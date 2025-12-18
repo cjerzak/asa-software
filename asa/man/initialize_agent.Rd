@@ -18,7 +18,7 @@ initialize_agent(
 )
 }
 \arguments{
-\item{backend}{LLM backend to use. One of: "openai", "groq", "xai", "exo"}
+\item{backend}{LLM backend to use. One of: "openai", "groq", "xai", "exo", "openrouter"}
 
 \item{model}{Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")}
 
@@ -66,7 +66,21 @@ The following environment variables should be set based on your backend:
   \item OpenAI: \code{OPENAI_API_KEY}
   \item Groq: \code{GROQ_API_KEY}
   \item xAI: \code{XAI_API_KEY}
+  \item OpenRouter: \code{OPENROUTER_API_KEY}
 }
+}
+
+\section{OpenRouter Models}{
+
+When using the \code{"openrouter"} backend, model names must be in
+\code{provider/model-name} format. Examples:
+\itemize{
+  \item \code{"openai/gpt-4o"}
+  \item \code{"anthropic/claude-3-sonnet"}
+  \item \code{"google/gemma-2-9b-it:free"}
+  \item \code{"meta-llama/llama-3-70b-instruct"}
+}
+See \url{https://openrouter.ai/models} for available models.
 }
 
 \examples{
@@ -83,6 +97,12 @@ agent <- initialize_agent(
   model = "llama-3.3-70b-versatile",
   use_memory_folding = FALSE,
   proxy = NULL  # No Tor proxy
+)
+
+# Initialize with OpenRouter (access to 100+ models)
+agent <- initialize_agent(
+  backend = "openrouter",
+  model = "anthropic/claude-3-sonnet"  # Note: provider/model format
 )
 }
 

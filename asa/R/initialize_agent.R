@@ -4,7 +4,7 @@
 #' search tools (Wikipedia, DuckDuckGo). The agent can use multiple LLM
 #' backends and supports DeepAgent-style memory folding.
 #'
-#' @param backend LLM backend to use. One of: "openai", "groq", "xai", "exo"
+#' @param backend LLM backend to use. One of: "openai", "groq", "xai", "exo", "openrouter"
 #' @param model Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")
 #' @param conda_env Name of the conda environment with Python dependencies
 #' @param proxy SOCKS5 proxy URL for Tor (default: "socks5h://127.0.0.1:9050").
@@ -36,7 +36,19 @@
 #'   \item OpenAI: \code{OPENAI_API_KEY}
 #'   \item Groq: \code{GROQ_API_KEY}
 #'   \item xAI: \code{XAI_API_KEY}
+#'   \item OpenRouter: \code{OPENROUTER_API_KEY}
 #' }
+#'
+#' @section OpenRouter Models:
+#' When using the \code{"openrouter"} backend, model names must be in
+#' \code{provider/model-name} format. Examples:
+#' \itemize{
+#'   \item \code{"openai/gpt-4o"}
+#'   \item \code{"anthropic/claude-3-sonnet"}
+#'   \item \code{"google/gemma-2-9b-it:free"}
+#'   \item \code{"meta-llama/llama-3-70b-instruct"}
+#' }
+#' See \url{https://openrouter.ai/models} for available models.
 #'
 #' @examples
 #' \dontrun{
@@ -52,6 +64,12 @@
 #'   model = "llama-3.3-70b-versatile",
 #'   use_memory_folding = FALSE,
 #'   proxy = NULL  # No Tor proxy
+#' )
+#'
+#' # Initialize with OpenRouter (access to 100+ models)
+#' agent <- initialize_agent(
+#'   backend = "openrouter",
+#'   model = "anthropic/claude-3-sonnet"  # Note: provider/model format
 #' )
 #' }
 #'
@@ -70,7 +88,14 @@ initialize_agent <- function(backend = "openai",
                              verbose = TRUE) {
 
   # Validate backend
- backend <- match.arg(backend, c("openai", "groq", "xai", "exo"))
+  backend <- match.arg(backend, c("openai", "groq", "xai", "exo", "openrouter"))
+
+  # Validate OpenRouter model format
+  if (backend == "openrouter" && !grepl("/", model)) {
+    warning("OpenRouter models should be in 'provider/model-name' format ",
+            "(e.g., 'openai/gpt-4o', 'anthropic/claude-3-sonnet'). ",
+            "Got: '", model, "'", call. = FALSE)
+  }
 
   if (verbose) message("Initializing ASA agent...")
 
@@ -88,10 +113,15 @@ initialize_agent <- function(backend = "openai",
     if (proxy == "") proxy <- NULL
   }
 
-  # Create HTTP clients for OpenAI
+  # Close any existing HTTP clients before creating new ones (prevents resource leak)
+  .close_http_clients()
+
+  # Create HTTP clients for backends that need them (OpenAI-compatible APIs)
   clients <- NULL
-  if (backend == "openai") {
+  if (backend %in% c("openai", "openrouter")) {
     clients <- .create_http_clients(proxy, timeout)
+    # Store clients in asa_env for cleanup on reset/unload
+    asa_env$http_clients <- clients
   }
 
   # Create LLM instance
@@ -251,6 +281,24 @@ initialize_agent <- function(backend = "openai",
       temperature = 0.01,
       streaming = TRUE
     )
+  } else if (backend == "openrouter") {
+    # OpenRouter uses OpenAI-compatible API with provider/model format
+    chat_models <- reticulate::import("langchain_openai")
+    llm <- chat_models$ChatOpenAI(
+      model_name = model,
+      openai_api_key = Sys.getenv("OPENROUTER_API_KEY"),
+      openai_api_base = "https://openrouter.ai/api/v1",
+      temperature = 0.5,
+      streaming = TRUE,
+      http_client = clients$sync,
+      http_async_client = clients$async,
+      include_response_headers = FALSE,
+      rate_limiter = rate_limiter,
+      default_headers = list(
+        "HTTP-Referer" = "https://github.com/cjerzak/asa-software",
+        "X-Title" = "asa"
+      )
+    )
   }
 
   llm
@@ -355,11 +403,15 @@ get_agent <- function() {
 #' Reset the Agent
 #'
 #' Clears the initialized agent state, forcing reinitialization on next use.
+#' Also closes any open HTTP clients to prevent resource leaks.
 #'
 #' @return Invisibly returns NULL
 #'
 #' @export
 reset_agent <- function() {
+  # Close HTTP clients to prevent resource leak (BUG-007 fix)
+  .close_http_clients()
+
   asa_env$initialized <- FALSE
   asa_env$agent <- NULL
   asa_env$llm <- NULL

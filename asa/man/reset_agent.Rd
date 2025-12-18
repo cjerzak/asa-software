@@ -11,4 +11,5 @@ Invisibly returns NULL
 }
 \description{
 Clears the initialized agent state, forcing reinitialization on next use.
+Also closes any open HTTP clients to prevent resource leaks.
 }

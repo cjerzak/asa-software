@@ -70,3 +70,56 @@ asa_env <- new.env(parent = emptyenv())
     system.file("extdata", filename, package = "asa")
   }
 }
+
+#' Close HTTP Clients
+#'
+#' Safely closes any open httpx clients to prevent resource leaks.
+#' This is called automatically by reset_agent() and when reinitializing.
+#'
+#' @return Invisibly returns NULL
+#' @keywords internal
+.close_http_clients <- function() {
+  # Close sync client if it exists
+
+if (exists("http_clients", envir = asa_env) && !is.null(asa_env$http_clients)) {
+    tryCatch({
+      if (!is.null(asa_env$http_clients$sync)) {
+        asa_env$http_clients$sync$close()
+      }
+    }, error = function(e) {
+      # Silently ignore errors during cleanup
+    })
+
+    tryCatch({
+      if (!is.null(asa_env$http_clients$async)) {
+        # For async client, we need to use aclose() in an async context
+        # but since we're in R, we'll try the sync close method if available
+        # or just let Python's garbage collector handle it
+        if (reticulate::py_has_attr(asa_env$http_clients$async, "aclose")) {
+          # Try to close using asyncio
+          tryCatch({
+            asyncio <- reticulate::import("asyncio")
+            loop <- tryCatch(asyncio$get_event_loop(), error = function(e) asyncio$new_event_loop())
+            if (!loop$is_running()) {
+              loop$run_until_complete(asa_env$http_clients$async$aclose())
+            }
+          }, error = function(e) {
+            # If async close fails, the client will be garbage collected
+          })
+        }
+      }
+    }, error = function(e) {
+      # Silently ignore errors during cleanup
+    })
+
+    asa_env$http_clients <- NULL
+  }
+
+  invisible(NULL)
+}
+
+#' @keywords internal
+.onUnload <- function(libpath) {
+  # Clean up HTTP clients when package is unloaded
+  .close_http_clients()
+}

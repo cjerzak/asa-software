@@ -14,3 +14,5 @@
 ^Internal$
 ^PredictRun\.sh$
 ^LLM_.*\.R$
+^doc$
+^Meta$
