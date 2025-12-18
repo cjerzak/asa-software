@@ -1,21 +1,41 @@
-# Script: LLM_CustomLLM_Invokation.R
+# Script: LLM_CustomLLM.R
+#
+# DeepAgent-style Memory Folding Configuration:
+#   Set USE_MEMORY_FOLDING <- TRUE to enable autonomous memory folding
+#   This implements the architecture from the DeepAgent paper where
+#   the agent automatically summarizes older messages to manage context.
+#
+#   Configuration options (set before sourcing this file):
+#     USE_MEMORY_FOLDING     - Enable memory folding (default: TRUE)
+#     MEMORY_THRESHOLD       - Messages before folding triggers (default: 6)
+#     MEMORY_KEEP_RECENT     - Messages to keep after folding (default: 2)
+#     MEMORY_DEBUG           - Enable debug logging (default: FALSE)
+#
 {
-# Run the agent, if initialized 
+# Set defaults for memory folding if not already defined
+if (!exists("USE_MEMORY_FOLDING")) USE_MEMORY_FOLDING <- TRUE
+if (!exists("MEMORY_THRESHOLD")) MEMORY_THRESHOLD <- 4L
+if (!exists("MEMORY_KEEP_RECENT")) MEMORY_KEEP_RECENT <- 2L
+if (!exists("MEMORY_DEBUG")) MEMORY_DEBUG <- FALSE
+if (!exists("AGENT_MAX_STEPS")) AGENT_MAX_STEPS <- 3L # Default steps before forced stop
+
+# Run the agent, if initialized
 if(INITIALIZED_CUSTOM_ENV_TAG){
     # rebuild agent - make sure tor is running (see tor browser to confirm)
     # brew services start tor
-    # rotating is potentially dangerous: 
+    # rotating is potentially dangerous:
     # https://chatgpt.com/share/68577668-1518-800f-b27d-4ae400938b17
-  
+
     # define proxy
     {
       #pip install httpx[http2]
       theProxy <- Sys.getenv("HTTP_PROXY")
-      theProxy <- ifelse(Sys.getenv("HTTP_PROXY") == "", 
+      theProxy <- ifelse(Sys.getenv("HTTP_PROXY") == "",
                          yes = "socks5h://127.0.0.1:9050",
                          no = Sys.getenv("HTTP_PROXY"))
-      write.csv(file = "~/Downloads/proxy.csv",theProxy)
-      write.csv(file = "~/Downloads/env.csv",Sys.getenv())
+      # Debug output removed for security - uncomment for debugging only:
+      # write.csv(file = "~/Downloads/proxy.csv",theProxy)
+      # write.csv(file = "~/Downloads/env.csv",Sys.getenv())
       
       #theHeader <- header_options[[sample(length(header_options),1)]]
       theHeader <- fake_headers$Headers(headers = TRUE)$generate()
@@ -69,6 +89,7 @@ if(INITIALIZED_CUSTOM_ENV_TAG){
 
     if(TRUE){
     custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = "~/Dropbox/APIs/AgentFunctions/")
+    #custom_ddg <- reticulate::import_from_path("custom_ddg_experimental", path = "~/Dropbox/APIs/AgentFunctions/")
     search <- custom_ddg$PatchedDuckDuckGoSearchRun(
       name        = "Search",
       description = "DuckDuckGo web search",
@@ -141,7 +162,7 @@ if(INITIALIZED_CUSTOM_ENV_TAG){
         model_name      = modelName,
         openai_api_key  = Sys.getenv("OPENAI_API_KEY"),
         openai_api_base = Sys.getenv("OPENAI_API_BASE", unset = "https://api.openai.com/v1"),
-        temperature     = 0.01,
+        temperature     = 0.5,
         streaming = TRUE,
         
         # tor management 
@@ -155,32 +176,80 @@ if(INITIALIZED_CUSTOM_ENV_TAG){
   
     #tor_ip <- try(system(sprintf(
       #"curl -s --proxy %s https://api.ipify.org?format=json",theProxy),intern = TRUE),T); message("IP seen: ", tor_ip)
-    
+
     #cmd <- sprintf("curl -s --proxy %s https://check.torproject.org/api/ip", theProxy)
     #out <- try(system(cmd, intern=TRUE), silent=TRUE)
     #message("Tor check result: ", out)
-    
+
     # define agent (important to cleanse memory)
-    theAgent <- langgraph$prebuilt$create_react_agent(
-      model        = theLLM,
-      tools        = theTools,
-      checkpointer = MemorySaver(), 
-      debug = FALSE
-    )
+    # Choose between standard prebuilt agent or DeepAgent-style memory folding
+    if (USE_MEMORY_FOLDING) {
+      message(sprintf("Creating Memory Folding Agent (threshold=%d, keep_recent=%d)",
+                      MEMORY_THRESHOLD, MEMORY_KEEP_RECENT))
+      theAgent <- custom_ddg$create_memory_folding_agent_with_checkpointer(
+        model        = theLLM,
+        tools        = theTools,
+        checkpointer = MemorySaver(),
+        message_threshold = as.integer(MEMORY_THRESHOLD),
+        keep_recent  = as.integer(MEMORY_KEEP_RECENT),
+        debug        = MEMORY_DEBUG
+      )
+    } else {
+      message("Creating standard prebuilt ReAct agent")
+      theAgent <- langgraph$prebuilt$create_react_agent(
+        model        = theLLM,
+        tools        = theTools,
+        checkpointer = MemorySaver(),
+        debug = FALSE
+      )
+    }
 
     # thePrompt <- "What is the political party of Scott Walker?"
     # search$invoke("Capital of Egypt")
     # (theLLM$bind_tools(theTools))$invoke(input = thePrompt)
     t0 <- Sys.time()
-    raw_response <- try(theAgent$invoke(
+
+    # Build initial state based on agent type
+    # Memory folding agent uses a different state schema with summary field
+    if (USE_MEMORY_FOLDING) {
+      # Import HumanMessage for proper message typing
+      from_schema <- import("langchain_core.messages")
+      initial_message <- from_schema$HumanMessage(content = thePrompt)
+
+      initial_state <- list(
+        messages = list(initial_message),
+        summary = "",
+        fold_count = 0L
+      )
+      raw_response <- try(theAgent$invoke(
+        initial_state,
+        config = list(
+          configurable = list(thread_id = rlang::hash(Sys.time())),
+          recursion_limit = 100L  # Higher limit for memory folding loops
+        )
+      ), TRUE)
+    } else {
+      raw_response <- try(theAgent$invoke(
         list(messages = list(list(role = "user", content = thePrompt))),
-             config = list(configurable = list(thread_id = "session-001"),
-                           recursion_limit = 20L
-                           )), TRUE)
-    print(sprintf("Agent ran in %.3f mins", 
+        config = list(
+          configurable = list(thread_id = rlang::hash(Sys.time())),
+          recursion_limit = 20L
+        )
+      ), TRUE)
+    }
+    print(sprintf("Agent ran in %.3f mins",
                   difftime(Sys.time(),t0,units = "mins")))
     print(raw_response)
-    
+
+    # Report memory folding statistics if applicable
+    if (USE_MEMORY_FOLDING && !inherits(raw_response, "try-error")) {
+      fold_count <- tryCatch(raw_response$fold_count, error = function(e) 0)
+      summary_len <- tryCatch(nchar(raw_response$summary %||% ""), error = function(e) 0)
+      msg_count <- tryCatch(length(raw_response$messages), error = function(e) 0)
+      message(sprintf("Memory Folding Stats: folds=%d, summary_chars=%d, final_messages=%d",
+                      fold_count %||% 0, summary_len, msg_count))
+    }
+
     # save full traceback
     text_blob <- paste(lapply(unlist(raw_response),function(l_){capture.output(l_)}), collapse = "\n\n")
     #writeBin(charToRaw(text_blob), file.path(sprintf("%s/traces/i%i.txt", output_directory,i)))
@@ -255,7 +324,7 @@ if(!INITIALIZED_CUSTOM_ENV_TAG){
     # define rate limiter 
     RateLimit <- import("langchain_core.rate_limiters")
     RateLimiter = RateLimit$InMemoryRateLimiter(
-      requests_per_second=0.2,  # <-- We can ake a request once every 1/value seconds;  30/min limit?
+      requests_per_second=0.2,  # <-- We can make a request once every 1/value seconds;  30/min limit?
       check_every_n_seconds=0.1,  # Wake up every value ms to check whether allowed to make a request,
       max_bucket_size=1,  # Controls the maximum burst size.
     )

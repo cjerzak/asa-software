@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.git$
+^\.gitignore$
+^LICENSE\.md$
+^README\.Rmd$
+^CLAUDE\.md$
+^reports$
+^tutorials$
+^\.DS_Store$
+^.*\.Rcheck$
+^.*\.tar\.gz$

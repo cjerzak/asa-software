@@ -1,0 +1,433 @@
+{
+  "United States of America": [
+    "Democratic Party",
+    "Republican Party",
+    "Libertarian Party",
+    "Green Party",
+    "Independent"
+  ],
+  "United States": [
+    "Democratic Party",
+    "Republican Party",
+    "Libertarian Party",
+    "Green Party",
+    "Independent"
+  ],
+  "USA": [
+    "Democratic Party",
+    "Republican Party",
+    "Libertarian Party",
+    "Green Party",
+    "Independent"
+  ],
+  "United Kingdom": [
+    "Conservative Party",
+    "Labour Party",
+    "Liberal Democrats",
+    "Scottish National Party",
+    "Green Party",
+    "UK Independence Party",
+    "Reform UK",
+    "Independent"
+  ],
+  "UK": [
+    "Conservative Party",
+    "Labour Party",
+    "Liberal Democrats",
+    "Scottish National Party",
+    "Green Party",
+    "UK Independence Party",
+    "Reform UK",
+    "Independent"
+  ],
+  "India": [
+    "Bharatiya Janata Party",
+    "Indian National Congress",
+    "Aam Aadmi Party",
+    "Communist Party of India",
+    "Communist Party of India (Marxist)",
+    "Bahujan Samaj Party",
+    "Samajwadi Party",
+    "Trinamool Congress",
+    "Nationalist Congress Party",
+    "Shiv Sena",
+    "Independent"
+  ],
+  "Germany": [
+    "Christian Democratic Union",
+    "Social Democratic Party",
+    "Alternative for Germany",
+    "Free Democratic Party",
+    "The Greens",
+    "The Left",
+    "Christian Social Union",
+    "Independent"
+  ],
+  "France": [
+    "La République En Marche",
+    "The Republicans",
+    "National Rally",
+    "Socialist Party",
+    "La France Insoumise",
+    "Europe Ecology – The Greens",
+    "Independent"
+  ],
+  "Canada": [
+    "Liberal Party",
+    "Conservative Party",
+    "New Democratic Party",
+    "Bloc Québécois",
+    "Green Party",
+    "People's Party",
+    "Independent"
+  ],
+  "Australia": [
+    "Australian Labor Party",
+    "Liberal Party",
+    "National Party",
+    "Australian Greens",
+    "One Nation",
+    "Independent"
+  ],
+  "Brazil": [
+    "Workers' Party",
+    "Liberal Party",
+    "Brazilian Democratic Movement",
+    "Social Democratic Party",
+    "Democrats",
+    "Progressistas",
+    "Independent"
+  ],
+  "Mexico": [
+    "Morena",
+    "National Action Party",
+    "Institutional Revolutionary Party",
+    "Citizens' Movement",
+    "Labor Party",
+    "Green Ecologist Party",
+    "Independent"
+  ],
+  "Japan": [
+    "Liberal Democratic Party",
+    "Constitutional Democratic Party",
+    "Komeito",
+    "Japan Innovation Party",
+    "Japanese Communist Party",
+    "Social Democratic Party",
+    "Independent"
+  ],
+  "South Korea": [
+    "People Power Party",
+    "Democratic Party of Korea",
+    "Justice Party",
+    "Independent"
+  ],
+  "Italy": [
+    "Brothers of Italy",
+    "Democratic Party",
+    "Five Star Movement",
+    "Lega",
+    "Forza Italia",
+    "Independent"
+  ],
+  "Spain": [
+    "Spanish Socialist Workers' Party",
+    "People's Party",
+    "Vox",
+    "Podemos",
+    "Citizens",
+    "Independent"
+  ],
+  "Netherlands": [
+    "People's Party for Freedom and Democracy",
+    "Party for Freedom",
+    "Democrats 66",
+    "Christian Democratic Appeal",
+    "GreenLeft",
+    "Socialist Party",
+    "Independent"
+  ],
+  "Poland": [
+    "Law and Justice",
+    "Civic Platform",
+    "Poland 2050",
+    "The Left",
+    "Polish People's Party",
+    "Confederation",
+    "Independent"
+  ],
+  "South Africa": [
+    "African National Congress",
+    "Democratic Alliance",
+    "Economic Freedom Fighters",
+    "Inkatha Freedom Party",
+    "Independent"
+  ],
+  "Nigeria": [
+    "All Progressives Congress",
+    "Peoples Democratic Party",
+    "Labour Party",
+    "Independent"
+  ],
+  "Russia": [
+    "United Russia",
+    "Communist Party",
+    "Liberal Democratic Party",
+    "A Just Russia",
+    "Independent"
+  ],
+  "China": [
+    "Chinese Communist Party"
+  ],
+  "Argentina": [
+    "Justicialist Party",
+    "Republican Proposal",
+    "Radical Civic Union",
+    "La Libertad Avanza",
+    "Independent"
+  ],
+  "Indonesia": [
+    "Indonesian Democratic Party of Struggle",
+    "Golkar",
+    "Great Indonesia Movement Party",
+    "National Awakening Party",
+    "National Mandate Party",
+    "Prosperous Justice Party",
+    "Independent"
+  ],
+  "Turkey": [
+    "Justice and Development Party",
+    "Republican People's Party",
+    "Nationalist Movement Party",
+    "Good Party",
+    "Peoples' Democratic Party",
+    "Independent"
+  ],
+  "Israel": [
+    "Likud",
+    "Yesh Atid",
+    "National Unity",
+    "Shas",
+    "United Torah Judaism",
+    "Religious Zionist Party",
+    "Labor Party",
+    "Independent"
+  ],
+  "Sweden": [
+    "Social Democrats",
+    "Moderate Party",
+    "Sweden Democrats",
+    "Centre Party",
+    "Left Party",
+    "Christian Democrats",
+    "Green Party",
+    "Liberals",
+    "Independent"
+  ],
+  "Norway": [
+    "Labour Party",
+    "Conservative Party",
+    "Progress Party",
+    "Centre Party",
+    "Socialist Left Party",
+    "Liberal Party",
+    "Christian Democratic Party",
+    "Green Party",
+    "Independent"
+  ],
+  "Denmark": [
+    "Social Democrats",
+    "Venstre",
+    "Danish People's Party",
+    "Socialist People's Party",
+    "Moderates",
+    "Liberal Alliance",
+    "Conservative People's Party",
+    "Independent"
+  ],
+  "Finland": [
+    "Social Democratic Party",
+    "National Coalition Party",
+    "Finns Party",
+    "Centre Party",
+    "Green League",
+    "Left Alliance",
+    "Independent"
+  ],
+  "Belgium": [
+    "New Flemish Alliance",
+    "Vlaams Belang",
+    "Socialist Party",
+    "Mouvement Réformateur",
+    "Open Flemish Liberals and Democrats",
+    "CD&V",
+    "Ecolo",
+    "Groen",
+    "Independent"
+  ],
+  "Austria": [
+    "Austrian People's Party",
+    "Social Democratic Party",
+    "Freedom Party",
+    "The Greens",
+    "NEOS",
+    "Independent"
+  ],
+  "Switzerland": [
+    "Swiss People's Party",
+    "Social Democratic Party",
+    "FDP.The Liberals",
+    "The Centre",
+    "Green Party",
+    "Green Liberal Party",
+    "Independent"
+  ],
+  "Greece": [
+    "New Democracy",
+    "Syriza",
+    "PASOK",
+    "Communist Party",
+    "Greek Solution",
+    "Independent"
+  ],
+  "Portugal": [
+    "Social Democratic Party",
+    "Socialist Party",
+    "Chega",
+    "Liberal Initiative",
+    "Left Bloc",
+    "Portuguese Communist Party",
+    "Independent"
+  ],
+  "Ireland": [
+    "Fianna Fáil",
+    "Fine Gael",
+    "Sinn Féin",
+    "Labour Party",
+    "Green Party",
+    "Social Democrats",
+    "Independent"
+  ],
+  "New Zealand": [
+    "Labour Party",
+    "National Party",
+    "Green Party",
+    "ACT New Zealand",
+    "New Zealand First",
+    "Independent"
+  ],
+  "Chile": [
+    "Independent Democratic Union",
+    "National Renewal",
+    "Socialist Party",
+    "Party for Democracy",
+    "Christian Democratic Party",
+    "Communist Party",
+    "Republican Party",
+    "Independent"
+  ],
+  "Colombia": [
+    "Historic Pact",
+    "Democratic Center",
+    "Liberal Party",
+    "Conservative Party",
+    "Green Alliance",
+    "Independent"
+  ],
+  "Philippines": [
+    "Lakas–CMD",
+    "Nacionalista Party",
+    "Liberal Party",
+    "PDP–Laban",
+    "Nationalist People's Coalition",
+    "Independent"
+  ],
+  "Thailand": [
+    "Pheu Thai Party",
+    "Move Forward Party",
+    "Bhumjaithai Party",
+    "Palang Pracharath Party",
+    "Democrat Party",
+    "Independent"
+  ],
+  "Vietnam": [
+    "Communist Party of Vietnam"
+  ],
+  "Malaysia": [
+    "Pakatan Harapan",
+    "Barisan Nasional",
+    "Perikatan Nasional",
+    "UMNO",
+    "DAP",
+    "PKR",
+    "Independent"
+  ],
+  "Singapore": [
+    "People's Action Party",
+    "Workers' Party",
+    "Progress Singapore Party",
+    "Independent"
+  ],
+  "Egypt": [
+    "Nation's Future Party",
+    "Republican People's Party",
+    "New Wafd Party",
+    "Independent"
+  ],
+  "Pakistan": [
+    "Pakistan Tehreek-e-Insaf",
+    "Pakistan Muslim League (N)",
+    "Pakistan Peoples Party",
+    "Muttahida Qaumi Movement",
+    "Jamiat Ulema-e-Islam",
+    "Independent"
+  ],
+  "Bangladesh": [
+    "Awami League",
+    "Bangladesh Nationalist Party",
+    "Jatiya Party",
+    "Independent"
+  ],
+  "Kenya": [
+    "Kenya Kwanza",
+    "Azimio la Umoja",
+    "Jubilee Party",
+    "Orange Democratic Movement",
+    "Independent"
+  ],
+  "Ghana": [
+    "New Patriotic Party",
+    "National Democratic Congress",
+    "Independent"
+  ],
+  "Ukraine": [
+    "Servant of the People",
+    "European Solidarity",
+    "Batkivshchyna",
+    "Opposition Platform — For Life",
+    "Voice",
+    "Independent"
+  ],
+  "Czech Republic": [
+    "ANO 2011",
+    "SPOLU",
+    "Pirates and Mayors",
+    "Freedom and Direct Democracy",
+    "Independent"
+  ],
+  "Hungary": [
+    "Fidesz",
+    "Democratic Coalition",
+    "Momentum",
+    "Jobbik",
+    "LMP",
+    "Independent"
+  ],
+  "Romania": [
+    "Social Democratic Party",
+    "National Liberal Party",
+    "Save Romania Union",
+    "Alliance for the Union of Romanians",
+    "Independent"
+  ]
+}
