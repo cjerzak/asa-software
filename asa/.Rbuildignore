@@ -10,3 +10,7 @@
 ^\.DS_Store$
 ^.*\.Rcheck$
 ^.*\.tar\.gz$
+^bash_scripts$
+^Internal$
+^PredictRun\.sh$
+^LLM_.*\.R$
