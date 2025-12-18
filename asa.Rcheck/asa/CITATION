@@ -1,0 +1,16 @@
+citHeader("To cite the asa package in publications, please use:")
+
+bibentry(
+  bibtype  = "Manual",
+  key      = "asa",
+  title    = "asa: AI Search Agent for Political Party Affiliation Inference",
+  author   = person("Connor", "Jerzak",
+                    role = c("aut", "cre"),
+                    comment = c(ORCID = "0000-0003-1914-8905")),
+  year     = "2025",
+  version  = "0.1.0",
+  note     = "R package version 0.1.0",
+  url      = "https://github.com/cjerzak/asa-software"
+)
+
+citFooter("For more information, see https://github.com/cjerzak/asa-software")

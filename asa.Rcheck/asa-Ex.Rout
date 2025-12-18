@@ -1,0 +1,470 @@
+
+R version 4.5.2 (2025-10-31) -- "[Not] Part in a Rumble"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "asa"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> base::assign(".ExTimings", "asa-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
+> library('asa')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("build_backend")
+> ### * build_backend
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: build_backend
+> ### Title: Build the Python Backend Environment
+> ### Aliases: build_backend
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Create the default environment
+> ##D build_backend()
+> ##D 
+> ##D # Create with a custom name
+> ##D build_backend(conda_env = "my_asa_env")
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("build_backend", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("build_prompt")
+> ### * build_prompt
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: build_prompt
+> ### Title: Build a Task Prompt from Template
+> ### Aliases: build_prompt
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D prompt <- build_prompt(
+> ##D   template = "Find information about {{name}} in {{country}} during {{year}}",
+> ##D   name = "Marie Curie",
+> ##D   country = "France",
+> ##D   year = 1903
+> ##D )
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("build_prompt", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("check_backend")
+> ### * check_backend
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: check_backend
+> ### Title: Check Python Environment Availability
+> ### Aliases: check_backend
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D status <- check_backend()
+> ##D if (!status$available) {
+> ##D   build_backend()
+> ##D }
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("check_backend", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("extract_agent_results")
+> ### * extract_agent_results
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: extract_agent_results
+> ### Title: Extract Structured Data from Agent Traces
+> ### Aliases: extract_agent_results
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D response <- run_agent("Who is the president of France?", agent)
+> ##D extracted <- extract_agent_results(response$trace)
+> ##D print(extracted$search_snippets)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("extract_agent_results", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("extract_search_snippets")
+> ### * extract_search_snippets
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: extract_search_snippets
+> ### Title: Extract Search Snippets by Source Number
+> ### Aliases: extract_search_snippets
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D snippets <- extract_search_snippets(response$trace)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("extract_search_snippets", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("extract_urls")
+> ### * extract_urls
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: extract_urls
+> ### Title: Extract URLs by Source Number
+> ### Aliases: extract_urls
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D urls <- extract_urls(response$trace)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("extract_urls", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("extract_wikipedia_content")
+> ### * extract_wikipedia_content
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: extract_wikipedia_content
+> ### Title: Extract Wikipedia Content
+> ### Aliases: extract_wikipedia_content
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D wiki <- extract_wikipedia_content(response$trace)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("extract_wikipedia_content", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("get_agent")
+> ### * get_agent
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: get_agent
+> ### Title: Get the Current Agent
+> ### Aliases: get_agent
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D agent <- get_agent()
+> ##D if (is.null(agent)) {
+> ##D   agent <- initialize_agent()
+> ##D }
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("get_agent", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("get_tor_ip")
+> ### * get_tor_ip
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: get_tor_ip
+> ### Title: Get External IP via Tor
+> ### Aliases: get_tor_ip
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D ip <- get_tor_ip()
+> ##D message("Current Tor IP: ", ip)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("get_tor_ip", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("initialize_agent")
+> ### * initialize_agent
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: initialize_agent
+> ### Title: Initialize the ASA Search Agent
+> ### Aliases: initialize_agent
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Initialize with OpenAI
+> ##D agent <- initialize_agent(
+> ##D   backend = "openai",
+> ##D   model = "gpt-4.1-mini"
+> ##D )
+> ##D 
+> ##D # Initialize with Groq and custom settings
+> ##D agent <- initialize_agent(
+> ##D   backend = "groq",
+> ##D   model = "llama-3.3-70b-versatile",
+> ##D   use_memory_folding = FALSE,
+> ##D   proxy = NULL  # No Tor proxy
+> ##D )
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("initialize_agent", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("is_tor_running")
+> ### * is_tor_running
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: is_tor_running
+> ### Title: Check if Tor is Running
+> ### Aliases: is_tor_running
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D if (!is_tor_running()) {
+> ##D   message("Start Tor with: brew services start tor")
+> ##D }
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("is_tor_running", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("rotate_tor_circuit")
+> ### * rotate_tor_circuit
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: rotate_tor_circuit
+> ### Title: Rotate Tor Circuit
+> ### Aliases: rotate_tor_circuit
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D rotate_tor_circuit()
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("rotate_tor_circuit", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("run_agent")
+> ### * run_agent
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: run_agent
+> ### Title: Run the ASA Agent with a Custom Prompt
+> ### Aliases: run_agent
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Run with a custom prompt
+> ##D agent <- initialize_agent()
+> ##D result <- run_agent(
+> ##D   prompt = "Who was the 44th president of the United States?",
+> ##D   agent = agent
+> ##D )
+> ##D print(result$message)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("run_agent", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("run_agent_batch")
+> ### * run_agent_batch
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: run_agent_batch
+> ### Title: Run Agent in Batch Mode
+> ### Aliases: run_agent_batch
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D prompts <- c(
+> ##D   "What is the population of Tokyo?",
+> ##D   "What is the population of New York?"
+> ##D )
+> ##D results <- run_agent_batch(prompts, agent)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("run_agent_batch", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("run_task")
+> ### * run_task
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: run_task
+> ### Title: Run a Structured Task with the Agent
+> ### Aliases: run_task
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Initialize agent first
+> ##D agent <- initialize_agent(backend = "openai", model = "gpt-4.1-mini")
+> ##D 
+> ##D # Simple text query
+> ##D result <- run_task(
+> ##D   prompt = "What is the capital of France?",
+> ##D   output_format = "text",
+> ##D   agent = agent
+> ##D )
+> ##D print(result$message)
+> ##D 
+> ##D # JSON structured output
+> ##D result <- run_task(
+> ##D   prompt = "Find information about Albert Einstein and return JSON with
+> ##D             fields: birth_year, death_year, nationality, field_of_study",
+> ##D   output_format = "json",
+> ##D   agent = agent
+> ##D )
+> ##D print(result$parsed)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("run_task", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("run_task_batch")
+> ### * run_task_batch
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: run_task_batch
+> ### Title: Run Multiple Tasks in Batch
+> ### Aliases: run_task_batch
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D prompts <- c(
+> ##D   "What is the population of Tokyo?",
+> ##D   "What is the population of New York?",
+> ##D   "What is the population of London?"
+> ##D )
+> ##D results <- run_task_batch(prompts, agent = agent)
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("run_task_batch", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  0.206 0.009 0.216 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

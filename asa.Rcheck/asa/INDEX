@@ -1,0 +1,31 @@
+as.data.frame.asa_result
+                        Convert asa_result to Data Frame
+asa_agent               Constructor for asa_agent Objects
+asa_response            Constructor for asa_response Objects
+asa_result              Constructor for asa_result Objects
+build_backend           Build the Python Backend Environment
+build_prompt            Build a Task Prompt from Template
+check_backend           Check Python Environment Availability
+extract_agent_results   Extract Structured Data from Agent Traces
+extract_search_snippets
+                        Extract Search Snippets by Source Number
+extract_urls            Extract URLs by Source Number
+extract_wikipedia_content
+                        Extract Wikipedia Content
+get_agent               Get the Current Agent
+get_tor_ip              Get External IP via Tor
+initialize_agent        Initialize the ASA Search Agent
+is_tor_running          Check if Tor is Running
+print.asa_agent         Print Method for asa_agent Objects
+print.asa_response      Print Method for asa_response Objects
+print.asa_result        Print Method for asa_result Objects
+process_outputs         Process Multiple Agent Outputs
+reset_agent             Reset the Agent
+rotate_tor_circuit      Rotate Tor Circuit
+run_agent               Run the ASA Agent with a Custom Prompt
+run_agent_batch         Run Agent in Batch Mode
+run_task                Run a Structured Task with the Agent
+run_task_batch          Run Multiple Tasks in Batch
+summary.asa_agent       Summary Method for asa_agent Objects
+summary.asa_response    Summary Method for asa_response Objects
+summary.asa_result      Summary Method for asa_result Objects
