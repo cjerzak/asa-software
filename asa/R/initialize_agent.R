@@ -272,8 +272,8 @@ initialize_agent <- function(backend = "openai",
   } else if (backend == "exo") {
     # Exo is a local LLM server
     chat_models <- reticulate::import("langchain_openai")
-    base_url <- system("ifconfig | grep 'inet ' | awk '{print $2}'", intern = TRUE)
-    base_url <- sprintf("http://%s:52415/v1", base_url[length(base_url)])
+    local_ip <- .get_local_ip()
+    base_url <- sprintf("http://%s:52415/v1", local_ip)
 
     llm <- chat_models$ChatOpenAI(
       model_name = model,
@@ -418,4 +418,60 @@ reset_agent <- function() {
   asa_env$tools <- NULL
   asa_env$config <- NULL
   invisible(NULL)
+}
+
+
+# ============================================================================
+# Internal helper functions
+# ============================================================================
+
+#' Get Local IP Address (Cross-Platform)
+#'
+#' Returns the local IP address for use with Exo backend.
+#' Works on Windows, macOS, and Linux.
+#'
+#' @return Character string with the local IP address, or "127.0.0.1" on failure.
+#' @keywords internal
+.get_local_ip <- function() {
+  os <- Sys.info()["sysname"]
+
+  ip <- tryCatch({
+    if (os == "Windows") {
+      # Windows: parse ipconfig output
+      output <- system("ipconfig", intern = TRUE, ignore.stderr = TRUE)
+      ipv4_lines <- grep("IPv4", output, value = TRUE)
+      if (length(ipv4_lines) > 0) {
+        # Extract IP from "IPv4 Address. . . . . . . . . . . : 192.168.1.100"
+        ip <- gsub(".*:\\s*", "", ipv4_lines[1])
+        trimws(ip)
+      } else {
+        NULL
+      }
+    } else if (os == "Darwin") {
+      # macOS: use ipconfig getifaddr
+      ip <- system("ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null",
+                   intern = TRUE, ignore.stderr = TRUE)
+      if (length(ip) == 0 || ip == "") {
+        # Fallback to ifconfig
+        ip <- system("ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | head -1",
+                     intern = TRUE, ignore.stderr = TRUE)
+      }
+      if (length(ip) > 0 && ip != "") ip[1] else NULL
+    } else {
+      # Linux: try hostname -I first, then ifconfig
+      ip <- system("hostname -I 2>/dev/null | awk '{print $1}'",
+                   intern = TRUE, ignore.stderr = TRUE)
+      if (length(ip) == 0 || ip == "") {
+        ip <- system("ifconfig 2>/dev/null | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | head -1",
+                     intern = TRUE, ignore.stderr = TRUE)
+      }
+      if (length(ip) > 0 && ip != "") ip[1] else NULL
+    }
+  }, error = function(e) NULL)
+
+  # Fallback to localhost
+  if (is.null(ip) || length(ip) == 0 || ip == "") {
+    return("127.0.0.1")
+  }
+  ip
 }

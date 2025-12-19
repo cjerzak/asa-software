@@ -11,6 +11,7 @@ import logging
 import os
 import traceback
 import time
+from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 from urllib.parse import quote, urlencode
 
@@ -30,8 +31,87 @@ import requests
 import random as random
 import primp
 
-INTERNAL_MAX_RETURN = 10
 logger = logging.getLogger(__name__)
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Configuration class for search parameters
+# ────────────────────────────────────────────────────────────────────────
+@dataclass
+class SearchConfig:
+    """Centralized configuration for search parameters.
+
+    All timing, retry, and limit values that were previously hardcoded
+    can now be customized by creating a SearchConfig instance.
+
+    Attributes:
+        max_results: Maximum number of search results to return (default: 10)
+        timeout: HTTP request timeout in seconds (default: 15.0)
+        max_retries: Maximum retry attempts on failure (default: 3)
+        retry_delay: Initial delay between retries in seconds (default: 2.0)
+        backoff_multiplier: Multiplier for exponential backoff (default: 1.5)
+        captcha_backoff_base: Base multiplier for CAPTCHA backoff (default: 3.0)
+        page_load_wait: Wait time after page load in seconds (default: 2.0)
+    """
+    max_results: int = 10
+    timeout: float = 15.0
+    max_retries: int = 3
+    retry_delay: float = 2.0
+    backoff_multiplier: float = 1.5
+    captcha_backoff_base: float = 3.0
+    page_load_wait: float = 2.0
+
+
+# Default configuration instance
+_default_config = SearchConfig()
+
+
+def configure_search(
+    max_results: int = None,
+    timeout: float = None,
+    max_retries: int = None,
+    retry_delay: float = None,
+    backoff_multiplier: float = None,
+    captcha_backoff_base: float = None,
+    page_load_wait: float = None,
+) -> SearchConfig:
+    """Configure global search defaults. Call from R via reticulate.
+
+    Only non-None values will update the defaults. Returns the updated config.
+    """
+    global _default_config
+    if max_results is not None:
+        _default_config.max_results = max_results
+    if timeout is not None:
+        _default_config.timeout = timeout
+    if max_retries is not None:
+        _default_config.max_retries = max_retries
+    if retry_delay is not None:
+        _default_config.retry_delay = retry_delay
+    if backoff_multiplier is not None:
+        _default_config.backoff_multiplier = backoff_multiplier
+    if captcha_backoff_base is not None:
+        _default_config.captcha_backoff_base = captcha_backoff_base
+    if page_load_wait is not None:
+        _default_config.page_load_wait = page_load_wait
+    return _default_config
+
+
+def configure_logging(level: str = "WARNING") -> None:
+    """Configure search module logging level. Call from R via reticulate.
+
+    Args:
+        level: Log level - one of "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+    """
+    logger.setLevel(getattr(logging, level.upper(), logging.WARNING))
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        ))
+        logger.addHandler(handler)
+
+
 _DEFAULT_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -39,6 +119,9 @@ _DEFAULT_UA = (
 )
 
 __all__ = [
+    "SearchConfig",
+    "configure_search",
+    "configure_logging",
     "PatchedDuckDuckGoSearchAPIWrapper",
     "PatchedDuckDuckGoSearchRun",
     "BrowserDuckDuckGoSearchAPIWrapper",
@@ -87,44 +170,68 @@ def _new_driver(
     headers: Dict[str, str] | None,
     headless: bool,
     bypass_proxy_for_driver: bool,
-    use_proxy_for_browser: bool = True,  # NEW: control whether browser uses proxy
- ) -> webdriver.Firefox:
-# ) -> webdriver.Chrome: # if using chrome
+    use_proxy_for_browser: bool = True,
+) -> webdriver.Firefox | webdriver.Chrome:
+    """Create a Selenium WebDriver instance.
 
-    opts = Options()
-    opts.add_argument("--headless") # for Firefox
-    #opts.add_argument("--headless=new") # for Chrome
-    #opts.add_argument('--window-size=1600,900')
-
-    opts.add_argument("--disable-gpu")
-    opts.add_argument("--disable-dev-shm-usage")
-    opts.add_argument("--no-sandbox")
-    #opts.add_argument('--disable-search-engine-choice-screen')
-
-    # Only apply proxy to browser if explicitly requested
-    if proxy and use_proxy_for_browser:
-        opts.add_argument(f"--proxy-server={proxy}")
-
-    # Temporarily clear proxies so Selenium‑Manager can download Chromedriver
+    Tries Firefox first (preferred), falls back to Chrome if unavailable.
+    Each browser uses its appropriate options configuration.
+    """
+    # Temporarily clear proxies so Selenium-Manager can download drivers
     saved_env: Dict[str, str] = {}
     if bypass_proxy_for_driver:
         for var in ("HTTP_PROXY", "HTTPS_PROXY"):
             if var in os.environ:
                 saved_env[var] = os.environ.pop(var)
 
+    driver = None
     try:
-        driver = webdriver.Chrome(options=opts)
-    except WebDriverException:
-        driver = webdriver.Firefox(options=opts)
+        # Try Firefox first (default) with Firefox-compatible options
+        firefox_opts = Options()  # Firefox Options (imported at module level)
+        firefox_opts.add_argument("--headless")
+        firefox_opts.add_argument("--disable-gpu")
+        firefox_opts.add_argument("--no-sandbox")
+        if proxy and use_proxy_for_browser:
+            firefox_opts.set_preference("network.proxy.type", 1)
+            # Parse SOCKS proxy if provided
+            if "socks" in (proxy or "").lower():
+                # Format: socks5h://host:port
+                import re
+                match = re.match(r"socks\d*h?://([^:]+):(\d+)", proxy)
+                if match:
+                    firefox_opts.set_preference("network.proxy.socks", match.group(1))
+                    firefox_opts.set_preference("network.proxy.socks_port", int(match.group(2)))
+                    firefox_opts.set_preference("network.proxy.socks_remote_dns", True)
+
+        try:
+            driver = webdriver.Firefox(options=firefox_opts)
+            logger.debug("Using Firefox WebDriver")
+        except WebDriverException as firefox_err:
+            logger.debug("Firefox unavailable (%s), trying Chrome", firefox_err)
+
+            # Fallback to Chrome with Chrome-compatible options
+            from selenium.webdriver.chrome.options import Options as ChromeOptions
+            chrome_opts = ChromeOptions()
+            chrome_opts.add_argument("--headless=new")
+            chrome_opts.add_argument("--disable-gpu")
+            chrome_opts.add_argument("--disable-dev-shm-usage")
+            chrome_opts.add_argument("--no-sandbox")
+            if proxy and use_proxy_for_browser:
+                chrome_opts.add_argument(f"--proxy-server={proxy}")
+
+            driver = webdriver.Chrome(options=chrome_opts)
+            logger.debug("Using Chrome WebDriver")
+
+            # Chrome-specific: inject headers via CDP
+            if headers:
+                try:
+                    driver.execute_cdp_cmd("Network.enable", {})
+                    driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": headers})
+                except Exception as e:
+                    logger.debug("CDP header injection failed: %s", e)
+
     finally:
         os.environ.update(saved_env)
-
-    if headers:
-        try:
-            driver.execute_cdp_cmd("Network.enable", {})
-            driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": headers})
-        except Exception as e:  # pragma: no cover
-            logger.debug("CDP header injection failed: %s", e)
 
     return driver
 
@@ -132,17 +239,21 @@ def _new_driver(
 def _browser_search(
     query: str,
     *,
-    max_results: int = 10,
+    max_results: int = None,
     proxy: str | None,
     headers: Dict[str, str] | None,
     headless: bool,
     bypass_proxy_for_driver: bool,
-    timeout: int = 15,
-    max_retries: int = 3,
+    timeout: float = None,
+    max_retries: int = None,
+    config: SearchConfig = None,
 ) -> List[Dict[str, str]]:
+    cfg = config or _default_config
+    max_results = max_results if max_results is not None else cfg.max_results
+    timeout = timeout if timeout is not None else cfg.timeout
+    max_retries = max_retries if max_retries is not None else cfg.max_retries
 
-    print("In _browser_search")
-    max_results = int(  INTERNAL_MAX_RETURN ) # hardcode
+    logger.debug("Starting browser search for: %s", query[:60])
 
     # Strategy: Try with proxy first (2 attempts), then without proxy (1 attempt)
     # This allows falling back to direct IP if Tor is blocked
@@ -150,7 +261,7 @@ def _browser_search(
         # After first 2 attempts with proxy fail, try without proxy
         use_proxy = (attempt < 2) if proxy else False
         if attempt == 2 and proxy:
-            print(f"[BROWSER] Switching to DIRECT IP (no proxy) for final attempt")
+            logger.info("Switching to DIRECT IP (no proxy) for final attempt")
 
         driver = _new_driver(
             proxy=proxy,
@@ -164,17 +275,17 @@ def _browser_search(
             driver.get(f"https://html.duckduckgo.com/html/?q={quote(query)}")
 
             # Wait a moment for page to load, then check for CAPTCHA
-            time.sleep(2)
+            time.sleep(cfg.page_load_wait)
             page_source = driver.page_source.lower()
 
             # Detect CAPTCHA before waiting for results
             if "captcha" in page_source or "robot" in page_source or "unusual traffic" in page_source:
-                print(f"[BROWSER] CAPTCHA detected on attempt {attempt + 1}/{max_retries}")
+                logger.warning("CAPTCHA detected on attempt %d/%d", attempt + 1, max_retries)
                 with contextlib.suppress(Exception):
                     driver.quit()
                 if attempt < max_retries - 1:
-                    wait_time = 3.0 * (attempt + 1)  # Exponential backoff
-                    print(f"[BROWSER] Waiting {wait_time}s before retry...")
+                    wait_time = cfg.captcha_backoff_base * (attempt + 1)  # Exponential backoff
+                    logger.info("Waiting %.1fs before retry...", wait_time)
                     time.sleep(wait_time)
                     continue
                 else:
@@ -214,10 +325,7 @@ def _browser_search(
                     "body": f"__START_OF_SOURCE {idx + 1}__ <CONTENT> {snippet} </CONTENT> <URL> {real_url} </URL> __END_OF_SOURCE  {idx + 1}__"
                 })
 
-            #print("Returning:")
-            #print(return_content)
-
-            print(f"[BROWSER] SUCCESS: Returning {len(return_content)} results")
+            logger.info("Browser search SUCCESS: returning %d results", len(return_content))
             return return_content
         finally:
             time.sleep(random.uniform(0, 0.01))
@@ -300,7 +408,8 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         #   • No global env mutation; proxy is passed directly from `self.proxy`.
         #   • Optional overrides via env: PRIMP_IMPERSONATE, PRIMP_IMPERSONATE_OS.
         #   • Includes retry logic for CAPTCHA with delay and impersonation rotation.
-        print(f"[PRIMP] Starting search for: {query[:60]}...")
+        cfg = _default_config
+        logger.debug("PRIMP starting search for: %s", query[:60])
 
         # Impersonation options to rotate through on CAPTCHA
         _impersonations = [
@@ -310,8 +419,8 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
             ("safari_18", "macos"),
             ("edge_131", "windows"),
         ]
-        _max_retries = 3
-        _retry_delay = 2.0  # seconds
+        _max_retries = cfg.max_retries
+        _retry_delay = cfg.retry_delay
 
         for _attempt in range(_max_retries):
             try:
@@ -334,13 +443,14 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 _use_proxy = self.proxy if _attempt < 2 else None
                 if _attempt > 0:
                     proxy_status = "with proxy" if _use_proxy else "DIRECT IP (no proxy)"
-                    print(f"[PRIMP] Retry {_attempt}/{_max_retries-1} with impersonation: {_imp}/{_imp_os}, {proxy_status}")
+                    logger.info("PRIMP retry %d/%d with impersonation: %s/%s, %s",
+                               _attempt, _max_retries - 1, _imp, _imp_os, proxy_status)
 
                 _client = primp.Client(
                     impersonate=_imp,
                     impersonate_os=_imp_os,
                     proxy=_use_proxy,
-                    timeout=15,
+                    timeout=cfg.timeout,
                     cookie_store=False,
                     follow_redirects=True,
                 )
@@ -349,8 +459,9 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                         with contextlib.suppress(Exception):
                             _client.headers_update(self.headers)
 
-                    _resp = _client.get("https://html.duckduckgo.com/html", params=_params, timeout=15)
-                    print(f"[PRIMP] Response status: {_resp.status_code}, length: {len(_resp.text) if _resp.text else 0}")
+                    _resp = _client.get("https://html.duckduckgo.com/html", params=_params, timeout=cfg.timeout)
+                    logger.debug("PRIMP response status: %d, length: %d",
+                                _resp.status_code, len(_resp.text) if _resp.text else 0)
 
                     if 200 <= _resp.status_code < 300 and _resp.text:
                         from bs4 import BeautifulSoup
@@ -359,25 +470,26 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                         _soup = BeautifulSoup(_resp.text, "html.parser")
                         _links = _soup.select("a.result__a")
                         _snips = _soup.select("div.result__snippet, a.result__snippet")
-                        print(f"[PRIMP] Found {len(_links)} links, {len(_snips)} snippets")
+                        logger.debug("PRIMP found %d links, %d snippets", len(_links), len(_snips))
 
                         # Check for CAPTCHA or rate limiting
                         if len(_links) == 0:
                             _page_text = _resp.text.lower()
                             if "captcha" in _page_text or "robot" in _page_text:
-                                print(f"[PRIMP] WARNING: CAPTCHA detected on attempt {_attempt+1}")
+                                logger.warning("PRIMP CAPTCHA detected on attempt %d", _attempt + 1)
                                 if _attempt < _max_retries - 1:
-                                    print(f"[PRIMP] Waiting {_retry_delay}s before retry...")
+                                    logger.info("PRIMP waiting %.1fs before retry...", _retry_delay)
                                     time.sleep(_retry_delay)
-                                    _retry_delay *= 1.5  # exponential backoff
+                                    _retry_delay *= cfg.backoff_multiplier
                                     continue  # retry with different impersonation
                             elif "rate" in _page_text and "limit" in _page_text:
-                                print("[PRIMP] WARNING: Rate limiting detected!")
+                                logger.warning("PRIMP rate limiting detected")
                             else:
-                                print(f"[PRIMP] No results - page title: {_soup.title.string if _soup.title else 'N/A'}")
+                                logger.debug("PRIMP no results - page title: %s",
+                                           _soup.title.string if _soup.title else 'N/A')
 
                         _out = []
-                        _limit = int(max_results or INTERNAL_MAX_RETURN)
+                        _limit = int(max_results or cfg.max_results)
                         for i, a in enumerate(_links[:_limit], 1):
                             _raw = a.get("href", "")
                             _parsed = urlparse(_raw)
@@ -397,10 +509,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                                 }
                             )
                         if _out:
-                            print(f"[PRIMP] SUCCESS: Returning {len(_out)} results")
+                            logger.info("PRIMP SUCCESS: returning %d results", len(_out))
                             return _out
                         else:
-                            print("[PRIMP] No output generated, falling through to next tier")
+                            logger.debug("PRIMP no output generated, falling through to next tier")
                             break  # Don't retry if we got a valid response with no results
                 finally:
                     with contextlib.suppress(Exception):
@@ -410,10 +522,11 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     del _client
 
             except Exception as _primp_exc:
-                print(f"[PRIMP] EXCEPTION on attempt {_attempt+1}: {type(_primp_exc).__name__}: {_primp_exc}")
+                logger.warning("PRIMP exception on attempt %d: %s: %s",
+                              _attempt + 1, type(_primp_exc).__name__, _primp_exc)
                 if _attempt < _max_retries - 1:
                     time.sleep(_retry_delay)
-                    _retry_delay *= 1.5
+                    _retry_delay *= cfg.backoff_multiplier
                 else:
                     logger.debug("PRIMP tier failed after %d attempts: %s", _max_retries, _primp_exc)
         # End tier 0
@@ -430,15 +543,13 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     bypass_proxy_for_driver=self.bypass_proxy_for_driver,
                 )
             except WebDriverException as exc:
-                print("Browser tier WebDriverException caught:")
-                print(f"Exception: {exc}")
-                print(traceback.format_exc())
-                logger.warning("Browser tier failed (%s); falling back.", exc)
+                logger.warning("Browser tier WebDriverException: %s", exc)
+                logger.debug("Browser tier traceback: %s", traceback.format_exc())
 
-        print("Done with Selenium try")
+        logger.debug("Selenium tier complete, trying next tier")
 
         # Tier 2 – ddgs HTTP API
-        print("[DDGS] Trying ddgs tier...")
+        logger.debug("Trying DDGS tier...")
         try:
             return _with_ddgs(
                 self.proxy,
@@ -454,10 +565,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 ),
             )
         except DDGSException as exc:
-            logger.warning("ddgs tier failed (%s); falling back to raw scrape.", exc)
+            logger.warning("DDGS tier failed (%s); falling back to raw scrape.", exc)
 
         # Tier 3 – raw Requests scrape
-        print("[REQUESTS] Trying requests scrape tier...")
+        logger.debug("Trying requests scrape tier...")
         return _requests_scrape(
             query,
             max_results=max_results,

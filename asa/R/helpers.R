@@ -238,3 +238,132 @@ rotate_tor_circuit <- function(method = c("brew", "systemctl", "signal"),
 print2 <- function(...) {
   cat(..., "\n", sep = "")
 }
+
+
+#' Configure Python Search Logging Level
+#'
+#' Sets the logging level for the Python search module. This controls
+#' how much diagnostic output is produced during web searches.
+#'
+#' @param level Log level: "DEBUG", "INFO", "WARNING" (default), "ERROR", or "CRITICAL"
+#' @param conda_env Name of the conda environment (default: "asa_env")
+#'
+#' @return Invisibly returns the current logging level
+#'
+#' @details
+#' Log levels from most to least verbose:
+#' \itemize{
+#'   \item DEBUG: Detailed diagnostic information for debugging
+#'   \item INFO: General operational information
+#'   \item WARNING: Indicates something unexpected but not an error (default)
+#'   \item ERROR: Serious problems that prevented an operation
+#'   \item CRITICAL: Very serious errors
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Enable verbose debugging output
+#' configure_search_logging("DEBUG")
+#'
+#' # Run a search (will show detailed logs)
+#' result <- run_task("What is the population of Tokyo?", agent = agent)
+#'
+#' # Disable verbose output
+#' configure_search_logging("WARNING")
+#' }
+#'
+#' @export
+configure_search_logging <- function(level = "WARNING",
+                                     conda_env = "asa_env") {
+  # Validate level
+  valid_levels <- c("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+  level <- toupper(level)
+  if (!level %in% valid_levels) {
+    stop("Invalid log level. Must be one of: ",
+         paste(valid_levels, collapse = ", "),
+         call. = FALSE)
+  }
+
+  # Use specified conda environment
+  reticulate::use_condaenv(conda_env, required = TRUE)
+
+  # Import the custom_ddg_production module and configure logging
+  tryCatch({
+    ddg_module <- reticulate::import("custom_ddg_production")
+    ddg_module$configure_logging(level)
+    message("Search logging level set to: ", level)
+  }, error = function(e) {
+    warning("Could not configure Python logging: ", e$message, call. = FALSE)
+  })
+
+  invisible(level)
+}
+
+
+#' Configure Python Search Parameters
+#'
+#' Sets global configuration values for the Python search module.
+#' These values control timeouts, retry behavior, and result limits.
+#'
+#' @param max_results Maximum number of search results to return (default: 10)
+#' @param timeout HTTP request timeout in seconds (default: 15)
+#' @param max_retries Maximum retry attempts on failure (default: 3)
+#' @param retry_delay Initial delay between retries in seconds (default: 2)
+#' @param backoff_multiplier Multiplier for exponential backoff (default: 1.5)
+#' @param captcha_backoff_base Base multiplier for CAPTCHA backoff (default: 3)
+#' @param page_load_wait Wait time after page load in seconds (default: 2)
+#' @param conda_env Name of the conda environment (default: "asa_env")
+#'
+#' @return Invisibly returns a list with the current configuration
+#'
+#' @examples
+#' \dontrun{
+#' # Increase timeout for slow connections
+#' configure_search(timeout = 30, max_retries = 5)
+#'
+#' # Get more results
+#' configure_search(max_results = 20)
+#' }
+#'
+#' @export
+configure_search <- function(max_results = NULL,
+                             timeout = NULL,
+                             max_retries = NULL,
+                             retry_delay = NULL,
+                             backoff_multiplier = NULL,
+                             captcha_backoff_base = NULL,
+                             page_load_wait = NULL,
+                             conda_env = "asa_env") {
+  # Use specified conda environment
+  reticulate::use_condaenv(conda_env, required = TRUE)
+
+  # Import the custom_ddg_production module and configure
+  tryCatch({
+    ddg_module <- reticulate::import("custom_ddg_production")
+    config <- ddg_module$configure_search(
+      max_results = max_results,
+      timeout = timeout,
+      max_retries = max_retries,
+      retry_delay = retry_delay,
+      backoff_multiplier = backoff_multiplier,
+      captcha_backoff_base = captcha_backoff_base,
+      page_load_wait = page_load_wait
+    )
+
+    # Build message showing which values were set
+    set_values <- c()
+    if (!is.null(max_results)) set_values <- c(set_values, paste0("max_results=", max_results))
+    if (!is.null(timeout)) set_values <- c(set_values, paste0("timeout=", timeout))
+    if (!is.null(max_retries)) set_values <- c(set_values, paste0("max_retries=", max_retries))
+    if (!is.null(retry_delay)) set_values <- c(set_values, paste0("retry_delay=", retry_delay))
+
+    if (length(set_values) > 0) {
+      message("Search configuration updated: ", paste(set_values, collapse = ", "))
+    }
+
+    invisible(config)
+  }, error = function(e) {
+    warning("Could not configure search parameters: ", e$message, call. = FALSE)
+    invisible(NULL)
+  })
+}
