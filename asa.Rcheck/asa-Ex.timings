@@ -8,7 +8,7 @@ extract_agent_results	0	0	0
 extract_search_snippets	0	0	0	
 extract_urls	0	0	0	
 extract_wikipedia_content	0	0	0	
-get_agent	0.000	0.000	0.001	
+get_agent	0	0	0	
 get_tor_ip	0	0	0	
 initialize_agent	0	0	0	
 is_tor_running	0	0	0	

@@ -2,7 +2,6 @@
   rm(list = ls())
   options(error = NULL)
 
-
   # Set path and specify package name
   package_name <- "asa"
   setwd(sprintf("~/Documents/%s-software", package_name))
@@ -51,4 +50,7 @@
   # Manual commands for reference:
   # R CMD build --resave-data ~/Documents/asa-software/asa
   # R CMD check --as-cran ~/Documents/asa_0.1.0.tar.gz
+  
+  install.packages( "~/Documents/asa-software/asa",repos = NULL, type = "source",force = F) # install from local 
+  # devtools::install_github("cjerzak/asa-software/asa") # install from github 
 }
