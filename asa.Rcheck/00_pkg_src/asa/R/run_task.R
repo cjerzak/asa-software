@@ -122,10 +122,39 @@ build_prompt <- function(template, ...) {
     return(template)
   }
 
+  # Validate that template is a non-empty string
+  if (!is.character(template) || length(template) != 1 || nchar(template) == 0) {
+    stop("'template' must be a non-empty character string", call. = FALSE)
+  }
+
   result <- template
+  substitutions_made <- 0L
+
   for (name in names(args)) {
     pattern <- paste0("\\{\\{", name, "\\}\\}")
-    result <- gsub(pattern, as.character(args[[name]]), result)
+    # Check if pattern exists before substitution
+    if (grepl(pattern, result)) {
+      result <- gsub(pattern, as.character(args[[name]]), result)
+      substitutions_made <- substitutions_made + 1L
+    } else {
+      warning(sprintf("Placeholder '{{%s}}' not found in template", name),
+              call. = FALSE)
+    }
+  }
+
+  # Warn if no substitutions were made when arguments were provided
+  if (substitutions_made == 0L && length(args) > 0) {
+    warning("No substitutions made: template may not contain expected placeholders",
+            call. = FALSE)
+  }
+
+  # Check for remaining unsubstituted placeholders
+
+  remaining <- regmatches(result, gregexpr("\\{\\{[^}]+\\}\\}", result))[[1]]
+  if (length(remaining) > 0) {
+    warning(sprintf("Unsubstituted placeholders remaining: %s",
+                    paste(remaining, collapse = ", ")),
+            call. = FALSE)
   }
 
   result

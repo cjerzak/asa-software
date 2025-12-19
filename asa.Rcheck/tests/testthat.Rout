@@ -25,8 +25,10 @@ Type 'q()' to quit R.
 > library(asa)
 > 
 > test_check("asa")
-[ FAIL 0 | WARN 0 | SKIP 0 | PASS 53 ]
+[ FAIL 0 | WARN 1 | SKIP 0 | PASS 53 ]
+
+[ FAIL 0 | WARN 1 | SKIP 0 | PASS 53 ]
 > 
 > proc.time()
    user  system elapsed 
-  0.339   0.058   0.391 
+  0.340   0.057   0.392 

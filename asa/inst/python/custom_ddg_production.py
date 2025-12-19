@@ -25,6 +25,7 @@ from pydantic import Field
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import requests
@@ -187,7 +188,7 @@ def _new_driver(
     driver = None
     try:
         # Try Firefox first (default) with Firefox-compatible options
-        firefox_opts = Options()  # Firefox Options (imported at module level)
+        firefox_opts = FirefoxOptions()
         firefox_opts.add_argument("--headless")
         firefox_opts.add_argument("--disable-gpu")
         firefox_opts.add_argument("--no-sandbox")
@@ -263,14 +264,15 @@ def _browser_search(
         if attempt == 2 and proxy:
             logger.info("Switching to DIRECT IP (no proxy) for final attempt")
 
-        driver = _new_driver(
-            proxy=proxy,
-            headers=headers,
-            headless=headless,
-            bypass_proxy_for_driver=bypass_proxy_for_driver,
-            use_proxy_for_browser=use_proxy,
-        )
+        driver = None  # Initialize to None for safe cleanup
         try:
+            driver = _new_driver(
+                proxy=proxy,
+                headers=headers,
+                headless=headless,
+                bypass_proxy_for_driver=bypass_proxy_for_driver,
+                use_proxy_for_browser=use_proxy,
+            )
             # Use html.duckduckgo.com which is the lite/HTML version
             driver.get(f"https://html.duckduckgo.com/html/?q={quote(query)}")
 
@@ -281,8 +283,13 @@ def _browser_search(
             # Detect CAPTCHA before waiting for results
             if "captcha" in page_source or "robot" in page_source or "unusual traffic" in page_source:
                 logger.warning("CAPTCHA detected on attempt %d/%d", attempt + 1, max_retries)
-                with contextlib.suppress(Exception):
-                    driver.quit()
+                # Safe driver cleanup with specific exception handling
+                if driver is not None:
+                    try:
+                        driver.quit()
+                    except (WebDriverException, OSError) as e:
+                        logger.debug("Driver cleanup failed after CAPTCHA: %s", e)
+                    driver = None
                 if attempt < max_retries - 1:
                     wait_time = cfg.captcha_backoff_base * (attempt + 1)  # Exponential backoff
                     logger.info("Waiting %.1fs before retry...", wait_time)
@@ -328,9 +335,16 @@ def _browser_search(
             logger.info("Browser search SUCCESS: returning %d results", len(return_content))
             return return_content
         finally:
-            time.sleep(random.uniform(0, 0.01))
-            with contextlib.suppress(Exception):
-                driver.quit()
+            # Safe driver cleanup with null check and specific exception handling
+            if driver is not None:
+                time.sleep(random.uniform(0, 0.01))
+                try:
+                    driver.quit()
+                except (WebDriverException, OSError) as e:
+                    logger.debug("Driver cleanup failed: %s", e)
+                except Exception as e:
+                    logger.warning("Unexpected error during driver cleanup: %s: %s",
+                                   type(e).__name__, e)
 
     # If we get here, all retries failed
     raise WebDriverException("Browser search failed after all retries")
@@ -456,8 +470,12 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 )
                 try:
                     if self.headers:
-                        with contextlib.suppress(Exception):
+                        try:
                             _client.headers_update(self.headers)
+                        except AttributeError:
+                            logger.debug("Client does not support headers_update")
+                        except Exception as e:
+                            logger.debug("Header update failed: %s: %s", type(e).__name__, e)
 
                     _resp = _client.get("https://html.duckduckgo.com/html", params=_params, timeout=cfg.timeout)
                     logger.debug("PRIMP response status: %d, length: %d",
@@ -497,8 +515,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
 
                             _snip = ""
                             if i - 1 < len(_snips):
-                                with contextlib.suppress(Exception):
+                                try:
                                     _snip = _snips[i - 1].get_text(strip=True)
+                                except (AttributeError, IndexError) as e:
+                                    logger.debug("Snippet extraction failed for result %d: %s", i, e)
 
                             _out.append(
                                 {
@@ -515,11 +535,17 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                             logger.debug("PRIMP no output generated, falling through to next tier")
                             break  # Don't retry if we got a valid response with no results
                 finally:
-                    with contextlib.suppress(Exception):
+                    try:
                         close_fn = getattr(_client, "close", None)
                         if callable(close_fn):
                             close_fn()
-                    del _client
+                    except (OSError, ConnectionError) as e:
+                        logger.debug("PRIMP client cleanup failed: %s", e)
+                    except Exception as e:
+                        logger.warning("Unexpected error closing PRIMP client: %s: %s",
+                                       type(e).__name__, e)
+                    finally:
+                        del _client
 
             except Exception as _primp_exc:
                 logger.warning("PRIMP exception on attempt %d: %s: %s",
@@ -635,9 +661,6 @@ class PatchedDuckDuckGoSearchRun(DuckDuckGoSearchRun):
 # Semantic aliases for code that always picks the browser path
 BrowserDuckDuckGoSearchAPIWrapper = PatchedDuckDuckGoSearchAPIWrapper
 BrowserDuckDuckGoSearchRun = PatchedDuckDuckGoSearchRun
-
-from selenium.webdriver.firefox.options import Options # Firefox
-#from selenium.webdriver.chrome.options import Options # Chrome
 
 
 # ────────────────────────────────────────────────────────────────────────
