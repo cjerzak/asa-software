@@ -25,10 +25,18 @@ Type 'q()' to quit R.
 > library(asa)
 > 
 > test_check("asa")
-[ FAIL 0 | WARN 1 | SKIP 0 | PASS 53 ]
 
-[ FAIL 0 | WARN 1 | SKIP 0 | PASS 53 ]
+  build_prompt: 0.0879 sec (baseline: 0.15, threshold: 0.19, ratio: 0.59x)
+
+  helper_funcs: 0.0683 sec (baseline: 0.15, threshold: 0.19, ratio: 0.46x)
+
+  combined:     0.0961 sec (baseline: 0.20, threshold: 0.25, ratio: 0.48x)
+
+  Could not write speed report: cannot open the connection
+[ FAIL 0 | WARN 2 | SKIP 0 | PASS 57 ]
+
+[ FAIL 0 | WARN 2 | SKIP 0 | PASS 57 ]
 > 
 > proc.time()
    user  system elapsed 
-  0.340   0.057   0.392 
+  0.616   0.064   0.676 

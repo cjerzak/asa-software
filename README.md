@@ -363,6 +363,21 @@ processed_df <- process_outputs(
 # Adds columns: search_count, wiki_count, plus parsed JSON fields
 ```
 
+## Performance
+
+<!-- SPEED_REPORT_START -->
+**Last Run:** 2025-12-19 18:51:18 EST | **Status:** PASS
+
+| Benchmark | Current | Baseline | Ratio | Status |
+|-----------|---------|----------|-------|--------|
+| `build_prompt` | 0.095s | 0.15s | 0.63x | PASS |
+| `helper_funcs` | 0.076s | 0.15s | 0.51x | PASS |
+| `combined` | 0.107s | 0.20s | 0.53x | PASS |
+
+Tests fail if time exceeds 1.25x baseline. 
+See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
+<!-- SPEED_REPORT_END -->
+
 ## Requirements
 
 - R >= 4.0
