@@ -15,6 +15,7 @@ TOLERANCE_FACTOR <- 1.25
 BASELINE_BUILD_PROMPT <- 0.15      # 10 iterations x 50 build_prompt calls each
 BASELINE_HELPER_FUNCS <- 0.15      # 10 iterations x 100 helper function calls each
 BASELINE_COMBINED <- 0.20          # Combined workload
+BASELINE_AGENT_SEARCH <- 60.0      # Single agent search task (includes network/API latency)
 
 # Environment to store results across tests for final report
 .speed_results <- new.env(parent = emptyenv())
@@ -32,6 +33,79 @@ record_speed_result <- function(name, elapsed, baseline, threshold) {
     ratio = ratio,
     passed = passed
   )
+}
+
+# Helper to find project root README.md
+find_readme <- function() {
+  candidates <- c(
+    "../../../README.md",                    # From tests/testthat/
+    "../../README.md",                       # Alternative
+    file.path(getwd(), "README.md"),         # Working dir
+    file.path(getwd(), "..", "README.md")    # Parent of working dir
+  )
+  for (cand in candidates) {
+    if (file.exists(cand)) return(normalizePath(cand))
+  }
+  NULL
+}
+
+# Helper to update README.md with speed results
+update_readme_speed_section <- function(results) {
+  readme_path <- find_readme()
+  if (is.null(readme_path)) {
+    message("  Could not find README.md to update")
+    return(invisible(NULL))
+  }
+
+  # Build the speed section content
+  timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")
+  all_passed <- all(vapply(results, function(x) x$passed, logical(1)))
+  overall_status <- if (all_passed) "PASS" else "FAIL"
+
+  speed_lines <- c(
+    sprintf("**Last Run:** %s | **Status:** %s", timestamp, overall_status),
+    "",
+    "| Benchmark | Current | Baseline | Ratio | Status |",
+    "|-----------|---------|----------|-------|--------|"
+  )
+
+  for (r in results) {
+    status_icon <- if (r$passed) "PASS" else "FAIL"
+    speed_lines <- c(speed_lines, sprintf(
+      "| `%s` | %.3fs | %.2fs | %.2fx | %s |",
+      r$name, r$elapsed, r$baseline, r$ratio, status_icon
+    ))
+  }
+
+  speed_lines <- c(speed_lines,
+    "",
+    sprintf("Tests fail if time exceeds %.2fx baseline. ", TOLERANCE_FACTOR),
+    "See [full report](asa/tests/testthat/SPEED_REPORT.md) for details."
+  )
+
+  new_section <- paste(speed_lines, collapse = "\n")
+
+  # Read README and replace section between markers
+  tryCatch({
+    readme_content <- readLines(readme_path, warn = FALSE)
+    readme_text <- paste(readme_content, collapse = "\n")
+
+    # Pattern to match content between markers
+    pattern <- "<!-- SPEED_REPORT_START -->.*<!-- SPEED_REPORT_END -->"
+    replacement <- sprintf("<!-- SPEED_REPORT_START -->\n%s\n<!-- SPEED_REPORT_END -->", new_section)
+
+    if (grepl(pattern, readme_text)) {
+      updated_text <- sub(pattern, replacement, readme_text)
+      writeLines(updated_text, readme_path)
+      message(sprintf("  README.md updated: %s", readme_path))
+    } else {
+      message("  README.md missing speed section markers")
+    }
+  }, error = function(e) {
+    message(sprintf("  Could not update README.md: %s", e$message))
+  })
+
+  invisible(readme_path)
 }
 
 # Helper to write the speed report
@@ -104,6 +178,8 @@ write_speed_report <- function() {
             BASELINE_HELPER_FUNCS, SPEED_TEST_ITERATIONS),
     sprintf("| combined | %.2fs | %d iterations of mixed workload |",
             BASELINE_COMBINED, SPEED_TEST_ITERATIONS),
+    sprintf("| agent_search | %.0fs | 1 search task (API + network latency) |",
+            BASELINE_AGENT_SEARCH),
     ""
   )
 
@@ -114,6 +190,9 @@ write_speed_report <- function() {
   }, error = function(e) {
     message(sprintf("\n  Could not write speed report: %s", e$message))
   })
+
+  # Also update README.md
+  update_readme_speed_section(results)
 
   invisible(report_path)
 }
@@ -236,8 +315,62 @@ test_that("combined workload performance is within acceptable bounds", {
   )
 })
 
+test_that("agent search performance is within acceptable bounds", {
+
+  # Skip if environment not configured for agent tests
+  skip_if_not(
+    nzchar(Sys.getenv("OPENAI_API_KEY")) || nzchar(Sys.getenv("GROQ_API_KEY")),
+    "No API key available (OPENAI_API_KEY or GROQ_API_KEY)"
+  )
+
+  # Try to initialize agent - skip if backend not available
+  agent <- tryCatch({
+    initialize_agent(
+      backend = if (nzchar(Sys.getenv("OPENAI_API_KEY"))) "openai" else "groq",
+      model = if (nzchar(Sys.getenv("OPENAI_API_KEY"))) "gpt-4.1-mini" else "llama-3.3-70b-versatile",
+      verbose = FALSE
+    )
+  }, error = function(e) {
+    skip(paste("Could not initialize agent:", e$message))
+  })
+
+  start_time <- Sys.time()
+
+  # Run a single search task
+  result <- tryCatch({
+    run_task(
+      prompt = "What is the population of Tokyo, Japan?",
+      output_format = "text",
+      agent = agent,
+      verbose = FALSE
+    )
+  }, error = function(e) {
+    skip(paste("Agent search failed:", e$message))
+  })
+
+  elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+  threshold <- BASELINE_AGENT_SEARCH * TOLERANCE_FACTOR
+
+  # Record for report
+  record_speed_result("agent_search", elapsed, BASELINE_AGENT_SEARCH, threshold)
+
+  # Report timing for visibility
+  message(sprintf(
+    "\n  agent_search: %.2f sec (baseline: %.0f, threshold: %.0f, ratio: %.2fx)",
+    elapsed, BASELINE_AGENT_SEARCH, threshold, elapsed / BASELINE_AGENT_SEARCH
+  ))
+
+  expect_lt(
+    elapsed, threshold,
+    label = sprintf(
+      "agent search took %.2f sec, exceeding %.2fx baseline (%.0f sec threshold)",
+      elapsed, TOLERANCE_FACTOR, threshold
+    )
+  )
+})
+
 test_that("speed report is generated", {
-  # This test runs last (alphabetically "speed report" > "combined"/"helper"/"build")
+  # This test runs last (alphabetically "speed report" > "combined"/"helper"/"build"/"agent")
   # and writes the accumulated results to SPEED_REPORT.md
   write_speed_report()
   expect_true(TRUE)

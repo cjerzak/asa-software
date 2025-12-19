@@ -15,6 +15,7 @@ TOLERANCE_FACTOR <- 1.25
 BASELINE_BUILD_PROMPT <- 0.15      # 10 iterations x 50 build_prompt calls each
 BASELINE_HELPER_FUNCS <- 0.15      # 10 iterations x 100 helper function calls each
 BASELINE_COMBINED <- 0.20          # Combined workload
+BASELINE_AGENT_SEARCH <- 60.0      # Single agent search task (includes network/API latency)
 
 # Environment to store results across tests for final report
 .speed_results <- new.env(parent = emptyenv())
@@ -177,6 +178,8 @@ write_speed_report <- function() {
             BASELINE_HELPER_FUNCS, SPEED_TEST_ITERATIONS),
     sprintf("| combined | %.2fs | %d iterations of mixed workload |",
             BASELINE_COMBINED, SPEED_TEST_ITERATIONS),
+    sprintf("| agent_search | %.0fs | 1 search task (API + network latency) |",
+            BASELINE_AGENT_SEARCH),
     ""
   )
 
@@ -312,8 +315,62 @@ test_that("combined workload performance is within acceptable bounds", {
   )
 })
 
+test_that("agent search performance is within acceptable bounds", {
+
+  # Skip if environment not configured for agent tests
+  skip_if_not(
+    nzchar(Sys.getenv("OPENAI_API_KEY")) || nzchar(Sys.getenv("GROQ_API_KEY")),
+    "No API key available (OPENAI_API_KEY or GROQ_API_KEY)"
+  )
+
+  # Try to initialize agent - skip if backend not available
+  agent <- tryCatch({
+    initialize_agent(
+      backend = if (nzchar(Sys.getenv("OPENAI_API_KEY"))) "openai" else "groq",
+      model = if (nzchar(Sys.getenv("OPENAI_API_KEY"))) "gpt-4.1-mini" else "llama-3.3-70b-versatile",
+      verbose = FALSE
+    )
+  }, error = function(e) {
+    skip(paste("Could not initialize agent:", e$message))
+  })
+
+  start_time <- Sys.time()
+
+  # Run a single search task
+  result <- tryCatch({
+    run_task(
+      prompt = "What is the population of Tokyo, Japan?",
+      output_format = "text",
+      agent = agent,
+      verbose = FALSE
+    )
+  }, error = function(e) {
+    skip(paste("Agent search failed:", e$message))
+  })
+
+  elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+  threshold <- BASELINE_AGENT_SEARCH * TOLERANCE_FACTOR
+
+  # Record for report
+  record_speed_result("agent_search", elapsed, BASELINE_AGENT_SEARCH, threshold)
+
+  # Report timing for visibility
+  message(sprintf(
+    "\n  agent_search: %.2f sec (baseline: %.0f, threshold: %.0f, ratio: %.2fx)",
+    elapsed, BASELINE_AGENT_SEARCH, threshold, elapsed / BASELINE_AGENT_SEARCH
+  ))
+
+  expect_lt(
+    elapsed, threshold,
+    label = sprintf(
+      "agent search took %.2f sec, exceeding %.2fx baseline (%.0f sec threshold)",
+      elapsed, TOLERANCE_FACTOR, threshold
+    )
+  )
+})
+
 test_that("speed report is generated", {
-  # This test runs last (alphabetically "speed report" > "combined"/"helper"/"build")
+  # This test runs last (alphabetically "speed report" > "combined"/"helper"/"build"/"agent")
   # and writes the accumulated results to SPEED_REPORT.md
   write_speed_report()
   expect_true(TRUE)

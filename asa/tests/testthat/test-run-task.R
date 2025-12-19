@@ -9,10 +9,18 @@ test_that("build_prompt substitutes variables correctly", {
 
 test_that("build_prompt handles missing variables gracefully", {
   template <- "Hello {{name}}, you are {{age}} years old"
-  result <- build_prompt(template, name = "Alice")
+
+  # Suppress expected warning about unsubstituted placeholder
+  result <- suppressWarnings(build_prompt(template, name = "Alice"))
 
   expect_match(result, "Hello Alice")
-  expect_match(result, "\\{\\{age\\}\\}")  # unsubstituted
+  expect_match(result, "\\{\\{age\\}\\}")
+
+  # Verify the warning is actually produced
+  expect_warning(
+    build_prompt(template, name = "Alice"),
+    "Unsubstituted placeholders"
+  )
 })
 
 test_that("build_prompt handles numeric values", {
