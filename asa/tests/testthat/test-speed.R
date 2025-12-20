@@ -71,9 +71,17 @@ update_readme_speed_section <- function(results) {
 
   for (r in results) {
     status_icon <- if (r$passed) "PASS" else "FAIL"
+    # Use adaptive formatting: seconds for fast ops, whole seconds for slow ops
+    if (r$baseline >= 1.0) {
+      elapsed_fmt <- sprintf("%.1fs", r$elapsed)
+      baseline_fmt <- sprintf("%.0fs", r$baseline)
+    } else {
+      elapsed_fmt <- sprintf("%.3fs", r$elapsed)
+      baseline_fmt <- sprintf("%.2fs", r$baseline)
+    }
     speed_lines <- c(speed_lines, sprintf(
-      "| `%s` | %.3fs | %.2fs | %.2fx | %s |",
-      r$name, r$elapsed, r$baseline, r$ratio, status_icon
+      "| `%s` | %s | %s | %.2fx | %s |",
+      r$name, elapsed_fmt, baseline_fmt, r$ratio, status_icon
     ))
   }
 
@@ -157,9 +165,19 @@ write_speed_report <- function() {
 
   for (r in results) {
     status_icon <- if (r$passed) "PASS" else "FAIL"
+    # Use adaptive formatting: seconds for fast ops, whole seconds for slow ops
+    if (r$baseline >= 1.0) {
+      elapsed_fmt <- sprintf("%.1fs", r$elapsed)
+      baseline_fmt <- sprintf("%.0fs", r$baseline)
+      threshold_fmt <- sprintf("%.0fs", r$threshold)
+    } else {
+      elapsed_fmt <- sprintf("%.4fs", r$elapsed)
+      baseline_fmt <- sprintf("%.2fs", r$baseline)
+      threshold_fmt <- sprintf("%.2fs", r$threshold)
+    }
     lines <- c(lines, sprintf(
-      "| %s | %.4fs | %.2fs | %.2fs | %.2fx | %s |",
-      r$name, r$elapsed, r$baseline, r$threshold, r$ratio, status_icon
+      "| %s | %s | %s | %s | %.2fx | %s |",
+      r$name, elapsed_fmt, baseline_fmt, threshold_fmt, r$ratio, status_icon
     ))
   }
 
