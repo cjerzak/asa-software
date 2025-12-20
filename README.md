@@ -46,6 +46,8 @@ print(result)
 | `run_task()` | Execute a research task and get structured results |
 | `run_task_batch()` | Run multiple tasks in batch |
 | `build_prompt()` | Build prompts from templates with variable substitution |
+| `configure_search()` | Configure search timing and retry behavior |
+| `extract_search_tiers()` | Get which search tier was used from traces |
 
 ## Structured Output
 
@@ -291,16 +293,26 @@ Fine-tune search behavior globally:
 ```r
 # Configure search parameters for reliability
 configure_search(
-  max_results = 15,        # Results per search (default: 10)
-  timeout = 20,            # Request timeout in seconds (default: 15)
-  max_retries = 5,         # Retry attempts (default: 3)
-  retry_delay = 3,         # Seconds between retries (default: 2)
-  backoff_multiplier = 2.0 # Exponential backoff factor (default: 1.5)
+  max_results = 15,          # Results per search (default: 10)
+  timeout = 20,              # Request timeout in seconds (default: 15)
+  max_retries = 5,           # Retry attempts (default: 3)
+  retry_delay = 3,           # Seconds between retries (default: 2)
+  backoff_multiplier = 2.0,  # Exponential backoff factor (default: 1.5)
+  inter_search_delay = 1.0   # Delay between searches in seconds (default: 0.5)
 )
 
 # Enable debug logging for troubleshooting
 configure_search_logging("DEBUG")  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `inter_search_delay` | `0.5` | Seconds to wait between consecutive searches (avoids rate limiting) |
+| `max_results` | `10` | Maximum results per search |
+| `timeout` | `15` | HTTP request timeout in seconds |
+| `max_retries` | `3` | Retry attempts on failure |
+| `retry_delay` | `2` | Initial delay between retries |
+| `backoff_multiplier` | `1.5` | Exponential backoff factor |
 
 ### Tor/Proxy Management
 
@@ -350,10 +362,15 @@ extracted$search_snippets     # List of search result text by source number
 extracted$search_urls         # List of URLs from search results
 extracted$wikipedia_snippets  # Wikipedia content retrieved
 extracted$json_data           # Any JSON data found in response
+extracted$search_tiers        # Which search tier was used ("primp", "selenium", "ddgs", "requests")
 
 # Get snippets from specific search call
 snippets_from_search_1 <- extract_search_snippets(result$raw_output, source = 1)
 urls_from_search_1 <- extract_urls(result$raw_output, source = 1)
+
+# Extract tier info directly
+tiers <- extract_search_tiers(result$raw_output)
+print(tiers)  # e.g., "primp"
 
 # Batch output processing - add extraction columns to results
 processed_df <- process_outputs(
@@ -363,16 +380,22 @@ processed_df <- process_outputs(
 # Adds columns: search_count, wiki_count, plus parsed JSON fields
 ```
 
+**Search Tiers:** The package uses a 4-tier fallback for DuckDuckGo searches:
+- `primp`: Fast HTTP/2 client with browser fingerprint (default, fastest)
+- `selenium`: Headless browser for JS-rendered content
+- `ddgs`: Standard DDGS Python library
+- `requests`: Raw HTTP POST fallback
+
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2025-12-19 22:33:25 EST | **Status:** PASS
+**Last Run:** 2025-12-19 22:38:53 EST | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.085s | 0.09s | 0.95x | PASS |
-| `helper_funcs` | 0.072s | 0.07s | 1.02x | PASS |
-| `combined` | 0.097s | 0.09s | 1.06x | PASS |
+| `build_prompt` | 0.083s | 0.09s | 0.93x | PASS |
+| `helper_funcs` | 0.065s | 0.07s | 0.94x | PASS |
+| `combined` | 0.093s | 0.09s | 1.02x | PASS |
 | `agent_search` | 12.0s | 18s | 0.68x | PASS |
 
 Tests fail if time exceeds 1.25x baseline. 
