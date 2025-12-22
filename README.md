@@ -387,14 +387,14 @@ processed_df <- asa::process_outputs(
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2025-12-19 22:38:53 EST | **Status:** PASS
+**Last Run:** 2025-12-22 10:53:18 EST | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.083s | 0.09s | 0.93x | PASS |
-| `helper_funcs` | 0.065s | 0.07s | 0.94x | PASS |
-| `combined` | 0.093s | 0.09s | 1.02x | PASS |
-| `agent_search` | 12.0s | 18s | 0.68x | PASS |
+| `build_prompt` | 0.082s | 0.09s | 0.91x | PASS |
+| `helper_funcs` | 0.065s | 0.07s | 0.93x | PASS |
+| `combined` | 0.089s | 0.09s | 0.98x | PASS |
+| `agent_search` | 13.5s | 18s | 0.77x | PASS |
 
 Tests fail if time exceeds 1.25x baseline. 
 See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
