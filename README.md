@@ -17,20 +17,18 @@ devtools::install("path/to/asa")
 ## Quick Start
 
 ```r
-library(asa)
-
 # First time only: build the Python backend
-build_backend()
+asa::build_backend()
 
 # Initialize the agent
-agent <- initialize_agent(
+agent <- asa::initialize_agent(
 
   backend = "openai",
   model = "gpt-4.1-mini"
 )
 
 # Run a simple task
-result <- run_task(
+result <- asa::run_task(
   prompt = "What is the population of Tokyo?",
   agent = agent
 )
@@ -54,7 +52,7 @@ print(result)
 Request JSON-formatted responses for programmatic use:
 
 ```r
-result <- run_task(
+result <- asa::run_task(
   prompt = "Find Marie Curie's birth year, nationality, and field of study. Return as JSON.",
   output_format = "json",
   agent = agent
@@ -80,7 +78,7 @@ result$parsed$nationality
 Build prompts dynamically using `{{variable}}` syntax and named arguments:
 
 ```r
-prompt <- build_prompt(
+prompt <- asa::build_prompt(
   template = "Find information about {{person}} and their work in {{year}}.",
   person = "Albert Einstein",
   year = 1905
@@ -101,7 +99,7 @@ prompts <- sapply(people, function(p) {
   build_prompt("Research {{person}}'s major contributions.", person = p)
 })
 
-results <- run_task_batch(prompts, agent = agent)
+results <- asa::run_task_batch(prompts, agent = agent)
 ```
 
 ## Batch Processing
@@ -115,7 +113,7 @@ prompts <- c(
   "What is the capital of Brazil?"
 )
 
-results <- run_task_batch(prompts, agent = agent)
+results <- asa::run_task_batch(prompts, agent = agent)
 
 # Results is a list of asa_result objects
 results[[1]]$message   # First response text
@@ -129,7 +127,7 @@ df <- data.frame(
   country = c("France", "Japan"),
   prompt = c("Capital of France?", "Capital of Japan?")
 )
-df <- run_task_batch(df, agent = agent)
+df <- asa::run_task_batch(df, agent = agent)
 # Returns df with added columns: response, status, elapsed_time
 ```
 
@@ -147,7 +145,7 @@ df <- run_task_batch(df, agent = agent)
 ### Agent Options
 
 ```r
-agent <- initialize_agent(
+agent <- asa::initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
   proxy = "socks5h://127.0.0.1:9050",  # Tor proxy (NULL to disable)
@@ -168,7 +166,7 @@ agent <- initialize_agent(
 Long conversations automatically compress older messages into summaries, following the DeepAgent paper. Configure with:
 
 ```r
-agent <- initialize_agent(
+agent <- asa::initialize_agent(
   use_memory_folding = TRUE,
   memory_threshold = 4,      # Messages before folding
   memory_keep_recent = 2     # Recent messages to preserve
@@ -207,7 +205,7 @@ Memory folding compresses older conversation messages into summaries, enabling l
 
 ```r
 # Custom memory settings for extended research sessions
-agent <- initialize_agent(
+agent <- asa::initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
   use_memory_folding = TRUE,   # Enable memory compression (default)
@@ -216,11 +214,11 @@ agent <- initialize_agent(
 )
 
 # Monitor folding activity in responses
-response <- run_agent("Complex multi-step research query...", agent = agent)
+response <- asa::run_agent("Complex multi-step research query...", agent = agent)
 print(response$fold_count)  # Number of times memory was folded
 
 # Disable memory folding for short, single-turn tasks
-agent_simple <- initialize_agent(
+agent_simple <- asa::initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
   use_memory_folding = FALSE   # Uses standard agent with lower recursion limit
@@ -241,7 +239,7 @@ Process large batches efficiently using parallel workers:
 
 ```r
 # Parallel processing with custom worker count
-results <- run_task_batch(
+results <- asa::run_task_batch(
   prompts = prompts,
   output_format = "json",
   agent = agent,
@@ -265,7 +263,7 @@ df <- data.frame(
 )
 
 # Run batch with JSON parsing
-results_df <- run_task_batch(
+results_df <- asa::run_task_batch(
   df,
   output_format = "json",
   agent = agent,
@@ -292,7 +290,7 @@ Fine-tune search behavior globally:
 
 ```r
 # Configure search parameters for reliability
-configure_search(
+asa::configure_search(
   max_results = 15,          # Results per search (default: 10)
   timeout = 20,              # Request timeout in seconds (default: 15)
   max_retries = 5,           # Retry attempts (default: 3)
@@ -302,7 +300,7 @@ configure_search(
 )
 
 # Enable debug logging for troubleshooting
-configure_search_logging("DEBUG")  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+asa::configure_search_logging("DEBUG")  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
 
 | Parameter | Default | Description |
@@ -326,7 +324,7 @@ if (is_tor_running()) {
   message("Current Tor IP: ", current_ip)
 
   # Rotate to new circuit between sensitive batches
-  rotate_tor_circuit(
+  asa::rotate_tor_circuit(
     method = "brew",   # "brew" (macOS), "systemctl" (Linux), or "signal"
     wait = 15          # Seconds to wait for new circuit (default: 12)
   )
@@ -336,7 +334,7 @@ if (is_tor_running()) {
 }
 
 # Initialize agent without proxy
-agent_direct <- initialize_agent(
+agent_direct <- asa::initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
   proxy = NULL  # Disable Tor proxy
@@ -349,13 +347,13 @@ Extract detailed information from agent traces for analysis:
 
 ```r
 # Run a task and extract structured data from the trace
-result <- run_task(
+result <- asa::run_task(
   prompt = "Research quantum computing applications in drug discovery.",
   agent = agent
 )
 
 # Extract search artifacts from raw trace
-extracted <- extract_agent_results(result$raw_output)
+extracted <- asa::extract_agent_results(result$raw_output)
 
 # Access extracted data
 extracted$search_snippets     # List of search result text by source number
@@ -365,15 +363,15 @@ extracted$json_data           # Any JSON data found in response
 extracted$search_tiers        # Which search tier was used ("primp", "selenium", "ddgs", "requests")
 
 # Get snippets from specific search call
-snippets_from_search_1 <- extract_search_snippets(result$raw_output, source = 1)
-urls_from_search_1 <- extract_urls(result$raw_output, source = 1)
+snippets_from_search_1 <- asa::extract_search_snippets(result$raw_output, source = 1)
+urls_from_search_1 <- asa::extract_urls(result$raw_output, source = 1)
 
 # Extract tier info directly
-tiers <- extract_search_tiers(result$raw_output)
+tiers <- asa::extract_search_tiers(result$raw_output)
 print(tiers)  # e.g., "primp"
 
 # Batch output processing - add extraction columns to results
-processed_df <- process_outputs(
+processed_df <- asa::process_outputs(
   results_df,
   parallel = TRUE  # Parallel extraction
 )
