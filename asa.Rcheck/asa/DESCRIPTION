@@ -25,8 +25,8 @@ Config/testthat/edition: 3
 SystemRequirements: Python (>= 3.11), Conda, Tor (optional, for
         anonymous searching)
 NeedsCompilation: no
-Packaged: 2025-12-24 13:11:16 UTC; cjerzak
+Packaged: 2025-12-25 04:04:15 UTC; cjerzak
 Author: Connor Jerzak [aut, cre] (ORCID:
     <https://orcid.org/0000-0003-1914-8905>)
 Maintainer: Connor Jerzak <connor.jerzak@gmail.com>
-Built: R 4.5.2; ; 2025-12-24 13:11:35 UTC; unix
+Built: R 4.5.2; ; 2025-12-25 04:04:46 UTC; unix
