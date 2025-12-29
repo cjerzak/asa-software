@@ -29,11 +29,14 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      # Set to 'true' to run only tests that don't require API keys
+      ASA_CI_SKIP_API_TESTS: 'true'
       # Optional API keys for extended tests (stored as GitHub Secrets)
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      # Uncomment and add secrets to enable API-dependent tests
+      # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      # GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+      # OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
     steps:
       - uses: actions/checkout@v4
@@ -68,20 +71,67 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: R CMD check
+      - name: R CMD check (no tests)
         uses: r-lib/actions/check-r-package@v2
         with:
           working-directory: ./asa
           upload-snapshots: true
-          args: 'c("--no-manual", "--as-cran")'
+          args: 'c("--no-manual", "--as-cran", "--no-tests")'
 
-      - name: Show testthat output
-        if: always()
-        shell: bash
+      - name: Run API-free tests only
+        shell: Rscript {0}
         run: |
-          if [ -f asa/check/*.Rcheck/tests/testthat.Rout ]; then
-            cat asa/check/*.Rcheck/tests/testthat.Rout
-          fi
-          if [ -f asa/check/*.Rcheck/tests/testthat.Rout.fail ]; then
-            cat asa/check/*.Rcheck/tests/testthat.Rout.fail
-          fi
+          # Tests that DON'T require API keys
+          api_free_tests <- c(
+            "validate",
+            "helpers",
+            "s3-classes",
+            "temporal",
+            "audit",
+            "research"
+          )
+
+          # Build filter pattern (e.g., "validate|helpers|s3-classes")
+          filter_pattern <- paste(api_free_tests, collapse = "|")
+
+          cat("Running tests matching:", filter_pattern, "\n")
+
+          results <- testthat::test_dir(
+            "asa/tests/testthat",
+            filter = filter_pattern,
+            stop_on_failure = FALSE,
+            reporter = testthat::MultiReporter$new(list(
+              testthat::CheckReporter$new(),
+              testthat::SummaryReporter$new()
+            ))
+          )
+
+          # Fail if any tests failed
+          if (!testthat::all_passed(results)) {
+            stop("Some tests failed!")
+          }
+
+      - name: Run API tests (if keys available)
+        if: env.OPENAI_API_KEY != '' || env.OPENROUTER_API_KEY != ''
+        shell: Rscript {0}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          # Tests that REQUIRE API keys
+          api_tests <- c("backends", "speed")
+          filter_pattern <- paste(api_tests, collapse = "|")
+
+          cat("Running API-dependent tests:", filter_pattern, "\n")
+
+          results <- testthat::test_dir(
+            "asa/tests/testthat",
+            filter = filter_pattern,
+            stop_on_failure = FALSE
+          )
+
+          if (!testthat::all_passed(results)) {
+            stop("Some API tests failed!")
+          }

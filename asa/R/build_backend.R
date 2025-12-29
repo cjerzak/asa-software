@@ -110,7 +110,28 @@ build_backend <- function(conda_env = "asa_env",
     "wikipedia"
   ))
 
-  msg("Environment '%s' is ready.", conda_env)
+  # Verify installation
+
+  msg("Verifying installation...")
+  status <- check_backend(conda_env = conda_env)
+
+  if (!status$available) {
+    if (length(status$missing_packages) > 0) {
+      warning(
+        sprintf(
+          "Installation completed but verification found issues:\n  Missing packages: %s\n  Run check_backend('%s') for details.",
+          paste(status$missing_packages, collapse = ", "),
+          conda_env
+        ),
+        call. = FALSE
+      )
+    }
+    msg("Environment '%s' created but may have issues. See warnings above.", conda_env)
+  } else {
+    msg("Verification passed: All 8 required packages available.")
+    msg("Environment '%s' is ready.", conda_env)
+  }
+
   msg("You can now use: asa::initialize_agent(conda_env = '%s')", conda_env)
 
   invisible(NULL)
