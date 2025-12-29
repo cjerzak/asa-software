@@ -33,6 +33,11 @@
 # ============================================================================
 
 test_that("asa_enumerate validates temporal$time_filter", {
+
+  # These tests require API key because asa_enumerate validates API key before temporal params
+
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   # Invalid time filter values
   expect_error(
     asa_enumerate(query = "test", temporal = list(time_filter = "x")),
@@ -56,6 +61,8 @@ test_that("asa_enumerate validates temporal$time_filter", {
 })
 
 test_that("asa_enumerate validates temporal$after date format", {
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   # Invalid month
   expect_error(
     asa_enumerate(query = "test", temporal = list(after = "2024-13-01")),
@@ -78,6 +85,8 @@ test_that("asa_enumerate validates temporal$after date format", {
 })
 
 test_that("asa_enumerate validates temporal$before date format", {
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   # Invalid day
   expect_error(
     asa_enumerate(query = "test", temporal = list(before = "2024-02-30")),
@@ -94,6 +103,8 @@ test_that("asa_enumerate validates temporal$before date format", {
 })
 
 test_that("asa_enumerate validates temporal$strictness", {
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   expect_error(
     asa_enumerate(query = "test", temporal = list(strictness = "very_strict")),
     regexp = "strictness"
