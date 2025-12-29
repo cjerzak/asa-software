@@ -68,7 +68,7 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           working-directory: ./asa
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, any::devtools
           needs: check
 
       - name: R CMD check (no tests)
@@ -95,6 +95,9 @@ jobs:
           filter_pattern <- paste(api_free_tests, collapse = "|")
 
           cat("Running tests matching:", filter_pattern, "\n")
+
+          # Load the package first (critical!)
+          devtools::load_all("asa")
 
           results <- testthat::test_dir(
             "asa/tests/testthat",
@@ -125,6 +128,9 @@ jobs:
           filter_pattern <- paste(api_tests, collapse = "|")
 
           cat("Running API-dependent tests:", filter_pattern, "\n")
+
+          # Load the package first
+          devtools::load_all("asa")
 
           results <- testthat::test_dir(
             "asa/tests/testthat",
