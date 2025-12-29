@@ -1,5 +1,7 @@
 # asa
 
+[![R-CMD-check](https://github.com/cjerzak/asa-software/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cjerzak/asa-software/actions/workflows/R-CMD-check.yaml)
+
 **AI Search Agent for Large-Scale Research Automation**
 
 An R package for running LLM-powered research tasks at scale. Uses a ReAct (Reasoning + Acting) agent pattern with web search capabilities, implemented via LangGraph in Python and orchestrated from R.
