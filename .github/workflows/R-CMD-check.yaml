@@ -102,17 +102,12 @@ jobs:
           results <- testthat::test_dir(
             "asa/tests/testthat",
             filter = filter_pattern,
-            stop_on_failure = FALSE,
+            stop_on_failure = TRUE,
             reporter = testthat::MultiReporter$new(list(
               testthat::CheckReporter$new(),
               testthat::SummaryReporter$new()
             ))
           )
-
-          # Fail if any tests failed
-          if (!testthat::all_passed(results)) {
-            stop("Some tests failed!")
-          }
 
       - name: Run API tests (if keys available)
         if: env.OPENAI_API_KEY != '' || env.OPENROUTER_API_KEY != ''
@@ -132,12 +127,8 @@ jobs:
           # Load the package first
           devtools::load_all("asa")
 
-          results <- testthat::test_dir(
+          testthat::test_dir(
             "asa/tests/testthat",
             filter = filter_pattern,
-            stop_on_failure = FALSE
+            stop_on_failure = TRUE
           )
-
-          if (!testthat::all_passed(results)) {
-            stop("Some API tests failed!")
-          }
