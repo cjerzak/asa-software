@@ -1,0 +1,87 @@
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# For the asa package: R + Python/conda cross-platform CI
+
+name: R-CMD-check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (R ${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: macos-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      # Optional API keys for extended tests (stored as GitHub Secrets)
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: '3.11'
+          miniforge-version: latest
+          activate-environment: asa_env
+
+      - name: Install Python dependencies
+        shell: bash -el {0}
+        run: |
+          conda activate asa_env
+          pip install langchain_groq langchain_community langchain_openai langgraph langchain-tavily
+          pip install ddgs selenium primp beautifulsoup4 requests fake_headers
+          pip install httpx pysocks socksio python-dotenv arxiv wikipedia
+
+      - name: Install R package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: ./asa
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - name: R CMD check
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          working-directory: ./asa
+          upload-snapshots: true
+          args: 'c("--no-manual", "--as-cran")'
+
+      - name: Show testthat output
+        if: always()
+        shell: bash
+        run: |
+          if [ -f asa/check/*.Rcheck/tests/testthat.Rout ]; then
+            cat asa/check/*.Rcheck/tests/testthat.Rout
+          fi
+          if [ -f asa/check/*.Rcheck/tests/testthat.Rout.fail ]; then
+            cat asa/check/*.Rcheck/tests/testthat.Rout.fail
+          fi
