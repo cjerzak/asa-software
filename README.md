@@ -4,7 +4,7 @@
 
 **AI Search Agent for Large-Scale Research Automation**
 
-An R package for running LLM-powered research tasks at scale. Uses a ReAct (Reasoning + Acting) agent pattern with web search capabilities, implemented via LangGraph in Python and orchestrated from R.
+An R package for running LLM-powered research tasks at scale. Unlike search-enabled APIs that charge ~$10 per 1,000 searches with limited control, asa provides full customizability over search behavior, LLM backends, and temporal filtering at minimal cost. Uses a ReAct (Reasoning + Acting) agent pattern with web search capabilities, implemented via LangGraph in Python and orchestrated from R.
 
 ## Installation
 
