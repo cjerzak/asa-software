@@ -64,7 +64,7 @@ test_that(".augment_prompt_temporal returns unchanged prompt when no dates speci
 test_that(".augment_prompt_temporal adds context for after date only", {
   prompt <- "Find companies"
   temporal <- list(after = "2020-01-01")
-  result <- suppressMessages(asa:::.augment_prompt_temporal(prompt, temporal))
+  result <- asa:::.augment_prompt_temporal(prompt, temporal, verbose = FALSE)
 
   expect_match(result, "Find companies")
   expect_match(result, "\\[Temporal context:")
@@ -76,19 +76,23 @@ test_that(".augment_prompt_temporal shows message for date context", {
 
   # Test after-only message
   expect_message(
-    asa:::.augment_prompt_temporal(prompt, list(after = "2020-01-01")),
+    asa:::.augment_prompt_temporal(prompt, list(after = "2020-01-01"), verbose = TRUE),
     "Temporal context: focusing on results after 2020-01-01"
   )
 
   # Test before-only message
   expect_message(
-    asa:::.augment_prompt_temporal(prompt, list(before = "2024-01-01")),
+    asa:::.augment_prompt_temporal(prompt, list(before = "2024-01-01"), verbose = TRUE),
     "Temporal context: focusing on results before 2024-01-01"
   )
 
   # Test date range message
   expect_message(
-    asa:::.augment_prompt_temporal(prompt, list(after = "2020-01-01", before = "2024-01-01")),
+    asa:::.augment_prompt_temporal(
+      prompt,
+      list(after = "2020-01-01", before = "2024-01-01"),
+      verbose = TRUE
+    ),
     "Temporal context: focusing on 2020-01-01 to 2024-01-01"
   )
 })
@@ -96,7 +100,7 @@ test_that(".augment_prompt_temporal shows message for date context", {
 test_that(".augment_prompt_temporal adds context for before date only", {
   prompt <- "Find companies"
   temporal <- list(before = "2024-01-01")
-  result <- suppressMessages(asa:::.augment_prompt_temporal(prompt, temporal))
+  result <- asa:::.augment_prompt_temporal(prompt, temporal, verbose = FALSE)
 
   expect_match(result, "Find companies")
   expect_match(result, "\\[Temporal context:")
@@ -106,7 +110,7 @@ test_that(".augment_prompt_temporal adds context for before date only", {
 test_that(".augment_prompt_temporal adds context for date range", {
   prompt <- "Find companies"
   temporal <- list(after = "2020-01-01", before = "2024-01-01")
-  result <- suppressMessages(asa:::.augment_prompt_temporal(prompt, temporal))
+  result <- asa:::.augment_prompt_temporal(prompt, temporal, verbose = FALSE)
 
   expect_match(result, "Find companies")
   expect_match(result, "\\[Temporal context:")
@@ -116,7 +120,7 @@ test_that(".augment_prompt_temporal adds context for date range", {
 test_that(".augment_prompt_temporal preserves original prompt structure", {
   prompt <- "Line 1\nLine 2\nLine 3"
   temporal <- list(after = "2020-01-01")
-  result <- suppressMessages(asa:::.augment_prompt_temporal(prompt, temporal))
+  result <- asa:::.augment_prompt_temporal(prompt, temporal, verbose = FALSE)
 
   # Original content preserved
   expect_match(result, "Line 1\nLine 2\nLine 3")
@@ -127,6 +131,30 @@ test_that(".augment_prompt_temporal preserves original prompt structure", {
 # ============================================================================
 # run_task() output_format = "raw" Tests
 # ============================================================================
+
+test_that(".parse_json_response parses JSON arrays", {
+  json_text <- '[{"name":"Ada","age":36},{"name":"Alan","age":41}]'
+  parsed <- asa:::.parse_json_response(json_text)
+
+  expect_true(is.data.frame(parsed))
+  expect_equal(parsed$name[1], "Ada")
+  expect_equal(parsed$age[2], 41)
+})
+
+test_that(".parse_json_response extracts JSON arrays from mixed output", {
+  mixed <- 'Here is the data: [{"name":"Grace","age":85}] Thanks!'
+  parsed <- asa:::.parse_json_response(mixed)
+
+  expect_true(is.data.frame(parsed))
+  expect_equal(parsed$name[1], "Grace")
+})
+
+test_that(".parse_json_response skips non-JSON brackets", {
+  mixed <- "Note [bracketed text] then {\"name\":\"Ada\"}."
+  parsed <- asa:::.parse_json_response(mixed)
+
+  expect_equal(parsed$name, "Ada")
+})
 
 test_that("run_task accepts output_format = 'raw'", {
   # Test that "raw" is a valid output_format (validation passes)

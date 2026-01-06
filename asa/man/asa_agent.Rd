@@ -4,7 +4,7 @@
 \alias{asa_agent}
 \title{Constructor for asa_agent Objects}
 \usage{
-asa_agent(python_agent, backend, model, config)
+asa_agent(python_agent, backend, model, config, llm = NULL, tools = NULL)
 }
 \arguments{
 \item{python_agent}{The underlying Python agent object}
@@ -14,6 +14,10 @@ asa_agent(python_agent, backend, model, config)
 \item{model}{Model identifier}
 
 \item{config}{Agent configuration list}
+
+\item{llm}{Optional LLM object used by LangGraph}
+
+\item{tools}{Optional list of tools associated with the agent}
 }
 \value{
 An object of class \code{asa_agent}

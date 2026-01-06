@@ -33,6 +33,11 @@
 # ============================================================================
 
 test_that("asa_enumerate validates temporal$time_filter", {
+
+  # These tests require API key because asa_enumerate validates API key before temporal params
+
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   # Invalid time filter values
   expect_error(
     asa_enumerate(query = "test", temporal = list(time_filter = "x")),
@@ -56,6 +61,8 @@ test_that("asa_enumerate validates temporal$time_filter", {
 })
 
 test_that("asa_enumerate validates temporal$after date format", {
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   # Invalid month
   expect_error(
     asa_enumerate(query = "test", temporal = list(after = "2024-13-01")),
@@ -78,6 +85,8 @@ test_that("asa_enumerate validates temporal$after date format", {
 })
 
 test_that("asa_enumerate validates temporal$before date format", {
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   # Invalid day
   expect_error(
     asa_enumerate(query = "test", temporal = list(before = "2024-02-30")),
@@ -94,6 +103,8 @@ test_that("asa_enumerate validates temporal$before date format", {
 })
 
 test_that("asa_enumerate validates temporal$strictness", {
+  skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
+
   expect_error(
     asa_enumerate(query = "test", temporal = list(strictness = "very_strict")),
     regexp = "strictness"
@@ -658,6 +669,66 @@ test_that("ResearchConfig accepts all valid time_filter values", {
     config <- research$ResearchConfig(time_filter = filter)
     expect_equal(config$time_filter, filter)
   }
+})
+
+# ============================================================================
+# Stopper Node Tests (research_graph.py)
+# ============================================================================
+
+test_that("stopper honors target_items", {
+  python_path <- .skip_if_no_python()
+  research <- reticulate::import_from_path("research_graph", path = python_path)
+
+  config <- research$ResearchConfig(target_items = 2L, plateau_rounds = 2L, novelty_min = 0.1)
+  stopper <- research$create_stopper_node(config)
+
+  state <- list(
+    round_number = 1L,
+    queries_used = 0L,
+    seen_hashes = list(a = TRUE, b = TRUE),
+    novelty_history = list(0.5)
+  )
+
+  result <- stopper(state)
+  expect_equal(result$status, "complete")
+  expect_equal(result$stop_reason, "target_reached")
+})
+
+test_that("stopper stops on novelty plateau", {
+  python_path <- .skip_if_no_python()
+  research <- reticulate::import_from_path("research_graph", path = python_path)
+
+  config <- research$ResearchConfig(target_items = NULL, plateau_rounds = 2L, novelty_min = 0.1)
+  stopper <- research$create_stopper_node(config)
+
+  state <- list(
+    round_number = 3L,
+    queries_used = 0L,
+    seen_hashes = list(a = TRUE, b = TRUE, c = TRUE),
+    novelty_history = list(0.05, 0.08)
+  )
+
+  result <- stopper(state)
+  expect_equal(result$status, "complete")
+  expect_equal(result$stop_reason, "novelty_plateau")
+})
+
+test_that("stopper continues when novelty remains above threshold", {
+  python_path <- .skip_if_no_python()
+  research <- reticulate::import_from_path("research_graph", path = python_path)
+
+  config <- research$ResearchConfig(target_items = NULL, plateau_rounds = 2L, novelty_min = 0.1)
+  stopper <- research$create_stopper_node(config)
+
+  state <- list(
+    round_number = 2L,
+    queries_used = 0L,
+    seen_hashes = list(a = TRUE),
+    novelty_history = list(0.2, 0.15)
+  )
+
+  result <- stopper(state)
+  expect_equal(result$status, "searching")
 })
 
 # ============================================================================

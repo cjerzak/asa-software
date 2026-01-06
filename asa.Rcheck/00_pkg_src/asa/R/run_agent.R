@@ -39,7 +39,7 @@
   }
 
   # Augment prompt with temporal hints if dates specified
-  augmented_prompt <- .augment_prompt_temporal(prompt, temporal)
+  augmented_prompt <- .augment_prompt_temporal(prompt, temporal, verbose = verbose)
 
   # Get config
   config <- agent$config
@@ -162,8 +162,8 @@
     if (length(messages) > 0) {
       last_message <- messages[[length(messages)]]
       text <- last_message$text
-      # Clean XML tags
-      text <- gsub("<[^>]+>.*?</[^>]+>\\n?", "", text)
+      # Clean XML tags without stripping inner content
+      text <- gsub("</?[^>]+>", "", text)
       # Handle exo backend format
       if (!is.null(backend) && backend == "exo") {
         text <- sub(

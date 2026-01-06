@@ -117,12 +117,17 @@ run_task <- function(prompt,
                      agent = NULL,
                      verbose = FALSE) {
 
+  config_search <- NULL
+  config_conda_env <- NULL
+
   # Extract settings from config if provided
   if (!is.null(config) && inherits(config, "asa_config")) {
     # Config temporal overrides direct temporal parameter
     if (is.null(temporal) && !is.null(config$temporal)) {
       temporal <- config$temporal
     }
+    config_search <- config$search
+    config_conda_env <- config$conda_env
   }
 
   # Convert asa_temporal to list for internal functions
@@ -138,17 +143,58 @@ run_task <- function(prompt,
     verbose = verbose
   )
 
+  # Initialize agent from config if provided
+  if (is.null(agent) && !is.null(config) && inherits(config, "asa_config")) {
+    current <- if (.is_initialized()) get_agent() else NULL
+    if (!is.null(current)) {
+      same_backend <- identical(current$backend, config$backend)
+      same_model <- identical(current$model, config$model)
+      same_conda <- identical(current$config$conda_env, config$conda_env)
+      same_proxy <- identical(current$config$proxy, config$proxy)
+      same_folding <- identical(current$config$use_memory_folding, config$memory_folding)
+      same_threshold <- identical(current$config$memory_threshold, config$memory_threshold)
+      same_keep <- identical(current$config$memory_keep_recent, config$memory_keep_recent)
+      same_rate <- identical(current$config$rate_limit, config$rate_limit)
+      same_timeout <- identical(current$config$timeout, config$timeout)
+
+      if (same_backend && same_model && same_conda && same_proxy &&
+          same_folding && same_threshold && same_keep &&
+          same_rate && same_timeout) {
+        agent <- current
+      }
+    }
+
+    if (is.null(agent)) {
+      if (verbose) message("Initializing agent from asa_config...")
+      agent <- initialize_agent(
+        backend = config$backend,
+        model = config$model,
+        conda_env = config$conda_env,
+        proxy = config$proxy,
+        use_memory_folding = config$memory_folding,
+        memory_threshold = config$memory_threshold,
+        memory_keep_recent = config$memory_keep_recent,
+        rate_limit = config$rate_limit,
+        timeout = config$timeout,
+        verbose = verbose
+      )
+    }
+  }
+
   # Validate temporal if provided
   .validate_temporal(temporal)
 
   # Augment prompt with temporal hints if dates specified
-  augmented_prompt <- .augment_prompt_temporal(prompt, temporal)
+  augmented_prompt <- .augment_prompt_temporal(prompt, temporal, verbose = verbose)
 
   start_time <- Sys.time()
 
   # Run agent with temporal filtering applied
-  response <- .with_temporal(temporal, function() {
-    .run_agent(augmented_prompt, agent = agent, verbose = verbose)
+  conda_env <- config_conda_env %||% .get_default_conda_env()
+  response <- .with_search_config(config_search, conda_env = conda_env, function() {
+    .with_temporal(temporal, function() {
+      .run_agent(augmented_prompt, agent = agent, verbose = verbose)
+    })
   })
 
   elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
@@ -259,7 +305,7 @@ build_prompt <- function(template, ...) {
 #' @param temporal Temporal filtering list (may be NULL)
 #' @return Augmented prompt string
 #' @keywords internal
-.augment_prompt_temporal <- function(prompt, temporal) {
+.augment_prompt_temporal <- function(prompt, temporal, verbose = FALSE) {
   if (is.null(temporal)) {
     return(prompt)
   }
@@ -273,12 +319,14 @@ build_prompt <- function(template, ...) {
   }
 
   # Inform user about date context being added to prompt
-  if (has_after && has_before) {
-    message("Temporal context: focusing on ", temporal$after, " to ", temporal$before)
-  } else if (has_after) {
-    message("Temporal context: focusing on results after ", temporal$after)
-  } else if (has_before) {
-    message("Temporal context: focusing on results before ", temporal$before)
+  if (isTRUE(verbose)) {
+    if (has_after && has_before) {
+      message("Temporal context: focusing on ", temporal$after, " to ", temporal$before)
+    } else if (has_after) {
+      message("Temporal context: focusing on results after ", temporal$after)
+    } else if (has_before) {
+      message("Temporal context: focusing on results before ", temporal$before)
+    }
   }
 
   # Build temporal context string
@@ -315,30 +363,58 @@ build_prompt <- function(template, ...) {
     return(NULL)
   }
 
-  # Try to extract JSON from response
-  json_str <- .extract_json_object(response_text)
-  if (is.null(json_str)) {
+  # Try to parse full response first
+  parsed <- tryCatch(
+    jsonlite::fromJSON(response_text),
+    error = function(e) NULL
+  )
+  if (!is.null(parsed)) {
+    return(parsed)
+  }
+
+  starts <- gregexpr("[\\{\\[]", response_text)[[1]]
+  if (starts[1] == -1) {
     return(NULL)
   }
 
-  # Parse JSON
-  tryCatch({
-    jsonlite::fromJSON(json_str)
-  }, error = function(e) {
-    NULL
-  })
+  for (start in starts) {
+    json_str <- .extract_json_object(response_text, start = start)
+    if (is.null(json_str)) {
+      next
+    }
+    parsed <- tryCatch(
+      jsonlite::fromJSON(json_str),
+      error = function(e) NULL
+    )
+    if (!is.null(parsed)) {
+      return(parsed)
+    }
+  }
+
+  NULL
 }
 
 #' Extract JSON Object from Text
 #' @param text Response text
+#' @param start Optional 1-based start index for extraction
 #' @keywords internal
-.extract_json_object <- function(text) {
-  # Try to find JSON object in text
-  # Look for outermost braces
-  start <- regexpr("\\{", text)
-  if (start == -1) return(NULL)
+.extract_json_object <- function(text, start = NULL) {
+  # Try to find JSON object or array in text
+  if (is.null(start)) {
+    start_obj <- regexpr("\\{", text)
+    start_arr <- regexpr("\\[", text)
 
-  # Count braces to find matching close
+    starts <- c(start_obj, start_arr)
+    starts <- starts[starts > 0]
+    if (length(starts) == 0) return(NULL)
+
+    start <- min(starts)
+  }
+  if (start <= 0) {
+    return(NULL)
+  }
+
+  # Count braces/brackets to find matching close
   depth <- 0
   in_string <- FALSE
   escape_next <- FALSE
@@ -365,8 +441,8 @@ build_prompt <- function(template, ...) {
     }
 
     if (!in_string) {
-      if (char == "{") depth <- depth + 1
-      if (char == "}") {
+      if (char == "{" || char == "[") depth <- depth + 1
+      if (char == "}" || char == "]") {
         depth <- depth - 1
         if (depth == 0) {
           end <- i

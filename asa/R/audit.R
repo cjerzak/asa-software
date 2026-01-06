@@ -185,15 +185,30 @@ backend <- match.arg(backend)
          call. = FALSE)
   }
 
-  # Serialize data to JSON file (for large datasets)
+  # Serialize data to JSON file (for large datasets or file attachment)
   data_json <- jsonlite::toJSON(data, auto_unbox = TRUE, pretty = TRUE)
   data_file <- tempfile(fileext = ".json")
   writeLines(data_json, data_file)
   on.exit(unlink(data_file), add = TRUE)
 
+  # Check whether the CLI supports file attachments
+  claude_help <- tryCatch({
+    processx::run("claude", "--help", error_on_status = FALSE)
+  }, error = function(e) NULL)
+  supports_file <- !is.null(claude_help) &&
+    claude_help$status == 0 &&
+    grepl("--file", claude_help$stdout, fixed = TRUE)
+
   # Build audit prompt
   prompt <- .build_audit_prompt(query, data, schema, checks, known_universe,
                                  confidence_threshold)
+  file_args <- character()
+  if (supports_file) {
+    prompt <- paste0(prompt, "\n\nUse the attached JSON file for the full dataset.")
+    file_args <- c("--file", data_file)
+  } else {
+    prompt <- paste0(prompt, "\n\nFull dataset (JSON):\n", data_json)
+  }
 
   if (interactive) {
     # Spawn interactive Claude Code session
@@ -212,7 +227,7 @@ backend <- match.arg(backend)
     tryCatch({
       processx::run(
         command = "claude",
-        args = c("--model", model),
+        args = c("--model", model, file_args),
         stdin = prompt_file,
         stdout = "",  # Print to console
         stderr = "",  # Print to console
@@ -242,6 +257,7 @@ backend <- match.arg(backend)
       args = c(
         "--model", model,
         "--output-format", "json",
+        file_args,
         "-p", prompt
       ),
       timeout = timeout,
@@ -322,9 +338,11 @@ backend <- match.arg(backend)
   schema_dict <- as.list(schema)
   known_universe_list <- if (!is.null(known_universe)) as.list(known_universe) else NULL
 
+  llm <- if (!is.null(agent) && !is.null(agent$llm)) agent$llm else asa_env$llm
+
   # Create audit graph
   audit_graph <- asa_env$audit_graph$create_audit_graph(
-    llm = asa_env$llm,
+    llm = llm,
     checks = as.list(checks)
   )
 
@@ -581,4 +599,3 @@ If the data looks complete and consistent, say so with high scores.',
     list()
   })
 }
-

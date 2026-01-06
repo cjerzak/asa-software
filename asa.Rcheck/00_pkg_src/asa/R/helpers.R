@@ -232,9 +232,17 @@ is_tor_running <- function(port = 9050L) {
 #' @export
 get_tor_ip <- function(proxy = "socks5h://127.0.0.1:9050") {
   tryCatch({
-    cmd <- sprintf("curl -s --proxy %s https://api.ipify.org?format=json", proxy)
-    result <- system(cmd, intern = TRUE)
-    parsed <- jsonlite::fromJSON(result)
+    result <- system2(
+      "curl",
+      args = c("-s", "--proxy", proxy, "https://api.ipify.org?format=json"),
+      stdout = TRUE,
+      stderr = TRUE
+    )
+    status <- attr(result, "status")
+    if (!is.null(status) && status != 0) {
+      return(NA_character_)
+    }
+    parsed <- jsonlite::fromJSON(paste(result, collapse = "\n"))
     parsed$ip
   }, error = function(e) {
     NA_character_
@@ -481,6 +489,87 @@ configure_temporal <- function(time_filter = NULL) {
   )
 
   result
+}
+
+
+#' Apply Search Configuration for a Single Operation
+#'
+#' Internal helper that applies search settings, runs a function,
+#' and restores the original configuration afterward.
+#'
+#' @param search asa_search object or list of search settings
+#' @param conda_env Conda env used by search tools
+#' @param fn Function to run with search config applied
+#' @return Result of fn()
+#' @keywords internal
+.with_search_config <- function(search, conda_env = "asa_env", fn) {
+  if (is.null(search)) {
+    return(fn())
+  }
+
+  if (!inherits(search, "asa_search")) {
+    if (is.list(search)) {
+      search <- tryCatch(do.call(search_options, search), error = function(e) NULL)
+    } else {
+      warning("search config must be an asa_search object or list; ignoring", call. = FALSE)
+      return(fn())
+    }
+  }
+
+  if (is.null(search)) {
+    return(fn())
+  }
+
+  previous <- tryCatch({
+    cfg <- configure_search(conda_env = conda_env)
+    if (is.null(cfg)) {
+      return(NULL)
+    }
+    list(
+      max_results = cfg$max_results,
+      timeout = cfg$timeout,
+      max_retries = cfg$max_retries,
+      retry_delay = cfg$retry_delay,
+      backoff_multiplier = cfg$backoff_multiplier,
+      captcha_backoff_base = cfg$captcha_backoff_base,
+      page_load_wait = cfg$page_load_wait,
+      inter_search_delay = cfg$inter_search_delay
+    )
+  }, error = function(e) NULL)
+
+  on.exit({
+    if (!is.null(previous)) {
+      tryCatch(
+        configure_search(
+          max_results = previous$max_results,
+          timeout = previous$timeout,
+          max_retries = previous$max_retries,
+          retry_delay = previous$retry_delay,
+          backoff_multiplier = previous$backoff_multiplier,
+          captcha_backoff_base = previous$captcha_backoff_base,
+          page_load_wait = previous$page_load_wait,
+          inter_search_delay = previous$inter_search_delay,
+          conda_env = conda_env
+        ),
+        error = function(e) NULL
+      )
+    }
+  }, add = TRUE)
+
+  tryCatch(
+    configure_search(
+      max_results = search$max_results,
+      timeout = search$timeout,
+      max_retries = search$max_retries,
+      retry_delay = search$retry_delay,
+      backoff_multiplier = search$backoff_multiplier,
+      inter_search_delay = search$inter_search_delay,
+      conda_env = conda_env
+    ),
+    error = function(e) NULL
+  )
+
+  fn()
 }
 
 

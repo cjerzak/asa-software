@@ -4,10 +4,12 @@
 \alias{.extract_json_object}
 \title{Extract JSON Object from Text}
 \usage{
-.extract_json_object(text)
+.extract_json_object(text, start = NULL)
 }
 \arguments{
 \item{text}{Response text}
+
+\item{start}{Optional 1-based start index for extraction}
 }
 \description{
 Extract JSON Object from Text

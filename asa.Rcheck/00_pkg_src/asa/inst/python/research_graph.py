@@ -78,7 +78,9 @@ class ResearchState(TypedDict):
 
     # Results
     results: Annotated[List[ResultRow], add_to_list]
+    new_results: List[ResultRow]
     seen_hashes: Annotated[Dict[str, bool], merge_dicts]
+    novelty_history: Annotated[List[float], add_to_list]
 
     # Metrics & Control
     round_number: int
@@ -158,6 +160,8 @@ def create_planner_node(llm):
         try:
             response = llm.invoke(messages)
             plan = parse_llm_json(response.content)
+            if not isinstance(plan, dict):
+                plan = {}
             logger.info(f"Plan: entity={plan.get('entity_type')}, wikidata={plan.get('wikidata_type')}")
 
             return {
@@ -191,14 +195,20 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         query = state.get("query", "")
         schema = state.get("schema", {})
         config = state.get("config", {})
+        seen_hashes = state.get("seen_hashes", {})
 
         # Extract temporal config
         time_filter = config.get("time_filter") or (research_config.time_filter if research_config else None)
         date_after = config.get("date_after") or (research_config.date_after if research_config else None)
         date_before = config.get("date_before") or (research_config.date_before if research_config else None)
+        target_items = config.get("target_items")
+        if target_items is None and research_config:
+            target_items = research_config.target_items
 
         results = []
         queries_used = state.get("queries_used", 0)
+        total_unique = len(seen_hashes)
+        needs_more = target_items is not None and total_unique < target_items
 
         # Try Wikidata first if we have a matching type
         if wikidata_type and wikidata_tool and config.get("use_wikidata", True):
@@ -250,17 +260,22 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
             except Exception as e:
                 logger.error(f"Wikidata error: {e}")
 
-        # If no Wikidata results, try web search
-        if len(results) == 0 and config.get("use_web", True):
+        # If no Wikidata results (or we still need more), try web search
+        if config.get("use_web", True) and (len(results) == 0 or needs_more):
             logger.info("Falling back to web search")
             try:
-                # Apply temporal filter to search tools
+                # Apply temporal filter to search tools and restore after run
                 search_tools = []
+                original_times = []
                 for tool in tools:
                     # Check if it's a DDG search tool and apply time filter
                     if hasattr(tool, 'api_wrapper') and time_filter:
-                        tool.api_wrapper.time = time_filter
-                        logger.info(f"Applied time filter '{time_filter}' to search tool")
+                        try:
+                            original_times.append((tool, tool.api_wrapper.time))
+                            tool.api_wrapper.time = time_filter
+                            logger.info(f"Applied time filter '{time_filter}' to search tool")
+                        except Exception as e:
+                            logger.warning(f"Could not apply time filter: {e}")
                     search_tools.append(tool)
 
                 # Use LLM with tools
@@ -272,6 +287,7 @@ Extract entities with these fields: {list(schema.keys())}
 Use the Search tool to find information."""
 
                 messages = [HumanMessage(content=search_prompt)]
+                tool_outputs = []
 
                 for _ in range(3):  # Max 3 tool calls
                     response = model_with_tools.invoke(messages)
@@ -282,14 +298,66 @@ Use the Search tool to find information."""
                         tool_result = tool_node.invoke({"messages": messages})
                         for msg in tool_result.get("messages", []):
                             messages.append(msg)
+                            if hasattr(msg, "content"):
+                                tool_outputs.append(str(msg.content))
                     else:
                         break
 
+                # Extract structured entities from tool output
+                if tool_outputs and schema:
+                    extraction_prompt = (
+                        "You are extracting structured entities from web search results.\n"
+                        f"Query: {query}\n"
+                        f"Required fields: {list(schema.keys())}\n"
+                        "Return ONLY a JSON array where each item has exactly those keys.\n"
+                        "Use null for missing values. No markdown, no extra text.\n\n"
+                        "Search results:\n"
+                        + "\n\n".join(tool_outputs)
+                    )
+
+                    extraction_messages = [HumanMessage(content=extraction_prompt)]
+                    extraction_response = llm.invoke(extraction_messages)
+                    queries_used += 1
+
+                    parsed = parse_llm_json(extraction_response.content)
+                    rows = []
+                    if isinstance(parsed, list):
+                        rows = parsed
+                    elif isinstance(parsed, dict) and isinstance(parsed.get("results"), list):
+                        rows = parsed.get("results", [])
+
+                    for item in rows:
+                        if not isinstance(item, dict):
+                            continue
+                        fields = {k: item.get(k) for k in schema.keys()}
+                        if not any(v is not None and v != "" for v in fields.values()):
+                            continue
+                        source_url = (
+                            item.get("source_url")
+                            or item.get("url")
+                            or item.get("source")
+                            or "web_search"
+                        )
+                        results.append(ResultRow(
+                            row_id=f"web_{len(results)}",
+                            fields=fields,
+                            source_url=source_url,
+                            confidence=0.6,
+                            worker_id="web_search",
+                            extraction_timestamp=time.time()
+                        ))
+
             except Exception as e:
                 logger.error(f"Web search error: {e}")
+            finally:
+                for tool, previous in original_times:
+                    try:
+                        tool.api_wrapper.time = previous
+                    except Exception as e:
+                        logger.warning(f"Could not restore time filter: {e}")
 
         return {
-            "results": results,
+            "new_results": results,
             "queries_used": queries_used,
             "round_number": state.get("round_number", 0) + 1
         }
@@ -305,7 +373,9 @@ def create_deduper_node():
 
     def deduper_node(state: ResearchState) -> Dict:
         """Deduplicate results."""
-        results = state.get("results", [])
+        results = state.get("new_results")
+        if results is None:
+            results = state.get("results", [])
         schema = state.get("schema", {})
         seen_hashes = state.get("seen_hashes", {})
 
@@ -332,9 +402,14 @@ def create_deduper_node():
 
         logger.info(f"Dedup: {len(results)} -> {len(unique_results)}")
 
+        total_unique = len(seen_hashes) + len(new_hashes)
+        novelty_rate = len(new_hashes) / max(1, total_unique)
+
         return {
             "results": unique_results,
-            "seen_hashes": new_hashes
+            "seen_hashes": new_hashes,
+            "novelty_history": [novelty_rate],
+            "new_results": []
         }
 
     return deduper_node
@@ -348,9 +423,10 @@ def create_stopper_node(config: ResearchConfig):
 
     def stopper_node(state: ResearchState) -> Dict:
         """Evaluate if we should stop."""
-        results = state.get("results", [])
         round_num = state.get("round_number", 0)
         queries = state.get("queries_used", 0)
+        seen_hashes = state.get("seen_hashes", {})
+        total_unique = len(seen_hashes)
 
         # Check limits
         if queries >= config.budget_queries:
@@ -359,12 +435,15 @@ def create_stopper_node(config: ResearchConfig):
         if round_num >= config.max_rounds:
             return {"status": "complete", "stop_reason": "max_rounds"}
 
-        if config.target_items and len(results) >= config.target_items:
+        if config.target_items and total_unique >= config.target_items:
             return {"status": "complete", "stop_reason": "target_reached"}
 
-        # If we have results from Wikidata, we're done
-        if len(results) > 0:
-            return {"status": "complete", "stop_reason": "results_found"}
+        novelty_history = state.get("novelty_history", [])
+        if config.plateau_rounds and config.novelty_min is not None:
+            if len(novelty_history) >= config.plateau_rounds:
+                recent = novelty_history[-config.plateau_rounds:]
+                if all(rate < config.novelty_min for rate in recent):
+                    return {"status": "complete", "stop_reason": "novelty_plateau"}
 
         return {"status": "searching"}
 
@@ -448,7 +527,9 @@ def run_research(
         "entity_type": "",
         "wikidata_type": None,
         "results": [],
+        "new_results": [],
         "seen_hashes": {},
+        "novelty_history": [],
         "round_number": 0,
         "queries_used": 0,
         "status": "planning",
@@ -514,7 +595,9 @@ def stream_research(
         "entity_type": "",
         "wikidata_type": None,
         "results": [],
+        "new_results": [],
         "seen_hashes": {},
+        "novelty_history": [],
         "round_number": 0,
         "queries_used": 0,
         "status": "planning",

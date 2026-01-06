@@ -44,7 +44,53 @@ def merge_dicts(existing: Dict, new: Dict) -> Dict:
     return result
 
 
-def parse_llm_json(content: str) -> Dict[str, Any]:
+def _scan_json_substring(content: str, start: int) -> Optional[str]:
+    """Scan for a JSON object/array starting at index and return substring."""
+    stack = []
+    in_string = False
+    escape_next = False
+
+    for i in range(start, len(content)):
+        char = content[i]
+
+        if escape_next:
+            escape_next = False
+            continue
+
+        if char == "\\":
+            escape_next = True
+            continue
+
+        if char == '"' and not escape_next:
+            in_string = not in_string
+            continue
+
+        if not in_string:
+            if char in "{[":
+                stack.append(char)
+            elif char in "}]":
+                if not stack:
+                    return None
+                opening = stack.pop()
+                if (opening == "{" and char != "}") or (opening == "[" and char != "]"):
+                    return None
+                if not stack:
+                    return content[start:i + 1]
+
+    return None
+
+
+def _extract_json_substring(content: str) -> Optional[str]:
+    """Extract the first valid JSON object/array substring from text."""
+    for i, char in enumerate(content):
+        if char in "{[":
+            snippet = _scan_json_substring(content, i)
+            if snippet:
+                return snippet
+    return None
+
+
+def parse_llm_json(content: str) -> Any:
     """Parse JSON from LLM response, handling markdown code blocks.
 
     Handles common LLM output patterns:
@@ -57,7 +103,7 @@ def parse_llm_json(content: str) -> Dict[str, Any]:
         content: Raw LLM response text
 
     Returns:
-        Parsed dictionary, or empty dict if parsing fails
+        Parsed object (dict or list), or empty dict if parsing fails
     """
     if not content:
         return {}
@@ -83,7 +129,15 @@ def parse_llm_json(content: str) -> Dict[str, Any]:
     except json.JSONDecodeError:
         pass
 
-    # Try to find JSON object in text
+    # Try scanning for a JSON object or array in text
+    extracted = _extract_json_substring(content)
+    if extracted:
+        try:
+            return json.loads(extracted)
+        except json.JSONDecodeError:
+            pass
+
+    # Try to find JSON object in text (legacy patterns)
     json_patterns = [
         r'```json\s*(.*?)\s*```',
         r'```\s*(.*?)\s*```',

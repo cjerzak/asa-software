@@ -388,17 +388,21 @@ print.asa_search <- function(x, ...) {
 #' @param backend LLM backend name (e.g., "openai", "groq")
 #' @param model Model identifier
 #' @param config Agent configuration list
+#' @param llm Optional LLM object used by LangGraph
+#' @param tools Optional list of tools associated with the agent
 #'
 #' @return An object of class \code{asa_agent}
 #'
 #' @export
-asa_agent <- function(python_agent, backend, model, config) {
+asa_agent <- function(python_agent, backend, model, config, llm = NULL, tools = NULL) {
   structure(
     list(
       python_agent = python_agent,
       backend = backend,
       model = model,
       config = config,
+      llm = llm,
+      tools = tools,
       created_at = Sys.time()
     ),
     class = "asa_agent"

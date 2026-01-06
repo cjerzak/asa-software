@@ -4,7 +4,7 @@
 \alias{.augment_prompt_temporal}
 \title{Augment Prompt with Temporal Context}
 \usage{
-.augment_prompt_temporal(prompt, temporal)
+.augment_prompt_temporal(prompt, temporal, verbose = FALSE)
 }
 \arguments{
 \item{prompt}{Original prompt}

@@ -124,6 +124,8 @@ Return JSON: {{"completeness_score": 0.95, "issues": ["issue1"], "recommendation
             try:
                 response = llm.invoke([HumanMessage(content=prompt)])
                 result = parse_llm_json(response.content)
+                if not isinstance(result, dict):
+                    result = {}
                 completeness = result.get("completeness_score", 0.9)
                 for issue in result.get("issues", []):
                     issues.append({
@@ -248,6 +250,8 @@ Return JSON: {{
         try:
             response = llm.invoke([HumanMessage(content=prompt)])
             result = parse_llm_json(response.content)
+            if not isinstance(result, dict):
+                result = {}
 
             for gap in result.get("gaps_found", []):
                 issues.append({

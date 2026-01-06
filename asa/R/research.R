@@ -403,10 +403,13 @@ asa_enumerate <- function(query,
     )
   }
 
+  llm <- if (!is.null(agent) && !is.null(agent$llm)) agent$llm else asa_env$llm
+  tools <- if (!is.null(agent) && !is.null(agent$tools)) agent$tools else asa_env$tools
+
   # Create research graph
   asa_env$research_graph$create_research_graph(
-    llm = asa_env$llm,
-    tools = asa_env$tools,
+    llm = llm,
+    tools = tools,
     config = py_config,
     checkpointer = asa_env$MemorySaver(),
     wikidata_tool = wikidata_tool

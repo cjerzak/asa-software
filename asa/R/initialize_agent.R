@@ -169,6 +169,8 @@ initialize_agent <- function(backend = "openai",
     model = model,
     conda_env = conda_env,
     proxy = proxy,
+    rate_limit = rate_limit,
+    timeout = timeout,
     use_memory_folding = use_memory_folding,
     memory_threshold = memory_threshold,
     memory_keep_recent = memory_keep_recent
@@ -181,7 +183,9 @@ initialize_agent <- function(backend = "openai",
     python_agent = agent,
     backend = backend,
     model = model,
-    config = asa_env$config
+    config = asa_env$config,
+    llm = llm,
+    tools = tools
   )
 }
 
@@ -415,7 +419,9 @@ get_agent <- function() {
     python_agent = asa_env$agent,
     backend = asa_env$config$backend,
     model = asa_env$config$model,
-    config = asa_env$config
+    config = asa_env$config,
+    llm = asa_env$llm,
+    tools = asa_env$tools
   )
 }
 
