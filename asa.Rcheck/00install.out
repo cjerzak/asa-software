@@ -5,6 +5,12 @@
 ** inst
 ** byte-compile and prepare package for lazy loading
 ** help
+Warning: /Users/cjerzak/Documents/asa-software/asa/man/ASA_JITTER_FACTOR.Rd:7: unexpected section header '\format'
+Warning: /Users/cjerzak/Documents/asa-software/asa/man/ASA_JITTER_FACTOR.Rd:10: unexpected section header '\usage'
+Warning: /Users/cjerzak/Documents/asa-software/asa/man/ASA_JITTER_FACTOR.Rd:13: unexpected section header '\description'
+Warning: /Users/cjerzak/Documents/asa-software/asa/man/ASA_JITTER_FACTOR.Rd:16: unexpected section header '\keyword'
+Warning: /Users/cjerzak/Documents/asa-software/asa/man/ASA_JITTER_FACTOR.Rd:17: unexpected END_OF_INPUT '
+'
 *** installing help indices
 ** building package indices
 ** installing vignettes

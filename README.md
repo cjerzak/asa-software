@@ -292,7 +292,7 @@ agent <- asa::initialize_agent(
   model = "gpt-4.1-mini",
   proxy = "socks5h://127.0.0.1:9050",  # Tor proxy (NULL to disable)
   timeout = 120,                        # Request timeout in seconds
-  rate_limit = 0.2                      # Requests per second
+  rate_limit = 0.1                      # Requests per second (conservative default)
 )
 ```
 
@@ -300,7 +300,7 @@ agent <- asa::initialize_agent(
 |-----------|---------|-------------|
 | `proxy` | `"socks5h://127.0.0.1:9050"` | SOCKS5 proxy URL, or `NULL` to disable |
 | `timeout` | `120` | Request timeout in seconds |
-| `rate_limit` | `0.2` | Max requests per second to avoid rate limits |
+| `rate_limit` | `0.1` | Max requests per second (conservative default for heavy workloads) |
 | `verbose` | `TRUE` | Print initialization status messages |
 
 ### Configuration Classes
@@ -437,7 +437,7 @@ asa::configure_search(
   max_retries = 5,           # Retry attempts (default: 3)
   retry_delay = 3,           # Seconds between retries (default: 2)
   backoff_multiplier = 2.0,  # Exponential backoff factor (default: 1.5)
-  inter_search_delay = 1.0   # Delay between searches in seconds (default: 0.5)
+  inter_search_delay = 3.0   # Delay between searches in seconds (default: 2.0)
 )
 
 # Enable debug logging for troubleshooting
@@ -446,7 +446,7 @@ asa::configure_search_logging("DEBUG")  # Options: DEBUG, INFO, WARNING, ERROR, 
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `inter_search_delay` | `0.5` | Seconds to wait between consecutive searches (avoids rate limiting) |
+| `inter_search_delay` | `2.0` | Seconds between consecutive searches (humanized with jitter) |
 | `max_results` | `10` | Maximum results per search |
 | `timeout` | `15` | HTTP request timeout in seconds |
 | `max_retries` | `3` | Retry attempts on failure |
@@ -480,6 +480,36 @@ agent_direct <- asa::initialize_agent(
   model = "gpt-4.1-mini",
   proxy = NULL  # Disable Tor proxy
 )
+```
+
+### Anti-Detection Features
+
+The package includes multiple layers of anti-detection for high-volume workloads (1000+ queries/day):
+
+**Proactive Tor Circuit Rotation:**
+- Automatically rotates Tor exit node every 15 requests (not just on errors)
+- Gets fresh IP before detection thresholds are reached
+
+**Adaptive Rate Limiting:**
+- Dynamically adjusts delays based on success/error patterns
+- On CAPTCHA/block: delays increase by 50% (caps at 5x)
+- After 10 consecutive successes: delays decrease by 10% (floor at 0.5x)
+
+**Session Reset:**
+- Every 50 requests, resets session identity
+- Shuffles user-agent pool and clears timing state
+- Each batch appears as a different user
+
+**Humanized Timing:**
+- Log-normal delay distribution (most quick, occasional long pauses)
+- Micro-stutters and fatigue curves simulate human behavior
+- 5% chance of "thinking pauses" (0.5-2s hesitation)
+
+All features are enabled by default. For very high-volume work, consider:
+```r
+# Even more conservative settings for 5000+ queries/day
+asa::configure_search(inter_search_delay = 4.0)
+agent <- asa::initialize_agent(rate_limit = 0.05)
 ```
 
 ### Output Extraction
@@ -528,7 +558,9 @@ processed_df <- asa::process_outputs(
 ## Troubleshooting
 
 **Rate limited or CAPTCHA blocks?**
-- Increase `inter_search_delay` via `configure_search(inter_search_delay = 2.0)`
+- The package now has adaptive rate limiting (enabled by default) that automatically slows down on errors
+- For persistent issues, increase delays: `configure_search(inter_search_delay = 4.0)`
+- Enable debug logging to see what's happening: `configure_search_logging("DEBUG")`
 - Use Tor proxy for IP rotation: `rotate_tor_circuit()`
 
 **API key not recognized?**
@@ -553,14 +585,14 @@ asa::build_backend(conda_env = "asa_env", force = TRUE)
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2026-01-06 10:48:34 EST | **Status:** PASS
+**Last Run:** 2026-01-10 12:13:03 EST | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.125s | 0.09s | 1.38x | PASS |
-| `helper_funcs` | 0.070s | 0.07s | 1.01x | PASS |
-| `combined` | 0.111s | 0.09s | 1.22x | PASS |
-| `agent_search` | 13.8s | 18s | 0.79x | PASS |
+| `build_prompt` | 0.123s | 0.09s | 1.37x | PASS |
+| `helper_funcs` | 0.065s | 0.07s | 0.93x | PASS |
+| `combined` | 0.105s | 0.09s | 1.15x | PASS |
+| `agent_search` | 11.2s | 18s | 0.63x | PASS |
 
 Tests fail if time exceeds 4.00x baseline. 
 See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.

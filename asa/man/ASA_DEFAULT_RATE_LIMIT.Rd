@@ -11,6 +11,7 @@ An object of class \code{numeric} of length 1.
 ASA_DEFAULT_RATE_LIMIT
 }
 \description{
-Default Rate Limit (requests per second)
+Conservative default: 0.1 = 10 seconds between requests.
+  Tuned for heavy volume (1000+ queries/day) to reduce CAPTCHA/blocks.
 }
 \keyword{internal}

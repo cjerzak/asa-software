@@ -219,30 +219,36 @@ is_tor_running <- function(port = 9050L) {
 #'
 #' Retrieves the external IP address as seen through Tor proxy.
 #'
-#' @param proxy Tor proxy URL
+#' @param proxy Tor proxy URL (e.g., "socks5h://127.0.0.1:9050" for default,
+#'   or "socks5h://127.0.0.1:9055" for instance on port 9055)
+#' @param timeout Timeout in seconds (default: 30). Useful for parallel
+#'   workloads where some Tor exits may be slow.
 #'
 #' @return IP address string or NA on failure
 #'
 #' @examples
 #' \dontrun{
+#' # Default Tor instance
 #' ip <- get_tor_ip()
 #' message("Current Tor IP: ", ip)
+#'
+#' # Check specific Tor instance (e.g., for parallel jobs)
+#' ip <- get_tor_ip(proxy = "socks5h://127.0.0.1:9055")
 #' }
 #'
 #' @export
-get_tor_ip <- function(proxy = "socks5h://127.0.0.1:9050") {
+get_tor_ip <- function(proxy = "socks5h://127.0.0.1:9050", timeout = 30L) {
   tryCatch({
-    result <- system2(
+    result <- processx::run(
       "curl",
       args = c("-s", "--proxy", proxy, "https://api.ipify.org?format=json"),
-      stdout = TRUE,
-      stderr = TRUE
+      timeout = timeout,
+      error_on_status = FALSE
     )
-    status <- attr(result, "status")
-    if (!is.null(status) && status != 0) {
+    if (result$status != 0) {
       return(NA_character_)
     }
-    parsed <- jsonlite::fromJSON(paste(result, collapse = "\n"))
+    parsed <- jsonlite::fromJSON(result$stdout)
     parsed$ip
   }, error = function(e) {
     NA_character_
@@ -251,33 +257,72 @@ get_tor_ip <- function(proxy = "socks5h://127.0.0.1:9050") {
 
 #' Rotate Tor Circuit
 #'
-#' Requests a new Tor circuit by restarting the Tor service.
+#' Requests a new Tor circuit by restarting the Tor service or sending SIGHUP.
 #'
 #' @param method Method to restart: "brew" (macOS), "systemctl" (Linux), or "signal"
 #' @param wait Seconds to wait for new circuit (default: 12)
+#' @param pid Optional PID of specific Tor process (only used with method="signal").
+#'   If NULL (default), finds the Tor process via pgrep.
 #'
-#' @return Invisibly returns NULL
+#' @return Invisibly returns TRUE on success, FALSE on failure
+#'
+#' @details
+#' For parallel Tor setups with multiple instances, consider using Tor's built-in
+#' circuit rotation via \code{MaxCircuitDirtiness} and \code{NewCircuitPeriod}
+#' config options instead of this function.
 #'
 #' @examples
 #' \dontrun{
-#' rotate_tor_circuit()
+#' # macOS with Homebrew
+#' rotate_tor_circuit(method = "brew")
+#'
+#' # Linux with systemd
+#' rotate_tor_circuit(method = "systemctl")
+#'
+#' # Send SIGHUP to Tor process
+#' rotate_tor_circuit(method = "signal")
 #' }
 #'
 #' @export
 rotate_tor_circuit <- function(method = c("brew", "systemctl", "signal"),
-                               wait = 12L) {
+                               wait = 12L,
+                               pid = NULL) {
   method <- match.arg(method)
 
-  cmd <- switch(method,
-    "brew" = "brew services restart tor",
-    "systemctl" = "sudo systemctl restart tor",
-    "signal" = "kill -HUP $(pgrep -x tor)"
-  )
+  success <- tryCatch({
+    if (method == "brew") {
+      processx::run("brew", c("services", "restart", "tor"),
+                    error_on_status = FALSE)
+    } else if (method == "systemctl") {
+      processx::run("sudo", c("systemctl", "restart", "tor"),
+                    error_on_status = FALSE)
+    } else if (method == "signal") {
+      # If no PID provided, find the Tor process
+      if (is.null(pid)) {
+        pgrep_result <- processx::run("pgrep", c("-x", "tor"),
+                                      error_on_status = FALSE)
+        if (pgrep_result$status != 0 || nchar(trimws(pgrep_result$stdout)) == 0) {
+          warning("Could not find Tor process", call. = FALSE)
+          return(invisible(FALSE))
+        }
+        pid <- trimws(pgrep_result$stdout)
+        # Handle multiple PIDs (take first line)
+        pid <- strsplit(pid, "\n")[[1]][1]
+      }
+      processx::run("kill", c("-HUP", as.character(pid)),
+                    error_on_status = FALSE)
+    }
+    TRUE
+  }, error = function(e) {
+    warning("Failed to rotate Tor circuit: ", e$message, call. = FALSE)
+    FALSE
+  })
 
-  system(cmd, ignore.stdout = TRUE, ignore.stderr = TRUE)
-  Sys.sleep(wait)
+  if (success) {
+    Sys.sleep(wait)
+  }
 
-  invisible(NULL)
+  invisible(success)
 }
 
 #' Print Utility

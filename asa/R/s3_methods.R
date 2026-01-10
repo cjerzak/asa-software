@@ -557,11 +557,23 @@ summary.asa_response <- function(object, show_trace = FALSE, ...) {
 #' @param raw_output Full agent trace
 #' @param elapsed_time Execution time in minutes
 #' @param status Status ("success" or "error")
+#' @param search_tier Which search tier was used ("primp", "selenium", "ddgs",
+#'   "requests", or "unknown"). Useful for assessing result quality.
+#' @param parsing_status List with JSON parsing validation info: valid (logical),
+#'   reason ("ok", "parsing_failed", "not_object", "missing_fields", "null_values",
+#'   "no_validation"), and missing (character vector of missing/invalid fields).
 #'
 #' @return An object of class \code{asa_result}
 #'
 #' @export
-asa_result <- function(prompt, message, parsed, raw_output, elapsed_time, status) {
+asa_result <- function(prompt, message, parsed, raw_output, elapsed_time, status,
+                       search_tier = "unknown", parsing_status = NULL) {
+  # Default parsing_status if not provided
+
+  if (is.null(parsing_status)) {
+    parsing_status <- list(valid = TRUE, reason = "no_validation", missing = character(0))
+  }
+
   structure(
     list(
       prompt = prompt,
@@ -569,7 +581,9 @@ asa_result <- function(prompt, message, parsed, raw_output, elapsed_time, status
       parsed = parsed,
       raw_output = raw_output,
       elapsed_time = elapsed_time,
-      status = status
+      status = status,
+      search_tier = search_tier,
+      parsing_status = parsing_status
     ),
     class = "asa_result"
   )
@@ -589,6 +603,9 @@ print.asa_result <- function(x, ...) {
   cat("===============\n")
   cat("Status:  ", x$status, "\n", sep = "")
   cat("Time:    ", format_duration(x$elapsed_time), "\n", sep = "")
+  if (!is.null(x$search_tier) && x$search_tier != "unknown") {
+    cat("Search:  ", x$search_tier, "\n", sep = "")
+  }
   cat("\n")
   cat("Prompt:\n")
   prompt_lines <- strwrap(x$prompt, width = 74)
@@ -611,6 +628,15 @@ print.asa_result <- function(x, ...) {
       } else {
         cat("  ", name, ": [", length(val), " items]\n", sep = "")
       }
+    }
+  }
+
+  # Show parsing status if validation failed
+  if (!is.null(x$parsing_status) && !isTRUE(x$parsing_status$valid)) {
+    cat("\nParsing Status: FAILED\n")
+    cat("  Reason: ", x$parsing_status$reason, "\n", sep = "")
+    if (length(x$parsing_status$missing) > 0) {
+      cat("  Missing/Invalid: ", paste(x$parsing_status$missing, collapse = ", "), "\n", sep = "")
     }
   }
 

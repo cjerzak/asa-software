@@ -4,10 +4,14 @@
 \alias{get_tor_ip}
 \title{Get External IP via Tor}
 \usage{
-get_tor_ip(proxy = "socks5h://127.0.0.1:9050")
+get_tor_ip(proxy = "socks5h://127.0.0.1:9050", timeout = 30L)
 }
 \arguments{
-\item{proxy}{Tor proxy URL}
+\item{proxy}{Tor proxy URL (e.g., "socks5h://127.0.0.1:9050" for default,
+or "socks5h://127.0.0.1:9055" for instance on port 9055)}
+
+\item{timeout}{Timeout in seconds (default: 30). Useful for parallel
+workloads where some Tor exits may be slow.}
 }
 \value{
 IP address string or NA on failure
@@ -17,8 +21,12 @@ Retrieves the external IP address as seen through Tor proxy.
 }
 \examples{
 \dontrun{
+# Default Tor instance
 ip <- get_tor_ip()
 message("Current Tor IP: ", ip)
+
+# Check specific Tor instance (e.g., for parallel jobs)
+ip <- get_tor_ip(proxy = "socks5h://127.0.0.1:9055")
 }
 
 }

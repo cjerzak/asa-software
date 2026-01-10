@@ -2,21 +2,26 @@
 % Please edit documentation in R/initialize_agent.R
 \name{.create_http_clients}
 \alias{.create_http_clients}
-\title{Create HTTP Client for API Calls}
+\title{Create HTTP Clients for API Calls}
 \usage{
-.create_http_clients(proxy, timeout)
+.create_http_clients(search_proxy, timeout)
 }
 \arguments{
-\item{proxy}{Proxy URL or NULL}
+\item{search_proxy}{Proxy URL for search tools (e.g., Tor SOCKS5) or NULL}
 
 \item{timeout}{Timeout in seconds}
 }
 \value{
-A list with 'sync' client (async is NULL, letting LangChain manage it)
+A list with 'direct' client (no proxy, for LLM) and 'proxied' client (for search)
 }
 \description{
-Creates a synchronous httpx client for LLM API calls.
-Note: We intentionally do NOT create an async client. LangChain/OpenAI SDK
+Creates two synchronous httpx clients: one direct (no proxy) for LLM API calls,
+and one proxied (with Tor) for search tools. This dual-client approach ensures
+OpenAI/OpenRouter API calls don't route through Tor (which causes failures),
+while DuckDuckGo searches still use Tor to avoid IP blocks.
+}
+\details{
+Note: We intentionally do NOT create async clients. LangChain/OpenAI SDK
 creates its own async client internally when needed (for async operations).
 This avoids R-CRIT-001 where async client cleanup was unreliable from R
 since aclose() requires an async context.

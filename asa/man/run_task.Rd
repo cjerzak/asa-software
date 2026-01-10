@@ -10,6 +10,7 @@ run_task(
   temporal = NULL,
   config = NULL,
   agent = NULL,
+  expected_fields = NULL,
   verbose = FALSE
 )
 }
@@ -40,6 +41,11 @@ to use defaults}
 \item{agent}{An asa_agent object from \code{\link{initialize_agent}}, or
 NULL to use the currently initialized agent}
 
+\item{expected_fields}{Optional character vector of field names expected in
+JSON output. When provided, validates that all fields are present and
+non-null. The result will include a \code{parsing_status} field with
+validation details.}
+
 \item{verbose}{Print progress messages (default: FALSE)}
 }
 \value{
@@ -51,6 +57,8 @@ An \code{asa_result} object with:
     \item raw_output: Full agent trace (always included, verbose for "raw" format)
     \item elapsed_time: Execution time in minutes
     \item status: "success" or "error"
+    \item search_tier: Which search tier was used ("primp", "selenium", etc.)
+    \item parsing_status: Validation result (if expected_fields provided)
     \item trace: Full execution trace (for "raw" output_format)
     \item fold_count: Number of memory folds (for "raw" output_format)
   }

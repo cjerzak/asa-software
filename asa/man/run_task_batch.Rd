@@ -11,7 +11,9 @@ run_task_batch(
   agent = NULL,
   parallel = FALSE,
   workers = 4L,
-  progress = TRUE
+  progress = TRUE,
+  circuit_breaker = TRUE,
+  abort_on_trip = FALSE
 )
 }
 \arguments{
@@ -30,13 +32,23 @@ See \code{\link{run_task}} for details.}
 \item{workers}{Number of parallel workers}
 
 \item{progress}{Show progress messages}
+
+\item{circuit_breaker}{Enable circuit breaker for error rate monitoring.
+When enabled, tracks recent error rates and pauses if threshold exceeded.
+Default TRUE.}
+
+\item{abort_on_trip}{If TRUE, abort the batch when circuit breaker trips.
+If FALSE (default), wait for cooldown and continue.}
 }
 \value{
 A list of asa_result objects, or if prompts was a data frame,
-  the data frame with result columns added
+  the data frame with result columns added. If circuit breaker aborts,
+  includes attribute "circuit_breaker_aborted" = TRUE.
 }
 \description{
-Executes multiple research tasks, optionally in parallel.
+Executes multiple research tasks, optionally in parallel. Includes a circuit
+breaker that monitors error rates and pauses execution if errors spike,
+preventing cascading failures.
 }
 \examples{
 \dontrun{
@@ -53,6 +65,12 @@ results <- run_task_batch(
   temporal = list(time_filter = "y"),
   agent = agent
 )
+
+# Disable circuit breaker
+results <- run_task_batch(prompts, agent = agent, circuit_breaker = FALSE)
+
+# Abort on circuit breaker trip
+results <- run_task_batch(prompts, agent = agent, abort_on_trip = TRUE)
 }
 
 }

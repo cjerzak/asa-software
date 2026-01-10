@@ -4,7 +4,16 @@
 \alias{asa_result}
 \title{Constructor for asa_result Objects}
 \usage{
-asa_result(prompt, message, parsed, raw_output, elapsed_time, status)
+asa_result(
+  prompt,
+  message,
+  parsed,
+  raw_output,
+  elapsed_time,
+  status,
+  search_tier = "unknown",
+  parsing_status = NULL
+)
 }
 \arguments{
 \item{prompt}{The original prompt}
@@ -18,6 +27,13 @@ asa_result(prompt, message, parsed, raw_output, elapsed_time, status)
 \item{elapsed_time}{Execution time in minutes}
 
 \item{status}{Status ("success" or "error")}
+
+\item{search_tier}{Which search tier was used ("primp", "selenium", "ddgs",
+"requests", or "unknown"). Useful for assessing result quality.}
+
+\item{parsing_status}{List with JSON parsing validation info: valid (logical),
+reason ("ok", "parsing_failed", "not_object", "missing_fields", "null_values",
+"no_validation"), and missing (character vector of missing/invalid fields).}
 }
 \value{
 An object of class \code{asa_result}

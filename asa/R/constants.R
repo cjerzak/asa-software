@@ -74,16 +74,26 @@ ASA_DEFAULT_MEMORY_KEEP_RECENT <- 2L
 # RATE LIMITING AND TIMEOUTS
 # ============================================================================
 #' Default Rate Limit (requests per second)
+#' @description Conservative default: 0.1 = 10 seconds between requests.
+#'   Tuned for heavy volume (1000+ queries/day) to reduce CAPTCHA/blocks.
 #' @keywords internal
-ASA_DEFAULT_RATE_LIMIT <- 0.2
+ASA_DEFAULT_RATE_LIMIT <- 0.1
 
 #' Default Request Timeout (seconds)
 #' @keywords internal
 ASA_DEFAULT_TIMEOUT <- 120L
 
 #' Default Inter-Search Delay (seconds)
+#' @description Conservative default: 2.0 seconds between searches.
+#'   More human-like pacing to avoid detection at high volumes.
 #' @keywords internal
-ASA_DEFAULT_INTER_SEARCH_DELAY <- 0.5
+ASA_DEFAULT_INTER_SEARCH_DELAY <- 2.0
+
+#' Default CAPTCHA Backoff Base Multiplier
+#' @description Aggressive backoff on CAPTCHA: 5.0x multiplier.
+#'   Results in 5s, 10s, 15s delays on successive CAPTCHA encounters.
+#' @keywords internal
+ASA_DEFAULT_CAPTCHA_BACKOFF_BASE <- 5.0
 
 #' Default Max Retries
 #' @keywords internal
@@ -92,6 +102,105 @@ ASA_DEFAULT_MAX_RETRIES <- 3L
 #' Rate Limit Wait Time (seconds)
 #' @keywords internal
 ASA_RATE_LIMIT_WAIT <- 15L
+
+#' Proactive Rate Limit Bucket Size (max tokens)
+#' @keywords internal
+ASA_RATE_LIMIT_BUCKET_SIZE <- 10L
+
+#' Enable Proactive Rate Limiting (default: TRUE)
+#' @keywords internal
+ASA_RATE_LIMIT_PROACTIVE <- TRUE
+
+#' Enable Humanized Timing (random jitter on delays)
+#' @keywords internal
+ASA_HUMANIZE_TIMING <- TRUE
+
+#' Jitter Factor (fraction of base delay for random variation, 0.5 = ±50%)
+#' @keywords internal
+ASA_JITTER_FACTOR <- 0.5
+
+# ============================================================================
+# CIRCUIT BREAKER (for parallel batch execution)
+# ============================================================================
+
+#' Circuit Breaker Error Threshold (trip if error rate exceeds this)
+#' @keywords internal
+ASA_CIRCUIT_BREAKER_THRESHOLD <- 0.10
+
+#' Circuit Breaker Window Size (number of recent requests to consider)
+#' @keywords internal
+ASA_CIRCUIT_BREAKER_WINDOW <- 20L
+
+#' Circuit Breaker Cooldown Period (seconds to wait when tripped)
+#' @keywords internal
+ASA_CIRCUIT_BREAKER_COOLDOWN <- 60L
+
+#' Enable Circuit Breaker by default
+#' @keywords internal
+ASA_CIRCUIT_BREAKER_ENABLED <- TRUE
+
+# ============================================================================
+# PROACTIVE ANTI-DETECTION
+# ============================================================================
+
+#' Enable Proactive Tor Circuit Rotation
+#' @description When TRUE, rotate Tor circuit every N requests (not just on error).
+#' @keywords internal
+ASA_PROACTIVE_ROTATION_ENABLED <- TRUE
+
+#' Proactive Rotation Interval (requests)
+#' @description Rotate Tor circuit every 15 requests to get fresh exit node IP.
+#' @keywords internal
+ASA_PROACTIVE_ROTATION_INTERVAL <- 15L
+
+#' Minimum Tor Rotation Interval (seconds)
+#' @description Minimum time between Tor circuit rotations to avoid hammering.
+#' @keywords internal
+ASA_TOR_MIN_ROTATION_INTERVAL <- 5.0
+
+#' Enable Session Reset
+#' @description When TRUE, periodically reset session identity to avoid fingerprinting.
+#' @keywords internal
+ASA_SESSION_RESET_ENABLED <- TRUE
+
+#' Session Reset Interval (requests)
+#' @description Reset session identity every 50 requests (clear cookies, shuffle UA).
+#' @keywords internal
+ASA_SESSION_RESET_INTERVAL <- 50L
+
+# ============================================================================
+# ADAPTIVE RATE LIMITING
+# ============================================================================
+
+#' Enable Adaptive Rate Limiting
+#' @description When TRUE, dynamically adjust delays based on success/error patterns.
+#' @keywords internal
+ASA_ADAPTIVE_RATE_ENABLED <- TRUE
+
+#' Adaptive Rate Window Size (requests)
+#' @description Number of recent requests to consider for adaptive rate adjustment.
+#' @keywords internal
+ASA_ADAPTIVE_RATE_WINDOW <- 20L
+
+#' Adaptive Rate Increase Factor (on error)
+#' @description Multiply delays by this factor when CAPTCHA/block detected.
+#' @keywords internal
+ASA_ADAPTIVE_RATE_INCREASE <- 1.5
+
+#' Adaptive Rate Decrease Factor (on success streak)
+#' @description Multiply delays by this factor after 10 consecutive successes.
+#' @keywords internal
+ASA_ADAPTIVE_RATE_DECREASE <- 0.9
+
+#' Adaptive Rate Maximum Multiplier
+#' @description Cap on delay multiplier to prevent excessive slowdown.
+#' @keywords internal
+ASA_ADAPTIVE_RATE_MAX <- 5.0
+
+#' Adaptive Rate Minimum Multiplier
+#' @description Floor on delay multiplier to maintain some speed.
+#' @keywords internal
+ASA_ADAPTIVE_RATE_MIN <- 0.5
 
 # ============================================================================
 # RECURSION LIMITS

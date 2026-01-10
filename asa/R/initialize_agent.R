@@ -116,6 +116,30 @@ initialize_agent <- function(backend = "openai",
 
   if (verbose) message("Initializing ASA agent...")
 
+  # Track initialization count for resource leak detection
+  asa_env$init_count <- (asa_env$init_count %||% 0L) + 1L
+
+  # Warn and clean up on re-initialization (potential resource leak source)
+  if (asa_env$init_count > 1L) {
+    if (verbose) {
+      message("  Note: Re-initializing agent (init #", asa_env$init_count, ")")
+    }
+    if (!is.null(asa_env$http_clients)) {
+      if (verbose) message("  Cleaning up previous HTTP clients...")
+    }
+  }
+
+  # Register cleanup finalizer on first initialization (belt-and-suspenders with .onUnload)
+  if (asa_env$init_count == 1L) {
+    .register_cleanup_finalizer()
+  }
+
+  # Initialize proactive rate limiter with configured rate
+  .rate_limiter_init(rate = rate_limit)
+
+  # Initialize adaptive rate limiting
+  .adaptive_rate_init()
+
   # Activate conda environment
   if (verbose) message("  Activating conda environment: ", conda_env)
   reticulate::use_condaenv(conda_env, required = TRUE)
@@ -134,9 +158,10 @@ initialize_agent <- function(backend = "openai",
   .close_http_clients()
 
   # Create HTTP clients for backends that need them (OpenAI-compatible APIs)
+  # Dual-client approach: direct client for LLM API, proxied client for search tools
   clients <- NULL
   if (backend %in% c("openai", "openrouter")) {
-    clients <- .create_http_clients(proxy, timeout)
+    clients <- .create_http_clients(search_proxy = proxy, timeout = timeout)
     # Store clients in asa_env for cleanup on reset/unload
     asa_env$http_clients <- clients
   }
@@ -216,33 +241,54 @@ initialize_agent <- function(backend = "openai",
   invisible(NULL)
 }
 
-#' Create HTTP Client for API Calls
+#' Create HTTP Clients for API Calls
 #'
-#' Creates a synchronous httpx client for LLM API calls.
-#' Note: We intentionally do NOT create an async client. LangChain/OpenAI SDK
+#' Creates two synchronous httpx clients: one direct (no proxy) for LLM API calls,
+#' and one proxied (with Tor) for search tools. This dual-client approach ensures
+#' OpenAI/OpenRouter API calls don't route through Tor (which causes failures),
+#' while DuckDuckGo searches still use Tor to avoid IP blocks.
+#'
+#' Note: We intentionally do NOT create async clients. LangChain/OpenAI SDK
 #' creates its own async client internally when needed (for async operations).
 #' This avoids R-CRIT-001 where async client cleanup was unreliable from R
 #' since aclose() requires an async context.
 #'
-#' @param proxy Proxy URL or NULL
+#' @param search_proxy Proxy URL for search tools (e.g., Tor SOCKS5) or NULL
 #' @param timeout Timeout in seconds
-#' @return A list with 'sync' client (async is NULL, letting LangChain manage it)
+#' @return A list with 'direct' client (no proxy, for LLM) and 'proxied' client (for search)
 #' @keywords internal
-.create_http_clients <- function(proxy, timeout) {
+.create_http_clients <- function(search_proxy, timeout) {
   # Generate fake headers for browser-like fingerprint
   headers <- asa_env$fake_headers$Headers(headers = TRUE)$generate()
 
-  sync_client <- asa_env$httpx$Client(
-    proxy = proxy,
+  # Direct client for LLM API calls (OpenAI, OpenRouter) - NO proxy
+  # OpenAI blocks/fails through Tor exit nodes, so LLM calls must be direct
+  direct_client <- asa_env$httpx$Client(
+    proxy = NULL,
     timeout = as.integer(timeout),
     http2 = FALSE,
     headers = headers,
     follow_redirects = TRUE
   )
 
-  # Return only sync client; async is NULL to let LangChain manage its own
+  # Proxied client for search tools (DuckDuckGo, Wikipedia) - WITH Tor proxy
+  # Tor is needed to avoid IP blocks from DuckDuckGo
+
+  proxied_client <- if (!is.null(search_proxy)) {
+    asa_env$httpx$Client(
+      proxy = search_proxy,
+      timeout = as.integer(timeout),
+      http2 = FALSE,
+      headers = headers,
+      follow_redirects = TRUE
+    )
+  } else {
+    NULL
+  }
+
+  # Return both clients; async is NULL to let LangChain manage its own
   # This fixes R-CRIT-001: async client cleanup was unreliable from R
-  list(sync = sync_client, async = NULL)
+  list(direct = direct_client, proxied = proxied_client, async = NULL)
 }
 
 #' Create LLM Instance
@@ -267,7 +313,7 @@ initialize_agent <- function(backend = "openai",
       openai_api_base = Sys.getenv("OPENAI_API_BASE", unset = "https://api.openai.com/v1"),
       temperature = 0.5,
       streaming = TRUE,
-      http_client = clients$sync,
+      http_client = clients$direct,  # Use direct client (no proxy) - OpenAI fails through Tor
       # http_async_client omitted: LangChain manages its own (R-CRIT-001 fix)
       include_response_headers = FALSE,
       rate_limiter = rate_limiter
@@ -313,7 +359,7 @@ initialize_agent <- function(backend = "openai",
       openai_api_base = "https://openrouter.ai/api/v1",
       temperature = 0.5,
       streaming = TRUE,
-      http_client = clients$sync,
+      http_client = clients$direct,  # Use direct client (no proxy) - avoid Tor for API calls
       # http_async_client omitted: LangChain manages its own (R-CRIT-001 fix)
       include_response_headers = FALSE,
       rate_limiter = rate_limiter,

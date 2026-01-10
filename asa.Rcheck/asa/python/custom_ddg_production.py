@@ -55,6 +55,8 @@ class SearchConfig:
         captcha_backoff_base: Base multiplier for CAPTCHA backoff (default: 3.0)
         page_load_wait: Wait time after page load in seconds (default: 2.0)
         inter_search_delay: Delay between consecutive searches in seconds (default: 0.5)
+        humanize_timing: Add random jitter to delays for human-like behavior (default: True)
+        jitter_factor: Jitter range as fraction of base delay (default: 0.5 = ±50%)
     """
     max_results: int = 10
     timeout: float = 15.0
@@ -64,6 +66,93 @@ class SearchConfig:
     captcha_backoff_base: float = 3.0
     page_load_wait: float = 2.0
     inter_search_delay: float = 0.5
+    humanize_timing: bool = True
+    jitter_factor: float = 0.5
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Human Behavioral Entropy - The nervous pulse of a tired hand
+# ────────────────────────────────────────────────────────────────────────
+# The problem with clean randomness: it's too clean. Uniform distributions
+# smell like bleach. Real humans have texture - hesitation, fatigue,
+# distraction, the micro-stutter of uncertainty.
+
+_SESSION_START = time.time()
+_REQUEST_COUNT = 0
+
+
+def _human_delay(base_delay: float, cfg: SearchConfig = None) -> float:
+    """Generate a delay that feels human - messy, uncertain, tired.
+
+    Not uniform jitter. This models:
+    - Log-normal base: most actions quick, occasional long pauses (thinking)
+    - Micro-stutters: tiny random additions (the tremor of a hand)
+    - Fatigue curve: delays drift longer as session ages
+    - Occasional spikes: the pause of a mind changing
+
+    Args:
+        base_delay: The nominal delay in seconds
+        cfg: SearchConfig instance
+
+    Returns:
+        A delay that breathes like a human
+    """
+    global _REQUEST_COUNT
+    _REQUEST_COUNT += 1
+
+    if cfg is None:
+        cfg = _default_config
+
+    if not cfg.humanize_timing or base_delay <= 0:
+        return base_delay
+
+    # 1. Log-normal base: right-skewed, mostly quick but occasional long pauses
+    # sigma controls spread: 0.3 = tight, 0.5 = moderate, 0.8 = wild
+    import math
+    sigma = 0.4
+    log_normal_factor = random.lognormvariate(0, sigma)
+    # Clamp to reasonable range (0.5x to 3x base)
+    log_normal_factor = max(0.5, min(3.0, log_normal_factor))
+
+    # 2. Micro-stutter: tiny random addition (50-200ms) - the tremor
+    micro_stutter = random.uniform(0.05, 0.2)
+
+    # 3. Fatigue curve: delays drift longer over session
+    # After 100 requests, delays are ~20% longer
+    session_minutes = (time.time() - _SESSION_START) / 60.0
+    fatigue_factor = 1.0 + (session_minutes * 0.01) + (_REQUEST_COUNT * 0.001)
+    fatigue_factor = min(fatigue_factor, 1.5)  # Cap at 50% increase
+
+    # 4. Occasional thinking pause: 5% chance of a longer hesitation
+    thinking_pause = 0
+    if random.random() < 0.05:
+        thinking_pause = random.uniform(0.5, 2.0)
+
+    # 5. The hesitation before commit: slight pause before action
+    pre_commit_hesitation = random.uniform(0.02, 0.08)
+
+    # Combine: base * log_normal * fatigue + stutter + thinking + hesitation
+    delay = (base_delay * log_normal_factor * fatigue_factor +
+             micro_stutter + thinking_pause + pre_commit_hesitation)
+
+    return max(0.1, delay)
+
+
+def _humanize_delay(base_delay: float, cfg: SearchConfig = None) -> float:
+    """Add human-like random jitter to a delay value.
+
+    DEPRECATED: Use _human_delay() for more realistic behavioral patterns.
+    This wrapper maintains backward compatibility but now uses the
+    human behavioral model internally.
+
+    Args:
+        base_delay: The base delay in seconds
+        cfg: SearchConfig instance (uses default if None)
+
+    Returns:
+        Delay with human behavioral patterns applied
+    """
+    return _human_delay(base_delay, cfg)
 
 
 # Default configuration instance (thread-safe via copy-on-read pattern)
@@ -82,11 +171,17 @@ def configure_search(
     captcha_backoff_base: float = None,
     page_load_wait: float = None,
     inter_search_delay: float = None,
+    humanize_timing: bool = None,
+    jitter_factor: float = None,
 ) -> SearchConfig:
     """Configure global search defaults. Call from R via reticulate.
 
     Only non-None values will update the defaults. Returns the updated config.
     Thread-safe: uses lock to prevent race conditions during configuration.
+
+    Args:
+        humanize_timing: Enable/disable human-like random jitter on delays
+        jitter_factor: Jitter range as fraction of base delay (0.5 = ±50%)
     """
     global _default_config
     with _config_lock:
@@ -106,6 +201,10 @@ def configure_search(
             _default_config.page_load_wait = page_load_wait
         if inter_search_delay is not None:
             _default_config.inter_search_delay = inter_search_delay
+        if humanize_timing is not None:
+            _default_config.humanize_timing = humanize_timing
+        if jitter_factor is not None:
+            _default_config.jitter_factor = jitter_factor
         return _default_config
 
 
@@ -134,6 +233,7 @@ __all__ = [
     "SearchConfig",
     "configure_search",
     "configure_logging",
+    "configure_tor",
     "PatchedDuckDuckGoSearchAPIWrapper",
     "PatchedDuckDuckGoSearchRun",
     "BrowserDuckDuckGoSearchAPIWrapper",
@@ -176,6 +276,269 @@ def _with_ddgs(
 # ────────────────────────────────────────────────────────────────────────
 # Helper tier 1 – real browser (Selenium)
 # ────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────────────────────────────
+# Stealth Configuration - Randomized fingerprints to reduce detection
+# ────────────────────────────────────────────────────────────────────────
+_STEALTH_USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:133.0) Gecko/20100101 Firefox/133.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+]
+
+_STEALTH_VIEWPORTS = [
+    (1920, 1080),  # Full HD - most common
+    (1366, 768),   # HD - laptops
+    (1536, 864),   # Scaled HD
+    (1440, 900),   # MacBook
+    (1280, 720),   # HD
+    (2560, 1440),  # QHD
+]
+
+_STEALTH_LANGUAGES = [
+    "en-US,en;q=0.9",
+    "en-GB,en;q=0.9,en-US;q=0.8",
+    "en-US,en;q=0.9,es;q=0.8",
+]
+
+
+def _simulate_human_behavior(driver, cfg: SearchConfig = None) -> None:
+    """Inject the entropy of a tired hand into browser behavior.
+
+    The algorithm at the gate looks for scripts. Scripts are efficient.
+    Humans are not. This function makes the connection sweat:
+    - Random scrolling (scanning the page)
+    - Mouse drift (the hand that overshoots)
+    - Micro-pauses (the mind that wanders)
+    - Variable focus (looking at nothing in particular)
+
+    Args:
+        driver: Selenium WebDriver instance
+        cfg: SearchConfig for timing parameters
+    """
+    cfg = cfg or _default_config
+
+    try:
+        from selenium.webdriver.common.action_chains import ActionChains
+
+        actions = ActionChains(driver)
+
+        # 1. Initial hesitation - the moment of arrival, looking around
+        time.sleep(random.uniform(0.3, 0.8))
+
+        # 2. Scroll behavior - humans scan before they act
+        # Sometimes scroll down, sometimes up, sometimes just a little
+        scroll_patterns = [
+            lambda: driver.execute_script("window.scrollBy(0, %d)" % random.randint(100, 300)),
+            lambda: driver.execute_script("window.scrollBy(0, %d)" % random.randint(-50, 150)),
+            lambda: driver.execute_script("window.scrollBy(0, %d)" % random.randint(50, 100)),
+            lambda: None,  # Sometimes don't scroll at all
+        ]
+        scroll_action = random.choice(scroll_patterns)
+        scroll_action()
+        time.sleep(random.uniform(0.1, 0.4))
+
+        # 3. Mouse movement - the drift of an uncertain hand
+        # Move to a random point, overshoot, correct
+        try:
+            viewport_width = driver.execute_script("return window.innerWidth")
+            viewport_height = driver.execute_script("return window.innerHeight")
+
+            # Target somewhere vaguely in the content area
+            target_x = random.randint(int(viewport_width * 0.2), int(viewport_width * 0.8))
+            target_y = random.randint(int(viewport_height * 0.3), int(viewport_height * 0.7))
+
+            # Overshoot by a bit
+            overshoot_x = target_x + random.randint(-30, 30)
+            overshoot_y = target_y + random.randint(-20, 20)
+
+            # Move with slight curve (not a straight line)
+            actions.move_by_offset(
+                overshoot_x // 2 + random.randint(-10, 10),
+                overshoot_y // 2 + random.randint(-5, 5)
+            ).pause(random.uniform(0.05, 0.15))
+
+            actions.move_by_offset(
+                overshoot_x // 2 + random.randint(-15, 15),
+                overshoot_y // 2 + random.randint(-10, 10)
+            ).pause(random.uniform(0.02, 0.08))
+
+            actions.perform()
+            actions = ActionChains(driver)  # Reset chain
+
+        except Exception:
+            pass  # Mouse movement is best-effort
+
+        # 4. Another small scroll - reconsidering the page
+        if random.random() < 0.4:
+            driver.execute_script("window.scrollBy(0, %d)" % random.randint(-30, 80))
+            time.sleep(random.uniform(0.1, 0.3))
+
+        # 5. The final pause - gathering thoughts before extraction
+        time.sleep(random.uniform(0.2, 0.5))
+
+    except Exception as e:
+        logger.debug("Human behavior simulation failed (non-fatal): %s", e)
+
+
+def _simulate_reading(driver, num_results: int, cfg: SearchConfig = None) -> None:
+    """Simulate a human scanning search results.
+
+    Humans don't just grab results. They look. They consider.
+    They scroll back up because they missed something.
+
+    Args:
+        driver: Selenium WebDriver instance
+        num_results: Number of results found
+        cfg: SearchConfig for timing parameters
+    """
+    cfg = cfg or _default_config
+
+    try:
+        # Time spent "reading" scales with results but has variance
+        base_read_time = min(num_results * 0.15, 1.5)
+        read_time = _human_delay(base_read_time, cfg)
+
+        # Break into micro-intervals (scanning behavior)
+        intervals = random.randint(2, 4)
+        for i in range(intervals):
+            time.sleep(read_time / intervals)
+
+            # Occasionally scroll slightly (following content)
+            if random.random() < 0.3:
+                scroll_amount = random.randint(-20, 40)
+                driver.execute_script(f"window.scrollBy(0, {scroll_amount})")
+
+    except Exception as e:
+        logger.debug("Reading simulation failed (non-fatal): %s", e)
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Tor Circuit Rotation - Request new identity on CAPTCHA detection
+# ────────────────────────────────────────────────────────────────────────
+_TOR_CONTROL_PORT = int(os.environ.get("TOR_CONTROL_PORT", "9051"))
+_TOR_CONTROL_PASSWORD = os.environ.get("TOR_CONTROL_PASSWORD", "")
+_TOR_LAST_ROTATION = 0.0
+_TOR_MIN_ROTATION_INTERVAL = 10.0  # Minimum seconds between rotations
+
+
+def _rotate_tor_circuit(force: bool = False) -> bool:
+    """Request a new Tor circuit (new exit node) via the control port.
+
+    This is the key to avoiding CAPTCHA when using Tor - each new circuit
+    gets a different exit node IP address, making it harder to block.
+
+    Requires Tor control port enabled. Configure in torrc:
+        ControlPort 9051
+        HashedControlPassword <your_hashed_password>
+    Or use cookie authentication (default on many systems).
+
+    Args:
+        force: If True, rotate even if min interval hasn't passed
+
+    Returns:
+        True if rotation succeeded, False otherwise
+    """
+    global _TOR_LAST_ROTATION
+
+    # Rate limit rotations to avoid hammering Tor
+    now = time.time()
+    if not force and (now - _TOR_LAST_ROTATION) < _TOR_MIN_ROTATION_INTERVAL:
+        logger.debug("Tor rotation skipped - too soon (%.1fs since last)",
+                     now - _TOR_LAST_ROTATION)
+        return False
+
+    # Try using stem library first (cleaner API)
+    try:
+        from stem import Signal
+        from stem.control import Controller
+
+        with Controller.from_port(port=_TOR_CONTROL_PORT) as controller:
+            if _TOR_CONTROL_PASSWORD:
+                controller.authenticate(password=_TOR_CONTROL_PASSWORD)
+            else:
+                controller.authenticate()  # Try cookie auth
+            controller.signal(Signal.NEWNYM)
+            _TOR_LAST_ROTATION = time.time()
+            logger.info("Tor circuit rotated successfully (new exit node)")
+            return True
+
+    except ImportError:
+        logger.debug("stem library not available, trying raw socket")
+    except Exception as e:
+        logger.debug("stem rotation failed: %s", e)
+
+    # Fallback: raw socket communication
+    try:
+        import socket
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.settimeout(5.0)
+            sock.connect(("127.0.0.1", _TOR_CONTROL_PORT))
+
+            # Authenticate
+            if _TOR_CONTROL_PASSWORD:
+                sock.send(f'AUTHENTICATE "{_TOR_CONTROL_PASSWORD}"\r\n'.encode())
+            else:
+                sock.send(b'AUTHENTICATE\r\n')
+
+            response = sock.recv(1024).decode()
+            if "250" not in response:
+                logger.warning("Tor authentication failed: %s", response.strip())
+                return False
+
+            # Request new identity
+            sock.send(b'SIGNAL NEWNYM\r\n')
+            response = sock.recv(1024).decode()
+
+            if "250" in response:
+                _TOR_LAST_ROTATION = time.time()
+                logger.info("Tor circuit rotated successfully via raw socket")
+                return True
+            else:
+                logger.warning("Tor NEWNYM failed: %s", response.strip())
+                return False
+
+    except Exception as e:
+        logger.debug("Raw socket Tor rotation failed: %s", e)
+        return False
+
+
+def configure_tor(
+    control_port: int = None,
+    control_password: str = None,
+    min_rotation_interval: float = None,
+) -> dict:
+    """Configure Tor circuit rotation settings.
+
+    Call from R via reticulate to set up Tor control connection.
+
+    Args:
+        control_port: Tor control port (default: 9051)
+        control_password: Control port password (or use cookie auth if None)
+        min_rotation_interval: Minimum seconds between rotations (default: 10)
+
+    Returns:
+        Dict with current configuration
+    """
+    global _TOR_CONTROL_PORT, _TOR_CONTROL_PASSWORD, _TOR_MIN_ROTATION_INTERVAL
+
+    if control_port is not None:
+        _TOR_CONTROL_PORT = control_port
+    if control_password is not None:
+        _TOR_CONTROL_PASSWORD = control_password
+    if min_rotation_interval is not None:
+        _TOR_MIN_ROTATION_INTERVAL = min_rotation_interval
+
+    return {
+        "control_port": _TOR_CONTROL_PORT,
+        "has_password": bool(_TOR_CONTROL_PASSWORD),
+        "min_rotation_interval": _TOR_MIN_ROTATION_INTERVAL,
+    }
+
+
 def _new_driver(
     *,
     proxy: str | None,
@@ -184,10 +547,14 @@ def _new_driver(
     bypass_proxy_for_driver: bool,
     use_proxy_for_browser: bool = True,
 ) -> webdriver.Firefox | webdriver.Chrome:
-    """Create a Selenium WebDriver instance.
+    """Create a Selenium WebDriver instance with stealth measures.
 
     Tries Firefox first (preferred), falls back to Chrome if unavailable.
-    Each browser uses its appropriate options configuration.
+    Implements anti-detection measures:
+    - Randomized user agent
+    - Randomized viewport size
+    - Disabled automation indicators
+    - Randomized language headers
     """
     # Temporarily clear proxies so Selenium-Manager can download drivers
     saved_env: Dict[str, str] = {}
@@ -196,13 +563,35 @@ def _new_driver(
             if var in os.environ:
                 saved_env[var] = os.environ.pop(var)
 
+    # Randomize fingerprint components
+    random_ua = random.choice(_STEALTH_USER_AGENTS)
+    random_viewport = random.choice(_STEALTH_VIEWPORTS)
+    random_lang = random.choice(_STEALTH_LANGUAGES)
+
     driver = None
     try:
-        # Try Firefox first (default) with Firefox-compatible options
+        # Try Firefox first (default) with stealth options
         firefox_opts = FirefoxOptions()
         firefox_opts.add_argument("--headless")
         firefox_opts.add_argument("--disable-gpu")
         firefox_opts.add_argument("--no-sandbox")
+        firefox_opts.add_argument(f"--width={random_viewport[0]}")
+        firefox_opts.add_argument(f"--height={random_viewport[1]}")
+
+        # Firefox stealth preferences
+        firefox_opts.set_preference("general.useragent.override", random_ua)
+        firefox_opts.set_preference("intl.accept_languages", random_lang)
+        firefox_opts.set_preference("dom.webdriver.enabled", False)
+        firefox_opts.set_preference("useAutomationExtension", False)
+        firefox_opts.set_preference("privacy.trackingprotection.enabled", False)
+        firefox_opts.set_preference("network.http.sendRefererHeader", 2)
+        firefox_opts.set_preference("general.platform.override", "Win32")
+
+        # Disable telemetry and crash reporting (reduces detectability)
+        firefox_opts.set_preference("toolkit.telemetry.enabled", False)
+        firefox_opts.set_preference("datareporting.healthreport.uploadEnabled", False)
+        firefox_opts.set_preference("browser.crashReports.unsubmittedCheck.autoSubmit2", False)
+
         if proxy and use_proxy_for_browser:
             firefox_opts.set_preference("network.proxy.type", 1)
             # Parse SOCKS proxy if provided
@@ -217,22 +606,56 @@ def _new_driver(
 
         try:
             driver = webdriver.Firefox(options=firefox_opts)
-            logger.debug("Using Firefox WebDriver")
+            logger.debug("Using Firefox WebDriver (stealth mode)")
+
+            # Additional stealth: override navigator.webdriver via JavaScript
+            try:
+                driver.execute_script("""
+                    Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                    Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+                    Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
+                """)
+            except Exception as e:
+                logger.debug("Firefox stealth script injection failed: %s", e)
+
         except WebDriverException as firefox_err:
             logger.debug("Firefox unavailable (%s), trying Chrome", firefox_err)
 
-            # Fallback to Chrome with Chrome-compatible options
+            # Fallback to Chrome with stealth options
             from selenium.webdriver.chrome.options import Options as ChromeOptions
             chrome_opts = ChromeOptions()
             chrome_opts.add_argument("--headless=new")
             chrome_opts.add_argument("--disable-gpu")
             chrome_opts.add_argument("--disable-dev-shm-usage")
             chrome_opts.add_argument("--no-sandbox")
+            chrome_opts.add_argument(f"--window-size={random_viewport[0]},{random_viewport[1]}")
+            chrome_opts.add_argument(f"--user-agent={random_ua}")
+            chrome_opts.add_argument(f"--lang={random_lang.split(',')[0]}")
+
+            # Chrome stealth arguments
+            chrome_opts.add_argument("--disable-blink-features=AutomationControlled")
+            chrome_opts.add_argument("--disable-infobars")
+            chrome_opts.add_argument("--disable-extensions")
+            chrome_opts.add_experimental_option("excludeSwitches", ["enable-automation"])
+            chrome_opts.add_experimental_option("useAutomationExtension", False)
+
             if proxy and use_proxy_for_browser:
                 chrome_opts.add_argument(f"--proxy-server={proxy}")
 
             driver = webdriver.Chrome(options=chrome_opts)
-            logger.debug("Using Chrome WebDriver")
+            logger.debug("Using Chrome WebDriver (stealth mode)")
+
+            # Chrome stealth: override navigator.webdriver via CDP
+            try:
+                driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                    "source": """
+                        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+                        window.chrome = {runtime: {}};
+                    """
+                })
+            except Exception as e:
+                logger.debug("Chrome stealth CDP injection failed: %s", e)
 
             # Chrome-specific: inject headers via CDP
             if headers:
@@ -288,7 +711,9 @@ def _browser_search(
             driver.get(f"https://html.duckduckgo.com/html/?q={quote(query)}")
 
             # Wait a moment for page to load, then check for CAPTCHA
-            time.sleep(cfg.page_load_wait)
+            # Use humanized timing for less predictable patterns
+            humanized_page_wait = _humanize_delay(cfg.page_load_wait, cfg)
+            time.sleep(humanized_page_wait)
             page_source = driver.page_source.lower()
 
             # Detect CAPTCHA before waiting for results
@@ -302,8 +727,15 @@ def _browser_search(
                         logger.debug("Driver cleanup failed after CAPTCHA: %s", e)
                     driver = None
                 if attempt < max_retries - 1:
-                    wait_time = cfg.captcha_backoff_base * (attempt + 1)  # Exponential backoff
-                    logger.info("Waiting %.1fs before retry...", wait_time)
+                    # Rotate Tor circuit to get new exit node IP before retry
+                    if proxy and "socks" in proxy.lower():
+                        if _rotate_tor_circuit():
+                            logger.info("Tor circuit rotated - new exit node for browser retry")
+                        else:
+                            logger.debug("Tor rotation unavailable, continuing with same circuit")
+                    base_wait = cfg.captcha_backoff_base * (attempt + 1)  # Exponential backoff
+                    wait_time = _humanize_delay(base_wait, cfg)
+                    logger.info("Waiting %.1fs before retry (humanized)...", wait_time)
                     time.sleep(wait_time)
                     continue
                 else:
@@ -313,13 +745,17 @@ def _browser_search(
             WebDriverWait(driver, timeout).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a.result__a"))
             )
+
+            # Inject human behavior - the nervous pulse, the wandering eye
+            _simulate_human_behavior(driver, cfg)
+
             soup = BeautifulSoup(driver.page_source, "html.parser")
 
-            #print(soup)
-            #print("Selected:")
-            #print(soup.select("a.result__snippet"))
             result_links = soup.select("a.result__a")[:max_results]
             result_snippets = soup.select("a.result__snippet")[:max_results]
+
+            # Simulate reading/scanning the results
+            _simulate_reading(driver, len(result_links), cfg)
 
             # return block
             from urllib.parse import urlparse, parse_qs, unquote
@@ -429,12 +865,15 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         cfg = _default_config
 
         # Apply inter-search delay to avoid rate limiting (thread-safe)
+        # Uses humanized timing for less predictable patterns
         with _search_lock:
             if cfg.inter_search_delay > 0:
                 elapsed = time.time() - _last_search_time
-                if elapsed < cfg.inter_search_delay:
-                    wait_time = cfg.inter_search_delay - elapsed
-                    logger.debug("Inter-search delay: waiting %.2fs", wait_time)
+                base_delay = cfg.inter_search_delay
+                humanized_delay = _humanize_delay(base_delay, cfg)
+                if elapsed < humanized_delay:
+                    wait_time = humanized_delay - elapsed
+                    logger.debug("Inter-search delay: waiting %.2fs (humanized from %.2fs)", wait_time, base_delay)
                     time.sleep(wait_time)
             _last_search_time = time.time()
 
@@ -520,12 +959,22 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                             if "captcha" in _page_text or "robot" in _page_text:
                                 logger.warning("PRIMP CAPTCHA detected on attempt %d", _attempt + 1)
                                 if _attempt < _max_retries - 1:
-                                    logger.info("PRIMP waiting %.1fs before retry...", _retry_delay)
-                                    time.sleep(_retry_delay)
+                                    # Rotate Tor circuit to get new exit node IP
+                                    if self.proxy and "socks" in self.proxy.lower():
+                                        if _rotate_tor_circuit():
+                                            logger.info("Tor circuit rotated - new exit node for retry")
+                                        else:
+                                            logger.debug("Tor rotation unavailable, continuing with same circuit")
+                                    _humanized_retry = _humanize_delay(_retry_delay, cfg)
+                                    logger.info("PRIMP waiting %.1fs before retry (humanized)...", _humanized_retry)
+                                    time.sleep(_humanized_retry)
                                     _retry_delay *= cfg.backoff_multiplier
-                                    continue  # retry with different impersonation
+                                    continue  # retry with different impersonation + new circuit
                             elif "rate" in _page_text and "limit" in _page_text:
                                 logger.warning("PRIMP rate limiting detected")
+                                # Also try rotating on rate limit
+                                if self.proxy and "socks" in self.proxy.lower():
+                                    _rotate_tor_circuit()
                             else:
                                 logger.debug("PRIMP no results - page title: %s",
                                            _soup.title.string if _soup.title else 'N/A')
@@ -576,7 +1025,8 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 logger.warning("PRIMP exception on attempt %d: %s: %s",
                               _attempt + 1, type(_primp_exc).__name__, _primp_exc)
                 if _attempt < _max_retries - 1:
-                    time.sleep(_retry_delay)
+                    _humanized_retry = _humanize_delay(_retry_delay, cfg)
+                    time.sleep(_humanized_retry)
                     _retry_delay *= cfg.backoff_multiplier
                 else:
                     logger.debug("PRIMP tier failed after %d attempts: %s", _max_retries, _primp_exc)

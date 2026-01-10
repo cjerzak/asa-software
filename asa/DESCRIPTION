@@ -1,6 +1,8 @@
 Package: asa
 Title: AI Search Agent for Large-Scale Research Automation
 Version: 0.1.0
+Author: Connor Jerzak [aut, cre] (<https://orcid.org/0000-0003-1914-8905>)
+Maintainer: Connor Jerzak <connor.jerzak@gmail.com>
 Authors@R:
     person(given = "Connor",
            family = "Jerzak",

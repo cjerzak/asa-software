@@ -1,7 +1,12 @@
 asa-package	asa-package
+.acquire_rate_limit_token	dot-acquire_rate_limit_token
 .asa_option	dot-asa_option
 .augment_prompt_temporal	dot-augment_prompt_temporal
 .build_trace	dot-build_trace
+.circuit_breaker_check	dot-circuit_breaker_check
+.circuit_breaker_init	dot-circuit_breaker_init
+.circuit_breaker_record	dot-circuit_breaker_record
+.circuit_breaker_status	dot-circuit_breaker_status
 .close_http_clients	dot-close_http_clients
 .create_agent	dot-create_agent
 .create_http_clients	dot-create_http_clients
@@ -13,6 +18,7 @@ asa-package	asa-package
 .extract_json_from_trace	dot-extract_json_from_trace
 .extract_json_object	dot-extract_json_object
 .extract_response_text	dot-extract_response_text
+.extract_search_tier	dot-extract_search_tier
 .get_default_backend	dot-get_default_backend
 .get_default_conda_env	dot-get_default_conda_env
 .get_default_model	dot-get_default_model
@@ -21,6 +27,7 @@ asa-package	asa-package
 .get_local_ip	dot-get_local_ip
 .get_python_path	dot-get_python_path
 .handle_response_issues	dot-handle_response_issues
+.humanize_delay	dot-humanize_delay
 .import_python_module	dot-import_python_module
 .import_python_packages	dot-import_python_packages
 .import_research_modules	dot-import_research_modules
@@ -30,6 +37,9 @@ asa-package	asa-package
 .normalize_schema	dot-normalize_schema
 .parse_json_response	dot-parse_json_response
 .process_research_results	dot-process_research_results
+.rate_limiter_init	dot-rate_limiter_init
+.rate_limiter_reset	dot-rate_limiter_reset
+.register_cleanup_finalizer	dot-register_cleanup_finalizer
 .resume_research	dot-resume_research
 .run_agent	dot-run_agent
 .run_research	dot-run_research
@@ -48,6 +58,7 @@ asa-package	asa-package
 .validate_consistency	dot-validate_consistency
 .validate_dataframe	dot-validate_dataframe
 .validate_initialize_agent	dot-validate_initialize_agent
+.validate_json_schema	dot-validate_json_schema
 .validate_logical	dot-validate_logical
 .validate_positive	dot-validate_positive
 .validate_process_outputs	dot-validate_process_outputs
@@ -73,6 +84,10 @@ ASA_API_ENDPOINTS	ASA_API_ENDPOINTS
 ASA_API_KEY_ENV_VARS	ASA_API_KEY_ENV_VARS
 asa_audit	asa_audit
 asa_audit_result	asa_audit_result
+ASA_CIRCUIT_BREAKER_COOLDOWN	ASA_CIRCUIT_BREAKER_COOLDOWN
+ASA_CIRCUIT_BREAKER_ENABLED	ASA_CIRCUIT_BREAKER_ENABLED
+ASA_CIRCUIT_BREAKER_THRESHOLD	ASA_CIRCUIT_BREAKER_THRESHOLD
+ASA_CIRCUIT_BREAKER_WINDOW	ASA_CIRCUIT_BREAKER_WINDOW
 asa_config	asa_config
 ASA_DEFAULT_BACKEND	ASA_DEFAULT_BACKEND
 ASA_DEFAULT_BUDGET_QUERIES	ASA_DEFAULT_BUDGET_QUERIES
@@ -100,8 +115,12 @@ ASA_DEFAULT_WIKI_TOP_K	ASA_DEFAULT_WIKI_TOP_K
 ASA_DEFAULT_WORKERS	ASA_DEFAULT_WORKERS
 asa_enumerate	asa_enumerate
 asa_enumerate_result	asa_enumerate_result
+ASA_HUMANIZE_TIMING	ASA_HUMANIZE_TIMING
+ASA_JITTER_FACTOR	ASA_JITTER_FACTOR
 ASA_OUTPUT_FORMATS	ASA_OUTPUT_FORMATS
 ASA_PRINT_WIDTH	ASA_PRINT_WIDTH
+ASA_RATE_LIMIT_BUCKET_SIZE	ASA_RATE_LIMIT_BUCKET_SIZE
+ASA_RATE_LIMIT_PROACTIVE	ASA_RATE_LIMIT_PROACTIVE
 ASA_RATE_LIMIT_WAIT	ASA_RATE_LIMIT_WAIT
 ASA_RECURSION_LIMIT_FOLDING	ASA_RECURSION_LIMIT_FOLDING
 ASA_RECURSION_LIMIT_STANDARD	ASA_RECURSION_LIMIT_STANDARD

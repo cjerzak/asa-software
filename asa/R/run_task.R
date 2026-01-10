@@ -25,6 +25,10 @@
 #'   to use defaults
 #' @param agent An asa_agent object from \code{\link{initialize_agent}}, or
 #'   NULL to use the currently initialized agent
+#' @param expected_fields Optional character vector of field names expected in
+#'   JSON output. When provided, validates that all fields are present and
+#'   non-null. The result will include a \code{parsing_status} field with
+#'   validation details.
 #' @param verbose Print progress messages (default: FALSE)
 #'
 #' @return An \code{asa_result} object with:
@@ -35,6 +39,8 @@
 #'     \item raw_output: Full agent trace (always included, verbose for "raw" format)
 #'     \item elapsed_time: Execution time in minutes
 #'     \item status: "success" or "error"
+#'     \item search_tier: Which search tier was used ("primp", "selenium", etc.)
+#'     \item parsing_status: Validation result (if expected_fields provided)
 #'     \item trace: Full execution trace (for "raw" output_format)
 #'     \item fold_count: Number of memory folds (for "raw" output_format)
 #'   }
@@ -115,6 +121,7 @@ run_task <- function(prompt,
                      temporal = NULL,
                      config = NULL,
                      agent = NULL,
+                     expected_fields = NULL,
                      verbose = FALSE) {
 
   config_search <- NULL
@@ -189,6 +196,9 @@ run_task <- function(prompt,
 
   start_time <- Sys.time()
 
+  # Acquire rate limit token BEFORE making request (proactive rate limiting)
+  .acquire_rate_limit_token(verbose = verbose)
+
   # Run agent with temporal filtering applied
   conda_env <- config_conda_env %||% .get_default_conda_env()
   response <- .with_search_config(config_search, conda_env = conda_env, function() {
@@ -203,6 +213,19 @@ run_task <- function(prompt,
   parsed <- NULL
   status <- if (response$status_code == ASA_STATUS_SUCCESS) "success" else "error"
 
+  # Detect CAPTCHA/block in response for adaptive rate limiting
+  adaptive_status <- status
+  if (status == "error" && !is.null(response$message)) {
+    msg_lower <- tolower(response$message)
+    if (grepl("captcha|robot|unusual traffic", msg_lower)) {
+      adaptive_status <- "captcha"
+    } else if (grepl("rate.?limit|blocked|forbidden", msg_lower)) {
+      adaptive_status <- "blocked"
+    }
+  }
+  # Record result for adaptive rate limiting (adjusts delays dynamically)
+  .adaptive_rate_record(adaptive_status, verbose = verbose)
+
   if (status == "success" && !is.na(response$message)) {
     if (identical(output_format, "json")) {
       parsed <- .parse_json_response(response$message)
@@ -212,6 +235,12 @@ run_task <- function(prompt,
     }
   }
 
+  # Validate parsed JSON against expected schema (if expected_fields provided)
+  parsing_status <- .validate_json_schema(parsed, expected_fields)
+
+  # Extract search tier from trace (if search was used)
+  search_tier <- .extract_search_tier(response$trace)
+
   # Build result object - always return asa_result for consistent API
   result <- asa_result(
     prompt = prompt,
@@ -219,7 +248,9 @@ run_task <- function(prompt,
     parsed = parsed,
     raw_output = response$trace,
     elapsed_time = elapsed,
-    status = status
+    status = status,
+    search_tier = search_tier,
+    parsing_status = parsing_status
   )
 
   # For "raw" format, add additional fields for debugging
@@ -507,7 +538,9 @@ build_prompt <- function(template, ...) {
 
 #' Run Multiple Tasks in Batch
 #'
-#' Executes multiple research tasks, optionally in parallel.
+#' Executes multiple research tasks, optionally in parallel. Includes a circuit
+#' breaker that monitors error rates and pauses execution if errors spike,
+#' preventing cascading failures.
 #'
 #' @param prompts Character vector of task prompts, or a data frame with a
 #'   'prompt' column
@@ -518,9 +551,15 @@ build_prompt <- function(template, ...) {
 #' @param parallel Use parallel processing
 #' @param workers Number of parallel workers
 #' @param progress Show progress messages
+#' @param circuit_breaker Enable circuit breaker for error rate monitoring.
+#'   When enabled, tracks recent error rates and pauses if threshold exceeded.
+#'   Default TRUE.
+#' @param abort_on_trip If TRUE, abort the batch when circuit breaker trips.
+#'   If FALSE (default), wait for cooldown and continue.
 #'
 #' @return A list of asa_result objects, or if prompts was a data frame,
-#'   the data frame with result columns added
+#'   the data frame with result columns added. If circuit breaker aborts,
+#'   includes attribute "circuit_breaker_aborted" = TRUE.
 #'
 #' @examples
 #' \dontrun{
@@ -537,6 +576,12 @@ build_prompt <- function(template, ...) {
 #'   temporal = list(time_filter = "y"),
 #'   agent = agent
 #' )
+#'
+#' # Disable circuit breaker
+#' results <- run_task_batch(prompts, agent = agent, circuit_breaker = FALSE)
+#'
+#' # Abort on circuit breaker trip
+#' results <- run_task_batch(prompts, agent = agent, abort_on_trip = TRUE)
 #' }
 #'
 #' @seealso \code{\link{run_task}}, \code{\link{configure_temporal}}
@@ -548,7 +593,9 @@ run_task_batch <- function(prompts,
                            agent = NULL,
                            parallel = FALSE,
                            workers = 4L,
-                           progress = TRUE) {
+                           progress = TRUE,
+                           circuit_breaker = TRUE,
+                           abort_on_trip = FALSE) {
 
   # Validate inputs
   .validate_run_task_batch(
@@ -563,6 +610,12 @@ run_task_batch <- function(prompts,
   # Validate temporal if provided
   .validate_temporal(temporal)
 
+  # Initialize circuit breaker if enabled
+  if (circuit_breaker) {
+    .circuit_breaker_init()
+  }
+  aborted <- FALSE
+
   # Handle data frame input
   is_df <- is.data.frame(prompts)
   if (is_df) {
@@ -573,15 +626,22 @@ run_task_batch <- function(prompts,
 
   n <- length(prompt_vec)
 
-  # Function to process one task
+  # Function to process one task with circuit breaker integration
   process_one <- function(i) {
-    run_task(
+    result <- run_task(
       prompt = prompt_vec[i],
       output_format = output_format,
       temporal = temporal,
       agent = agent,
       verbose = FALSE
     )
+
+    # Record result in circuit breaker (only for sequential, parallel handled separately)
+    if (circuit_breaker && !parallel) {
+      .circuit_breaker_record(result$status, verbose = progress)
+    }
+
+    result
   }
 
   # Run tasks
@@ -594,24 +654,65 @@ run_task_batch <- function(prompts,
     future::plan(future::multisession(workers = workers))
     on.exit(future::plan(future::sequential), add = TRUE)
 
+    # Note: Circuit breaker less effective in parallel mode since workers
+    # don't share state. We check after each batch of results.
     results <- future.apply::future_lapply(
       seq_len(n),
       process_one,
       future.seed = TRUE
     )
+
+    # Record all results in circuit breaker after parallel execution
+    if (circuit_breaker) {
+      for (r in results) {
+        .circuit_breaker_record(r$status, verbose = progress)
+      }
+    }
   } else {
     results <- vector("list", n)
     for (i in seq_len(n)) {
+      # Check circuit breaker before each task
+      if (circuit_breaker && !.circuit_breaker_check(verbose = progress)) {
+        if (abort_on_trip) {
+          if (progress) {
+            message(sprintf("Circuit breaker tripped at task %d/%d - aborting batch", i, n))
+          }
+          aborted <- TRUE
+          break
+        } else {
+          # Wait for cooldown
+          if (progress) {
+            message(sprintf("Circuit breaker tripped - waiting %ds cooldown...",
+                            ASA_CIRCUIT_BREAKER_COOLDOWN))
+          }
+          Sys.sleep(ASA_CIRCUIT_BREAKER_COOLDOWN)
+          # Reset and continue
+          .circuit_breaker_init()
+        }
+      }
+
       if (progress) message(sprintf("[%d/%d] Processing...", i, n))
       results[[i]] <- process_one(i)
     }
   }
 
+  # Filter out NULL results if aborted early
+  if (aborted) {
+    results <- Filter(Negate(is.null), results)
+  }
+
   # Return as data frame if input was data frame
   if (is_df) {
+    # Handle partial results if aborted
+    n_completed <- length(results)
+    if (aborted && n_completed < nrow(prompts)) {
+      prompts <- prompts[seq_len(n_completed), , drop = FALSE]
+    }
+
     prompts$response <- vapply(results, function(r) r$message %||% NA_character_, character(1))
     prompts$status <- vapply(results, function(r) r$status %||% NA_character_, character(1))
     prompts$elapsed_time <- vapply(results, function(r) r$elapsed_time %||% NA_real_, numeric(1))
+    prompts$search_tier <- vapply(results, function(r) r$search_tier %||% "unknown", character(1))
 
     # Add parsed fields if JSON output
     if (identical(output_format, "json") || (is.character(output_format) && length(output_format) > 1)) {
@@ -637,8 +738,122 @@ run_task_batch <- function(prompts,
       }
     }
 
+    # Add circuit breaker metadata
+    if (aborted) {
+      attr(prompts, "circuit_breaker_aborted") <- TRUE
+      attr(prompts, "circuit_breaker_status") <- .circuit_breaker_status()
+    }
+
     return(prompts)
   }
 
+  # Add circuit breaker metadata to list output
+  if (aborted) {
+    attr(results, "circuit_breaker_aborted") <- TRUE
+    attr(results, "circuit_breaker_status") <- .circuit_breaker_status()
+  }
+
   results
+}
+
+#' Validate JSON Against Expected Schema
+#'
+#' Validates that parsed JSON contains all expected fields.
+#' Returns a structured validation result indicating success or failure.
+#'
+#' @param parsed The parsed JSON object (list or NULL)
+#' @param expected_fields Character vector of expected field names
+#' @return A list with: valid (logical), reason (character), missing (character vector)
+#' @keywords internal
+.validate_json_schema <- function(parsed, expected_fields) {
+  if (is.null(expected_fields) || length(expected_fields) == 0) {
+    return(list(valid = TRUE, reason = "no_validation", missing = character(0)))
+  }
+
+  if (is.null(parsed)) {
+    return(list(valid = FALSE, reason = "parsing_failed", missing = expected_fields))
+  }
+
+  if (!is.list(parsed)) {
+    return(list(valid = FALSE, reason = "not_object", missing = expected_fields))
+  }
+
+  missing <- setdiff(expected_fields, names(parsed))
+  if (length(missing) > 0) {
+    return(list(valid = FALSE, reason = "missing_fields", missing = missing))
+  }
+
+  # Check for NULL/NA values in expected fields
+  null_fields <- character(0)
+  for (field in expected_fields) {
+    val <- parsed[[field]]
+    if (is.null(val) || (length(val) == 1 && is.na(val))) {
+      null_fields <- c(null_fields, field)
+    }
+  }
+
+  if (length(null_fields) > 0) {
+    return(list(valid = FALSE, reason = "null_values", missing = null_fields))
+  }
+
+  return(list(valid = TRUE, reason = "ok", missing = character(0)))
+}
+
+#' Extract Search Tier from Response Trace
+#'
+#' Parses the agent's response trace to determine which search tier
+#' was used (PRIMP, Selenium, DDGS, or Requests). This is useful for
+#' assessing result quality since higher tiers generally produce
+#' more reliable results.
+#'
+#' @param trace Character string containing the agent's execution trace
+#' @return Character string: "primp", "selenium", "ddgs", "requests", or "unknown"
+#' @keywords internal
+.extract_search_tier <- function(trace) {
+  if (is.null(trace) || is.na(trace) || trace == "") {
+    return("unknown")
+  }
+
+
+  # Convert to character if needed
+  trace_str <- tryCatch(
+    as.character(trace),
+    error = function(e) ""
+  )
+
+  if (trace_str == "") {
+    return("unknown")
+  }
+
+  # Check for tier markers in order of preference (most specific first)
+  # The Python code adds "_tier": "primp"/"selenium"/"ddgs"/"requests" to results
+  if (grepl("'_tier':\\s*'primp'|\"_tier\":\\s*\"primp\"", trace_str, ignore.case = TRUE)) {
+    return("primp")
+  }
+  if (grepl("'_tier':\\s*'selenium'|\"_tier\":\\s*\"selenium\"", trace_str, ignore.case = TRUE)) {
+    return("selenium")
+  }
+  if (grepl("'_tier':\\s*'ddgs'|\"_tier\":\\s*\"ddgs\"", trace_str, ignore.case = TRUE)) {
+    return("ddgs")
+  }
+  if (grepl("'_tier':\\s*'requests'|\"_tier\":\\s*\"requests\"", trace_str, ignore.case = TRUE)) {
+    return("requests")
+  }
+
+  # Fallback: check for tier keywords in log messages
+  if (grepl("PRIMP SUCCESS|PRIMP.*returning", trace_str, ignore.case = TRUE)) {
+    return("primp")
+  }
+  if (grepl("Browser search SUCCESS|selenium", trace_str, ignore.case = TRUE)) {
+    return("selenium")
+  }
+  if (grepl("DDGS tier|ddgs\\.text", trace_str, ignore.case = TRUE)) {
+    return("ddgs")
+  }
+  if (grepl("requests scrape|requests_scrape", trace_str, ignore.case = TRUE)) {
+    return("requests")
+  }
+
+  # No search tier detected (may not have used search tools)
+  return("unknown")
 }
