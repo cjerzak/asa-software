@@ -65,7 +65,7 @@ class SearchConfig:
     backoff_multiplier: float = 1.5
     captcha_backoff_base: float = 3.0
     page_load_wait: float = 2.0
-    inter_search_delay: float = 1.5  # Increased from 0.5 to reduce CAPTCHA rate
+    inter_search_delay: float = 0.5
     humanize_timing: bool = True
     jitter_factor: float = 0.5
 
@@ -428,128 +428,11 @@ _TOR_MIN_ROTATION_INTERVAL = 5.0  # Minimum seconds between rotations (reduced f
 # ────────────────────────────────────────────────────────────────────────
 _REQUESTS_SINCE_ROTATION = 0
 _PROACTIVE_ROTATION_ENABLED = True
-_PROACTIVE_ROTATION_INTERVAL = 8  # Rotate every N requests (reduced from 15)
+_PROACTIVE_ROTATION_INTERVAL = 15  # Rotate every N requests (configurable from R)
 
 _REQUESTS_SINCE_SESSION_RESET = 0
 _SESSION_RESET_ENABLED = True
 _SESSION_RESET_INTERVAL = 50  # Reset session every N requests
-
-# ────────────────────────────────────────────────────────────────────────
-# IP/Proxy Blocklist Tracking
-# ────────────────────────────────────────────────────────────────────────
-# Track proxies that have recently hit CAPTCHA to avoid reusing them
-_PROXY_BLOCKLIST: Dict[str, float] = {}  # proxy -> timestamp of last CAPTCHA
-_PROXY_BLOCKLIST_LOCK = threading.Lock()
-_PROXY_BLOCK_DURATION = 300.0  # Block proxy for 5 minutes after CAPTCHA
-_PROXY_CAPTCHA_COUNTS: Dict[str, int] = {}  # Track repeat offenders
-_PROXY_MAX_CAPTCHA_COUNT = 3  # After this many CAPTCHAs, extend block duration
-
-
-def _record_captcha_hit(proxy: Optional[str]) -> None:
-    """Record that a proxy has hit a CAPTCHA.
-
-    Args:
-        proxy: The proxy URL that hit CAPTCHA, or None for direct connections
-    """
-    if not proxy:
-        return  # Don't track direct connections
-
-    with _PROXY_BLOCKLIST_LOCK:
-        now = time.time()
-        _PROXY_BLOCKLIST[proxy] = now
-
-        # Track repeat offenders
-        _PROXY_CAPTCHA_COUNTS[proxy] = _PROXY_CAPTCHA_COUNTS.get(proxy, 0) + 1
-        count = _PROXY_CAPTCHA_COUNTS[proxy]
-
-        if count >= _PROXY_MAX_CAPTCHA_COUNT:
-            logger.warning("Proxy %s has hit CAPTCHA %d times - consider rotating circuit",
-                          proxy, count)
-
-
-def _is_proxy_blocked(proxy: Optional[str]) -> bool:
-    """Check if a proxy is currently blocked due to recent CAPTCHA.
-
-    Args:
-        proxy: The proxy URL to check, or None for direct connections
-
-    Returns:
-        True if the proxy is blocked, False otherwise
-    """
-    if not proxy:
-        return False  # Direct connections aren't tracked
-
-    with _PROXY_BLOCKLIST_LOCK:
-        if proxy not in _PROXY_BLOCKLIST:
-            return False
-
-        blocked_time = _PROXY_BLOCKLIST[proxy]
-        now = time.time()
-        elapsed = now - blocked_time
-
-        # Calculate block duration based on repeat offender status
-        count = _PROXY_CAPTCHA_COUNTS.get(proxy, 1)
-        effective_duration = _PROXY_BLOCK_DURATION * min(count, 5)  # Cap at 5x
-
-        if elapsed < effective_duration:
-            remaining = effective_duration - elapsed
-            logger.debug("Proxy %s blocked for %.1f more seconds (CAPTCHA count: %d)",
-                        proxy, remaining, count)
-            return True
-
-        # Block expired - clean it up
-        del _PROXY_BLOCKLIST[proxy]
-        return False
-
-
-def _cleanup_expired_blocks() -> int:
-    """Remove expired entries from the blocklist.
-
-    Returns:
-        Number of entries removed
-    """
-    with _PROXY_BLOCKLIST_LOCK:
-        now = time.time()
-        expired = []
-
-        for proxy, blocked_time in _PROXY_BLOCKLIST.items():
-            count = _PROXY_CAPTCHA_COUNTS.get(proxy, 1)
-            effective_duration = _PROXY_BLOCK_DURATION * min(count, 5)
-
-            if now - blocked_time >= effective_duration:
-                expired.append(proxy)
-
-        for proxy in expired:
-            del _PROXY_BLOCKLIST[proxy]
-            # Also reset CAPTCHA count after block expires
-            if proxy in _PROXY_CAPTCHA_COUNTS:
-                del _PROXY_CAPTCHA_COUNTS[proxy]
-
-        if expired:
-            logger.debug("Cleaned up %d expired proxy blocks", len(expired))
-
-        return len(expired)
-
-
-def _get_blocklist_status() -> Dict[str, Any]:
-    """Get current blocklist status for debugging.
-
-    Returns:
-        Dict with blocklist statistics
-    """
-    with _PROXY_BLOCKLIST_LOCK:
-        now = time.time()
-        return {
-            "blocked_proxies": len(_PROXY_BLOCKLIST),
-            "total_captcha_counts": dict(_PROXY_CAPTCHA_COUNTS),
-            "blocked_entries": {
-                proxy: {
-                    "blocked_since": now - ts,
-                    "captcha_count": _PROXY_CAPTCHA_COUNTS.get(proxy, 0)
-                }
-                for proxy, ts in _PROXY_BLOCKLIST.items()
-            }
-        }
 
 
 def _rotate_tor_circuit(force: bool = False) -> bool:
@@ -959,10 +842,7 @@ def _browser_search(
 
             # Detect CAPTCHA before waiting for results
             if "captcha" in page_source or "robot" in page_source or "unusual traffic" in page_source:
-                logger.warning("Browser CAPTCHA detected on attempt %d/%d (proxy=%s, query=%s...)",
-                             attempt + 1, max_retries, proxy or "direct", query[:30])
-                # Record this proxy hit for blocklist tracking
-                _record_captcha_hit(proxy)
+                logger.warning("CAPTCHA detected on attempt %d/%d", attempt + 1, max_retries)
                 # Safe driver cleanup with specific exception handling
                 if driver is not None:
                     try:
@@ -1105,11 +985,6 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         Unified dispatcher for text search with multi‑level fallback.
         Thread-safe: uses lock for inter-search delay coordination.
         """
-        # Validate query early to prevent cryptic errors downstream
-        if not query or not query.strip():
-            logger.warning("Empty query received in _search_text - returning empty results")
-            return []
-
         global _last_search_time
         cfg = _default_config
 
@@ -1131,16 +1006,6 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         # ────────────────────────────────────────────────────────────────────────
         _maybe_session_reset()
         _maybe_proactive_rotation(self.proxy)
-
-        # Check if current proxy is blocklisted due to recent CAPTCHA
-        if _is_proxy_blocked(self.proxy):
-            logger.info("Proxy %s is blocklisted - forcing circuit rotation before search",
-                       self.proxy or "direct")
-            if self.proxy and "socks" in self.proxy.lower():
-                if _rotate_tor_circuit(force=True):
-                    logger.info("Circuit rotated successfully to clear blocklist")
-                    # Periodic cleanup of expired blocks
-                    _cleanup_expired_blocks()
 
         # tier 0 - primp
         # ────────────────────────────────────────────────────────────────────────
@@ -1222,10 +1087,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                         if len(_links) == 0:
                             _page_text = _resp.text.lower()
                             if "captcha" in _page_text or "robot" in _page_text:
-                                logger.warning("PRIMP CAPTCHA detected on attempt %d (proxy=%s, query=%s...)",
-                                             _attempt + 1, self.proxy or "direct", query[:30])
-                                # Record this proxy hit for blocklist tracking
-                                _record_captcha_hit(self.proxy)
+                                logger.warning("PRIMP CAPTCHA detected on attempt %d", _attempt + 1)
                                 if _attempt < _max_retries - 1:
                                     # Rotate Tor circuit to get new exit node IP
                                     if self.proxy and "socks" in self.proxy.lower():

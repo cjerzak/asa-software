@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Connor Jerzak" />
+
+<meta name="date" content="2026-01-10" />
+
+<title>Introduction to asa: AI Search Agent for Large-Scale Research Automation</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to asa: AI Search Agent for
+Large-Scale Research Automation</h1>
+<h4 class="author">Connor Jerzak</h4>
+<h4 class="date">2026-01-10</h4>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>The <strong>asa</strong> package provides an LLM-powered research
+agent for performing AI search tasks at large scales. It implements a
+ReAct (Reasoning + Acting) agent pattern that combines: -
+<strong>Reasoning</strong>: The LLM thinks through what information it
+needs - <strong>Acting</strong>: The agent uses tools (web search,
+Wikipedia) to gather information - <strong>Iteration</strong>: The
+process repeats until the task is complete</p>
+<p>This architecture enables complex research tasks that require
+multiple searches and synthesis of information from various sources.</p>
+<div id="key-features" class="section level3">
+<h3>Key Features</h3>
+<ul>
+<li><strong>Multiple LLM Backends</strong>: Support for OpenAI, Groq,
+and xAI</li>
+<li><strong>Web Search Tools</strong>: DuckDuckGo search with 4-tier
+fallback system and Wikipedia lookup</li>
+<li><strong>Memory Folding</strong>: DeepAgent-style context compression
+for long conversations</li>
+<li><strong>Structured Outputs</strong>: Extract JSON or specific fields
+from agent responses</li>
+<li><strong>Batch Processing</strong>: Run multiple queries with
+optional parallelization</li>
+<li><strong>Privacy Support</strong>: Optional Tor proxy for anonymous
+searching</li>
+</ul>
+</div>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<div id="install-the-r-package" class="section level3">
+<h3>Install the R Package</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install from GitHub</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;cjerzak/asa-software/asa&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Or install locally from the repository</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;path/to/asa-software/asa&quot;</span>)</span></code></pre></div>
+</div>
+<div id="build-the-python-backend" class="section level3">
+<h3>Build the Python Backend</h3>
+<p>The package uses Python for the LangGraph agent infrastructure. Run
+this once to set up the environment:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(asa)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Create conda environment with all Python dependencies</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">build_backend</span>(<span class="at">conda_env =</span> <span class="st">&quot;asa_env&quot;</span>)</span></code></pre></div>
+<p>This installs LangChain, LangGraph, search tools, and proxy support
+packages.</p>
+</div>
+<div id="api-keys" class="section level3">
+<h3>API Keys</h3>
+<p>Set environment variables for your chosen LLM backend:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># For OpenAI (recommended for best results)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">OPENAI_API_KEY =</span> <span class="st">&quot;your-openai-api-key&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># For Groq (fast inference, free tier available)</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">GROQ_API_KEY =</span> <span class="st">&quot;your-groq-api-key&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># For xAI</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">XAI_API_KEY =</span> <span class="st">&quot;your-xai-api-key&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="quick-start" class="section level2">
+<h2>Quick Start</h2>
+<div id="basic-query" class="section level3">
+<h3>Basic Query</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(asa)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Initialize the agent</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">conda_env =</span> <span class="st">&quot;asa_env&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># Run a simple query</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">run_task</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">&quot;What is the current population of Tokyo, Japan?&quot;</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="at">output_format =</span> <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="at">agent =</span> agent</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>)</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co"># View the response</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="fu">print</span>(result<span class="sc">$</span>message)</span></code></pre></div>
+</div>
+<div id="structured-json-output" class="section level3">
+<h3>Structured JSON Output</h3>
+<p>For queries where you need specific data fields:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">run_task</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">&quot;Find information about Marie Curie and return JSON with these exact fields:</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="st">            birth_year, death_year, nationality, field_of_study, major_achievement&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">output_format =</span> <span class="st">&quot;json&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">agent =</span> agent</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co"># Access parsed data</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="fu">print</span>(result<span class="sc">$</span>parsed)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co"># $birth_year</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co"># [1] &quot;1867&quot;</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co"># $death_year</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co"># [1] &quot;1934&quot;</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co"># $nationality</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co"># [1] &quot;Polish-French&quot;</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co"># ...</span></span></code></pre></div>
+</div>
+<div id="extract-specific-fields" class="section level3">
+<h3>Extract Specific Fields</h3>
+<p>When you know exactly which fields you need:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">run_task</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">&quot;What is the capital of Australia and its population?&quot;</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">output_format =</span> <span class="fu">c</span>(<span class="st">&quot;capital&quot;</span>, <span class="st">&quot;population&quot;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">agent =</span> agent</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co"># Access extracted fields</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>result<span class="sc">$</span>parsed<span class="sc">$</span>capital     <span class="co"># &quot;Canberra&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>result<span class="sc">$</span>parsed<span class="sc">$</span>population  <span class="co"># &quot;453,000&quot; (approximate)</span></span></code></pre></div>
+</div>
+</div>
+<div id="working-with-prompts" class="section level2">
+<h2>Working with Prompts</h2>
+<div id="building-prompts-from-templates" class="section level3">
+<h3>Building Prompts from Templates</h3>
+<p>Use <code>build_prompt()</code> to create dynamic prompts from
+templates:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Define a reusable template</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>template <span class="ot">&lt;-</span> <span class="st">&quot;Find the {{metric}} of {{entity}} in {{year}} and return JSON</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="st">             with fields: value, source, confidence&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># Generate specific prompts</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>prompt1 <span class="ot">&lt;-</span> <span class="fu">build_prompt</span>(template,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                        <span class="at">metric =</span> <span class="st">&quot;GDP&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                        <span class="at">entity =</span> <span class="st">&quot;Germany&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>                        <span class="at">year =</span> <span class="dv">2023</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>prompt2 <span class="ot">&lt;-</span> <span class="fu">build_prompt</span>(template,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>                        <span class="at">metric =</span> <span class="st">&quot;population&quot;</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>                        <span class="at">entity =</span> <span class="st">&quot;Brazil&quot;</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>                        <span class="at">year =</span> <span class="dv">2024</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co"># Run the queries</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>result1 <span class="ot">&lt;-</span> <span class="fu">run_task</span>(prompt1, <span class="at">output_format =</span> <span class="st">&quot;json&quot;</span>, <span class="at">agent =</span> agent)</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>result2 <span class="ot">&lt;-</span> <span class="fu">run_task</span>(prompt2, <span class="at">output_format =</span> <span class="st">&quot;json&quot;</span>, <span class="at">agent =</span> agent)</span></code></pre></div>
+</div>
+</div>
+<div id="batch-processing" class="section level2">
+<h2>Batch Processing</h2>
+<div id="running-multiple-queries" class="section level3">
+<h3>Running Multiple Queries</h3>
+<p>Process multiple research questions efficiently:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Define your queries</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>prompts <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="st">&quot;What is the population of Tokyo?&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="st">&quot;What is the population of New York City?&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="st">&quot;What is the population of London?&quot;</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="st">&quot;What is the population of Paris?&quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co"># Run all queries (sequential)</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">run_task_batch</span>(prompts, <span class="at">agent =</span> agent, <span class="at">progress =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co"># Extract the messages</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>responses <span class="ot">&lt;-</span> <span class="fu">sapply</span>(results, <span class="cf">function</span>(r) r<span class="sc">$</span>message)</span></code></pre></div>
+</div>
+<div id="batch-with-data-frames" class="section level3">
+<h3>Batch with Data Frames</h3>
+<p>For research workflows, use data frames:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Create research tasks</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>research_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">country =</span> <span class="fu">c</span>(<span class="st">&quot;France&quot;</span>, <span class="st">&quot;Germany&quot;</span>, <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;Brazil&quot;</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="fu">c</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="st">&quot;What is the current head of state of France?&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="st">&quot;What is the current head of state of Germany?&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="st">&quot;What is the current head of state of Japan?&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="st">&quot;What is the current head of state of Brazil?&quot;</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  )</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># Run batch and get results merged back</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>results_df <span class="ot">&lt;-</span> <span class="fu">run_task_batch</span>(</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>  research_df,</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  <span class="at">output_format =</span> <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  <span class="at">agent =</span> agent,</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="at">progress =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>)</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co"># Results are added as new columns</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="fu">print</span>(results_df[, <span class="fu">c</span>(<span class="st">&quot;country&quot;</span>, <span class="st">&quot;response&quot;</span>, <span class="st">&quot;status&quot;</span>)])</span></code></pre></div>
+</div>
+<div id="parallel-processing" class="section level3">
+<h3>Parallel Processing</h3>
+<p>For large batches, enable parallelization:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Requires future.apply package</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co"># install.packages(&quot;future.apply&quot;)</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">run_task_batch</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  prompts,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">agent =</span> agent,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="at">parallel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="at">workers =</span> <span class="dv">4</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Note</strong>: Parallel processing works best with multiple
+API keys or when rate limits allow concurrent requests.</p>
+</div>
+</div>
+<div id="agent-configuration" class="section level2">
+<h2>Agent Configuration</h2>
+<div id="llm-backend-options" class="section level3">
+<h3>LLM Backend Options</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># OpenAI - Best for complex reasoning tasks</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>agent_openai <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>  <span class="co"># or &quot;gpt-4.1&quot;, &quot;gpt-4o&quot;</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co"># Groq - Fast inference, good for simple queries</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>agent_groq <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;groq&quot;</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;llama-3.3-70b-versatile&quot;</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>)</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co"># xAI - Alternative provider</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>agent_xai <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;xai&quot;</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;grok-beta&quot;</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="memory-folding" class="section level3">
+<h3>Memory Folding</h3>
+<p>For long research sessions, memory folding compresses older
+messages:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Enable memory folding (default)</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">use_memory_folding =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">memory_threshold =</span> <span class="dv">4</span>,      <span class="co"># Fold after 4 messages</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">memory_keep_recent =</span> <span class="dv">2</span>     <span class="co"># Keep 2 most recent messages intact</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>)</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co"># Disable for short, independent queries</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>agent_no_fold <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>  <span class="at">use_memory_folding =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>)</span></code></pre></div>
+<p>Memory folding is beneficial when: - Running many sequential queries
+in one session - Building on previous results - Avoiding context length
+limits</p>
+</div>
+<div id="rate-limiting" class="section level3">
+<h3>Rate Limiting</h3>
+<p>Control request frequency to avoid API limits:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="at">rate_limit =</span> <span class="fl">0.2</span>,  <span class="co"># 0.2 requests per second (1 every 5 seconds)</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="at">timeout =</span> <span class="dv">120</span>      <span class="co"># 2 minute timeout per request</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="privacy-with-tor" class="section level2">
+<h2>Privacy with Tor</h2>
+<div id="setting-up-tor" class="section level3">
+<h3>Setting Up Tor</h3>
+<p>For anonymous searching, configure a Tor proxy:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># macOS</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="ex">brew</span> install tor</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="ex">brew</span> services start tor</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co"># Linux (Ubuntu/Debian)</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="fu">sudo</span> apt install tor</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="fu">sudo</span> systemctl start tor</span></code></pre></div>
+</div>
+<div id="using-tor-with-asa" class="section level3">
+<h3>Using Tor with asa</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Check if Tor is running</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is_tor_running</span>()) {</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Tor is running!&quot;</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>  <span class="co"># Initialize agent with Tor proxy</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>    <span class="at">proxy =</span> <span class="st">&quot;socks5h://127.0.0.1:9050&quot;</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>  )</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>  <span class="co"># Verify your Tor IP</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>  ip <span class="ot">&lt;-</span> <span class="fu">get_tor_ip</span>()</span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Current Tor exit IP: &quot;</span>, ip)</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Tor is not running. Start with: brew services start tor&quot;</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="rotating-tor-circuits" class="section level3">
+<h3>Rotating Tor Circuits</h3>
+<p>Get a new IP address for different searches:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Rotate to a new Tor circuit (new exit node)</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">rotate_tor_circuit</span>(<span class="at">method =</span> <span class="st">&quot;brew&quot;</span>)  <span class="co"># macOS</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co"># rotate_tor_circuit(method = &quot;systemctl&quot;)  # Linux</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co"># Verify the new IP</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>new_ip <span class="ot">&lt;-</span> <span class="fu">get_tor_ip</span>()</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="fu">message</span>(<span class="st">&quot;New Tor exit IP: &quot;</span>, new_ip)</span></code></pre></div>
+</div>
+</div>
+<div id="extracting-data-from-agent-traces" class="section level2">
+<h2>Extracting Data from Agent Traces</h2>
+<div id="understanding-agent-output" class="section level3">
+<h3>Understanding Agent Output</h3>
+<p>Each agent response contains rich trace data showing the agent’s
+reasoning:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Run a query</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">run_task</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">&quot;Who won the 2024 Nobel Prize in Physics?&quot;</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  <span class="at">output_format =</span> <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  <span class="at">agent =</span> agent</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>)</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co"># The trace shows all agent steps</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">substr</span>(result<span class="sc">$</span>raw_output, <span class="dv">1</span>, <span class="dv">500</span>))  <span class="co"># First 500 characters</span></span></code></pre></div>
+</div>
+<div id="extracting-search-results" class="section level3">
+<h3>Extracting Search Results</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>response <span class="ot">&lt;-</span> <span class="fu">run_agent</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">&quot;What are the main causes of climate change?&quot;</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  <span class="at">agent =</span> agent</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>)</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co"># Extract structured data from the trace</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>extracted <span class="ot">&lt;-</span> <span class="fu">extract_agent_results</span>(response<span class="sc">$</span>trace)</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co"># Search snippets from DuckDuckGo</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="fu">print</span>(extracted<span class="sc">$</span>search_snippets)</span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co"># URLs of sources used</span></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="fu">print</span>(extracted<span class="sc">$</span>search_urls)</span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a><span class="co"># Wikipedia content retrieved</span></span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a><span class="fu">print</span>(extracted<span class="sc">$</span>wikipedia_snippets)</span></code></pre></div>
+</div>
+<div id="batch-output-processing" class="section level3">
+<h3>Batch Output Processing</h3>
+<p>Process multiple raw outputs efficiently:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># After running a batch</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>results_df <span class="ot">&lt;-</span> <span class="fu">run_task_batch</span>(prompts, <span class="at">agent =</span> agent)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="co"># Add raw output column for processing</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>results_df<span class="sc">$</span>raw_output <span class="ot">&lt;-</span> <span class="fu">sapply</span>(results, <span class="cf">function</span>(r) r<span class="sc">$</span>raw_output)</span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co"># Process all outputs to extract metadata</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>processed_df <span class="ot">&lt;-</span> <span class="fu">process_outputs</span>(results_df)</span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="co"># Now contains search_count, wiki_count, and any JSON fields</span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="fu">print</span>(processed_df[, <span class="fu">c</span>(<span class="st">&quot;prompt&quot;</span>, <span class="st">&quot;search_count&quot;</span>, <span class="st">&quot;wiki_count&quot;</span>)])</span></code></pre></div>
+</div>
+</div>
+<div id="best-practices" class="section level2">
+<h2>Best Practices</h2>
+<div id="clear-specific-prompts" class="section level3">
+<h3>1. Clear, Specific Prompts</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Good: Specific and structured</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>good_prompt <span class="ot">&lt;-</span> <span class="st">&quot;Find the GDP of South Korea in 2023. Return JSON with fields:</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="st">                gdp_value (in USD), gdp_growth_rate (percentage), data_source&quot;</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co"># Bad: Vague</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>bad_prompt <span class="ot">&lt;-</span> <span class="st">&quot;Tell me about South Korea&#39;s economy&quot;</span></span></code></pre></div>
+</div>
+<div id="handle-errors-gracefully" class="section level3">
+<h3>2. Handle Errors Gracefully</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">run_task</span>(prompt, <span class="at">agent =</span> agent)</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="cf">if</span> (result<span class="sc">$</span>status <span class="sc">==</span> <span class="st">&quot;success&quot;</span>) {</span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="co"># Process result</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="fu">print</span>(result<span class="sc">$</span>message)</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>  <span class="co"># Handle error</span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">&quot;Query failed: &quot;</span>, result<span class="sc">$</span>raw_output)</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="check-backend-status" class="section level3">
+<h3>3. Check Backend Status</h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># Verify environment before running queries</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>status <span class="ot">&lt;-</span> <span class="fu">check_backend</span>(<span class="at">conda_env =</span> <span class="st">&quot;asa_env&quot;</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>status<span class="sc">$</span>available) {</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Missing packages: &quot;</span>, <span class="fu">paste</span>(status<span class="sc">$</span>missing_packages, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  <span class="fu">build_backend</span>()  <span class="co"># Rebuild if needed</span></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="manage-agent-state" class="section level3">
+<h3>4. Manage Agent State</h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># Get current agent (if initialized)</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>current_agent <span class="ot">&lt;-</span> <span class="fu">get_agent</span>()</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="co"># Reset agent state between different tasks</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="fu">reset_agent</span>()</span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a><span class="co"># Re-initialize with new settings</span></span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a>agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(<span class="at">backend =</span> <span class="st">&quot;groq&quot;</span>, <span class="at">model =</span> <span class="st">&quot;llama-3.3-70b-versatile&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="complete-research-workflow-example" class="section level2">
+<h2>Complete Research Workflow Example</h2>
+<p>Here’s a complete example of a research workflow:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">library</span>(asa)</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="co"># 1. Setup</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="fu">build_backend</span>(<span class="at">conda_env =</span> <span class="st">&quot;asa_env&quot;</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a>agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a>  <span class="at">conda_env =</span> <span class="st">&quot;asa_env&quot;</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a>  <span class="at">use_memory_folding =</span> <span class="cn">TRUE</span></span>
+<span id="cb24-12"><a href="#cb24-12" tabindex="-1"></a>)</span>
+<span id="cb24-13"><a href="#cb24-13" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" tabindex="-1"></a><span class="co"># 2. Define research questions</span></span>
+<span id="cb24-15"><a href="#cb24-15" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Norway&quot;</span>, <span class="st">&quot;Sweden&quot;</span>, <span class="st">&quot;Denmark&quot;</span>, <span class="st">&quot;Finland&quot;</span>, <span class="st">&quot;Iceland&quot;</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" tabindex="-1"></a>research_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb24-18"><a href="#cb24-18" tabindex="-1"></a>  <span class="at">country =</span> countries,</span>
+<span id="cb24-19"><a href="#cb24-19" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="fu">sapply</span>(countries, <span class="cf">function</span>(c) {</span>
+<span id="cb24-20"><a href="#cb24-20" tabindex="-1"></a>    <span class="fu">build_prompt</span>(</span>
+<span id="cb24-21"><a href="#cb24-21" tabindex="-1"></a>      <span class="st">&quot;Research {{country}} and return JSON with:</span></span>
+<span id="cb24-22"><a href="#cb24-22" tabindex="-1"></a><span class="st">       population (number), capital (city name),</span></span>
+<span id="cb24-23"><a href="#cb24-23" tabindex="-1"></a><span class="st">       gdp_per_capita (USD), happiness_rank (global ranking)&quot;</span>,</span>
+<span id="cb24-24"><a href="#cb24-24" tabindex="-1"></a>      <span class="at">country =</span> c</span>
+<span id="cb24-25"><a href="#cb24-25" tabindex="-1"></a>    )</span>
+<span id="cb24-26"><a href="#cb24-26" tabindex="-1"></a>  })</span>
+<span id="cb24-27"><a href="#cb24-27" tabindex="-1"></a>)</span>
+<span id="cb24-28"><a href="#cb24-28" tabindex="-1"></a></span>
+<span id="cb24-29"><a href="#cb24-29" tabindex="-1"></a><span class="co"># 3. Run batch research</span></span>
+<span id="cb24-30"><a href="#cb24-30" tabindex="-1"></a>results_df <span class="ot">&lt;-</span> <span class="fu">run_task_batch</span>(</span>
+<span id="cb24-31"><a href="#cb24-31" tabindex="-1"></a>  research_df,</span>
+<span id="cb24-32"><a href="#cb24-32" tabindex="-1"></a>  <span class="at">output_format =</span> <span class="st">&quot;json&quot;</span>,</span>
+<span id="cb24-33"><a href="#cb24-33" tabindex="-1"></a>  <span class="at">agent =</span> agent,</span>
+<span id="cb24-34"><a href="#cb24-34" tabindex="-1"></a>  <span class="at">progress =</span> <span class="cn">TRUE</span></span>
+<span id="cb24-35"><a href="#cb24-35" tabindex="-1"></a>)</span>
+<span id="cb24-36"><a href="#cb24-36" tabindex="-1"></a></span>
+<span id="cb24-37"><a href="#cb24-37" tabindex="-1"></a><span class="co"># 4. Analyze results</span></span>
+<span id="cb24-38"><a href="#cb24-38" tabindex="-1"></a>summary_df <span class="ot">&lt;-</span> results_df <span class="sc">%&gt;%</span></span>
+<span id="cb24-39"><a href="#cb24-39" tabindex="-1"></a>  <span class="fu">select</span>(country, population, capital, gdp_per_capita, happiness_rank, status) <span class="sc">%&gt;%</span></span>
+<span id="cb24-40"><a href="#cb24-40" tabindex="-1"></a>  <span class="fu">filter</span>(status <span class="sc">==</span> <span class="st">&quot;success&quot;</span>)</span>
+<span id="cb24-41"><a href="#cb24-41" tabindex="-1"></a></span>
+<span id="cb24-42"><a href="#cb24-42" tabindex="-1"></a><span class="fu">print</span>(summary_df)</span>
+<span id="cb24-43"><a href="#cb24-43" tabindex="-1"></a></span>
+<span id="cb24-44"><a href="#cb24-44" tabindex="-1"></a><span class="co"># 5. Save results</span></span>
+<span id="cb24-45"><a href="#cb24-45" tabindex="-1"></a><span class="fu">write.csv</span>(summary_df, <span class="st">&quot;nordic_countries_research.csv&quot;</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+<div id="troubleshooting" class="section level2">
+<h2>Troubleshooting</h2>
+<div id="common-issues" class="section level3">
+<h3>Common Issues</h3>
+<p><strong>“Agent not initialized”</strong></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># Always initialize before running tasks</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(<span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>, <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>)</span></code></pre></div>
+<p><strong>“Environment not found”</strong></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># Rebuild the Python environment</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">build_backend</span>(<span class="at">conda_env =</span> <span class="st">&quot;asa_env&quot;</span>)</span></code></pre></div>
+<p><strong>Rate Limiting Errors</strong></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># Reduce request rate</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>agent <span class="ot">&lt;-</span> <span class="fu">initialize_agent</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>  <span class="at">backend =</span> <span class="st">&quot;openai&quot;</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;gpt-4.1-mini&quot;</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>  <span class="at">rate_limit =</span> <span class="fl">0.1</span>  <span class="co"># 1 request per 10 seconds</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Empty or NA Responses</strong></p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># Check the trace for error details</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">run_task</span>(prompt, <span class="at">agent =</span> agent)</span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(result<span class="sc">$</span>message)) {</span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Error trace:</span><span class="sc">\n</span><span class="st">&quot;</span>, result<span class="sc">$</span>raw_output)</span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="further-resources" class="section level2">
+<h2>Further Resources</h2>
+<ul>
+<li><strong>GitHub Repository</strong>: <a href="https://github.com/cjerzak/asa-software" class="uri">https://github.com/cjerzak/asa-software</a></li>
+<li><strong>Bug Reports</strong>: <a href="https://github.com/cjerzak/asa-software/issues" class="uri">https://github.com/cjerzak/asa-software/issues</a></li>
+<li><strong>LangGraph Documentation</strong>: <a href="https://langchain-ai.github.io/langgraph/" class="uri">https://langchain-ai.github.io/langgraph/</a></li>
+<li><strong>ReAct Paper</strong>: Yao et al., “ReAct: Synergizing
+Reasoning and Acting in Language Models”</li>
+<li><strong>DeepAgent Paper</strong>: Memory folding architecture for
+long-context agents</li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
