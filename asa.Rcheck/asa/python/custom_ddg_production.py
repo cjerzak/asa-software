@@ -421,7 +421,18 @@ def _simulate_reading(driver, num_results: int, cfg: SearchConfig = None) -> Non
 _TOR_CONTROL_PORT = int(os.environ.get("TOR_CONTROL_PORT", "9051"))
 _TOR_CONTROL_PASSWORD = os.environ.get("TOR_CONTROL_PASSWORD", "")
 _TOR_LAST_ROTATION = 0.0
-_TOR_MIN_ROTATION_INTERVAL = 10.0  # Minimum seconds between rotations
+_TOR_MIN_ROTATION_INTERVAL = 5.0  # Minimum seconds between rotations (reduced from 10s)
+
+# ────────────────────────────────────────────────────────────────────────
+# Proactive Anti-Detection State
+# ────────────────────────────────────────────────────────────────────────
+_REQUESTS_SINCE_ROTATION = 0
+_PROACTIVE_ROTATION_ENABLED = True
+_PROACTIVE_ROTATION_INTERVAL = 15  # Rotate every N requests (configurable from R)
+
+_REQUESTS_SINCE_SESSION_RESET = 0
+_SESSION_RESET_ENABLED = True
+_SESSION_RESET_INTERVAL = 50  # Reset session every N requests
 
 
 def _rotate_tor_circuit(force: bool = False) -> bool:
@@ -536,6 +547,119 @@ def configure_tor(
         "control_port": _TOR_CONTROL_PORT,
         "has_password": bool(_TOR_CONTROL_PASSWORD),
         "min_rotation_interval": _TOR_MIN_ROTATION_INTERVAL,
+    }
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Proactive Anti-Detection Functions
+# ────────────────────────────────────────────────────────────────────────
+
+def _maybe_proactive_rotation(proxy: str = None) -> bool:
+    """Rotate Tor circuit proactively every N requests (not just on error).
+
+    This significantly reduces CAPTCHA encounters by getting a fresh exit node
+    IP before detection thresholds are reached.
+
+    Args:
+        proxy: Current proxy setting (only rotates if Tor proxy is in use)
+
+    Returns:
+        True if rotation was performed, False otherwise
+    """
+    global _REQUESTS_SINCE_ROTATION
+
+    if not _PROACTIVE_ROTATION_ENABLED:
+        return False
+
+    # Only rotate if using Tor proxy
+    if not proxy or "socks" not in proxy.lower():
+        return False
+
+    _REQUESTS_SINCE_ROTATION += 1
+
+    if _REQUESTS_SINCE_ROTATION >= _PROACTIVE_ROTATION_INTERVAL:
+        logger.info("Proactive circuit rotation (after %d requests)",
+                    _REQUESTS_SINCE_ROTATION)
+        success = _rotate_tor_circuit(force=False)
+        if success:
+            _REQUESTS_SINCE_ROTATION = 0
+        return success
+
+    return False
+
+
+def _maybe_session_reset() -> bool:
+    """Reset session identity periodically to avoid fingerprint tracking.
+
+    Clears timing state, shuffles user-agent pool, and resets request counters
+    to make each session batch appear as a different user.
+
+    Returns:
+        True if session was reset, False otherwise
+    """
+    global _REQUESTS_SINCE_SESSION_RESET, _REQUEST_COUNT, _last_search_time
+    global _SESSION_START
+
+    if not _SESSION_RESET_ENABLED:
+        return False
+
+    _REQUESTS_SINCE_SESSION_RESET += 1
+
+    if _REQUESTS_SINCE_SESSION_RESET >= _SESSION_RESET_INTERVAL:
+        logger.info("Session reset (after %d requests)", _REQUESTS_SINCE_SESSION_RESET)
+
+        # Reset timing state to appear as new session
+        _last_search_time = 0.0
+        _REQUEST_COUNT = 0
+        _SESSION_START = time.time()
+
+        # Shuffle user-agent pool for variety
+        random.shuffle(_STEALTH_USER_AGENTS)
+
+        # Reset counter
+        _REQUESTS_SINCE_SESSION_RESET = 0
+
+        return True
+
+    return False
+
+
+def configure_anti_detection(
+    proactive_rotation_enabled: bool = None,
+    proactive_rotation_interval: int = None,
+    session_reset_enabled: bool = None,
+    session_reset_interval: int = None,
+) -> dict:
+    """Configure proactive anti-detection settings.
+
+    Call from R via reticulate to customize anti-detection behavior.
+
+    Args:
+        proactive_rotation_enabled: Enable/disable proactive Tor rotation
+        proactive_rotation_interval: Requests between proactive rotations
+        session_reset_enabled: Enable/disable periodic session reset
+        session_reset_interval: Requests between session resets
+
+    Returns:
+        Dict with current configuration
+    """
+    global _PROACTIVE_ROTATION_ENABLED, _PROACTIVE_ROTATION_INTERVAL
+    global _SESSION_RESET_ENABLED, _SESSION_RESET_INTERVAL
+
+    if proactive_rotation_enabled is not None:
+        _PROACTIVE_ROTATION_ENABLED = proactive_rotation_enabled
+    if proactive_rotation_interval is not None:
+        _PROACTIVE_ROTATION_INTERVAL = proactive_rotation_interval
+    if session_reset_enabled is not None:
+        _SESSION_RESET_ENABLED = session_reset_enabled
+    if session_reset_interval is not None:
+        _SESSION_RESET_INTERVAL = session_reset_interval
+
+    return {
+        "proactive_rotation_enabled": _PROACTIVE_ROTATION_ENABLED,
+        "proactive_rotation_interval": _PROACTIVE_ROTATION_INTERVAL,
+        "session_reset_enabled": _SESSION_RESET_ENABLED,
+        "session_reset_interval": _SESSION_RESET_INTERVAL,
     }
 
 
@@ -876,6 +1000,12 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     logger.debug("Inter-search delay: waiting %.2fs (humanized from %.2fs)", wait_time, base_delay)
                     time.sleep(wait_time)
             _last_search_time = time.time()
+
+        # ────────────────────────────────────────────────────────────────────────
+        # Proactive Anti-Detection: Session reset and circuit rotation
+        # ────────────────────────────────────────────────────────────────────────
+        _maybe_session_reset()
+        _maybe_proactive_rotation(self.proxy)
 
         # tier 0 - primp
         # ────────────────────────────────────────────────────────────────────────

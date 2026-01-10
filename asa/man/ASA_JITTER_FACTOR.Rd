@@ -3,7 +3,7 @@
 \docType{data}
 \name{ASA_JITTER_FACTOR}
 \alias{ASA_JITTER_FACTOR}
-\title{Jitter Factor (fraction of base delay for random variation, 0.5 = ±50%)}
+\title{Jitter Factor for random timing variation}
 \format{
 An object of class \code{numeric} of length 1.
 }
@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 ASA_JITTER_FACTOR
 }
 \description{
-Jitter Factor (fraction of base delay for random variation, 0.5 = ±50%)
+Jitter Factor for random timing variation
 }
 \keyword{internal}

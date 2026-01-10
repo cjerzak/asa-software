@@ -115,7 +115,7 @@ ASA_RATE_LIMIT_PROACTIVE <- TRUE
 #' @keywords internal
 ASA_HUMANIZE_TIMING <- TRUE
 
-#' Jitter Factor (fraction of base delay for random variation, 0.5 = ±50%)
+#' Jitter Factor for random timing variation
 #' @keywords internal
 ASA_JITTER_FACTOR <- 0.5
 

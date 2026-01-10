@@ -19,7 +19,6 @@ BugReports: https://github.com/cjerzak/asa-software/issues
 Depends: R (>= 4.0.0)
 License: GPL-3
 Encoding: UTF-8
-LazyData: false
 Imports: reticulate (>= 1.28), jsonlite, rlang, digest, processx
 Suggests: testthat (>= 3.0.0), knitr, rmarkdown, future, future.apply
 VignetteBuilder: knitr
@@ -27,4 +26,6 @@ RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 SystemRequirements: Python (>= 3.11), Conda, Tor (optional, for
         anonymous searching)
-Built: R 4.5.2; ; 2026-01-10 17:11:38 UTC; unix
+NeedsCompilation: no
+Packaged: 2026-01-10 18:26:08 UTC; cjerzak
+Built: R 4.5.2; ; 2026-01-10 18:26:55 UTC; unix

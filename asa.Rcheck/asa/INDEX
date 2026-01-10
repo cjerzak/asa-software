@@ -1,8 +1,3 @@
-ASA_JITTER_FACTOR       Jitter Factor (fraction of base delay for
-                        random variation, 0.5 = ±50 An object of class
-                        'numeric' of length 1. ASA_JITTER_FACTOR Jitter
-                        Factor (fraction of base delay for random
-                        variation, 0.5 = ±50 internal
 as.data.frame.asa_audit_result
                         Convert asa_audit_result to Data Frame
 as.data.frame.asa_enumerate_result
