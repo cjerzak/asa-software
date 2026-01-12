@@ -158,6 +158,40 @@ ASA_PROACTIVE_ROTATION_INTERVAL <- 15L
 #' @keywords internal
 ASA_TOR_MIN_ROTATION_INTERVAL <- 5.0
 
+#' Enable Shared Tor Exit Registry
+#' @description When TRUE, track Tor exit IP health (good/bad/overused) in a shared store.
+#' @keywords internal
+ASA_TOR_REGISTRY_ENABLED <- TRUE
+
+#' Tor Exit Bad TTL (seconds)
+#' @description How long to keep a bad/tainted exit before allowing reuse.
+#' @keywords internal
+ASA_TOR_BAD_TTL <- 3600
+
+#' Tor Exit Good TTL (seconds)
+#' @description How long to treat an exit as good before requiring a refresh.
+#' @keywords internal
+ASA_TOR_GOOD_TTL <- 1800
+
+#' Tor Exit Overuse Threshold
+#' @description Maximum recent uses before a good exit is considered overloaded.
+#' @keywords internal
+ASA_TOR_OVERUSE_THRESHOLD <- 8L
+
+#' Tor Exit Overuse Decay Window (seconds)
+#' @description Time window for counting recent uses before decaying counts.
+#' @keywords internal
+ASA_TOR_OVERUSE_DECAY <- 900.0
+
+#' Tor Rotation Attempts when Exit is Bad/Overused
+#' @keywords internal
+ASA_TOR_MAX_ROTATION_ATTEMPTS <- 4L
+
+#' Tor Exit IP Cache TTL (seconds)
+#' @description How long to cache exit IP lookups before refreshing.
+#' @keywords internal
+ASA_TOR_IP_CACHE_TTL <- 300.0
+
 #' Enable Session Reset
 #' @description When TRUE, periodically reset session identity to avoid fingerprinting.
 #' @keywords internal

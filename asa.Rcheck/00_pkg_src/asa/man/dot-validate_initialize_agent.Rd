@@ -14,7 +14,8 @@
   memory_keep_recent,
   rate_limit,
   timeout,
-  verbose
+  verbose,
+  tor = NULL
 )
 }
 \description{

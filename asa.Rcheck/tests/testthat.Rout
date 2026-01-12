@@ -28,13 +28,13 @@ Type 'q()' to quit R.
 DuckDuckGo time filter set to: y (past year)
 DuckDuckGo time filter set to: m (past month)
 
-  build_prompt: 0.1188 sec (baseline: 0.09, threshold: 0.36, ratio: 1.32x)
+  build_prompt: 0.0768 sec (baseline: 0.09, threshold: 0.36, ratio: 0.85x)
 
-  helper_funcs: 0.0685 sec (baseline: 0.07, threshold: 0.28, ratio: 0.98x)
+  helper_funcs: 0.0410 sec (baseline: 0.07, threshold: 0.28, ratio: 0.59x)
 
-  combined:     0.1051 sec (baseline: 0.09, threshold: 0.36, ratio: 1.16x)
+  combined:     0.0662 sec (baseline: 0.09, threshold: 0.36, ratio: 0.73x)
 
-  agent_search: 9.80 sec (baseline: 18, threshold: 70, ratio: 0.56x)
+  agent_search: 11.04 sec (baseline: 18, threshold: 70, ratio: 0.63x)
 
   Could not write speed report: cannot open the connection
   README.md updated: /Users/cjerzak/Documents/asa-software/README.md
@@ -67,4 +67,4 @@ DuckDuckGo time filter set to: m (past month)
 > 
 > proc.time()
    user  system elapsed 
- 17.157   4.411  76.106 
+ 18.864   5.155  68.230 

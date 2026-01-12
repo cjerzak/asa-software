@@ -4,7 +4,12 @@
 \alias{.invoke_memory_folding_agent}
 \title{Invoke Memory Folding Agent}
 \usage{
-.invoke_memory_folding_agent(python_agent, prompt, recursion_limit)
+.invoke_memory_folding_agent(
+  python_agent,
+  prompt,
+  recursion_limit,
+  thread_id = NULL
+)
 }
 \description{
 Invoke Memory Folding Agent

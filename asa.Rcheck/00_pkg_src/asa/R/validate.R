@@ -363,7 +363,7 @@
 .validate_initialize_agent <- function(backend, model, conda_env, proxy,
                                         use_memory_folding, memory_threshold,
                                         memory_keep_recent, rate_limit, timeout,
-                                        verbose) {
+                                        verbose, tor = NULL) {
   # backend is validated by match.arg() in the calling function
   .validate_string(model, "model")
   .validate_conda_env(conda_env, "conda_env")
@@ -374,6 +374,7 @@
   .validate_positive(rate_limit, "rate_limit")
   .validate_positive(timeout, "timeout", integer_only = TRUE)
   .validate_logical(verbose, "verbose")
+  .validate_tor_options(tor, "tor")
 
   # Logical consistency: threshold must be > keep_recent for folding to make sense
   if (use_memory_folding) {
@@ -390,7 +391,7 @@
 
 #' Validate run_task() Parameters
 #' @keywords internal
-.validate_run_task <- function(prompt, output_format, agent, verbose) {
+.validate_run_task <- function(prompt, output_format, agent, verbose, thread_id = NULL) {
   .validate_string(prompt, "prompt")
 
   # output_format: "text", "json", "raw", or character vector of field names
@@ -414,6 +415,11 @@
   }
 
   .validate_logical(verbose, "verbose")
+
+  # thread_id: NULL or single string (opt-in stable sessions)
+  if (!is.null(thread_id)) {
+    .validate_string(thread_id, "thread_id")
+  }
 
   invisible(TRUE)
 }
@@ -473,7 +479,7 @@
 
 #' Validate run_agent() Parameters
 #' @keywords internal
-.validate_run_agent <- function(prompt, agent, recursion_limit, verbose) {
+.validate_run_agent <- function(prompt, agent, recursion_limit, verbose, thread_id = NULL) {
   .validate_string(prompt, "prompt")
 
   if (!is.null(agent)) {
@@ -486,6 +492,10 @@
   }
 
   .validate_logical(verbose, "verbose")
+
+  if (!is.null(thread_id)) {
+    .validate_string(thread_id, "thread_id")
+  }
 
   invisible(TRUE)
 }
@@ -542,6 +552,51 @@
 
   .validate_conda_env(conda_env, "conda_env")
 
+  invisible(TRUE)
+}
+
+#' Validate tor_options() Parameters
+#' @keywords internal
+.validate_tor_options <- function(tor, param_name = "tor") {
+  if (is.null(tor)) return(invisible(TRUE))
+
+  if (!inherits(tor, "asa_tor")) {
+    stop(sprintf("`%s` must be created with tor_options() or be a list", param_name),
+         call. = FALSE)
+  }
+
+  .validate_string(tor$registry_path, sprintf("%s$registry_path", param_name))
+  .validate_logical(tor$dirty_tor_exists, sprintf("%s$dirty_tor_exists", param_name))
+  .validate_positive(tor$bad_ttl, sprintf("%s$bad_ttl", param_name), allow_zero = FALSE)
+  .validate_positive(tor$good_ttl, sprintf("%s$good_ttl", param_name), allow_zero = FALSE)
+  .validate_positive(tor$overuse_threshold, sprintf("%s$overuse_threshold", param_name),
+                     integer_only = TRUE)
+  .validate_positive(tor$overuse_decay, sprintf("%s$overuse_decay", param_name))
+  .validate_positive(tor$max_rotation_attempts, sprintf("%s$max_rotation_attempts", param_name),
+                     integer_only = TRUE, allow_zero = FALSE)
+  .validate_positive(tor$ip_cache_ttl, sprintf("%s$ip_cache_ttl", param_name))
+
+  invisible(TRUE)
+}
+
+#' Validate configure_tor_registry() Parameters
+#' @keywords internal
+.validate_configure_tor_registry <- function(registry_path, enable,
+                                             bad_ttl, good_ttl,
+                                             overuse_threshold, overuse_decay,
+                                             max_rotation_attempts, ip_cache_ttl,
+                                             conda_env) {
+  if (!is.null(registry_path)) {
+    .validate_string(registry_path, "registry_path")
+  }
+  .validate_logical(enable, "enable")
+  .validate_positive(bad_ttl, "bad_ttl", allow_zero = FALSE)
+  .validate_positive(good_ttl, "good_ttl", allow_zero = FALSE)
+  .validate_positive(overuse_threshold, "overuse_threshold", integer_only = TRUE)
+  .validate_positive(overuse_decay, "overuse_decay")
+  .validate_positive(max_rotation_attempts, "max_rotation_attempts", integer_only = TRUE)
+  .validate_positive(ip_cache_ttl, "ip_cache_ttl")
+  .validate_conda_env(conda_env, "conda_env")
   invisible(TRUE)
 }
 

@@ -2,10 +2,10 @@
 % Please edit documentation in R/helpers.R
 \name{rotate_tor_circuit}
 \alias{rotate_tor_circuit}
-\title{Rotate Tor Circuit}
+\title{Rotate Tor Circuit (R-side, daemon restart)}
 \usage{
 rotate_tor_circuit(
-  method = c("brew", "systemctl", "signal"),
+  method = c("signal", "brew", "systemctl"),
   wait = 12L,
   pid = NULL
 )
@@ -25,20 +25,33 @@ Invisibly returns TRUE on success, FALSE on failure
 Requests a new Tor circuit by restarting the Tor service or sending SIGHUP.
 }
 \details{
+MEDIUM FIX: This function restarts the entire Tor daemon, which kills ALL
+circuits and affects parallel execution. For production use, prefer the
+Python-side control port rotation which sends SIGNAL NEWNYM to get a new
+circuit without restarting the daemon.
+
 For parallel Tor setups with multiple instances, consider using Tor's built-in
 circuit rotation via \code{MaxCircuitDirtiness} and \code{NewCircuitPeriod}
 config options instead of this function.
 }
+\note{
+The "brew" and "systemctl" methods restart the entire Tor daemon and
+should only be used as a last resort for recovery. The "signal" method is
+preferred but still affects all circuits on the process.
+}
 \examples{
 \dontrun{
-# macOS with Homebrew
+# Preferred: Use Python-side control port rotation (via run_task/asa_enumerate)
+# This R function is for manual recovery only
+
+# Send SIGHUP to Tor process (least disruptive)
+rotate_tor_circuit(method = "signal")
+
+# macOS with Homebrew (restarts daemon - use sparingly)
 rotate_tor_circuit(method = "brew")
 
-# Linux with systemd
+# Linux with systemd (restarts daemon - use sparingly)
 rotate_tor_circuit(method = "systemctl")
-
-# Send SIGHUP to Tor process
-rotate_tor_circuit(method = "signal")
 }
 
 }

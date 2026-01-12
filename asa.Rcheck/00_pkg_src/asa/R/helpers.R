@@ -246,16 +246,23 @@ get_tor_ip <- function(proxy = "socks5h://127.0.0.1:9050", timeout = 30L) {
       error_on_status = FALSE
     )
     if (result$status != 0) {
+      # LOW FIX: Log stderr context for debugging Tor connection failures
+      stderr_msg <- trimws(result$stderr)
+      if (nzchar(stderr_msg)) {
+        message("[asa] get_tor_ip failed (exit ", result$status, "): ", stderr_msg)
+      }
       return(NA_character_)
     }
     parsed <- jsonlite::fromJSON(result$stdout)
     parsed$ip
   }, error = function(e) {
+    # LOW FIX: Log error message for debugging
+    message("[asa] get_tor_ip error: ", conditionMessage(e))
     NA_character_
   })
 }
 
-#' Rotate Tor Circuit
+#' Rotate Tor Circuit (R-side, daemon restart)
 #'
 #' Requests a new Tor circuit by restarting the Tor service or sending SIGHUP.
 #'
@@ -267,27 +274,50 @@ get_tor_ip <- function(proxy = "socks5h://127.0.0.1:9050", timeout = 30L) {
 #' @return Invisibly returns TRUE on success, FALSE on failure
 #'
 #' @details
+#' MEDIUM FIX: This function restarts the entire Tor daemon, which kills ALL
+#' circuits and affects parallel execution. For production use, prefer the
+#' Python-side control port rotation which sends SIGNAL NEWNYM to get a new
+#' circuit without restarting the daemon.
+#'
 #' For parallel Tor setups with multiple instances, consider using Tor's built-in
 #' circuit rotation via \code{MaxCircuitDirtiness} and \code{NewCircuitPeriod}
 #' config options instead of this function.
 #'
+#' @note The "brew" and "systemctl" methods restart the entire Tor daemon and
+#' should only be used as a last resort for recovery. The "signal" method is
+#' preferred but still affects all circuits on the process.
+#'
 #' @examples
 #' \dontrun{
-#' # macOS with Homebrew
+#' # Preferred: Use Python-side control port rotation (via run_task/asa_enumerate)
+#' # This R function is for manual recovery only
+#'
+#' # Send SIGHUP to Tor process (least disruptive)
+#' rotate_tor_circuit(method = "signal")
+#'
+#' # macOS with Homebrew (restarts daemon - use sparingly)
 #' rotate_tor_circuit(method = "brew")
 #'
-#' # Linux with systemd
+#' # Linux with systemd (restarts daemon - use sparingly)
 #' rotate_tor_circuit(method = "systemctl")
-#'
-#' # Send SIGHUP to Tor process
-#' rotate_tor_circuit(method = "signal")
 #' }
 #'
 #' @export
-rotate_tor_circuit <- function(method = c("brew", "systemctl", "signal"),
+rotate_tor_circuit <- function(method = c("signal", "brew", "systemctl"),
                                wait = 12L,
                                pid = NULL) {
   method <- match.arg(method)
+
+  # MEDIUM FIX: Warn about daemon restart methods
+
+  if (method %in% c("brew", "systemctl")) {
+    warning(
+      "rotate_tor_circuit with method='", method, "' restarts the entire Tor daemon, ",
+      "which kills ALL circuits and affects parallel execution. ",
+      "Consider using method='signal' or the Python-side control port rotation instead.",
+      call. = FALSE
+    )
+  }
 
   success <- tryCatch({
     if (method == "brew") {
@@ -323,6 +353,78 @@ rotate_tor_circuit <- function(method = c("brew", "systemctl", "signal"),
   }
 
   invisible(success)
+}
+
+#' Configure Tor Exit Registry
+#'
+#' Sets up the shared Tor exit health registry used by the Python search stack
+#' to avoid reusing tainted or overused exit nodes.
+#'
+#' @param registry_path Path to the SQLite registry file (default: user cache).
+#' @param enable Enable the registry (set FALSE to disable tracking).
+#' @param bad_ttl Seconds to keep a bad/tainted exit before reuse.
+#' @param good_ttl Seconds to treat an exit as good before refreshing.
+#' @param overuse_threshold Maximum recent uses before a good exit is treated as overloaded.
+#' @param overuse_decay Window (seconds) for counting recent uses before decay.
+#' @param max_rotation_attempts Maximum rotations to find a clean exit.
+#' @param ip_cache_ttl Seconds to cache exit IP lookups.
+#' @param conda_env Conda environment name for the Python module.
+#'
+#' @return Invisibly returns a list of the configured values (or NULL on error).
+#'
+#' @export
+configure_tor_registry <- function(registry_path = NULL,
+                                   enable = ASA_TOR_REGISTRY_ENABLED,
+                                   bad_ttl = ASA_TOR_BAD_TTL,
+                                   good_ttl = ASA_TOR_GOOD_TTL,
+                                   overuse_threshold = ASA_TOR_OVERUSE_THRESHOLD,
+                                   overuse_decay = ASA_TOR_OVERUSE_DECAY,
+                                   max_rotation_attempts = ASA_TOR_MAX_ROTATION_ATTEMPTS,
+                                   ip_cache_ttl = ASA_TOR_IP_CACHE_TTL,
+                                   conda_env = "asa_env") {
+
+  .validate_configure_tor_registry(
+    registry_path = registry_path,
+    enable = enable,
+    bad_ttl = bad_ttl,
+    good_ttl = good_ttl,
+    overuse_threshold = overuse_threshold,
+    overuse_decay = overuse_decay,
+    max_rotation_attempts = max_rotation_attempts,
+    ip_cache_ttl = ip_cache_ttl,
+    conda_env = conda_env
+  )
+
+  if (is.null(registry_path) || registry_path == "") {
+    base_dir <- tools::R_user_dir("asa", which = "cache")
+    dir.create(base_dir, recursive = TRUE, showWarnings = FALSE)
+    registry_path <- file.path(base_dir, "tor_exit_registry.sqlite")
+  } else {
+    dir.create(dirname(registry_path), recursive = TRUE, showWarnings = FALSE)
+  }
+
+  # Keep env vars in sync for child processes
+  Sys.setenv(TOR_EXIT_DB = registry_path, ASA_TOR_EXIT_DB = registry_path)
+
+  reticulate::use_condaenv(conda_env, required = TRUE)
+
+  tryCatch({
+    ddg_module <- reticulate::import("custom_ddg_production")
+    cfg <- ddg_module$configure_tor_registry(
+      registry_path = registry_path,
+      enable = enable,
+      bad_ttl = as.numeric(bad_ttl),
+      good_ttl = as.numeric(good_ttl),
+      overuse_threshold = as.integer(overuse_threshold),
+      overuse_decay = as.numeric(overuse_decay),
+      max_rotation_attempts = as.integer(max_rotation_attempts),
+      ip_cache_ttl = as.numeric(ip_cache_ttl)
+    )
+    invisible(cfg)
+  }, error = function(e) {
+    warning("Could not configure Tor registry: ", e$message, call. = FALSE)
+    invisible(NULL)
+  })
 }
 
 #' Print Utility

@@ -14,6 +14,8 @@
 #' @param memory_keep_recent Number of recent messages to preserve after folding (default: 2)
 #' @param rate_limit Requests per second for rate limiting (default: 0.2)
 #' @param timeout Request timeout in seconds (default: 120)
+#' @param tor Tor registry options from \code{\link{tor_options}}. Disable shared
+#'   tracking by setting \code{dirty_tor_exists = FALSE}.
 #' @param verbose Print status messages (default: TRUE)
 #'
 #' @return An object of class \code{asa_agent} containing the initialized agent
@@ -85,6 +87,7 @@ initialize_agent <- function(backend = "openai",
                              memory_keep_recent = 2L,
                              rate_limit = 0.2,
                              timeout = 120L,
+                             tor = tor_options(),
                              verbose = TRUE) {
 
   # Validate backend
@@ -92,6 +95,15 @@ initialize_agent <- function(backend = "openai",
 
   # Validate API key for the selected backend (fail-fast before expensive operations)
   .validate_api_key(backend)
+
+  # Normalize tor options early for validation
+  if (!inherits(tor, "asa_tor")) {
+    if (is.list(tor)) {
+      tor <- do.call(tor_options, tor)
+    } else {
+      stop("`tor` must be created with tor_options() or be a list", call. = FALSE)
+    }
+  }
 
   # Validate all inputs
   .validate_initialize_agent(
@@ -104,7 +116,8 @@ initialize_agent <- function(backend = "openai",
     memory_keep_recent = memory_keep_recent,
     rate_limit = rate_limit,
     timeout = timeout,
-    verbose = verbose
+    verbose = verbose,
+    tor = tor
   )
 
   # Validate OpenRouter model format
@@ -147,6 +160,38 @@ initialize_agent <- function(backend = "openai",
   # Import Python packages
   if (verbose) message("  Importing Python packages...")
   .import_python_packages()
+
+  # Configure shared Tor registry (exit health tracking)
+  configure_tor_registry(
+    registry_path = tor$registry_path,
+    enable = tor$dirty_tor_exists,
+    bad_ttl = tor$bad_ttl,
+    good_ttl = tor$good_ttl,
+    overuse_threshold = tor$overuse_threshold,
+    overuse_decay = tor$overuse_decay,
+    max_rotation_attempts = tor$max_rotation_attempts,
+    ip_cache_ttl = tor$ip_cache_ttl,
+    conda_env = conda_env
+  )
+
+  # Configure Tor control port for circuit rotation verification
+  control_port_env <- Sys.getenv("TOR_CONTROL_PORT", unset = "9051")
+  control_port <- suppressWarnings(as.integer(control_port_env))
+  if (is.na(control_port)) control_port <- 9051L
+  control_password <- Sys.getenv("TOR_CONTROL_PASSWORD", unset = "")
+  if (nzchar(control_password)) {
+    control_password <- control_password
+  } else {
+    control_password <- NULL
+  }
+  # Keep env in sync so worker processes see the chosen control port
+  Sys.setenv(TOR_CONTROL_PORT = as.character(control_port))
+  ddg_module <- asa_env$custom_ddg %||% reticulate::import("custom_ddg_production")
+  ddg_module$configure_tor(
+    control_port = as.integer(control_port),
+    control_password = control_password,
+    min_rotation_interval = ASA_TOR_MIN_ROTATION_INTERVAL
+  )
 
   # Set up proxy from environment if not specified
   if (is.null(proxy)) {
@@ -198,7 +243,8 @@ initialize_agent <- function(backend = "openai",
     timeout = timeout,
     use_memory_folding = use_memory_folding,
     memory_threshold = memory_threshold,
-    memory_keep_recent = memory_keep_recent
+    memory_keep_recent = memory_keep_recent,
+    tor = tor
   )
 
   if (verbose) message("  Done!")

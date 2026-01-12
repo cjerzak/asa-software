@@ -60,6 +60,7 @@ asa-package	asa-package
 .validate_choice	dot-validate_choice
 .validate_conda_env	dot-validate_conda_env
 .validate_configure_search	dot-validate_configure_search
+.validate_configure_tor_registry	dot-validate_configure_tor_registry
 .validate_consistency	dot-validate_consistency
 .validate_dataframe	dot-validate_dataframe
 .validate_initialize_agent	dot-validate_initialize_agent
@@ -78,6 +79,7 @@ asa-package	asa-package
 .validate_string	dot-validate_string
 .validate_string_vector	dot-validate_string_vector
 .validate_temporal	dot-validate_temporal
+.validate_tor_options	dot-validate_tor_options
 .with_search_config	dot-with_search_config
 .with_temporal	dot-with_temporal
 as.data.frame.asa_audit_result	as.data.frame.asa_audit_result
@@ -147,7 +149,14 @@ ASA_STATUS_SUCCESS	ASA_STATUS_SUCCESS
 ASA_SUPPORTED_BACKENDS	ASA_SUPPORTED_BACKENDS
 ASA_TEMPORAL_STRICTNESS	ASA_TEMPORAL_STRICTNESS
 ASA_TIME_FILTERS	ASA_TIME_FILTERS
+ASA_TOR_BAD_TTL	ASA_TOR_BAD_TTL
+ASA_TOR_GOOD_TTL	ASA_TOR_GOOD_TTL
+ASA_TOR_IP_CACHE_TTL	ASA_TOR_IP_CACHE_TTL
+ASA_TOR_MAX_ROTATION_ATTEMPTS	ASA_TOR_MAX_ROTATION_ATTEMPTS
 ASA_TOR_MIN_ROTATION_INTERVAL	ASA_TOR_MIN_ROTATION_INTERVAL
+ASA_TOR_OVERUSE_DECAY	ASA_TOR_OVERUSE_DECAY
+ASA_TOR_OVERUSE_THRESHOLD	ASA_TOR_OVERUSE_THRESHOLD
+ASA_TOR_REGISTRY_ENABLED	ASA_TOR_REGISTRY_ENABLED
 ASA_TRUNCATE_LENGTH	ASA_TRUNCATE_LENGTH
 build_backend	build_backend
 build_prompt	build_prompt
@@ -156,6 +165,7 @@ clean_whitespace	clean_whitespace
 configure_search	configure_search
 configure_search_logging	configure_search_logging
 configure_temporal	configure_temporal
+configure_tor_registry	configure_tor_registry
 decode_html	decode_html
 extract_agent_results	extract_agent_results
 extract_search_snippets	extract_search_snippets
@@ -176,6 +186,7 @@ print.asa_response	print.asa_response
 print.asa_result	print.asa_result
 print.asa_search	print.asa_search
 print.asa_temporal	print.asa_temporal
+print.asa_tor	print.asa_tor
 print2	print2
 process_outputs	process_outputs
 reset_agent	reset_agent
@@ -190,5 +201,6 @@ summary.asa_enumerate_result	summary.asa_enumerate_result
 summary.asa_response	summary.asa_response
 summary.asa_result	summary.asa_result
 temporal_options	temporal_options
+tor_options	tor_options
 truncate_string	truncate_string
 write_csv.asa_enumerate_result	write_csv.asa_enumerate_result

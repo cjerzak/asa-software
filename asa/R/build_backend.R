@@ -16,8 +16,10 @@
 #'   \item langgraph
 #'   \item ddgs (DuckDuckGo search)
 #'   \item selenium, primp (browser automation)
+#'   \item undetected-chromedriver (stealth Chrome)
 #'   \item beautifulsoup4, requests
 #'   \item fake_headers, httpx
+#'   \item stem (Tor control)
 #'   \item pysocks, socksio (proxy support)
 #' }
 #'
@@ -90,6 +92,7 @@ build_backend <- function(conda_env = "asa_env",
   pip_install(c(
     "ddgs",
     "selenium",
+    "undetected-chromedriver",
     "primp",
     "beautifulsoup4",
     "requests",
@@ -100,7 +103,8 @@ build_backend <- function(conda_env = "asa_env",
   pip_install(c(
     "httpx",
     "pysocks",
-    "socksio"
+    "socksio",
+    "stem"
   ))
 
   # Additional utilities
@@ -128,7 +132,7 @@ build_backend <- function(conda_env = "asa_env",
     }
     msg("Environment '%s' created but may have issues. See warnings above.", conda_env)
   } else {
-    msg("Verification passed: All 8 required packages available.")
+    msg("Verification passed: All required packages available.")
     msg("Environment '%s' is ready.", conda_env)
   }
 
@@ -191,8 +195,10 @@ check_backend <- function(conda_env = "asa_env") {
       "ddgs",
       "selenium",
       "primp",
+      "undetected_chromedriver",
       "httpx",
-      "fake_headers"
+      "fake_headers",
+      "stem"
     )
 
     missing <- character(0)

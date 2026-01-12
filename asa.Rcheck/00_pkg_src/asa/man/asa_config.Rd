@@ -16,7 +16,8 @@ asa_config(
   memory_threshold = NULL,
   memory_keep_recent = NULL,
   temporal = NULL,
-  search = NULL
+  search = NULL,
+  tor = NULL
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ asa_config(
 \item{temporal}{Temporal filtering options (use \code{temporal_options()})}
 
 \item{search}{Search configuration (use \code{search_options()})}
+
+\item{tor}{Tor registry options (use \code{tor_options()})}
 }
 \value{
 An object of class \code{asa_config}

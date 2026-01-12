@@ -29,6 +29,9 @@
 #'   JSON output. When provided, validates that all fields are present and
 #'   non-null. The result will include a \code{parsing_status} field with
 #'   validation details.
+#' @param thread_id Optional stable identifier for memory folding sessions.
+#'   When provided, the same thread ID is reused so folded summaries persist
+#'   across invocations. Defaults to NULL (new thread each call).
 #' @param verbose Print progress messages (default: FALSE)
 #'
 #' @return An \code{asa_result} object with:
@@ -122,6 +125,7 @@ run_task <- function(prompt,
                      config = NULL,
                      agent = NULL,
                      expected_fields = NULL,
+                     thread_id = NULL,
                      verbose = FALSE) {
 
   config_search <- NULL
@@ -147,7 +151,8 @@ run_task <- function(prompt,
     prompt = prompt,
     output_format = output_format,
     agent = agent,
-    verbose = verbose
+    verbose = verbose,
+    thread_id = thread_id
   )
 
   # Initialize agent from config if provided
@@ -163,10 +168,11 @@ run_task <- function(prompt,
       same_keep <- identical(current$config$memory_keep_recent, config$memory_keep_recent)
       same_rate <- identical(current$config$rate_limit, config$rate_limit)
       same_timeout <- identical(current$config$timeout, config$timeout)
+      same_tor <- identical(current$config$tor, config$tor)
 
       if (same_backend && same_model && same_conda && same_proxy &&
           same_folding && same_threshold && same_keep &&
-          same_rate && same_timeout) {
+          same_rate && same_timeout && same_tor) {
         agent <- current
       }
     }
@@ -183,6 +189,7 @@ run_task <- function(prompt,
         memory_keep_recent = config$memory_keep_recent,
         rate_limit = config$rate_limit,
         timeout = config$timeout,
+        tor = config$tor,
         verbose = verbose
       )
     }
@@ -203,7 +210,12 @@ run_task <- function(prompt,
   conda_env <- config_conda_env %||% .get_default_conda_env()
   response <- .with_search_config(config_search, conda_env = conda_env, function() {
     .with_temporal(temporal, function() {
-      .run_agent(augmented_prompt, agent = agent, verbose = verbose)
+      .run_agent(
+        augmented_prompt,
+        agent = agent,
+        thread_id = thread_id,
+        verbose = verbose
+      )
     })
   })
 

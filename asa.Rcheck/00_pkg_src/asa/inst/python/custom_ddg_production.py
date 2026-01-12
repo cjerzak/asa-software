@@ -9,6 +9,8 @@
 import contextlib
 import logging
 import os
+import sqlite3
+import tempfile
 import threading
 import traceback
 import time
@@ -57,6 +59,8 @@ class SearchConfig:
         inter_search_delay: Delay between consecutive searches in seconds (default: 0.5)
         humanize_timing: Add random jitter to delays for human-like behavior (default: True)
         jitter_factor: Jitter range as fraction of base delay (default: 0.5 = ±50%)
+        allow_direct_fallback: Allow fallback to direct IP (no proxy) on final retry (default: False)
+            WARNING: Enabling this defeats anonymity - only use if you don't need Tor protection
     """
     max_results: int = 10
     timeout: float = 15.0
@@ -65,9 +69,10 @@ class SearchConfig:
     backoff_multiplier: float = 1.5
     captcha_backoff_base: float = 3.0
     page_load_wait: float = 2.0
-    inter_search_delay: float = 0.5
+    inter_search_delay: float = 1.5  # Increased from 0.5 to reduce CAPTCHA rate
     humanize_timing: bool = True
     jitter_factor: float = 0.5
+    allow_direct_fallback: bool = False  # CRITICAL: Default OFF to preserve anonymity
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -79,6 +84,8 @@ class SearchConfig:
 
 _SESSION_START = time.time()
 _REQUEST_COUNT = 0
+# HIGH FIX: Lock to protect session state from race conditions in parallel execution
+_SESSION_STATE_LOCK = threading.Lock()
 
 
 def _human_delay(base_delay: float, cfg: SearchConfig = None) -> float:
@@ -90,6 +97,8 @@ def _human_delay(base_delay: float, cfg: SearchConfig = None) -> float:
     - Fatigue curve: delays drift longer as session ages
     - Occasional spikes: the pause of a mind changing
 
+    Thread-safe: Uses lock to protect global session state.
+
     Args:
         base_delay: The nominal delay in seconds
         cfg: SearchConfig instance
@@ -98,7 +107,11 @@ def _human_delay(base_delay: float, cfg: SearchConfig = None) -> float:
         A delay that breathes like a human
     """
     global _REQUEST_COUNT
-    _REQUEST_COUNT += 1
+    # HIGH FIX: Protect global state update with lock
+    with _SESSION_STATE_LOCK:
+        _REQUEST_COUNT += 1
+        local_request_count = _REQUEST_COUNT
+        local_session_start = _SESSION_START
 
     if cfg is None:
         cfg = _default_config
@@ -119,8 +132,9 @@ def _human_delay(base_delay: float, cfg: SearchConfig = None) -> float:
 
     # 3. Fatigue curve: delays drift longer over session
     # After 100 requests, delays are ~20% longer
-    session_minutes = (time.time() - _SESSION_START) / 60.0
-    fatigue_factor = 1.0 + (session_minutes * 0.01) + (_REQUEST_COUNT * 0.001)
+    # HIGH FIX: Use local copies to avoid race conditions
+    session_minutes = (time.time() - local_session_start) / 60.0
+    fatigue_factor = 1.0 + (session_minutes * 0.01) + (local_request_count * 0.001)
     fatigue_factor = min(fatigue_factor, 1.5)  # Cap at 50% increase
 
     # 4. Occasional thinking pause: 5% chance of a longer hesitation
@@ -160,6 +174,68 @@ _default_config = SearchConfig()
 _last_search_time: float = 0.0  # Track last search timestamp for inter-search delay
 _search_lock = threading.Lock()  # Lock for thread-safe access to _last_search_time
 _config_lock = threading.Lock()  # Lock for thread-safe config modifications
+
+
+def _is_captcha_page(page_text: str, has_results: bool = False) -> bool:
+    """MEDIUM FIX: More specific CAPTCHA detection to reduce false positives.
+
+    Checks for DuckDuckGo-specific CAPTCHA indicators rather than just
+    substring matching on generic words like 'robot'.
+
+    Args:
+        page_text: Lowercased page source text
+        has_results: Whether valid search results were found
+
+    Returns:
+        True if page appears to be a CAPTCHA challenge, False otherwise
+    """
+    # If we have valid results, it's not a CAPTCHA page
+    if has_results:
+        return False
+
+    # DuckDuckGo-specific CAPTCHA indicators
+    ddg_captcha_indicators = [
+        "please click to continue",  # DDG CAPTCHA prompt
+        "human verification",
+        "security check",
+        "prove you're not a robot",
+        "i'm not a robot",
+        "verify you are human",
+        "too many requests",
+        "rate limit exceeded",
+    ]
+
+    # Generic but more specific indicators (require no results + indicator)
+    generic_indicators = [
+        "captcha",
+        "unusual traffic",
+        "automated queries",
+        "suspected bot",
+    ]
+
+    # Check for DDG-specific indicators first (high confidence)
+    for indicator in ddg_captcha_indicators:
+        if indicator in page_text:
+            return True
+
+    # Check generic indicators only if combined with other signals
+    for indicator in generic_indicators:
+        if indicator in page_text:
+            # Additional confirmation: check for form elements or challenge
+            if "form" in page_text or "challenge" in page_text or "submit" in page_text:
+                return True
+            # Or if page is suspiciously short (CAPTCHA pages are usually small)
+            if len(page_text) < 5000:
+                return True
+
+    # "robot" alone is too generic - require more context
+    if "robot" in page_text:
+        if ("not a robot" in page_text or
+            "prove you" in page_text or
+            "verify" in page_text):
+            return True
+
+    return False
 
 
 def configure_search(
@@ -234,6 +310,7 @@ __all__ = [
     "configure_search",
     "configure_logging",
     "configure_tor",
+    "configure_tor_registry",
     "PatchedDuckDuckGoSearchAPIWrapper",
     "PatchedDuckDuckGoSearchRun",
     "BrowserDuckDuckGoSearchAPIWrapper",
@@ -418,24 +495,835 @@ def _simulate_reading(driver, num_results: int, cfg: SearchConfig = None) -> Non
 # ────────────────────────────────────────────────────────────────────────
 # Tor Circuit Rotation - Request new identity on CAPTCHA detection
 # ────────────────────────────────────────────────────────────────────────
-_TOR_CONTROL_PORT = int(os.environ.get("TOR_CONTROL_PORT", "9051"))
+# NOTE: Control port is read dynamically in _get_tor_control_port() to support
+# per-worker port assignment via TOR_CONTROL_PORT environment variable
+_TOR_CONTROL_PORT = 9051  # Fallback when env var is absent/invalid
 _TOR_CONTROL_PASSWORD = os.environ.get("TOR_CONTROL_PASSWORD", "")
 _TOR_LAST_ROTATION = 0.0
 _TOR_MIN_ROTATION_INTERVAL = 5.0  # Minimum seconds between rotations (reduced from 10s)
+
+
+def _get_tor_control_port() -> int:
+    """Get Tor control port dynamically from environment.
+
+    This is read at call time (not module load time) to support per-worker
+    port assignment in parallel execution environments.
+
+    Returns:
+        The Tor control port number (default: 9051)
+    """
+    port_str = os.environ.get("TOR_CONTROL_PORT")
+    if port_str is not None:
+        try:
+            port = int(port_str)
+            logger.debug("Using Tor control port: %d (from env: %s)", port, port_str)
+            return port
+        except ValueError:
+            logger.warning("Invalid TOR_CONTROL_PORT '%s', using configured default %d", port_str, _TOR_CONTROL_PORT)
+    return _TOR_CONTROL_PORT
+
+# ────────────────────────────────────────────────────────────────────────
+# Shared Tor Exit Registry (SQLite, cross-process)
+# ────────────────────────────────────────────────────────────────────────
+_TOR_REGISTRY_ENABLED = True
+_TOR_REGISTRY_PATH: str | None = os.environ.get("ASA_TOR_EXIT_DB") or os.environ.get("TOR_EXIT_DB")
+_TOR_BAD_TTL = 3600.0
+_TOR_GOOD_TTL = 1800.0
+_TOR_OVERUSE_THRESHOLD = 8
+_TOR_OVERUSE_DECAY = 900.0
+_TOR_MAX_ROTATION_ATTEMPTS = 4
+_TOR_IP_CACHE_TTL = 300.0
+_TOR_EXIT_IP_CACHE: Dict[str, tuple[str, float]] = {}
+_TOR_REGISTRY_LOCK = threading.Lock()
+
+# CRITICAL FIX: Dedicated session for exit IP lookups with proper timeouts and retry
+# This prevents blocking the main pipeline when Tor check endpoint is slow
+_TOR_IP_CHECK_SESSION: requests.Session | None = None
+_TOR_IP_CHECK_LOCK = threading.Lock()
+
+# MEDIUM FIX: Lock for environment variable mutations (thread-safe proxy bypass)
+_ENV_VAR_LOCK = threading.Lock()
+
+
+def _get_tor_ip_session() -> requests.Session:
+    """Get or create a dedicated session for exit IP lookups.
+
+    Uses a separate session with tight timeouts and retry logic to avoid
+    blocking the main search pipeline when check.torproject.org is slow.
+    """
+    global _TOR_IP_CHECK_SESSION
+    with _TOR_IP_CHECK_LOCK:
+        if _TOR_IP_CHECK_SESSION is None:
+            from requests.adapters import HTTPAdapter
+            from urllib3.util.retry import Retry
+
+            session = requests.Session()
+            # Retry strategy: 2 retries with short backoff
+            retry_strategy = Retry(
+                total=2,
+                backoff_factor=0.5,
+                status_forcelist=[429, 500, 502, 503, 504],
+            )
+            adapter = HTTPAdapter(max_retries=retry_strategy)
+            session.mount("http://", adapter)
+            session.mount("https://", adapter)
+            _TOR_IP_CHECK_SESSION = session
+        return _TOR_IP_CHECK_SESSION
+
+
+def _resolve_registry_path() -> str | None:
+    """Resolve or initialize the registry path."""
+    global _TOR_REGISTRY_PATH
+
+    if _TOR_REGISTRY_PATH:
+        return _TOR_REGISTRY_PATH
+
+    env_path = os.environ.get("ASA_TOR_EXIT_DB") or os.environ.get("TOR_EXIT_DB")
+    if env_path:
+        _TOR_REGISTRY_PATH = env_path
+        return _TOR_REGISTRY_PATH
+
+    base_dir = os.path.join(tempfile.gettempdir(), "asa_tor")
+    os.makedirs(base_dir, exist_ok=True)
+    _TOR_REGISTRY_PATH = os.path.join(base_dir, "tor_exit_registry.sqlite")
+    return _TOR_REGISTRY_PATH
+
+
+# HIGH FIX: Increased SQLite timeout for parallel workloads
+_SQLITE_TIMEOUT = 5.0  # Was 1.0s, now 5.0s for parallel execution
+
+
+def _ensure_registry() -> str | None:
+    """Create registry if enabled; return path or None."""
+    if not _TOR_REGISTRY_ENABLED:
+        return None
+
+    path = _resolve_registry_path()
+    if not path:
+        return None
+
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        # HIGH FIX: Increased timeout from 1.0s to 5.0s for parallel workloads
+        with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+            conn.execute("PRAGMA journal_mode=WAL;")
+            # HIGH FIX: NORMAL sync is faster but still safe with WAL
+            conn.execute("PRAGMA synchronous=NORMAL;")
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS exit_health (
+                    exit_ip TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    last_seen REAL NOT NULL,
+                    failures INTEGER DEFAULT 0,
+                    successes INTEGER DEFAULT 0,
+                    last_reason TEXT,
+                    cooldown_until REAL DEFAULT 0,
+                    recent_uses INTEGER DEFAULT 0
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS proxy_blocks (
+                    proxy TEXT PRIMARY KEY,
+                    last_hit REAL NOT NULL,
+                    captcha_count INTEGER DEFAULT 1,
+                    expires_at REAL NOT NULL
+                )
+                """
+            )
+        return path
+    except Exception as exc:
+        logger.debug("Tor registry setup failed: %s", exc)
+        return None
+
+
+def _get_exit_status(exit_ip: str) -> Dict[str, Any] | None:
+    """Fetch exit status with TTL/overuse handling."""
+    path = _ensure_registry()
+    if not path:
+        return None
+
+    with _TOR_REGISTRY_LOCK:
+        try:
+            with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+                row = conn.execute(
+                    """
+                    SELECT status, last_seen, failures, successes, last_reason, cooldown_until, recent_uses
+                    FROM exit_health WHERE exit_ip=?
+                    """,
+                    (exit_ip,),
+                ).fetchone()
+
+                if not row:
+                    return None
+
+                status, last_seen, failures, successes, last_reason, cooldown_until, recent_uses = row
+                now = time.time()
+
+                expired = False
+                if status == "bad":
+                    if (cooldown_until and now >= cooldown_until) or (now - last_seen) >= _TOR_BAD_TTL:
+                        expired = True
+                elif status == "ok" and (now - last_seen) >= _TOR_GOOD_TTL:
+                    expired = True
+
+                if expired:
+                    conn.execute("DELETE FROM exit_health WHERE exit_ip=?", (exit_ip,))
+                    conn.commit()
+                    return None
+
+                # Decay overuse counts if stale
+                if now - last_seen > _TOR_OVERUSE_DECAY:
+                    recent_uses = 0
+                    conn.execute(
+                        "UPDATE exit_health SET recent_uses=?, last_seen=? WHERE exit_ip=?",
+                        (0, now, exit_ip),
+                    )
+                    conn.commit()
+
+                return {
+                    "status": status,
+                    "last_seen": last_seen,
+                    "failures": failures,
+                    "successes": successes,
+                    "last_reason": last_reason,
+                    "cooldown_until": cooldown_until,
+                    "recent_uses": recent_uses or 0,
+                    "overused": (recent_uses or 0) >= _TOR_OVERUSE_THRESHOLD
+                    and (now - last_seen) <= _TOR_OVERUSE_DECAY,
+                }
+        except Exception as exc:
+            logger.debug("Tor registry read failed for %s: %s", exit_ip, exc)
+            return None
+
+
+def _update_exit_record(
+    exit_ip: str,
+    status: str,
+    reason: str | None = None,
+    increment_failure: bool = False,
+    increment_success: bool = False,
+    bump_use: bool = False,
+    cooldown_until: float | None = None,
+) -> None:
+    """Upsert exit health entry."""
+    path = _ensure_registry()
+    if not path or not exit_ip:
+        return
+
+    now = time.time()
+    with _TOR_REGISTRY_LOCK:
+        for attempt in range(3):
+            try:
+                with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+                    conn.execute("BEGIN IMMEDIATE")
+                    row = conn.execute(
+                        """
+                        SELECT status, last_seen, failures, successes, last_reason, cooldown_until, recent_uses
+                        FROM exit_health WHERE exit_ip=?
+                        """,
+                        (exit_ip,),
+                    ).fetchone()
+
+                    if row:
+                        _, last_seen, failures, successes, last_reason, existing_cooldown, recent_uses = row
+                        if bump_use:
+                            if now - (last_seen or now) > _TOR_OVERUSE_DECAY:
+                                recent_uses = 0
+                            recent_uses = (recent_uses or 0) + 1
+                        if increment_failure:
+                            failures = (failures or 0) + 1
+                        if increment_success:
+                            successes = (successes or 0) + 1
+                        effective_reason = reason or last_reason
+                        effective_cooldown = cooldown_until if cooldown_until is not None else (existing_cooldown or 0)
+
+                        if (recent_uses or 0) >= _TOR_OVERUSE_THRESHOLD:
+                            status = "bad"
+                            effective_reason = reason or "overused"
+                            effective_cooldown = max(effective_cooldown or 0, now + _TOR_OVERUSE_DECAY)
+
+                        conn.execute(
+                            """
+                            UPDATE exit_health
+                            SET status=?, last_seen=?, failures=?, successes=?, last_reason=?, cooldown_until=?, recent_uses=?
+                            WHERE exit_ip=?
+                            """,
+                            (
+                                status,
+                                now,
+                                failures or 0,
+                                successes or 0,
+                                effective_reason,
+                                effective_cooldown,
+                                recent_uses or 0,
+                                exit_ip,
+                            ),
+                        )
+                    else:
+                        recent_uses = 1 if bump_use else 0
+                        insert_status = status
+                        insert_reason = reason
+                        insert_cooldown = cooldown_until or 0
+
+                        if recent_uses >= _TOR_OVERUSE_THRESHOLD:
+                            insert_status = "bad"
+                            insert_reason = reason or "overused"
+                            insert_cooldown = max(insert_cooldown, now + _TOR_OVERUSE_DECAY)
+
+                        conn.execute(
+                            """
+                            INSERT INTO exit_health
+                            (exit_ip, status, last_seen, failures, successes, last_reason, cooldown_until, recent_uses)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            """,
+                            (
+                                exit_ip,
+                                insert_status,
+                                now,
+                                1 if increment_failure else 0,
+                                1 if increment_success else 0,
+                                insert_reason,
+                                insert_cooldown,
+                                recent_uses,
+                            ),
+                        )
+                    conn.commit()
+                    return
+            except sqlite3.OperationalError as exc:
+                logger.debug("Tor registry write contention for %s (attempt %d): %s", exit_ip, attempt + 1, exc)
+                time.sleep(0.05 * (attempt + 1))
+            except Exception as exc:
+                logger.debug("Tor registry update failed for %s: %s", exit_ip, exc)
+                return
+
+
+def _clear_exit_cache(proxy: str) -> None:
+    """Drop cached exit IP for a proxy."""
+    with _TOR_REGISTRY_LOCK:
+        if proxy in _TOR_EXIT_IP_CACHE:
+            _TOR_EXIT_IP_CACHE.pop(proxy, None)
+
+
+def _get_exit_ip(proxy: str | None, force_refresh: bool = False) -> str | None:
+    """Resolve current Tor exit IP for a proxy.
+
+    CRITICAL FIX: Uses dedicated session with tight timeouts to avoid blocking
+    the main search pipeline when check.torproject.org is slow or unreachable.
+    """
+    if not proxy or "socks" not in proxy.lower():
+        return None
+
+    now = time.time()
+    with _TOR_REGISTRY_LOCK:
+        cached = _TOR_EXIT_IP_CACHE.get(proxy)
+        if cached and not force_refresh:
+            ip, ts = cached
+            if now - ts <= _TOR_IP_CACHE_TTL:
+                return ip
+
+    proxies = {"http": proxy, "https": proxy}
+
+    # Try multiple endpoints for resilience
+    endpoints = [
+        "https://check.torproject.org/api/ip",
+        "https://api.ipify.org?format=json",
+        "https://ifconfig.me/ip",
+        "https://icanhazip.com",
+    ]
+
+    session = _get_tor_ip_session()
+
+    for endpoint in endpoints:
+        try:
+            # CRITICAL FIX: Tight timeout (5s) to avoid blocking pipeline
+            resp = session.get(endpoint, proxies=proxies, timeout=5.0)
+            if resp.status_code >= 400:
+                logger.debug("Exit IP lookup failed for %s at %s: status %s",
+                           proxy, endpoint, resp.status_code)
+                continue
+
+            # Parse response based on endpoint format
+            if "json" in endpoint or endpoint.endswith("/ip"):
+                try:
+                    data = resp.json()
+                    ip = data.get("IP") or data.get("ip")
+                except (ValueError, KeyError):
+                    # Not JSON, try plain text
+                    ip = resp.text.strip()
+            else:
+                ip = resp.text.strip()
+
+            # Validate IP format (basic check)
+            if ip and "." in ip and len(ip) <= 45:  # Max IPv6 length
+                with _TOR_REGISTRY_LOCK:
+                    _TOR_EXIT_IP_CACHE[proxy] = (ip, now)
+                logger.debug("Exit IP resolved for %s via %s: %s", proxy, endpoint, ip)
+                return ip
+
+        except requests.exceptions.Timeout:
+            logger.debug("Exit IP lookup timed out for %s at %s", proxy, endpoint)
+            continue
+        except requests.exceptions.ConnectionError as exc:
+            logger.debug("Exit IP lookup connection error for %s at %s: %s", proxy, endpoint, exc)
+            continue
+        except Exception as exc:
+            logger.debug("Exit IP lookup failed for %s at %s: %s", proxy, endpoint, exc)
+            continue
+
+    logger.debug("Exit IP lookup failed for %s: all endpoints exhausted", proxy)
+    return None
+
+
+def _mark_exit_bad(proxy: str | None, reason: str = "tainted") -> None:
+    """Mark current exit as bad and rotate circuit.
+
+    HIGH FIX: When exit IP cannot be determined, still persist proxy-level
+    block and rotate circuit, but skip exit_health updates to avoid registry
+    pollution with unknown/None entries.
+    """
+    if not _TOR_REGISTRY_ENABLED or not proxy or "socks" not in proxy.lower():
+        return
+
+    exit_ip = _get_exit_ip(proxy, force_refresh=True)
+
+    # HIGH FIX: Only update exit_health if we have a valid exit IP
+    # This prevents registry pollution with unknown exits
+    if exit_ip:
+        _update_exit_record(
+            exit_ip,
+            status="bad",
+            reason=reason,
+            increment_failure=True,
+            bump_use=True,
+            cooldown_until=time.time() + _TOR_BAD_TTL,
+        )
+        logger.debug("Marked exit %s as bad: %s", exit_ip, reason)
+    else:
+        # Can't identify exit - still persist proxy-level block
+        logger.warning("Cannot identify exit IP for proxy %s - persisting proxy-level block only", proxy)
+        _persist_proxy_block(proxy, 1, time.time())
+
+    _clear_exit_cache(proxy)
+    _rotate_tor_circuit(force=True, proxy=proxy)
+
+
+def _mark_exit_good(proxy: str | None) -> None:
+    """Record successful usage for the current exit."""
+    if not _TOR_REGISTRY_ENABLED or not proxy or "socks" not in proxy.lower():
+        return
+
+    exit_ip = _get_exit_ip(proxy, force_refresh=False)
+    if not exit_ip:
+        return
+
+    _update_exit_record(
+        exit_ip,
+        status="ok",
+        reason="success",
+        increment_success=True,
+        bump_use=True,
+        cooldown_until=None,
+    )
+
+
+def _ensure_clean_exit(proxy: str | None) -> str | None:
+    """Ensure we are not using a known bad/overused exit."""
+    if not _TOR_REGISTRY_ENABLED or not proxy or "socks" not in proxy.lower():
+        return None
+
+    for attempt in range(_TOR_MAX_ROTATION_ATTEMPTS):
+        exit_ip = _get_exit_ip(proxy, force_refresh=attempt > 0)
+        if not exit_ip:
+            logger.debug("Could not resolve exit IP on attempt %d/%d; rotating to try a fresh circuit",
+                         attempt + 1, _TOR_MAX_ROTATION_ATTEMPTS)
+            _rotate_tor_circuit(force=True, proxy=proxy)
+            _clear_exit_cache(proxy)
+            continue
+
+        status = _get_exit_status(exit_ip)
+
+        if status and status.get("status") == "bad":
+            logger.info("Exit %s marked bad (%s); rotating", exit_ip, status.get("last_reason") or "tainted")
+            _rotate_tor_circuit(force=True, proxy=proxy)
+            _clear_exit_cache(proxy)
+            continue
+
+        if status and status.get("overused"):
+            logger.info(
+                "Exit %s overused (%d recent uses) - marking bad and rotating",
+                exit_ip,
+                status.get("recent_uses", 0),
+            )
+            _update_exit_record(
+                exit_ip,
+                status="bad",
+                reason="overused",
+                bump_use=True,
+                cooldown_until=time.time() + _TOR_OVERUSE_DECAY,
+            )
+            _clear_exit_cache(proxy)
+            _rotate_tor_circuit(force=True, proxy=proxy)
+            continue
+
+        _update_exit_record(exit_ip, status=status["status"] if status else "ok", reason="in_use", bump_use=True)
+
+        # If bump_use crossed threshold inside _update_exit_record, status may now be bad
+        refreshed_status = _get_exit_status(exit_ip)
+        if refreshed_status and refreshed_status.get("status") == "bad" and refreshed_status.get("last_reason") == "overused":
+            logger.info("Exit %s crossed overuse threshold during selection; rotating", exit_ip)
+            _rotate_tor_circuit(force=True, proxy=proxy)
+            _clear_exit_cache(proxy)
+            continue
+
+        return exit_ip
+
+    return None
 
 # ────────────────────────────────────────────────────────────────────────
 # Proactive Anti-Detection State
 # ────────────────────────────────────────────────────────────────────────
 _REQUESTS_SINCE_ROTATION = 0
 _PROACTIVE_ROTATION_ENABLED = True
-_PROACTIVE_ROTATION_INTERVAL = 15  # Rotate every N requests (configurable from R)
+_PROACTIVE_ROTATION_BASE = int(os.environ.get("ASA_PROACTIVE_ROTATION_INTERVAL", "15"))
+_NEXT_PROACTIVE_ROTATION_TARGET = None
 
 _REQUESTS_SINCE_SESSION_RESET = 0
 _SESSION_RESET_ENABLED = True
-_SESSION_RESET_INTERVAL = 50  # Reset session every N requests
+_SESSION_RESET_BASE = int(os.environ.get("ASA_SESSION_RESET_INTERVAL", "50"))
+_NEXT_SESSION_RESET_TARGET = None
+
+def _sample_request_threshold(mean: int, spread: int, minimum: int, maximum: int) -> int:
+    """Generate a stochastic interval to avoid detectable periodicity."""
+    try:
+        val = int(round(random.gauss(mean, spread)))
+    except Exception:
+        val = mean
+    return max(minimum, min(maximum, val))
 
 
-def _rotate_tor_circuit(force: bool = False) -> bool:
+def _reset_rotation_targets() -> None:
+    """Resample rotation/session reset thresholds."""
+    global _NEXT_PROACTIVE_ROTATION_TARGET, _NEXT_SESSION_RESET_TARGET
+    _NEXT_PROACTIVE_ROTATION_TARGET = _sample_request_threshold(
+        _PROACTIVE_ROTATION_BASE, max(2, _PROACTIVE_ROTATION_BASE // 3), 5, 60
+    )
+    _NEXT_SESSION_RESET_TARGET = _sample_request_threshold(
+        _SESSION_RESET_BASE, max(5, _SESSION_RESET_BASE // 3), 15, 120
+    )
+
+# Initialize stochastic targets on import
+_reset_rotation_targets()
+
+# Session CAPTCHA tracking - pause or fail if too many CAPTCHAs
+_SESSION_CAPTCHA_COUNT = 0
+_SESSION_CAPTCHA_THRESHOLD = 50  # After this many CAPTCHAs, take extended pause
+_SESSION_CAPTCHA_CRITICAL = 100  # After this many, raise exception
+_SESSION_CAPTCHA_PAUSE_DURATION = 300  # 5 minute pause after threshold
+
+# ────────────────────────────────────────────────────────────────────────
+# IP/Proxy Blocklist Tracking
+# ────────────────────────────────────────────────────────────────────────
+# Track proxies that have recently hit CAPTCHA to avoid reusing them
+_PROXY_BLOCKLIST: Dict[str, float] = {}  # proxy -> timestamp of last CAPTCHA
+_PROXY_BLOCKLIST_LOCK = threading.Lock()
+_PROXY_BLOCK_DURATION = 300.0  # Block proxy for 5 minutes after CAPTCHA
+_PROXY_CAPTCHA_COUNTS: Dict[str, int] = {}  # Track repeat offenders
+_PROXY_MAX_CAPTCHA_COUNT = 3  # After this many CAPTCHAs, extend block duration
+
+
+def _persist_proxy_block(proxy: str, captcha_count: int, now: float) -> None:
+    """Persist proxy block to shared registry for cross-process awareness."""
+    path = _ensure_registry()
+    if not path or not proxy:
+        return
+
+    expires_at = now + (_PROXY_BLOCK_DURATION * min(captcha_count, 5))
+    with _TOR_REGISTRY_LOCK:
+        for attempt in range(3):
+            try:
+                with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+                    conn.execute("BEGIN IMMEDIATE")
+                    conn.execute(
+                        """
+                        INSERT INTO proxy_blocks(proxy, last_hit, captcha_count, expires_at)
+                        VALUES (?, ?, ?, ?)
+                        ON CONFLICT(proxy) DO UPDATE SET
+                            last_hit=excluded.last_hit,
+                            captcha_count=excluded.captcha_count,
+                            expires_at=excluded.expires_at
+                        """,
+                        (proxy, now, captcha_count, expires_at),
+                    )
+                    conn.commit()
+                    return
+            except sqlite3.OperationalError as exc:
+                logger.debug("Proxy block persist contention for %s (attempt %d): %s", proxy, attempt + 1, exc)
+                time.sleep(0.05 * (attempt + 1))
+            except Exception as exc:
+                logger.debug("Proxy block persist failed for %s: %s", proxy, exc)
+                return
+
+
+def _get_proxy_block(proxy: str) -> Dict[str, float] | None:
+    """Fetch proxy block entry from registry."""
+    path = _ensure_registry()
+    if not path or not proxy:
+        return None
+
+    with _TOR_REGISTRY_LOCK:
+        try:
+            with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+                row = conn.execute(
+                    "SELECT last_hit, captcha_count, expires_at FROM proxy_blocks WHERE proxy=?",
+                    (proxy,),
+                ).fetchone()
+                if not row:
+                    return None
+                last_hit, captcha_count, expires_at = row
+                return {
+                    "last_hit": last_hit,
+                    "captcha_count": captcha_count or 0,
+                    "expires_at": expires_at,
+                }
+        except Exception as exc:
+            logger.debug("Proxy block fetch failed for %s: %s", proxy, exc)
+            return None
+
+
+def _delete_proxy_block(proxy: str) -> None:
+    """Remove proxy block entry from registry."""
+    path = _ensure_registry()
+    if not path or not proxy:
+        return
+
+    with _TOR_REGISTRY_LOCK:
+        try:
+            with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+                conn.execute("DELETE FROM proxy_blocks WHERE proxy=?", (proxy,))
+                conn.commit()
+        except Exception as exc:
+            logger.debug("Proxy block delete failed for %s: %s", proxy, exc)
+
+
+def _cleanup_expired_proxy_blocks_db() -> int:
+    """Purge expired proxy blocks from registry."""
+    path = _ensure_registry()
+    if not path:
+        return 0
+
+    with _TOR_REGISTRY_LOCK:
+        try:
+            now = time.time()
+            with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+                count = conn.execute(
+                    "SELECT COUNT(*) FROM proxy_blocks WHERE expires_at <= ?",
+                    (now,),
+                ).fetchone()[0]
+                if count:
+                    conn.execute("DELETE FROM proxy_blocks WHERE expires_at <= ?", (now,))
+                    conn.commit()
+                return int(count or 0)
+        except Exception as exc:
+            logger.debug("Proxy block cleanup failed: %s", exc)
+            return 0
+
+
+def _record_captcha_hit(proxy: Optional[str]) -> None:
+    """Record that a proxy has hit a CAPTCHA.
+
+    Also tracks session-level CAPTCHA count and takes action if thresholds
+    are exceeded (extended pause or exception).
+
+    Args:
+        proxy: The proxy URL that hit CAPTCHA, or None for direct connections
+    """
+    global _SESSION_CAPTCHA_COUNT
+
+    # Track session-level CAPTCHAs (even for direct connections)
+    _SESSION_CAPTCHA_COUNT += 1
+
+    # Check session-level thresholds
+    if _SESSION_CAPTCHA_COUNT >= _SESSION_CAPTCHA_CRITICAL:
+        logger.error("CRITICAL: Session has hit %d CAPTCHAs - search infrastructure may be blocked",
+                    _SESSION_CAPTCHA_COUNT)
+        raise RuntimeError(f"Session CAPTCHA limit exceeded ({_SESSION_CAPTCHA_COUNT} CAPTCHAs). "
+                          "All exit nodes may be blocked. Consider: (1) waiting 10+ minutes, "
+                          "(2) using different Tor circuits, (3) reducing request rate.")
+
+    if _SESSION_CAPTCHA_COUNT >= _SESSION_CAPTCHA_THRESHOLD and \
+       _SESSION_CAPTCHA_COUNT % _SESSION_CAPTCHA_THRESHOLD == 0:  # Every 50 CAPTCHAs
+        logger.warning("Session has hit %d CAPTCHAs - taking extended pause (%.0fs)",
+                      _SESSION_CAPTCHA_COUNT, _SESSION_CAPTCHA_PAUSE_DURATION)
+        time.sleep(_SESSION_CAPTCHA_PAUSE_DURATION)
+
+    if not proxy:
+        return  # Don't track per-proxy stats for direct connections
+
+    now = time.time()
+    persisted = _get_proxy_block(proxy)
+
+    with _PROXY_BLOCKLIST_LOCK:
+        baseline_count = _PROXY_CAPTCHA_COUNTS.get(proxy, 0)
+        if persisted:
+            baseline_count = max(baseline_count, persisted.get("captcha_count", 0))
+
+        count = baseline_count + 1
+        _PROXY_BLOCKLIST[proxy] = now
+        _PROXY_CAPTCHA_COUNTS[proxy] = count
+
+        if count >= _PROXY_MAX_CAPTCHA_COUNT:
+            logger.warning("Proxy %s has hit CAPTCHA %d times - forcing circuit rotation",
+                          proxy, count)
+            # Force rotation to escape blocked exit node
+            if proxy and "socks" in proxy.lower():
+                rotation_success = _rotate_tor_circuit(force=True, proxy=proxy)
+                if rotation_success:
+                    logger.info("Forced circuit rotation succeeded after %d CAPTCHAs", count)
+                else:
+                    logger.warning("Forced circuit rotation FAILED after %d CAPTCHAs - check Tor control port", count)
+
+    _persist_proxy_block(proxy, count, now)
+
+
+def _is_proxy_blocked(proxy: Optional[str]) -> bool:
+    """Check if a proxy is currently blocked due to recent CAPTCHA.
+
+    Args:
+        proxy: The proxy URL to check, or None for direct connections
+
+    Returns:
+        True if the proxy is blocked, False otherwise
+    """
+    if not proxy:
+        return False  # Direct connections aren't tracked
+
+    now = time.time()
+
+    with _PROXY_BLOCKLIST_LOCK:
+        if proxy not in _PROXY_BLOCKLIST:
+            blocked_time = None
+        else:
+            blocked_time = _PROXY_BLOCKLIST[proxy]
+
+        if blocked_time is not None:
+            elapsed = now - blocked_time
+
+            # Calculate block duration based on repeat offender status
+            count = _PROXY_CAPTCHA_COUNTS.get(proxy, 1)
+            effective_duration = _PROXY_BLOCK_DURATION * min(count, 5)  # Cap at 5x
+
+            if elapsed < effective_duration:
+                remaining = effective_duration - elapsed
+                logger.debug("Proxy %s blocked for %.1f more seconds (CAPTCHA count: %d)",
+                            proxy, remaining, count)
+                return True
+
+        # Block expired - clean it up (local cache)
+        if blocked_time is not None:
+            del _PROXY_BLOCKLIST[proxy]
+            if proxy in _PROXY_CAPTCHA_COUNTS:
+                del _PROXY_CAPTCHA_COUNTS[proxy]
+
+    # Cross-process: check persisted registry
+    entry = _get_proxy_block(proxy)
+    if entry:
+        remaining = entry.get("expires_at", 0) - now
+        if remaining > 0:
+            with _PROXY_BLOCKLIST_LOCK:
+                _PROXY_BLOCKLIST[proxy] = entry.get("last_hit", now)
+                _PROXY_CAPTCHA_COUNTS[proxy] = entry.get("captcha_count", 1)
+            logger.debug("Proxy %s blocked via registry for %.1f more seconds (CAPTCHA count: %d)",
+                        proxy, remaining, entry.get("captcha_count", 1))
+            return True
+
+        _delete_proxy_block(proxy)
+        with _PROXY_BLOCKLIST_LOCK:
+            _PROXY_BLOCKLIST.pop(proxy, None)
+            _PROXY_CAPTCHA_COUNTS.pop(proxy, None)
+
+    return False
+
+
+def _cleanup_expired_blocks() -> int:
+    """Remove expired entries from the blocklist.
+
+    Returns:
+        Number of entries removed
+    """
+    db_removed = _cleanup_expired_proxy_blocks_db()
+    with _PROXY_BLOCKLIST_LOCK:
+        now = time.time()
+        expired = []
+
+        for proxy, blocked_time in _PROXY_BLOCKLIST.items():
+            count = _PROXY_CAPTCHA_COUNTS.get(proxy, 1)
+            effective_duration = _PROXY_BLOCK_DURATION * min(count, 5)
+
+            if now - blocked_time >= effective_duration:
+                expired.append(proxy)
+
+        for proxy in expired:
+            del _PROXY_BLOCKLIST[proxy]
+            # Also reset CAPTCHA count after block expires
+            if proxy in _PROXY_CAPTCHA_COUNTS:
+                del _PROXY_CAPTCHA_COUNTS[proxy]
+
+        total_removed = len(expired) + db_removed
+
+        if total_removed:
+            logger.debug("Cleaned up %d expired proxy blocks (local=%d, db=%d)",
+                        total_removed, len(expired), db_removed)
+
+        return total_removed
+
+
+def _get_blocklist_status() -> Dict[str, Any]:
+    """Get current blocklist status for debugging.
+
+    Returns:
+        Dict with blocklist statistics
+    """
+    db_entries: Dict[str, Any] = {}
+    path = _ensure_registry()
+    if path:
+        with _TOR_REGISTRY_LOCK:
+            try:
+                with sqlite3.connect(path, timeout=_SQLITE_TIMEOUT) as conn:
+                    rows = conn.execute(
+                        "SELECT proxy, last_hit, captcha_count, expires_at FROM proxy_blocks"
+                    ).fetchall()
+                    now = time.time()
+                    db_entries = {
+                        proxy: {
+                            "blocked_since": now - last_hit,
+                            "captcha_count": captcha_count,
+                            "seconds_remaining": max(expires_at - now, 0),
+                        }
+                        for proxy, last_hit, captcha_count, expires_at in rows
+                    }
+            except Exception as exc:
+                logger.debug("Proxy blocklist status read failed: %s", exc)
+
+    with _PROXY_BLOCKLIST_LOCK:
+        now = time.time()
+        return {
+            "blocked_proxies": len(_PROXY_BLOCKLIST),
+            "total_captcha_counts": dict(_PROXY_CAPTCHA_COUNTS),
+            "blocked_entries": {
+                proxy: {
+                    "blocked_since": now - ts,
+                    "captcha_count": _PROXY_CAPTCHA_COUNTS.get(proxy, 0)
+                }
+                for proxy, ts in _PROXY_BLOCKLIST.items()
+            },
+            "registry_entries": db_entries,
+        }
+
+
+def _rotate_tor_circuit(force: bool = False, proxy: str | None = None, verify: bool = True) -> bool:
     """Request a new Tor circuit (new exit node) via the control port.
 
     This is the key to avoiding CAPTCHA when using Tor - each new circuit
@@ -448,11 +1336,16 @@ def _rotate_tor_circuit(force: bool = False) -> bool:
 
     Args:
         force: If True, rotate even if min interval hasn't passed
+        proxy: Proxy URL to verify IP change (e.g., "socks5://127.0.0.1:9050")
+        verify: If True, verify that exit IP actually changed after rotation
 
     Returns:
-        True if rotation succeeded, False otherwise
+        True if rotation succeeded (and IP changed if verify=True), False otherwise
     """
     global _TOR_LAST_ROTATION
+
+    # Get control port dynamically (supports per-worker assignment)
+    control_port = _get_tor_control_port()
 
     # Rate limit rotations to avoid hammering Tor
     now = time.time()
@@ -461,60 +1354,139 @@ def _rotate_tor_circuit(force: bool = False) -> bool:
                      now - _TOR_LAST_ROTATION)
         return False
 
+    logger.info("Attempting Tor circuit rotation on port %d (force=%s)", control_port, force)
+
+    # CRITICAL FIX: Get current exit IP before rotation for verification
+    old_exit_ip = None
+    if verify and proxy:
+        old_exit_ip = _get_exit_ip(proxy, force_refresh=True)
+        if old_exit_ip:
+            logger.debug("Pre-rotation exit IP: %s", old_exit_ip)
+
+    rotation_success = False
+
     # Try using stem library first (cleaner API)
     try:
         from stem import Signal
         from stem.control import Controller
 
-        with Controller.from_port(port=_TOR_CONTROL_PORT) as controller:
+        with Controller.from_port(port=control_port) as controller:
             if _TOR_CONTROL_PASSWORD:
                 controller.authenticate(password=_TOR_CONTROL_PASSWORD)
             else:
                 controller.authenticate()  # Try cookie auth
             controller.signal(Signal.NEWNYM)
             _TOR_LAST_ROTATION = time.time()
-            logger.info("Tor circuit rotated successfully (new exit node)")
-            return True
+            rotation_success = True
+            logger.info("Tor NEWNYM signal sent successfully via stem (port %d)", control_port)
 
     except ImportError:
         logger.debug("stem library not available, trying raw socket")
     except Exception as e:
-        logger.debug("stem rotation failed: %s", e)
+        logger.warning("stem rotation failed on port %d: %s", control_port, e)
 
-    # Fallback: raw socket communication
-    try:
-        import socket
+    # Fallback: raw socket communication (only if stem didn't succeed)
+    if not rotation_success:
+        try:
+            import socket
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.settimeout(5.0)
-            sock.connect(("127.0.0.1", _TOR_CONTROL_PORT))
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.settimeout(5.0)
+                sock.connect(("127.0.0.1", control_port))
 
-            # Authenticate
-            if _TOR_CONTROL_PASSWORD:
-                sock.send(f'AUTHENTICATE "{_TOR_CONTROL_PASSWORD}"\r\n'.encode())
-            else:
-                sock.send(b'AUTHENTICATE\r\n')
+                # Authenticate - try multiple methods
+                auth_success = False
 
-            response = sock.recv(1024).decode()
-            if "250" not in response:
-                logger.warning("Tor authentication failed: %s", response.strip())
-                return False
+                if _TOR_CONTROL_PASSWORD:
+                    # Method 1: Password authentication
+                    sock.send(f'AUTHENTICATE "{_TOR_CONTROL_PASSWORD}"\r\n'.encode())
+                    response = sock.recv(1024).decode()
+                    auth_success = "250" in response
 
-            # Request new identity
-            sock.send(b'SIGNAL NEWNYM\r\n')
-            response = sock.recv(1024).decode()
+                if not auth_success:
+                    # Method 2: Cookie authentication - try known paths
+                    socks_port = control_port - 100  # 9150 -> 9050, etc.
+                    cookie_paths = [
+                        f"/tmp/ELITES_tor_instance_{socks_port}/control_auth_cookie",
+                        f"/tmp/tor_{socks_port}/control_auth_cookie",
+                        "/var/lib/tor/control_auth_cookie",
+                        os.path.expanduser("~/.tor/control_auth_cookie"),
+                        "/opt/homebrew/var/lib/tor/control_auth_cookie",
+                    ]
+                    for cookie_path in cookie_paths:
+                        if os.path.exists(cookie_path):
+                            try:
+                                with open(cookie_path, "rb") as f:
+                                    cookie = f.read().hex()
+                                sock.send(f'AUTHENTICATE {cookie}\r\n'.encode())
+                                response = sock.recv(1024).decode()
+                                if "250" in response:
+                                    auth_success = True
+                                    logger.debug("Cookie auth succeeded from %s", cookie_path)
+                                    break
+                            except (IOError, PermissionError) as e:
+                                logger.debug("Could not read cookie from %s: %s", cookie_path, e)
 
-            if "250" in response:
-                _TOR_LAST_ROTATION = time.time()
-                logger.info("Tor circuit rotated successfully via raw socket")
-                return True
-            else:
-                logger.warning("Tor NEWNYM failed: %s", response.strip())
-                return False
+                if not auth_success:
+                    # Method 3: Try empty auth (some Tor configs allow it)
+                    if os.environ.get("ASA_ALLOW_TOR_EMPTY_AUTH") == "1":
+                        sock.send(b'AUTHENTICATE\r\n')
+                        response = sock.recv(1024).decode()
+                        auth_success = "250" in response
 
-    except Exception as e:
-        logger.debug("Raw socket Tor rotation failed: %s", e)
+                if not auth_success:
+                    logger.warning("Tor authentication failed on port %d (tried password, cookie, and empty auth)", control_port)
+                    return False
+
+                # Request new identity
+                sock.send(b'SIGNAL NEWNYM\r\n')
+                response = sock.recv(1024).decode()
+
+                if "250" in response:
+                    _TOR_LAST_ROTATION = time.time()
+                    rotation_success = True
+                    logger.info("Tor NEWNYM signal sent successfully via raw socket (port %d)", control_port)
+                else:
+                    logger.warning("Tor NEWNYM failed on port %d: %s", control_port, response.strip())
+                    return False
+
+        except ConnectionRefusedError:
+            logger.warning("Tor control port %d: connection refused (is Tor running with ControlPort enabled?)", control_port)
+            return False
+        except Exception as e:
+            logger.warning("Raw socket Tor rotation failed on port %d: %s", control_port, e)
+            return False
+
+    # If rotation signal was sent but we couldn't verify, return success optimistically
+    if not rotation_success:
         return False
+
+    # CRITICAL FIX: Verify that exit IP actually changed after rotation
+    if not verify or not proxy:
+        return True
+
+    for attempt in range(3):
+        # Wait a moment for circuit to settle (progressively longer)
+        time.sleep(1.5 + attempt)
+        _clear_exit_cache(proxy)
+        new_exit_ip = _get_exit_ip(proxy, force_refresh=True)
+
+        if new_exit_ip:
+            if old_exit_ip and new_exit_ip == old_exit_ip:
+                logger.warning(
+                    "Tor rotation FAILED to change exit IP: still %s (signal sent but circuit unchanged)",
+                    new_exit_ip,
+                )
+                return False
+            logger.info(
+                "Tor rotation VERIFIED: exit IP changed%s %s",
+                f" from {old_exit_ip}" if old_exit_ip else "",
+                new_exit_ip,
+            )
+            return True
+
+    logger.warning("Tor rotation could not verify exit change (all lookups failed)")
+    return False
 
 
 def configure_tor(
@@ -538,6 +1510,8 @@ def configure_tor(
 
     if control_port is not None:
         _TOR_CONTROL_PORT = control_port
+        # Keep env var in sync so worker processes that only read env still pick it up
+        os.environ["TOR_CONTROL_PORT"] = str(control_port)
     if control_password is not None:
         _TOR_CONTROL_PASSWORD = control_password
     if min_rotation_interval is not None:
@@ -547,6 +1521,63 @@ def configure_tor(
         "control_port": _TOR_CONTROL_PORT,
         "has_password": bool(_TOR_CONTROL_PASSWORD),
         "min_rotation_interval": _TOR_MIN_ROTATION_INTERVAL,
+    }
+
+
+def configure_tor_registry(
+    registry_path: str | None = None,
+    enable: bool | None = None,
+    bad_ttl: float | None = None,
+    good_ttl: float | None = None,
+    overuse_threshold: int | None = None,
+    overuse_decay: float | None = None,
+    max_rotation_attempts: int | None = None,
+    ip_cache_ttl: float | None = None,
+) -> dict:
+    """Configure shared Tor exit registry settings."""
+    global _TOR_REGISTRY_PATH, _TOR_REGISTRY_ENABLED, _TOR_BAD_TTL, _TOR_GOOD_TTL
+    global _TOR_OVERUSE_THRESHOLD, _TOR_OVERUSE_DECAY, _TOR_MAX_ROTATION_ATTEMPTS, _TOR_IP_CACHE_TTL
+
+    if enable is not None:
+        _TOR_REGISTRY_ENABLED = bool(enable)
+
+    if registry_path:
+        _TOR_REGISTRY_PATH = registry_path
+        os.environ["ASA_TOR_EXIT_DB"] = registry_path
+        os.environ["TOR_EXIT_DB"] = registry_path
+
+    if bad_ttl is not None:
+        _TOR_BAD_TTL = float(bad_ttl)
+    if good_ttl is not None:
+        _TOR_GOOD_TTL = float(good_ttl)
+    if overuse_threshold is not None:
+        _TOR_OVERUSE_THRESHOLD = int(overuse_threshold)
+    if overuse_decay is not None:
+        _TOR_OVERUSE_DECAY = float(overuse_decay)
+    if max_rotation_attempts is not None:
+        _TOR_MAX_ROTATION_ATTEMPTS = int(max_rotation_attempts)
+    if ip_cache_ttl is not None:
+        _TOR_IP_CACHE_TTL = float(ip_cache_ttl)
+
+    if not _TOR_REGISTRY_ENABLED:
+        _TOR_EXIT_IP_CACHE.clear()
+
+    resolved_path = _ensure_registry()
+
+    if resolved_path:
+        logger.info("Tor registry configured (enabled=%s): %s", _TOR_REGISTRY_ENABLED, resolved_path)
+    else:
+        logger.info("Tor registry disabled")
+
+    return {
+        "registry_path": _resolve_registry_path(),
+        "enabled": _TOR_REGISTRY_ENABLED,
+        "bad_ttl": _TOR_BAD_TTL,
+        "good_ttl": _TOR_GOOD_TTL,
+        "overuse_threshold": _TOR_OVERUSE_THRESHOLD,
+        "overuse_decay": _TOR_OVERUSE_DECAY,
+        "max_rotation_attempts": _TOR_MAX_ROTATION_ATTEMPTS,
+        "ip_cache_ttl": _TOR_IP_CACHE_TTL,
     }
 
 
@@ -577,12 +1608,15 @@ def _maybe_proactive_rotation(proxy: str = None) -> bool:
 
     _REQUESTS_SINCE_ROTATION += 1
 
-    if _REQUESTS_SINCE_ROTATION >= _PROACTIVE_ROTATION_INTERVAL:
-        logger.info("Proactive circuit rotation (after %d requests)",
-                    _REQUESTS_SINCE_ROTATION)
-        success = _rotate_tor_circuit(force=False)
-        if success:
-            _REQUESTS_SINCE_ROTATION = 0
+    if _REQUESTS_SINCE_ROTATION >= (_NEXT_PROACTIVE_ROTATION_TARGET or _PROACTIVE_ROTATION_BASE):
+        logger.info(
+            "Proactive circuit rotation (after %d requests; target=%d)",
+            _REQUESTS_SINCE_ROTATION,
+            _NEXT_PROACTIVE_ROTATION_TARGET or _PROACTIVE_ROTATION_BASE,
+        )
+        success = _rotate_tor_circuit(force=False, proxy=proxy)
+        _REQUESTS_SINCE_ROTATION = 0
+        _reset_rotation_targets()
         return success
 
     return False
@@ -605,8 +1639,12 @@ def _maybe_session_reset() -> bool:
 
     _REQUESTS_SINCE_SESSION_RESET += 1
 
-    if _REQUESTS_SINCE_SESSION_RESET >= _SESSION_RESET_INTERVAL:
-        logger.info("Session reset (after %d requests)", _REQUESTS_SINCE_SESSION_RESET)
+    if _REQUESTS_SINCE_SESSION_RESET >= (_NEXT_SESSION_RESET_TARGET or _SESSION_RESET_BASE):
+        logger.info(
+            "Session reset (after %d requests; target=%d)",
+            _REQUESTS_SINCE_SESSION_RESET,
+            _NEXT_SESSION_RESET_TARGET or _SESSION_RESET_BASE,
+        )
 
         # Reset timing state to appear as new session
         _last_search_time = 0.0
@@ -618,6 +1656,7 @@ def _maybe_session_reset() -> bool:
 
         # Reset counter
         _REQUESTS_SINCE_SESSION_RESET = 0
+        _reset_rotation_targets()
 
         return True
 
@@ -643,23 +1682,25 @@ def configure_anti_detection(
     Returns:
         Dict with current configuration
     """
-    global _PROACTIVE_ROTATION_ENABLED, _PROACTIVE_ROTATION_INTERVAL
-    global _SESSION_RESET_ENABLED, _SESSION_RESET_INTERVAL
+    global _PROACTIVE_ROTATION_ENABLED, _PROACTIVE_ROTATION_BASE
+    global _SESSION_RESET_ENABLED, _SESSION_RESET_BASE
 
     if proactive_rotation_enabled is not None:
         _PROACTIVE_ROTATION_ENABLED = proactive_rotation_enabled
     if proactive_rotation_interval is not None:
-        _PROACTIVE_ROTATION_INTERVAL = proactive_rotation_interval
+        _PROACTIVE_ROTATION_BASE = proactive_rotation_interval
     if session_reset_enabled is not None:
         _SESSION_RESET_ENABLED = session_reset_enabled
     if session_reset_interval is not None:
-        _SESSION_RESET_INTERVAL = session_reset_interval
+        _SESSION_RESET_BASE = session_reset_interval
+
+    _reset_rotation_targets()
 
     return {
         "proactive_rotation_enabled": _PROACTIVE_ROTATION_ENABLED,
-        "proactive_rotation_interval": _PROACTIVE_ROTATION_INTERVAL,
+        "proactive_rotation_interval": _PROACTIVE_ROTATION_BASE,
         "session_reset_enabled": _SESSION_RESET_ENABLED,
-        "session_reset_interval": _SESSION_RESET_INTERVAL,
+        "session_reset_interval": _SESSION_RESET_BASE,
     }
 
 
@@ -670,22 +1711,32 @@ def _new_driver(
     headless: bool,
     bypass_proxy_for_driver: bool,
     use_proxy_for_browser: bool = True,
-) -> webdriver.Firefox | webdriver.Chrome:
-    """Create a Selenium WebDriver instance with stealth measures.
+) -> Any:  # Returns UC Chrome, Firefox, or standard Chrome
+    """Create a WebDriver instance with maximum stealth measures.
 
-    Tries Firefox first (preferred), falls back to Chrome if unavailable.
-    Implements anti-detection measures:
-    - Randomized user agent
-    - Randomized viewport size
-    - Disabled automation indicators
-    - Randomized language headers
+    Priority order (best stealth first):
+    1. undetected-chromedriver (UC) - best anti-detection, handles most bot checks
+    2. Firefox with stealth options - good fallback, different fingerprint
+    3. Standard Chrome with manual stealth - last resort
+
+    Args:
+        proxy: SOCKS or HTTP proxy URL
+        headers: Custom headers to inject
+        headless: Run in headless mode
+        bypass_proxy_for_driver: Temporarily clear proxy for driver download
+        use_proxy_for_browser: Whether to use proxy for actual browsing
+
+    Returns:
+        WebDriver instance (UC Chrome, Firefox, or standard Chrome)
     """
-    # Temporarily clear proxies so Selenium-Manager can download drivers
+    # Temporarily clear proxies so Selenium-Manager/UC can download drivers
+    # MEDIUM FIX: Use lock to make env var mutations thread-safe
     saved_env: Dict[str, str] = {}
     if bypass_proxy_for_driver:
-        for var in ("HTTP_PROXY", "HTTPS_PROXY"):
-            if var in os.environ:
-                saved_env[var] = os.environ.pop(var)
+        with _ENV_VAR_LOCK:
+            for var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
+                if var in os.environ:
+                    saved_env[var] = os.environ.pop(var)
 
     # Randomize fingerprint components
     random_ua = random.choice(_STEALTH_USER_AGENTS)
@@ -694,45 +1745,130 @@ def _new_driver(
 
     driver = None
     try:
-        # Try Firefox first (default) with stealth options
-        firefox_opts = FirefoxOptions()
-        firefox_opts.add_argument("--headless")
-        firefox_opts.add_argument("--disable-gpu")
-        firefox_opts.add_argument("--no-sandbox")
-        firefox_opts.add_argument(f"--width={random_viewport[0]}")
-        firefox_opts.add_argument(f"--height={random_viewport[1]}")
-
-        # Firefox stealth preferences
-        firefox_opts.set_preference("general.useragent.override", random_ua)
-        firefox_opts.set_preference("intl.accept_languages", random_lang)
-        firefox_opts.set_preference("dom.webdriver.enabled", False)
-        firefox_opts.set_preference("useAutomationExtension", False)
-        firefox_opts.set_preference("privacy.trackingprotection.enabled", False)
-        firefox_opts.set_preference("network.http.sendRefererHeader", 2)
-        firefox_opts.set_preference("general.platform.override", "Win32")
-
-        # Disable telemetry and crash reporting (reduces detectability)
-        firefox_opts.set_preference("toolkit.telemetry.enabled", False)
-        firefox_opts.set_preference("datareporting.healthreport.uploadEnabled", False)
-        firefox_opts.set_preference("browser.crashReports.unsubmittedCheck.autoSubmit2", False)
-
-        if proxy and use_proxy_for_browser:
-            firefox_opts.set_preference("network.proxy.type", 1)
-            # Parse SOCKS proxy if provided
-            if "socks" in (proxy or "").lower():
-                # Format: socks5h://host:port
-                import re
-                match = re.match(r"socks\d*h?://([^:]+):(\d+)", proxy)
-                if match:
-                    firefox_opts.set_preference("network.proxy.socks", match.group(1))
-                    firefox_opts.set_preference("network.proxy.socks_port", int(match.group(2)))
-                    firefox_opts.set_preference("network.proxy.socks_remote_dns", True)
-
+        # ════════════════════════════════════════════════════════════════════
+        # TIER 1: undetected-chromedriver (UC) - BEST STEALTH
+        # ════════════════════════════════════════════════════════════════════
+        # UC patches ChromeDriver to evade detection by anti-bot services.
+        # It handles: webdriver flag, CDP detection, headless detection, etc.
         try:
-            driver = webdriver.Firefox(options=firefox_opts)
-            logger.debug("Using Firefox WebDriver (stealth mode)")
+            import undetected_chromedriver as uc
 
-            # Additional stealth: override navigator.webdriver via JavaScript
+            logger.info("Attempting undetected-chromedriver (UC) for maximum stealth")
+
+            # UC options - it handles most stealth automatically
+            uc_options = uc.ChromeOptions()
+
+            # Headless mode - UC supports headless but it's more detectable
+            if headless:
+                uc_options.add_argument("--headless=new")
+
+            # Window size
+            uc_options.add_argument(f"--window-size={random_viewport[0]},{random_viewport[1]}")
+
+            # Disable GPU (reduces fingerprinting surface)
+            uc_options.add_argument("--disable-gpu")
+            uc_options.add_argument("--disable-dev-shm-usage")
+            uc_options.add_argument("--no-sandbox")
+
+            # Language
+            uc_options.add_argument(f"--lang={random_lang.split(',')[0]}")
+
+            # Proxy handling for UC
+            if proxy and use_proxy_for_browser:
+                # UC can handle SOCKS proxies but needs special handling
+                if "socks" in (proxy or "").lower():
+                    # For SOCKS proxy, we need to use a proxy extension or bypass
+                    # UC doesn't natively support SOCKS well in headless
+                    logger.debug("UC: SOCKS proxy detected, using proxy-server arg")
+                    uc_options.add_argument(f"--proxy-server={proxy}")
+                else:
+                    uc_options.add_argument(f"--proxy-server={proxy}")
+
+            # Create UC driver
+            # use_subprocess=True helps with cleanup in parallel environments
+            driver = uc.Chrome(
+                options=uc_options,
+                use_subprocess=True,
+                version_main=None,  # Auto-detect Chrome version
+            )
+
+            logger.info("Using undetected-chromedriver (UC) - maximum stealth mode")
+
+            # UC handles most stealth automatically, but we can add extras
+            try:
+                # Set custom user agent if needed
+                platform_override = "Win32"
+                if "mac" in random_ua.lower() or "safari" in random_ua.lower():
+                    platform_override = "MacIntel"
+                driver.execute_cdp_cmd("Network.setUserAgentOverride", {
+                    "userAgent": random_ua,
+                    "acceptLanguage": random_lang,
+                    "platform": platform_override
+                })
+            except Exception as e:
+                logger.debug("UC user agent override failed (non-fatal): %s", e)
+
+            # Inject custom headers if provided
+            if headers:
+                try:
+                    driver.execute_cdp_cmd("Network.enable", {})
+                    driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": headers})
+                except Exception as e:
+                    logger.debug("UC header injection failed (non-fatal): %s", e)
+
+            return driver
+
+        except ImportError:
+            logger.debug("undetected-chromedriver not installed, trying Firefox")
+        except Exception as uc_err:
+            logger.warning("UC Chrome failed (%s), trying Firefox fallback", uc_err)
+            if driver:
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+                driver = None
+
+        # ════════════════════════════════════════════════════════════════════
+        # TIER 2: Firefox with stealth options
+        # ════════════════════════════════════════════════════════════════════
+        try:
+            firefox_opts = FirefoxOptions()
+            if headless:
+                firefox_opts.add_argument("--headless")
+            firefox_opts.add_argument("--disable-gpu")
+            firefox_opts.add_argument("--no-sandbox")
+            firefox_opts.add_argument(f"--width={random_viewport[0]}")
+            firefox_opts.add_argument(f"--height={random_viewport[1]}")
+
+            # Firefox stealth preferences
+            firefox_opts.set_preference("general.useragent.override", random_ua)
+            firefox_opts.set_preference("intl.accept_languages", random_lang)
+            firefox_opts.set_preference("dom.webdriver.enabled", False)
+            firefox_opts.set_preference("useAutomationExtension", False)
+            firefox_opts.set_preference("privacy.trackingprotection.enabled", False)
+            firefox_opts.set_preference("network.http.sendRefererHeader", 2)
+            firefox_opts.set_preference("general.platform.override", "Win32")
+
+            # Disable telemetry and crash reporting
+            firefox_opts.set_preference("toolkit.telemetry.enabled", False)
+            firefox_opts.set_preference("datareporting.healthreport.uploadEnabled", False)
+            firefox_opts.set_preference("browser.crashReports.unsubmittedCheck.autoSubmit2", False)
+
+            if proxy and use_proxy_for_browser:
+                firefox_opts.set_preference("network.proxy.type", 1)
+                if "socks" in (proxy or "").lower():
+                    import re
+                    match = re.match(r"socks\d*h?://([^:]+):(\d+)", proxy)
+                    if match:
+                        firefox_opts.set_preference("network.proxy.socks", match.group(1))
+                        firefox_opts.set_preference("network.proxy.socks_port", int(match.group(2)))
+                        firefox_opts.set_preference("network.proxy.socks_remote_dns", True)
+
+            driver = webdriver.Firefox(options=firefox_opts)
+            logger.info("Using Firefox WebDriver (stealth mode)")
+
+            # Additional stealth via JavaScript
             try:
                 driver.execute_script("""
                     Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
@@ -742,57 +1878,64 @@ def _new_driver(
             except Exception as e:
                 logger.debug("Firefox stealth script injection failed: %s", e)
 
+            return driver
+
         except WebDriverException as firefox_err:
-            logger.debug("Firefox unavailable (%s), trying Chrome", firefox_err)
+            logger.debug("Firefox unavailable (%s), trying standard Chrome", firefox_err)
 
-            # Fallback to Chrome with stealth options
-            from selenium.webdriver.chrome.options import Options as ChromeOptions
-            chrome_opts = ChromeOptions()
+        # ════════════════════════════════════════════════════════════════════
+        # TIER 3: Standard Chrome with manual stealth (last resort)
+        # ════════════════════════════════════════════════════════════════════
+        from selenium.webdriver.chrome.options import Options as ChromeOptions
+        chrome_opts = ChromeOptions()
+        if headless:
             chrome_opts.add_argument("--headless=new")
-            chrome_opts.add_argument("--disable-gpu")
-            chrome_opts.add_argument("--disable-dev-shm-usage")
-            chrome_opts.add_argument("--no-sandbox")
-            chrome_opts.add_argument(f"--window-size={random_viewport[0]},{random_viewport[1]}")
-            chrome_opts.add_argument(f"--user-agent={random_ua}")
-            chrome_opts.add_argument(f"--lang={random_lang.split(',')[0]}")
+        chrome_opts.add_argument("--disable-gpu")
+        chrome_opts.add_argument("--disable-dev-shm-usage")
+        chrome_opts.add_argument("--no-sandbox")
+        chrome_opts.add_argument(f"--window-size={random_viewport[0]},{random_viewport[1]}")
+        chrome_opts.add_argument(f"--user-agent={random_ua}")
+        chrome_opts.add_argument(f"--lang={random_lang.split(',')[0]}")
 
-            # Chrome stealth arguments
-            chrome_opts.add_argument("--disable-blink-features=AutomationControlled")
-            chrome_opts.add_argument("--disable-infobars")
-            chrome_opts.add_argument("--disable-extensions")
-            chrome_opts.add_experimental_option("excludeSwitches", ["enable-automation"])
-            chrome_opts.add_experimental_option("useAutomationExtension", False)
+        # Manual stealth arguments
+        chrome_opts.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_opts.add_argument("--disable-infobars")
+        chrome_opts.add_argument("--disable-extensions")
+        chrome_opts.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_opts.add_experimental_option("useAutomationExtension", False)
 
-            if proxy and use_proxy_for_browser:
-                chrome_opts.add_argument(f"--proxy-server={proxy}")
+        if proxy and use_proxy_for_browser:
+            chrome_opts.add_argument(f"--proxy-server={proxy}")
 
-            driver = webdriver.Chrome(options=chrome_opts)
-            logger.debug("Using Chrome WebDriver (stealth mode)")
+        driver = webdriver.Chrome(options=chrome_opts)
+        logger.info("Using standard Chrome WebDriver (manual stealth mode)")
 
-            # Chrome stealth: override navigator.webdriver via CDP
+        # Manual stealth via CDP
+        try:
+            driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                "source": """
+                    Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                    Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+                    window.chrome = {runtime: {}};
+                """
+            })
+        except Exception as e:
+            logger.debug("Chrome stealth CDP injection failed: %s", e)
+
+        if headers:
             try:
-                driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-                    "source": """
-                        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-                        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
-                        window.chrome = {runtime: {}};
-                    """
-                })
+                driver.execute_cdp_cmd("Network.enable", {})
+                driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": headers})
             except Exception as e:
-                logger.debug("Chrome stealth CDP injection failed: %s", e)
+                logger.debug("CDP header injection failed: %s", e)
 
-            # Chrome-specific: inject headers via CDP
-            if headers:
-                try:
-                    driver.execute_cdp_cmd("Network.enable", {})
-                    driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": headers})
-                except Exception as e:
-                    logger.debug("CDP header injection failed: %s", e)
+        return driver
 
     finally:
-        os.environ.update(saved_env)
-
-    return driver
+        # MEDIUM FIX: Use lock to make env var restoration thread-safe
+        if saved_env:
+            with _ENV_VAR_LOCK:
+                os.environ.update(saved_env)
 
 
 def _browser_search(
@@ -814,13 +1957,15 @@ def _browser_search(
 
     logger.debug("Starting browser search for: %s", query[:60])
 
-    # Strategy: Try with proxy first (2 attempts), then without proxy (1 attempt)
-    # This allows falling back to direct IP if Tor is blocked
+    # Strategy: Always use proxy if configured (preserve anonymity by default)
+    # Only fall back to direct IP if explicitly allowed via config
     for attempt in range(max_retries):
-        # After first 2 attempts with proxy fail, try without proxy
-        use_proxy = (attempt < 2) if proxy else False
-        if attempt == 2 and proxy:
-            logger.info("Switching to DIRECT IP (no proxy) for final attempt")
+        # CRITICAL FIX: Direct IP fallback is now opt-in to preserve anonymity
+        use_proxy = bool(proxy)  # Always use proxy if configured
+        if attempt >= 2 and proxy and cfg.allow_direct_fallback:
+            use_proxy = False
+            logger.warning("ANONYMITY WARNING: Switching to DIRECT IP (no proxy) for final attempt - "
+                          "your real IP will be exposed. Set allow_direct_fallback=False to disable.")
 
         driver = None  # Initialize to None for safe cleanup
         try:
@@ -840,9 +1985,13 @@ def _browser_search(
             time.sleep(humanized_page_wait)
             page_source = driver.page_source.lower()
 
-            # Detect CAPTCHA before waiting for results
-            if "captcha" in page_source or "robot" in page_source or "unusual traffic" in page_source:
-                logger.warning("CAPTCHA detected on attempt %d/%d", attempt + 1, max_retries)
+            # MEDIUM FIX: Use more specific CAPTCHA detection
+            if _is_captcha_page(page_source, has_results=False):
+                logger.warning("Browser CAPTCHA detected on attempt %d/%d (proxy=%s, query=%s...)",
+                             attempt + 1, max_retries, proxy or "direct", query[:30])
+                # Record this proxy hit for blocklist tracking
+                _record_captcha_hit(proxy)
+                _mark_exit_bad(proxy, reason="captcha_browser")
                 # Safe driver cleanup with specific exception handling
                 if driver is not None:
                     try:
@@ -851,12 +2000,13 @@ def _browser_search(
                         logger.debug("Driver cleanup failed after CAPTCHA: %s", e)
                     driver = None
                 if attempt < max_retries - 1:
-                    # Rotate Tor circuit to get new exit node IP before retry
+                    # Rotate Tor circuit to get new exit node IP before retry (force=True to bypass rate limit)
                     if proxy and "socks" in proxy.lower():
-                        if _rotate_tor_circuit():
-                            logger.info("Tor circuit rotated - new exit node for browser retry")
+                        if _rotate_tor_circuit(force=True, proxy=proxy):
+                            logger.info("Tor circuit rotated (forced) - new exit node for browser retry")
                         else:
-                            logger.debug("Tor rotation unavailable, continuing with same circuit")
+                            logger.warning("Tor rotation FAILED - check control port auth")
+                    _ensure_clean_exit(proxy)
                     base_wait = cfg.captcha_backoff_base * (attempt + 1)  # Exponential backoff
                     wait_time = _humanize_delay(base_wait, cfg)
                     logger.info("Waiting %.1fs before retry (humanized)...", wait_time)
@@ -904,6 +2054,7 @@ def _browser_search(
                     "_tier": "selenium",
                 })
 
+            _mark_exit_good(proxy)
             logger.info("Browser search SUCCESS: returning %d results", len(return_content))
             return return_content
         finally:
@@ -936,24 +2087,57 @@ def _requests_scrape(
     """
     Very small "Plan C" that fetches the DuckDuckGo Lite HTML endpoint
     and scrapes results.  No Javascript, so it's low‑rate and robust.
+
+    HIGH FIX: Now includes preflight checks for consistency with other tiers.
     """
+    # HIGH FIX: Apply same preflight checks as other tiers
+    _maybe_session_reset()
+    _maybe_proactive_rotation(proxy)
+
+    # Ensure clean exit before making request
+    if proxy and "socks" in proxy.lower():
+        exit_ip = _ensure_clean_exit(proxy)
+        if exit_ip:
+            logger.debug("Plan C using exit: %s", exit_ip)
+
+    # Check if proxy is blocklisted
+    if _is_proxy_blocked(proxy):
+        logger.info("Plan C: proxy %s is blocklisted - rotating before request", proxy or "direct")
+        if proxy and "socks" in proxy.lower():
+            _rotate_tor_circuit(force=True, proxy=proxy)
+
     url = "https://html.duckduckgo.com/html"
     headers = dict(headers or {})
     headers.setdefault("User-Agent", _DEFAULT_UA)
     proxies = {"http": proxy, "https": proxy} if proxy else None
 
-    resp = requests.post(
-        url,
-        data=urlencode({"q": query}),
-        headers=headers,
-        proxies=proxies,
-        timeout=timeout,
-    )
-    resp.raise_for_status()
+    try:
+        resp = requests.post(
+            url,
+            data=urlencode({"q": query}),
+            headers=headers,
+            proxies=proxies,
+            timeout=timeout,
+        )
+        if resp.status_code in (403, 429):
+            _mark_exit_bad(proxy, reason=f"http_{resp.status_code}")
+        resp.raise_for_status()
+    except Exception:
+        _mark_exit_bad(proxy, reason="requests_scrape_error")
+        raise
+
+    page_text = resp.text.lower()
+    # MEDIUM FIX: Use specific CAPTCHA detection to reduce false positives
+    if _is_captcha_page(page_text, has_results=False):
+        _record_captcha_hit(proxy)
+        _mark_exit_bad(proxy, reason="captcha_requests")
+
     soup = BeautifulSoup(resp.text, "html.parser")
     results: List[Dict[str, str]] = []
     for i, a in enumerate(soup.select("a.result__a")[:max_results], 1):
         results.append({"id": i, "title": a.get_text(strip=True), "href": a["href"], "body": "", "_tier": "requests"})
+    if results:
+        _mark_exit_good(proxy)
     return results
 
 
@@ -985,11 +2169,19 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         Unified dispatcher for text search with multi‑level fallback.
         Thread-safe: uses lock for inter-search delay coordination.
         """
+        # Validate query early to prevent cryptic errors downstream
+        if not query or not query.strip():
+            logger.warning("Empty query received in _search_text - returning empty results")
+            return []
+
         global _last_search_time
         cfg = _default_config
 
         # Apply inter-search delay to avoid rate limiting (thread-safe)
         # Uses humanized timing for less predictable patterns
+        # HIGH FIX: Compute wait time under lock, then release before sleeping
+        # This prevents synchronized "burst then stall" patterns across threads
+        wait_time = 0
         with _search_lock:
             if cfg.inter_search_delay > 0:
                 elapsed = time.time() - _last_search_time
@@ -997,8 +2189,14 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 humanized_delay = _humanize_delay(base_delay, cfg)
                 if elapsed < humanized_delay:
                     wait_time = humanized_delay - elapsed
-                    logger.debug("Inter-search delay: waiting %.2fs (humanized from %.2fs)", wait_time, base_delay)
-                    time.sleep(wait_time)
+
+        # Sleep OUTSIDE the lock to allow other threads to proceed
+        if wait_time > 0:
+            logger.debug("Inter-search delay: waiting %.2fs (humanized from %.2fs)", wait_time, base_delay)
+            time.sleep(wait_time)
+
+        # Update last search time under lock
+        with _search_lock:
             _last_search_time = time.time()
 
         # ────────────────────────────────────────────────────────────────────────
@@ -1006,6 +2204,29 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         # ────────────────────────────────────────────────────────────────────────
         _maybe_session_reset()
         _maybe_proactive_rotation(self.proxy)
+        exit_ip = _ensure_clean_exit(self.proxy)
+        if exit_ip:
+            logger.debug("Exit selected for search: %s", exit_ip)
+
+        def _reselect_exit(reason: str) -> None:
+            """Force selection of a new exit before retrying."""
+            nonlocal exit_ip
+            exit_ip = _ensure_clean_exit(self.proxy)
+            if exit_ip:
+                logger.info("Exit %s selected after %s", exit_ip, reason)
+            else:
+                logger.debug("No exit selected after %s", reason)
+
+        # Check if current proxy is blocklisted due to recent CAPTCHA
+        if _is_proxy_blocked(self.proxy):
+            logger.info("Proxy %s is blocklisted - forcing circuit rotation before search",
+                       self.proxy or "direct")
+            if self.proxy and "socks" in self.proxy.lower():
+                if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                    logger.info("Circuit rotated successfully to clear blocklist")
+                    # Periodic cleanup of expired blocks
+                    _cleanup_expired_blocks()
+                _reselect_exit("blocklist")
 
         # tier 0 - primp
         # ────────────────────────────────────────────────────────────────────────
@@ -1046,8 +2267,13 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 # Rotate impersonation on retries
                 _imp, _imp_os = _impersonations[_attempt % len(_impersonations)]
 
-                # Strategy: First 2 attempts use proxy, 3rd attempt uses direct IP
-                _use_proxy = self.proxy if _attempt < 2 else None
+                # CRITICAL FIX: Direct IP fallback is now opt-in to preserve anonymity
+                # Always use proxy if configured, unless allow_direct_fallback is True
+                _use_proxy = self.proxy  # Default: always use proxy
+                if _attempt >= 2 and self.proxy and cfg.allow_direct_fallback:
+                    _use_proxy = None
+                    logger.warning("ANONYMITY WARNING: PRIMP falling back to DIRECT IP (no proxy) - "
+                                  "your real IP will be exposed. Set allow_direct_fallback=False to disable.")
                 if _attempt > 0:
                     proxy_status = "with proxy" if _use_proxy else "DIRECT IP (no proxy)"
                     logger.info("PRIMP retry %d/%d with impersonation: %s/%s, %s",
@@ -1086,25 +2312,36 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                         # Check for CAPTCHA or rate limiting
                         if len(_links) == 0:
                             _page_text = _resp.text.lower()
-                            if "captcha" in _page_text or "robot" in _page_text:
-                                logger.warning("PRIMP CAPTCHA detected on attempt %d", _attempt + 1)
+                            # MEDIUM FIX: Use more specific CAPTCHA detection
+                            if _is_captcha_page(_page_text, has_results=False):
+                                logger.warning("PRIMP CAPTCHA detected on attempt %d (proxy=%s, query=%s...)",
+                                             _attempt + 1, self.proxy or "direct", query[:30])
+                                # Record this proxy hit for blocklist tracking
+                                _record_captcha_hit(self.proxy)
+                                _mark_exit_bad(self.proxy, reason="captcha_primp")
                                 if _attempt < _max_retries - 1:
-                                    # Rotate Tor circuit to get new exit node IP
+                                    # Rotate Tor circuit to get new exit node IP (force=True to bypass rate limit)
                                     if self.proxy and "socks" in self.proxy.lower():
-                                        if _rotate_tor_circuit():
-                                            logger.info("Tor circuit rotated - new exit node for retry")
+                                        if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                                            logger.info("Tor circuit rotated (forced) - new exit node for retry")
                                         else:
-                                            logger.debug("Tor rotation unavailable, continuing with same circuit")
+                                            logger.warning("Tor rotation FAILED - check control port auth")
+                                    _reselect_exit("PRIMP CAPTCHA")
                                     _humanized_retry = _humanize_delay(_retry_delay, cfg)
                                     logger.info("PRIMP waiting %.1fs before retry (humanized)...", _humanized_retry)
                                     time.sleep(_humanized_retry)
-                                    _retry_delay *= cfg.backoff_multiplier
-                                    continue  # retry with different impersonation + new circuit
+                                _retry_delay *= cfg.backoff_multiplier
+                                continue  # retry with different impersonation + new circuit
                             elif "rate" in _page_text and "limit" in _page_text:
                                 logger.warning("PRIMP rate limiting detected")
-                                # Also try rotating on rate limit
+                                _mark_exit_bad(self.proxy, reason="rate_limit_primp")
+                                # Force rotation on rate limit to escape blocked exit
                                 if self.proxy and "socks" in self.proxy.lower():
-                                    _rotate_tor_circuit()
+                                    if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                                        logger.info("Tor circuit rotated (forced) after rate limit")
+                                    else:
+                                        logger.warning("Tor rotation FAILED after rate limit")
+                                _reselect_exit("PRIMP rate-limit")
                             else:
                                 logger.debug("PRIMP no results - page title: %s",
                                            _soup.title.string if _soup.title else 'N/A')
@@ -1134,6 +2371,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                             )
                         if _out:
                             logger.info("PRIMP SUCCESS: returning %d results", len(_out))
+                            _mark_exit_good(self.proxy)
                             return _out
                         else:
                             logger.debug("PRIMP no output generated, falling through to next tier")
@@ -1162,6 +2400,13 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     logger.debug("PRIMP tier failed after %d attempts: %s", _max_retries, _primp_exc)
         # End tier 0
 
+        # Inter-tier rotation: get fresh exit before trying Selenium
+        if self.proxy and "socks" in self.proxy.lower():
+            logger.info("PRIMP tier exhausted - rotating circuit before Selenium fallback")
+            if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                logger.info("Circuit rotated successfully before Selenium tier")
+            _reselect_exit("tier_fallback")
+
         # Tier 1 – Selenium
         if self.use_browser:
             try:
@@ -1178,6 +2423,13 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 logger.debug("Browser tier traceback: %s", traceback.format_exc())
 
         logger.debug("Selenium tier complete, trying next tier")
+
+        # Inter-tier rotation: get fresh exit before DDGS
+        if self.proxy and "socks" in self.proxy.lower():
+            logger.info("Selenium tier exhausted - rotating circuit before DDGS fallback")
+            if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                logger.info("Circuit rotated successfully before DDGS tier")
+            _reselect_exit("tier_fallback_ddgs")
 
         # Tier 2 – ddgs HTTP API
         logger.debug("Trying DDGS tier...")
@@ -1198,9 +2450,14 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
             # Add tier info to each result
             for item in ddgs_results:
                 item["_tier"] = "ddgs"
+            _mark_exit_good(self.proxy)
             return ddgs_results
         except DDGSException as exc:
             logger.warning("DDGS tier failed (%s); falling back to raw scrape.", exc)
+            if self.proxy and "socks" in self.proxy.lower():
+                logger.info("DDGS tier exhausted - rotating circuit before requests fallback")
+                _rotate_tor_circuit(force=True, proxy=self.proxy)
+                _reselect_exit("tier_fallback_requests")
 
         # Tier 3 – raw Requests scrape
         logger.debug("Trying requests scrape tier...")
@@ -1535,16 +2792,41 @@ def create_memory_folding_agent(
         Determine next step after tool execution.
 
         Routes to:
-        - 'agent': Always return to agent for next step
-
-        NOTE: We do NOT fold memory after tools - only after agent completes.
-        This prevents breaking the tool_call -> tool_response sequence.
+        - 'summarize': If the working set is too large, fold before next agent step
+        - 'agent': Otherwise continue the normal loop
         """
+        messages = state.get("messages", [])
+        if len(messages) > message_threshold:
+            if debug:
+                logger.info(
+                    f"Memory threshold exceeded after tools: {len(messages)} > {message_threshold}"
+                )
+            return "summarize"
         return "agent"
 
     def after_summarize(state: MemoryFoldingAgentState) -> str:
-        """After summarizing, return to agent to continue."""
-        return "agent"
+        """
+        Determine where to go after summarizing.
+
+        Routes to:
+        - 'agent': If more reasoning is needed (e.g., tool outputs to process)
+        - 'end': If the agent already delivered a final answer (no pending tool calls)
+        """
+        messages = state.get("messages", [])
+        if not messages:
+            return "end"
+
+        last_message = messages[-1]
+        last_type = type(last_message).__name__
+        tool_calls = getattr(last_message, "tool_calls", None)
+
+        # If the last message was a tool response or an AI turn requesting tools,
+        # we need another agent step to continue the chain.
+        if last_type == "ToolMessage" or tool_calls:
+            return "agent"
+
+        # Otherwise, we've already produced the final AI response.
+        return "end"
 
     # Build the StateGraph
     workflow = StateGraph(MemoryFoldingAgentState)
@@ -1568,11 +2850,25 @@ def create_memory_folding_agent(
         }
     )
 
-    # Tools always return to agent (no folding mid-tool-loop)
-    workflow.add_edge("tools", "agent")
+    # Tools route back to agent, with optional summarization when too long
+    workflow.add_conditional_edges(
+        "tools",
+        after_tools,
+        {
+            "summarize": "summarize",
+            "agent": "agent",
+        },
+    )
 
-    # After summarizing, we END (the response was already given by agent)
-    workflow.add_edge("summarize", END)
+    # After summarizing, decide whether to continue or end
+    workflow.add_conditional_edges(
+        "summarize",
+        after_summarize,
+        {
+            "agent": "agent",
+            "end": END,
+        },
+    )
 
     # Compile with optional checkpointer and return
     return workflow.compile(checkpointer=checkpointer)

@@ -560,20 +560,23 @@ flush(stderr()); flush(stdout())
 
 base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: rotate_tor_circuit
-### Title: Rotate Tor Circuit
+### Title: Rotate Tor Circuit (R-side, daemon restart)
 ### Aliases: rotate_tor_circuit
 
 ### ** Examples
 
 ## Not run: 
-##D # macOS with Homebrew
+##D # Preferred: Use Python-side control port rotation (via run_task/asa_enumerate)
+##D # This R function is for manual recovery only
+##D 
+##D # Send SIGHUP to Tor process (least disruptive)
+##D rotate_tor_circuit(method = "signal")
+##D 
+##D # macOS with Homebrew (restarts daemon - use sparingly)
 ##D rotate_tor_circuit(method = "brew")
 ##D 
-##D # Linux with systemd
+##D # Linux with systemd (restarts daemon - use sparingly)
 ##D rotate_tor_circuit(method = "systemctl")
-##D 
-##D # Send SIGHUP to Tor process
-##D rotate_tor_circuit(method = "signal")
 ## End(Not run)
 
 

@@ -20,6 +20,7 @@
 #' @param memory_keep_recent Messages to preserve after folding
 #' @param temporal Temporal filtering options (use \code{temporal_options()})
 #' @param search Search configuration (use \code{search_options()})
+#' @param tor Tor registry options (use \code{tor_options()})
 #'
 #' @return An object of class \code{asa_config}
 #'
@@ -56,7 +57,8 @@ asa_config <- function(backend = NULL,
                        memory_threshold = NULL,
                        memory_keep_recent = NULL,
                        temporal = NULL,
-                       search = NULL) {
+                       search = NULL,
+                       tor = NULL) {
 
   # Use defaults from constants.R if not specified
   backend <- backend %||% .get_default_backend()
@@ -68,6 +70,7 @@ asa_config <- function(backend = NULL,
   memory_folding <- memory_folding %||% ASA_DEFAULT_MEMORY_FOLDING
   memory_threshold <- memory_threshold %||% ASA_DEFAULT_MEMORY_THRESHOLD
   memory_keep_recent <- memory_keep_recent %||% ASA_DEFAULT_MEMORY_KEEP_RECENT
+  tor <- tor %||% tor_options()
 
   # Validate backend
   if (!backend %in% ASA_SUPPORTED_BACKENDS) {
@@ -87,6 +90,16 @@ asa_config <- function(backend = NULL,
     }
   }
 
+  # Validate tor if provided
+  if (!inherits(tor, "asa_tor")) {
+    if (is.list(tor)) {
+      tor <- do.call(tor_options, tor)
+    } else {
+      stop("`tor` must be created with tor_options() or be a list",
+           call. = FALSE)
+    }
+  }
+
   structure(
     list(
       backend = backend,
@@ -100,7 +113,8 @@ asa_config <- function(backend = NULL,
       memory_threshold = as.integer(memory_threshold),
       memory_keep_recent = as.integer(memory_keep_recent),
       temporal = temporal,
-      search = search
+      search = search,
+      tor = tor
     ),
     class = "asa_config"
   )
@@ -133,6 +147,10 @@ print.asa_config <- function(x, ...) {
   if (!is.null(x$temporal)) {
     cat("\nTemporal Filtering:\n")
     print(x$temporal)
+  }
+  if (!is.null(x$tor)) {
+    cat("\nTor Registry:\n")
+    print(x$tor)
   }
   invisible(x)
 }
@@ -372,6 +390,70 @@ print.asa_search <- function(x, ...) {
       ", timeout=", x$timeout, "s",
       ", retries=", x$max_retries,
       ", delay=", x$inter_search_delay, "s\n", sep = "")
+  invisible(x)
+}
+
+#' Tor Options
+#'
+#' Configure shared Tor exit tracking for healthier circuit rotation.
+#'
+#' @param registry_path Path to the shared SQLite registry file (default: user cache).
+#' @param dirty_tor_exists Enable the registry (tracks good/bad/overused exits).
+#' @param bad_ttl Seconds to keep a bad/tainted exit before reuse (default: 3600).
+#' @param good_ttl Seconds to treat an exit as good before refreshing (default: 1800).
+#' @param overuse_threshold Max recent uses before a good exit is considered overloaded.
+#' @param overuse_decay Window (seconds) for overuse counting before decaying.
+#' @param max_rotation_attempts Max attempts to find a clean exit before giving up.
+#' @param ip_cache_ttl Seconds to cache exit IP lookups.
+#'
+#' @return An object of class \code{asa_tor}
+#'
+#' @export
+tor_options <- function(registry_path = NULL,
+                        dirty_tor_exists = ASA_TOR_REGISTRY_ENABLED,
+                        bad_ttl = ASA_TOR_BAD_TTL,
+                        good_ttl = ASA_TOR_GOOD_TTL,
+                        overuse_threshold = ASA_TOR_OVERUSE_THRESHOLD,
+                        overuse_decay = ASA_TOR_OVERUSE_DECAY,
+                        max_rotation_attempts = ASA_TOR_MAX_ROTATION_ATTEMPTS,
+                        ip_cache_ttl = ASA_TOR_IP_CACHE_TTL) {
+
+  # Default registry path in user cache
+  if (is.null(registry_path) || registry_path == "") {
+    base_dir <- tools::R_user_dir("asa", which = "cache")
+    dir.create(base_dir, recursive = TRUE, showWarnings = FALSE)
+    registry_path <- file.path(base_dir, "tor_exit_registry.sqlite")
+  }
+
+  structure(
+    list(
+      registry_path = registry_path,
+      dirty_tor_exists = isTRUE(dirty_tor_exists),
+      bad_ttl = as.numeric(bad_ttl),
+      good_ttl = as.numeric(good_ttl),
+      overuse_threshold = as.integer(overuse_threshold),
+      overuse_decay = as.numeric(overuse_decay),
+      max_rotation_attempts = as.integer(max_rotation_attempts),
+      ip_cache_ttl = as.numeric(ip_cache_ttl)
+    ),
+    class = "asa_tor"
+  )
+}
+
+#' Print Method for asa_tor Objects
+#'
+#' @param x An asa_tor object
+#' @param ... Additional arguments (ignored)
+#'
+#' @return Invisibly returns the object
+#'
+#' @method print asa_tor
+#' @export
+print.asa_tor <- function(x, ...) {
+  cat("Tor Registry:    ", x$registry_path, "\n", sep = "")
+  cat("Registry Enabled:", if (isTRUE(x$dirty_tor_exists)) "Yes" else "No", "\n", sep = " ")
+  cat("Bad TTL:         ", x$bad_ttl, "s; Good TTL: ", x$good_ttl, "s\n", sep = "")
+  cat("Overuse Thresh:  >", x$overuse_threshold, " uses in ", x$overuse_decay, "s\n", sep = "")
   invisible(x)
 }
 

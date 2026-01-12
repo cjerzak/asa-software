@@ -11,6 +11,7 @@ run_task(
   config = NULL,
   agent = NULL,
   expected_fields = NULL,
+  thread_id = NULL,
   verbose = FALSE
 )
 }
@@ -45,6 +46,10 @@ NULL to use the currently initialized agent}
 JSON output. When provided, validates that all fields are present and
 non-null. The result will include a \code{parsing_status} field with
 validation details.}
+
+\item{thread_id}{Optional stable identifier for memory folding sessions.
+When provided, the same thread ID is reused so folded summaries persist
+across invocations. Defaults to NULL (new thread each call).}
 
 \item{verbose}{Print progress messages (default: FALSE)}
 }

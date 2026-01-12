@@ -9,6 +9,7 @@
   agent = NULL,
   temporal = NULL,
   recursion_limit = NULL,
+  thread_id = NULL,
   verbose = FALSE
 )
 }

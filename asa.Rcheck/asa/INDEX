@@ -20,6 +20,8 @@ configure_search        Configure Python Search Parameters
 configure_search_logging
                         Configure Python Search Logging Level
 configure_temporal      Configure Temporal Filtering for Search
+configure_tor_registry
+                        Configure Tor Exit Registry
 extract_agent_results   Extract Structured Data from Agent Traces
 extract_search_snippets
                         Extract Search Snippets by Source Number
@@ -41,9 +43,10 @@ print.asa_response      Print Method for asa_response Objects
 print.asa_result        Print Method for asa_result Objects
 print.asa_search        Print Method for asa_search Objects
 print.asa_temporal      Print Method for asa_temporal Objects
+print.asa_tor           Print Method for asa_tor Objects
 process_outputs         Process Multiple Agent Outputs
 reset_agent             Reset the Agent
-rotate_tor_circuit      Rotate Tor Circuit
+rotate_tor_circuit      Rotate Tor Circuit (R-side, daemon restart)
 run_task                Run a Structured Task with the Agent
 run_task_batch          Run Multiple Tasks in Batch
 search_options          Create Search Options
@@ -55,5 +58,6 @@ summary.asa_enumerate_result
 summary.asa_response    Summary Method for asa_response Objects
 summary.asa_result      Summary Method for asa_result Objects
 temporal_options        Create Temporal Filtering Options
+tor_options             Tor Options
 write_csv.asa_enumerate_result
                         Write asa_enumerate_result to CSV

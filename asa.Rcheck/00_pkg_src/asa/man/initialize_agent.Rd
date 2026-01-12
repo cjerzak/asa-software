@@ -14,6 +14,7 @@ initialize_agent(
   memory_keep_recent = 2L,
   rate_limit = 0.2,
   timeout = 120L,
+  tor = tor_options(),
   verbose = TRUE
 )
 }
@@ -36,6 +37,9 @@ Set to NULL to disable proxy.}
 \item{rate_limit}{Requests per second for rate limiting (default: 0.2)}
 
 \item{timeout}{Request timeout in seconds (default: 120)}
+
+\item{tor}{Tor registry options from \code{\link{tor_options}}. Disable shared
+tracking by setting \code{dirty_tor_exists = FALSE}.}
 
 \item{verbose}{Print status messages (default: TRUE)}
 }

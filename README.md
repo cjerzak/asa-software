@@ -480,6 +480,20 @@ agent_direct <- asa::initialize_agent(
   model = "gpt-4.1-mini",
   proxy = NULL  # Disable Tor proxy
 )
+
+# Share a Tor exit health registry across workers (avoids reusing tainted exits)
+tor_cfg <- asa::tor_options(
+  registry_path = "~/asa/tor_exit_registry.sqlite",  # defaults to user cache
+  bad_ttl = 3600,    # keep bad exits sidelined for an hour
+  overuse_threshold = 8  # rotate if an exit is used too often
+)
+asa::initialize_agent(
+  backend = "openai",
+  model = "gpt-4.1-mini",
+  tor = tor_cfg
+)
+# You can also push settings without reinitializing:
+asa::configure_tor_registry(registry_path = tor_cfg$registry_path)
 ```
 
 ### Anti-Detection Features
@@ -562,6 +576,7 @@ processed_df <- asa::process_outputs(
 - For persistent issues, increase delays: `configure_search(inter_search_delay = 4.0)`
 - Enable debug logging to see what's happening: `configure_search_logging("DEBUG")`
 - Use Tor proxy for IP rotation: `rotate_tor_circuit()`
+- Using Tor + stealth Chrome? Rebuild the backend so `undetected-chromedriver` and `stem` are installed (`asa::build_backend(force = TRUE)`), and set `TOR_CONTROL_PORT` per worker (env is read at call time).
 
 **API key not recognized?**
 ```r
@@ -585,14 +600,14 @@ asa::build_backend(conda_env = "asa_env", force = TRUE)
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2026-01-10 13:28:27 EST | **Status:** PASS
+**Last Run:** 2026-01-11 21:22:04 CST | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.119s | 0.09s | 1.32x | PASS |
-| `helper_funcs` | 0.069s | 0.07s | 0.98x | PASS |
-| `combined` | 0.105s | 0.09s | 1.16x | PASS |
-| `agent_search` | 9.8s | 18s | 0.56x | PASS |
+| `build_prompt` | 0.077s | 0.09s | 0.85x | PASS |
+| `helper_funcs` | 0.041s | 0.07s | 0.59x | PASS |
+| `combined` | 0.066s | 0.09s | 0.73x | PASS |
+| `agent_search` | 11.0s | 18s | 0.63x | PASS |
 
 Tests fail if time exceeds 4.00x baseline. 
 See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
@@ -606,6 +621,7 @@ See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
 
 **Optional:**
 - Claude Code CLI (for `asa_audit()` with `backend = "claude_code"`)
+- Tor + stealth Chrome support (requires system Tor plus Python packages `undetected-chromedriver` and `stem`, installed by `asa::build_backend()`)
 
 ## Reference
 
@@ -652,5 +668,3 @@ MIT
 ║  v1.0.0  ::  DuckDuckGo + Wiki  ::  LangGraph  ::  Parallel Batch Processing ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
-
-

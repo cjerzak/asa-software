@@ -28,8 +28,10 @@ Python packages:
   \item langgraph
   \item ddgs (DuckDuckGo search)
   \item selenium, primp (browser automation)
+  \item undetected-chromedriver (stealth Chrome)
   \item beautifulsoup4, requests
   \item fake_headers, httpx
+  \item stem (Tor control)
   \item pysocks, socksio (proxy support)
 }
 }

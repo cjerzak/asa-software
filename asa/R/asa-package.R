@@ -94,7 +94,10 @@ asa_env$init_count <- 0L
     tryCatch({
       asa_env$http_clients$direct$close()
     }, error = function(e) {
-      # Sync client cleanup rarely fails, but ignore if it does
+      # LOW FIX: Log cleanup errors in debug mode for diagnostics
+      if (isTRUE(getOption("asa.debug"))) {
+        message("[asa] HTTP direct client cleanup error: ", conditionMessage(e))
+      }
     })
   }
 
@@ -103,7 +106,10 @@ asa_env$init_count <- 0L
     tryCatch({
       asa_env$http_clients$proxied$close()
     }, error = function(e) {
-      # Sync client cleanup rarely fails, but ignore if it does
+      # LOW FIX: Log cleanup errors in debug mode for diagnostics
+      if (isTRUE(getOption("asa.debug"))) {
+        message("[asa] HTTP proxied client cleanup error: ", conditionMessage(e))
+      }
     })
   }
 
