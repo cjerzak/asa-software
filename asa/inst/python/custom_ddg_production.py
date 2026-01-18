@@ -253,14 +253,15 @@ PERFORMANCE CONSIDERATIONS
 
 SECURITY & ANONYMITY
 ====================
-⚠️  CRITICAL: Direct IP fallback is DISABLED by default (allow_direct_fallback=False)
-    Enabling it will expose your real IP on final retry attempts.
+** CRITICAL WARNING: Direct IP fallback is DISABLED by default (allow_direct_fallback=False)
+   Enabling it will expose your real IP on final retry attempts.
 
-✓  Tor proxy recommended for anonymity
-✓  Exit node rotation prevents IP-based blocking
-✓  Exit health registry prevents reusing burned exits
-✓  Human behavioral simulation reduces fingerprinting
-✓  Randomized browser fingerprints for Selenium tier
+Best Practices:
+  - Tor proxy recommended for anonymity
+  - Exit node rotation prevents IP-based blocking
+  - Exit health registry prevents reusing burned exits
+  - Human behavioral simulation reduces fingerprinting
+  - Randomized browser fingerprints for Selenium tier
 
 DEBUGGING
 =========
