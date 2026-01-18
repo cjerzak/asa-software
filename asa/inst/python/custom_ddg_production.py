@@ -1,11 +1,293 @@
-# custom_duckduckgo.py
-#
-# LangChain‑compatible DuckDuckGo search wrapper with:
-#   • optional real Chrome/Chromium via Selenium
-#   • proxy + arbitrary headers on every tier
-#   • automatic proxy‑bypass for Chromedriver handshake
-#   • smart retries and a final pure‑Requests HTML fallback
-#
+"""
+custom_ddg_production.py - Advanced DuckDuckGo Search System with Anti-Detection
+
+OVERVIEW
+========
+This module implements a sophisticated, production-grade DuckDuckGo search system designed for
+high-volume, automated research while evading detection and CAPTCHA challenges. It's LangChain-
+compatible and serves as a drop-in replacement for the standard DuckDuckGoSearchAPIWrapper with
+significant enhancements for reliability, stealth, and anonymity.
+
+KEY FEATURES
+============
+
+1. MULTI-TIER SEARCH STRATEGY (4 tiers with automatic fallback)
+   ------------------------------------------------------------
+   Tier 0: PRIMP (primp library)
+     - Fast HTTP client with browser impersonation (Chrome, Firefox, Safari, Edge)
+     - Rotates browser fingerprints on retries to avoid detection
+     - Best performance for most queries
+     - Falls back to next tier on CAPTCHA or failure
+
+   Tier 1: Selenium WebDriver (Browser Automation)
+     - Priority: undetected-chromedriver (UC) - maximum stealth
+     - Fallback: Firefox with stealth options
+     - Last resort: Standard Chrome with manual stealth
+     - Simulates human behavior: mouse movements, scrolling, reading delays
+     - Randomized viewports, user agents, and languages
+     - Best for bypassing sophisticated bot detection
+
+   Tier 2: DDGS HTTP API (duckduckgo-search library)
+     - Official DuckDuckGo API wrapper with retry logic
+     - Lightweight and fast when it works
+     - Falls back when rate-limited
+
+   Tier 3: Raw Requests + BeautifulSoup (HTML scraping)
+     - Direct scraping of html.duckduckgo.com
+     - Most basic but most robust fallback
+     - Always works when nothing else does
+
+2. TOR INTEGRATION & CIRCUIT MANAGEMENT
+   -------------------------------------
+   - Automatic Tor circuit rotation on CAPTCHA or rate limits
+   - Exit node health tracking via SQLite registry (cross-process shared state)
+   - Proactive circuit rotation every N requests (default: 15, randomized)
+   - Exit node overuse detection and blacklisting (max 8 uses per exit)
+   - Automatic bad exit avoidance before starting searches
+   - Thread-safe for parallel execution with per-worker control ports
+
+   Exit Node Registry Features:
+     * Persistent SQLite database tracks exit health across processes
+     * TTL-based expiration: bad exits (3600s), good exits (1800s)
+     * Cooldown periods for tainted exits
+     * Recent usage tracking to avoid overusing exits
+     * Automatic IP resolution with caching (300s TTL)
+
+3. ANTI-DETECTION & STEALTH MEASURES
+   ----------------------------------
+   Human Behavioral Entropy:
+     * Log-normal timing distributions (not uniform randomness)
+     * Fatigue curves - delays drift longer over session
+     * Micro-stutters - tiny random additions (50-200ms)
+     * Thinking pauses - 5% chance of longer hesitations
+     * Pre-commit hesitation before actions
+
+   Browser Stealth:
+     * Randomized user agents from pool (Chrome, Firefox, Safari, Edge)
+     * Randomized viewport sizes (1920x1080, 1366x768, 1440x900, etc.)
+     * Randomized language headers
+     * WebDriver flag masking
+     * Automation extension disabling
+     * CDP injection for navigator properties
+     * Plugins and chrome runtime simulation
+
+   Behavioral Simulation:
+     * Random scrolling patterns (scan before extract)
+     * Mouse drift with overshoot and correction
+     * Variable focus and micro-pauses
+     * Reading simulation (time scales with result count)
+
+4. CAPTCHA DETECTION & RESPONSE
+   -----------------------------
+   - DuckDuckGo-specific CAPTCHA indicators ("please click to continue", etc.)
+   - Generic indicators with confirmation (form elements, challenge keywords)
+   - Automatic circuit rotation on CAPTCHA detection
+   - Per-proxy blocklist (5 min block, extends with repeat offenses)
+   - Session-level CAPTCHA tracking with emergency shutoff
+   - Exit node marking (bad/good) for future avoidance
+
+5. PROXY & BLOCKLIST MANAGEMENT
+   -----------------------------
+   - Thread-safe proxy blocklist with TTL expiration
+   - Cross-process shared registry via SQLite (WAL mode)
+   - Repeat offender tracking (3+ CAPTCHAs = extended block)
+   - Automatic cleanup of expired blocks
+   - Bypass option for driver downloads (env var mutation with locks)
+
+6. CONFIGURABLE SEARCH PARAMETERS
+   -------------------------------
+   SearchConfig dataclass controls all timing and retry behavior:
+     * max_results: Number of results to return (default: 10)
+     * timeout: HTTP/WebDriver timeout in seconds (default: 15.0)
+     * max_retries: Retry attempts on failure (default: 3)
+     * retry_delay: Initial delay between retries (default: 2.0)
+     * backoff_multiplier: Exponential backoff factor (default: 1.5)
+     * captcha_backoff_base: CAPTCHA-specific backoff (default: 3.0)
+     * page_load_wait: Wait after page load (default: 2.0)
+     * inter_search_delay: Delay between searches (default: 1.5)
+     * humanize_timing: Enable human-like jitter (default: True)
+     * jitter_factor: Jitter range (default: 0.5 = ±50%)
+     * allow_direct_fallback: Allow direct IP fallback (default: False)
+
+7. PROACTIVE ANTI-DETECTION
+   -------------------------
+   - Proactive circuit rotation every ~15 requests (randomized interval)
+   - Session identity reset every ~50 requests (clears timing state)
+   - Stochastic thresholds with Gaussian distribution (avoids periodicity)
+   - User agent pool shuffling on session reset
+
+8. MEMORY FOLDING AGENT (DeepAgent Architecture)
+   ----------------------------------------------
+   - LangGraph-based autonomous agent with working + long-term memory
+   - Automatic summarization when message count exceeds threshold
+   - Preserves message coherence (tool calls + responses stay together)
+   - Safe fold boundaries (only at complete conversation rounds)
+   - Prevents context overflow in long research sessions
+
+ARCHITECTURE HIGHLIGHTS
+=======================
+
+Thread Safety:
+  - All global state protected by locks (_search_lock, _config_lock, etc.)
+  - Lock-free inter-search delay computation (compute wait time under lock,
+    then release before sleeping to avoid synchronized bursts)
+  - SQLite with WAL mode and increased timeouts (5s) for parallel workloads
+  - Dedicated session for exit IP lookups with tight timeouts (5s)
+
+Tor Integration:
+  - Dynamic control port resolution (supports per-worker assignment via env)
+  - stem library for clean control port communication
+  - Raw socket fallback for environments without stem
+  - Automatic authentication (password or cookie)
+  - Exit IP verification after rotation with multi-endpoint fallback
+
+Exit Node Health:
+  - Persistent SQLite registry (~/asa_tor/tor_exit_registry.sqlite)
+  - WAL mode for concurrent access
+  - Health tracking: status, failures, successes, last_seen, cooldown
+  - Overuse detection and prevention
+  - Bad exit TTL: 3600s, Good exit TTL: 1800s
+  - Max 4 rotation attempts to find clean exit before search
+
+Error Handling:
+  - Graceful degradation through tier fallback
+  - Detailed logging at each decision point
+  - Non-fatal errors don't crash the pipeline
+  - Safe driver cleanup with specific exception handling
+
+USAGE EXAMPLES
+==============
+
+Basic Usage (LangChain Tool):
+    ```python
+    from custom_ddg_production import PatchedDuckDuckGoSearchRun
+    
+    search = PatchedDuckDuckGoSearchRun(
+        api_wrapper=PatchedDuckDuckGoSearchAPIWrapper(
+            proxy="socks5://127.0.0.1:9050",  # Tor proxy
+            use_browser=True,
+            headless=True,
+        )
+    )
+    
+    results = search.invoke("quantum computing breakthroughs 2024")
+    ```
+
+Configure Search Behavior:
+    ```python
+    from custom_ddg_production import configure_search
+    
+    configure_search(
+        max_results=20,
+        max_retries=5,
+        humanize_timing=True,
+        inter_search_delay=2.0,
+    )
+    ```
+
+Configure Tor:
+    ```python
+    from custom_ddg_production import configure_tor
+    
+    configure_tor(
+        control_port=9051,
+        control_password="your_password",  # or None for cookie auth
+        min_rotation_interval=5.0,
+    )
+    ```
+
+Memory Folding Agent:
+    ```python
+    from custom_ddg_production import create_memory_folding_agent
+    from langchain_openai import ChatOpenAI
+    
+    model = ChatOpenAI(model="gpt-4")
+    tools = [search_tool, wikipedia_tool]
+    
+    agent = create_memory_folding_agent(
+        model=model,
+        tools=tools,
+        message_threshold=10,  # Fold when >10 messages
+        keep_recent=3,         # Keep 3 most recent
+        debug=True,
+    )
+    
+    # Long research session without context overflow
+    response = agent.invoke(
+        {"messages": [("user", "Research quantum computing trends")]},
+        config={"configurable": {"thread_id": "research_1"}},
+    )
+    ```
+
+DEPENDENCIES
+============
+Core:
+  - beautifulsoup4: HTML parsing
+  - ddgs (duckduckgo-search): Official DuckDuckGo API
+  - requests: HTTP client
+  - primp: Fast browser impersonation
+  - selenium: Browser automation
+  - langchain-community: LangChain integration
+
+Optional:
+  - undetected-chromedriver: Maximum stealth for Selenium
+  - stem: Clean Tor control port API
+  - langgraph: Memory folding agent
+
+Environment Variables:
+  - HTTP_PROXY, HTTPS_PROXY: Default proxy settings
+  - TOR_CONTROL_PORT: Tor control port (default: 9051)
+  - TOR_CONTROL_PASSWORD: Control port password (or use cookie auth)
+  - ASA_TOR_EXIT_DB: Path to exit registry SQLite database
+  - ASA_PROACTIVE_ROTATION_INTERVAL: Requests between rotations (default: 15)
+  - ASA_SESSION_RESET_INTERVAL: Requests between session resets (default: 50)
+
+PERFORMANCE CONSIDERATIONS
+==========================
+- PRIMP tier is fastest (~100-300ms per search)
+- Selenium tier is slowest (~2-5s per search due to human simulation)
+- Exit node health checks add ~200-500ms per search (cached for 5 min)
+- Parallel execution supported (use unique proxy ports per worker)
+- Inter-search delay prevents rate limiting (default: 1.5s, humanized)
+- Memory folding keeps context size bounded for long sessions
+
+SECURITY & ANONYMITY
+====================
+⚠️  CRITICAL: Direct IP fallback is DISABLED by default (allow_direct_fallback=False)
+    Enabling it will expose your real IP on final retry attempts.
+
+✓  Tor proxy recommended for anonymity
+✓  Exit node rotation prevents IP-based blocking
+✓  Exit health registry prevents reusing burned exits
+✓  Human behavioral simulation reduces fingerprinting
+✓  Randomized browser fingerprints for Selenium tier
+
+DEBUGGING
+=========
+Enable debug logging:
+    ```python
+    from custom_ddg_production import configure_logging
+    configure_logging("DEBUG")
+    ```
+
+Check blocklist status:
+    ```python
+    from custom_ddg_production import _get_blocklist_status
+    status = _get_blocklist_status()
+    print(status)
+    ```
+
+Monitor exit health:
+    # Query SQLite directly: ~/asa_tor/tor_exit_registry.sqlite
+    # Tables: exit_health, proxy_blocks
+
+AUTHORS & MAINTENANCE
+=====================
+This is production code for the ASA (Automated Social Analysis) research framework.
+Designed for large-scale automated research with strong anti-detection requirements.
+
+License: See LICENSE.txt in repository root
+"""
 import contextlib
 import logging
 import os
