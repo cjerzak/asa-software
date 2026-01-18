@@ -129,8 +129,8 @@ ARCHITECTURE HIGHLIGHTS
 
 Thread Safety:
   - All global state protected by locks (_search_lock, _config_lock, etc.)
-  - Lock-free inter-search delay computation (compute wait time under lock,
-    then release before sleeping to avoid synchronized bursts)
+  - Lock-free inter-search delay computation (compute wait time under lock, then
+    release before sleeping to avoid synchronized bursts)
   - SQLite with WAL mode and increased timeouts (5s) for parallel workloads
   - Dedicated session for exit IP lookups with tight timeouts (5s)
 
