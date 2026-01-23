@@ -70,7 +70,7 @@
     }, error = function(e) {
       structure(list(error = e$message), class = "asa_error")
     })
-  })
+  }, agent = agent)
 
   elapsed <- as.numeric(difftime(Sys.time(), t0, units = "mins"))
   if (verbose) message(sprintf("  Agent completed in %.2f minutes", elapsed))
@@ -167,9 +167,66 @@
     messages <- raw_response$messages
     if (length(messages) > 0) {
       last_message <- messages[[length(messages)]]
-      text <- last_message$text
+
+      # Prefer text when available; fall back to content for LangChain messages.
+      text <- tryCatch(last_message$text, error = function(e) NULL)
+      if (is.null(text) || length(text) == 0) {
+        text <- tryCatch(last_message$content, error = function(e) NULL)
+      }
+
+      extract_text_blocks <- function(value) {
+        if (is.null(value) || length(value) == 0) {
+          return(character(0))
+        }
+        if (is.character(value)) {
+          return(as.character(value))
+        }
+        if (is.list(value)) {
+          value_names <- names(value)
+          if (!is.null(value_names) && any(value_names %in% c("text", "content", "value"))) {
+            block <- character(0)
+            if (!is.null(value$text)) block <- c(block, as.character(value$text))
+            if (!is.null(value$content)) block <- c(block, as.character(value$content))
+            if (!is.null(value$value)) block <- c(block, as.character(value$value))
+            block <- block[!is.na(block) & nzchar(block)]
+            return(block)
+          }
+          parts <- character(0)
+          for (item in value) {
+            if (is.character(item)) {
+              parts <- c(parts, as.character(item))
+            } else if (is.list(item)) {
+              if (!is.null(item$text)) {
+                parts <- c(parts, as.character(item$text))
+              } else if (!is.null(item$content)) {
+                parts <- c(parts, as.character(item$content))
+              } else if (!is.null(item$value)) {
+                parts <- c(parts, as.character(item$value))
+              }
+            }
+          }
+          parts <- parts[!is.na(parts) & nzchar(parts)]
+          return(parts)
+        }
+        tryCatch(as.character(value), error = function(e) character(0))
+      }
+
+      if (is.null(text) || length(text) == 0) {
+        return(NA_character_)
+      }
+
+      text_parts <- extract_text_blocks(text)
+      if (length(text_parts) == 0) {
+        return(NA_character_)
+      }
+      text <- paste(text_parts, collapse = "\n")
+      if (is.na(text) || !nzchar(text)) {
+        return(NA_character_)
+      }
+
       # Clean XML tags without stripping inner content
       text <- gsub("</?[^>]+>", "", text)
+
       # Handle exo backend format
       if (!is.null(backend) && backend == "exo") {
         text <- sub(
