@@ -64,6 +64,9 @@ asa_config <- function(backend = NULL,
   backend <- backend %||% .get_default_backend()
   model <- model %||% .get_default_model()
   conda_env <- conda_env %||% .get_default_conda_env()
+  if (missing(proxy)) {
+    proxy <- NULL
+  }
   workers <- workers %||% .get_default_workers()
   timeout <- timeout %||% ASA_DEFAULT_TIMEOUT
   rate_limit <- rate_limit %||% ASA_DEFAULT_RATE_LIMIT

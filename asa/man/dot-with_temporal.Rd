@@ -4,12 +4,14 @@
 \alias{.with_temporal}
 \title{Apply Temporal Filtering for a Single Operation}
 \usage{
-.with_temporal(temporal, fn)
+.with_temporal(temporal, fn, agent = NULL)
 }
 \arguments{
 \item{temporal}{Named list with temporal options (time_filter, after, before)}
 
 \item{fn}{Function to run with temporal filtering applied}
+
+\item{agent}{Optional asa_agent whose tools should receive the time filter}
 }
 \value{
 Result of fn()

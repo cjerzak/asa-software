@@ -25,16 +25,14 @@ Type 'q()' to quit R.
 > library(asa)
 > 
 > test_check("asa")
-DuckDuckGo time filter set to: y (past year)
-DuckDuckGo time filter set to: m (past month)
 
-  build_prompt: 0.0768 sec (baseline: 0.09, threshold: 0.36, ratio: 0.85x)
+  build_prompt: 0.1187 sec (baseline: 0.09, threshold: 0.36, ratio: 1.32x)
 
-  helper_funcs: 0.0410 sec (baseline: 0.07, threshold: 0.28, ratio: 0.59x)
+  helper_funcs: 0.0690 sec (baseline: 0.07, threshold: 0.28, ratio: 0.99x)
 
-  combined:     0.0662 sec (baseline: 0.09, threshold: 0.36, ratio: 0.73x)
+  combined:     0.1023 sec (baseline: 0.09, threshold: 0.36, ratio: 1.12x)
 
-  agent_search: 11.04 sec (baseline: 18, threshold: 70, ratio: 0.63x)
+  agent_search: 11.05 sec (baseline: 18, threshold: 70, ratio: 0.63x)
 
   Could not write speed report: cannot open the connection
   README.md updated: /Users/cjerzak/Documents/asa-software/README.md
@@ -67,4 +65,4 @@ DuckDuckGo time filter set to: m (past month)
 > 
 > proc.time()
    user  system elapsed 
- 18.864   5.155  68.230 
+ 33.068   9.089  89.130 

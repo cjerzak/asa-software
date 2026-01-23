@@ -216,7 +216,7 @@ run_task <- function(prompt,
         thread_id = thread_id,
         verbose = verbose
       )
-    })
+    }, agent = agent)
   })
 
   elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
@@ -738,10 +738,20 @@ run_task_batch <- function(prompts,
       }
 
       if (!is.null(first_parsed) && is.list(first_parsed)) {
+        coerce_value <- function(val) {
+          if (is.null(val)) return(NA_character_)
+          if (is.list(val)) {
+            return(as.character(jsonlite::toJSON(val, auto_unbox = TRUE)))
+          }
+          if (length(val) == 0) return(NA_character_)
+          if (length(val) == 1) return(as.character(val))
+          as.character(jsonlite::toJSON(val, auto_unbox = TRUE))
+        }
+
         for (field in names(first_parsed)) {
           prompts[[field]] <- vapply(results, function(r) {
             if (!is.null(r$parsed) && field %in% names(r$parsed)) {
-              as.character(r$parsed[[field]])
+              coerce_value(r$parsed[[field]])
             } else {
               NA_character_
             }

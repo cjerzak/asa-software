@@ -600,25 +600,62 @@ configure_temporal <- function(time_filter = NULL) {
 #'
 #' @param temporal Named list with temporal options (time_filter, after, before)
 #' @param fn Function to run with temporal filtering applied
+#' @param agent Optional asa_agent whose tools should receive the time filter
 #' @return Result of fn()
 #' @keywords internal
-.with_temporal <- function(temporal, fn) {
+.with_temporal <- function(temporal, fn, agent = NULL) {
   if (is.null(temporal)) {
     return(fn())
   }
 
+  tools <- NULL
+  if (!is.null(agent) && inherits(agent, "asa_agent") && !is.null(agent$tools)) {
+    tools <- agent$tools
+  } else if (.is_initialized()) {
+    tools <- asa_env$tools
+  }
+
   # Store original setting
   original_filter <- tryCatch({
-    if (.is_initialized()) {
+    if (!is.null(tools) && length(tools) >= 2) {
+      tools[[2]]$api_wrapper$time
+    } else if (.is_initialized()) {
       asa_env$tools[[2]]$api_wrapper$time
     } else {
       "none"
     }
   }, error = function(e) "none")
 
+  set_filter <- function(value, warn = TRUE) {
+    if (!is.null(tools) && length(tools) >= 2) {
+      tryCatch(
+        tools[[2]]$api_wrapper$time <- value,
+        error = function(e) {
+          if (warn) {
+            warning("Could not set DuckDuckGo time filter: ", e$message, call. = FALSE)
+          }
+          NULL
+        }
+      )
+      return(invisible(NULL))
+    }
+    if (.is_initialized()) {
+      tryCatch(
+        configure_temporal(value),
+        error = function(e) {
+          if (warn) {
+            warning("Could not set DuckDuckGo time filter: ", e$message, call. = FALSE)
+          }
+          NULL
+        }
+      )
+    }
+    invisible(NULL)
+  }
+
   # Apply temporal filter if specified
   if (!is.null(temporal$time_filter)) {
-    configure_temporal(temporal$time_filter)
+    set_filter(temporal$time_filter, warn = TRUE)
   }
 
   # Run the function
@@ -628,7 +665,7 @@ configure_temporal <- function(time_filter = NULL) {
       # Restore original setting
       if (!is.null(temporal$time_filter)) {
         tryCatch(
-          configure_temporal(original_filter),
+          set_filter(original_filter, warn = FALSE),
           error = function(e) NULL
         )
       }
