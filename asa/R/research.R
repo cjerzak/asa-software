@@ -205,32 +205,19 @@ asa_enumerate <- function(query,
     config_search <- config$search
   }
 
-  if (is.null(temporal) && !is.null(config) && !is.null(config$temporal)) {
-    temporal <- config$temporal
-  }
+  temporal <- .resolve_temporal_input(temporal, config)
 
-  # Normalize temporal to list for internal validation
-  if (inherits(temporal, "asa_temporal")) {
-    temporal <- as.list(temporal)
-  }
-
-  # Resolve webpage reader settings from config$search when not specified directly
-  allow_rw <- allow_read_webpages
-  if (is.null(allow_rw) && is.list(config_search) && !is.null(config_search$allow_read_webpages)) {
-    allow_rw <- config_search$allow_read_webpages
-  }
-  relevance_mode <- webpage_relevance_mode
-  if (is.null(relevance_mode) && is.list(config_search) && !is.null(config_search$webpage_relevance_mode)) {
-    relevance_mode <- config_search$webpage_relevance_mode
-  }
-  embedding_provider <- webpage_embedding_provider
-  if (is.null(embedding_provider) && is.list(config_search) && !is.null(config_search$webpage_embedding_provider)) {
-    embedding_provider <- config_search$webpage_embedding_provider
-  }
-  embedding_model <- webpage_embedding_model
-  if (is.null(embedding_model) && is.list(config_search) && !is.null(config_search$webpage_embedding_model)) {
-    embedding_model <- config_search$webpage_embedding_model
-  }
+  webpage_settings <- .resolve_webpage_reader_settings(
+    config_search,
+    allow_read_webpages,
+    webpage_relevance_mode,
+    webpage_embedding_provider,
+    webpage_embedding_model
+  )
+  allow_rw <- webpage_settings$allow_read_webpages
+  relevance_mode <- webpage_settings$relevance_mode
+  embedding_provider <- webpage_settings$embedding_provider
+  embedding_model <- webpage_settings$embedding_model
 
   # Apply defaults from constants
   if (is.null(workers)) {

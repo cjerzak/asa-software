@@ -152,38 +152,23 @@ run_task <- function(prompt,
 
   # Extract settings from config if provided
   if (!is.null(config) && inherits(config, "asa_config")) {
-    # Config temporal overrides direct temporal parameter
-    if (is.null(temporal) && !is.null(config$temporal)) {
-      temporal <- config$temporal
-    }
     config_search <- config$search
     config_conda_env <- config$conda_env
   }
 
-  # Resolve allow_read_webpages from config$search if not provided directly.
-  allow_rw <- allow_read_webpages
-  if (is.null(allow_rw) && is.list(config_search) && !is.null(config_search$allow_read_webpages)) {
-    allow_rw <- config_search$allow_read_webpages
-  }
+  temporal <- .resolve_temporal_input(temporal, config)
 
-  # Optional webpage reader tuning (defaults live on the Python side).
-  relevance_mode <- webpage_relevance_mode
-  if (is.null(relevance_mode) && is.list(config_search) && !is.null(config_search$webpage_relevance_mode)) {
-    relevance_mode <- config_search$webpage_relevance_mode
-  }
-  embedding_provider <- webpage_embedding_provider
-  if (is.null(embedding_provider) && is.list(config_search) && !is.null(config_search$webpage_embedding_provider)) {
-    embedding_provider <- config_search$webpage_embedding_provider
-  }
-  embedding_model <- webpage_embedding_model
-  if (is.null(embedding_model) && is.list(config_search) && !is.null(config_search$webpage_embedding_model)) {
-    embedding_model <- config_search$webpage_embedding_model
-  }
-
-  # Convert asa_temporal to list for internal functions
-  if (inherits(temporal, "asa_temporal")) {
-    temporal <- as.list(temporal)
-  }
+  webpage_settings <- .resolve_webpage_reader_settings(
+    config_search,
+    allow_read_webpages,
+    webpage_relevance_mode,
+    webpage_embedding_provider,
+    webpage_embedding_model
+  )
+  allow_rw <- webpage_settings$allow_read_webpages
+  relevance_mode <- webpage_settings$relevance_mode
+  embedding_provider <- webpage_settings$embedding_provider
+  embedding_model <- webpage_settings$embedding_model
 
   # Validate inputs
   .validate_run_task(
@@ -683,14 +668,7 @@ run_task_batch <- function(prompts,
   }
 
   # Config temporal overrides direct temporal parameter when temporal is NULL
-  if (is.null(temporal) && !is.null(config) && !is.null(config$temporal)) {
-    temporal <- config$temporal
-  }
-
-  # Convert asa_temporal to list for internal functions
-  if (inherits(temporal, "asa_temporal")) {
-    temporal <- as.list(temporal)
-  }
+  temporal <- .resolve_temporal_input(temporal, config)
 
   # Resolve workers (used for parallel planning, and validated regardless)
   if (is.null(workers)) {

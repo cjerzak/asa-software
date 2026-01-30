@@ -760,6 +760,30 @@ configure_temporal <- function(time_filter = NULL) {
   invisible(prev_filter)
 }
 
+#' Resolve Temporal Inputs
+#'
+#' Internal helper that merges temporal defaults from asa_config and coerces
+#' asa_temporal objects to plain lists.
+#'
+#' @param temporal NULL, list, or asa_temporal
+#' @param config Optional asa_config supplying default temporal
+#' @return Temporal list or NULL
+#' @keywords internal
+.resolve_temporal_input <- function(temporal, config = NULL) {
+  if (is.null(temporal) &&
+      !is.null(config) &&
+      inherits(config, "asa_config") &&
+      !is.null(config$temporal)) {
+    temporal <- config$temporal
+  }
+
+  if (inherits(temporal, "asa_temporal")) {
+    temporal <- as.list(temporal)
+  }
+
+  temporal
+}
+
 
 #' Apply Temporal Filtering for a Single Operation
 #'
@@ -923,6 +947,59 @@ configure_temporal <- function(time_filter = NULL) {
   )
 
   fn()
+}
+
+#' Resolve Webpage Reader Settings
+#'
+#' Internal helper that merges per-call webpage reader options with defaults
+#' from config$search.
+#'
+#' @param config_search asa_search object or list of search settings
+#' @param allow_read_webpages TRUE/FALSE/NULL
+#' @param webpage_relevance_mode "auto", "lexical", "embeddings", or NULL
+#' @param webpage_embedding_provider "auto", "openai", "sentence_transformers", or NULL
+#' @param webpage_embedding_model Embedding model identifier or NULL
+#' @return List with resolved settings
+#' @keywords internal
+.resolve_webpage_reader_settings <- function(config_search = NULL,
+                                             allow_read_webpages = NULL,
+                                             webpage_relevance_mode = NULL,
+                                             webpage_embedding_provider = NULL,
+                                             webpage_embedding_model = NULL) {
+  allow_rw <- allow_read_webpages
+  if (is.null(allow_rw) &&
+      is.list(config_search) &&
+      !is.null(config_search$allow_read_webpages)) {
+    allow_rw <- config_search$allow_read_webpages
+  }
+
+  relevance_mode <- webpage_relevance_mode
+  if (is.null(relevance_mode) &&
+      is.list(config_search) &&
+      !is.null(config_search$webpage_relevance_mode)) {
+    relevance_mode <- config_search$webpage_relevance_mode
+  }
+
+  embedding_provider <- webpage_embedding_provider
+  if (is.null(embedding_provider) &&
+      is.list(config_search) &&
+      !is.null(config_search$webpage_embedding_provider)) {
+    embedding_provider <- config_search$webpage_embedding_provider
+  }
+
+  embedding_model <- webpage_embedding_model
+  if (is.null(embedding_model) &&
+      is.list(config_search) &&
+      !is.null(config_search$webpage_embedding_model)) {
+    embedding_model <- config_search$webpage_embedding_model
+  }
+
+  list(
+    allow_read_webpages = allow_rw,
+    relevance_mode = relevance_mode,
+    embedding_provider = embedding_provider,
+    embedding_model = embedding_model
+  )
 }
 
 
