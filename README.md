@@ -290,7 +290,7 @@ asa_audit(senators, backend = "langgraph", agent = agent)
 agent <- asa::initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
-  proxy = "socks5h://127.0.0.1:9050",  # Tor proxy (NULL to disable)
+  proxy = NA,                           # NA=auto from env; NULL=disable; set socks5h://127.0.0.1:9050 for Tor
   timeout = 120,                        # Request timeout in seconds
   rate_limit = 0.1                      # Requests per second (conservative default)
 )
@@ -298,7 +298,7 @@ agent <- asa::initialize_agent(
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `proxy` | `"socks5h://127.0.0.1:9050"` | SOCKS5 proxy URL, or `NULL` to disable |
+| `proxy` | `NA` | Proxy URL for search tools (`NA` = auto from env; `NULL` = disable) |
 | `timeout` | `120` | Request timeout in seconds |
 | `rate_limit` | `0.1` | Max requests per second (conservative default for heavy workloads) |
 | `verbose` | `TRUE` | Print initialization status messages |
@@ -332,6 +332,10 @@ config <- asa::asa_config(
 
 # Use with run_task
 result <- asa::run_task(prompt, config = config)
+
+# Use with run_task_batch / asa_enumerate
+results <- asa::run_task_batch(prompts, config = config, parallel = TRUE)
+enum <- asa::asa_enumerate("Find all current US senators", config = config)
 ```
 
 ### Optional Webpage Reading
@@ -626,14 +630,14 @@ asa::build_backend(conda_env = "asa_env", force = TRUE)
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2026-01-29 21:32:49 CST | **Status:** PASS
+**Last Run:** 2026-01-30 10:24:29 CST | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.114s | 0.09s | 1.26x | PASS |
-| `helper_funcs` | 0.061s | 0.07s | 0.88x | PASS |
-| `combined` | 0.106s | 0.09s | 1.17x | PASS |
-| `agent_search` | 51.4s | 18s | 2.92x | PASS |
+| `build_prompt` | 0.126s | 0.09s | 1.40x | PASS |
+| `helper_funcs` | 0.070s | 0.07s | 1.00x | PASS |
+| `combined` | 0.110s | 0.09s | 1.21x | PASS |
+| `agent_search` | 52.1s | 18s | 2.96x | PASS |
 
 Tests fail if time exceeds 4.00x baseline. 
 See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.

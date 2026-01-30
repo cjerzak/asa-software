@@ -8,9 +8,10 @@ run_task_batch(
   prompts,
   output_format = "text",
   temporal = NULL,
+  config = NULL,
   agent = NULL,
   parallel = FALSE,
-  workers = 4L,
+  workers = NULL,
   progress = TRUE,
   circuit_breaker = TRUE,
   abort_on_trip = FALSE,
@@ -28,6 +29,12 @@ run_task_batch(
 
 \item{temporal}{Named list for temporal filtering (applies to all tasks).
 See \code{\link{run_task}} for details.}
+
+\item{config}{Optional \code{asa_config} object to apply across the batch.
+When provided, \code{config$temporal} is used if \code{temporal} is NULL, and
+\code{config$workers} is used if \code{workers} is NULL. In parallel mode,
+the config is sent to worker processes so each worker can initialize its
+own agent session.}
 
 \item{agent}{An asa_agent object}
 

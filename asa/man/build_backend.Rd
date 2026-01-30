@@ -5,14 +5,15 @@
 \title{Build the Python Backend Environment}
 \usage{
 build_backend(
-  conda_env = "asa_env",
+  conda_env = NULL,
   conda = "auto",
   python_version = "3.11",
   force = FALSE
 )
 }
 \arguments{
-\item{conda_env}{Name of the conda environment (default: "asa_env")}
+\item{conda_env}{Name of the conda environment. Defaults to the package
+option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 
 \item{conda}{Path to conda executable (default: "auto")}
 

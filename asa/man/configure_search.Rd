@@ -13,7 +13,7 @@ configure_search(
   captcha_backoff_base = NULL,
   page_load_wait = NULL,
   inter_search_delay = NULL,
-  conda_env = "asa_env"
+  conda_env = NULL
 )
 }
 \arguments{
@@ -33,7 +33,8 @@ configure_search(
 
 \item{inter_search_delay}{Delay between consecutive searches in seconds (default: 1.5)}
 
-\item{conda_env}{Name of the conda environment (default: "asa_env")}
+\item{conda_env}{Name of the conda environment. Defaults to the package
+option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 }
 \value{
 Invisibly returns a list with the current configuration

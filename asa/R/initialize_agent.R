@@ -7,8 +7,11 @@
 #' @param backend LLM backend to use. One of: "openai", "groq", "xai", "exo", "openrouter"
 #' @param model Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")
 #' @param conda_env Name of the conda environment with Python dependencies
-#' @param proxy Proxy URL for search tools (default: NULL). Use
-#'   \code{ASA_DEFAULT_PROXY} (or \code{"socks5h://127.0.0.1:9050"}) to route
+#' @param proxy Proxy URL for search tools.
+#'   Use \code{NA} (default) to auto-detect from environment variables
+#'   (\code{ASA_PROXY}, \code{HTTP_PROXY}, \code{HTTPS_PROXY}).
+#'   Use \code{NULL} to disable proxying.
+#'   Use \code{ASA_DEFAULT_PROXY} (or \code{"socks5h://127.0.0.1:9050"}) to route
 #'   searches through Tor.
 #' @param use_memory_folding Enable DeepAgent-style memory compression (default: TRUE)
 #' @param memory_threshold Number of messages before folding triggers (default: 4)
@@ -82,23 +85,50 @@
 #' @seealso \code{\link{run_task}}, \code{\link{run_task_batch}}
 #'
 #' @export
-initialize_agent <- function(backend = "openai",
-                             model = "gpt-4.1-mini",
-                             conda_env = "asa_env",
-                             proxy = NULL,
-                             use_memory_folding = TRUE,
-                             memory_threshold = 4L,
-                             memory_keep_recent = 2L,
+initialize_agent <- function(backend = NULL,
+                             model = NULL,
+                             conda_env = NULL,
+                             proxy = NA,
+                             use_memory_folding = ASA_DEFAULT_MEMORY_FOLDING,
+                             memory_threshold = ASA_DEFAULT_MEMORY_THRESHOLD,
+                             memory_keep_recent = ASA_DEFAULT_MEMORY_KEEP_RECENT,
                              rate_limit = ASA_DEFAULT_RATE_LIMIT,
-                             timeout = 120L,
+                             timeout = ASA_DEFAULT_TIMEOUT,
                              tor = tor_options(),
                              verbose = TRUE) {
 
+  # Apply defaults (option-aware where available)
+  backend <- backend %||% .get_default_backend()
+  model <- model %||% .get_default_model()
+  conda_env <- conda_env %||% .get_default_conda_env()
+
   # Validate backend
-  backend <- match.arg(backend, c("openai", "groq", "xai", "exo", "openrouter"))
+  backend <- match.arg(backend, ASA_SUPPORTED_BACKENDS)
 
   # Validate API key for the selected backend (fail-fast before expensive operations)
   .validate_api_key(backend)
+
+  # Resolve proxy (NA = auto, NULL = disable)
+  proxy_info <- .resolve_proxy(proxy)
+  proxy <- proxy_info$proxy
+  proxy_mode <- proxy_info$mode
+  proxy_source <- proxy_info$source
+
+  # If auto-detected proxy is malformed, warn and fall back to no proxy.
+  if (identical(proxy_mode, "auto") && !is.null(proxy)) {
+    proxy <- tryCatch({
+      .validate_proxy_url(proxy, "proxy")
+      proxy
+    }, error = function(e) {
+      warning(
+        "Ignoring invalid proxy from environment",
+        if (!is.null(proxy_source) && nzchar(proxy_source)) paste0(" (", proxy_source, ")") else "",
+        ": ", conditionMessage(e),
+        call. = FALSE
+      )
+      NULL
+    })
+  }
 
   # Normalize tor options early for validation
   if (!inherits(tor, "asa_tor")) {
@@ -198,11 +228,6 @@ initialize_agent <- function(backend = "openai",
   )
 
   # Set up proxy from environment if not specified
-  if (is.null(proxy)) {
-    proxy <- Sys.getenv("HTTP_PROXY", unset = "")
-    if (proxy == "") proxy <- NULL
-  }
-
   # Close any existing HTTP clients before creating new ones (prevents resource leak)
   .close_http_clients()
 
@@ -243,9 +268,12 @@ initialize_agent <- function(backend = "openai",
     model = model,
     conda_env = conda_env,
     proxy = proxy,
+    proxy_mode = proxy_mode,
+    proxy_source = proxy_source,
     rate_limit = rate_limit,
     timeout = timeout,
     use_memory_folding = use_memory_folding,
+    memory_folding = use_memory_folding,
     memory_threshold = memory_threshold,
     memory_keep_recent = memory_keep_recent,
     tor = tor

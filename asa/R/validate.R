@@ -184,8 +184,8 @@
   invisible(TRUE)
 }
 
-#' Validate URL Format (SOCKS5 Proxy)
-#' @param x Value to check (NULL is valid = no proxy)
+#' Validate Proxy URL Format
+#' @param x Value to check (NULL disables proxy; NA enables auto-detection)
 #' @param param_name Name for error message
 #' @keywords internal
 .validate_proxy_url <- function(x, param_name) {
@@ -193,15 +193,20 @@
     return(invisible(TRUE))  # NULL is valid (no proxy)
   }
 
+  if (isTRUE(is.na(x))) {
+    return(invisible(TRUE))  # NA is valid (auto proxy)
+  }
+
   .validate_string(x, param_name)
 
-  # Check SOCKS5 format: socks5://host:port or socks5h://host:port
-  if (!grepl("^socks5h?://[^:]+:\\d+$", x)) {
+  # Check proxy URL format: socks5(h)://host:port or http(s)://host:port
+  # Allow optional basic auth (user:pass@) for corporate proxies.
+  if (!grepl("^(socks5h?|https?)://([^/@]+@)?[^:]+:\\d+$", x)) {
     .stop_validation(
       param_name,
-      'be a valid SOCKS5 URL (format: "socks5h://host:port")',
+      'be a valid proxy URL (format: "socks5h://host:port" or "http://host:port")',
       actual = x,
-      fix = 'Use format like "socks5h://127.0.0.1:9050" or set to NULL to disable'
+      fix = 'Use e.g. "socks5h://127.0.0.1:9050" (Tor), "http://proxy:8080", NA for auto, or NULL to disable'
     )
   }
 

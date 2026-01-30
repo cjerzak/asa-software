@@ -199,20 +199,7 @@ run_task <- function(prompt,
   if (is.null(agent) && !is.null(config) && inherits(config, "asa_config")) {
     current <- if (.is_initialized()) get_agent() else NULL
     if (!is.null(current)) {
-      same_backend <- identical(current$backend, config$backend)
-      same_model <- identical(current$model, config$model)
-      same_conda <- identical(current$config$conda_env, config$conda_env)
-      same_proxy <- identical(current$config$proxy, config$proxy)
-      same_folding <- identical(current$config$use_memory_folding, config$memory_folding)
-      same_threshold <- identical(current$config$memory_threshold, config$memory_threshold)
-      same_keep <- identical(current$config$memory_keep_recent, config$memory_keep_recent)
-      same_rate <- identical(current$config$rate_limit, config$rate_limit)
-      same_timeout <- identical(current$config$timeout, config$timeout)
-      same_tor <- identical(current$config$tor, config$tor)
-
-      if (same_backend && same_model && same_conda && same_proxy &&
-          same_folding && same_threshold && same_keep &&
-          same_rate && same_timeout && same_tor) {
+      if (.agent_matches_config(current, config)) {
         agent <- current
       }
     }
@@ -614,6 +601,11 @@ build_prompt <- function(template, ...) {
 #' @param output_format Expected output format (applies to all tasks)
 #' @param temporal Named list for temporal filtering (applies to all tasks).
 #'   See \code{\link{run_task}} for details.
+#' @param config Optional \code{asa_config} object to apply across the batch.
+#'   When provided, \code{config$temporal} is used if \code{temporal} is NULL, and
+#'   \code{config$workers} is used if \code{workers} is NULL. In parallel mode,
+#'   the config is sent to worker processes so each worker can initialize its
+#'   own agent session.
 #' @param agent An asa_agent object
 #' @param parallel Use parallel processing
 #' @param workers Number of parallel workers
@@ -665,9 +657,10 @@ build_prompt <- function(template, ...) {
 run_task_batch <- function(prompts,
                            output_format = "text",
                            temporal = NULL,
+                           config = NULL,
                            agent = NULL,
                            parallel = FALSE,
-                           workers = 4L,
+                           workers = NULL,
                            progress = TRUE,
                            circuit_breaker = TRUE,
                            abort_on_trip = FALSE,
@@ -675,6 +668,27 @@ run_task_batch <- function(prompts,
                            webpage_relevance_mode = NULL,
                            webpage_embedding_provider = NULL,
                            webpage_embedding_model = NULL) {
+
+  # Validate config type early (before any work)
+  if (!is.null(config) && !inherits(config, "asa_config")) {
+    stop("`config` must be an asa_config object or NULL", call. = FALSE)
+  }
+
+  # Config temporal overrides direct temporal parameter when temporal is NULL
+  if (is.null(temporal) && !is.null(config) && !is.null(config$temporal)) {
+    temporal <- config$temporal
+  }
+
+  # Convert asa_temporal to list for internal functions
+  if (inherits(temporal, "asa_temporal")) {
+    temporal <- as.list(temporal)
+  }
+
+  # Resolve workers (used for parallel planning, and validated regardless)
+  if (is.null(workers)) {
+    workers <- if (!is.null(config) && !is.null(config$workers)) config$workers else .get_default_workers()
+  }
+  workers <- as.integer(workers)
 
   # Validate inputs
   .validate_run_task_batch(
@@ -710,13 +724,18 @@ run_task_batch <- function(prompts,
   # worker initialize its own agent session.
   worker_config <- NULL
   if (parallel) {
+    if (!is.null(config)) {
+      worker_config <- config
+      worker_config$workers <- workers
+      agent <- NULL
+    } else {
     config_template <- agent
     if (is.null(config_template) && .is_initialized()) {
       config_template <- get_agent()
     }
     if (is.null(config_template)) {
       stop(
-        "In parallel mode, provide `agent` or call initialize_agent() first ",
+        "In parallel mode, provide `config`, provide `agent`, or call initialize_agent() first ",
         "so configuration can be derived for worker processes.",
         call. = FALSE
       )
@@ -739,7 +758,10 @@ run_task_batch <- function(prompts,
     # Drop reference to the (non-serializable) agent object.
     agent <- NULL
     config_template <- NULL
+    }
   }
+
+  effective_config <- if (parallel) worker_config else config
 
   # Function to process one task with circuit breaker integration
   process_one <- function(i) {
@@ -747,7 +769,7 @@ run_task_batch <- function(prompts,
       prompt = prompt_vec[i],
       output_format = output_format,
       temporal = temporal,
-      config = worker_config,
+      config = effective_config,
       agent = agent,
       allow_read_webpages = allow_read_webpages,
       webpage_relevance_mode = webpage_relevance_mode,

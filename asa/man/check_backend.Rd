@@ -4,10 +4,11 @@
 \alias{check_backend}
 \title{Check Python Environment Availability}
 \usage{
-check_backend(conda_env = "asa_env", strict = FALSE)
+check_backend(conda_env = NULL, strict = FALSE)
 }
 \arguments{
-\item{conda_env}{Name of the conda environment to check}
+\item{conda_env}{Name of the conda environment to check. Defaults to the
+package option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 
 \item{strict}{If TRUE, also require optional packages used for Tor control and
 stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).}

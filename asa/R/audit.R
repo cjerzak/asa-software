@@ -318,7 +318,7 @@ backend <- match.arg(backend)
     agent <- initialize_agent(
       backend = "openai",
       model = model,
-      conda_env = "asa_env"
+      verbose = verbose
     )
   }
 

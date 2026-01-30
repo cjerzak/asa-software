@@ -13,6 +13,108 @@
   if (is.null(x)) y else x
 }
 
+#' Resolve Proxy Configuration
+#'
+#' Interprets ASA proxy inputs consistently across functions:
+#' - `NA`: auto-detect from environment variables (ASA_PROXY, HTTP_PROXY, HTTPS_PROXY)
+#' - `NULL`: disable proxying
+#' - string: explicit proxy URL
+#'
+#' @param proxy Proxy specification (NA, NULL, or character scalar)
+#' @param env_vars Character vector of env vars to consult in auto mode
+#' @return A list with `proxy` (character scalar or NULL), `mode`, and `source`
+#' @keywords internal
+.resolve_proxy <- function(proxy,
+                           env_vars = c("ASA_PROXY", "HTTP_PROXY", "HTTPS_PROXY")) {
+  # Explicit disable
+  if (is.null(proxy)) {
+    return(list(proxy = NULL, mode = "off", source = NULL))
+  }
+
+  # Auto mode (NA)
+  if (isTRUE(is.na(proxy))) {
+    for (var in env_vars) {
+      value <- Sys.getenv(var, unset = "")
+      if (nzchar(value)) {
+        return(list(proxy = value, mode = "auto", source = var))
+      }
+    }
+    return(list(proxy = NULL, mode = "auto", source = NULL))
+  }
+
+  # Explicit string
+  if (!is.character(proxy) || length(proxy) != 1) {
+    stop("`proxy` must be NA (auto), NULL (disable), or a single proxy URL string.",
+         call. = FALSE)
+  }
+  if (!nzchar(proxy)) {
+    return(list(proxy = NULL, mode = "off", source = NULL))
+  }
+  list(proxy = proxy, mode = "manual", source = NULL)
+}
+
+#' Format Proxy for Printing
+#' @keywords internal
+.format_proxy <- function(proxy, mode = NULL, source = NULL) {
+  if (!is.null(mode)) {
+    mode <- as.character(mode)
+    if (identical(mode, "auto")) {
+      if (is.null(proxy) || (is.character(proxy) && length(proxy) == 1 && !nzchar(proxy))) {
+        return("Auto (none found)")
+      }
+      if (!is.null(source) && nzchar(source)) {
+        return(paste0("Auto (", source, "): ", proxy))
+      }
+      return(paste0("Auto: ", proxy))
+    }
+    if (identical(mode, "off")) {
+      return("None")
+    }
+    # manual or unknown mode falls back to showing proxy
+  }
+
+  if (is.null(proxy)) return("None")
+  if (isTRUE(is.na(proxy))) return("Auto")
+  as.character(proxy)
+}
+
+#' Check Whether an Agent Matches an asa_config
+#' @keywords internal
+.agent_matches_config <- function(agent, config) {
+  if (is.null(agent) || is.null(config)) return(FALSE)
+  if (!inherits(agent, "asa_agent")) return(FALSE)
+  if (!inherits(config, "asa_config")) return(FALSE)
+
+  desired_proxy <- tryCatch({
+    info <- .resolve_proxy(config$proxy)
+    proxy_value <- info$proxy
+    if (identical(info$mode, "auto") && !is.null(proxy_value)) {
+      proxy_value <- tryCatch({
+        .validate_proxy_url(proxy_value, "proxy")
+        proxy_value
+      }, error = function(e) NULL)
+    }
+    proxy_value
+  }, error = function(e) config$proxy)
+
+  agent_folding <- agent$config$use_memory_folding %||% agent$config$memory_folding
+
+  same_backend <- identical(agent$backend, config$backend)
+  same_model <- identical(agent$model, config$model)
+  same_conda <- identical(agent$config$conda_env, config$conda_env)
+  same_proxy <- identical(agent$config$proxy, desired_proxy)
+  same_folding <- identical(agent_folding, config$memory_folding)
+  same_threshold <- identical(agent$config$memory_threshold, config$memory_threshold)
+  same_keep <- identical(agent$config$memory_keep_recent, config$memory_keep_recent)
+  same_rate <- identical(agent$config$rate_limit, config$rate_limit)
+  same_timeout <- identical(agent$config$timeout, config$timeout)
+  same_tor <- identical(agent$config$tor, config$tor)
+
+  isTRUE(same_backend && same_model && same_conda && same_proxy &&
+           same_folding && same_threshold && same_keep &&
+           same_rate && same_timeout && same_tor)
+}
+
 #' Clean Text for JSON Output
 #'
 #' Escapes special characters in text for safe inclusion in JSON strings.
@@ -429,7 +531,8 @@ rotate_tor_circuit <- function(method = c("signal", "brew", "systemctl"),
 #' @param overuse_decay Window (seconds) for counting recent uses before decay.
 #' @param max_rotation_attempts Maximum rotations to find a clean exit.
 #' @param ip_cache_ttl Seconds to cache exit IP lookups.
-#' @param conda_env Conda environment name for the Python module.
+#' @param conda_env Conda environment name for the Python module. Defaults to
+#'   the package option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #'
 #' @return Invisibly returns a list of the configured values (or NULL on error).
 #'
@@ -442,7 +545,9 @@ configure_tor_registry <- function(registry_path = NULL,
                                    overuse_decay = ASA_TOR_OVERUSE_DECAY,
                                    max_rotation_attempts = ASA_TOR_MAX_ROTATION_ATTEMPTS,
                                    ip_cache_ttl = ASA_TOR_IP_CACHE_TTL,
-                                   conda_env = "asa_env") {
+                                   conda_env = NULL) {
+
+  conda_env <- conda_env %||% .get_default_conda_env()
 
   .validate_configure_tor_registry(
     registry_path = registry_path,
@@ -506,7 +611,8 @@ print2 <- function(...) {
 #' how much diagnostic output is produced during web searches.
 #'
 #' @param level Log level: "DEBUG", "INFO", "WARNING" (default), "ERROR", or "CRITICAL"
-#' @param conda_env Name of the conda environment (default: "asa_env")
+#' @param conda_env Name of the conda environment. Defaults to the package
+#'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #'
 #' @return Invisibly returns the current logging level
 #'
@@ -534,7 +640,8 @@ print2 <- function(...) {
 #'
 #' @export
 configure_search_logging <- function(level = "WARNING",
-                                     conda_env = "asa_env") {
+                                     conda_env = NULL) {
+  conda_env <- conda_env %||% .get_default_conda_env()
   # Validate level
   valid_levels <- c("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
   level <- toupper(level)
@@ -747,7 +854,8 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param fn Function to run with search config applied
 #' @return Result of fn()
 #' @keywords internal
-.with_search_config <- function(search, conda_env = "asa_env", fn) {
+.with_search_config <- function(search, conda_env = NULL, fn) {
+  conda_env <- conda_env %||% .get_default_conda_env()
   if (is.null(search)) {
     return(fn())
   }
@@ -844,8 +952,9 @@ configure_temporal <- function(time_filter = NULL) {
                                        prefilter_k = NULL,
                                        use_mmr = NULL,
                                        mmr_lambda = NULL,
-                                       conda_env = "asa_env",
+                                       conda_env = NULL,
                                        fn) {
+  conda_env <- conda_env %||% .get_default_conda_env()
   # If nothing was specified, don't touch Python config.
   if (is.null(allow_read_webpages) &&
       is.null(relevance_mode) &&
@@ -946,7 +1055,8 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param captcha_backoff_base Base multiplier for CAPTCHA backoff (default: 3)
 #' @param page_load_wait Wait time after page load in seconds (default: 2)
 #' @param inter_search_delay Delay between consecutive searches in seconds (default: 1.5)
-#' @param conda_env Name of the conda environment (default: "asa_env")
+#' @param conda_env Name of the conda environment. Defaults to the package
+#'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #'
 #' @return Invisibly returns a list with the current configuration
 #'
@@ -971,7 +1081,8 @@ configure_search <- function(max_results = NULL,
                              captcha_backoff_base = NULL,
                              page_load_wait = NULL,
                              inter_search_delay = NULL,
-                             conda_env = "asa_env") {
+                             conda_env = NULL) {
+  conda_env <- conda_env %||% .get_default_conda_env()
   # Validate inputs
   .validate_configure_search(
     max_results = max_results,

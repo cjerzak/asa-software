@@ -12,7 +12,7 @@
   prefilter_k = NULL,
   use_mmr = NULL,
   mmr_lambda = NULL,
-  conda_env = "asa_env",
+  conda_env = NULL,
   fn
 )
 }

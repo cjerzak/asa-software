@@ -84,17 +84,19 @@ test_that(".validate_choice accepts valid choices", {
 
 test_that(".validate_proxy_url accepts valid formats", {
   expect_silent(.validate_proxy_url(NULL, "proxy"))
+  expect_silent(.validate_proxy_url(NA, "proxy"))
   expect_silent(.validate_proxy_url("socks5h://127.0.0.1:9050", "proxy"))
   expect_silent(.validate_proxy_url("socks5://localhost:1080", "proxy"))
   expect_silent(.validate_proxy_url("socks5h://192.168.1.1:9999", "proxy"))
+  expect_silent(.validate_proxy_url("http://proxy.com:8080", "proxy"))
+  expect_silent(.validate_proxy_url("https://proxy.com:8443", "proxy"))
 })
 
 test_that(".validate_proxy_url rejects invalid formats", {
-  expect_error(.validate_proxy_url("http://proxy.com:8080", "proxy"), "SOCKS5 URL")
-  expect_error(.validate_proxy_url("https://proxy.com", "proxy"), "SOCKS5 URL")
-  expect_error(.validate_proxy_url("127.0.0.1:9050", "proxy"), "SOCKS5 URL")
-  expect_error(.validate_proxy_url("socks5://localhost", "proxy"), "SOCKS5 URL")  # missing port
-  expect_error(.validate_proxy_url("ftp://localhost:21", "proxy"), "SOCKS5 URL")
+  expect_error(.validate_proxy_url("https://proxy.com", "proxy"), "proxy URL")  # missing port
+  expect_error(.validate_proxy_url("127.0.0.1:9050", "proxy"), "proxy URL")     # missing scheme
+  expect_error(.validate_proxy_url("socks5://localhost", "proxy"), "proxy URL") # missing port
+  expect_error(.validate_proxy_url("ftp://localhost:21", "proxy"), "proxy URL")
 })
 
 test_that(".validate_conda_env accepts valid names", {
@@ -341,7 +343,7 @@ test_that("error messages include Got and Fix sections", {
 
 test_that("error messages are actionable", {
   tryCatch(
-    .validate_proxy_url("http://bad:8080", "proxy"),
+    .validate_proxy_url("http://bad", "proxy"),
     error = function(e) {
       msg <- conditionMessage(e)
       expect_match(msg, "socks5h://127.0.0.1:9050")  # Example of correct format

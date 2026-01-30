@@ -2,16 +2,16 @@
 % Please edit documentation in R/validate.R
 \name{.validate_proxy_url}
 \alias{.validate_proxy_url}
-\title{Validate URL Format (SOCKS5 Proxy)}
+\title{Validate Proxy URL Format}
 \usage{
 .validate_proxy_url(x, param_name)
 }
 \arguments{
-\item{x}{Value to check (NULL is valid = no proxy)}
+\item{x}{Value to check (NULL disables proxy; NA enables auto-detection)}
 
 \item{param_name}{Name for error message}
 }
 \description{
-Validate URL Format (SOCKS5 Proxy)
+Validate Proxy URL Format
 }
 \keyword{internal}

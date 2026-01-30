@@ -13,7 +13,7 @@ configure_tor_registry(
   overuse_decay = ASA_TOR_OVERUSE_DECAY,
   max_rotation_attempts = ASA_TOR_MAX_ROTATION_ATTEMPTS,
   ip_cache_ttl = ASA_TOR_IP_CACHE_TTL,
-  conda_env = "asa_env"
+  conda_env = NULL
 )
 }
 \arguments{
@@ -33,7 +33,8 @@ configure_tor_registry(
 
 \item{ip_cache_ttl}{Seconds to cache exit IP lookups.}
 
-\item{conda_env}{Conda environment name for the Python module.}
+\item{conda_env}{Conda environment name for the Python module. Defaults to
+the package option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 }
 \value{
 Invisibly returns a list of the configured values (or NULL on error).

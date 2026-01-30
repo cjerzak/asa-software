@@ -4,7 +4,7 @@
 \alias{.with_search_config}
 \title{Apply Search Configuration for a Single Operation}
 \usage{
-.with_search_config(search, conda_env = "asa_env", fn)
+.with_search_config(search, conda_env = NULL, fn)
 }
 \arguments{
 \item{search}{asa_search object or list of search settings}

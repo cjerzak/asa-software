@@ -10,8 +10,11 @@
 #'
 #' @param backend LLM backend: "openai", "groq", "xai", "exo", "openrouter"
 #' @param model Model identifier (e.g., "gpt-4.1-mini")
-#' @param conda_env Conda environment name (default: "asa_env")
-#' @param proxy SOCKS5 proxy URL or NULL to disable
+#' @param conda_env Conda environment name. Defaults to the package option
+#'   \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
+#' @param proxy Proxy URL (e.g., Tor SOCKS5). Use \code{NA} (default) to
+#'   auto-detect from environment variables (\code{ASA_PROXY}, \code{HTTP_PROXY},
+#'   \code{HTTPS_PROXY}); use \code{NULL} to disable proxying.
 #' @param workers Number of parallel workers for batch operations
 #' @param timeout Request timeout in seconds
 #' @param rate_limit Requests per second
@@ -49,7 +52,7 @@
 asa_config <- function(backend = NULL,
                        model = NULL,
                        conda_env = NULL,
-                       proxy = NULL,
+                       proxy = NA,
                        workers = NULL,
                        timeout = NULL,
                        rate_limit = NULL,
@@ -64,9 +67,6 @@ asa_config <- function(backend = NULL,
   backend <- backend %||% .get_default_backend()
   model <- model %||% .get_default_model()
   conda_env <- conda_env %||% .get_default_conda_env()
-  if (missing(proxy)) {
-    proxy <- NULL
-  }
   workers <- workers %||% .get_default_workers()
   timeout <- timeout %||% ASA_DEFAULT_TIMEOUT
   rate_limit <- rate_limit %||% ASA_DEFAULT_RATE_LIMIT
@@ -82,6 +82,9 @@ asa_config <- function(backend = NULL,
          call. = FALSE)
   }
 
+  # Validate proxy (NA = auto, NULL = disabled)
+  .validate_proxy_url(proxy, "proxy")
+
   # Validate temporal if provided
   if (!is.null(temporal) && !inherits(temporal, "asa_temporal")) {
     if (is.list(temporal)) {
@@ -89,6 +92,16 @@ asa_config <- function(backend = NULL,
       temporal <- do.call(temporal_options, temporal)
     } else {
       stop("`temporal` must be created with temporal_options() or be a list",
+           call. = FALSE)
+    }
+  }
+
+  # Validate search if provided
+  if (!is.null(search) && !inherits(search, "asa_search")) {
+    if (is.list(search)) {
+      search <- do.call(search_options, search)
+    } else {
+      stop("`search` must be created with search_options() or be a list",
            call. = FALSE)
     }
   }
@@ -138,7 +151,7 @@ print.asa_config <- function(x, ...) {
   cat("Backend:         ", x$backend, "\n", sep = "")
   cat("Model:           ", x$model, "\n", sep = "")
   cat("Conda Env:       ", x$conda_env, "\n", sep = "")
-  cat("Proxy:           ", x$proxy %||% "None", "\n", sep = "")
+  cat("Proxy:           ", .format_proxy(x$proxy), "\n", sep = "")
   cat("Workers:         ", x$workers, "\n", sep = "")
   cat("Timeout:         ", x$timeout, "s\n", sep = "")
   cat("Rate Limit:      ", x$rate_limit, " req/s\n", sep = "")
@@ -525,13 +538,18 @@ print.asa_agent <- function(x, ...) {
   cat("Backend:        ", x$backend, "\n", sep = "")
   cat("Model:          ", x$model, "\n", sep = "")
 
-  use_folding <- isTRUE(x$config$use_memory_folding)
+  use_folding <- isTRUE(x$config$use_memory_folding %||% x$config$memory_folding)
   cat("Memory Folding: ", if (use_folding) "Enabled" else "Disabled", "\n", sep = "")
   if (use_folding) {
     cat("  Threshold:    ", x$config$memory_threshold %||% "N/A", " messages\n", sep = "")
     cat("  Keep Recent:  ", x$config$memory_keep_recent %||% "N/A", " messages\n", sep = "")
   }
-  cat("Proxy:          ", x$config$proxy %||% "None", "\n", sep = "")
+  cat(
+    "Proxy:          ",
+    .format_proxy(x$config$proxy, mode = x$config$proxy_mode, source = x$config$proxy_source),
+    "\n",
+    sep = ""
+  )
   cat("Created:        ", format(x$created_at, "%Y-%m-%d %H:%M:%S"), "\n", sep = "")
 
   invisible(x)

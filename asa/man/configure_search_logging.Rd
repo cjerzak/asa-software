@@ -4,12 +4,13 @@
 \alias{configure_search_logging}
 \title{Configure Python Search Logging Level}
 \usage{
-configure_search_logging(level = "WARNING", conda_env = "asa_env")
+configure_search_logging(level = "WARNING", conda_env = NULL)
 }
 \arguments{
 \item{level}{Log level: "DEBUG", "INFO", "WARNING" (default), "ERROR", or "CRITICAL"}
 
-\item{conda_env}{Name of the conda environment (default: "asa_env")}
+\item{conda_env}{Name of the conda environment. Defaults to the package
+option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 }
 \value{
 Invisibly returns the current logging level

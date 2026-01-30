@@ -8,7 +8,7 @@ asa_config(
   backend = NULL,
   model = NULL,
   conda_env = NULL,
-  proxy = NULL,
+  proxy = NA,
   workers = NULL,
   timeout = NULL,
   rate_limit = NULL,
@@ -25,9 +25,12 @@ asa_config(
 
 \item{model}{Model identifier (e.g., "gpt-4.1-mini")}
 
-\item{conda_env}{Conda environment name (default: "asa_env")}
+\item{conda_env}{Conda environment name. Defaults to the package option
+\code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 
-\item{proxy}{SOCKS5 proxy URL or NULL to disable}
+\item{proxy}{Proxy URL (e.g., Tor SOCKS5). Use \code{NA} (default) to
+auto-detect from environment variables (\code{ASA_PROXY}, \code{HTTP_PROXY},
+\code{HTTPS_PROXY}); use \code{NULL} to disable proxying.}
 
 \item{workers}{Number of parallel workers for batch operations}
 

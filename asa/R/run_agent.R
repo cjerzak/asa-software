@@ -5,7 +5,6 @@
 #'
 #' @param prompt The prompt to send to the agent
 #' @param agent An asa_agent object
-#' @param temporal Named list for temporal filtering
 #' @param recursion_limit Maximum number of agent steps
 #' @param verbose Print status messages
 #'
@@ -14,7 +13,6 @@
 #' @keywords internal
 .run_agent <- function(prompt,
                        agent = NULL,
-                       temporal = NULL,
                        recursion_limit = NULL,
                        thread_id = NULL,
                        verbose = FALSE) {
@@ -28,9 +26,6 @@
     thread_id = thread_id
   )
 
-  # Validate temporal if provided
-  .validate_temporal(temporal)
-
   # Get or initialize agent
   if (is.null(agent)) {
     if (!.is_initialized()) {
@@ -40,12 +35,9 @@
     agent <- get_agent()
   }
 
-  # Augment prompt with temporal hints if dates specified
-  augmented_prompt <- .augment_prompt_temporal(prompt, temporal, verbose = verbose)
-
   # Get config
   config <- agent$config
-  use_memory_folding <- config$use_memory_folding %||% TRUE
+  use_memory_folding <- (config$use_memory_folding %||% config$memory_folding) %||% TRUE
 
   # Set recursion limit based on agent type
   if (is.null(recursion_limit)) {
@@ -59,18 +51,16 @@
   if (verbose) message("Running agent...")
   t0 <- Sys.time()
 
-  # Build initial state and invoke agent with temporal filtering
-  raw_response <- .with_temporal(temporal, function() {
-    tryCatch({
-      if (use_memory_folding) {
-        .invoke_memory_folding_agent(agent$python_agent, augmented_prompt, recursion_limit, thread_id)
-      } else {
-        .invoke_standard_agent(agent$python_agent, augmented_prompt, recursion_limit, thread_id)
-      }
-    }, error = function(e) {
-      structure(list(error = e$message), class = "asa_error")
-    })
-  }, agent = agent)
+  # Build initial state and invoke agent
+  raw_response <- tryCatch({
+    if (use_memory_folding) {
+      .invoke_memory_folding_agent(agent$python_agent, prompt, recursion_limit, thread_id)
+    } else {
+      .invoke_standard_agent(agent$python_agent, prompt, recursion_limit, thread_id)
+    }
+  }, error = function(e) {
+    structure(list(error = e$message), class = "asa_error")
+  })
 
   elapsed <- as.numeric(difftime(Sys.time(), t0, units = "mins"))
   if (verbose) message(sprintf("  Agent completed in %.2f minutes", elapsed))

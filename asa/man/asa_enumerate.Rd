@@ -8,13 +8,14 @@ asa_enumerate(
   query,
   schema = NULL,
   output = c("data.frame", "csv", "json"),
+  config = NULL,
   workers = NULL,
   max_rounds = NULL,
   budget = list(queries = 50L, tokens = 200000L, time_sec = 300L),
   stop_policy = list(target_items = NULL, plateau_rounds = 2L, novelty_min = 0.05,
     novelty_window = 20L),
   sources = list(web = TRUE, wikipedia = TRUE, wikidata = TRUE),
-  allow_read_webpages = FALSE,
+  allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,
   webpage_embedding_provider = NULL,
   webpage_embedding_model = NULL,
@@ -42,8 +43,13 @@ Use NULL or "auto" for LLM-proposed schema.}
 
 \item{output}{Output format: "data.frame" (default), "csv", or "json".}
 
+\item{config}{Optional \code{asa_config} object to supply defaults for agent
+initialization and per-run search/temporal settings. Explicit arguments to
+\code{asa_enumerate()} take precedence over \code{config}.}
+
 \item{workers}{Number of parallel search workers. Defaults to value from
-\code{ASA_DEFAULT_WORKERS} (typically 4).}
+\code{config$workers} when provided, otherwise \code{ASA_DEFAULT_WORKERS}
+(typically 4).}
 
 \item{max_rounds}{Maximum research iterations. Defaults to value from
 \code{ASA_DEFAULT_MAX_ROUNDS} (typically 8).}
@@ -71,8 +77,9 @@ Use NULL or "auto" for LLM-proposed schema.}
 }}
 
 \item{allow_read_webpages}{If TRUE, the agent may open and read full webpages
-(in addition to search snippets) when it helps extraction. Disabled by
-default for safety and to avoid large context usage.}
+(in addition to search snippets) when it helps extraction. Use NULL
+(default) to inherit from \code{config$search} (when provided); otherwise
+defaults to FALSE for safety and to avoid large context usage.}
 
 \item{webpage_relevance_mode}{Relevance selection for opened webpages.
 One of: "auto" (default), "lexical", "embeddings". When "embeddings" or
@@ -114,7 +121,8 @@ agent or creates a new one with specified backend/model.}
 
 \item{model}{Model identifier if creating new agent.}
 
-\item{conda_env}{Conda environment name (default: "asa_env").}
+\item{conda_env}{Conda environment name. Defaults to the package option
+\code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 
 \item{verbose}{Print status messages (default: TRUE).}
 }

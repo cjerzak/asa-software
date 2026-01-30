@@ -3,7 +3,8 @@
 #' Creates a conda environment with all required Python dependencies for the
 #' asa search agent, including LangChain, LangGraph, and search tools.
 #'
-#' @param conda_env Name of the conda environment (default: "asa_env")
+#' @param conda_env Name of the conda environment. Defaults to the package
+#'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #' @param conda Path to conda executable (default: "auto")
 #' @param python_version Python version to use (default: "3.11")
 #' @param force If TRUE, delete and recreate the conda environment if it already exists.
@@ -39,10 +40,12 @@
 #' }
 #'
 #' @export
-build_backend <- function(conda_env = "asa_env",
+build_backend <- function(conda_env = NULL,
                           conda = "auto",
                           python_version = "3.11",
                           force = FALSE) {
+
+  conda_env <- conda_env %||% .get_default_conda_env()
 
   # Check reticulate is available
   if (!requireNamespace("reticulate", quietly = TRUE)) {
@@ -165,7 +168,8 @@ build_backend <- function(conda_env = "asa_env",
 #'
 #' Checks if the required Python environment and packages are available.
 #'
-#' @param conda_env Name of the conda environment to check
+#' @param conda_env Name of the conda environment to check. Defaults to the
+#'   package option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #' @param strict If TRUE, also require optional packages used for Tor control and
 #'   stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).
 #'
@@ -188,7 +192,9 @@ build_backend <- function(conda_env = "asa_env",
 #' }
 #'
 #' @export
-check_backend <- function(conda_env = "asa_env", strict = FALSE) {
+check_backend <- function(conda_env = NULL, strict = FALSE) {
+
+  conda_env <- conda_env %||% .get_default_conda_env()
 
   result <- list(
     available = FALSE,

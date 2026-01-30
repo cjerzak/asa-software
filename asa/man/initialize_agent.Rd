@@ -5,15 +5,15 @@
 \title{Initialize the ASA Search Agent}
 \usage{
 initialize_agent(
-  backend = "openai",
-  model = "gpt-4.1-mini",
-  conda_env = "asa_env",
-  proxy = NULL,
-  use_memory_folding = TRUE,
-  memory_threshold = 4L,
-  memory_keep_recent = 2L,
+  backend = NULL,
+  model = NULL,
+  conda_env = NULL,
+  proxy = NA,
+  use_memory_folding = ASA_DEFAULT_MEMORY_FOLDING,
+  memory_threshold = ASA_DEFAULT_MEMORY_THRESHOLD,
+  memory_keep_recent = ASA_DEFAULT_MEMORY_KEEP_RECENT,
   rate_limit = ASA_DEFAULT_RATE_LIMIT,
-  timeout = 120L,
+  timeout = ASA_DEFAULT_TIMEOUT,
   tor = tor_options(),
   verbose = TRUE
 )
@@ -25,8 +25,11 @@ initialize_agent(
 
 \item{conda_env}{Name of the conda environment with Python dependencies}
 
-\item{proxy}{Proxy URL for search tools (default: NULL). Use
-\code{ASA_DEFAULT_PROXY} (or \code{"socks5h://127.0.0.1:9050"}) to route
+\item{proxy}{Proxy URL for search tools.
+Use \code{NA} (default) to auto-detect from environment variables
+(\code{ASA_PROXY}, \code{HTTP_PROXY}, \code{HTTPS_PROXY}).
+Use \code{NULL} to disable proxying.
+Use \code{ASA_DEFAULT_PROXY} (or \code{"socks5h://127.0.0.1:9050"}) to route
 searches through Tor.}
 
 \item{use_memory_folding}{Enable DeepAgent-style memory compression (default: TRUE)}

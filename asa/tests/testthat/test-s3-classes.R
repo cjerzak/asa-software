@@ -71,6 +71,19 @@ test_that("as.data.frame.asa_result works", {
   expect_equal(df$age, "30")
 })
 
+test_that("asa_config defaults and printing are consistent", {
+  cfg <- asa_config()
+  expect_s3_class(cfg, "asa_config")
+  expect_true(isTRUE(is.na(cfg$proxy)))
+  output <- capture.output(print(cfg))
+  expect_true(any(grepl("^Proxy:", output)))
+  expect_true(any(grepl("Auto", output)))
+
+  cfg_off <- asa_config(proxy = NULL)
+  output_off <- capture.output(print(cfg_off))
+  expect_true(any(grepl("^Proxy:.*None", output_off)))
+})
+
 test_that("print methods don't error", {
   agent <- asa_agent(NULL, "openai", "gpt-4", list())
   expect_output(print(agent), "ASA Search Agent")

@@ -7,7 +7,6 @@
 .run_agent(
   prompt,
   agent = NULL,
-  temporal = NULL,
   recursion_limit = NULL,
   thread_id = NULL,
   verbose = FALSE
@@ -17,8 +16,6 @@
 \item{prompt}{The prompt to send to the agent}
 
 \item{agent}{An asa_agent object}
-
-\item{temporal}{Named list for temporal filtering}
 
 \item{recursion_limit}{Maximum number of agent steps}
 

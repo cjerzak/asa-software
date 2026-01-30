@@ -10,8 +10,12 @@
 #'   Names are column names, values are R types ("character", "numeric", "logical").
 #'   Use NULL or "auto" for LLM-proposed schema.
 #' @param output Output format: "data.frame" (default), "csv", or "json".
+#' @param config Optional \code{asa_config} object to supply defaults for agent
+#'   initialization and per-run search/temporal settings. Explicit arguments to
+#'   \code{asa_enumerate()} take precedence over \code{config}.
 #' @param workers Number of parallel search workers. Defaults to value from
-#'   \code{ASA_DEFAULT_WORKERS} (typically 4).
+#'   \code{config$workers} when provided, otherwise \code{ASA_DEFAULT_WORKERS}
+#'   (typically 4).
 #' @param max_rounds Maximum research iterations. Defaults to value from
 #'   \code{ASA_DEFAULT_MAX_ROUNDS} (typically 8).
 #' @param budget Named list with resource limits:
@@ -34,8 +38,9 @@
 #'     \item wikidata: Use Wikidata SPARQL for authoritative enumerations (default: TRUE)
 #'   }
 #' @param allow_read_webpages If TRUE, the agent may open and read full webpages
-#'   (in addition to search snippets) when it helps extraction. Disabled by
-#'   default for safety and to avoid large context usage.
+#'   (in addition to search snippets) when it helps extraction. Use NULL
+#'   (default) to inherit from \code{config$search} (when provided); otherwise
+#'   defaults to FALSE for safety and to avoid large context usage.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
 #'   One of: "auto" (default), "lexical", "embeddings". When "embeddings" or
 #'   "auto" with an available provider, the tool uses vector similarity to pick
@@ -63,7 +68,8 @@
 #'   agent or creates a new one with specified backend/model.
 #' @param backend LLM backend if creating new agent: "openai", "groq", "xai", "openrouter".
 #' @param model Model identifier if creating new agent.
-#' @param conda_env Conda environment name (default: "asa_env").
+#' @param conda_env Conda environment name. Defaults to the package option
+#'   \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #' @param verbose Print status messages (default: TRUE).
 #'
 #' @return An object of class \code{asa_enumerate_result} containing:
@@ -165,13 +171,14 @@
 asa_enumerate <- function(query,
                          schema = NULL,
                          output = c("data.frame", "csv", "json"),
+                         config = NULL,
                          workers = NULL,
                          max_rounds = NULL,
                          budget = list(queries = 50L, tokens = 200000L, time_sec = 300L),
                          stop_policy = list(target_items = NULL, plateau_rounds = 2L,
                                            novelty_min = 0.05, novelty_window = 20L),
                          sources = list(web = TRUE, wikipedia = TRUE, wikidata = TRUE),
-                         allow_read_webpages = FALSE,
+                         allow_read_webpages = NULL,
                          webpage_relevance_mode = NULL,
                          webpage_embedding_provider = NULL,
                          webpage_embedding_model = NULL,
@@ -188,12 +195,51 @@ asa_enumerate <- function(query,
                          conda_env = NULL,
                          verbose = TRUE) {
 
+  if (!is.null(config) && !inherits(config, "asa_config")) {
+    stop("`config` must be an asa_config object or NULL", call. = FALSE)
+  }
+
+  # Pull defaults from config where appropriate (explicit args win)
+  config_search <- NULL
+  if (!is.null(config)) {
+    config_search <- config$search
+  }
+
+  if (is.null(temporal) && !is.null(config) && !is.null(config$temporal)) {
+    temporal <- config$temporal
+  }
+
+  # Normalize temporal to list for internal validation
+  if (inherits(temporal, "asa_temporal")) {
+    temporal <- as.list(temporal)
+  }
+
+  # Resolve webpage reader settings from config$search when not specified directly
+  allow_rw <- allow_read_webpages
+  if (is.null(allow_rw) && is.list(config_search) && !is.null(config_search$allow_read_webpages)) {
+    allow_rw <- config_search$allow_read_webpages
+  }
+  relevance_mode <- webpage_relevance_mode
+  if (is.null(relevance_mode) && is.list(config_search) && !is.null(config_search$webpage_relevance_mode)) {
+    relevance_mode <- config_search$webpage_relevance_mode
+  }
+  embedding_provider <- webpage_embedding_provider
+  if (is.null(embedding_provider) && is.list(config_search) && !is.null(config_search$webpage_embedding_provider)) {
+    embedding_provider <- config_search$webpage_embedding_provider
+  }
+  embedding_model <- webpage_embedding_model
+  if (is.null(embedding_model) && is.list(config_search) && !is.null(config_search$webpage_embedding_model)) {
+    embedding_model <- config_search$webpage_embedding_model
+  }
+
   # Apply defaults from constants
-  workers <- workers %||% .get_default_workers()
+  if (is.null(workers)) {
+    workers <- if (!is.null(config) && !is.null(config$workers)) config$workers else .get_default_workers()
+  }
   max_rounds <- max_rounds %||% ASA_DEFAULT_MAX_ROUNDS
-  backend <- backend %||% .get_default_backend()
-  model <- model %||% .get_default_model()
-  conda_env <- conda_env %||% .get_default_conda_env()
+  backend <- backend %||% if (!is.null(config)) config$backend else .get_default_backend()
+  model <- model %||% if (!is.null(config)) config$model else .get_default_model()
+  conda_env <- conda_env %||% if (!is.null(config)) config$conda_env else .get_default_conda_env()
 
   # Match output format
   output <- match.arg(output)
@@ -231,22 +277,41 @@ asa_enumerate <- function(query,
     budget = budget,
     stop_policy = stop_policy,
     sources = sources,
-    allow_read_webpages = allow_read_webpages,
+    allow_read_webpages = isTRUE(allow_rw),
     temporal = temporal
   )
 
   # Ensure agent is initialized
   if (is.null(agent)) {
-    if (!.is_initialized()) {
+    config_for_agent <- if (!is.null(config)) config else asa_config(
+      backend = backend,
+      model = model,
+      conda_env = conda_env
+    )
+
+    # Ensure overrides are reflected if config was provided
+    config_for_agent$backend <- backend
+    config_for_agent$model <- model
+    config_for_agent$conda_env <- conda_env
+
+    current <- if (.is_initialized()) get_agent() else NULL
+    if (!is.null(current) && .agent_matches_config(current, config_for_agent)) {
+      agent <- current
+    } else {
       if (verbose) message("Initializing agent...")
       agent <- initialize_agent(
-        backend = backend,
-        model = model,
-        conda_env = conda_env,
+        backend = config_for_agent$backend,
+        model = config_for_agent$model,
+        conda_env = config_for_agent$conda_env,
+        proxy = config_for_agent$proxy,
+        use_memory_folding = config_for_agent$memory_folding,
+        memory_threshold = config_for_agent$memory_threshold,
+        memory_keep_recent = config_for_agent$memory_keep_recent,
+        rate_limit = config_for_agent$rate_limit,
+        timeout = config_for_agent$timeout,
+        tor = config_for_agent$tor,
         verbose = verbose
       )
-    } else {
-      agent <- get_agent()
     }
   }
 
@@ -270,19 +335,23 @@ asa_enumerate <- function(query,
 
   # Enable/disable webpage reading during this call (tool-level gating).
   conda_env_used <- conda_env %||% .get_default_conda_env()
-  result <- .with_webpage_reader_config(
-    allow_read_webpages,
-    relevance_mode = webpage_relevance_mode,
-    embedding_provider = webpage_embedding_provider,
-    embedding_model = webpage_embedding_model,
-    conda_env = conda_env_used,
-    fn = function() {
+  result <- .with_search_config(config_search, conda_env = conda_env_used, function() {
+    .with_webpage_reader_config(
+      allow_rw,
+      relevance_mode = relevance_mode,
+      embedding_provider = embedding_provider,
+      embedding_model = embedding_model,
+      conda_env = conda_env_used,
+      fn = function() {
+      .with_temporal(temporal, function() {
     if (progress) {
       .run_research_with_progress(graph, query, schema_dict, config_dict,
                                   checkpoint_file, verbose)
     } else {
       .run_research(graph, query, schema_dict, config_dict)
     }
+  }, agent = agent)
+  })
   })
 
   elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
@@ -726,8 +795,10 @@ asa_enumerate <- function(query,
   }
 
   # Optional capability flag
-  if (!is.logical(allow_read_webpages) || length(allow_read_webpages) != 1 || is.na(allow_read_webpages)) {
-    stop("`allow_read_webpages` must be TRUE or FALSE", call. = FALSE)
+  if (!is.null(allow_read_webpages)) {
+    if (!is.logical(allow_read_webpages) || length(allow_read_webpages) != 1 || is.na(allow_read_webpages)) {
+      stop("`allow_read_webpages` must be TRUE, FALSE, or NULL", call. = FALSE)
+    }
   }
 
   # Webpage reader options (optional)
