@@ -363,6 +363,21 @@ result <- asa::run_task(
 )
 ```
 
+**In the agent trace:** Each opened page appears as an `OpenWebpage` tool message in `result$trace_json` (preferred) or `result$raw_output`. The tool output is plain text like:
+
+```text
+URL: https://example.com/page
+Final URL: https://example.com/page
+Title: Example
+Bytes read: 12345
+Cache: MISS
+
+Relevant excerpts:
+
+[1]
+...
+```
+
 ## Advanced Use
 
 ### Memory Folding Configuration
