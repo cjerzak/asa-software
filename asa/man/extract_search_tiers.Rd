@@ -7,7 +7,7 @@
 extract_search_tiers(text)
 }
 \arguments{
-\item{text}{Raw agent trace text}
+\item{text}{Raw agent trace text, or a structured JSON trace (asa_trace_v1)}
 }
 \value{
 Character vector of unique tier names encountered

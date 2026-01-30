@@ -4,10 +4,14 @@
 \alias{extract_search_snippets}
 \title{Extract Search Snippets by Source Number}
 \usage{
-extract_search_snippets(text)
+extract_search_snippets(text, source = NULL)
 }
 \arguments{
-\item{text}{Raw agent trace text}
+\item{text}{Raw agent trace text, or a structured JSON trace (asa_trace_v1)}
+
+\item{source}{Optional integer vector of source numbers to return (1-indexed).
+If NULL (default), returns a character vector for all sources encountered
+(with empty strings for missing indices).}
 }
 \value{
 Character vector of search snippets, ordered by source number

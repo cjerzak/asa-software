@@ -8,11 +8,11 @@ initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
   conda_env = "asa_env",
-  proxy = "socks5h://127.0.0.1:9050",
+  proxy = NULL,
   use_memory_folding = TRUE,
   memory_threshold = 4L,
   memory_keep_recent = 2L,
-  rate_limit = 0.2,
+  rate_limit = ASA_DEFAULT_RATE_LIMIT,
   timeout = 120L,
   tor = tor_options(),
   verbose = TRUE
@@ -25,8 +25,9 @@ initialize_agent(
 
 \item{conda_env}{Name of the conda environment with Python dependencies}
 
-\item{proxy}{SOCKS5 proxy URL for Tor (default: "socks5h://127.0.0.1:9050").
-Set to NULL to disable proxy.}
+\item{proxy}{Proxy URL for search tools (default: NULL). Use
+\code{ASA_DEFAULT_PROXY} (or \code{"socks5h://127.0.0.1:9050"}) to route
+searches through Tor.}
 
 \item{use_memory_folding}{Enable DeepAgent-style memory compression (default: TRUE)}
 
@@ -34,7 +35,7 @@ Set to NULL to disable proxy.}
 
 \item{memory_keep_recent}{Number of recent messages to preserve after folding (default: 2)}
 
-\item{rate_limit}{Requests per second for rate limiting (default: 0.2)}
+\item{rate_limit}{Requests per second for rate limiting (default: 0.1)}
 
 \item{timeout}{Request timeout in seconds (default: 120)}
 

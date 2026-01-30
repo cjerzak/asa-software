@@ -84,10 +84,10 @@ ASA_DEFAULT_RATE_LIMIT <- 0.1
 ASA_DEFAULT_TIMEOUT <- 120L
 
 #' Default Inter-Search Delay (seconds)
-#' @description Conservative default: 2.0 seconds between searches.
+#' @description Conservative default: 1.5 seconds between searches.
 #'   More human-like pacing to avoid detection at high volumes.
 #' @keywords internal
-ASA_DEFAULT_INTER_SEARCH_DELAY <- 2.0
+ASA_DEFAULT_INTER_SEARCH_DELAY <- 1.5
 
 #' Default CAPTCHA Backoff Base Multiplier
 #' @description Aggressive backoff on CAPTCHA: 5.0x multiplier.

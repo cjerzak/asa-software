@@ -98,6 +98,11 @@ def _inject_temporal_filter(query: str, date_after: Optional[str], date_before: 
     if not temporal_filter:
         return query
 
+    # Ensure xsd prefix is declared for portability (Wikidata may provide defaults,
+    # but other SPARQL endpoints generally won't).
+    if "xsd:dateTime" in temporal_filter and "PREFIX xsd:" not in query and "prefix xsd:" not in query:
+        query = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" + query.lstrip()
+
     # Check if query already has termStart/termEnd variables
     has_term_start = "?termStart" in query or "pq:P580" in query
     has_term_end = "?termEnd" in query or "pq:P582" in query

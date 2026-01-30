@@ -40,6 +40,7 @@
 #'     \item message: The agent's response text
 #'     \item parsed: Parsed output (list for JSON/field extraction, NULL for text/raw)
 #'     \item raw_output: Full agent trace (always included, verbose for "raw" format)
+#'     \item trace_json: Structured trace JSON (when available)
 #'     \item elapsed_time: Execution time in minutes
 #'     \item status: "success" or "error"
 #'     \item search_tier: Which search tier was used ("primp", "selenium", etc.)
@@ -259,6 +260,7 @@ run_task <- function(prompt,
     message = response$message,
     parsed = parsed,
     raw_output = response$trace,
+    trace_json = response$trace_json %||% "",
     elapsed_time = elapsed,
     status = status,
     search_tier = search_tier,
@@ -638,12 +640,49 @@ run_task_batch <- function(prompts,
 
   n <- length(prompt_vec)
 
+  # In parallel mode, don't attempt to serialize asa_agent / reticulate objects
+  # to workers. Instead, derive a lightweight asa_config template and let each
+  # worker initialize its own agent session.
+  worker_config <- NULL
+  if (parallel) {
+    config_template <- agent
+    if (is.null(config_template) && .is_initialized()) {
+      config_template <- get_agent()
+    }
+    if (is.null(config_template)) {
+      stop(
+        "In parallel mode, provide `agent` or call initialize_agent() first ",
+        "so configuration can be derived for worker processes.",
+        call. = FALSE
+      )
+    }
+
+    worker_config <- asa_config(
+      backend = config_template$backend,
+      model = config_template$model,
+      conda_env = config_template$config$conda_env,
+      proxy = config_template$config$proxy,
+      workers = workers,
+      timeout = config_template$config$timeout,
+      rate_limit = config_template$config$rate_limit,
+      memory_folding = config_template$config$use_memory_folding,
+      memory_threshold = config_template$config$memory_threshold,
+      memory_keep_recent = config_template$config$memory_keep_recent,
+      tor = config_template$config$tor
+    )
+
+    # Drop reference to the (non-serializable) agent object.
+    agent <- NULL
+    config_template <- NULL
+  }
+
   # Function to process one task with circuit breaker integration
   process_one <- function(i) {
     result <- run_task(
       prompt = prompt_vec[i],
       output_format = output_format,
       temporal = temporal,
+      config = worker_config,
       agent = agent,
       verbose = FALSE
     )
@@ -671,6 +710,7 @@ run_task_batch <- function(prompts,
     results <- future.apply::future_lapply(
       seq_len(n),
       process_one,
+      future.packages = "asa",
       future.seed = TRUE
     )
 

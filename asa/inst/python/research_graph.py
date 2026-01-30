@@ -7,6 +7,8 @@ import hashlib
 import json
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 from dataclasses import dataclass, field
 from typing import Any, Annotated, Dict, List, Optional, Sequence, TypedDict
 
@@ -21,6 +23,13 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
 
 from state_utils import add_to_list, merge_dicts, parse_llm_json
+from wikidata_tool import query_known_entity
+
+# Optional strict temporal verification (local module)
+try:
+    from date_extractor import verify_date_constraint
+except Exception:  # pragma: no cover
+    verify_date_constraint = None
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +94,8 @@ class ResearchState(TypedDict):
     # Metrics & Control
     round_number: int
     queries_used: int
+    tokens_used: int
+    start_time: float
     status: str  # "planning", "searching", "complete", "failed"
     stop_reason: Optional[str]
     errors: Annotated[List[Dict], add_to_list]
@@ -123,6 +134,88 @@ def _fuzzy_match_name(name1: str, name2: str) -> float:
     overlap = len(words1 & words2)
     total = len(words1 | words2)
     return overlap / total if total > 0 else 0.0
+
+
+def _token_usage_from_message(message: Any) -> int:
+    """Best-effort extraction of token usage from LangChain message objects."""
+    if message is None:
+        return 0
+
+    # Newer LangChain: AIMessage.usage_metadata = {"input_tokens":..., "output_tokens":..., "total_tokens":...}
+    usage = getattr(message, "usage_metadata", None)
+    if isinstance(usage, dict):
+        total = usage.get("total_tokens")
+        if isinstance(total, (int, float)):
+            return int(total)
+        inp = usage.get("input_tokens")
+        out = usage.get("output_tokens")
+        if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
+            return int(inp + out)
+
+    # Some providers: response_metadata contains usage/token_usage
+    resp_meta = getattr(message, "response_metadata", None)
+    if isinstance(resp_meta, dict):
+        token_usage = resp_meta.get("token_usage") or resp_meta.get("usage") or {}
+        if isinstance(token_usage, dict):
+            total = token_usage.get("total_tokens")
+            if isinstance(total, (int, float)):
+                return int(total)
+            inp = token_usage.get("prompt_tokens")
+            out = token_usage.get("completion_tokens")
+            if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
+                return int(inp + out)
+
+    return 0
+
+
+def _to_snake_case(name: str) -> str:
+    out = []
+    for i, ch in enumerate(name):
+        if ch.isupper() and i > 0 and (name[i - 1].islower() or (i + 1 < len(name) and name[i + 1].islower())):
+            out.append("_")
+        out.append(ch.lower())
+    return "".join(out)
+
+
+def _normalize_wikidata_item(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize Wikidata dict keys to be friendlier for schema matching."""
+    normalized: Dict[str, Any] = {}
+    for k, v in (item or {}).items():
+        normalized[k] = v
+        snake = _to_snake_case(k)
+        if snake not in normalized:
+            normalized[snake] = v
+
+    # Common aliases
+    if "termStart" in normalized and "term_start" not in normalized:
+        normalized["term_start"] = normalized.get("termStart")
+    if "termEnd" in normalized and "term_end" not in normalized:
+        normalized["term_end"] = normalized.get("termEnd")
+
+    return normalized
+
+
+def _parse_iso_date(date_str: Optional[str]) -> Optional[datetime]:
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d")
+    except Exception:
+        return None
+
+
+def _within_date_range(date_str: Optional[str], date_after: Optional[str], date_before: Optional[str]) -> Optional[bool]:
+    """Return True/False if determinable, else None."""
+    dt = _parse_iso_date(date_str)
+    if dt is None:
+        return None
+    after = _parse_iso_date(date_after)
+    before = _parse_iso_date(date_before)
+    if after and dt < after:
+        return False
+    if before and dt >= before:
+        return False
+    return True
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -169,7 +262,8 @@ def create_planner_node(llm):
                 "entity_type": plan.get("entity_type", "unknown"),
                 "wikidata_type": plan.get("wikidata_type"),
                 "status": "searching",
-                "queries_used": 1
+                "queries_used": 1,
+                "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
             }
 
         except Exception as e:
@@ -196,17 +290,21 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         schema = state.get("schema", {})
         config = state.get("config", {})
         seen_hashes = state.get("seen_hashes", {})
+        plan = state.get("plan", {}) or {}
 
         # Extract temporal config
         time_filter = config.get("time_filter") or (research_config.time_filter if research_config else None)
         date_after = config.get("date_after") or (research_config.date_after if research_config else None)
         date_before = config.get("date_before") or (research_config.date_before if research_config else None)
+        temporal_strictness = config.get("temporal_strictness") or (research_config.temporal_strictness if research_config else "best_effort")
+        use_wayback = bool(config.get("use_wayback") if config.get("use_wayback") is not None else (research_config.use_wayback if research_config else False))
         target_items = config.get("target_items")
         if target_items is None and research_config:
             target_items = research_config.target_items
 
         results = []
         queries_used = state.get("queries_used", 0)
+        tokens_used = state.get("tokens_used", 0)
         total_unique = len(seen_hashes)
         needs_more = target_items is not None and total_unique < target_items
 
@@ -214,47 +312,36 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         if wikidata_type and wikidata_tool and config.get("use_wikidata", True):
             logger.info(f"Querying Wikidata for: {wikidata_type}")
             try:
-                wd_query = f"entity_type:{wikidata_type}"
-                wd_result = wikidata_tool._run(wd_query)
+                wd_rows = query_known_entity(
+                    wikidata_type,
+                    config=wikidata_tool.config,
+                    date_after=date_after,
+                    date_before=date_before,
+                )
 
-                # Parse Wikidata results
-                if isinstance(wd_result, str) and "Found" in wd_result:
-                    lines = wd_result.split("\n")
-                    for line in lines[1:]:  # Skip "Found X results:" line
-                        if line.strip() and line[0].isdigit():
-                            # Parse "1. Name (State) [Party] [Q123]"
-                            parts = line.split(".", 1)
-                            if len(parts) > 1:
-                                info = parts[1].strip()
-                                # Extract name (before first parenthesis)
-                                name = info.split("(")[0].strip() if "(" in info else info.split("[")[0].strip()
+                for item in wd_rows:
+                    if not isinstance(item, dict):
+                        continue
+                    normalized = _normalize_wikidata_item(item)
+                    fields = {k: normalized.get(k) for k in schema.keys()}
+                    if not any(v is not None and v != "" for v in fields.values()):
+                        continue
 
-                                # Extract other fields from parentheses/brackets
-                                fields = {"name": name}
+                    wikidata_id = normalized.get("wikidata_id") or normalized.get("wikidataId") or normalized.get("wikidata")
+                    source_url = f"https://www.wikidata.org/wiki/{wikidata_id}" if wikidata_id else "https://www.wikidata.org"
 
-                                # Try to extract state
-                                if "(" in info and ")" in info:
-                                    state_match = info[info.find("(")+1:info.find(")")]
-                                    fields["state"] = state_match
-
-                                # Try to extract party
-                                if "[" in info:
-                                    bracket_content = info[info.find("[")+1:]
-                                    if "]" in bracket_content:
-                                        party = bracket_content[:bracket_content.find("]")]
-                                        if not party.startswith("Q"):  # Skip Wikidata IDs
-                                            fields["party"] = party
-
-                                results.append(ResultRow(
-                                    row_id=f"wd_{len(results)}",
-                                    fields=fields,
-                                    source_url="https://www.wikidata.org",
-                                    confidence=0.95,
-                                    worker_id="wikidata",
-                                    extraction_timestamp=time.time()
-                                ))
+                    results.append(ResultRow(
+                        row_id=f"wd_{len(results)}",
+                        fields=fields,
+                        source_url=source_url,
+                        confidence=0.95,
+                        worker_id="wikidata",
+                        extraction_timestamp=time.time()
+                    ))
 
                 queries_used += 1
+                total_unique = len(seen_hashes)
+                needs_more = target_items is not None and (total_unique + len(results)) < target_items
                 logger.info(f"Wikidata returned {len(results)} results")
 
             except Exception as e:
@@ -264,6 +351,20 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         if config.get("use_web", True) and (len(results) == 0 or needs_more):
             logger.info("Falling back to web search")
             try:
+                planned_queries = plan.get("search_queries")
+                if isinstance(planned_queries, list) and planned_queries:
+                    planned = "\n".join(f"- {q}" for q in planned_queries[:8] if isinstance(q, str) and q.strip())
+                    if planned.strip():
+                        query_hint = f"\nPlanned sub-queries:\n{planned}\n"
+                    else:
+                        query_hint = ""
+                else:
+                    query_hint = ""
+
+                temporal_hint = ""
+                if date_after or date_before:
+                    temporal_hint = f"\nTemporal constraints: after={date_after or 'N/A'}, before={date_before or 'N/A'} (strictness={temporal_strictness})\n"
+
                 # Apply temporal filter to search tools and restore after run
                 search_tools = []
                 original_times = []
@@ -283,6 +384,7 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
                 tool_node = ToolNode(search_tools)
 
                 search_prompt = f"""Search for: {query}
+{query_hint}{temporal_hint}
 Extract entities with these fields: {list(schema.keys())}
 Use the Search tool to find information."""
 
@@ -291,6 +393,7 @@ Use the Search tool to find information."""
 
                 for _ in range(3):  # Max 3 tool calls
                     response = model_with_tools.invoke(messages)
+                    tokens_used += _token_usage_from_message(response)
                     messages.append(response)
                     queries_used += 1
 
@@ -308,6 +411,8 @@ Use the Search tool to find information."""
                     extraction_prompt = (
                         "You are extracting structured entities from web search results.\n"
                         f"Query: {query}\n"
+                        f"Temporal constraints: after={date_after or 'N/A'}, before={date_before or 'N/A'} (strictness={temporal_strictness}).\n"
+                        "If strictness is 'strict', ONLY include entities supported by sources that clearly satisfy the date constraints; otherwise omit.\n"
                         f"Required fields: {list(schema.keys())}\n"
                         "Return ONLY a JSON array where each item has exactly those keys.\n"
                         "Use null for missing values. No markdown, no extra text.\n\n"
@@ -317,6 +422,7 @@ Use the Search tool to find information."""
 
                     extraction_messages = [HumanMessage(content=extraction_prompt)]
                     extraction_response = llm.invoke(extraction_messages)
+                    tokens_used += _token_usage_from_message(extraction_response)
                     queries_used += 1
 
                     parsed = parse_llm_json(extraction_response.content)
@@ -356,9 +462,72 @@ Use the Search tool to find information."""
                     except Exception as e:
                         logger.warning(f"Could not restore time filter: {e}")
 
+        # Strict temporal verification (best-effort): filter web results using date metadata.
+        if temporal_strictness == "strict" and (date_after or date_before):
+            if verify_date_constraint is None:
+                logger.warning("Strict temporal filtering requested, but date_extractor is unavailable.")
+            else:
+                web_rows = [r for r in results if isinstance(r, dict) and r.get("worker_id") == "web_search"]
+                urls = sorted({r.get("source_url") for r in web_rows if isinstance(r.get("source_url"), str) and r.get("source_url", "").startswith("http")})
+
+                verified: Dict[str, Dict[str, Any]] = {}
+                if urls:
+                    max_workers = int(config.get("max_workers") or (research_config.max_workers if research_config else 4) or 4)
+                    max_workers = max(1, min(max_workers, 16))
+                    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                        futures = {
+                            ex.submit(verify_date_constraint, u, date_after=date_after, date_before=date_before): u
+                            for u in urls
+                        }
+                        for fut in as_completed(futures):
+                            u = futures[fut]
+                            try:
+                                verified[u] = fut.result()
+                            except Exception as e:
+                                verified[u] = {"url": u, "passes": None, "reason": f"verify_error:{e}"}
+
+                def _row_passes(row: Dict[str, Any]) -> bool:
+                    url = row.get("source_url")
+                    if not isinstance(url, str) or not url.startswith("http"):
+                        return False
+                    v = verified.get(url)
+                    if not isinstance(v, dict):
+                        return False
+                    if v.get("passes") is True:
+                        return True
+                    # Optional Wayback fallback: accept a snapshot within range
+                    if use_wayback and (v.get("passes") is None):
+                        try:
+                            from wayback_tool import find_snapshots_in_range
+                            snaps = find_snapshots_in_range(url, after_date=date_after, before_date=date_before, limit=5)
+                            if snaps:
+                                snap = snaps[0]
+                                snap_date = snap.get("date")
+                                within = _within_date_range(snap_date, date_after, date_before)
+                                if within:
+                                    row["source_url"] = snap.get("wayback_url") or row.get("source_url")
+                                    row["confidence"] = min(float(row.get("confidence", 0.6)) + 0.1, 0.9)
+                                    return True
+                        except Exception:
+                            return False
+                    return False
+
+                filtered = []
+                for r in results:
+                    if isinstance(r, dict) and r.get("worker_id") == "web_search" and (date_after or date_before):
+                        if _row_passes(r):
+                            filtered.append(r)
+                    else:
+                        filtered.append(r)
+                dropped = len(results) - len(filtered)
+                if dropped > 0:
+                    logger.info(f"Strict temporal filtering dropped {dropped} web results")
+                results = filtered
+
         return {
             "new_results": results,
             "queries_used": queries_used,
+            "tokens_used": tokens_used,
             "round_number": state.get("round_number", 0) + 1
         }
 
@@ -425,12 +594,21 @@ def create_stopper_node(config: ResearchConfig):
         """Evaluate if we should stop."""
         round_num = state.get("round_number", 0)
         queries = state.get("queries_used", 0)
+        tokens = state.get("tokens_used", 0)
+        start_time = state.get("start_time", 0.0) or 0.0
+        elapsed = time.time() - float(start_time) if start_time else 0.0
         seen_hashes = state.get("seen_hashes", {})
         total_unique = len(seen_hashes)
 
         # Check limits
+        if config.budget_time_sec and elapsed >= config.budget_time_sec:
+            return {"status": "complete", "stop_reason": "budget_time"}
+
         if queries >= config.budget_queries:
             return {"status": "complete", "stop_reason": "budget_queries"}
+
+        if config.budget_tokens and tokens >= config.budget_tokens:
+            return {"status": "complete", "stop_reason": "budget_tokens"}
 
         if round_num >= config.max_rounds:
             return {"status": "complete", "stop_reason": "max_rounds"}
@@ -532,6 +710,8 @@ def run_research(
         "novelty_history": [],
         "round_number": 0,
         "queries_used": 0,
+        "tokens_used": 0,
+        "start_time": time.time(),
         "status": "planning",
         "stop_reason": None,
         "errors": []
@@ -550,6 +730,7 @@ def run_research(
             "metrics": {
                 "round_number": final_state.get("round_number", 0),
                 "queries_used": final_state.get("queries_used", 0),
+                "tokens_used": final_state.get("tokens_used", 0),
                 "time_elapsed": elapsed,
                 "items_found": len(final_state.get("results", []))
             },
@@ -600,6 +781,8 @@ def stream_research(
         "novelty_history": [],
         "round_number": 0,
         "queries_used": 0,
+        "tokens_used": 0,
+        "start_time": time.time(),
         "status": "planning",
         "stop_reason": None,
         "errors": []
@@ -636,6 +819,7 @@ def stream_research(
             "metrics": {
                 "round_number": accumulated_state.get("round_number", 0),
                 "queries_used": accumulated_state.get("queries_used", 0),
+                "tokens_used": accumulated_state.get("tokens_used", 0),
                 "time_elapsed": elapsed,
                 "items_found": len(accumulated_state.get("results", []))
             },

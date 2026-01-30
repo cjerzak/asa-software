@@ -8,7 +8,8 @@ extract_agent_results(raw_output)
 }
 \arguments{
 \item{raw_output}{Raw output string from agent invocation (the trace field
-from an asa_response object)}
+from an asa_response object), or a structured JSON trace (asa_trace_v1)
+from \code{asa_result$trace_json}}
 }
 \value{
 A list with components:

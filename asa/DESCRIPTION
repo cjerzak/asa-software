@@ -17,21 +17,21 @@ Description: Provides an LLM-powered research agent for performing AI search tas
 URL: https://github.com/cjerzak/asa-software
 BugReports: https://github.com/cjerzak/asa-software/issues
 Depends: R (>= 4.0.0)
-License: GPL-3
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: false
 Imports:
     reticulate (>= 1.28),
     jsonlite,
     rlang,
-    digest,
-    processx
+    digest
 Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
     future,
-    future.apply
+    future.apply,
+    processx
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3

@@ -60,6 +60,7 @@ An \code{asa_result} object with:
     \item message: The agent's response text
     \item parsed: Parsed output (list for JSON/field extraction, NULL for text/raw)
     \item raw_output: Full agent trace (always included, verbose for "raw" format)
+    \item trace_json: Structured trace JSON (when available)
     \item elapsed_time: Execution time in minutes
     \item status: "success" or "error"
     \item search_tier: Which search tier was used ("primp", "selenium", etc.)

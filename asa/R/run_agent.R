@@ -93,6 +93,7 @@
 
   # Build trace
   trace <- .build_trace(raw_response)
+  trace_json <- .build_trace_json(raw_response)
 
   # Handle rate limiting and timeouts
   .handle_response_issues(trace, verbose)
@@ -112,6 +113,7 @@
     status_code = if (is.na(response_text)) ASA_STATUS_ERROR else ASA_STATUS_SUCCESS,
     raw_response = raw_response,
     trace = trace,
+    trace_json = trace_json,
     elapsed_time = elapsed,
     fold_count = fold_count,
     prompt = prompt
@@ -252,6 +254,88 @@
     paste(
       lapply(unlist(raw_response), function(l) capture.output(l)),
       collapse = "\n\n"
+    )
+  }, error = function(e) {
+    ""
+  })
+}
+
+#' Build Structured Trace JSON from Raw Response
+#' @keywords internal
+.build_trace_json <- function(raw_response) {
+  tryCatch({
+    messages <- tryCatch(raw_response$messages, error = function(e) NULL)
+    if (is.null(messages) || length(messages) == 0) {
+      return("")
+    }
+
+    msg_type <- function(msg) {
+      # Prefer __class__.__name__ when available
+      type_name <- tryCatch(
+        as.character(msg$`__class__`$`__name__`),
+        error = function(e) NA_character_
+      )
+      if (!is.na(type_name) && nzchar(type_name)) {
+        return(type_name)
+      }
+      # Fallback to "type" field if present (e.g., "ai", "human", "tool")
+      tryCatch(as.character(msg$type), error = function(e) NA_character_)
+    }
+
+    msg_content <- function(msg) {
+      content <- tryCatch(msg$content, error = function(e) NULL)
+      if (is.null(content)) return("")
+      # Content may be a list of blocks; collapse to a string
+      if (is.character(content)) {
+        return(paste(content, collapse = "\n"))
+      }
+      if (is.list(content)) {
+        parts <- character(0)
+        for (item in content) {
+          if (is.character(item)) {
+            parts <- c(parts, item)
+          } else if (is.list(item)) {
+            if (!is.null(item$text)) parts <- c(parts, as.character(item$text))
+            if (!is.null(item$content)) parts <- c(parts, as.character(item$content))
+            if (!is.null(item$value)) parts <- c(parts, as.character(item$value))
+          }
+        }
+        parts <- parts[!is.na(parts) & nzchar(parts)]
+        return(paste(parts, collapse = "\n"))
+      }
+      tryCatch(as.character(content), error = function(e) "")
+    }
+
+    msg_name <- function(msg) {
+      name <- tryCatch(msg$name, error = function(e) NULL)
+      if (is.null(name)) return(NULL)
+      name <- tryCatch(as.character(name), error = function(e) NULL)
+      if (is.null(name) || !nzchar(name)) return(NULL)
+      name
+    }
+
+    msg_tool_calls <- function(msg) {
+      tool_calls <- tryCatch(msg$tool_calls, error = function(e) NULL)
+      if (is.null(tool_calls)) return(NULL)
+      tryCatch(reticulate::py_to_r(tool_calls), error = function(e) NULL)
+    }
+
+    out_messages <- lapply(messages, function(msg) {
+      list(
+        message_type = msg_type(msg),
+        name = msg_name(msg),
+        content = msg_content(msg),
+        tool_calls = msg_tool_calls(msg)
+      )
+    })
+
+    jsonlite::toJSON(
+      list(
+        format = "asa_trace_v1",
+        messages = out_messages
+      ),
+      auto_unbox = TRUE,
+      null = "null"
     )
   }, error = function(e) {
     ""

@@ -65,15 +65,16 @@
 #'   }
 #'
 #' @details
-#' The function uses a multi-agent architecture:
+#' The function uses an iterative graph architecture:
 #' \enumerate{
-#'   \item \strong{Planner}: Decomposes query into facets and identifies authoritative sources
-#'   \item \strong{Dispatcher}: Spawns parallel workers for each facet
-#'   \item \strong{Workers}: Execute searches using DDG, Wikipedia, and Wikidata
-#'   \item \strong{Extractor}: Normalizes results to match schema
-#'   \item \strong{Deduper}: Removes duplicates using hash + fuzzy matching
-#'   \item \strong{Stopper}: Evaluates stopping criteria (novelty, budget, saturation)
+#'   \item \strong{Planner}: Decomposes the query and proposes a search plan.
+#'   \item \strong{Searcher}: Queries Wikidata (when applicable) and falls back to web/Wikipedia.
+#'   \item \strong{Deduper}: Removes duplicates using hashing + fuzzy matching.
+#'   \item \strong{Stopper}: Evaluates stopping criteria (novelty, budgets, saturation).
 #' }
+#'
+#' Parallelism is limited and backend-dependent. For example, strict temporal
+#' filtering may verify publication dates in parallel up to \code{workers}.
 #'
 #' For known entity types (US senators, countries, Fortune 500), Wikidata provides
 #' authoritative enumerations with complete, verified data.
@@ -200,6 +201,19 @@ asa_enumerate <- function(query,
     return(.resume_research(resume_from, verbose))
   }
 
+  # Normalize schema (no Python required)
+  schema_dict <- .normalize_schema(schema, query, verbose)
+
+  # Create research config (validates temporal before any Python initialization)
+  config_dict <- .create_research_config(
+    workers = workers,
+    max_rounds = max_rounds,
+    budget = budget,
+    stop_policy = stop_policy,
+    sources = sources,
+    temporal = temporal
+  )
+
   # Ensure agent is initialized
   if (is.null(agent)) {
     if (!.is_initialized()) {
@@ -217,19 +231,6 @@ asa_enumerate <- function(query,
 
   # Import Python modules
   .import_research_modules()
-
-  # Normalize schema
-  schema_dict <- .normalize_schema(schema, query, verbose)
-
-  # Create research config
-  config_dict <- .create_research_config(
-    workers = workers,
-    max_rounds = max_rounds,
-    budget = budget,
-    stop_policy = stop_policy,
-    sources = sources,
-    temporal = temporal
-  )
 
   # Create checkpoint file path
   checkpoint_file <- NULL
@@ -316,9 +317,58 @@ asa_enumerate <- function(query,
 #' @keywords internal
 .normalize_schema <- function(schema, query, verbose) {
   if (is.null(schema) || identical(schema, "auto")) {
-    # For now, use a default schema - could be enhanced with LLM proposal
     if (verbose) message("  Using auto schema detection...")
-    return(list(name = "character"))
+
+    schema_out <- list(name = "character")
+    q <- tolower(query %||% "")
+
+    add_field <- function(field, type = "character") {
+      if (is.null(schema_out[[field]])) {
+        schema_out[[field]] <<- type
+      }
+    }
+
+    # Keyword-based heuristics
+    if (grepl("\\bstate\\b", q)) add_field("state")
+    if (grepl("\\bparty\\b", q)) add_field("party")
+    if (grepl("\\bdistrict\\b", q)) add_field("district")
+    if (grepl("term\\s*end", q)) add_field("term_end")
+    if (grepl("term\\s*start", q)) add_field("term_start")
+    if (grepl("\\bcapital\\b", q)) add_field("capital")
+    if (grepl("\\bpopulation\\b", q)) add_field("population", "numeric")
+    if (grepl("\\barea\\b", q)) add_field("area", "numeric")
+    if (grepl("\\biso\\s*3\\b|\\biso3\\b", q)) add_field("iso3")
+    if (grepl("\\bwebsite\\b|\\burl\\b", q)) add_field("website")
+
+    # Parse "with ..." clause (e.g., "with state, party, and term end date")
+    with_match <- regmatches(q, regexec("\\bwith\\b\\s+(.*)$", q, perl = TRUE))[[1]]
+    if (length(with_match) > 1 && nzchar(with_match[2])) {
+      fields_str <- gsub("[\\.;].*$", "", with_match[2])
+      fields_str <- gsub("\\band\\b", ",", fields_str)
+      candidates <- trimws(strsplit(fields_str, ",", fixed = TRUE)[[1]])
+      candidates <- candidates[nzchar(candidates)]
+
+      normalize_name <- function(x) {
+        x <- gsub("[^a-z0-9\\s_]+", "", x)
+        x <- trimws(x)
+        x <- gsub("\\s+", "_", x)
+        x
+      }
+
+      for (cand in candidates) {
+        nm <- normalize_name(cand)
+        nm <- switch(
+          nm,
+          term_end_date = "term_end",
+          term_start_date = "term_start",
+          nm
+        )
+        if (!nzchar(nm) || nm %in% names(schema_out)) next
+        add_field(nm, "character")
+      }
+    }
+
+    return(schema_out)
   }
 
   if (is.character(schema) && !is.null(names(schema))) {

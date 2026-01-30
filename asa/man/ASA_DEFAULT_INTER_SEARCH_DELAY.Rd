@@ -11,7 +11,7 @@ An object of class \code{numeric} of length 1.
 ASA_DEFAULT_INTER_SEARCH_DELAY
 }
 \description{
-Conservative default: 2.0 seconds between searches.
+Conservative default: 1.5 seconds between searches.
   More human-like pacing to avoid detection at high volumes.
 }
 \keyword{internal}

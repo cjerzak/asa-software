@@ -4,10 +4,13 @@
 \alias{check_backend}
 \title{Check Python Environment Availability}
 \usage{
-check_backend(conda_env = "asa_env")
+check_backend(conda_env = "asa_env", strict = FALSE)
 }
 \arguments{
 \item{conda_env}{Name of the conda environment to check}
+
+\item{strict}{If TRUE, also require optional packages used for Tor control and
+stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).}
 }
 \value{
 A list with components:
@@ -15,7 +18,9 @@ A list with components:
   \item available: Logical, TRUE if environment is ready
   \item conda_env: Name of the environment checked
   \item python_version: Python version if available
-  \item missing_packages: Character vector of missing packages (if any)
+  \item missing_packages: Character vector of missing required packages (if any)
+  \item missing_optional_packages: Character vector of missing optional packages (if any)
+  \item strict: Logical, whether optional packages were required
 }
 }
 \description{

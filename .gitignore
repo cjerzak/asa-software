@@ -9,6 +9,14 @@ __pycache__/
 # .DS_Store
 .DS_Store
 
+# Local agent settings
+.claude/settings.local.json
+
+# R build/check artifacts
+*.Rcheck/
+asa_*.tar.gz
+asa.pdf
+
 # Distribution / packaging
 .Python
 build/

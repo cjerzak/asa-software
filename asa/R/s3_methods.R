@@ -316,7 +316,7 @@ print.asa_temporal <- function(x, ...) {
 #' @param backoff_multiplier Multiplier for exponential backoff between retries.
 #'   E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1.5.
 #' @param inter_search_delay Minimum delay in seconds between consecutive searches.
-#'   Helps avoid rate limiting from search providers. Default: 0.5.
+#'   Helps avoid rate limiting from search providers. Default: 1.5.
 #'
 #' @return An object of class \code{asa_search}
 #'
@@ -551,6 +551,7 @@ summary.asa_agent <- function(object, ...) {
 #' @param status_code Status code (200 = success, 100 = error)
 #' @param raw_response The full Python response object
 #' @param trace Full text trace of agent execution
+#' @param trace_json Structured JSON trace (when available)
 #' @param elapsed_time Execution time in minutes
 #' @param fold_count Number of memory folds performed
 #' @param prompt The original prompt
@@ -559,13 +560,15 @@ summary.asa_agent <- function(object, ...) {
 #'
 #' @export
 asa_response <- function(message, status_code, raw_response, trace,
-                         elapsed_time, fold_count, prompt) {
+                         elapsed_time, fold_count, prompt,
+                         trace_json = "") {
   structure(
     list(
       message = message,
       status_code = status_code,
       raw_response = raw_response,
       trace = trace,
+      trace_json = trace_json,
       elapsed_time = elapsed_time,
       fold_count = fold_count,
       prompt = prompt
@@ -640,6 +643,7 @@ summary.asa_response <- function(object, show_trace = FALSE, ...) {
 #' @param message The agent's response text
 #' @param parsed Parsed output (list or NULL)
 #' @param raw_output Full agent trace
+#' @param trace_json Structured JSON trace (when available)
 #' @param elapsed_time Execution time in minutes
 #' @param status Status ("success" or "error")
 #' @param search_tier Which search tier was used ("primp", "selenium", "ddgs",
@@ -651,8 +655,10 @@ summary.asa_response <- function(object, show_trace = FALSE, ...) {
 #' @return An object of class \code{asa_result}
 #'
 #' @export
-asa_result <- function(prompt, message, parsed, raw_output, elapsed_time, status,
-                       search_tier = "unknown", parsing_status = NULL) {
+asa_result <- function(prompt, message, parsed, raw_output,
+                       elapsed_time, status,
+                       search_tier = "unknown", parsing_status = NULL,
+                       trace_json = "") {
   # Default parsing_status if not provided
 
   if (is.null(parsing_status)) {
@@ -665,6 +671,7 @@ asa_result <- function(prompt, message, parsed, raw_output, elapsed_time, status
       message = message,
       parsed = parsed,
       raw_output = raw_output,
+      trace_json = trace_json,
       elapsed_time = elapsed_time,
       status = status,
       search_tier = search_tier,

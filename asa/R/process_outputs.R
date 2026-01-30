@@ -5,7 +5,8 @@
 #' for post-processing agent traces.
 #'
 #' @param raw_output Raw output string from agent invocation (the trace field
-#'   from an asa_response object)
+#'   from an asa_response object), or a structured JSON trace (asa_trace_v1)
+#'   from \code{asa_result$trace_json}
 #'
 #' @return A list with components:
 #' \itemize{
@@ -49,11 +50,54 @@ extract_agent_results <- function(raw_output) {
   )
 }
 
+#' Parse Structured Trace JSON (asa_trace_v1)
+#' @keywords internal
+.parse_trace_json_messages <- function(text) {
+  if (!is.character(text) || length(text) != 1 || is.na(text) || !nzchar(text)) {
+    return(NULL)
+  }
+  txt <- trimws(text)
+  if (!startsWith(txt, "{") || !grepl("\"format\"\\s*:\\s*\"asa_trace_v1\"", txt)) {
+    return(NULL)
+  }
+  parsed <- tryCatch(jsonlite::fromJSON(txt, simplifyVector = FALSE), error = function(e) NULL)
+  if (is.null(parsed) || !identical(parsed$format, "asa_trace_v1")) {
+    return(NULL)
+  }
+  if (!is.list(parsed$messages)) {
+    return(NULL)
+  }
+  parsed$messages
+}
+
+#' Extract tool message contents from either text trace or asa_trace_v1 JSON.
+#' @keywords internal
+.extract_tool_contents <- function(text, tool_name) {
+  msgs <- .parse_trace_json_messages(text)
+  if (is.null(msgs)) {
+    return(NULL)
+  }
+  tool_name <- tolower(tool_name)
+  contents <- character(0)
+  for (m in msgs) {
+    if (!is.list(m)) next
+    m_type <- tolower(as.character(m$message_type %||% ""))
+    m_name <- tolower(as.character(m$name %||% ""))
+    if (!(m_type %in% c("toolmessage", "tool"))) next
+    if (m_name != tool_name) next
+    contents <- c(contents, as.character(m$content %||% ""))
+  }
+  contents
+}
+
 #' Extract Search Snippets by Source Number
 #'
 #' Extracts content from Search tool messages in the agent trace.
 #'
-#' @param text Raw agent trace text
+#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
+#' @param source Optional integer vector of source numbers to return (1-indexed).
+#'   If NULL (default), returns a character vector for all sources encountered
+#'   (with empty strings for missing indices).
 #'
 #' @return Character vector of search snippets, ordered by source number
 #'
@@ -63,8 +107,69 @@ extract_agent_results <- function(raw_output) {
 #' }
 #'
 #' @export
-extract_search_snippets <- function(text) {
+extract_search_snippets <- function(text, source = NULL) {
   source_contents <- list()
+
+  tool_contents <- .extract_tool_contents(text, "search")
+  if (!is.null(tool_contents)) {
+    for (content in tool_contents) {
+      if (is.na(content) || !nzchar(content)) next
+
+      # Extract sources with dotall
+      source_pattern <- "(?s)__START_OF_SOURCE (\\d+)__ <CONTENT>(.*?)</CONTENT>.*?__END_OF_SOURCE.*?__"
+      source_matches <- gregexpr(source_pattern, content, perl = TRUE)[[1]]
+
+      if (source_matches[1] != -1) {
+        source_match_texts <- regmatches(content, list(source_matches))[[1]]
+
+        for (src_match in source_match_texts) {
+          num_match <- regmatches(src_match, regexec("(?s)__START_OF_SOURCE (\\d+)__.*", src_match, perl = TRUE))[[1]]
+          source_num <- as.integer(num_match[2])
+
+          cont_match <- regmatches(src_match, regexec("(?s)<CONTENT>(.*?)</CONTENT>", src_match, perl = TRUE))[[1]]
+          src_content <- cont_match[2]
+
+          cleaned_content <- trimws(gsub("\\s+", " ", src_content))
+
+          if (nchar(cleaned_content) > 0) {
+            key <- as.character(source_num)
+            if (is.null(source_contents[[key]])) {
+              source_contents[[key]] <- c()
+            }
+            source_contents[[key]] <- c(source_contents[[key]], cleaned_content)
+          }
+        }
+      }
+    }
+
+    if (length(source_contents) == 0) {
+      return(character(0))
+    }
+
+    max_source <- max(as.integer(names(source_contents)))
+    result <- character(max_source)
+
+    for (i in seq_len(max_source)) {
+      source_key <- as.character(i)
+      if (source_key %in% names(source_contents)) {
+        result[i] <- paste(source_contents[[source_key]], collapse = " ")
+      } else {
+        result[i] <- ""
+      }
+    }
+
+    if (is.null(source)) {
+      return(result)
+    }
+
+    source <- as.integer(source)
+    source <- source[!is.na(source) & source > 0]
+    if (length(source) == 0) {
+      return(character(0))
+    }
+
+    return(result[source])
+  }
 
   # Pattern for ToolMessage with Search
   tool_pattern <- paste0(
@@ -137,14 +242,24 @@ extract_search_snippets <- function(text) {
     }
   }
 
-  result
+  if (is.null(source)) {
+    return(result)
+  }
+
+  source <- as.integer(source)
+  source <- source[!is.na(source) & source > 0]
+  if (length(source) == 0) {
+    return(character(0))
+  }
+
+  result[source]
 }
 
 #' Extract Wikipedia Content
 #'
 #' Extracts content from Wikipedia tool messages in the agent trace.
 #'
-#' @param text Raw agent trace text
+#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
 #'
 #' @return Character vector of Wikipedia snippets
 #'
@@ -156,6 +271,21 @@ extract_search_snippets <- function(text) {
 #' @export
 extract_wikipedia_content <- function(text) {
   snippets <- character(0)
+
+  tool_contents <- .extract_tool_contents(text, "wikipedia")
+  if (!is.null(tool_contents)) {
+    for (content in tool_contents) {
+      if (is.na(content) || !nzchar(content)) next
+      if ((grepl("Page:", content) || grepl("Summary:", content)) &&
+          !grepl("No good Wikipedia Search Result", content, ignore.case = TRUE)) {
+        cleaned <- trimws(gsub("\\s+", " ", content))
+        if (nchar(cleaned) > 0) {
+          snippets <- c(snippets, cleaned)
+        }
+      }
+    }
+    return(snippets)
+  }
 
   # Pattern for ToolMessage with Wikipedia
   tool_pattern <- paste0(
@@ -200,7 +330,10 @@ extract_wikipedia_content <- function(text) {
 #'
 #' Extracts URLs from Search tool messages in the agent trace.
 #'
-#' @param text Raw agent trace text
+#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
+#' @param source Optional integer vector of source numbers to return (1-indexed).
+#'   If NULL (default), returns a character vector for all sources encountered
+#'   (with empty strings for missing indices).
 #'
 #' @return Character vector of URLs, ordered by source number
 #'
@@ -210,8 +343,67 @@ extract_wikipedia_content <- function(text) {
 #' }
 #'
 #' @export
-extract_urls <- function(text) {
+extract_urls <- function(text, source = NULL) {
   source_urls <- list()
+
+  tool_contents <- .extract_tool_contents(text, "search")
+  if (!is.null(tool_contents)) {
+    for (content in tool_contents) {
+      if (is.na(content) || !nzchar(content)) next
+
+      # Extract sources with URLs
+      source_pattern <- "(?s)__START_OF_SOURCE (\\d+)__.*?<URL>(.*?)</URL>.*?__END_OF_SOURCE.*?__"
+      source_matches <- gregexpr(source_pattern, content, perl = TRUE)[[1]]
+
+      if (source_matches[1] != -1) {
+        source_match_texts <- regmatches(content, list(source_matches))[[1]]
+
+        for (src_match in source_match_texts) {
+          num_match <- regmatches(src_match, regexec("(?s)__START_OF_SOURCE (\\d+)__.*", src_match, perl = TRUE))[[1]]
+          source_num <- as.integer(num_match[2])
+
+          url_match <- regmatches(src_match, regexec("(?s)<URL>(.*?)</URL>", src_match, perl = TRUE))[[1]]
+          url <- trimws(url_match[2])
+
+          if (nchar(url) > 0) {
+            key <- as.character(source_num)
+            if (is.null(source_urls[[key]])) {
+              source_urls[[key]] <- c()
+            }
+            source_urls[[key]] <- unique(c(source_urls[[key]], url))
+          }
+        }
+      }
+    }
+
+    if (length(source_urls) == 0) {
+      return(character(0))
+    }
+
+    max_source <- max(as.integer(names(source_urls)))
+    result <- character(max_source)
+
+    for (i in seq_len(max_source)) {
+      source_key <- as.character(i)
+      if (source_key %in% names(source_urls)) {
+        result[i] <- paste(source_urls[[source_key]], collapse = " ")
+      } else {
+        result[i] <- ""
+      }
+    }
+
+    if (is.null(source)) {
+      return(result)
+    }
+
+    source <- as.integer(source)
+    source <- source[!is.na(source) & source > 0]
+    if (length(source) == 0) {
+      return(character(0))
+    }
+
+    return(result[source])
+  }
 
   # Pattern for ToolMessage with Search
   tool_pattern <- paste0(
@@ -281,7 +473,17 @@ extract_urls <- function(text) {
     }
   }
 
-  result
+  if (is.null(source)) {
+    return(result)
+  }
+
+  source <- as.integer(source)
+  source <- source[!is.na(source) & source > 0]
+  if (length(source) == 0) {
+    return(character(0))
+  }
+
+  result[source]
 }
 
 #' Extract Search Tier Information
@@ -295,7 +497,7 @@ extract_urls <- function(text) {
 #'   \item requests: Raw POST to DuckDuckGo HTML endpoint (Tier 3)
 #' }
 #'
-#' @param text Raw agent trace text
+#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
 #'
 #' @return Character vector of unique tier names encountered
 #'   (e.g., "primp", "selenium", "ddgs", "requests")
@@ -310,6 +512,20 @@ extract_urls <- function(text) {
 extract_search_tiers <- function(text) {
   if (is.null(text) || text == "") {
     return(character(0))
+  }
+
+  tool_contents <- .extract_tool_contents(text, "search")
+  if (!is.null(tool_contents) && length(tool_contents) > 0) {
+    tier_pattern <- "['\"]_tier['\"]:\\s*['\"]?(primp|selenium|ddgs|requests)['\"]?"
+    tiers <- character(0)
+    for (content in tool_contents) {
+      matches <- gregexpr(tier_pattern, content, perl = TRUE)[[1]]
+      if (matches[1] == -1) next
+      match_texts <- regmatches(content, list(matches))[[1]]
+      tiers <- c(tiers, gsub(tier_pattern, "\\1", match_texts, perl = TRUE))
+    }
+    tiers <- unique(tiers)
+    return(tiers)
   }
 
   # Match '_tier': 'primp' patterns in Python dict repr
@@ -334,6 +550,30 @@ extract_search_tiers <- function(text) {
 #' @return Parsed JSON data as a list, or NULL if no JSON found
 #' @keywords internal
 .extract_json_from_trace <- function(text) {
+  # Structured trace JSON path (asa_trace_v1)
+  msgs <- .parse_trace_json_messages(text)
+  if (!is.null(msgs)) {
+    ai_contents <- character(0)
+    for (m in msgs) {
+      if (!is.list(m)) next
+      m_type <- tolower(as.character(m$message_type %||% ""))
+      if (!(m_type %in% c("aimessage", "ai"))) next
+      content <- as.character(m$content %||% "")
+      if (nzchar(content)) {
+        ai_contents <- c(ai_contents, content)
+      }
+    }
+    if (length(ai_contents) > 0) {
+      # Prefer the most recent AI message
+      for (i in rev(seq_along(ai_contents))) {
+        parsed <- safe_json_parse(ai_contents[i])
+        if (is.list(parsed) && length(parsed) > 0) {
+          return(parsed)
+        }
+      }
+    }
+  }
+
   tryCatch({
     # Extract JSON from AIMessage
     json_patterns <- c(

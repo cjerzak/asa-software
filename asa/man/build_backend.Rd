@@ -4,14 +4,21 @@
 \alias{build_backend}
 \title{Build the Python Backend Environment}
 \usage{
-build_backend(conda_env = "asa_env", conda = "auto", python_version = "3.13")
+build_backend(
+  conda_env = "asa_env",
+  conda = "auto",
+  python_version = "3.11",
+  force = FALSE
+)
 }
 \arguments{
 \item{conda_env}{Name of the conda environment (default: "asa_env")}
 
 \item{conda}{Path to conda executable (default: "auto")}
 
-\item{python_version}{Python version to use (default: "3.13")}
+\item{python_version}{Python version to use (default: "3.11")}
+
+\item{force}{If TRUE, delete and recreate the conda environment if it already exists.}
 }
 \value{
 Invisibly returns NULL; called for side effects.
@@ -39,6 +46,9 @@ Python packages:
 \dontrun{
 # Create the default environment
 build_backend()
+
+# Rebuild from scratch
+build_backend(force = TRUE)
 
 # Create with a custom name
 build_backend(conda_env = "my_asa_env")

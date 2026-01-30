@@ -4,7 +4,7 @@
 \alias{.validate_build_backend}
 \title{Validate build_backend() Parameters}
 \usage{
-.validate_build_backend(conda_env, conda, python_version)
+.validate_build_backend(conda_env, conda, python_version, force = FALSE)
 }
 \description{
 Validate build_backend() Parameters

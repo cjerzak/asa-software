@@ -537,8 +537,9 @@ result <- asa::run_task(
   agent = agent
 )
 
-# Extract search artifacts from raw trace
-extracted <- asa::extract_agent_results(result$raw_output)
+# Extract search artifacts from the trace (prefer structured JSON when available)
+trace <- if (!is.null(result$trace_json) && nzchar(result$trace_json)) result$trace_json else result$raw_output
+extracted <- asa::extract_agent_results(trace)
 
 # Access extracted data
 extracted$search_snippets     # List of search result text by source number
@@ -548,11 +549,11 @@ extracted$json_data           # Any JSON data found in response
 extracted$search_tiers        # Which search tier was used ("primp", "selenium", "ddgs", "requests")
 
 # Get snippets from specific search call
-snippets_from_search_1 <- asa::extract_search_snippets(result$raw_output, source = 1)
-urls_from_search_1 <- asa::extract_urls(result$raw_output, source = 1)
+snippets_from_search_1 <- asa::extract_search_snippets(trace, source = 1)
+urls_from_search_1 <- asa::extract_urls(trace, source = 1)
 
 # Extract tier info directly
-tiers <- asa::extract_search_tiers(result$raw_output)
+tiers <- asa::extract_search_tiers(trace)
 print(tiers)  # e.g., "primp"
 
 # Batch output processing - add extraction columns to results
@@ -600,14 +601,14 @@ asa::build_backend(conda_env = "asa_env", force = TRUE)
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2026-01-22 22:55:05 CST | **Status:** PASS
+**Last Run:** 2026-01-26 22:45:23 CST | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.119s | 0.09s | 1.32x | PASS |
-| `helper_funcs` | 0.069s | 0.07s | 0.99x | PASS |
-| `combined` | 0.102s | 0.09s | 1.12x | PASS |
-| `agent_search` | 11.0s | 18s | 0.63x | PASS |
+| `build_prompt` | 0.093s | 0.09s | 1.03x | PASS |
+| `helper_funcs` | 0.055s | 0.07s | 0.78x | PASS |
+| `combined` | 0.084s | 0.09s | 0.92x | PASS |
+| `agent_search` | 21.2s | 18s | 1.21x | PASS |
 
 Tests fail if time exceeds 4.00x baseline. 
 See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
@@ -616,11 +617,12 @@ See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
 ## Requirements
 
 - R >= 4.0
-- Python >= 3.10 (managed via conda)
-- reticulate, jsonlite, rlang, processx
+- Python >= 3.11 (managed via conda)
+- reticulate, jsonlite, rlang
 
 **Optional:**
 - Claude Code CLI (for `asa_audit()` with `backend = "claude_code"`)
+- processx (recommended for robust CLI invocations; base `system2()` fallback is used if unavailable)
 - Tor + stealth Chrome support (requires system Tor plus Python packages `undetected-chromedriver` and `stem`, installed by `asa::build_backend()`)
 
 ## Reference
@@ -665,6 +667,6 @@ MIT
 ║          ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    > Search:    [Multi-Tier Fallback]      ║
 ║                                                                              ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
-║  v1.0.0  ::  DuckDuckGo + Wiki  ::  LangGraph  ::  Parallel Batch Processing ║
+║  v0.1.0  ::  DuckDuckGo + Wiki  ::  LangGraph  ::  Parallel Batch Processing ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```

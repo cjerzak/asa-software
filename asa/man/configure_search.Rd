@@ -31,7 +31,7 @@ configure_search(
 
 \item{page_load_wait}{Wait time after page load in seconds (default: 2)}
 
-\item{inter_search_delay}{Delay between consecutive searches in seconds (default: 0.5)}
+\item{inter_search_delay}{Delay between consecutive searches in seconds (default: 1.5)}
 
 \item{conda_env}{Name of the conda environment (default: "asa_env")}
 }

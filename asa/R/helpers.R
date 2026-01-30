@@ -122,6 +122,72 @@ safe_json_parse <- function(x) {
   )
 }
 
+#' Run External Command (processx if available, system2 fallback)
+#' @keywords internal
+.run_command <- function(command,
+                         args = character(),
+                         timeout = NULL,
+                         stdin = NULL,
+                         echo = FALSE) {
+  has_processx <- tryCatch(requireNamespace("processx", quietly = TRUE), error = function(e) FALSE)
+
+  if (has_processx) {
+    return(processx::run(
+      command = command,
+      args = args,
+      timeout = timeout,
+      stdin = stdin %||% "",
+      stdout = if (isTRUE(echo)) "" else "|",
+      stderr = if (isTRUE(echo)) "" else "|",
+      echo = isTRUE(echo),
+      error_on_status = FALSE
+    ))
+  }
+
+  # Fallback: base system2() with temp files for stdout/stderr.
+  stdout_file <- tempfile()
+  stderr_file <- tempfile()
+  on.exit({
+    unlink(stdout_file)
+    unlink(stderr_file)
+  }, add = TRUE)
+
+  run_one <- function() {
+    system2(
+      command,
+      args = args,
+      stdout = if (isTRUE(echo)) "" else stdout_file,
+      stderr = if (isTRUE(echo)) "" else stderr_file,
+      stdin = stdin %||% "",
+      wait = TRUE
+    )
+  }
+
+  status <- tryCatch({
+    if (!is.null(timeout)) {
+      setTimeLimit(elapsed = timeout, transient = TRUE)
+      on.exit(setTimeLimit(elapsed = Inf, transient = FALSE), add = TRUE)
+    }
+    run_one()
+  }, error = function(e) {
+    124L
+  })
+
+  stdout <- if (!isTRUE(echo) && file.exists(stdout_file)) {
+    paste(readLines(stdout_file, warn = FALSE), collapse = "\n")
+  } else {
+    ""
+  }
+
+  stderr <- if (!isTRUE(echo) && file.exists(stderr_file)) {
+    paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
+  } else {
+    ""
+  }
+
+  list(status = as.integer(status), stdout = stdout, stderr = stderr)
+}
+
 #' Import Python Module into asa_env
 #'
 #' Generic helper for importing Python modules from inst/python.
@@ -239,11 +305,10 @@ is_tor_running <- function(port = 9050L) {
 #' @export
 get_tor_ip <- function(proxy = "socks5h://127.0.0.1:9050", timeout = 30L) {
   tryCatch({
-    result <- processx::run(
+    result <- .run_command(
       "curl",
       args = c("-s", "--proxy", proxy, "https://api.ipify.org?format=json"),
-      timeout = timeout,
-      error_on_status = FALSE
+      timeout = timeout
     )
     if (result$status != 0) {
       # LOW FIX: Log stderr context for debugging Tor connection failures
@@ -321,16 +386,13 @@ rotate_tor_circuit <- function(method = c("signal", "brew", "systemctl"),
 
   success <- tryCatch({
     if (method == "brew") {
-      processx::run("brew", c("services", "restart", "tor"),
-                    error_on_status = FALSE)
+      .run_command("brew", c("services", "restart", "tor"))
     } else if (method == "systemctl") {
-      processx::run("sudo", c("systemctl", "restart", "tor"),
-                    error_on_status = FALSE)
+      .run_command("sudo", c("systemctl", "restart", "tor"))
     } else if (method == "signal") {
       # If no PID provided, find the Tor process
       if (is.null(pid)) {
-        pgrep_result <- processx::run("pgrep", c("-x", "tor"),
-                                      error_on_status = FALSE)
+        pgrep_result <- .run_command("pgrep", c("-x", "tor"))
         if (pgrep_result$status != 0 || nchar(trimws(pgrep_result$stdout)) == 0) {
           warning("Could not find Tor process", call. = FALSE)
           return(invisible(FALSE))
@@ -339,8 +401,7 @@ rotate_tor_circuit <- function(method = c("signal", "brew", "systemctl"),
         # Handle multiple PIDs (take first line)
         pid <- strsplit(pid, "\n")[[1]][1]
       }
-      processx::run("kill", c("-HUP", as.character(pid)),
-                    error_on_status = FALSE)
+      .run_command("kill", c("-HUP", as.character(pid)))
     }
     TRUE
   }, error = function(e) {
@@ -769,7 +830,7 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param backoff_multiplier Multiplier for exponential backoff (default: 1.5)
 #' @param captcha_backoff_base Base multiplier for CAPTCHA backoff (default: 3)
 #' @param page_load_wait Wait time after page load in seconds (default: 2)
-#' @param inter_search_delay Delay between consecutive searches in seconds (default: 0.5)
+#' @param inter_search_delay Delay between consecutive searches in seconds (default: 1.5)
 #' @param conda_env Name of the conda environment (default: "asa_env")
 #'
 #' @return Invisibly returns a list with the current configuration

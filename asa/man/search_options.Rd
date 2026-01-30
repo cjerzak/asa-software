@@ -30,7 +30,7 @@ Subsequent retries use exponential backoff. Default: 2.}
 E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1.5.}
 
 \item{inter_search_delay}{Minimum delay in seconds between consecutive searches.
-Helps avoid rate limiting from search providers. Default: 0.5.}
+Helps avoid rate limiting from search providers. Default: 1.5.}
 }
 \value{
 An object of class \code{asa_search}

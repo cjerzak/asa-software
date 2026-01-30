@@ -56,7 +56,7 @@ class SearchConfig:
         backoff_multiplier: Multiplier for exponential backoff (default: 1.5)
         captcha_backoff_base: Base multiplier for CAPTCHA backoff (default: 3.0)
         page_load_wait: Wait time after page load in seconds (default: 2.0)
-        inter_search_delay: Delay between consecutive searches in seconds (default: 0.5)
+        inter_search_delay: Delay between consecutive searches in seconds (default: 1.5)
         humanize_timing: Add random jitter to delays for human-like behavior (default: True)
         jitter_factor: Jitter range as fraction of base delay (default: 0.5 = ±50%)
         allow_direct_fallback: Allow fallback to direct IP (no proxy) on final retry (default: False)

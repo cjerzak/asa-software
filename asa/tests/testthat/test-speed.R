@@ -335,6 +335,11 @@ test_that("combined workload performance is within acceptable bounds", {
 
 test_that("agent search performance is within acceptable bounds", {
 
+  skip_if(
+    tolower(Sys.getenv("ASA_CI_SKIP_API_TESTS")) %in% c("true", "1", "yes"),
+    "ASA_CI_SKIP_API_TESTS is set"
+  )
+
   # Skip if environment not configured for agent tests
   skip_if_not(
     nzchar(Sys.getenv("OPENAI_API_KEY")) || nzchar(Sys.getenv("GROQ_API_KEY")),

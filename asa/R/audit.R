@@ -175,11 +175,8 @@ backend <- match.arg(backend)
                                     interactive, verbose) {
 
   # Check if claude CLI is available
-  claude_check <- tryCatch({
-    processx::run("which", "claude", error_on_status = FALSE)
-  }, error = function(e) list(status = 1))
-
-  if (claude_check$status != 0) {
+  claude_path <- Sys.which("claude")
+  if (!nzchar(claude_path)) {
     stop("Claude Code CLI not found. Please install it from: ",
          "https://github.com/anthropics/claude-code",
          call. = FALSE)
@@ -192,9 +189,7 @@ backend <- match.arg(backend)
   on.exit(unlink(data_file), add = TRUE)
 
   # Check whether the CLI supports file attachments
-  claude_help <- tryCatch({
-    processx::run("claude", "--help", error_on_status = FALSE)
-  }, error = function(e) NULL)
+  claude_help <- tryCatch(.run_command("claude", "--help"), error = function(e) NULL)
   supports_file <- !is.null(claude_help) &&
     claude_help$status == 0 &&
     grepl("--file", claude_help$stdout, fixed = TRUE)
@@ -225,12 +220,10 @@ backend <- match.arg(backend)
 
     # Run interactively - user will see the session
     tryCatch({
-      processx::run(
+      .run_command(
         command = "claude",
         args = c("--model", model, file_args),
         stdin = prompt_file,
-        stdout = "",  # Print to console
-        stderr = "",  # Print to console
         echo = TRUE
       )
     }, error = function(e) {
@@ -252,7 +245,7 @@ backend <- match.arg(backend)
   if (verbose) message("Running Claude Code audit...")
 
   result <- tryCatch({
-    processx::run(
+    .run_command(
       command = "claude",
       args = c(
         "--model", model,
@@ -260,8 +253,7 @@ backend <- match.arg(backend)
         file_args,
         "-p", prompt
       ),
-      timeout = timeout,
-      error_on_status = FALSE
+      timeout = timeout
     )
   }, error = function(e) {
     stop("Claude Code invocation failed: ", e$message, call. = FALSE)

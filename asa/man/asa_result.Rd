@@ -12,7 +12,8 @@ asa_result(
   elapsed_time,
   status,
   search_tier = "unknown",
-  parsing_status = NULL
+  parsing_status = NULL,
+  trace_json = ""
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ asa_result(
 \item{parsing_status}{List with JSON parsing validation info: valid (logical),
 reason ("ok", "parsing_failed", "not_object", "missing_fields", "null_values",
 "no_validation"), and missing (character vector of missing/invalid fields).}
+
+\item{trace_json}{Structured JSON trace (when available)}
 }
 \value{
 An object of class \code{asa_result}

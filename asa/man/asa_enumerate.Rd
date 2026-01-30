@@ -115,15 +115,16 @@ Decomposes complex queries into sub-tasks, executes parallel searches, and
 aggregates results into structured output (data.frame, CSV, or JSON).
 }
 \details{
-The function uses a multi-agent architecture:
+The function uses an iterative graph architecture:
 \enumerate{
-  \item \strong{Planner}: Decomposes query into facets and identifies authoritative sources
-  \item \strong{Dispatcher}: Spawns parallel workers for each facet
-  \item \strong{Workers}: Execute searches using DDG, Wikipedia, and Wikidata
-  \item \strong{Extractor}: Normalizes results to match schema
-  \item \strong{Deduper}: Removes duplicates using hash + fuzzy matching
-  \item \strong{Stopper}: Evaluates stopping criteria (novelty, budget, saturation)
+  \item \strong{Planner}: Decomposes the query and proposes a search plan.
+  \item \strong{Searcher}: Queries Wikidata (when applicable) and falls back to web/Wikipedia.
+  \item \strong{Deduper}: Removes duplicates using hashing + fuzzy matching.
+  \item \strong{Stopper}: Evaluates stopping criteria (novelty, budgets, saturation).
 }
+
+Parallelism is limited and backend-dependent. For example, strict temporal
+filtering may verify publication dates in parallel up to \code{workers}.
 
 For known entity types (US senators, countries, Fortune 500), Wikidata provides
 authoritative enumerations with complete, verified data.

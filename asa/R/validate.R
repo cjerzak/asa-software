@@ -602,7 +602,7 @@
 
 #' Validate build_backend() Parameters
 #' @keywords internal
-.validate_build_backend <- function(conda_env, conda, python_version) {
+.validate_build_backend <- function(conda_env, conda, python_version, force = FALSE) {
   .validate_conda_env(conda_env, "conda_env")
 
   if (conda != "auto") {
@@ -619,6 +619,8 @@
       fix = 'Use format like python_version = "3.13"'
     )
   }
+
+  .validate_logical(force, "force")
 
   invisible(TRUE)
 }

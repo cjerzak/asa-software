@@ -11,7 +11,8 @@ asa_response(
   trace,
   elapsed_time,
   fold_count,
-  prompt
+  prompt,
+  trace_json = ""
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ asa_response(
 \item{fold_count}{Number of memory folds performed}
 
 \item{prompt}{The original prompt}
+
+\item{trace_json}{Structured JSON trace (when available)}
 }
 \value{
 An object of class \code{asa_response}

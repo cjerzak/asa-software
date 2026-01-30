@@ -7,12 +7,13 @@
 #' @param backend LLM backend to use. One of: "openai", "groq", "xai", "exo", "openrouter"
 #' @param model Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")
 #' @param conda_env Name of the conda environment with Python dependencies
-#' @param proxy SOCKS5 proxy URL for Tor (default: "socks5h://127.0.0.1:9050").
-#'   Set to NULL to disable proxy.
+#' @param proxy Proxy URL for search tools (default: NULL). Use
+#'   \code{ASA_DEFAULT_PROXY} (or \code{"socks5h://127.0.0.1:9050"}) to route
+#'   searches through Tor.
 #' @param use_memory_folding Enable DeepAgent-style memory compression (default: TRUE)
 #' @param memory_threshold Number of messages before folding triggers (default: 4)
 #' @param memory_keep_recent Number of recent messages to preserve after folding (default: 2)
-#' @param rate_limit Requests per second for rate limiting (default: 0.2)
+#' @param rate_limit Requests per second for rate limiting (default: 0.1)
 #' @param timeout Request timeout in seconds (default: 120)
 #' @param tor Tor registry options from \code{\link{tor_options}}. Disable shared
 #'   tracking by setting \code{dirty_tor_exists = FALSE}.
@@ -81,11 +82,11 @@
 initialize_agent <- function(backend = "openai",
                              model = "gpt-4.1-mini",
                              conda_env = "asa_env",
-                             proxy = "socks5h://127.0.0.1:9050",
+                             proxy = NULL,
                              use_memory_folding = TRUE,
                              memory_threshold = 4L,
                              memory_keep_recent = 2L,
-                             rate_limit = 0.2,
+                             rate_limit = ASA_DEFAULT_RATE_LIMIT,
                              timeout = 120L,
                              tor = tor_options(),
                              verbose = TRUE) {
