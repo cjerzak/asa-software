@@ -542,6 +542,140 @@ extract_search_tiers <- function(text) {
   unique(tiers)
 }
 
+#' Make a string safe to wrap as a JSON string literal
+#'
+#' Ensures every double quote is escaped (i.e., preceded by an odd number of
+#' backslashes), so `jsonlite::fromJSON(paste0('"', x, '"'))` can be used to
+#' decode one layer of trace-escaped content.
+#'
+#' @param x Character scalar
+#' @keywords internal
+.make_json_string_wrapper_safe <- function(x) {
+  if (!is.character(x) || length(x) != 1 || is.na(x) || !nzchar(x)) {
+    return("")
+  }
+
+  chars <- strsplit(x, "", fixed = TRUE)[[1]]
+  out <- character(0)
+
+  for (ch in chars) {
+    if (ch == '"') {
+      # Count consecutive backslashes immediately before this quote in the output
+      # built so far. If the count is even, the quote would terminate a JSON
+      # string literal; insert one more backslash to escape it.
+      bs_count <- 0L
+      j <- length(out)
+      while (j >= 1L && out[j] == "\\") {
+        bs_count <- bs_count + 1L
+        j <- j - 1L
+      }
+      if (bs_count %% 2L == 0L) {
+        out <- c(out, "\\")
+      }
+      out <- c(out, ch)
+    } else {
+      out <- c(out, ch)
+    }
+  }
+
+  paste0(out, collapse = "")
+}
+
+#' Decode one layer of trace-escaped content into a string
+#'
+#' Many raw traces contain AI message content escaped as a Python-esque string
+#' literal (e.g. `\"`, `\\n`). This function attempts to decode one layer of
+#' escaping using JSON string decoding, while normalizing `\\'` (a Python escape
+#' that is not valid JSON) back to `'`.
+#'
+#' @param x Character scalar
+#' @return Character scalar, or NULL
+#' @keywords internal
+.decode_trace_escaped_string <- function(x) {
+  if (!is.character(x) || length(x) != 1 || is.na(x) || !nzchar(x)) {
+    return(NULL)
+  }
+
+  # JSON doesn't support `\'`, but Python repr does (when single-quoting). If it
+  # exists here, it's not valid JSON text yet; normalize before decoding.
+  x <- gsub("\\'", "'", x, fixed = TRUE)
+
+  safe <- .make_json_string_wrapper_safe(x)
+  wrapped <- paste0('"', safe, '"')
+  decoded <- tryCatch(jsonlite::fromJSON(wrapped), error = function(e) NULL)
+
+  if (is.character(decoded) && length(decoded) == 1L) {
+    decoded
+  } else {
+    NULL
+  }
+}
+
+#' Try to parse a JSON candidate extracted from a raw trace
+#'
+#' @param x Character scalar candidate (may be escaped)
+#' @param max_decode_layers Maximum number of decode layers to attempt
+#' @return Parsed JSON (list/data.frame), or NULL
+#' @keywords internal
+.parse_trace_json_candidate <- function(x, max_decode_layers = 3L) {
+  if (!is.character(x) || length(x) != 1 || is.na(x) || !nzchar(x)) {
+    return(NULL)
+  }
+
+  current <- x
+
+  unescape_quotes_only <- function(txt) {
+    # Convert `\"` -> `"` without decoding other escapes (e.g. preserve `\\`).
+    gsub("\\\"", "\"", txt, fixed = TRUE)
+  }
+
+  parse_one <- function(txt) {
+    # Prefer the shared robust extractor (handles JSON embedded in text).
+    parsed <- tryCatch(.parse_json_response(txt), error = function(e) NULL)
+    if (is.list(parsed) && length(parsed) > 0) {
+      return(parsed)
+    }
+    NULL
+  }
+
+  parsed <- parse_one(current)
+  if (!is.null(parsed)) {
+    return(parsed)
+  }
+
+  max_decode_layers <- as.integer(max_decode_layers)
+  if (is.na(max_decode_layers) || max_decode_layers < 1L) {
+    return(NULL)
+  }
+
+  for (i in seq_len(max_decode_layers)) {
+    decoded <- .decode_trace_escaped_string(current)
+    if (is.null(decoded) || identical(decoded, current)) {
+      break
+    }
+    current <- decoded
+
+    parsed <- parse_one(current)
+    if (!is.null(parsed)) {
+      return(parsed)
+    }
+
+    parsed <- parse_one(unescape_quotes_only(current))
+    if (!is.null(parsed)) {
+      return(parsed)
+    }
+  }
+
+  # Last resort: if decoding didn't help, try unescaping quotes only once on the
+  # original string (useful when backslashes are already JSON-level).
+  parsed <- parse_one(unescape_quotes_only(x))
+  if (!is.null(parsed)) {
+    return(parsed)
+  }
+
+  NULL
+}
+
 #' Extract JSON from Agent Traces
 #'
 #' Internal function to extract JSON data from raw agent traces.
@@ -566,7 +700,7 @@ extract_search_tiers <- function(text) {
     if (length(ai_contents) > 0) {
       # Prefer the most recent AI message
       for (i in rev(seq_along(ai_contents))) {
-        parsed <- safe_json_parse(ai_contents[i])
+        parsed <- tryCatch(.parse_json_response(ai_contents[i]), error = function(e) NULL)
         if (is.list(parsed) && length(parsed) > 0) {
           return(parsed)
         }
@@ -591,21 +725,10 @@ extract_search_tiers <- function(text) {
         for (i in rev(seq_along(matches))) {
           json_str <- gsub(pattern, "\\1", matches[i], perl = TRUE)
 
-          # Clean escape sequences
-          json_str <- gsub("\\\\n", "\n", json_str)
-          json_str <- gsub('\\\\"', '"', json_str)
-          json_str <- gsub("\\\\'", "'", json_str)
-          json_str <- gsub("\\\\\\\\", "\\\\", json_str)
-
-          # Try to parse as JSON
-          tryCatch({
-            data <- jsonlite::fromJSON(json_str)
-            if (is.list(data) && length(data) > 0) {
-              return(data)
-            }
-          }, error = function(e) {
-            # Continue to next match
-          })
+          data <- .parse_trace_json_candidate(json_str, max_decode_layers = 3L)
+          if (is.list(data) && length(data) > 0) {
+            return(data)
+          }
         }
       }
     }
