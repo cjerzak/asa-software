@@ -529,10 +529,6 @@ build_prompt <- function(template, ...) {
 
   if (end > start) {
     json_str <- paste(chars[start:end], collapse = "")
-    # Clean escape sequences
-    json_str <- gsub("\\\\n", "\n", json_str)
-    json_str <- gsub('\\\\"', '"', json_str)
-    json_str <- gsub("\\\\'", "'", json_str)
     return(json_str)
   }
 

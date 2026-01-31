@@ -156,6 +156,14 @@ test_that(".parse_json_response skips non-JSON brackets", {
   expect_equal(parsed$name, "Ada")
 })
 
+test_that(".parse_json_response preserves escaped quotes inside strings", {
+  mixed <- "Preamble {\"note\":\"The \\\"Great\\\" Wall\"} epilogue"
+  parsed <- asa:::.parse_json_response(mixed)
+
+  expect_true(is.list(parsed))
+  expect_equal(parsed$note, 'The "Great" Wall')
+})
+
 test_that("run_task accepts output_format = 'raw'", {
   # Test that "raw" is a valid output_format (validation passes)
   # The validation function should not throw for "raw"

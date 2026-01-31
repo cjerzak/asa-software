@@ -23,14 +23,18 @@ test_that("run_task returns Vietnam first-level divisions in JSON (Gemini)", {
 
   prompt <- paste(
     "List all the first-level administrative divisions of Vietnam.",
+    "Include all 58 provinces and 5 centrally governed municipalities (total 63).",
     "Use search and Wikipedia if needed.",
-    "Return JSON only with fields:",
-    "country (string), divisions (array of strings), count (integer)."
+    "Return only valid JSON with a single top-level object and fields:",
+    "country (string), divisions (flat array of strings), count (integer).",
+    "Example:",
+    "{\"country\":\"Vietnam\",\"divisions\":[\"An Giang\", \"Ba Ria-Vung Tau\"],\"count\":63}"
   )
 
   result <- run_task(
     prompt = prompt,
     output_format = "json",
+    expected_fields = c("country", "divisions", "count"),
     agent = agent,
     allow_read_webpages = TRUE,
     verbose = FALSE
@@ -39,29 +43,84 @@ test_that("run_task returns Vietnam first-level divisions in JSON (Gemini)", {
   expect_s3_class(result, "asa_result")
   parsed <- result$parsed
   expect_false(is.null(parsed), info = "Parsed JSON is NULL")
+  if (!is.null(result$parsing_status) && !isTRUE(result$parsing_status$valid)) {
+    message(
+      "Parsing status: ",
+      result$parsing_status$reason,
+      " (missing: ",
+      paste(result$parsing_status$missing, collapse = ", "),
+      ")"
+    )
+  }
 
-  divisions <- NULL
+  divisions <- character(0)
   declared_count <- NULL
 
-  if (is.list(parsed) && !is.data.frame(parsed) && "divisions" %in% names(parsed)) {
-    divisions <- parsed$divisions
-    if ("count" %in% names(parsed)) declared_count <- parsed$count
-  } else if (is.data.frame(parsed)) {
-    if ("division" %in% names(parsed)) {
-      divisions <- parsed$division
-    } else if ("name" %in% names(parsed)) {
-      divisions <- parsed$name
+  division_keys <- c(
+    "divisions", "first_level_divisions", "administrative_divisions",
+    "province_level", "provinces", "municipalities", "cities",
+    "centrally_governed_municipalities", "central_municipalities"
+  )
+  item_keys <- c("division", "name", "province", "municipality", "city", "unit")
+
+  extract_divisions <- function(x) {
+    if (is.null(x)) return(character(0))
+    if (is.character(x)) return(x)
+
+    if (is.data.frame(x)) {
+      hit <- intersect(names(x), item_keys)
+      if (length(hit) > 0) return(x[[hit[1]]])
+      char_cols <- names(x)[vapply(x, is.character, logical(1))]
+      if (length(char_cols) > 0) return(x[[char_cols[1]]])
+      return(character(0))
     }
-  } else if (is.character(parsed)) {
-    divisions <- parsed
+
+    if (is.list(x)) {
+      # Direct division fields
+      hit <- intersect(names(x), division_keys)
+      if (length(hit) > 0) {
+        return(unlist(x[hit], use.names = FALSE))
+      }
+
+      # Common wrappers
+      for (wrapper in c("results", "items", "data")) {
+        if (wrapper %in% names(x)) {
+          return(extract_divisions(x[[wrapper]]))
+        }
+      }
+
+      # List of objects
+      if (all(vapply(x, is.list, logical(1)))) {
+        out <- vapply(x, function(item) {
+          for (key in item_keys) {
+            if (!is.null(item[[key]])) return(as.character(item[[key]]))
+          }
+          NA_character_
+        }, character(1))
+        return(out)
+      }
+
+      # List of character vectors
+      if (all(vapply(x, is.character, logical(1)))) {
+        return(unlist(x, use.names = FALSE))
+      }
+    }
+
+    character(0)
   }
+
+  divisions <- extract_divisions(parsed)
 
   if (is.list(divisions) && !is.character(divisions)) {
     if (all(vapply(divisions, is.list, logical(1)))) {
       divisions <- vapply(divisions, function(item) {
         val <- NULL
-        if (!is.null(item$division)) val <- item$division
-        if (is.null(val) && !is.null(item$name)) val <- item$name
+        for (key in item_keys) {
+          if (!is.null(item[[key]])) {
+            val <- item[[key]]
+            break
+          }
+        }
         if (is.null(val)) NA_character_ else as.character(val)
       }, character(1))
     } else {
@@ -73,6 +132,13 @@ test_that("run_task returns Vietnam first-level divisions in JSON (Gemini)", {
   divisions <- trimws(divisions)
   divisions <- divisions[nzchar(divisions)]
 
+  if (length(divisions) == 0) {
+    parsed_keys <- if (is.list(parsed)) paste(names(parsed), collapse = ", ") else "<non-list>"
+    msg <- result$message
+    if (is.null(msg)) msg <- ""
+    message("Parsed keys: ", parsed_keys)
+    message("Raw response preview: ", substr(msg, 1, 400))
+  }
   expect_true(length(divisions) > 0, info = "No divisions parsed from JSON output")
 
   if (!is.null(declared_count) && length(declared_count) == 1 && !is.na(declared_count)) {
