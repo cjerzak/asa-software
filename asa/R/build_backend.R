@@ -22,7 +22,7 @@
 #'   \item ddgs (DuckDuckGo search)
 #'   \item selenium, primp (browser automation)
 #'   \item undetected-chromedriver (stealth Chrome)
-#'   \item beautifulsoup4, requests
+#'   \item beautifulsoup4, curl_cffi, requests
 #'   \item fake_headers, httpx
 #'   \item stem (Tor control)
 #'   \item pysocks, socksio (proxy support)
@@ -122,6 +122,7 @@ build_backend <- function(conda_env = NULL,
     "undetected-chromedriver",
     "primp",
     "beautifulsoup4",
+    "curl_cffi",
     "requests",
     "fake_headers"
   ))

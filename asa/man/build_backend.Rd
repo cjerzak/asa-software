@@ -8,7 +8,8 @@ build_backend(
   conda_env = NULL,
   conda = "auto",
   python_version = "3.11",
-  force = FALSE
+  force = FALSE,
+  check_browser = TRUE
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 \item{python_version}{Python version to use (default: "3.11")}
 
 \item{force}{If TRUE, delete and recreate the conda environment if it already exists.}
+
+\item{check_browser}{If TRUE, performs a best-effort check for a system Chrome/Chromium
+binary and `chromedriver`, warning when major versions are incompatible. Set to
+FALSE to skip this check.}
 }
 \value{
 Invisibly returns NULL; called for side effects.
@@ -37,7 +42,7 @@ Python packages:
   \item ddgs (DuckDuckGo search)
   \item selenium, primp (browser automation)
   \item undetected-chromedriver (stealth Chrome)
-  \item beautifulsoup4, requests
+  \item beautifulsoup4, curl_cffi, requests
   \item fake_headers, httpx
   \item stem (Tor control)
   \item pysocks, socksio (proxy support)

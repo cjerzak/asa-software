@@ -23,12 +23,17 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Type
 from urllib.parse import urlparse, urlunparse
 
-import requests
+from curl_cffi import requests
 from bs4 import BeautifulSoup
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
+
+try:
+    RequestException = requests.exceptions.RequestException
+except Exception:
+    RequestException = getattr(requests, "RequestsError", Exception)
 
 
 @dataclass
@@ -632,48 +637,56 @@ def _relevant_chunks(text: str, query: str, *, chunk_chars: int, max_chunks: int
 def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> Dict[str, Any]:
     headers = {"User-Agent": cfg.user_agent}
     proxies = {"http": proxy, "https": proxy} if proxy else None
-    r = requests.get(
-        url,
-        headers=headers,
-        timeout=cfg.timeout,
-        proxies=proxies,
-        stream=True,
-        allow_redirects=True,
-    )
-    r.raise_for_status()
+    r = None
+    try:
+        r = requests.get(
+            url,
+            headers=headers,
+            timeout=cfg.timeout,
+            proxies=proxies,
+            stream=True,
+            allow_redirects=True,
+        )
+        r.raise_for_status()
 
-    content_type = (r.headers.get("Content-Type") or "").lower()
-    if not (
-        "text/html" in content_type
-        or "application/xhtml+xml" in content_type
-        or "text/plain" in content_type
-        or content_type == ""
-    ):
+        content_type = (r.headers.get("Content-Type") or "").lower()
+        if not (
+            "text/html" in content_type
+            or "application/xhtml+xml" in content_type
+            or "text/plain" in content_type
+            or content_type == ""
+        ):
+            return {
+                "ok": False,
+                "error": "unsupported_content_type",
+                "content_type": content_type,
+                "final_url": str(getattr(r, "url", url)),
+            }
+
+        data = bytearray()
+        for chunk in r.iter_content(chunk_size=16 * 1024):
+            if not chunk:
+                continue
+            data.extend(chunk)
+            if len(data) >= cfg.max_bytes:
+                break
+
+        # Best-effort decode
+        encoding = r.encoding or "utf-8"
+        html = data.decode(encoding, errors="replace")
         return {
-            "ok": False,
-            "error": "unsupported_content_type",
+            "ok": True,
+            "html": html,
             "content_type": content_type,
             "final_url": str(getattr(r, "url", url)),
+            "bytes_read": int(len(data)),
         }
-
-    data = bytearray()
-    for chunk in r.iter_content(chunk_size=16 * 1024):
-        if not chunk:
-            continue
-        data.extend(chunk)
-        if len(data) >= cfg.max_bytes:
-            break
-
-    # Best-effort decode
-    encoding = r.encoding or "utf-8"
-    html = data.decode(encoding, errors="replace")
-    return {
-        "ok": True,
-        "html": html,
-        "content_type": content_type,
-        "final_url": str(getattr(r, "url", url)),
-        "bytes_read": int(len(data)),
-    }
+    finally:
+        if r is not None:
+            try:
+                r.close()
+            except Exception:
+                pass
 
 
 class OpenWebpageInput(BaseModel):
@@ -791,7 +804,7 @@ class OpenWebpageTool(BaseTool):
                 out = out[: cfg.max_chars] + "\n\n[Truncated]"
             return out
 
-        except requests.exceptions.RequestException as e:
+        except RequestException as e:
             return f"Request error opening URL: {norm}\nError: {e}"
         except Exception as e:
             logger.exception("OpenWebpageTool error")

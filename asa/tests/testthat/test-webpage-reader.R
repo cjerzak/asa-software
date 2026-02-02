@@ -65,7 +65,7 @@
 test_that("OpenWebpage tool is gated by allow_read_webpages", {
   python_path <- .skip_if_no_python_webpage_reader()
   .skip_if_missing_python_modules_webpage_reader(
-    c("requests", "bs4", "pydantic", "langchain_core")
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
   webpage_tool <- .import_webpage_tool(python_path)
@@ -114,7 +114,7 @@ test_that("OpenWebpage tool is gated by allow_read_webpages", {
 test_that(".with_webpage_reader_config toggles Python allow_read_webpages", {
   python_path <- .skip_if_no_python_webpage_reader()
   .skip_if_missing_python_modules_webpage_reader(
-    c("requests", "bs4", "pydantic", "langchain_core")
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
   conda_env <- tryCatch(asa:::.get_default_conda_env(), error = function(e) NULL)
@@ -149,7 +149,7 @@ test_that("OpenWebpage can read collaborators page (live network)", {
 
   python_path <- .skip_if_no_python_webpage_reader()
   .skip_if_missing_python_modules_webpage_reader(
-    c("requests", "bs4", "pydantic", "langchain_core")
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
   webpage_tool <- .import_webpage_tool(python_path)
