@@ -9,8 +9,11 @@
 import contextlib
 import logging
 import os
+import re
 import shutil
 import sqlite3
+import subprocess
+import sys
 import tempfile
 import threading
 import traceback
@@ -1726,6 +1729,59 @@ def _strip_chromedriver_from_path(path_value: str) -> str:
     return sep.join(keep)
 
 
+def _parse_major_version(version_str: str | None) -> int | None:
+    if not version_str:
+        return None
+    m = re.search(r"(\\d+)\\.", version_str)
+    if not m:
+        return None
+    try:
+        return int(m.group(1))
+    except Exception:
+        return None
+
+
+def _detect_chrome_version() -> str | None:
+    env_version = os.environ.get("ASA_CHROME_VERSION") or os.environ.get("CHROME_VERSION")
+    if env_version:
+        return env_version
+
+    candidates = []
+    if sys.platform == "darwin":
+        candidates.extend([
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta",
+            "/Applications/Chromium.app/Contents/MacOS/Chromium",
+        ])
+    for name in ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome"):
+        path = shutil.which(name)
+        if path:
+            candidates.append(path)
+
+    for path in candidates:
+        if not path or not os.path.exists(path):
+            continue
+        try:
+            out = subprocess.check_output([path, "--version"], stderr=subprocess.STDOUT)
+            version = out.decode("utf-8", errors="ignore").strip()
+            if version:
+                return version
+        except Exception:
+            continue
+
+    return None
+
+
+def _detect_chrome_major() -> int | None:
+    env_major = os.environ.get("ASA_CHROME_MAJOR") or os.environ.get("CHROME_MAJOR")
+    if env_major:
+        try:
+            return int(env_major)
+        except Exception:
+            pass
+    return _parse_major_version(_detect_chrome_version())
+
+
 def _new_driver(
     *,
     proxy: str | None,
@@ -1785,6 +1841,9 @@ def _new_driver(
     random_lang = random.choice(_STEALTH_LANGUAGES)
 
     driver = None
+    ignore_path = str(os.environ.get("ASA_IGNORE_PATH_CHROMEDRIVER", "")).lower() in ("1", "true", "yes")
+    disable_uc = str(os.environ.get("ASA_DISABLE_UC", "")).lower() in ("1", "true", "yes") or ignore_path
+    chrome_major = _detect_chrome_major()
     try:
         # ════════════════════════════════════════════════════════════════════
         # TIER 1: undetected-chromedriver (UC) - BEST STEALTH
@@ -1792,6 +1851,9 @@ def _new_driver(
         # UC patches ChromeDriver to evade detection by anti-bot services.
         # It handles: webdriver flag, CDP detection, headless detection, etc.
         try:
+            if disable_uc:
+                raise ImportError("UC disabled via ASA_DISABLE_UC/ASA_IGNORE_PATH_CHROMEDRIVER")
+
             import undetected_chromedriver as uc
 
             logger.info("Attempting undetected-chromedriver (UC) for maximum stealth")
@@ -1830,7 +1892,7 @@ def _new_driver(
             driver = uc.Chrome(
                 options=uc_options,
                 use_subprocess=True,
-                version_main=None,  # Auto-detect Chrome version
+                version_main=chrome_major,  # Prefer installed Chrome major when available
             )
 
             logger.info("Using undetected-chromedriver (UC) - maximum stealth mode")
@@ -1859,8 +1921,11 @@ def _new_driver(
 
             return driver
 
-        except ImportError:
-            logger.debug("undetected-chromedriver not installed, trying Firefox")
+        except ImportError as ie:
+            if disable_uc:
+                logger.info("Skipping undetected-chromedriver (%s), trying Firefox", ie)
+            else:
+                logger.debug("undetected-chromedriver not installed, trying Firefox")
         except Exception as uc_err:
             logger.warning("UC Chrome failed (%s), trying Firefox fallback", uc_err)
             if driver:
