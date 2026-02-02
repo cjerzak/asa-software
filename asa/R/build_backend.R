@@ -43,7 +43,8 @@
 build_backend <- function(conda_env = NULL,
                           conda = "auto",
                           python_version = "3.11",
-                          force = FALSE) {
+                          force = FALSE,
+                          check_browser = TRUE) {
 
   conda_env <- conda_env %||% .get_default_conda_env()
 
@@ -162,7 +163,151 @@ build_backend <- function(conda_env = NULL,
 
   msg("You can now use: asa::initialize_agent(conda_env = '%s')", conda_env)
 
+  # Optional: check system browser/driver compatibility for Selenium tier.
+  if (isTRUE(check_browser)) {
+    .check_browser_stack(verbose = TRUE)
+  }
+
   invisible(NULL)
+}
+
+.parse_major_version <- function(version_str) {
+  if (!is.character(version_str) || length(version_str) != 1 || is.na(version_str) || !nzchar(version_str)) {
+    return(NA_integer_)
+  }
+  m <- regexec("([0-9]+)\\.", version_str)
+  mm <- regmatches(version_str, m)[[1]]
+  if (length(mm) < 2) {
+    return(NA_integer_)
+  }
+  suppressWarnings(as.integer(mm[2]))
+}
+
+.run_version_cmd <- function(path, args = "--version") {
+  if (!is.character(path) || length(path) != 1 || is.na(path) || !nzchar(path)) {
+    return("")
+  }
+  out <- tryCatch(
+    system2(path, args, stdout = TRUE, stderr = TRUE),
+    error = function(e) character(0)
+  )
+  out <- paste(out, collapse = " ")
+  trimws(out)
+}
+
+.find_chrome_executable <- function() {
+  # Prefer explicit env var when set.
+  chrome_env <- Sys.getenv("ASA_CHROME_BIN", unset = Sys.getenv("CHROME_BIN", unset = ""))
+  candidates <- character(0)
+  if (nzchar(chrome_env)) {
+    candidates <- c(candidates, chrome_env)
+  }
+
+  sysname <- Sys.info()[["sysname"]] %||% ""
+  if (identical(sysname, "Darwin")) {
+    candidates <- c(candidates,
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta",
+      "/Applications/Chromium.app/Contents/MacOS/Chromium"
+    )
+  }
+
+  # Common PATH names across Linux/macOS.
+  path_hits <- unname(Sys.which(c(
+    "google-chrome",
+    "google-chrome-stable",
+    "chromium",
+    "chromium-browser",
+    "chrome"
+  )))
+  candidates <- c(candidates, path_hits)
+  candidates <- unique(candidates[nzchar(candidates)])
+
+  for (p in candidates) {
+    if (file.exists(p) && file.access(p, 1) == 0) {
+      return(p)
+    }
+  }
+  NULL
+}
+
+.find_chromedriver_executable <- function() {
+  driver_env <- Sys.getenv(
+    "ASA_CHROMEDRIVER_BIN",
+    unset = Sys.getenv("CHROMEDRIVER_BIN", unset = "")
+  )
+  candidates <- character(0)
+  if (nzchar(driver_env)) {
+    candidates <- c(candidates, driver_env)
+  }
+  candidates <- c(candidates, unname(Sys.which("chromedriver")))
+  candidates <- unique(candidates[nzchar(candidates)])
+  for (p in candidates) {
+    if (file.exists(p) && file.access(p, 1) == 0) {
+      return(p)
+    }
+  }
+  NULL
+}
+
+.check_browser_stack <- function(verbose = TRUE) {
+  # This check is best-effort and never errors.
+  chrome_path <- .find_chrome_executable()
+  driver_path <- .find_chromedriver_executable()
+
+  if (isTRUE(verbose)) {
+    message("Checking system browser/driver for Selenium tier...")
+  }
+
+  if (is.null(chrome_path) || is.null(driver_path)) {
+    if (isTRUE(verbose)) {
+      if (is.null(chrome_path)) message("  Chrome not found (Selenium tier may fall back).")
+      if (is.null(driver_path)) message("  chromedriver not found (Selenium tier may fall back).")
+    }
+    return(invisible(list(
+      ok = FALSE,
+      chrome_path = chrome_path,
+      chromedriver_path = driver_path,
+      chrome_version = NA_character_,
+      chromedriver_version = NA_character_,
+      chrome_major = NA_integer_,
+      chromedriver_major = NA_integer_,
+      mismatch = NA
+    )))
+  }
+
+  chrome_version <- .run_version_cmd(chrome_path, "--version")
+  chromedriver_version <- .run_version_cmd(driver_path, "--version")
+  chrome_major <- .parse_major_version(chrome_version)
+  chromedriver_major <- .parse_major_version(chromedriver_version)
+  mismatch <- !is.na(chrome_major) && !is.na(chromedriver_major) && chrome_major != chromedriver_major
+
+  if (isTRUE(verbose)) {
+    message("  Chrome:      ", chrome_version, " (", chrome_path, ")")
+    message("  chromedriver:", chromedriver_version, " (", driver_path, ")")
+    if (isTRUE(mismatch)) {
+      warning(
+        paste0(
+          "Chrome/chromedriver major versions differ (Chrome ", chrome_major,
+          " vs chromedriver ", chromedriver_major, "). Selenium browser tier may fail ",
+          "with SessionNotCreatedException. Align the major versions by updating Chrome ",
+          "or installing the matching chromedriver."
+        ),
+        call. = FALSE
+      )
+    }
+  }
+
+  invisible(list(
+    ok = !isTRUE(mismatch),
+    chrome_path = chrome_path,
+    chromedriver_path = driver_path,
+    chrome_version = chrome_version,
+    chromedriver_version = chromedriver_version,
+    chrome_major = chrome_major,
+    chromedriver_major = chromedriver_major,
+    mismatch = mismatch
+  ))
 }
 
 #' Check Python Environment Availability
