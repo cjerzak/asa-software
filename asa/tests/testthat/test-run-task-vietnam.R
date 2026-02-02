@@ -6,6 +6,13 @@ test_that("run_task returns Vietnam first-level divisions in JSON (Gemini)", {
   skip_api_tests <- tolower(Sys.getenv("ASA_CI_SKIP_API_TESTS")) %in% c("true", "1", "yes")
   skip_if(skip_api_tests, "ASA_CI_SKIP_API_TESTS is set")
 
+  # Activate asa_env before checking for Python modules
+  # (otherwise py_module_available checks wrong environment)
+  tryCatch(
+    reticulate::use_condaenv("asa_env", required = TRUE),
+    error = function(e) skip("asa_env conda environment not available")
+  )
+
   skip_if(
     !reticulate::py_module_available("langchain_google_genai"),
     "Missing Python module langchain_google_genai"
