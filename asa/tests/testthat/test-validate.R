@@ -183,7 +183,7 @@ test_that(".validate_initialize_agent catches memory consistency issues", {
   expect_error(
     .validate_initialize_agent(
       backend = "openai", model = "gpt-4", conda_env = "asa_env",
-      proxy = NULL, use_memory_folding = TRUE,
+      proxy = NULL, use_browser = TRUE, use_memory_folding = TRUE,
       memory_threshold = 2L, memory_keep_recent = 4L,  # threshold < keep_recent
       rate_limit = 0.2, timeout = 120L, verbose = TRUE
     ),
@@ -196,7 +196,7 @@ test_that(".validate_initialize_agent allows valid memory params when folding di
   expect_silent(
     .validate_initialize_agent(
       backend = "openai", model = "gpt-4", conda_env = "asa_env",
-      proxy = NULL, use_memory_folding = FALSE,
+      proxy = NULL, use_browser = TRUE, use_memory_folding = FALSE,
       memory_threshold = 2L, memory_keep_recent = 4L,
       rate_limit = 0.2, timeout = 120L, verbose = TRUE
     )
@@ -207,7 +207,7 @@ test_that(".validate_initialize_agent rejects invalid rate_limit", {
   expect_error(
     .validate_initialize_agent(
       backend = "openai", model = "gpt-4", conda_env = "asa_env",
-      proxy = NULL, use_memory_folding = TRUE,
+      proxy = NULL, use_browser = TRUE, use_memory_folding = TRUE,
       memory_threshold = 4L, memory_keep_recent = 2L,
       rate_limit = -0.1, timeout = 120L, verbose = TRUE
     ),
