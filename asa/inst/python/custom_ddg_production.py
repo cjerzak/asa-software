@@ -2875,7 +2875,7 @@ BrowserDuckDuckGoSearchRun = PatchedDuckDuckGoSearchRun
 from typing import Annotated, TypedDict, Sequence
 from operator import add as operator_add
 from langgraph.managed import RemainingSteps
-from state_utils import remaining_steps_value
+from state_utils import remaining_steps_value, repair_json_output_to_required_schema
 
 
 def _base_system_prompt(summary: str = "") -> str:
@@ -2916,6 +2916,96 @@ def _final_system_prompt(summary: str = "", remaining: int = None) -> str:
             f"=== END LONG-TERM MEMORY ===\n"
         )
     return base_prompt
+
+
+def _message_content_to_text(content: Any) -> str:
+    if content is None:
+        return ""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: List[str] = []
+        for item in content:
+            if isinstance(item, str):
+                if item.strip():
+                    parts.append(item)
+                continue
+            if isinstance(item, dict):
+                for key in ("text", "content", "value"):
+                    val = item.get(key)
+                    if isinstance(val, str) and val.strip():
+                        parts.append(val)
+                        break
+                continue
+            try:
+                s = str(item)
+            except Exception:
+                s = ""
+            if s.strip():
+                parts.append(s)
+        return "\n".join(parts)
+    try:
+        return str(content)
+    except Exception:
+        return ""
+
+
+def _extract_last_user_prompt(messages: list) -> str:
+    """Best-effort extraction of the most recent user message content."""
+    for msg in reversed(messages or []):
+        try:
+            if isinstance(msg, dict):
+                role = (msg.get("role") or msg.get("type") or "").lower()
+                if role in {"user", "human"}:
+                    content = msg.get("content") or msg.get("text") or ""
+                    return str(content) if content is not None else ""
+                continue
+
+            msg_type = type(msg).__name__
+            if msg_type == "HumanMessage":
+                content = getattr(msg, "content", "") or ""
+                return str(content)
+
+            role = getattr(msg, "type", None)
+            if isinstance(role, str) and role.lower() in {"user", "human"}:
+                content = getattr(msg, "content", "") or ""
+                return str(content)
+        except Exception:
+            continue
+    return ""
+
+
+def _repair_best_effort_json(messages: list, response: Any) -> Any:
+    """If the user provided a JSON schema, populate missing required keys."""
+    try:
+        prompt = _extract_last_user_prompt(messages)
+        if not prompt:
+            return response
+
+        content = getattr(response, "content", None)
+        text = _message_content_to_text(content)
+        if not text:
+            return response
+
+        repaired = repair_json_output_to_required_schema(text, prompt)
+        if not repaired:
+            return response
+
+        # Prefer mutating content to preserve metadata where possible.
+        try:
+            response.content = repaired
+            return response
+        except Exception:
+            pass
+
+        try:
+            from langchain_core.messages import AIMessage
+            return AIMessage(content=repaired)
+        except Exception:
+            return response
+    except Exception:
+        return response
+
 
 def _add_messages(left: list, right: list) -> list:
     """Reducer for messages that handles RemoveMessage objects."""
@@ -3026,6 +3116,7 @@ def create_memory_folding_agent(
             system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
             full_messages = [system_msg] + list(messages)
             response = model.invoke(full_messages)
+            response = _repair_best_effort_json(messages, response)
         else:
             # Prepend system message with summary context
             system_msg = SystemMessage(content=_base_system_prompt(summary))
@@ -3039,6 +3130,7 @@ def create_memory_folding_agent(
                     system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
                     full_messages = [system_msg] + list(messages)
                     response = model.invoke(full_messages)
+                    response = _repair_best_effort_json(messages, response)
 
         out = {"messages": [response]}
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
@@ -3054,6 +3146,7 @@ def create_memory_folding_agent(
         system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
         full_messages = [system_msg] + list(messages)
         response = model.invoke(full_messages)
+        response = _repair_best_effort_json(messages, response)
 
         return {"messages": [response], "stop_reason": "recursion_limit"}
 
@@ -3351,6 +3444,7 @@ def create_standard_agent(
             system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
             full_messages = [system_msg] + list(messages)
             response = model.invoke(full_messages)
+            response = _repair_best_effort_json(messages, response)
         else:
             system_msg = SystemMessage(content=_base_system_prompt())
             full_messages = [system_msg] + list(messages)
@@ -3361,6 +3455,7 @@ def create_standard_agent(
                     system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
                     full_messages = [system_msg] + list(messages)
                     response = model.invoke(full_messages)
+                    response = _repair_best_effort_json(messages, response)
 
         out = {"messages": [response]}
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
@@ -3373,6 +3468,7 @@ def create_standard_agent(
         system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
         full_messages = [system_msg] + list(messages)
         response = model.invoke(full_messages)
+        response = _repair_best_effort_json(messages, response)
         return {"messages": [response], "stop_reason": "recursion_limit"}
 
     def should_continue(state: StandardAgentState) -> str:

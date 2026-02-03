@@ -129,6 +129,73 @@ test_that("research graph stops with stop_reason='recursion_limit' (RemainingSte
   expect_equal(final_state$stop_reason, "recursion_limit")
 })
 
+test_that("best-effort recursion_limit output populates required JSON fields (stubbed)", {
+  python_path <- .skip_if_no_python_langgraph()
+  .skip_if_missing_python_modules_langgraph(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ))
+
+  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  # Stub LLM: returns intentionally incomplete JSON so the recursion-limit
+  # "best effort" path must populate schema-required keys.
+  reticulate::py_run_string(paste0(
+    "class _StubResponse:\n",
+    "    def __init__(self, content):\n",
+    "        self.content = content\n",
+    "        self.tool_calls = None\n",
+    "\n",
+    "class _StubLLM:\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        # Missing: missing, notes; and item is missing birth_year/field/key_contribution.\n",
+    "        return _StubResponse('{\"status\":\"partial\",\"items\":[{\"name\":\"Ada Lovelace\"}]}')\n",
+    "\n",
+    "stub_llm = _StubLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_standard_agent(
+    model = reticulate::py$stub_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  prompt <- paste0(
+    "Produce ONLY valid JSON with this exact schema:\n",
+    "{\n",
+    "  \"status\": \"complete\"|\"partial\",\n",
+    "  \"items\": [\n",
+    "    {\"name\": string, \"birth_year\": integer, \"field\": string, \"key_contribution\": string|null}\n",
+    "  ],\n",
+    "  \"missing\": [string],\n",
+    "  \"notes\": string\n",
+    "}\n"
+  )
+
+  final_state <- agent$invoke(
+    list(messages = list(list(role = "user", content = prompt))),
+    config = list(recursion_limit = as.integer(3))
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+
+  expect_true(is.list(parsed))
+  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+
+  if (is.data.frame(parsed$items)) {
+    expect_true(all(c("name", "birth_year", "field", "key_contribution") %in% names(parsed$items)))
+  }
+})
+
 test_that("standard agent reaches recursion_limit and preserves JSON output (Gemini, best-effort)", {
 
   skip_on_cran()

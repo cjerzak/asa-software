@@ -187,6 +187,296 @@ def parse_llm_json(content: str) -> Any:
     return {}
 
 
+def _tokenize_jsonish_schema(text: str) -> List[Tuple[str, str]]:
+    """Tokenize a JSON-ish schema string.
+
+    This is intentionally tolerant: it supports non-JSON leaf values like
+    `string|null` or `integer`, and only relies on quoted keys.
+    """
+    tokens: List[Tuple[str, str]] = []
+    if not text:
+        return tokens
+
+    i = 0
+    n = len(text)
+    punct = set("{}[]:,")
+
+    while i < n:
+        ch = text[i]
+
+        if ch.isspace():
+            i += 1
+            continue
+
+        if ch in punct:
+            tokens.append((ch, ch))
+            i += 1
+            continue
+
+        if ch == '"':
+            # Parse double-quoted string literal; keep the decoded content only.
+            i += 1
+            buf: List[str] = []
+            escape_next = False
+            while i < n:
+                c = text[i]
+                if escape_next:
+                    buf.append(c)
+                    escape_next = False
+                    i += 1
+                    continue
+                if c == "\\":
+                    escape_next = True
+                    i += 1
+                    continue
+                if c == '"':
+                    break
+                buf.append(c)
+                i += 1
+            tokens.append(("STRING", "".join(buf)))
+            if i < n and text[i] == '"':
+                i += 1
+            continue
+
+        # OTHER token: read until whitespace or punctuation or string start.
+        start = i
+        while i < n and (not text[i].isspace()) and (text[i] not in punct) and (text[i] != '"'):
+            i += 1
+        tokens.append(("OTHER", text[start:i]))
+
+    return tokens
+
+
+def _parse_jsonish_schema(text: str) -> Any:
+    """Parse a JSON-ish schema block into a lightweight schema tree.
+
+    Schema representation:
+      - dict: object keys -> subschema
+      - list: array, with element subschema at index 0 (may be None/leaf)
+      - str: leaf descriptor (e.g., "string|null")
+      - None: unknown leaf
+    """
+    tokens = _tokenize_jsonish_schema(text)
+    if not tokens:
+        return None
+
+    pos = 0
+
+    def peek_type() -> Optional[str]:
+        return tokens[pos][0] if pos < len(tokens) else None
+
+    def consume(expected: Optional[str] = None) -> Optional[Tuple[str, str]]:
+        nonlocal pos
+        if pos >= len(tokens):
+            return None
+        tok = tokens[pos]
+        if expected is not None and tok[0] != expected:
+            return None
+        pos += 1
+        return tok
+
+    def parse_value() -> Any:
+        t = peek_type()
+        if t == "{":
+            return parse_object()
+        if t == "[":
+            return parse_array()
+
+        # Leaf: consume until delimiter so callers don't see leftover tokens like `| null`.
+        parts: List[str] = []
+        while True:
+            t2 = peek_type()
+            if t2 is None or t2 in {",", "}", "]"}:
+                break
+            tok = consume()
+            if tok is None:
+                break
+            parts.append(tok[1])
+        leaf = "".join(parts).strip()
+        return leaf or None
+
+    def parse_object() -> Dict[str, Any]:
+        obj: Dict[str, Any] = {}
+        consume("{")
+        while True:
+            t = peek_type()
+            if t is None:
+                break
+            if t == "}":
+                consume("}")
+                break
+            if t == ",":
+                consume(",")
+                continue
+
+            if t != "STRING":
+                # Skip unexpected tokens for robustness.
+                consume()
+                continue
+
+            key_tok = consume("STRING")
+            if key_tok is None:
+                break
+            key = key_tok[1]
+
+            # Advance to ':' (schema blocks can contain odd tokens).
+            while True:
+                t2 = peek_type()
+                if t2 is None or t2 in {":", ",", "}", "]"}:
+                    break
+                consume()
+            if peek_type() != ":":
+                obj[key] = None
+                continue
+            consume(":")
+
+            obj[key] = parse_value()
+
+        return obj
+
+    def parse_array() -> List[Any]:
+        consume("[")
+
+        # Skip leading commas, if any.
+        while peek_type() == ",":
+            consume(",")
+
+        if peek_type() == "]":
+            consume("]")
+            return [None]
+
+        elem_schema = parse_value()
+
+        # Skip remaining array contents; we only need the element schema.
+        while True:
+            t = peek_type()
+            if t is None:
+                break
+            if t == "]":
+                consume("]")
+                break
+            consume()
+
+        return [elem_schema]
+
+    # Parse the first value in the token stream.
+    return parse_value()
+
+
+def infer_required_json_schema(prompt: str) -> Optional[Any]:
+    """Infer a JSON-ish schema tree from a user's prompt.
+
+    Heuristic: looks for a schema block following anchors like "exact schema"
+    and parses quoted keys into an object/array shape.
+    """
+    if not prompt or not isinstance(prompt, str):
+        return None
+
+    lower = prompt.lower()
+    anchors = [
+        "this exact schema",
+        "exact schema",
+        "json schema",
+        "schema:",
+        "schema",
+    ]
+
+    start_at = None
+    for anchor in anchors:
+        idx = lower.find(anchor)
+        if idx != -1:
+            start_at = idx
+            break
+    if start_at is None:
+        return None
+
+    # Find the first object/array block after the anchor.
+    m = re.search(r"[\{\[]", prompt[start_at:])
+    if not m:
+        return None
+    start = start_at + m.start()
+
+    block = _scan_json_substring(prompt, start)
+    if not block:
+        return None
+
+    schema = _parse_jsonish_schema(block)
+    # Require at least one key to avoid accidentally parsing unrelated braces.
+    if isinstance(schema, dict) and len(schema) == 0:
+        return None
+    return schema
+
+
+def populate_required_fields(data: Any, schema: Any) -> Any:
+    """Populate missing keys in parsed JSON according to a schema tree.
+
+    Adds missing keys with default values:
+      - object -> {}
+      - array -> []
+      - leaf -> None
+    """
+    if schema is None:
+        return data
+
+    if isinstance(schema, dict):
+        if not isinstance(data, dict):
+            return data
+
+        for key, child_schema in schema.items():
+            if key not in data or data.get(key) is None:
+                if isinstance(child_schema, dict):
+                    data[key] = {}
+                elif isinstance(child_schema, list):
+                    data[key] = []
+                else:
+                    data[key] = None
+            else:
+                data[key] = populate_required_fields(data[key], child_schema)
+        return data
+
+    if isinstance(schema, list):
+        if not isinstance(data, list):
+            return data
+        elem_schema = schema[0] if len(schema) > 0 else None
+        if elem_schema is None:
+            return data
+        for i, item in enumerate(data):
+            data[i] = populate_required_fields(item, elem_schema)
+        return data
+
+    # Leaf
+    return data
+
+
+def repair_json_output_to_required_schema(output_text: str, prompt: str) -> Optional[str]:
+    """Repair an LLM JSON output so required schema keys exist.
+
+    Returns repaired JSON text, or None when we can't infer a schema or parse output.
+    """
+    if not output_text or not isinstance(output_text, str):
+        return None
+
+    schema = infer_required_json_schema(prompt)
+    if schema is None:
+        return None
+
+    parsed = parse_llm_json(output_text)
+    if not isinstance(parsed, (dict, list)):
+        return None
+
+    # Only repair when top-level shape matches inferred schema.
+    if isinstance(schema, dict) and not isinstance(parsed, dict):
+        return None
+    if isinstance(schema, list) and not isinstance(parsed, list):
+        return None
+
+    repaired = populate_required_fields(parsed, schema)
+    try:
+        return json.dumps(repaired, ensure_ascii=False)
+    except Exception:
+        return None
+
+
 def parse_date_filters(query: str) -> Tuple[str, Optional[str], Optional[str]]:
     """Extract after:/before: date filters from query string.
 
