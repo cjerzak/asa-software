@@ -2875,7 +2875,11 @@ BrowserDuckDuckGoSearchRun = PatchedDuckDuckGoSearchRun
 from typing import Annotated, TypedDict, Sequence
 from operator import add as operator_add
 from langgraph.managed import RemainingSteps
-from state_utils import remaining_steps_value, repair_json_output_to_required_schema
+from state_utils import (
+    infer_required_json_schema_from_messages,
+    remaining_steps_value,
+    repair_json_output_to_schema,
+)
 
 
 def _base_system_prompt(summary: str = "") -> str:
@@ -3026,11 +3030,10 @@ def _extract_last_user_prompt(messages: list) -> str:
     return ""
 
 
-def _repair_best_effort_json(messages: list, response: Any) -> Any:
-    """If the user provided a JSON schema, populate missing required keys."""
+def _repair_best_effort_json(expected_schema: Any, response: Any, *, fallback_on_failure: bool = False) -> Any:
+    """Populate required keys when an expected schema tree is available."""
     try:
-        prompt = _extract_last_user_prompt(messages)
-        if not prompt:
+        if expected_schema is None:
             return response
 
         content = getattr(response, "content", None)
@@ -3038,7 +3041,11 @@ def _repair_best_effort_json(messages: list, response: Any) -> Any:
         if not text:
             return response
 
-        repaired = repair_json_output_to_required_schema(text, prompt)
+        repaired = repair_json_output_to_schema(
+            text,
+            expected_schema,
+            fallback_on_failure=fallback_on_failure,
+        )
         if not repaired:
             return response
 
@@ -3094,6 +3101,8 @@ class MemoryFoldingAgentState(TypedDict):
     fold_count: int
     stop_reason: Optional[str]
     remaining_steps: RemainingSteps
+    expected_schema: Optional[Any]
+    expected_schema_source: Optional[str]
 
 
 def create_memory_folding_agent(
@@ -3156,6 +3165,14 @@ def create_memory_folding_agent(
         """The main agent reasoning node."""
         messages = state.get("messages", [])
         summary = state.get("summary", "")
+        expected_schema = state.get("expected_schema")
+        expected_schema_source = state.get("expected_schema_source")
+        if expected_schema is None:
+            expected_schema = infer_required_json_schema_from_messages(messages)
+            if expected_schema is not None:
+                expected_schema_source = expected_schema_source or "inferred"
+        elif expected_schema_source is None:
+            expected_schema_source = "explicit"
 
         if debug:
             logger.info(f"Agent node: {len(messages)} messages, summary={bool(summary)}")
@@ -3167,7 +3184,7 @@ def create_memory_folding_agent(
             system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
             full_messages = [system_msg] + list(messages)
             response = model.invoke(full_messages)
-            response = _repair_best_effort_json(messages, response)
+            response = _repair_best_effort_json(expected_schema, response, fallback_on_failure=True)
         else:
             # Prepend system message with summary context
             system_msg = SystemMessage(content=_base_system_prompt(summary))
@@ -3181,9 +3198,20 @@ def create_memory_folding_agent(
                     system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
                     full_messages = [system_msg] + list(messages)
                     response = model.invoke(full_messages)
-                    response = _repair_best_effort_json(messages, response)
+                    response = _repair_best_effort_json(expected_schema, response, fallback_on_failure=True)
 
-        out = {"messages": [response]}
+        # Always repair when an expected schema is present (idempotent).
+        response = _repair_best_effort_json(
+            expected_schema,
+            response,
+            fallback_on_failure=_should_force_finalize(state),
+        )
+
+        out = {
+            "messages": [response],
+            "expected_schema": expected_schema,
+            "expected_schema_source": expected_schema_source,
+        }
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             out["stop_reason"] = "recursion_limit"
         return out
@@ -3193,11 +3221,12 @@ def create_memory_folding_agent(
         messages = state.get("messages", [])
         summary = state.get("summary", "")
         remaining = _remaining_steps(state)
+        expected_schema = state.get("expected_schema")
 
         system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
         full_messages = [system_msg] + list(messages)
         response = model.invoke(full_messages)
-        response = _repair_best_effort_json(messages, response)
+        response = _repair_best_effort_json(expected_schema, response, fallback_on_failure=True)
 
         return {"messages": [response], "stop_reason": "recursion_limit"}
 
@@ -3454,6 +3483,8 @@ class StandardAgentState(TypedDict):
     messages: Annotated[list, _add_messages]
     stop_reason: Optional[str]
     remaining_steps: RemainingSteps
+    expected_schema: Optional[Any]
+    expected_schema_source: Optional[str]
 
 
 def create_standard_agent(
@@ -3487,6 +3518,14 @@ def create_standard_agent(
     def agent_node(state: StandardAgentState) -> dict:
         messages = state.get("messages", [])
         remaining = _remaining_steps(state)
+        expected_schema = state.get("expected_schema")
+        expected_schema_source = state.get("expected_schema_source")
+        if expected_schema is None:
+            expected_schema = infer_required_json_schema_from_messages(messages)
+            if expected_schema is not None:
+                expected_schema_source = expected_schema_source or "inferred"
+        elif expected_schema_source is None:
+            expected_schema_source = "explicit"
 
         if debug:
             logger.info(f"Standard agent node: {len(messages)} messages")
@@ -3495,7 +3534,7 @@ def create_standard_agent(
             system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
             full_messages = [system_msg] + list(messages)
             response = model.invoke(full_messages)
-            response = _repair_best_effort_json(messages, response)
+            response = _repair_best_effort_json(expected_schema, response, fallback_on_failure=True)
         else:
             system_msg = SystemMessage(content=_base_system_prompt())
             full_messages = [system_msg] + list(messages)
@@ -3506,9 +3545,20 @@ def create_standard_agent(
                     system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
                     full_messages = [system_msg] + list(messages)
                     response = model.invoke(full_messages)
-                    response = _repair_best_effort_json(messages, response)
+                    response = _repair_best_effort_json(expected_schema, response, fallback_on_failure=True)
 
-        out = {"messages": [response]}
+        # Always repair when an expected schema is present (idempotent).
+        response = _repair_best_effort_json(
+            expected_schema,
+            response,
+            fallback_on_failure=_should_force_finalize(state),
+        )
+
+        out = {
+            "messages": [response],
+            "expected_schema": expected_schema,
+            "expected_schema_source": expected_schema_source,
+        }
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             out["stop_reason"] = "recursion_limit"
         return out
@@ -3516,10 +3566,11 @@ def create_standard_agent(
     def finalize_answer(state: StandardAgentState) -> dict:
         messages = state.get("messages", [])
         remaining = _remaining_steps(state)
+        expected_schema = state.get("expected_schema")
         system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
         full_messages = [system_msg] + list(messages)
         response = model.invoke(full_messages)
-        response = _repair_best_effort_json(messages, response)
+        response = _repair_best_effort_json(expected_schema, response, fallback_on_failure=True)
         return {"messages": [response], "stop_reason": "recursion_limit"}
 
     def should_continue(state: StandardAgentState) -> str:

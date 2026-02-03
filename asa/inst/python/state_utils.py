@@ -363,41 +363,44 @@ def _parse_jsonish_schema(text: str) -> Any:
     return parse_value()
 
 
-def infer_required_json_schema(prompt: str) -> Optional[Any]:
-    """Infer a JSON-ish schema tree from a user's prompt.
+def infer_required_json_schema(text: str) -> Optional[Any]:
+    """Infer a JSON-ish schema tree from free text.
 
     Heuristic: looks for a schema block following anchors like "exact schema"
     and parses quoted keys into an object/array shape.
     """
-    if not prompt or not isinstance(prompt, str):
+    if not text or not isinstance(text, str):
         return None
 
-    lower = prompt.lower()
-    anchors = [
-        "this exact schema",
-        "exact schema",
-        "json schema",
-        "schema:",
-        "schema",
-    ]
-
-    start_at = None
-    for anchor in anchors:
-        idx = lower.find(anchor)
-        if idx != -1:
-            start_at = idx
-            break
-    if start_at is None:
+    # Prefer explicit anchors; avoid generic "schema" which is too noisy.
+    anchor_re = re.compile(
+        r"(this exact schema|exact schema|json schema|schema\\s*:)",
+        re.IGNORECASE,
+    )
+    matches = list(anchor_re.finditer(text))
+    if not matches:
         return None
+
+    # Choose the most recent/last anchor in the text.
+    start_at = matches[-1].start()
+
+    # Bound scanning to reduce exposure to huge or adversarial blocks.
+    MAX_SCAN_CHARS = 20000
+    tail = text[start_at:start_at + MAX_SCAN_CHARS]
 
     # Find the first object/array block after the anchor.
-    m = re.search(r"[\{\[]", prompt[start_at:])
+    m = re.search(r"[\{\[]", tail)
     if not m:
         return None
-    start = start_at + m.start()
+    start = m.start()
 
-    block = _scan_json_substring(prompt, start)
+    block = _scan_json_substring(tail, start)
     if not block:
+        return None
+
+    # Avoid pathological parsing work.
+    MAX_SCHEMA_BLOCK_CHARS = 20000
+    if len(block) > MAX_SCHEMA_BLOCK_CHARS:
         return None
 
     schema = _parse_jsonish_schema(block)
@@ -405,6 +408,115 @@ def infer_required_json_schema(prompt: str) -> Optional[Any]:
     if isinstance(schema, dict) and len(schema) == 0:
         return None
     return schema
+
+
+def _message_role(msg: Any) -> str:
+    """Best-effort extraction of message role."""
+    try:
+        if isinstance(msg, dict):
+            role = msg.get("role") or msg.get("type") or ""
+            return str(role).lower()
+        role = getattr(msg, "type", None)
+        if isinstance(role, str):
+            return role.lower()
+    except Exception:
+        pass
+
+    try:
+        return type(msg).__name__.lower()
+    except Exception:
+        return ""
+
+
+def _message_content(msg: Any) -> str:
+    """Best-effort extraction of message content as text."""
+    try:
+        if isinstance(msg, dict):
+            content = msg.get("content", "")
+            if content is None:
+                return ""
+            return str(content)
+    except Exception:
+        pass
+
+    try:
+        content = getattr(msg, "content", "")
+        if content is None:
+            return ""
+        return str(content)
+    except Exception:
+        return ""
+
+
+def infer_required_json_schema_from_messages(messages: Any) -> Optional[Any]:
+    """Infer required JSON schema from a conversation message list.
+
+    Only considers user/system/developer content (skips tool outputs).
+    """
+    if not messages:
+        return None
+
+    parts: List[str] = []
+    # Cap total scanned text to avoid adversarial prompts/tool outputs.
+    MAX_TOTAL_CHARS = 50000
+    total = 0
+
+    for msg in messages:
+        role = _message_role(msg)
+        if role in {"tool", "toolmessage", "function", "functionmessage"}:
+            continue
+
+        # Keep only user/system/dev messages for schema discovery.
+        if role not in {"user", "human", "system", "developer"}:
+            continue
+
+        text = _message_content(msg)
+        if not text:
+            continue
+        if len(text) > 20000:
+            text = text[:20000]
+        parts.append(text)
+        total += len(text)
+        if total >= MAX_TOTAL_CHARS:
+            break
+
+    return infer_required_json_schema("\n\n".join(parts))
+
+
+def _default_leaf_value(descriptor: Any, key: Optional[str] = None) -> Any:
+    """Default value for an unknown scalar leaf.
+
+    Policy (best-effort):
+    - If null is allowed: use None
+    - If it's a string and null is disallowed: use "" (empty string)
+    - If it's an enum like complete|partial: prefer "partial" when available
+    - Otherwise: use None
+    """
+    if not isinstance(descriptor, str):
+        return None
+
+    lower = descriptor.lower().strip()
+    if "null" in lower:
+        return None
+
+    # Prefer "partial" for common status enums when available.
+    if key == "status" and "partial" in lower:
+        return "partial"
+
+    if "|" in descriptor:
+        parts = [p.strip() for p in descriptor.split("|") if p.strip()]
+        type_words = {"string", "integer", "number", "boolean", "null", "object", "array"}
+        if parts and not any(p.lower() in type_words for p in parts):
+            # Enum of literals (e.g., complete|partial).
+            for p in parts:
+                if p.lower() == "partial":
+                    return p
+            return parts[0]
+
+    if "string" in lower:
+        return ""
+
+    return None
 
 
 def populate_required_fields(data: Any, schema: Any) -> Any:
@@ -425,11 +537,12 @@ def populate_required_fields(data: Any, schema: Any) -> Any:
         for key, child_schema in schema.items():
             if key not in data or data.get(key) is None:
                 if isinstance(child_schema, dict):
-                    data[key] = {}
+                    data[key] = populate_required_fields({}, child_schema)
                 elif isinstance(child_schema, list):
+                    # Do not create placeholder elements; keep arrays empty by default.
                     data[key] = []
                 else:
-                    data[key] = None
+                    data[key] = _default_leaf_value(child_schema, key=key)
             else:
                 data[key] = populate_required_fields(data[key], child_schema)
         return data
@@ -448,26 +561,35 @@ def populate_required_fields(data: Any, schema: Any) -> Any:
     return data
 
 
-def repair_json_output_to_required_schema(output_text: str, prompt: str) -> Optional[str]:
+def repair_json_output_to_schema(
+    output_text: str,
+    schema: Any,
+    *,
+    fallback_on_failure: bool = False,
+) -> Optional[str]:
     """Repair an LLM JSON output so required schema keys exist.
 
-    Returns repaired JSON text, or None when we can't infer a schema or parse output.
+    When fallback_on_failure is True, returns a deterministic best-effort JSON
+    output matching the schema's top-level shape even when parsing fails.
     """
     if not output_text or not isinstance(output_text, str):
         return None
-
-    schema = infer_required_json_schema(prompt)
     if schema is None:
         return None
 
     parsed = parse_llm_json(output_text)
-    if not isinstance(parsed, (dict, list)):
-        return None
 
-    # Only repair when top-level shape matches inferred schema.
-    if isinstance(schema, dict) and not isinstance(parsed, dict):
-        return None
-    if isinstance(schema, list) and not isinstance(parsed, list):
+    if isinstance(schema, dict):
+        if not isinstance(parsed, dict):
+            if not fallback_on_failure:
+                return None
+            parsed = {}
+    elif isinstance(schema, list):
+        if not isinstance(parsed, list):
+            if not fallback_on_failure:
+                return None
+            parsed = []
+    else:
         return None
 
     repaired = populate_required_fields(parsed, schema)
@@ -475,6 +597,14 @@ def repair_json_output_to_required_schema(output_text: str, prompt: str) -> Opti
         return json.dumps(repaired, ensure_ascii=False)
     except Exception:
         return None
+
+
+def repair_json_output_to_required_schema(output_text: str, prompt: str) -> Optional[str]:
+    """Back-compat wrapper: infer schema from prompt then repair output."""
+    schema = infer_required_json_schema(prompt)
+    if schema is None:
+        return None
+    return repair_json_output_to_schema(output_text, schema, fallback_on_failure=False)
 
 
 def parse_date_filters(query: str) -> Tuple[str, Optional[str], Optional[str]]:
