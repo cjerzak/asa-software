@@ -239,10 +239,32 @@
 
 #' Build Trace from Raw Response
 #' @keywords internal
+.strip_trace_noise <- function(x) {
+  tryCatch({
+    if (!is.list(x)) {
+      return(x)
+    }
+    nm <- names(x)
+    if (!is.null(nm)) {
+      drop <- nm %in% c("__gemini_function_call_thought_signatures__")
+      if (any(drop)) {
+        x <- x[!drop]
+        nm <- names(x)
+      }
+    }
+    x <- lapply(x, .strip_trace_noise)
+    if (!is.null(nm)) {
+      names(x) <- nm
+    }
+    x
+  }, error = function(e) x)
+}
+
 .build_trace <- function(raw_response) {
   tryCatch({
+    cleaned <- .strip_trace_noise(raw_response)
     paste(
-      lapply(unlist(raw_response), function(l) capture.output(l)),
+      lapply(unlist(cleaned), function(l) capture.output(l)),
       collapse = "\n\n"
     )
   }, error = function(e) {

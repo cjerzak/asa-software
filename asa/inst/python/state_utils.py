@@ -8,6 +8,38 @@ import re
 from typing import Any, Dict, List, Optional, Tuple
 
 
+def remaining_steps_value(state: Any) -> Optional[int]:
+    """Safely extract remaining_steps from LangGraph state.
+
+    Returns an int when available, otherwise None.
+    """
+    val = None
+    try:
+        if isinstance(state, dict):
+            val = state.get("remaining_steps")
+        else:
+            val = getattr(state, "remaining_steps", None)
+    except Exception:
+        val = None
+
+    if val is None:
+        return None
+
+    try:
+        return int(val)
+    except Exception:
+        try:
+            return int(getattr(val, "value"))
+        except Exception:
+            return None
+
+
+def should_stop_for_recursion(state: Any, buffer: int = 1) -> bool:
+    """Return True when RemainingSteps is at/under buffer."""
+    remaining = remaining_steps_value(state)
+    return remaining is not None and remaining <= buffer
+
+
 def add_to_list(existing: List, new: List) -> List:
     """Reducer for appending lists (LangGraph state annotation).
 

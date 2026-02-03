@@ -550,8 +550,8 @@ initialize_agent <- function(backend = NULL,
       debug = FALSE
     )
   } else {
-    # Use standard prebuilt ReAct agent
-    agent <- asa_env$langgraph$prebuilt$create_react_agent(
+    # Use standard ReAct agent with RemainingSteps guard
+    agent <- asa_env$custom_ddg$create_standard_agent(
       model = llm,
       tools = tools,
       checkpointer = asa_env$MemorySaver(),

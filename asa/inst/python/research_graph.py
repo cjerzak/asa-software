@@ -23,7 +23,12 @@ from langgraph.graph.message import add_messages
 from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import ToolNode
 
-from state_utils import add_to_list, merge_dicts, parse_llm_json
+from state_utils import (
+    add_to_list,
+    merge_dicts,
+    parse_llm_json,
+    should_stop_for_recursion,
+)
 from wikidata_tool import query_known_entity
 
 # Optional strict temporal verification (local module)
@@ -291,13 +296,9 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         """Execute search based on plan."""
         # If this is the last allowed step, stop before doing any more work. Otherwise
         # we can still run search->dedupe and let dedupe mark completion on the last step.
-        remaining = state.get("remaining_steps")
-        try:
-            # Buffer by 1 step to avoid attempting to route to a node we can't execute.
-            if remaining is not None and int(remaining) <= 1:
-                return {"status": "complete", "stop_reason": "recursion_limit"}
-        except Exception:
-            pass
+        # Buffer by 1 step to avoid attempting to route to a node we can't execute.
+        if should_stop_for_recursion(state, buffer=1):
+            return {"status": "complete", "stop_reason": "recursion_limit"}
 
         wikidata_type = state.get("wikidata_type")
         query = state.get("query", "")
@@ -576,13 +577,8 @@ def create_deduper_node():
     def deduper_node(state: ResearchState) -> Dict:
         """Deduplicate results."""
         # If this is the last allowed step, still dedupe, but mark complete so the graph can END.
-        force_stop = False
-        remaining = state.get("remaining_steps")
-        try:
-            # Buffer by 1 step to avoid routing to stopper when we can't execute it.
-            force_stop = (remaining is not None and int(remaining) <= 1)
-        except Exception:
-            force_stop = False
+        # Buffer by 1 step to avoid routing to stopper when we can't execute it.
+        force_stop = should_stop_for_recursion(state, buffer=1)
 
         results = state.get("new_results")
         if results is None:
@@ -638,8 +634,6 @@ def create_stopper_node(config: ResearchConfig):
 
     def stopper_node(state: ResearchState) -> Dict:
         """Evaluate if we should stop."""
-        remaining = state.get("remaining_steps")
-
         round_num = state.get("round_number", 0)
         queries = state.get("queries_used", 0)
         tokens = state.get("tokens_used", 0)
@@ -672,11 +666,8 @@ def create_stopper_node(config: ResearchConfig):
                     return {"status": "complete", "stop_reason": "novelty_plateau"}
 
         # Stop before LangGraph raises GraphRecursionError.
-        try:
-            if remaining is not None and int(remaining) <= 1:
-                return {"status": "complete", "stop_reason": "recursion_limit"}
-        except Exception:
-            pass
+        if should_stop_for_recursion(state, buffer=1):
+            return {"status": "complete", "stop_reason": "recursion_limit"}
 
         return {"status": "searching"}
 
@@ -693,12 +684,8 @@ def should_continue(state: ResearchState) -> str:
         return "end"
     # Stop before LangGraph raises GraphRecursionError. Use a small buffer to be
     # robust across LangGraph versions / semantics for RemainingSteps.
-    remaining = state.get("remaining_steps")
-    try:
-        if remaining is not None and int(remaining) <= 1:
-            return "end"
-    except Exception:
-        pass
+    if should_stop_for_recursion(state, buffer=1):
+        return "end"
     if status == "searching":
         return "search"
     return "end"
