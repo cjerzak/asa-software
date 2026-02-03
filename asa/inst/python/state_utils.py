@@ -15,9 +15,18 @@ def remaining_steps_value(state: Any) -> Optional[int]:
     """
     val = None
     try:
-        if isinstance(state, dict):
+        # Try dict-like access first (works for dict, AddableValuesDict, etc.)
+        # Use duck-typing instead of isinstance(dict) for broader compatibility
+        if hasattr(state, "get"):
             val = state.get("remaining_steps")
-        else:
+        elif hasattr(state, "__getitem__"):
+            try:
+                val = state["remaining_steps"]
+            except (KeyError, TypeError):
+                val = None
+
+        # Fallback to attribute access
+        if val is None:
             val = getattr(state, "remaining_steps", None)
     except Exception:
         val = None

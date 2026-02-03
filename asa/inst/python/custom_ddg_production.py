@@ -3218,9 +3218,8 @@ def create_memory_folding_agent(
             logger.info(f"Agent node: {len(messages)} messages, summary={bool(summary)}")
 
         remaining = _remaining_steps(state)
-        # If there are no steps left after this node, we must not emit tool_calls
-        # (we wouldn't have budget to execute them).
-        if remaining is not None and remaining <= 1:
+        # When near the recursion limit, use final mode to avoid empty/tool-ish responses
+        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
             full_messages = [system_msg] + list(messages)
             response = model.invoke(full_messages)
@@ -3229,14 +3228,6 @@ def create_memory_folding_agent(
             system_msg = SystemMessage(content=_base_system_prompt(summary))
             full_messages = [system_msg] + list(messages)
             response = model_with_tools.invoke(full_messages)
-            # If we're too close to the step limit and the model asked for tools,
-            # re-run without tools to produce a final answer instead.
-            if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
-                tool_calls = getattr(response, "tool_calls", None)
-                if tool_calls:
-                    system_msg = SystemMessage(content=_final_system_prompt(summary, remaining=remaining))
-                    full_messages = [system_msg] + list(messages)
-                    response = model.invoke(full_messages)
 
         force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
         response, repair_event = _repair_best_effort_json(
@@ -3591,7 +3582,8 @@ def create_standard_agent(
         if debug:
             logger.info(f"Standard agent node: {len(messages)} messages")
 
-        if remaining is not None and remaining <= 1:
+        # When near the recursion limit, use final mode to avoid empty/tool-ish responses
+        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
             full_messages = [system_msg] + list(messages)
             response = model.invoke(full_messages)
@@ -3599,12 +3591,7 @@ def create_standard_agent(
             system_msg = SystemMessage(content=_base_system_prompt())
             full_messages = [system_msg] + list(messages)
             response = model_with_tools.invoke(full_messages)
-            if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
-                tool_calls = getattr(response, "tool_calls", None)
-                if tool_calls:
-                    system_msg = SystemMessage(content=_final_system_prompt(remaining=remaining))
-                    full_messages = [system_msg] + list(messages)
-                    response = model.invoke(full_messages)
+
         force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
         response, repair_event = _repair_best_effort_json(
             expected_schema,

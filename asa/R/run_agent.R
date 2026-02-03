@@ -231,7 +231,14 @@
       # If still no content, return a meaningful message based on stop_reason
       if (length(text_parts) == 0) {
         stop_reason <- tryCatch(raw_response$stop_reason, error = function(e) NULL)
-        if (!is.null(stop_reason) && stop_reason == "recursion_limit") {
+        error_msg <- tryCatch(as.character(raw_response$error), error = function(e) "")
+
+        # Detect recursion limit from stop_reason OR error message
+        is_recursion_limit <- (!is.null(stop_reason) && stop_reason == "recursion_limit") ||
+                              grepl("recursion", error_msg, ignore.case = TRUE) ||
+                              grepl("GraphRecursionError", error_msg, ignore.case = TRUE)
+
+        if (is_recursion_limit) {
           return("[Agent reached step limit before completing task. Increase recursion_limit or simplify the task.]")
         }
         return(NA_character_)
