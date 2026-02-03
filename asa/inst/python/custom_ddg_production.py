@@ -3255,8 +3255,8 @@ def create_memory_folding_agent(
         }
         if repair_event:
             out["json_repair"] = [repair_event]
-        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
-            out["stop_reason"] = "recursion_limit"
+        # REMOVED: Do not set stop_reason here - let finalize_answer handle it
+        # This prevents short-circuiting in should_continue before finalize runs
         return out
 
     def finalize_answer(state: MemoryFoldingAgentState) -> dict:
@@ -3401,6 +3401,11 @@ def create_memory_folding_agent(
         if not messages:
             return "end"
 
+        # FIX: Check force_finalize BEFORE checking stop_reason
+        # This ensures we route through finalize even if agent_node set the flag
+        if _should_force_finalize(state):
+            return "finalize"
+
         if state.get("stop_reason") == "recursion_limit":
             return "end"
 
@@ -3414,9 +3419,6 @@ def create_memory_folding_agent(
 
         # Check if agent wants to use tools - if so, DON'T fold yet
         tool_calls = getattr(last_message, 'tool_calls', None)
-        if _should_force_finalize(state):
-            # Always route through finalize to ensure stop_reason is set
-            return "finalize"
         if tool_calls:
             return "tools"
 
@@ -3466,13 +3468,14 @@ def create_memory_folding_agent(
         if remaining is not None and remaining <= 0:
             return "finalize"
 
+        # FIX: Unconditionally route to finalize when near recursion limit
+        # This ensures stop_reason is always set via the finalize node
+        if _should_force_finalize(state):
+            return "finalize"
+
         last_message = messages[-1]
         last_type = type(last_message).__name__
         tool_calls = getattr(last_message, "tool_calls", None)
-        if _should_force_finalize(state):
-            if last_type == "ToolMessage" or tool_calls:
-                return "finalize"
-            return "end"
 
         # If the last message was a tool response or an AI turn requesting tools,
         # we need another agent step to continue the chain.
@@ -3615,8 +3618,8 @@ def create_standard_agent(
         out = {"messages": [response], "expected_schema": expected_schema, "expected_schema_source": expected_schema_source}
         if repair_event:
             out["json_repair"] = [repair_event]
-        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
-            out["stop_reason"] = "recursion_limit"
+        # REMOVED: Do not set stop_reason here - let finalize_answer handle it
+        # This prevents short-circuiting in should_continue before finalize runs
         return out
 
     def finalize_answer(state: StandardAgentState) -> dict:
@@ -3645,6 +3648,11 @@ def create_standard_agent(
         if not messages:
             return "end"
 
+        # FIX: Check force_finalize BEFORE checking stop_reason
+        # This ensures we route through finalize even if agent_node set the flag
+        if _should_force_finalize(state):
+            return "finalize"
+
         if state.get("stop_reason") == "recursion_limit":
             return "end"
 
@@ -3655,10 +3663,6 @@ def create_standard_agent(
         last_message = messages[-1]
         last_type = type(last_message).__name__
         tool_calls = getattr(last_message, "tool_calls", None)
-
-        if _should_force_finalize(state):
-            # Always route through finalize to ensure stop_reason is set
-            return "finalize"
 
         if tool_calls:
             return "tools"
