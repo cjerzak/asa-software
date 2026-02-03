@@ -354,6 +354,46 @@ def _with_ddgs(
             sleep *= backoff
 
 
+def _normalize_optional_str(value: Any) -> str | None:
+    if value is None:
+        return None
+    try:
+        text = str(value).strip()
+    except Exception:
+        return None
+    if not text:
+        return None
+    if text.lower() in {"none", "null", "na", "nan"}:
+        return None
+    return text
+
+
+def _build_ddgs_kwargs(
+    *,
+    max_results: int,
+    region: Any = None,
+    safesearch: Any = None,
+    timelimit: Any = None,
+) -> Dict[str, Any]:
+    """Build ddgs kwargs without overriding its defaults with None.
+
+    Newer ddgs versions accept arbitrary kwargs, but several engines assume
+    region/safesearch are strings and will call `.lower()`/`.split()` on them.
+    Passing `None` overrides ddgs defaults and can trigger AttributeError.
+    """
+    kwargs: Dict[str, Any] = {"max_results": max_results}
+    region_norm = _normalize_optional_str(region)
+    if region_norm is not None:
+        kwargs["region"] = region_norm
+    safesearch_norm = _normalize_optional_str(safesearch)
+    if safesearch_norm is not None:
+        kwargs["safesearch"] = safesearch_norm
+    timelimit_norm = _normalize_optional_str(timelimit)
+    if timelimit_norm is not None:
+        kwargs["timelimit"] = timelimit_norm
+    return kwargs
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Helper tier 1 – real browser (Selenium)
 # ────────────────────────────────────────────────────────────────────────
@@ -2713,16 +2753,19 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         # Tier 2 – ddgs HTTP API
         logger.debug("Trying DDGS tier...")
         try:
+            ddgs_kwargs = _build_ddgs_kwargs(
+                max_results=max_results,
+                region=self.region,
+                safesearch=self.safesearch,
+                timelimit=self.time,
+            )
             ddgs_results = _with_ddgs(
                 self.proxy,
                 self.headers,
                 lambda d: list(
                     d.text(
                         query,
-                        max_results=max_results,
-                        region=self.region,
-                        safesearch=self.safesearch,
-                        timelimit=self.time,
+                        **ddgs_kwargs,
                     )
                 ),
             )
@@ -2752,46 +2795,55 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         return self._search_text(query, kw.get("max_results", self.k))
 
     def _ddgs_images(self, query: str, **kw):
+        ddgs_kwargs = _build_ddgs_kwargs(
+            max_results=kw.get("max_results", self.k),
+            region=self.region,
+            safesearch=self.safesearch,
+            timelimit=self.time,
+        )
         return _with_ddgs(
             self.proxy,
             self.headers,
             lambda d: list(
                 d.images(
                     query,
-                    max_results=kw.get("max_results", self.k),
-                    region=self.region,
-                    safesearch=self.safesearch,
-                    timelimit=self.time,
+                    **ddgs_kwargs,
                 )
             ),
         )
 
     def _ddgs_videos(self, query: str, **kw):
+        ddgs_kwargs = _build_ddgs_kwargs(
+            max_results=kw.get("max_results", self.k),
+            region=self.region,
+            safesearch=self.safesearch,
+            timelimit=self.time,
+        )
         return _with_ddgs(
             self.proxy,
             self.headers,
             lambda d: list(
                 d.videos(
                     query,
-                    max_results=kw.get("max_results", self.k),
-                    region=self.region,
-                    safesearch=self.safesearch,
-                    timelimit=self.time,
+                    **ddgs_kwargs,
                 )
             ),
         )
 
     def _ddgs_news(self, query: str, **kw):
+        ddgs_kwargs = _build_ddgs_kwargs(
+            max_results=kw.get("max_results", self.k),
+            region=self.region,
+            safesearch=self.safesearch,
+            timelimit=self.time,
+        )
         return _with_ddgs(
             self.proxy,
             self.headers,
             lambda d: list(
                 d.news(
                     query,
-                    max_results=kw.get("max_results", self.k),
-                    region=self.region,
-                    safesearch=self.safesearch,
-                    timelimit=self.time,
+                    **ddgs_kwargs,
                 )
             ),
         )

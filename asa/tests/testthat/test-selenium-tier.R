@@ -113,11 +113,14 @@ class _StubDDGS:
         return self
     def __exit__(self, exc_type, exc, tb):
         return False
-    def text(self, query, max_results=None, region=None, safesearch=None, timelimit=None):
+    def text(self, query, max_results=None, region='__region_default__', safesearch='__safesearch_default__', timelimit='__timelimit_default__'):
         return [{
             'title': 'Example',
             'href': 'https://example.com',
-            'body': 'Stub snippet'
+            'body': 'Stub snippet',
+            'region': region,
+            'safesearch': safesearch,
+            'timelimit': timelimit
         }]
 "
   )
@@ -317,4 +320,7 @@ test_that("DDGS tier returns stubbed results when PRIMP is empty", {
   expect_true(is.list(res) && length(res) >= 1)
   expect_equal(res[[1]][["_tier"]], "ddgs")
   expect_equal(res[[1]][["title"]], "Example")
+  expect_equal(res[[1]][["region"]], "__region_default__")
+  expect_equal(res[[1]][["safesearch"]], "__safesearch_default__")
+  expect_equal(res[[1]][["timelimit"]], "__timelimit_default__")
 })
