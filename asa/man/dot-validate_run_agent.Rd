@@ -4,7 +4,14 @@
 \alias{.validate_run_agent}
 \title{Validate run_agent() Parameters}
 \usage{
-.validate_run_agent(prompt, agent, recursion_limit, verbose, thread_id = NULL, expected_schema = NULL)
+.validate_run_agent(
+  prompt,
+  agent,
+  recursion_limit,
+  verbose,
+  thread_id = NULL,
+  expected_schema = NULL
+)
 }
 \description{
 Validate run_agent() Parameters

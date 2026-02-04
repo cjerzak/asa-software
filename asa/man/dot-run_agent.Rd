@@ -8,6 +8,7 @@
   prompt,
   agent = NULL,
   recursion_limit = NULL,
+  expected_schema = NULL,
   thread_id = NULL,
   verbose = FALSE
 )
