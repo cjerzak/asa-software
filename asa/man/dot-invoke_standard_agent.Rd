@@ -4,7 +4,7 @@
 \alias{.invoke_standard_agent}
 \title{Invoke Standard Agent}
 \usage{
-.invoke_standard_agent(python_agent, prompt, recursion_limit, thread_id = NULL)
+.invoke_standard_agent(python_agent, prompt, recursion_limit, expected_schema = NULL, thread_id = NULL)
 }
 \description{
 Invoke Standard Agent

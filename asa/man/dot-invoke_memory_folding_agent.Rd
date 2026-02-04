@@ -8,6 +8,7 @@
   python_agent,
   prompt,
   recursion_limit,
+  expected_schema = NULL,
   thread_id = NULL
 )
 }

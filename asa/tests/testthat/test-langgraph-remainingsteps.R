@@ -438,3 +438,81 @@ test_that("standard agent reaches recursion_limit and preserves JSON output (Gem
     expect_true(any(parsed$items$name %in% c("Ada Lovelace", "Alan Turing", "Grace Hopper")))
   }
 })
+
+test_that("run_task passes expected_schema into LangGraph state (explicit schema)", {
+  python_path <- .skip_if_no_python_langgraph()
+  .skip_if_missing_python_modules_langgraph(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ))
+
+  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  # Stub LLM: returns incomplete JSON; run_task(expected_schema=...) should
+  # trigger best-effort repair even without prompt-based schema inference.
+  reticulate::py_run_string(paste0(
+    "class _StubResponse:\n",
+    "    def __init__(self, content):\n",
+    "        self.content = content\n",
+    "        self.tool_calls = None\n",
+    "\n",
+    "class _StubLLM:\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        return _StubResponse('{\"status\":\"partial\",\"items\":[{\"name\":\"Ada\"}]}')\n",
+    "\n",
+    "stub_llm = _StubLLM()\n"
+  ))
+
+  python_agent <- custom_ddg$create_standard_agent(
+    model = reticulate::py$stub_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  agent <- asa::asa_agent(
+    python_agent = python_agent,
+    backend = "gemini",
+    model = "stub",
+    config = list(use_memory_folding = FALSE, backend = "gemini")
+  )
+
+  expected_schema <- list(
+    status = "complete|partial",
+    items = list(list(
+      name = "string",
+      birth_year = "integer"
+    )),
+    missing = list("string"),
+    notes = "string"
+  )
+
+  result <- asa::run_task(
+    prompt = "Return JSON only.",
+    output_format = "raw",
+    agent = agent,
+    expected_schema = expected_schema,
+    recursion_limit = 50L,
+    verbose = FALSE
+  )
+
+  expect_true(is.list(result$raw_response))
+  expect_equal(result$raw_response$expected_schema_source, "explicit")
+
+  response_text <- result$message
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+
+  if (is.data.frame(parsed$items)) {
+    expect_true(all(c("name", "birth_year") %in% names(parsed$items)))
+  }
+
+  expect_true(is.list(result$raw_response$json_repair))
+  expect_true(length(result$raw_response$json_repair) >= 1)
+})

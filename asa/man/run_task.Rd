@@ -11,6 +11,7 @@ run_task(
   config = NULL,
   agent = NULL,
   expected_fields = NULL,
+  expected_schema = NULL,
   thread_id = NULL,
   verbose = FALSE,
   allow_read_webpages = NULL,
@@ -51,6 +52,13 @@ NULL to use the currently initialized agent}
 JSON output. When provided, validates that all fields are present and
 non-null. The result will include a \code{parsing_status} field with
 validation details.}
+
+\item{expected_schema}{Optional JSON schema tree used for best-effort repair
+when the agent output is missing required keys (especially when
+\code{recursion_limit} is reached). This should be a nested list describing
+the required JSON object/array shape, following the conventions used in
+\code{asa/tests/testthat/test-langgraph-remainingsteps.R}. When provided,
+this bypasses prompt-based schema inference.}
 
 \item{thread_id}{Optional stable identifier for memory folding sessions.
 When provided, the same thread ID is reused so folded summaries persist

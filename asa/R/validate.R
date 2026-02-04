@@ -399,6 +399,7 @@
 #' Validate run_task() Parameters
 #' @keywords internal
 .validate_run_task <- function(prompt, output_format, agent, verbose, thread_id = NULL,
+                               expected_schema = NULL,
                                recursion_limit = NULL,
                                allow_read_webpages = NULL,
                                webpage_relevance_mode = NULL,
@@ -431,6 +432,32 @@
   # thread_id: NULL or single string (opt-in stable sessions)
   if (!is.null(thread_id)) {
     .validate_string(thread_id, "thread_id")
+  }
+
+  # expected_schema: NULL, nested list, or Python object (dict/list)
+  if (!is.null(expected_schema)) {
+    is_py <- FALSE
+    try({
+      is_py <- reticulate::is_py_object(expected_schema)
+    }, silent = TRUE)
+
+    is_list_schema <- is.list(expected_schema) && !is.data.frame(expected_schema)
+    if (!is_py && !is_list_schema) {
+      .stop_validation(
+        "expected_schema",
+        "be a nested list (or Python dict/list) describing the required JSON shape",
+        actual = expected_schema,
+        fix = "Pass a nested list schema (e.g., list(status=\"complete|partial\", items=list(list(name=\"string\")))) or set expected_schema = NULL"
+      )
+    }
+    if (is_list_schema && length(expected_schema) == 0) {
+      .stop_validation(
+        "expected_schema",
+        "not be an empty list",
+        actual = expected_schema,
+        fix = "Provide at least one key/element in the schema, or set expected_schema = NULL"
+      )
+    }
   }
 
   if (!is.null(recursion_limit)) {
@@ -518,7 +545,7 @@
 
 #' Validate run_agent() Parameters
 #' @keywords internal
-.validate_run_agent <- function(prompt, agent, recursion_limit, verbose, thread_id = NULL) {
+.validate_run_agent <- function(prompt, agent, recursion_limit, verbose, thread_id = NULL, expected_schema = NULL) {
   .validate_string(prompt, "prompt")
 
   if (!is.null(agent)) {
@@ -528,6 +555,23 @@
   if (!is.null(recursion_limit)) {
     .validate_positive(recursion_limit, "recursion_limit", integer_only = TRUE)
     .validate_range(recursion_limit, "recursion_limit", min = 1, max = 500)
+  }
+
+  if (!is.null(expected_schema)) {
+    is_py <- FALSE
+    try({
+      is_py <- reticulate::is_py_object(expected_schema)
+    }, silent = TRUE)
+
+    is_list_schema <- is.list(expected_schema) && !is.data.frame(expected_schema)
+    if (!is_py && !is_list_schema) {
+      .stop_validation(
+        "expected_schema",
+        "be a nested list (or Python dict/list) describing the required JSON shape",
+        actual = expected_schema,
+        fix = "Pass a nested list schema or set expected_schema = NULL"
+      )
+    }
   }
 
   .validate_logical(verbose, "verbose")

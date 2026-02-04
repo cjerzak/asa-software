@@ -14,6 +14,7 @@
 .run_agent <- function(prompt,
                        agent = NULL,
                        recursion_limit = NULL,
+                       expected_schema = NULL,
                        thread_id = NULL,
                        verbose = FALSE) {
 
@@ -22,6 +23,7 @@
     prompt = prompt,
     agent = agent,
     recursion_limit = recursion_limit,
+    expected_schema = expected_schema,
     verbose = verbose,
     thread_id = thread_id
   )
@@ -54,9 +56,9 @@
   # Build initial state and invoke agent
   raw_response <- tryCatch({
     if (use_memory_folding) {
-      .invoke_memory_folding_agent(agent$python_agent, prompt, recursion_limit, thread_id)
+      .invoke_memory_folding_agent(agent$python_agent, prompt, recursion_limit, expected_schema, thread_id)
     } else {
-      .invoke_standard_agent(agent$python_agent, prompt, recursion_limit, thread_id)
+      .invoke_standard_agent(agent$python_agent, prompt, recursion_limit, expected_schema, thread_id)
     }
   }, error = function(e) {
     structure(list(error = e$message), class = "asa_error")
@@ -116,14 +118,17 @@
 
 #' Invoke Memory Folding Agent
 #' @keywords internal
-.invoke_memory_folding_agent <- function(python_agent, prompt, recursion_limit, thread_id = NULL) {
+.invoke_memory_folding_agent <- function(python_agent, prompt, recursion_limit, expected_schema = NULL, thread_id = NULL) {
   # Import message type
   from_schema <- reticulate::import("langchain_core.messages")
   initial_message <- from_schema$HumanMessage(content = prompt)
 
-  initial_state <- list(
-    messages = list(initial_message)
-  )
+  initial_state <- list(messages = list(initial_message))
+
+  if (!is.null(expected_schema)) {
+    initial_state$expected_schema <- expected_schema
+    initial_state$expected_schema_source <- "explicit"
+  }
 
   # Only seed summary/fold_count when starting a fresh (ephemeral) thread.
   if (is.null(thread_id)) {
@@ -142,9 +147,15 @@
 
 #' Invoke Standard Agent
 #' @keywords internal
-.invoke_standard_agent <- function(python_agent, prompt, recursion_limit, thread_id = NULL) {
+.invoke_standard_agent <- function(python_agent, prompt, recursion_limit, expected_schema = NULL, thread_id = NULL) {
+  initial_state <- list(messages = list(list(role = "user", content = prompt)))
+  if (!is.null(expected_schema)) {
+    initial_state$expected_schema <- expected_schema
+    initial_state$expected_schema_source <- "explicit"
+  }
+
   python_agent$invoke(
-    list(messages = list(list(role = "user", content = prompt))),
+    initial_state,
     config = list(
       configurable = list(thread_id = thread_id %||% rlang::hash(Sys.time())),
       recursion_limit = as.integer(recursion_limit)
