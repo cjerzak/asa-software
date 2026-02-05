@@ -9,7 +9,8 @@
   tools,
   use_memory_folding,
   memory_threshold,
-  memory_keep_recent
+  memory_keep_recent,
+  fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET
 )
 }
 \arguments{
@@ -22,6 +23,8 @@
 \item{memory_threshold}{Messages before folding}
 
 \item{memory_keep_recent}{Exchanges to keep}
+
+\item{fold_char_budget}{Char budget before fold triggers}
 }
 \description{
 Create the LangGraph Agent

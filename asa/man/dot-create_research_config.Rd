@@ -11,6 +11,7 @@
   stop_policy,
   sources,
   allow_read_webpages = FALSE,
+  max_tool_calls_per_round = NULL,
   temporal = NULL
 )
 }

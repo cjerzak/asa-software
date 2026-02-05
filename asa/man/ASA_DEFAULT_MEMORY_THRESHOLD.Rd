@@ -3,7 +3,7 @@
 \docType{data}
 \name{ASA_DEFAULT_MEMORY_THRESHOLD}
 \alias{ASA_DEFAULT_MEMORY_THRESHOLD}
-\title{Default Memory Threshold (messages before folding)}
+\title{Default Memory Threshold (message count backstop before folding)}
 \format{
 An object of class \code{integer} of length 1.
 }
@@ -11,6 +11,7 @@ An object of class \code{integer} of length 1.
 ASA_DEFAULT_MEMORY_THRESHOLD
 }
 \description{
-Default Memory Threshold (messages before folding)
+Backstop trigger: fold when message count exceeds this.
+  The primary trigger is char-budget-based (see ASA_DEFAULT_FOLD_CHAR_BUDGET).
 }
 \keyword{internal}
