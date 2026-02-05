@@ -538,9 +538,11 @@ initialize_agent <- function(backend = NULL,
 #' @param use_memory_folding Whether to use memory folding
 #' @param memory_threshold Messages before folding
 #' @param memory_keep_recent Exchanges to keep
+#' @param fold_char_budget Char budget before fold triggers
 #' @keywords internal
 .create_agent <- function(llm, tools, use_memory_folding,
-                          memory_threshold, memory_keep_recent) {
+                          memory_threshold, memory_keep_recent,
+                          fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET) {
   if (use_memory_folding) {
     # Use custom memory folding agent with unified API
     agent <- asa_env$custom_ddg$create_memory_folding_agent(
@@ -549,6 +551,7 @@ initialize_agent <- function(backend = NULL,
       checkpointer = asa_env$MemorySaver(),
       message_threshold = as.integer(memory_threshold),
       keep_recent = as.integer(memory_keep_recent),
+      fold_char_budget = as.integer(fold_char_budget),
       debug = FALSE
     )
   } else {

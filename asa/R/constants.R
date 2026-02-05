@@ -67,13 +67,22 @@ ASA_API_KEY_ENV_VARS <- list(
 #' @keywords internal
 ASA_DEFAULT_MEMORY_FOLDING <- TRUE
 
-#' Default Memory Threshold (messages before folding)
+#' Default Memory Threshold (message count backstop before folding)
+#' @description Backstop trigger: fold when message count exceeds this.
+#'   The primary trigger is char-budget-based (see ASA_DEFAULT_FOLD_CHAR_BUDGET).
 #' @keywords internal
-ASA_DEFAULT_MEMORY_THRESHOLD <- 4L
+ASA_DEFAULT_MEMORY_THRESHOLD <- 10L
 
 #' Default Exchanges to Keep After Folding
 #' @keywords internal
-ASA_DEFAULT_MEMORY_KEEP_RECENT <- 2L
+ASA_DEFAULT_MEMORY_KEEP_RECENT <- 4L
+
+#' Default Fold Char Budget (primary trigger for memory folding)
+#' @description Primary trigger: fold when total estimated chars across messages
+#'   exceeds this budget. This is more adaptive than pure message count -- short
+#'   messages accumulate safely, but a single huge tool output won't blow context.
+#' @keywords internal
+ASA_DEFAULT_FOLD_CHAR_BUDGET <- 30000L
 
 # ============================================================================
 # RATE LIMITING AND TIMEOUTS

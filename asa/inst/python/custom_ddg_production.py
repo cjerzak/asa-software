@@ -2452,7 +2452,19 @@ def _requests_scrape(
     soup = BeautifulSoup(resp.text, "html.parser")
     results: List[Dict[str, str]] = []
     for i, a in enumerate(soup.select("a.result__a")[:max_results], 1):
-        results.append({"id": i, "title": a.get_text(strip=True), "href": a["href"], "body": "", "_tier": "requests"})
+        # Extract snippet body from the result container
+        body = ""
+        result_container = a.find_parent(class_="result")
+        if result_container:
+            snippet_el = result_container.select_one(".result__snippet")
+            if snippet_el:
+                body = snippet_el.get_text(strip=True)
+        if not body:
+            # Fallback: try sibling or parent text
+            parent = a.find_parent()
+            if parent:
+                body = parent.get_text(strip=True)[:300]
+        results.append({"id": i, "title": a.get_text(strip=True), "href": a["href"], "body": body, "_tier": "requests"})
     if results:
         _mark_exit_good(proxy)
     return results
@@ -3337,6 +3349,90 @@ def _message_content_to_text(content: Any) -> str:
         return ""
 
 
+def _compact_tool_output(content_text: str, full_results_limit: int = 8) -> str:
+    """Structure-preserving compaction for search tool output.
+
+    Parses __START_OF_SOURCE N__ / __END_OF_SOURCE N__ blocks and preserves
+    all titles + URLs. Full snippet text is kept for the first `full_results_limit`
+    results; remaining results get title + URL + first sentence only.
+
+    Falls back to a generous prefix if no structured blocks are found.
+    """
+    import re as _re
+
+    # Try to parse structured source blocks
+    source_pattern = _re.compile(
+        r'__START_OF_SOURCE\s+(\d+)__\s*(.*?)\s*__END_OF_SOURCE\s+\d+__',
+        _re.DOTALL
+    )
+    matches = list(source_pattern.finditer(content_text))
+
+    if matches:
+        parts = []
+        for i, m in enumerate(matches):
+            source_num = m.group(1)
+            block = m.group(2).strip()
+
+            # Extract title and URL lines
+            title_line = ""
+            url_line = ""
+            snippet_lines = []
+            for line in block.splitlines():
+                stripped = line.strip()
+                lower = stripped.lower()
+                if lower.startswith("title:"):
+                    title_line = stripped
+                elif lower.startswith("url:") or lower.startswith("href:") or lower.startswith("final url:"):
+                    url_line = stripped
+                else:
+                    snippet_lines.append(stripped)
+
+            snippet = "\n".join(snippet_lines).strip()
+
+            if i < full_results_limit:
+                # Full content for top-N results
+                parts.append(f"[Source {source_num}] {title_line}\n{url_line}\n{snippet}")
+            else:
+                # Title + URL + first sentence for remaining results
+                first_sentence = ""
+                if snippet:
+                    # Take first sentence (up to first period, question mark, or 150 chars)
+                    sentence_end = _re.search(r'[.!?]\s', snippet)
+                    if sentence_end:
+                        first_sentence = snippet[:sentence_end.end()].strip()
+                    else:
+                        first_sentence = snippet[:150].strip()
+                parts.append(f"[Source {source_num}] {title_line}\n{url_line}\n{first_sentence}")
+
+        return "\n".join(parts)
+
+    # Fallback: try to find numbered result patterns (e.g., "1. Title\nURL: ...\nSnippet")
+    result_pattern = _re.compile(r'(?:^|\n)(\d+)\.\s+', _re.MULTILINE)
+    result_matches = list(result_pattern.finditer(content_text))
+
+    if len(result_matches) >= 2:
+        parts = []
+        for i, m in enumerate(result_matches):
+            start = m.start()
+            end = result_matches[i + 1].start() if i + 1 < len(result_matches) else len(content_text)
+            block = content_text[start:end].strip()
+
+            if i < full_results_limit:
+                parts.append(block)
+            else:
+                # Keep first 2 lines (usually title and URL) + first sentence of body
+                lines = block.splitlines()
+                kept = lines[:3] if len(lines) >= 3 else lines
+                parts.append("\n".join(kept))
+
+        return "\n".join(parts)
+
+    # No structured format detected: use a generous prefix (2000 chars)
+    if len(content_text) > 2000:
+        return content_text[:2000] + "..."
+    return content_text
+
+
 def _extract_last_user_prompt(messages: list) -> str:
     """Best-effort extraction of the most recent user message content."""
     for msg in reversed(messages or []):
@@ -3522,6 +3618,7 @@ def create_memory_folding_agent(
     checkpointer=None,
     message_threshold: int = 6,
     keep_recent: int = 2,
+    fold_char_budget: int = 30000,
     summarizer_model = None,
     debug: bool = False
 ):
@@ -3913,7 +4010,10 @@ def create_memory_folding_agent(
             "text": archive_text,
         }
 
-        # Build the summarization prompt (intentionally truncated to control token cost).
+        # Build the summarization prompt with structure-preserving compaction.
+        # Previously used naive char truncation (300 chars for ToolMessages, 200 for AI)
+        # which discarded ~90-95% of search results. Now uses _compact_tool_output
+        # to preserve all titles/URLs and full snippets for top results.
         fold_text_parts = []
         for msg in summary_candidates:
             msg_type = type(msg).__name__
@@ -3921,14 +4021,16 @@ def create_memory_folding_agent(
             tool_calls = getattr(msg, "tool_calls", None)
             if tool_calls:
                 tool_info = ", ".join([f"{tc.get('name', 'tool')}" for tc in tool_calls])
+                # Preserve tool name + first 500 chars of reasoning
+                reasoning = content_text[:500] + "..." if len(content_text) > 500 else content_text
                 fold_text_parts.append(
-                    f"[{msg_type}] (called tools: {tool_info}) "
-                    f"{content_text[:200] + '...' if len(content_text) > 200 else content_text}"
+                    f"[{msg_type}] (called tools: {tool_info}) {reasoning}"
                 )
             elif msg_type == "ToolMessage":
-                # Tool responses can be huge; summarize with a small excerpt.
-                truncated = content_text[:300] + "..." if len(content_text) > 300 else content_text
-                fold_text_parts.append(f"[{msg_type}] {truncated}")
+                # Structure-preserving compaction: keeps all titles/URLs,
+                # full snippets for top-8 results, first sentence for rest.
+                compacted = _compact_tool_output(content_text)
+                fold_text_parts.append(f"[{msg_type}] {compacted}")
             else:
                 fold_text_parts.append(f"[{msg_type}] {content_text}")
 
@@ -4032,10 +4134,20 @@ def create_memory_folding_agent(
         if tool_calls:
             return "tools"
 
-        # Agent is done (no tool calls) - NOW check if we need to fold memory
-        if len(messages) > message_threshold:
+        # Agent is done (no tool calls) - NOW check if we need to fold memory.
+        # Primary trigger: estimated total chars across messages exceeds budget.
+        # Backstop: message count exceeds threshold.
+        total_chars = sum(
+            len(_message_content_to_text(getattr(m, "content", "")) or "")
+            for m in messages
+        )
+        should_fold = total_chars > fold_char_budget or len(messages) > message_threshold
+        if should_fold:
             if debug:
-                logger.info(f"Memory threshold exceeded: {len(messages)} > {message_threshold}, triggering fold")
+                logger.info(
+                    f"Memory fold triggered: {total_chars} chars (budget={fold_char_budget}), "
+                    f"{len(messages)} msgs (threshold={message_threshold})"
+                )
             return "summarize"
 
         return "end"
@@ -4044,22 +4156,19 @@ def create_memory_folding_agent(
         """
         Determine next step after tool execution.
 
+        ALWAYS routes back to agent so the agent can process raw tool output
+        before any memory folding occurs. Folding is handled by should_continue
+        AFTER the agent has reasoned about the results.
+
         Routes to:
-        - 'summarize': If the working set is too large, fold before next agent step
-        - 'agent': Otherwise continue the normal loop
+        - 'finalize': If near recursion limit
+        - 'agent': Always (let agent process tool results first)
         """
-        messages = state.get("messages", [])
         remaining = _remaining_steps(state)
         if remaining is not None and remaining <= 0:
             return "finalize"
         if _should_force_finalize(state):
             return "finalize"
-        if len(messages) > message_threshold:
-            if debug:
-                logger.info(
-                    f"Memory threshold exceeded after tools: {len(messages)} > {message_threshold}"
-                )
-            return "summarize"
         return "agent"
 
     def after_summarize(state: MemoryFoldingAgentState) -> str:

@@ -60,6 +60,8 @@ class ResearchConfig:
     use_wikipedia: bool = True
     # Optional capability: allow reading full webpages (disabled by default)
     allow_read_webpages: bool = False
+    # Maximum tool calls per search round (higher when webpage reading enabled)
+    max_tool_calls_per_round: Optional[int] = None
     # Temporal filtering parameters
     time_filter: Optional[str] = None      # DDG time filter: "d", "w", "m", "y"
     date_after: Optional[str] = None       # ISO 8601: "2020-01-01"
@@ -114,8 +116,8 @@ class ResearchState(TypedDict):
 # Utility Functions
 # ────────────────────────────────────────────────────────────────────────
 def _hash_result(fields: Dict[str, Any], schema: Dict[str, str]) -> str:
-    """Create a hash for deduplication based on key fields."""
-    key_fields = list(schema.keys())[:3]
+    """Create a hash for deduplication based on ALL schema fields."""
+    key_fields = list(schema.keys())
     key_values = []
     for field_name in key_fields:
         val = fields.get(field_name, "")
@@ -313,11 +315,29 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         date_before = config.get("date_before") or (research_config.date_before if research_config else None)
         temporal_strictness = config.get("temporal_strictness") or (research_config.temporal_strictness if research_config else "best_effort")
         use_wayback = bool(config.get("use_wayback") if config.get("use_wayback") is not None else (research_config.use_wayback if research_config else False))
-        allow_read_webpages = bool(
+        allow_read_webpages_raw = (
             config.get("allow_read_webpages")
             if config.get("allow_read_webpages") is not None
             else (research_config.allow_read_webpages if research_config else False)
         )
+        # Support "auto" mode: enable webpage reading when extraction yield is low
+        auto_webpage_mode = (isinstance(allow_read_webpages_raw, str)
+                             and allow_read_webpages_raw.lower() == "auto")
+        if auto_webpage_mode:
+            # Check if yield has been low for 2+ consecutive rounds
+            novelty_history = state.get("novelty_history", [])
+            existing_results = state.get("results", [])
+            round_number = state.get("round_number", 0)
+            low_yield = (
+                round_number >= 2
+                and len(novelty_history) >= 2
+                and all(r < 0.2 for r in novelty_history[-2:])
+            ) or (round_number >= 2 and len(existing_results) < 2)
+            allow_read_webpages = low_yield
+            if low_yield:
+                logger.info("Auto webpage mode: enabling OpenWebpage due to low extraction yield")
+        else:
+            allow_read_webpages = bool(allow_read_webpages_raw)
         target_items = config.get("target_items")
         if target_items is None and research_config:
             target_items = research_config.target_items
@@ -415,15 +435,41 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
                         "When calling OpenWebpage, include a focused 'query' describing what you need.\n"
                     )
 
+                # Build context about already-found entities for subsequent rounds
+                already_found_hint = ""
+                round_number = state.get("round_number", 0)
+                if round_number > 0:
+                    existing_results = state.get("results", [])
+                    if existing_results:
+                        # Sample a few names to include in prompt
+                        sample_names = []
+                        first_field = list(schema.keys())[0] if schema else "name"
+                        for r in existing_results[:10]:
+                            fields = r.get("fields", {}) if isinstance(r, dict) else {}
+                            val = fields.get(first_field, "")
+                            if val:
+                                sample_names.append(str(val))
+                        if sample_names:
+                            names_str = ", ".join(sample_names[:8])
+                            already_found_hint = (
+                                f"\nAlready found {len(existing_results)} entities "
+                                f"(e.g., {names_str}). "
+                                "Search for entities NOT in this list. "
+                                "Focus on gaps and underrepresented categories.\n"
+                            )
+
                 search_prompt = f"""Search for: {query}
-{query_hint}{temporal_hint}{webpage_hint}
+{query_hint}{temporal_hint}{webpage_hint}{already_found_hint}
 Extract entities with these fields: {list(schema.keys())}
 Use the Search tool to find information."""
 
                 messages = [HumanMessage(content=search_prompt)]
                 tool_outputs = []
 
-                max_tool_calls = 5 if allow_read_webpages else 3
+                max_tool_calls = (
+                    (research_config.max_tool_calls_per_round if research_config else None)
+                    or (5 if allow_read_webpages else 3)
+                )
                 for _ in range(max_tool_calls):
                     response = model_with_tools.invoke(messages)
                     tokens_used += _token_usage_from_message(response)
@@ -441,15 +487,24 @@ Use the Search tool to find information."""
 
                 # Extract structured entities from tool output
                 if tool_outputs and schema:
+                    schema_keys = list(schema.keys())
                     extraction_prompt = (
-                        "You are extracting structured entities from tool outputs (search results and any opened webpages).\n"
+                        "You are extracting ALL structured entities from search results and opened webpages.\n\n"
+                        "CRITICAL INSTRUCTIONS:\n"
+                        "- Extract EVERY entity mentioned, even if only partially described.\n"
+                        "- Use null for any field you cannot determine -- partial records ARE valuable.\n"
+                        "- Do NOT skip entities just because some fields are missing.\n"
+                        "- Be EXHAUSTIVE: if a source mentions 10 entities, extract all 10.\n"
+                        "- Include entities from ALL search results, not just the first few.\n\n"
                         f"Query: {query}\n"
                         f"Temporal constraints: after={date_after or 'N/A'}, before={date_before or 'N/A'} (strictness={temporal_strictness}).\n"
-                        "If strictness is 'strict', ONLY include entities supported by sources that clearly satisfy the date constraints; otherwise omit.\n"
-                        f"Required fields: {list(schema.keys())}\n"
-                        "Return ONLY a JSON array. Each item MUST contain those required fields.\n"
-                        "You MAY also include an optional 'source_url' field when you can associate an entity with a specific URL.\n"
-                        "Use null for missing values. No markdown, no extra text.\n\n"
+                        "If strictness is 'strict', ONLY include entities clearly within date constraints.\n\n"
+                        f"Required fields: {schema_keys}\n"
+                        "Return ONLY a JSON array. Each item MUST have these fields (use null for unknown).\n"
+                        "You MAY also include an optional 'source_url' field.\n\n"
+                        "Example (for schema [name, state, party]):\n"
+                        '[{"name": "Jane Smith", "state": "California", "party": "Democrat", "source_url": "https://..."},\n'
+                        ' {"name": "Bob Jones", "state": null, "party": "Republican"}]\n\n'
                         "Tool outputs:\n"
                         + "\n\n".join(tool_outputs)
                     )
@@ -589,17 +644,20 @@ def create_deduper_node():
         unique_results = []
         new_hashes = {}
 
+        # Use first schema field for fuzzy matching (instead of hardcoded "name")
+        fuzzy_field = list(schema.keys())[0] if schema else "name"
+
         for result in results:
             fields = result.get("fields", {})
             result_hash = _hash_result(fields, schema)
 
             if result_hash not in seen_hashes and result_hash not in new_hashes:
-                # Fuzzy check
+                # Fuzzy check on first schema field
                 is_dup = False
-                name = fields.get("name", "")
+                name = fields.get(fuzzy_field, "")
                 if name:
                     for existing in unique_results:
-                        if _fuzzy_match_name(name, existing.get("fields", {}).get("name", "")) > 0.85:
+                        if _fuzzy_match_name(name, existing.get("fields", {}).get(fuzzy_field, "")) > 0.85:
                             is_dup = True
                             break
 
@@ -609,8 +667,11 @@ def create_deduper_node():
 
         logger.info(f"Dedup: {len(results)} -> {len(unique_results)}")
 
-        total_unique = len(seen_hashes) + len(new_hashes)
-        novelty_rate = len(new_hashes) / max(1, total_unique)
+        # Per-round novelty: fraction of THIS batch that was novel.
+        # Previously used cumulative denominator which caused premature stopping
+        # (e.g., 5 new out of 105 total = 0.048, even though 100% of batch was new).
+        batch_size = len(results)
+        novelty_rate = len(new_hashes) / max(1, batch_size)
 
         out = {
             "results": unique_results,
@@ -852,14 +913,28 @@ def stream_research(
     # Accumulate state updates (stream_mode="updates" gives partial updates per node)
     accumulated_state = dict(initial_state)
 
+    # Keys that use list-append reducers in ResearchState (Annotated[..., add_to_list])
+    _LIST_REDUCER_KEYS = {"results", "novelty_history", "errors"}
+    # Keys that use dict-merge reducers in ResearchState (Annotated[..., merge_dicts])
+    _DICT_REDUCER_KEYS = {"seen_hashes"}
+
     try:
         for event in graph.stream(initial_state, config, stream_mode="updates"):
             node_name = list(event.keys())[0] if event else "unknown"
             node_state = event.get(node_name, {})
 
-            # Merge node updates into accumulated state
+            # Merge node updates into accumulated state, respecting reducer semantics
             for key, value in node_state.items():
-                accumulated_state[key] = value
+                if key in _LIST_REDUCER_KEYS:
+                    accumulated_state.setdefault(key, []).extend(
+                        value if isinstance(value, list) else [value]
+                    )
+                elif key in _DICT_REDUCER_KEYS:
+                    accumulated_state.setdefault(key, {}).update(
+                        value if isinstance(value, dict) else {}
+                    )
+                else:
+                    accumulated_state[key] = value
 
             yield {
                 "event_type": "node_update",

@@ -265,7 +265,7 @@ asa_enumerate <- function(query,
     budget = budget,
     stop_policy = stop_policy,
     sources = sources,
-    allow_read_webpages = isTRUE(allow_rw),
+    allow_read_webpages = if (identical(allow_rw, "auto")) "auto" else isTRUE(allow_rw),
     temporal = temporal
   )
 
@@ -477,6 +477,7 @@ asa_enumerate <- function(query,
 #' @keywords internal
 .create_research_config <- function(workers, max_rounds, budget, stop_policy, sources,
                                     allow_read_webpages = FALSE,
+                                    max_tool_calls_per_round = NULL,
                                     temporal = NULL) {
   config <- list(
     max_workers = as.integer(workers),  # Python side still expects max_workers
@@ -491,7 +492,8 @@ asa_enumerate <- function(query,
     use_wikidata = isTRUE(sources$wikidata),
     use_web = isTRUE(sources$web),
     use_wikipedia = isTRUE(sources$wikipedia),
-    allow_read_webpages = isTRUE(allow_read_webpages)
+    allow_read_webpages = if (identical(allow_read_webpages, "auto")) "auto" else isTRUE(allow_read_webpages),
+    max_tool_calls_per_round = if (!is.null(max_tool_calls_per_round)) as.integer(max_tool_calls_per_round) else NULL
   )
 
   # Add temporal filtering parameters if provided
@@ -528,7 +530,8 @@ asa_enumerate <- function(query,
     use_wikidata = config_dict$use_wikidata,
     use_web = config_dict$use_web,
     use_wikipedia = config_dict$use_wikipedia,
-    allow_read_webpages = config_dict$allow_read_webpages %||% FALSE,
+    allow_read_webpages = if (identical(config_dict$allow_read_webpages, "auto")) TRUE else (config_dict$allow_read_webpages %||% FALSE),
+    max_tool_calls_per_round = config_dict$max_tool_calls_per_round,
     # Temporal filtering parameters
     time_filter = config_dict$time_filter,
     date_after = config_dict$date_after,
@@ -783,10 +786,12 @@ asa_enumerate <- function(query,
     stop("`sources` must be a list with keys: web, wikipedia, wikidata", call. = FALSE)
   }
 
-  # Optional capability flag
+  # Optional capability flag: TRUE, FALSE, "auto", or NULL
   if (!is.null(allow_read_webpages)) {
-    if (!is.logical(allow_read_webpages) || length(allow_read_webpages) != 1 || is.na(allow_read_webpages)) {
-      stop("`allow_read_webpages` must be TRUE, FALSE, or NULL", call. = FALSE)
+    if (identical(allow_read_webpages, "auto")) {
+      # "auto" mode is valid
+    } else if (!is.logical(allow_read_webpages) || length(allow_read_webpages) != 1 || is.na(allow_read_webpages)) {
+      stop('`allow_read_webpages` must be TRUE, FALSE, "auto", or NULL', call. = FALSE)
     }
   }
 

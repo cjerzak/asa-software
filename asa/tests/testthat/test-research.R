@@ -82,6 +82,13 @@ test_that("asa_enumerate validates allow_read_webpages parameter", {
     asa_enumerate(query = "test", allow_read_webpages = "yes"),
     regexp = "allow_read_webpages"
   )
+
+  # "auto" should not produce a validation error (it may fail for other reasons)
+  expect_error(
+    asa_enumerate(query = "test", allow_read_webpages = "auto",
+                  checkpoint_dir = "/nonexistent/path/12345"),
+    regexp = "checkpoint_dir"  # Fails at checkpoint_dir, not allow_read_webpages
+  )
 })
 
 test_that("asa_enumerate validates webpage embedding options", {
