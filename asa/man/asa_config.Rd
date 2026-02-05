@@ -45,8 +45,8 @@ auto-detect from environment variables (\code{ASA_PROXY}, \code{HTTP_PROXY},
 
 \item{memory_threshold}{Messages before folding triggers}
 
-\item{memory_keep_recent}{Exchanges to preserve after folding. An exchange is a user turn plus
-the assistant response, including any tool calls and tool outputs.}
+\item{memory_keep_recent}{Exchanges to preserve after folding. An exchange is
+a user turn plus the assistant response, including any tool calls and tool outputs.}
 
 \item{temporal}{Temporal filtering options (use \code{temporal_options()})}
 

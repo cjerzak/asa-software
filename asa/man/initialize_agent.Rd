@@ -40,8 +40,9 @@ searches through Tor.}
 
 \item{memory_threshold}{Number of messages before folding triggers (default: 4)}
 
-\item{memory_keep_recent}{Number of recent exchanges to preserve after folding (default: 2).
-An exchange is a user turn plus the assistant response, including any tool calls and tool outputs.}
+\item{memory_keep_recent}{Number of recent exchanges to preserve after folding
+(default: 2). An exchange is a user turn plus the assistant response,
+including any tool calls and tool outputs.}
 
 \item{rate_limit}{Requests per second for rate limiting (default: 0.1)}
 
