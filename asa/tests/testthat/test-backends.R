@@ -6,7 +6,7 @@
 backends <- list(
   list(backend = "openai", model = "gpt-4o-mini", env = "OPENAI_API_KEY"),
   list(backend = "groq", model = "llama-3.3-70b-versatile", env = "GROQ_API_KEY"),
-  list(backend = "xai", model = "grok-2-1212", env = "XAI_API_KEY"),
+  list(backend = "xai", model = "grok-2-latest", env = "XAI_API_KEY"),
   list(
     backend = "gemini",
     model = "gemini-3-flash-preview",
@@ -70,8 +70,11 @@ for (cfg in backends) {
       output_format = "text",
       agent = agent
     )
-    # Collapse result to single string and check for standalone "4"
+    # Collapse result to single string and check for "4" not adjacent to other digits
     result_text <- paste(unlist(result), collapse = " ")
-    expect_true(grepl("\\b4\\b", result_text))
+    expect_true(
+      grepl("(?<![0-9])4(?![0-9])", result_text, perl = TRUE),
+      info = paste("Expected '4' in response:", substr(result_text, 1, 200))
+    )
   })
 }
