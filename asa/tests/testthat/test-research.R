@@ -222,7 +222,7 @@ test_that("print.asa_enumerate_result works", {
   output <- capture.output(print(result))
   expect_true(any(grepl("ASA Enumeration Result", output)))
   expect_true(any(grepl("complete", output)))
-  expect_true(any(grepl("3", output)))  # Items found
+  expect_true(any(grepl("Items.*3|3.*items|\\b3\\b", output, ignore.case = TRUE)))  # Items found
 })
 
 test_that("summary.asa_enumerate_result works", {

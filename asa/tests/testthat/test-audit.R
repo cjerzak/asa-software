@@ -237,7 +237,8 @@ test_that(".annotate_results adds audit columns", {
   expect_true("_audit_notes" %in% names(annotated))
   expect_true("_confidence_adjusted" %in% names(annotated))
 
-  # Check that flags were applied correctly (0-indexed to 1-indexed)
+  # Check that flags were applied correctly (Python 0-indexed → R 1-indexed)
+  # flagged index=0 → R row 1, flagged index=2 → R row 3
   expect_equal(annotated[["_audit_flag"]][1], "warning")
   expect_equal(annotated[["_audit_flag"]][2], "ok")
   expect_equal(annotated[["_audit_flag"]][3], "suspect")

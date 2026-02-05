@@ -9,6 +9,9 @@
 
 # ============================================================================
 # Memory Folding Defaults Tests
+# These verify that constants consumed by create_memory_folding_agent()
+# have the expected values. The constants are used in initialize_agent.R
+# and helpers.R.
 # ============================================================================
 
 test_that("memory threshold default is 10 (backstop)", {

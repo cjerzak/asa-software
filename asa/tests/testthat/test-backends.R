@@ -4,7 +4,7 @@
 # Backend configurations: (backend, model, env_var)
 # Updated Dec 2025 with current model IDs
 backends <- list(
-  list(backend = "openai", model = "gpt-4.1-mini", env = "OPENAI_API_KEY"),
+  list(backend = "openai", model = "gpt-4o-mini", env = "OPENAI_API_KEY"),
   list(backend = "groq", model = "llama-3.3-70b-versatile", env = "GROQ_API_KEY"),
   list(backend = "xai", model = "grok-2-1212", env = "XAI_API_KEY"),
   list(
@@ -70,8 +70,8 @@ for (cfg in backends) {
       output_format = "text",
       agent = agent
     )
-    # Collapse result to single string and check for "4"
+    # Collapse result to single string and check for standalone "4"
     result_text <- paste(unlist(result), collapse = " ")
-    expect_true(grepl("4", result_text))
+    expect_true(grepl("\\b4\\b", result_text))
   })
 }

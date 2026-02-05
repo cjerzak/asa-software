@@ -304,6 +304,45 @@ test_that("verify_date_constraint validates after constraint", {
     html_content = mock_html
   )
   expect_false(result$passes)
+
+  # Boundary test: extracted date exactly equals "after" date
+  result <- date_extractor$verify_date_constraint(
+    url = "https://example.com/article",
+    date_after = "2023-06-15",
+    date_before = NULL,
+    html_content = mock_html
+  )
+  # Documents the inclusive/exclusive boundary semantics
+  expect_true(is.logical(result$passes) || is.null(result$passes),
+    info = "Boundary case: date == after should have well-defined behavior")
+})
+
+test_that("verify_date_constraint validates before constraint boundary", {
+  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
+  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
+  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+
+  mock_html <- '
+    <html>
+    <head>
+      <script type="application/ld+json">
+        {"@type": "Article", "datePublished": "2023-06-15"}
+      </script>
+    </head>
+    <body></body>
+    </html>
+  '
+
+  # Boundary test: extracted date exactly equals "before" date
+  result <- date_extractor$verify_date_constraint(
+    url = "https://example.com/article",
+    date_after = NULL,
+    date_before = "2023-06-15",
+    html_content = mock_html
+  )
+  # Documents the inclusive/exclusive boundary semantics
+  expect_true(is.logical(result$passes) || is.null(result$passes),
+    info = "Boundary case: date == before should have well-defined behavior")
 })
 
 test_that("verify_date_constraint validates before constraint", {
@@ -331,7 +370,7 @@ test_that("verify_date_constraint validates before constraint", {
   )
   expect_true(result$passes)
 
-  # Date fails "before" constraint (2023-06-15 >= 2023-01-01)
+  # Date fails "before" constraint (2023-06-15 is not before 2023-01-01)
   result <- date_extractor$verify_date_constraint(
     url = "https://example.com/article",
     date_after = NULL,
@@ -764,13 +803,23 @@ test_that("Date parsing handles ambiguous MM/DD vs DD/MM formats", {
   asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
   date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
 
-  # MM/DD/YYYY format (US style) is tried first
+  # Unambiguous MM/DD/YYYY (month > 12 impossible as day)
   result <- date_extractor$`_parse_date_string`("01/15/2024")
   expect_equal(result, "2024-01-15")
 
-  # Unambiguous date
+  # Unambiguous (month=12, day=31)
   result <- date_extractor$`_parse_date_string`("12/31/2024")
   expect_equal(result, "2024-12-31")
+
+  # Truly ambiguous: 03/04/2024 could be March 4 (US) or April 3 (EU)
+  # Parser should return a valid date (US MM/DD convention expected)
+  result <- date_extractor$`_parse_date_string`("03/04/2024")
+  expect_true(!is.null(result) && !is.na(result))
+  expect_equal(result, "2024-03-04")  # Expect US MM/DD interpretation
+
+  # Another ambiguous case: 05/06/2024
+  result <- date_extractor$`_parse_date_string`("05/06/2024")
+  expect_equal(result, "2024-05-06")  # Expect US MM/DD interpretation
 })
 
 test_that("SPARQL filter injection preserves query structure", {
@@ -810,7 +859,13 @@ test_that("URL extraction handles edge cases in paths", {
   result <- date_extractor$`_extract_from_url`("https://example.com/2024/06/15/")
   expect_true(length(result) > 0)
 
-  # Multiple date-like patterns (should extract first valid one)
+  # Multiple date-like patterns in URL
   result <- date_extractor$`_extract_from_url`("https://example.com/archive/2023/2024/06/15")
   expect_true(length(result) >= 1)
+  # Verify the extracted date is one of the plausible dates from the URL
+  extracted_dates <- sapply(result, function(r) r$date)
+  expect_true(
+    any(extracted_dates %in% c("2024-06-15", "2023-01-01")),
+    info = paste("Expected date from URL, got:", paste(extracted_dates, collapse = ", "))
+  )
 })

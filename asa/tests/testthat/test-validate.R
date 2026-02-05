@@ -222,7 +222,7 @@ test_that(".validate_run_task accepts valid output_format values", {
 })
 
 test_that(".validate_run_task rejects invalid output_format", {
-  expect_error(.validate_run_task("prompt", "xml", NULL, FALSE), 'be one of: "text", "json"')
+  expect_error(.validate_run_task("prompt", "xml", NULL, FALSE), 'be one of: "text", "json", "raw"')
   expect_error(.validate_run_task("prompt", 123, NULL, FALSE), 'be "text", "json"')
   expect_error(.validate_run_task("prompt", list("a"), NULL, FALSE), 'be "text", "json"')
 })
@@ -494,15 +494,194 @@ test_that(".validate_temporal accepts valid use_wayback values", {
   expect_silent(.validate_temporal(list(use_wayback = FALSE)))
 })
 
-test_that(".validate_temporal accepts complex valid temporal lists", {
-  # Note: This combination triggers a warning about time_filter conflicting
-  # with the date range (after = 2020 is outside past year). We suppress
-  # the warning here since we're testing that validation passes.
-  expect_silent(suppressWarnings(.validate_temporal(list(
+test_that(".validate_temporal accepts complex valid temporal lists with conflict warning", {
+  # This combination triggers a warning about time_filter conflicting
+  # with the date range (after = 2020 is outside past year).
+  # Verify that validation passes but warns about the conflict.
+
+  expect_warning(
+    .validate_temporal(list(
+      time_filter = "y",
+      after = "2020-01-01",
+      before = "2024-12-31",
+      strictness = "best_effort",
+      use_wayback = FALSE
+    )),
+    "Temporal conflict"
+  )
+})
+
+test_that(".validate_temporal accepts complex valid temporal lists without conflict", {
+  # Use a date range compatible with time_filter to avoid warnings
+  today <- Sys.Date()
+  expect_silent(.validate_temporal(list(
     time_filter = "y",
-    after = "2020-01-01",
-    before = "2024-12-31",
+    after = as.character(today - 100),
+    before = as.character(today - 1),
     strictness = "best_effort",
     use_wayback = FALSE
-  ))))
+  )))
+})
+
+# ============================================================================
+# API Key Validation Tests
+# ============================================================================
+
+test_that(".validate_api_key passes for exo backend (no key needed)", {
+  expect_silent(.validate_api_key("exo"))
+})
+
+test_that(".validate_api_key errors for unknown backend", {
+  expect_error(.validate_api_key("unknown_backend"), "Unknown backend")
+})
+
+test_that(".validate_api_key errors when env var is not set", {
+  withr::with_envvar(c(OPENAI_API_KEY = ""), {
+    expect_error(.validate_api_key("openai"), "OPENAI_API_KEY")
+  })
+})
+
+test_that(".validate_api_key errors for groq when key missing", {
+  withr::with_envvar(c(GROQ_API_KEY = ""), {
+    expect_error(.validate_api_key("groq"), "GROQ_API_KEY")
+  })
+})
+
+test_that(".validate_api_key errors for xai when key missing", {
+  withr::with_envvar(c(XAI_API_KEY = ""), {
+    expect_error(.validate_api_key("xai"), "XAI_API_KEY")
+  })
+})
+
+test_that(".validate_api_key errors for gemini when both keys missing", {
+  withr::with_envvar(c(GOOGLE_API_KEY = "", GEMINI_API_KEY = "", GOOGLE_GENAI_USE_VERTEXAI = ""), {
+    expect_error(.validate_api_key("gemini"), "GOOGLE_API_KEY.*GEMINI_API_KEY|GEMINI_API_KEY.*GOOGLE_API_KEY")
+  })
+})
+
+test_that(".validate_api_key passes for gemini with GOOGLE_API_KEY set", {
+  withr::with_envvar(c(GOOGLE_API_KEY = "valid-api-key-1234567890"), {
+    expect_silent(.validate_api_key("gemini"))
+  })
+})
+
+test_that(".validate_api_key passes for gemini with GEMINI_API_KEY set", {
+  withr::with_envvar(c(GOOGLE_API_KEY = "", GEMINI_API_KEY = "valid-api-key-1234567890"), {
+    expect_silent(.validate_api_key("gemini"))
+  })
+})
+
+test_that(".validate_api_key warns for gemini vertex mode without key", {
+  withr::with_envvar(c(GOOGLE_API_KEY = "", GEMINI_API_KEY = "", GOOGLE_GENAI_USE_VERTEXAI = "true"), {
+    expect_warning(.validate_api_key("gemini"), "Vertex AI")
+  })
+})
+
+test_that(".validate_api_key errors for openrouter when key missing", {
+  withr::with_envvar(c(OPENROUTER_API_KEY = ""), {
+    expect_error(.validate_api_key("openrouter"), "OPENROUTER_API_KEY")
+  })
+})
+
+test_that(".validate_api_key warns for short keys", {
+  withr::with_envvar(c(OPENAI_API_KEY = "short"), {
+    expect_warning(.validate_api_key("openai"), "too short")
+  })
+})
+
+test_that(".validate_api_key warns for placeholder keys", {
+  withr::with_envvar(c(OPENAI_API_KEY = "your-api-key-here-placeholder"), {
+    expect_warning(.validate_api_key("openai"), "placeholder")
+  })
+
+  withr::with_envvar(c(OPENAI_API_KEY = "test_key_example_1234567890"), {
+    expect_warning(.validate_api_key("openai"), "placeholder")
+  })
+})
+
+test_that(".validate_api_key passes for valid-length keys", {
+  withr::with_envvar(c(OPENAI_API_KEY = "sk-abcdefghij1234567890abcdefghij"), {
+    expect_silent(.validate_api_key("openai"))
+  })
+})
+
+# ============================================================================
+# S3 Constructor Validator Tests
+# ============================================================================
+
+test_that(".validate_asa_agent rejects invalid backend", {
+  expect_error(.validate_asa_agent(NULL, 123, "gpt-4", list()), "backend")
+  expect_error(.validate_asa_agent(NULL, "", "gpt-4", list()), "not be empty")
+})
+
+test_that(".validate_asa_agent rejects invalid model", {
+  expect_error(.validate_asa_agent(NULL, "openai", 123, list()), "model")
+  expect_error(.validate_asa_agent(NULL, "openai", "", list()), "not be empty")
+})
+
+test_that(".validate_asa_agent rejects non-list config", {
+  expect_error(.validate_asa_agent(NULL, "openai", "gpt-4", "not-a-list"), "config.*be a list")
+})
+
+test_that(".validate_asa_agent accepts valid inputs", {
+  expect_silent(.validate_asa_agent(NULL, "openai", "gpt-4", list()))
+  expect_silent(.validate_asa_agent(NULL, "groq", "llama-3", list(use_memory_folding = TRUE)))
+})
+
+test_that(".validate_asa_response rejects invalid status_code", {
+  expect_error(.validate_asa_response("msg", -1L, NULL, "", 1.0, 0L, "prompt"), "be positive")
+  expect_error(.validate_asa_response("msg", "200", NULL, "", 1.0, 0L, "prompt"), "be a single")
+})
+
+test_that(".validate_asa_response rejects invalid elapsed_time", {
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", -1.0, 0L, "prompt"), "non-negative")
+})
+
+test_that(".validate_asa_response rejects invalid fold_count", {
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, -1L, "prompt"), "non-negative")
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, 1.5, "prompt"), "be an integer")
+})
+
+test_that(".validate_asa_response rejects non-string trace", {
+  expect_error(.validate_asa_response("msg", 200L, NULL, 123, 1.0, 0L, "prompt"), "character string")
+})
+
+test_that(".validate_asa_response accepts valid inputs", {
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt"))
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "trace data", 0.0, 2L, "test prompt"))
+})
+
+test_that(".validate_asa_result rejects invalid status", {
+  expect_error(.validate_asa_result("prompt", "msg", NULL, "", 1.0, "invalid"), "be one of")
+})
+
+test_that(".validate_asa_result rejects non-list parsed", {
+  expect_error(.validate_asa_result("prompt", "msg", "not-a-list", "", 1.0, "success"), "be NULL or a list")
+})
+
+test_that(".validate_asa_result rejects non-string raw_output", {
+  expect_error(.validate_asa_result("prompt", "msg", NULL, 123, 1.0, "success"), "character string")
+})
+
+test_that(".validate_asa_result accepts valid inputs", {
+  expect_silent(.validate_asa_result("prompt", "msg", NULL, "", 1.0, "success"))
+  expect_silent(.validate_asa_result("prompt", "msg", list(a = 1), "raw", 0.0, "error"))
+})
+
+# ============================================================================
+# Proxy URL Regex Edge Case Tests
+# ============================================================================
+
+test_that(".validate_proxy_url accepts valid auth formats", {
+  expect_silent(.validate_proxy_url("socks5h://user:pass@127.0.0.1:9050", "proxy"))
+  expect_silent(.validate_proxy_url("http://admin:secret@proxy.com:8080", "proxy"))
+})
+
+test_that(".validate_proxy_url rejects malformed formats", {
+  # Missing port after auth
+  expect_error(.validate_proxy_url("socks5h://user:pass@127.0.0.1", "proxy"), "proxy URL")
+  # No scheme
+  expect_error(.validate_proxy_url("user:pass@127.0.0.1:9050", "proxy"), "proxy URL")
+  # Invalid scheme
+  expect_error(.validate_proxy_url("ftp://user:pass@127.0.0.1:9050", "proxy"), "proxy URL")
 })

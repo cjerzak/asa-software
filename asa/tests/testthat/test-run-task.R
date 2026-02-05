@@ -307,6 +307,7 @@ test_that("configure_temporal sets and clears time filter", {
   .skip_if_no_agent()
 
   # Store original value
+  # Note: tools[[2]] is the search tool by convention (matches helpers.R:789)
   search_tool <- asa:::asa_env$tools[[2]]
   original_filter <- tryCatch(
     search_tool$api_wrapper$time,
@@ -341,6 +342,7 @@ test_that(".with_temporal restores original filter after execution", {
   # Set a known initial state
   suppressMessages(configure_temporal("m"))
 
+  # Note: tools[[2]] is the search tool by convention (matches helpers.R:789)
   search_tool <- asa:::asa_env$tools[[2]]
   original <- search_tool$api_wrapper$time
 

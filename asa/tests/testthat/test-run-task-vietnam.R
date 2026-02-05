@@ -118,6 +118,15 @@ test_that("run_task returns Vietnam first-level divisions in JSON (Gemini)", {
 
   divisions <- extract_divisions(parsed)
 
+  # Extract declared count from JSON if available
+  count_keys <- c("count", "total", "total_count", "division_count")
+  for (ck in count_keys) {
+    if (!is.null(parsed[[ck]])) {
+      declared_count <- parsed[[ck]]
+      break
+    }
+  }
+
   if (is.list(divisions) && !is.character(divisions)) {
     if (all(vapply(divisions, is.list, logical(1)))) {
       divisions <- vapply(divisions, function(item) {

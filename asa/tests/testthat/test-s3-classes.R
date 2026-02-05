@@ -84,7 +84,7 @@ test_that("asa_config defaults and printing are consistent", {
   expect_true(any(grepl("^Proxy:.*None", output_off)))
 })
 
-test_that("print methods don't error", {
+test_that("print methods produce expected headers", {
   agent <- asa_agent(NULL, "openai", "gpt-4", list())
   expect_output(print(agent), "ASA Search Agent")
 
