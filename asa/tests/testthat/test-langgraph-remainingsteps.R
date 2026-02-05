@@ -575,7 +575,10 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
-  # Deterministic tool + stub LLM that *always* calls the tool when tools are bound.
+  # Deterministic tool + stub LLM that calls the tool once (tool-mode), which
+  # forces a ToolMessage and makes folding happen after tools. This ensures we
+  # exercise the "preserve_first_user" invariant with a remaining AI tool-call
+  # turn.
   reticulate::py_run_string(paste0(
     "from langchain_core.tools import Tool\n",
     "from langchain_core.messages import AIMessage\n",
@@ -600,11 +603,12 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
     "    def invoke(self, messages):\n",
     "        self.n += 1\n",
     "        if self.tool_mode:\n",
-    "            call_id = f'call_{self.n}'\n",
-    "            return AIMessage(\n",
-    "                content='calling tool',\n",
-    "                tool_calls=[{'name':'Search','args':{'query':'x'},'id':call_id}],\n",
-    "            )\n",
+    "            if self.n == 1:\n",
+    "                return AIMessage(\n",
+    "                    content='calling tool',\n",
+    "                    tool_calls=[{'name':'Search','args':{'query':'x'},'id':'call_1'}],\n",
+    "                )\n",
+    "            return AIMessage(content='done')\n",
     "        return AIMessage(content='summary')\n",
     "\n",
     "stub_llm = _StubLLM()\n"
@@ -614,15 +618,20 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
     model = reticulate::py$stub_llm,
     tools = list(reticulate::py$fake_search_tool),
     checkpointer = NULL,
-    message_threshold = as.integer(6),
-    keep_recent = as.integer(4),
+    message_threshold = as.integer(5),
+    keep_recent = as.integer(1),
     debug = FALSE
   )
 
+  # Two completed exchanges in history ensure keep_recent=1 preserves only the
+  # open tool-call round, allowing earlier content to be folded away.
   initial <- msgs$HumanMessage(content = "hi")
+  ai1 <- msgs$AIMessage(content = "old1")
+  human2 <- msgs$HumanMessage(content = "old2")
+  ai2 <- msgs$AIMessage(content = "old3")
 
   final_state <- agent$invoke(
-    list(messages = list(initial), summary = "", fold_count = 0L),
+    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L),
     config = list(
       recursion_limit = as.integer(30),
       configurable = list(thread_id = "test")
@@ -630,7 +639,7 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   )
 
   # Ensure we actually folded (otherwise this test is meaningless).
-  expect_true(as.integer(final_state$fold_count) >= 1L)
+  expect_equal(as.integer(final_state$fold_count), 1L)
 
   types <- vapply(
     final_state$messages,
@@ -643,4 +652,115 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   expect_true(length(types) >= 2L)
   expect_equal(types[[2]], "AIMessage")
   expect_true(!is.null(final_state$messages[[2]]$tool_calls))
+})
+
+test_that("memory folding updates summary and injects it into the next system prompt", {
+  python_path <- .skip_if_no_python_langgraph()
+  .skip_if_missing_python_modules_langgraph(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic"
+  ))
+
+  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  # Deterministic tool + stub models that:
+  # 1) Force a tool call (so we get a ToolMessage)
+  # 2) Trigger folding after tools (so graph continues to another agent step)
+  # 3) Return a known folded summary string
+  # 4) Record system prompts seen by the main model for assertion
+  reticulate::py_run_string(paste0(
+    "from langchain_core.tools import Tool\n",
+    "from langchain_core.messages import AIMessage\n",
+    "\n",
+    "def _fake_search(query: str) -> str:\n",
+    "    return 'ok'\n",
+    "\n",
+    "fake_search_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Fake search',\n",
+    "    func=_fake_search,\n",
+    ")\n",
+    "\n",
+    "class _StubResponse:\n",
+    "    def __init__(self, content):\n",
+    "        self.content = content\n",
+    "\n",
+    "class _StubSummarizer:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "        self.last_prompt = None\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        self.last_prompt = messages[0].content if messages else None\n",
+    "        return _StubResponse('FOLDED_SUMMARY')\n",
+    "\n",
+    "class _RecordingLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "        self.system_prompts = []\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        try:\n",
+    "            self.system_prompts.append(getattr(messages[0], 'content', None))\n",
+    "        except Exception:\n",
+    "            self.system_prompts.append(None)\n",
+    "        if self.n == 1:\n",
+    "            return AIMessage(\n",
+    "                content='calling tool',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'x'},'id':'call_1'}],\n",
+    "            )\n",
+    "        return AIMessage(content='final answer')\n",
+    "\n",
+    "stub_llm = _RecordingLLM()\n",
+    "stub_summarizer = _StubSummarizer()\n"
+  ))
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$stub_llm,
+    tools = list(reticulate::py$fake_search_tool),
+    checkpointer = NULL,
+    message_threshold = as.integer(5),
+    keep_recent = as.integer(1),
+    summarizer_model = reticulate::py$stub_summarizer,
+    debug = FALSE
+  )
+
+  # Prior history has two completed exchanges. The tool-call round starts with an
+  # AI tool-call message (no new HumanMessage), so keep_recent=1 will preserve
+  # only the tool-call pair while folding earlier content.
+  initial <- msgs$HumanMessage(content = "initial question")
+  ai1 <- msgs$AIMessage(content = "alpha: old assistant answer")
+  human2 <- msgs$HumanMessage(content = "followup: IMPORTANT_FACT=42")
+  ai2 <- msgs$AIMessage(content = "beta: old assistant note")
+
+  final_state <- agent$invoke(
+    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L),
+    config = list(
+      recursion_limit = as.integer(40),
+      configurable = list(thread_id = "test_plumbing")
+    )
+  )
+
+  expect_equal(as.integer(final_state$fold_count), 1L)
+  expect_equal(final_state$summary, "FOLDED_SUMMARY")
+
+  # Folding should pass prior content into the summarizer prompt.
+  expect_equal(as.integer(reticulate::py$stub_summarizer$calls), 1L)
+  last_prompt <- as.character(reticulate::py$stub_summarizer$last_prompt)
+  expect_true(grepl("alpha: old assistant answer", last_prompt, fixed = TRUE))
+  expect_true(grepl("IMPORTANT_FACT=42", last_prompt, fixed = TRUE))
+  expect_true(grepl("beta: old assistant note", last_prompt, fixed = TRUE))
+
+  # After folding, the *next* agent step should see the folded summary injected
+  # into the system prompt via _base_system_prompt().
+  sys_prompts <- reticulate::py_to_r(reticulate::py$stub_llm$system_prompts)
+  expect_true(length(sys_prompts) >= 2L)
+  expect_true(!grepl("LONG-TERM MEMORY", sys_prompts[[1]], fixed = TRUE))
+  expect_true(grepl("LONG-TERM MEMORY", sys_prompts[[2]], fixed = TRUE))
+  expect_true(grepl("FOLDED_SUMMARY", sys_prompts[[2]], fixed = TRUE))
 })
