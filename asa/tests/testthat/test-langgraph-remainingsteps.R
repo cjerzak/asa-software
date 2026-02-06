@@ -1080,6 +1080,137 @@ test_that("recursion_limit=2 completes without error (no double finalize)", {
   expect_equal(as.integer(reticulate::py$counting_stub_llm$call_count), 1L)
 })
 
+test_that("finalize strips residual tool calls and returns terminal JSON (standard)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  # Simulates finalize-time bad behavior: model emits a tool call with empty content.
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _ResidualToolCallLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(\n",
+    "            content='',\n",
+    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
+    "        )\n\n",
+    "residual_tool_llm = _ResidualToolCallLLM()\n"
+  ))
+
+  expected_schema <- list(
+    status = "string",
+    items = "array",
+    missing = "array",
+    notes = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$residual_tool_llm,
+    tools = list()
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return JSON")),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(recursion_limit = 2L)
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+
+  last_msg <- final_state$messages[[length(final_state$messages)]]
+  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
+  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+})
+
+test_that("finalize strips residual tool calls and returns terminal JSON (memory folding)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _ResidualToolCallLLM_Memory:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(\n",
+    "            content='',\n",
+    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
+    "        )\n\n",
+    "residual_tool_llm_memory = _ResidualToolCallLLM_Memory()\n"
+  ))
+
+  expected_schema <- list(
+    status = "string",
+    items = "array",
+    missing = "array",
+    notes = "string"
+  )
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$residual_tool_llm_memory,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return JSON")),
+      summary = "",
+      archive = list(),
+      fold_stats = reticulate::dict(fold_count = 0L),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 2L,
+      configurable = list(thread_id = "test_residual_finalize_memory")
+    )
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+
+  last_msg <- final_state$messages[[length(final_state$messages)]]
+  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
+  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+})
+
 test_that("recursion_limit=1 does not produce unhandled crash", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c(

@@ -3411,6 +3411,128 @@ def _message_content_to_text(content: Any) -> str:
         return ""
 
 
+def _extract_response_tool_calls(response: Any) -> list:
+    """Best-effort extraction of tool calls from an LLM response object."""
+    if response is None:
+        return []
+    try:
+        if isinstance(response, dict):
+            tc = response.get("tool_calls")
+            if tc:
+                return list(tc) if isinstance(tc, list) else [tc]
+    except Exception:
+        pass
+    try:
+        tc = getattr(response, "tool_calls", None)
+        if tc:
+            return list(tc) if isinstance(tc, list) else [tc]
+    except Exception:
+        pass
+    try:
+        extra = getattr(response, "additional_kwargs", None)
+        if isinstance(extra, dict):
+            tc = extra.get("tool_calls")
+            if tc:
+                return list(tc) if isinstance(tc, list) else [tc]
+    except Exception:
+        pass
+    return []
+
+
+def _strip_response_tool_calls(response: Any) -> Any:
+    """Remove tool call metadata from a response (best-effort)."""
+    if response is None:
+        return response
+
+    if isinstance(response, dict):
+        try:
+            if "tool_calls" in response:
+                response["tool_calls"] = []
+        except Exception:
+            pass
+        try:
+            extra = response.get("additional_kwargs")
+            if isinstance(extra, dict) and "tool_calls" in extra:
+                cleaned = dict(extra)
+                cleaned.pop("tool_calls", None)
+                response["additional_kwargs"] = cleaned
+        except Exception:
+            pass
+        return response
+
+    try:
+        response.tool_calls = []
+    except Exception:
+        pass
+    try:
+        response.invalid_tool_calls = []
+    except Exception:
+        pass
+    try:
+        extra = getattr(response, "additional_kwargs", None)
+        if isinstance(extra, dict) and "tool_calls" in extra:
+            cleaned = dict(extra)
+            cleaned.pop("tool_calls", None)
+            response.additional_kwargs = cleaned
+    except Exception:
+        pass
+
+    if _extract_response_tool_calls(response):
+        text = _message_content_to_text(getattr(response, "content", None))
+        try:
+            from langchain_core.messages import AIMessage
+            return AIMessage(content=text or "")
+        except Exception:
+            return response
+    return response
+
+
+def _sanitize_finalize_response(
+    response: Any,
+    expected_schema: Any,
+    *,
+    schema_source: Optional[str] = None,
+    context: str = "",
+    debug: bool = False,
+) -> tuple[Any, Optional[Dict[str, Any]]]:
+    """Ensure finalize responses are terminal (no pending tool calls)."""
+    tool_calls = _extract_response_tool_calls(response)
+    if not tool_calls:
+        return response, None
+
+    response = _strip_response_tool_calls(response)
+    content = getattr(response, "content", None)
+    text = _message_content_to_text(content)
+    repaired = False
+
+    if not text and expected_schema is not None:
+        seed = "{}" if isinstance(expected_schema, dict) else "[]"
+        fallback_json = repair_json_output_to_schema(seed, expected_schema, fallback_on_failure=True)
+        if fallback_json:
+            repaired = True
+            try:
+                response.content = fallback_json
+            except Exception:
+                try:
+                    from langchain_core.messages import AIMessage
+                    response = AIMessage(content=fallback_json)
+                except Exception:
+                    pass
+
+    event = {
+        "repair_applied": True,
+        "repair_reason": "residual_tool_calls_no_content" if repaired else "residual_tool_calls",
+        "missing_keys_count": 0,
+        "missing_keys_sample": [],
+        "fallback_on_failure": bool(expected_schema is not None),
+        "schema_source": schema_source,
+        "context": context,
+    }
+    if debug or str(os.environ.get("ASA_LOG_JSON_REPAIR", "")).lower() in {"1", "true", "yes"}:
+        logger.info("json_repair=%s", event)
+    return response, event
+
+
 def _compact_tool_output(content_text: str, full_results_limit: int = 8) -> str:
     """Structure-preserving compaction for search tool output.
 
@@ -3837,6 +3959,18 @@ def create_memory_folding_agent(
             full_messages = _build_full_messages(system_msg, messages, summary, archive)
             response = model_with_tools.invoke(full_messages)
 
+        repair_events: List[Dict[str, Any]] = []
+        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
+            response, finalize_event = _sanitize_finalize_response(
+                response,
+                expected_schema,
+                schema_source=expected_schema_source,
+                context="agent",
+                debug=debug,
+            )
+            if finalize_event:
+                repair_events.append(finalize_event)
+
         force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
         response, repair_event = _repair_best_effort_json(
             expected_schema,
@@ -3853,7 +3987,9 @@ def create_memory_folding_agent(
             "expected_schema_source": expected_schema_source,
         }
         if repair_event:
-            out["json_repair"] = [repair_event]
+            repair_events.append(repair_event)
+        if repair_events:
+            out["json_repair"] = repair_events
         # Set stop_reason when agent_node itself ran in finalize mode,
         # so routing can skip the redundant finalize_answer node.
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
@@ -3873,6 +4009,16 @@ def create_memory_folding_agent(
         system_msg = SystemMessage(content=_final_system_prompt(summary, scratchpad=scratchpad, remaining=remaining))
         full_messages = _build_full_messages(system_msg, messages, summary, archive)
         response = model.invoke(full_messages)
+        repair_events: List[Dict[str, Any]] = []
+        response, finalize_event = _sanitize_finalize_response(
+            response,
+            expected_schema,
+            schema_source=expected_schema_source,
+            context="finalize",
+            debug=debug,
+        )
+        if finalize_event:
+            repair_events.append(finalize_event)
         response, repair_event = _repair_best_effort_json(
             expected_schema,
             response,
@@ -3884,7 +4030,9 @@ def create_memory_folding_agent(
 
         out = {"messages": [response], "stop_reason": "recursion_limit"}
         if repair_event:
-            out["json_repair"] = [repair_event]
+            repair_events.append(repair_event)
+        if repair_events:
+            out["json_repair"] = repair_events
         return out
 
     def summarize_conversation(state: MemoryFoldingAgentState) -> dict:
@@ -4456,6 +4604,18 @@ def create_standard_agent(
             full_messages = [system_msg] + list(messages)
             response = model_with_tools.invoke(full_messages)
 
+        repair_events: List[Dict[str, Any]] = []
+        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
+            response, finalize_event = _sanitize_finalize_response(
+                response,
+                expected_schema,
+                schema_source=expected_schema_source,
+                context="agent",
+                debug=debug,
+            )
+            if finalize_event:
+                repair_events.append(finalize_event)
+
         force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
         response, repair_event = _repair_best_effort_json(
             expected_schema,
@@ -4468,7 +4628,9 @@ def create_standard_agent(
 
         out = {"messages": [response], "expected_schema": expected_schema, "expected_schema_source": expected_schema_source}
         if repair_event:
-            out["json_repair"] = [repair_event]
+            repair_events.append(repair_event)
+        if repair_events:
+            out["json_repair"] = repair_events
         # Set stop_reason when agent_node itself ran in finalize mode,
         # so routing can skip the redundant finalize_answer node.
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
@@ -4484,6 +4646,16 @@ def create_standard_agent(
         system_msg = SystemMessage(content=_final_system_prompt(scratchpad=scratchpad, remaining=remaining))
         full_messages = [system_msg] + list(messages)
         response = model.invoke(full_messages)
+        repair_events: List[Dict[str, Any]] = []
+        response, finalize_event = _sanitize_finalize_response(
+            response,
+            expected_schema,
+            schema_source=expected_schema_source,
+            context="finalize",
+            debug=debug,
+        )
+        if finalize_event:
+            repair_events.append(finalize_event)
         response, repair_event = _repair_best_effort_json(
             expected_schema,
             response,
@@ -4494,7 +4666,9 @@ def create_standard_agent(
         )
         out = {"messages": [response], "stop_reason": "recursion_limit"}
         if repair_event:
-            out["json_repair"] = [repair_event]
+            repair_events.append(repair_event)
+        if repair_events:
+            out["json_repair"] = repair_events
         return out
 
     def should_continue(state: StandardAgentState) -> str:
