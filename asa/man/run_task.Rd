@@ -102,7 +102,7 @@ An \code{asa_result} object with:
       fold_chars_input, fold_summary_chars, fold_trigger_reason,
       fold_safe_boundary_idx, fold_compression_ratio, fold_parse_success,
       and fold_summarizer_latency_m.
-}
+  }
 }
 \description{
 Executes a research task using the AI search agent with a structured prompt
