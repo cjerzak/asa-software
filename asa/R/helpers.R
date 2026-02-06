@@ -1419,6 +1419,20 @@ configure_temporal <- function(time_filter = NULL) {
   fn()
 }
 
+#' Resolve a single option from config
+#'
+#' Returns \code{value} unless it is \code{NULL} and \code{config[[key]]}
+#' exists, in which case the config value is returned.
+#'
+#' @param value Explicit value (returned if non-NULL).
+#' @param config Configuration list to fall back to.
+#' @param key Key to look up in \code{config}.
+#' @return The resolved value.
+#' @keywords internal
+.resolve_option <- function(value, config, key) {
+  if (is.null(value) && is.list(config) && !is.null(config[[key]])) config[[key]] else value
+}
+
 #' Resolve Webpage Reader Settings
 #'
 #' Internal helper that merges per-call webpage reader options with defaults
@@ -1454,10 +1468,6 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param webpage_user_agent User-Agent string for webpage fetches, or NULL.
 #' @return List with resolved settings
 #' @keywords internal
-.resolve_option <- function(value, config, key) {
-  if (is.null(value) && is.list(config) && !is.null(config[[key]])) config[[key]] else value
-}
-
 .resolve_webpage_reader_settings <- function(config_search = NULL,
                                              allow_read_webpages = NULL,
                                              webpage_relevance_mode = NULL,

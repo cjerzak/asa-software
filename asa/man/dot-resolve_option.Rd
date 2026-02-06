@@ -2,62 +2,22 @@
 % Please edit documentation in R/helpers.R
 \name{.resolve_option}
 \alias{.resolve_option}
-\title{Resolve Webpage Reader Settings}
+\title{Resolve a single option from config}
 \usage{
 .resolve_option(value, config, key)
 }
 \arguments{
-\item{config_search}{asa_search object or list of search settings}
+\item{value}{Explicit value (returned if non-NULL).}
 
-\item{allow_read_webpages}{TRUE/FALSE/NULL}
+\item{config}{Configuration list to fall back to.}
 
-\item{webpage_relevance_mode}{"auto", "lexical", "embeddings", or NULL}
-
-\item{webpage_embedding_provider}{"auto", "openai", "sentence_transformers", or NULL}
-
-\item{webpage_embedding_model}{Embedding model identifier or NULL}
-
-\item{webpage_timeout}{OpenWebpage timeout in seconds, or NULL to use the
-Python default.}
-
-\item{webpage_max_bytes}{OpenWebpage download cap in bytes, or NULL to use
-the Python default.}
-
-\item{webpage_max_chars}{OpenWebpage output cap in characters, or NULL to use
-the Python default.}
-
-\item{webpage_max_chunks}{Max relevant excerpts to return, or NULL to use the
-Python default.}
-
-\item{webpage_chunk_chars}{Approximate chunk size (characters), or NULL to
-use the Python default.}
-
-\item{webpage_embedding_api_base}{OpenAI-compatible base URL for embeddings,
-or NULL to use the Python default.}
-
-\item{webpage_prefilter_k}{Optional lexical prefilter size before embedding
-selection.}
-
-\item{webpage_use_mmr}{Whether to apply maximal marginal relevance (MMR) for
-diverse excerpts.}
-
-\item{webpage_mmr_lambda}{MMR tradeoff between relevance (1.0) and diversity (0.0).}
-
-\item{webpage_cache_enabled}{Enable per-run caching, or NULL to use the Python
-default.}
-
-\item{webpage_cache_max_entries}{Max cached entries per run, or NULL.}
-
-\item{webpage_cache_max_text_chars}{Max extracted text chars to cache per page,
-or NULL.}
-
-\item{webpage_user_agent}{User-Agent string for webpage fetches, or NULL.}
+\item{key}{Key to look up in \code{config}.}
 }
 \value{
-List with resolved settings
+The resolved value.
 }
 \description{
-Internal helper that merges per-call webpage reader options with defaults
-from config$search.
+Returns \code{value} unless it is \code{NULL} and \code{config[[key]]}
+exists, in which case the config value is returned.
 }
 \keyword{internal}
