@@ -134,6 +134,19 @@ asa_test_import_from_path_or_skip <- function(module_name, python_path) {
   )
 }
 
+asa_test_import_module <- function(module_name,
+                                   required_file = paste0(module_name, ".py"),
+                                   required_modules = NULL,
+                                   initialize = FALSE) {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = required_file, initialize = initialize
+  )
+  if (!is.null(required_modules)) {
+    asa_test_skip_if_missing_python_modules(required_modules)
+  }
+  reticulate::import_from_path(module_name, path = python_path)
+}
+
 asa_test_recursion_limit_prompt <- function() {
   paste0(
     "You are doing a multi-step research task.\n",

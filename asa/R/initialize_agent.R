@@ -418,19 +418,57 @@ initialize_agent <- function(backend = NULL,
     max_bucket_size = 1L
   )
 
-  if (backend == "openai") {
-    chat_models <- reticulate::import("langchain_openai")
-    llm <- chat_models$ChatOpenAI(
-      model_name = model,
-      openai_api_key = Sys.getenv("OPENAI_API_KEY"),
-      openai_api_base = Sys.getenv("OPENAI_API_BASE", unset = "https://api.openai.com/v1"),
-      temperature = 0.5,
-      streaming = TRUE,
-      http_client = clients$direct,  # Use direct client (no proxy) - OpenAI fails through Tor
-      # http_async_client omitted: LangChain manages its own (R-CRIT-001 fix)
-      include_response_headers = FALSE,
-      rate_limiter = rate_limiter
+  # OpenAI-compatible backends share ChatOpenAI with per-backend config.
+  # Build config only for the requested backend to avoid eager side-effects
+  # (e.g. .get_local_ip() for exo when not using exo).
+  openai_compat_names <- c("openai", "xai", "exo", "openrouter")
+
+  if (backend %in% openai_compat_names) {
+    cfg <- switch(backend,
+      openai = list(
+        env = "OPENAI_API_KEY",
+        base = Sys.getenv("OPENAI_API_BASE", unset = "https://api.openai.com/v1"),
+        temperature = 0.5,
+        http_client = clients$direct,
+        include_response_headers = FALSE,
+        rate_limiter = rate_limiter
+      ),
+      xai = list(
+        env = "XAI_API_KEY",
+        base = "https://api.x.ai/v1",
+        temperature = 0.5,
+        rate_limiter = rate_limiter
+      ),
+      exo = list(
+        base = sprintf("http://%s:52415/v1", .get_local_ip()),
+        temperature = 0.01
+      ),
+      openrouter = list(
+        env = "OPENROUTER_API_KEY",
+        base = "https://openrouter.ai/api/v1",
+        temperature = 0.5,
+        http_client = clients$direct,
+        include_response_headers = FALSE,
+        rate_limiter = rate_limiter,
+        default_headers = list(
+          "HTTP-Referer" = "https://github.com/cjerzak/asa-software",
+          "X-Title" = "asa"
+        )
+      )
     )
+    chat_models <- reticulate::import("langchain_openai")
+    args <- list(
+      model_name = model,
+      openai_api_base = cfg$base,
+      temperature = cfg$temperature,
+      streaming = TRUE
+    )
+    if (!is.null(cfg$env)) args$openai_api_key <- Sys.getenv(cfg$env)
+    if (!is.null(cfg$http_client)) args$http_client <- cfg$http_client
+    if (!is.null(cfg$include_response_headers)) args$include_response_headers <- cfg$include_response_headers
+    if (!is.null(cfg$rate_limiter)) args$rate_limiter <- cfg$rate_limiter
+    if (!is.null(cfg$default_headers)) args$default_headers <- cfg$default_headers
+    llm <- do.call(chat_models$ChatOpenAI, args)
   } else if (backend == "groq") {
     chat_models <- reticulate::import("langchain_groq")
     llm <- chat_models$ChatGroq(
@@ -439,47 +477,6 @@ initialize_agent <- function(backend = NULL,
       temperature = 0.01,
       streaming = TRUE,
       rate_limiter = rate_limiter
-    )
-  } else if (backend == "xai") {
-    # xAI uses OpenAI-compatible API
-    chat_models <- reticulate::import("langchain_openai")
-    llm <- chat_models$ChatOpenAI(
-      model_name = model,
-      openai_api_key = Sys.getenv("XAI_API_KEY"),
-      openai_api_base = "https://api.x.ai/v1",
-      temperature = 0.5,
-      streaming = TRUE,
-      rate_limiter = rate_limiter
-    )
-  } else if (backend == "exo") {
-    # Exo is a local LLM server
-    chat_models <- reticulate::import("langchain_openai")
-    local_ip <- .get_local_ip()
-    base_url <- sprintf("http://%s:52415/v1", local_ip)
-
-    llm <- chat_models$ChatOpenAI(
-      model_name = model,
-      openai_api_base = base_url,
-      temperature = 0.01,
-      streaming = TRUE
-    )
-  } else if (backend == "openrouter") {
-    # OpenRouter uses OpenAI-compatible API with provider/model format
-    chat_models <- reticulate::import("langchain_openai")
-    llm <- chat_models$ChatOpenAI(
-      model_name = model,
-      openai_api_key = Sys.getenv("OPENROUTER_API_KEY"),
-      openai_api_base = "https://openrouter.ai/api/v1",
-      temperature = 0.5,
-      streaming = TRUE,
-      http_client = clients$direct,  # Use direct client (no proxy) - avoid Tor for API calls
-      # http_async_client omitted: LangChain manages its own (R-CRIT-001 fix)
-      include_response_headers = FALSE,
-      rate_limiter = rate_limiter,
-      default_headers = list(
-        "HTTP-Referer" = "https://github.com/cjerzak/asa-software",
-        "X-Title" = "asa"
-      )
     )
   } else if (backend == "gemini") {
     chat_models <- reticulate::import("langchain_google_genai")

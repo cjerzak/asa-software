@@ -3661,6 +3661,40 @@ class MemoryFoldingAgentState(TypedDict):
     scratchpad: Annotated[list, add_to_list]
 
 
+# ────────────────────────────────────────────────────────────────────────
+# Shared agent helpers (used by both memory-folding and standard agents)
+# ────────────────────────────────────────────────────────────────────────
+FINALIZE_WHEN_REMAINING_STEPS_LTE = 2
+
+
+def _create_tool_node_with_scratchpad(base_tool_node):
+    """Wrap a ToolNode to extract save_finding calls into scratchpad state."""
+    def tool_node_with_scratchpad(state):
+        """Execute tools, extract scratchpad entries into state."""
+        scratchpad_entries = []
+        last_msg = (state.get("messages") or [None])[-1]
+        for tc in getattr(last_msg, "tool_calls", []) or []:
+            if tc.get("name") == "save_finding":
+                finding = (tc.get("args") or {}).get("finding", "")
+                category = (tc.get("args") or {}).get("category", "fact")
+                if finding:
+                    scratchpad_entries.append({
+                        "finding": finding[:500],
+                        "category": category if category in ("fact", "observation", "todo", "insight") else "fact",
+                    })
+        result = base_tool_node.invoke(state)
+        if scratchpad_entries:
+            result["scratchpad"] = scratchpad_entries
+        return result
+    return tool_node_with_scratchpad
+
+
+def _should_force_finalize(state) -> bool:
+    """Check if remaining steps are too low to continue tool use."""
+    rem = remaining_steps_value(state)
+    return rem is not None and rem <= FINALIZE_WHEN_REMAINING_STEPS_LTE
+
+
 def create_memory_folding_agent(
     model,
     tools: list,
@@ -3708,37 +3742,7 @@ def create_memory_folding_agent(
     # Create tool executor with scratchpad wrapper
     from langgraph.prebuilt import ToolNode
     base_tool_node = ToolNode(tools_with_scratchpad)
-
-    def tool_node_with_scratchpad(state):
-        """Execute tools, extract scratchpad entries into state."""
-        scratchpad_entries = []
-        last_msg = (state.get("messages") or [None])[-1]
-        for tc in getattr(last_msg, "tool_calls", []) or []:
-            if tc.get("name") == "save_finding":
-                finding = (tc.get("args") or {}).get("finding", "")
-                category = (tc.get("args") or {}).get("category", "fact")
-                if finding:
-                    scratchpad_entries.append({
-                        "finding": finding[:500],
-                        "category": category if category in ("fact", "observation", "todo", "insight") else "fact",
-                    })
-        result = base_tool_node.invoke(state)
-        if scratchpad_entries:
-            result["scratchpad"] = scratchpad_entries
-        return result
-
-    # When we are close to the recursion limit, force a best-effort final answer
-    # instead of taking more tool/agent steps that could trigger GraphRecursionError.
-    # remaining_steps counts total steps remaining INCLUDING the current node.
-    # If <= 2, we may not have enough budget for tool + follow-up agent steps.
-    FINALIZE_WHEN_REMAINING_STEPS_LTE = 2
-
-    def _remaining_steps(state: MemoryFoldingAgentState):
-        return remaining_steps_value(state)
-
-    def _should_force_finalize(state: MemoryFoldingAgentState) -> bool:
-        rem = _remaining_steps(state)
-        return rem is not None and rem <= FINALIZE_WHEN_REMAINING_STEPS_LTE
+    tool_node_with_scratchpad = _create_tool_node_with_scratchpad(base_tool_node)
 
     def _build_full_messages(system_msg, messages, summary, archive):
         """Insert optional retrieval context from archive as a user-level message."""
@@ -3804,7 +3808,7 @@ def create_memory_folding_agent(
         if debug:
             logger.info(f"Agent node: {len(messages)} messages, memory={_memory_has_content(summary)}, archive={bool(archive)}, scratchpad={len(scratchpad)}")
 
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         # When near the recursion limit, use final mode to avoid empty/tool-ish responses
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             system_msg = SystemMessage(content=_final_system_prompt(summary, scratchpad=scratchpad, remaining=remaining))
@@ -3843,7 +3847,7 @@ def create_memory_folding_agent(
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)
 
@@ -4195,7 +4199,7 @@ def create_memory_folding_agent(
         if state.get("stop_reason") == "recursion_limit":
             return "end"
 
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         # If there are no steps left after this node, force finalization to produce valid output.
         if remaining is not None and remaining <= 0:
             return "finalize"
@@ -4238,7 +4242,7 @@ def create_memory_folding_agent(
         - 'finalize': If near recursion limit
         - 'agent': Always (let agent process tool results first)
         """
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= 0:
             return "finalize"
         if _should_force_finalize(state):
@@ -4257,7 +4261,7 @@ def create_memory_folding_agent(
         if not messages:
             return "end"
 
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= 0:
             return "finalize"
 
@@ -4362,40 +4366,12 @@ def create_standard_agent(
 
     model_with_tools = model.bind_tools(tools_with_scratchpad)
     base_tool_node = ToolNode(tools_with_scratchpad)
-
-    def tool_node_with_scratchpad(state):
-        """Execute tools, extract scratchpad entries into state."""
-        scratchpad_entries = []
-        last_msg = (state.get("messages") or [None])[-1]
-        for tc in getattr(last_msg, "tool_calls", []) or []:
-            if tc.get("name") == "save_finding":
-                finding = (tc.get("args") or {}).get("finding", "")
-                category = (tc.get("args") or {}).get("category", "fact")
-                if finding:
-                    scratchpad_entries.append({
-                        "finding": finding[:500],
-                        "category": category if category in ("fact", "observation", "todo", "insight") else "fact",
-                    })
-        result = base_tool_node.invoke(state)
-        if scratchpad_entries:
-            result["scratchpad"] = scratchpad_entries
-        return result
-
-    # remaining_steps counts total steps remaining INCLUDING the current node.
-    # If <= 2, we may not have enough budget for tool + follow-up agent steps.
-    FINALIZE_WHEN_REMAINING_STEPS_LTE = 2
-
-    def _remaining_steps(state: StandardAgentState):
-        return remaining_steps_value(state)
-
-    def _should_force_finalize(state: StandardAgentState) -> bool:
-        rem = _remaining_steps(state)
-        return rem is not None and rem <= FINALIZE_WHEN_REMAINING_STEPS_LTE
+    tool_node_with_scratchpad = _create_tool_node_with_scratchpad(base_tool_node)
 
     def agent_node(state: StandardAgentState) -> dict:
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source")
         if expected_schema is None:
@@ -4438,7 +4414,7 @@ def create_standard_agent(
     def finalize_answer(state: StandardAgentState) -> dict:
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)
         system_msg = SystemMessage(content=_final_system_prompt(scratchpad=scratchpad, remaining=remaining))
@@ -4470,7 +4446,7 @@ def create_standard_agent(
         if state.get("stop_reason") == "recursion_limit":
             return "end"
 
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= 0:
             return "finalize"
 
@@ -4483,7 +4459,7 @@ def create_standard_agent(
         return "end"
 
     def after_tools(state: StandardAgentState) -> str:
-        remaining = _remaining_steps(state)
+        remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= 0:
             return "finalize"
         if _should_force_finalize(state):

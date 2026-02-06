@@ -1142,6 +1142,10 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param webpage_user_agent User-Agent string for webpage fetches, or NULL.
 #' @return List with resolved settings
 #' @keywords internal
+.resolve_option <- function(value, config, key) {
+  if (is.null(value) && is.list(config) && !is.null(config[[key]])) config[[key]] else value
+}
+
 .resolve_webpage_reader_settings <- function(config_search = NULL,
                                              allow_read_webpages = NULL,
                                              webpage_relevance_mode = NULL,
@@ -1160,144 +1164,53 @@ configure_temporal <- function(time_filter = NULL) {
                                              webpage_cache_max_entries = NULL,
                                              webpage_cache_max_text_chars = NULL,
                                              webpage_user_agent = NULL) {
-  allow_rw <- allow_read_webpages
-  if (is.null(allow_rw) &&
-      is.list(config_search) &&
-      !is.null(config_search$allow_read_webpages)) {
-    allow_rw <- config_search$allow_read_webpages
-  }
-
-  relevance_mode <- webpage_relevance_mode
-  if (is.null(relevance_mode) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_relevance_mode)) {
-    relevance_mode <- config_search$webpage_relevance_mode
-  }
-
-  embedding_provider <- webpage_embedding_provider
-  if (is.null(embedding_provider) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_embedding_provider)) {
-    embedding_provider <- config_search$webpage_embedding_provider
-  }
-
-  embedding_model <- webpage_embedding_model
-  if (is.null(embedding_model) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_embedding_model)) {
-    embedding_model <- config_search$webpage_embedding_model
-  }
-
-  timeout <- webpage_timeout
-  if (is.null(timeout) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_timeout)) {
-    timeout <- config_search$webpage_timeout
-  }
-
-  max_bytes <- webpage_max_bytes
-  if (is.null(max_bytes) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_max_bytes)) {
-    max_bytes <- config_search$webpage_max_bytes
-  }
-
-  max_chars <- webpage_max_chars
-  if (is.null(max_chars) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_max_chars)) {
-    max_chars <- config_search$webpage_max_chars
-  }
-
-  max_chunks <- webpage_max_chunks
-  if (is.null(max_chunks) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_max_chunks)) {
-    max_chunks <- config_search$webpage_max_chunks
-  }
-
-  chunk_chars <- webpage_chunk_chars
-  if (is.null(chunk_chars) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_chunk_chars)) {
-    chunk_chars <- config_search$webpage_chunk_chars
-  }
-
-  embedding_api_base <- webpage_embedding_api_base
-  if (is.null(embedding_api_base) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_embedding_api_base)) {
-    embedding_api_base <- config_search$webpage_embedding_api_base
-  }
-
-  prefilter_k <- webpage_prefilter_k
-  if (is.null(prefilter_k) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_prefilter_k)) {
-    prefilter_k <- config_search$webpage_prefilter_k
-  }
-
-  use_mmr <- webpage_use_mmr
-  if (is.null(use_mmr) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_use_mmr)) {
-    use_mmr <- config_search$webpage_use_mmr
-  }
-
-  mmr_lambda <- webpage_mmr_lambda
-  if (is.null(mmr_lambda) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_mmr_lambda)) {
-    mmr_lambda <- config_search$webpage_mmr_lambda
-  }
-
-  cache_enabled <- webpage_cache_enabled
-  if (is.null(cache_enabled) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_cache_enabled)) {
-    cache_enabled <- config_search$webpage_cache_enabled
-  }
-
-  cache_max_entries <- webpage_cache_max_entries
-  if (is.null(cache_max_entries) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_cache_max_entries)) {
-    cache_max_entries <- config_search$webpage_cache_max_entries
-  }
-
-  cache_max_text_chars <- webpage_cache_max_text_chars
-  if (is.null(cache_max_text_chars) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_cache_max_text_chars)) {
-    cache_max_text_chars <- config_search$webpage_cache_max_text_chars
-  }
-
-  user_agent <- webpage_user_agent
-  if (is.null(user_agent) &&
-      is.list(config_search) &&
-      !is.null(config_search$webpage_user_agent)) {
-    user_agent <- config_search$webpage_user_agent
-  }
-
-  list(
-    allow_read_webpages = allow_rw,
-    relevance_mode = relevance_mode,
-    embedding_provider = embedding_provider,
-    embedding_model = embedding_model,
-    timeout = timeout,
-    max_bytes = max_bytes,
-    max_chars = max_chars,
-    max_chunks = max_chunks,
-    chunk_chars = chunk_chars,
-    embedding_api_base = embedding_api_base,
-    prefilter_k = prefilter_k,
-    use_mmr = use_mmr,
-    mmr_lambda = mmr_lambda,
-    cache_enabled = cache_enabled,
-    cache_max_entries = cache_max_entries,
-    cache_max_text_chars = cache_max_text_chars,
-    user_agent = user_agent
+  # Map from result-list key -> (explicit value, config_search key)
+  fields <- list(
+    allow_read_webpages  = allow_read_webpages,
+    relevance_mode       = webpage_relevance_mode,
+    embedding_provider   = webpage_embedding_provider,
+    embedding_model      = webpage_embedding_model,
+    timeout              = webpage_timeout,
+    max_bytes            = webpage_max_bytes,
+    max_chars            = webpage_max_chars,
+    max_chunks           = webpage_max_chunks,
+    chunk_chars          = webpage_chunk_chars,
+    embedding_api_base   = webpage_embedding_api_base,
+    prefilter_k          = webpage_prefilter_k,
+    use_mmr              = webpage_use_mmr,
+    mmr_lambda           = webpage_mmr_lambda,
+    cache_enabled        = webpage_cache_enabled,
+    cache_max_entries    = webpage_cache_max_entries,
+    cache_max_text_chars = webpage_cache_max_text_chars,
+    user_agent           = webpage_user_agent
   )
+
+  # config_search keys use the "webpage_" prefix except allow_read_webpages
+  config_keys <- c(
+    allow_read_webpages  = "allow_read_webpages",
+    relevance_mode       = "webpage_relevance_mode",
+    embedding_provider   = "webpage_embedding_provider",
+    embedding_model      = "webpage_embedding_model",
+    timeout              = "webpage_timeout",
+    max_bytes            = "webpage_max_bytes",
+    max_chars            = "webpage_max_chars",
+    max_chunks           = "webpage_max_chunks",
+    chunk_chars          = "webpage_chunk_chars",
+    embedding_api_base   = "webpage_embedding_api_base",
+    prefilter_k          = "webpage_prefilter_k",
+    use_mmr              = "webpage_use_mmr",
+    mmr_lambda           = "webpage_mmr_lambda",
+    cache_enabled        = "webpage_cache_enabled",
+    cache_max_entries    = "webpage_cache_max_entries",
+    cache_max_text_chars = "webpage_cache_max_text_chars",
+    user_agent           = "webpage_user_agent"
+  )
+
+  result <- lapply(names(fields), function(nm) {
+    .resolve_option(fields[[nm]], config_search, config_keys[[nm]])
+  })
+  names(result) <- names(fields)
+  result
 }
 
 

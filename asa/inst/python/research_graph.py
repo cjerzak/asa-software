@@ -25,6 +25,7 @@ from langgraph.prebuilt import ToolNode
 
 from state_utils import (
     add_to_list,
+    hash_result,
     merge_dicts,
     parse_llm_json,
     should_stop_for_recursion,
@@ -117,15 +118,7 @@ class ResearchState(TypedDict):
 # ────────────────────────────────────────────────────────────────────────
 def _hash_result(fields: Dict[str, Any], schema: Dict[str, str]) -> str:
     """Create a hash for deduplication based on ALL schema fields."""
-    key_fields = list(schema.keys())
-    key_values = []
-    for field_name in key_fields:
-        val = fields.get(field_name, "")
-        if isinstance(val, str):
-            val = val.lower().strip()
-        key_values.append(str(val))
-    key_string = "|".join(key_values)
-    return hashlib.md5(key_string.encode()).hexdigest()
+    return hash_result(fields, schema)
 
 
 def _fuzzy_match_name(name1: str, name2: str) -> float:

@@ -3,7 +3,6 @@
 # LangGraph pipeline for auditing enumeration results.
 # Performs completeness, consistency, gap, and anomaly checks.
 #
-import hashlib
 import json
 import logging
 import re
@@ -13,7 +12,7 @@ from typing import Any, Annotated, Dict, List, Optional, TypedDict
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.graph import END, StateGraph
 
-from state_utils import add_to_list, merge_dicts, parse_llm_json
+from state_utils import add_to_list, hash_result, merge_dicts, parse_llm_json
 
 logger = logging.getLogger(__name__)
 
@@ -288,13 +287,11 @@ def create_anomaly_node(llm):
         issues = []
         flagged_rows = []
 
-        # Check for duplicates using hash
+        # Check for duplicates using hash (first 3 schema fields for audit)
         seen_hashes = {}
+        audit_key_fields = list(schema.keys())[:3]
         for idx, row in enumerate(data):
-            # Create hash from first 3 fields
-            key_fields = list(schema.keys())[:3]
-            key_values = [str(row.get(f, "")).strip().lower() for f in key_fields]
-            row_hash = hashlib.md5("|".join(key_values).encode()).hexdigest()
+            row_hash = hash_result(row, schema, key_fields=audit_key_fields)
 
             if row_hash in seen_hashes:
                 prev_idx = seen_hashes[row_hash]

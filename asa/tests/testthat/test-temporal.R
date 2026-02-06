@@ -176,9 +176,7 @@ test_that(".create_research_config defaults use_wayback to FALSE", {
 # ============================================================================
 
 test_that("_parse_date_string handles ISO 8601 formats", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   # ISO 8601 with Z suffix
   expect_equal(date_extractor$`_parse_date_string`("2024-01-15T10:30:00Z"), "2024-01-15")
@@ -191,9 +189,7 @@ test_that("_parse_date_string handles ISO 8601 formats", {
 })
 
 test_that("_parse_date_string handles human-readable formats", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   # Full month name
   expect_equal(date_extractor$`_parse_date_string`("January 15, 2024"), "2024-01-15")
@@ -206,9 +202,7 @@ test_that("_parse_date_string handles human-readable formats", {
 })
 
 test_that("_parse_date_string handles edge cases", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   # Empty string
   result <- date_extractor$`_parse_date_string`("")
@@ -224,9 +218,7 @@ test_that("_parse_date_string handles edge cases", {
 })
 
 test_that("_extract_from_url extracts dates from URL patterns", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   # YYYY/MM/DD pattern
   result <- date_extractor$`_extract_from_url`("https://example.com/2024/01/15/article")
@@ -245,9 +237,7 @@ test_that("_extract_from_url extracts dates from URL patterns", {
 })
 
 test_that("_extract_from_url handles ISO date pattern in URL", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   result <- date_extractor$`_extract_from_url`("https://example.com/post-2024-01-15-title")
   expect_true(length(result) > 0)
@@ -255,9 +245,7 @@ test_that("_extract_from_url handles ISO date pattern in URL", {
 })
 
 test_that("_extract_from_url handles boundary dates", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   # Leap year February 29 (valid)
   result <- date_extractor$`_extract_from_url`("https://example.com/2024/02/29/leap")
@@ -271,9 +259,7 @@ test_that("_extract_from_url handles boundary dates", {
 })
 
 test_that("verify_date_constraint validates after constraint", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   mock_html <- '
     <html>
@@ -318,9 +304,7 @@ test_that("verify_date_constraint validates after constraint", {
 })
 
 test_that("verify_date_constraint validates before constraint boundary", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   mock_html <- '
     <html>
@@ -346,9 +330,7 @@ test_that("verify_date_constraint validates before constraint boundary", {
 })
 
 test_that("verify_date_constraint validates before constraint", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   mock_html <- '
     <html>
@@ -381,9 +363,7 @@ test_that("verify_date_constraint validates before constraint", {
 })
 
 test_that("verify_date_constraint handles no date found", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   mock_html <- '<html><body><p>No date here</p></body></html>'
 
@@ -399,9 +379,7 @@ test_that("verify_date_constraint handles no date found", {
 })
 
 test_that("_extract_from_json_ld extracts datePublished", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
   bs4 <- reticulate::import("bs4")
 
   html <- '
@@ -423,9 +401,7 @@ test_that("_extract_from_json_ld extracts datePublished", {
 })
 
 test_that("_extract_from_meta_tags extracts article:published_time", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
   bs4 <- reticulate::import("bs4")
 
   html <- '
@@ -444,9 +420,7 @@ test_that("_extract_from_meta_tags extracts article:published_time", {
 })
 
 test_that("DateExtractionConfig has correct defaults", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   config <- date_extractor$DateExtractionConfig()
 
@@ -456,9 +430,7 @@ test_that("DateExtractionConfig has correct defaults", {
 })
 
 test_that("filter_results_by_date handles empty list", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   result <- date_extractor$filter_results_by_date(
     results = list(),
@@ -777,9 +749,7 @@ test_that("stopper continues when novelty remains above threshold", {
 # ============================================================================
 
 test_that("ExtractedDate dataclass works correctly", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   extracted <- date_extractor$ExtractedDate(
     date = "2023-06-15",
@@ -799,9 +769,7 @@ test_that("ExtractedDate dataclass works correctly", {
 # ============================================================================
 
 test_that("Date parsing handles ambiguous MM/DD vs DD/MM formats", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   # Unambiguous MM/DD/YYYY (month > 12 impossible as day)
   result <- date_extractor$`_parse_date_string`("01/15/2024")
@@ -847,9 +815,7 @@ test_that("SPARQL filter injection preserves query structure", {
 })
 
 test_that("URL extraction handles edge cases in paths", {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("bs4", "requests"))
-  date_extractor <- reticulate::import_from_path("date_extractor", path = python_path)
+  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
 
   # Date at end of URL
   result <- date_extractor$`_extract_from_url`("https://example.com/news/2024/06/15")

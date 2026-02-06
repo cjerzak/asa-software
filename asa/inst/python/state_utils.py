@@ -3,6 +3,7 @@
 # Shared utilities for LangGraph state management.
 # Provides state reducers, JSON parsing, and query parsing functions.
 #
+import hashlib
 import json
 import re
 from typing import Any, Dict, List, Optional, Tuple
@@ -83,6 +84,23 @@ def merge_dicts(existing: Dict, new: Dict) -> Dict:
     result = existing.copy()
     result.update(new)
     return result
+
+
+def hash_result(row: Dict[str, Any], schema: Dict[str, str],
+                key_fields: Optional[List[str]] = None) -> str:
+    """Create an MD5 hash for dedup based on selected schema fields.
+
+    Args:
+        row: Data row dict.
+        schema: Schema dict whose keys define the field universe.
+        key_fields: Explicit fields to hash.  Defaults to all schema keys.
+
+    Returns:
+        Hex MD5 digest string.
+    """
+    fields = key_fields if key_fields is not None else list(schema.keys())
+    values = [str(row.get(f, "")).lower().strip() for f in fields]
+    return hashlib.md5("|".join(values).encode()).hexdigest()
 
 
 def _scan_json_substring(content: str, start: int) -> Optional[str]:
