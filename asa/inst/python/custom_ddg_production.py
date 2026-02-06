@@ -3660,7 +3660,9 @@ class MemoryFoldingAgentState(TypedDict):
         summary: Long-term memory - structured summary of older interactions
         archive: Lossless archive of folded content (not injected into the prompt)
         fold_stats: Diagnostic metrics from the most recent fold (merge_dicts reducer).
-                    Includes fold_count (int) tracking number of times memory has been folded.
+                    Includes fold_count (int) plus fold diagnostics such as
+                    trigger reason, safe fold boundary, compression ratio,
+                    parse success, and summarizer latency.
         remaining_steps: Managed value populated by LangGraph (steps left before recursion_limit)
         scratchpad: Agent-saved findings that persist across memory folds
     """
@@ -3899,6 +3901,20 @@ def create_memory_folding_agent(
         current_summary = state.get("summary", "")
         current_fold_stats = state.get("fold_stats", {})
         fold_count = current_fold_stats.get("fold_count", 0)
+        total_chars_pre = sum(
+            len(_message_content_to_text(getattr(m, "content", "")) or "")
+            for m in messages
+        )
+        char_triggered = total_chars_pre > fold_char_budget
+        message_triggered = len(messages) > message_threshold
+        if char_triggered and message_triggered:
+            fold_trigger_reason = "char_budget_and_message_threshold"
+        elif char_triggered:
+            fold_trigger_reason = "char_budget"
+        elif message_triggered:
+            fold_trigger_reason = "message_threshold"
+        else:
+            fold_trigger_reason = "manual_or_unknown"
 
         def _compute_effective_keep_recent_messages(messages, keep_recent_exchanges):
             # keep_recent_exchanges counts full user/assistant exchanges, where an exchange
@@ -4155,10 +4171,13 @@ def create_memory_folding_agent(
             f"New transcript chunk (excerpted):\n{fold_text}\n"
         )
 
+        summarize_started = time.perf_counter()
         summary_response = summarizer_model.invoke([HumanMessage(content=summarize_prompt)])
+        fold_summarizer_latency_m = (time.perf_counter() - summarize_started) / 60.0
         summary_text = summary_response.content if hasattr(summary_response, "content") else str(summary_response)
         summary_text_str = _message_content_to_text(summary_text) or str(summary_text)
         parsed_memory = parse_llm_json(summary_text_str)
+        fold_parse_success = isinstance(parsed_memory, dict) and bool(parsed_memory)
         if not isinstance(parsed_memory, dict):
             parsed_memory = {}
         # Robust fallback: if the model didn't return JSON, store the text as a legacy fact
@@ -4187,6 +4206,11 @@ def create_memory_folding_agent(
         fold_messages_removed = len(remove_messages)
         fold_chars_input = len(fold_text)
         fold_summary_chars = len(json.dumps(new_memory, ensure_ascii=True))
+        fold_compression_ratio = (
+            float(fold_summary_chars) / float(fold_chars_input)
+            if fold_chars_input > 0
+            else 0.0
+        )
         fold_total_messages_removed = (
             current_fold_stats.get("fold_total_messages_removed", 0) + fold_messages_removed
         )
@@ -4201,6 +4225,11 @@ def create_memory_folding_agent(
                 "fold_total_messages_removed": fold_total_messages_removed,
                 "fold_chars_input": fold_chars_input,
                 "fold_summary_chars": fold_summary_chars,
+                "fold_trigger_reason": fold_trigger_reason,
+                "fold_safe_boundary_idx": safe_fold_idx,
+                "fold_compression_ratio": fold_compression_ratio,
+                "fold_parse_success": fold_parse_success,
+                "fold_summarizer_latency_m": fold_summarizer_latency_m,
             },
         }
 

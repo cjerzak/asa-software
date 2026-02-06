@@ -34,7 +34,12 @@ test_that("asa_response stores fold_stats correctly", {
     fold_messages_removed = 5L,
     fold_total_messages_removed = 8L,
     fold_chars_input = 1200L,
-    fold_summary_chars = 350L
+    fold_summary_chars = 350L,
+    fold_trigger_reason = "char_budget",
+    fold_safe_boundary_idx = 6L,
+    fold_compression_ratio = 0.29,
+    fold_parse_success = TRUE,
+    fold_summarizer_latency_m = 0.002
   )
   response <- asa_response(
     message = "Test response",
@@ -52,6 +57,11 @@ test_that("asa_response stores fold_stats correctly", {
   expect_equal(response$fold_stats$fold_total_messages_removed, 8L)
   expect_equal(response$fold_stats$fold_chars_input, 1200L)
   expect_equal(response$fold_stats$fold_summary_chars, 350L)
+  expect_equal(response$fold_stats$fold_trigger_reason, "char_budget")
+  expect_equal(response$fold_stats$fold_safe_boundary_idx, 6L)
+  expect_equal(response$fold_stats$fold_compression_ratio, 0.29)
+  expect_equal(response$fold_stats$fold_parse_success, TRUE)
+  expect_equal(response$fold_stats$fold_summarizer_latency_m, 0.002)
 })
 
 test_that("asa_response defaults fold_stats to empty list", {

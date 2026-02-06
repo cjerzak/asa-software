@@ -67,7 +67,9 @@
 #'     \item trace: Full execution trace (for "raw" output_format)
 #'     \item fold_stats: Memory folding diagnostics list (for "raw" output_format).
 #'       Includes fold_count, fold_messages_removed, fold_total_messages_removed,
-#'       fold_chars_input, and fold_summary_chars.
+#'       fold_chars_input, fold_summary_chars, fold_trigger_reason,
+#'       fold_safe_boundary_idx, fold_compression_ratio, fold_parse_success,
+#'       and fold_summarizer_latency_m.
 #'   }
 #'
 #' @details

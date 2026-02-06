@@ -653,7 +653,12 @@ test_that(".validate_asa_response accepts valid fold_stats", {
     fold_messages_removed = 3L,
     fold_total_messages_removed = 5L,
     fold_chars_input = 800L,
-    fold_summary_chars = 200L
+    fold_summary_chars = 200L,
+    fold_trigger_reason = "message_threshold",
+    fold_safe_boundary_idx = 4L,
+    fold_compression_ratio = 0.25,
+    fold_parse_success = TRUE,
+    fold_summarizer_latency_m = 0.001
   )))
 })
 

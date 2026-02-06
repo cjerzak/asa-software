@@ -516,6 +516,17 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   expect_equal(as.integer(fs$fold_messages_removed), as.integer(fs$fold_total_messages_removed))
   expect_true(as.integer(fs$fold_chars_input) > 0L)
   expect_true(as.integer(fs$fold_summary_chars) > 0L)
+  expect_true(as.character(fs$fold_trigger_reason) %in% c(
+    "char_budget",
+    "message_threshold",
+    "char_budget_and_message_threshold",
+    "manual_or_unknown"
+  ))
+  expect_true(as.integer(fs$fold_safe_boundary_idx) > 0L)
+  expect_true(is.finite(as.numeric(fs$fold_compression_ratio)))
+  expect_true(as.numeric(fs$fold_compression_ratio) >= 0)
+  expect_false(isTRUE(fs$fold_parse_success))
+  expect_true(as.numeric(fs$fold_summarizer_latency_m) >= 0)
 
   types <- vapply(
     final_state$messages,
@@ -632,6 +643,8 @@ test_that("memory folding updates summary and injects it into the next system pr
   )
 
   expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
+  fs <- as.list(final_state$fold_stats)
+  expect_true(isTRUE(fs$fold_parse_success))
   expect_true(is.list(final_state$summary))
   expect_true("facts" %in% names(final_state$summary))
   expect_true("FOLDED_SUMMARY" %in% unlist(final_state$summary$facts))
