@@ -36,4 +36,4 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3
-SystemRequirements: Python (>= 3.11), Conda, Tor (optional, for anonymous searching)
+SystemRequirements: Python (>= 3.14), Conda, Tor (optional, for anonymous searching)

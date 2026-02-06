@@ -213,6 +213,13 @@ test_that("run_task validation accepts recursion_limit", {
   expect_error(asa:::.validate_run_task("prompt", "text", NULL, FALSE, recursion_limit = 999L), "recursion_limit")
 })
 
+test_that("run_task rejects non-asa_config config", {
+  expect_error(
+    run_task("test prompt", config = list(foo = "bar")),
+    "asa_config object or NULL"
+  )
+})
+
 test_that("effective recursion_limit precedence is explicit > config > defaults", {
   expect_equal(
     asa:::.resolve_effective_recursion_limit(

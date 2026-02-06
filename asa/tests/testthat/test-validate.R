@@ -300,11 +300,11 @@ test_that(".validate_run_agent validates recursion_limit", {
 test_that(".validate_build_backend validates python_version format", {
   expect_silent(.validate_build_backend("asa_env", "auto", "3.13"))
   expect_silent(.validate_build_backend("asa_env", "auto", "3.9"))
-  expect_silent(.validate_build_backend("my_env", "/usr/bin/conda", "3.11"))
+  expect_silent(.validate_build_backend("my_env", "/usr/bin/conda", "3.14"))
 
   expect_error(.validate_build_backend("asa_env", "auto", "python3.13"), 'format "X.Y"')
   expect_error(.validate_build_backend("asa_env", "auto", "3"), 'format "X.Y"')
-  expect_error(.validate_build_backend("asa_env", "auto", "3.11.5"), 'format "X.Y"')
+  expect_error(.validate_build_backend("asa_env", "auto", "3.14.5"), 'format "X.Y"')
   expect_error(.validate_build_backend("asa_env", "auto", "three.eleven"), 'format "X.Y"')
 })
 

@@ -160,6 +160,11 @@ run_task <- function(prompt,
                      webpage_embedding_model = NULL,
                      recursion_limit = NULL) {
 
+  # Validate config type early (before any work)
+  if (!is.null(config) && !inherits(config, "asa_config")) {
+    stop("`config` must be an asa_config object or NULL", call. = FALSE)
+  }
+
   runtime_inputs <- .resolve_runtime_inputs(
     config,
     agent,

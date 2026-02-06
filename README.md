@@ -668,7 +668,7 @@ See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
 ## Requirements
 
 - R >= 4.0
-- Python >= 3.11 (managed via conda)
+- Python >= 3.14 (managed via conda)
 - reticulate, jsonlite, rlang
 
 **Optional:**
