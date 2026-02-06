@@ -1025,3 +1025,108 @@ test_that("memory folding finalization respects inferred schema from CSV templat
   }
   expect_true("finalize" %in% contexts)
 })
+
+test_that("recursion_limit=2 completes without error (no double finalize)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  # Stub LLM that returns a direct JSON answer (no tool calls) and tracks call_count.
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _CountingStubLLM:\n",
+    "    def __init__(self):\n",
+    "        self.call_count = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.call_count += 1\n",
+    "        return AIMessage(content=",
+    deparse('{\"status\":\"complete\",\"items\":[{\"name\":\"Ada Lovelace\"}],\"missing\":[],\"notes\":\"stub\"}'),
+    ")\n\n",
+    "counting_stub_llm = _CountingStubLLM()\n"
+  ))
+
+  schema <- list(
+    status = "string",
+    items = list(list(name = "string")),
+    missing = "array",
+    notes = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$counting_stub_llm,
+    tools = list()
+  )
+
+  result <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return JSON")),
+      expected_schema = schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(recursion_limit = 2L)
+  )
+
+  expect_equal(result$stop_reason, "recursion_limit")
+  # Verify only 1 LLM call was made (no double finalize)
+  expect_equal(as.integer(reticulate::py$counting_stub_llm$call_count), 1L)
+})
+
+test_that("recursion_limit=1 does not produce unhandled crash", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  # Stub LLM: returns a direct JSON answer (no tool calls)
+  asa_test_stub_llm(
+    mode = "json_response",
+    json_content = '{"status":"complete","items":[],"missing":[],"notes":"minimal"}',
+    var_name = "limit1_stub_llm"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$limit1_stub_llm,
+    tools = list()
+  )
+
+  # recursion_limit=1 is below the minimum viable limit for LangGraph graphs
+
+  # (the framework may exhaust the budget before routing can reach END).
+  # We verify it either succeeds gracefully or raises GraphRecursionError
+  # (not some other unexpected error).
+  result <- tryCatch(
+    agent$invoke(
+      list(
+        messages = list(list(role = "user", content = "Return JSON")),
+        expected_schema = list(status = "string", items = "array", missing = "array", notes = "string"),
+        expected_schema_source = "explicit"
+      ),
+      config = list(recursion_limit = 1L)
+    ),
+    error = function(e) {
+      # GraphRecursionError is the expected failure at limit=1
+      expect_true(grepl("GraphRecursionError|Recursion limit", conditionMessage(e)))
+      NULL
+    }
+  )
+
+  # If it did succeed, verify stop_reason is set
+  if (!is.null(result)) {
+    expect_equal(result$stop_reason, "recursion_limit")
+  }
+})

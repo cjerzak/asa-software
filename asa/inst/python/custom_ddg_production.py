@@ -3854,8 +3854,10 @@ def create_memory_folding_agent(
         }
         if repair_event:
             out["json_repair"] = [repair_event]
-        # REMOVED: Do not set stop_reason here - let finalize_answer handle it
-        # This prevents short-circuiting in should_continue before finalize runs
+        # Set stop_reason when agent_node itself ran in finalize mode,
+        # so routing can skip the redundant finalize_answer node.
+        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
+            out["stop_reason"] = "recursion_limit"
         return out
 
     def finalize_answer(state: MemoryFoldingAgentState) -> dict:
@@ -4250,18 +4252,18 @@ def create_memory_folding_agent(
         if not messages:
             return "end"
 
-        # FIX: Check force_finalize BEFORE checking stop_reason
-        # This ensures we route through finalize even if agent_node set the flag
         if _should_force_finalize(state):
+            # Agent already finalized (set stop_reason) — skip redundant finalize node
+            if state.get("stop_reason") == "recursion_limit":
+                return "end"
+            # No budget to execute finalize node — agent_node already ran in finalize mode
+            rem = remaining_steps_value(state)
+            if rem is not None and rem <= 0:
+                return "end"
             return "finalize"
 
         if state.get("stop_reason") == "recursion_limit":
             return "end"
-
-        remaining = remaining_steps_value(state)
-        # If there are no steps left after this node, force finalization to produce valid output.
-        if remaining is not None and remaining <= 0:
-            return "finalize"
 
         last_message = messages[-1]
         last_type = type(last_message).__name__
@@ -4298,12 +4300,13 @@ def create_memory_folding_agent(
         AFTER the agent has reasoned about the results.
 
         Routes to:
+        - 'end': If no budget for any more nodes
         - 'finalize': If near recursion limit
         - 'agent': Always (let agent process tool results first)
         """
         remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= 0:
-            return "finalize"
+            return "end"  # No budget for any more nodes
         if _should_force_finalize(state):
             return "finalize"
         return "agent"
@@ -4322,7 +4325,7 @@ def create_memory_folding_agent(
 
         remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= 0:
-            return "finalize"
+            return "end"  # No budget for any more nodes
 
         # FIX: Unconditionally route to finalize when near recursion limit
         # This ensures stop_reason is always set via the finalize node
@@ -4466,8 +4469,10 @@ def create_standard_agent(
         out = {"messages": [response], "expected_schema": expected_schema, "expected_schema_source": expected_schema_source}
         if repair_event:
             out["json_repair"] = [repair_event]
-        # REMOVED: Do not set stop_reason here - let finalize_answer handle it
-        # This prevents short-circuiting in should_continue before finalize runs
+        # Set stop_reason when agent_node itself ran in finalize mode,
+        # so routing can skip the redundant finalize_answer node.
+        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
+            out["stop_reason"] = "recursion_limit"
         return out
 
     def finalize_answer(state: StandardAgentState) -> dict:
@@ -4497,17 +4502,18 @@ def create_standard_agent(
         if not messages:
             return "end"
 
-        # FIX: Check force_finalize BEFORE checking stop_reason
-        # This ensures we route through finalize even if agent_node set the flag
         if _should_force_finalize(state):
+            # Agent already finalized (set stop_reason) — skip redundant finalize node
+            if state.get("stop_reason") == "recursion_limit":
+                return "end"
+            # No budget to execute finalize node — agent_node already ran in finalize mode
+            rem = remaining_steps_value(state)
+            if rem is not None and rem <= 0:
+                return "end"
             return "finalize"
 
         if state.get("stop_reason") == "recursion_limit":
             return "end"
-
-        remaining = remaining_steps_value(state)
-        if remaining is not None and remaining <= 0:
-            return "finalize"
 
         last_message = messages[-1]
         last_type = type(last_message).__name__
@@ -4520,7 +4526,7 @@ def create_standard_agent(
     def after_tools(state: StandardAgentState) -> str:
         remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= 0:
-            return "finalize"
+            return "end"  # No budget for any more nodes
         if _should_force_finalize(state):
             return "finalize"
         return "agent"
