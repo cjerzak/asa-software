@@ -2904,6 +2904,7 @@ from operator import add as operator_add
 from langgraph.managed import RemainingSteps
 from state_utils import (
     add_to_list,
+    merge_dicts,
     infer_required_json_schema_from_messages,
     list_missing_required_keys,
     parse_llm_json,
@@ -3659,6 +3660,7 @@ class MemoryFoldingAgentState(TypedDict):
         summary: Long-term memory - structured summary of older interactions
         archive: Lossless archive of folded content (not injected into the prompt)
         fold_count: Number of times memory has been folded (for debugging)
+        fold_stats: Diagnostic metrics from the most recent fold (merge_dicts reducer)
         remaining_steps: Managed value populated by LangGraph (steps left before recursion_limit)
         scratchpad: Agent-saved findings that persist across memory folds
     """
@@ -3666,6 +3668,7 @@ class MemoryFoldingAgentState(TypedDict):
     summary: Any
     archive: Annotated[list, add_to_list]
     fold_count: int
+    fold_stats: Annotated[dict, merge_dicts]
     stop_reason: Optional[str]
     remaining_steps: RemainingSteps
     expected_schema: Optional[Any]
@@ -3896,6 +3899,7 @@ def create_memory_folding_agent(
         messages = state.get("messages", [])
         current_summary = state.get("summary", "")
         fold_count = state.get("fold_count", 0)
+        current_fold_stats = state.get("fold_stats", {})
 
         def _compute_effective_keep_recent_messages(messages, keep_recent_exchanges):
             # keep_recent_exchanges counts full user/assistant exchanges, where an exchange
@@ -4180,11 +4184,25 @@ def create_memory_folding_agent(
         if not remove_messages:
             return {}
 
+        # Compute fold diagnostics
+        fold_messages_removed = len(remove_messages)
+        fold_chars_input = len(fold_text)
+        fold_summary_chars = len(json.dumps(new_memory, ensure_ascii=True))
+        fold_total_messages_removed = (
+            current_fold_stats.get("fold_total_messages_removed", 0) + fold_messages_removed
+        )
+
         return {
             "summary": new_memory,
             "archive": [archive_entry],
             "messages": remove_messages,
             "fold_count": fold_count + 1,
+            "fold_stats": {
+                "fold_messages_removed": fold_messages_removed,
+                "fold_total_messages_removed": fold_total_messages_removed,
+                "fold_chars_input": fold_chars_input,
+                "fold_summary_chars": fold_summary_chars,
+            },
         }
 
     def should_continue(state: MemoryFoldingAgentState) -> str:

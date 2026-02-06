@@ -106,19 +106,7 @@ test_that("Selenium tier can load and parse a local result fixture", {
     fixture
   )
 
-  cfg <- ddg$SearchConfig(
-    max_results = 3L,
-    timeout = 0.5,
-    max_retries = 1L,
-    retry_delay = 0.0,
-    backoff_multiplier = 1.0,
-    captcha_backoff_base = 0.0,
-    page_load_wait = 0.0,
-    inter_search_delay = 0.0,
-    humanize_timing = FALSE,
-    jitter_factor = 0.0,
-    allow_direct_fallback = FALSE
-  )
+  cfg <- asa_test_fast_search_config(ddg, timeout = 0.5)
 
   res <- ddg$`_browser_search`(
     query = "irrelevant",
@@ -160,19 +148,7 @@ test_that("Selenium tier raises a timeout on a local empty fixture", {
     fixture
   )
 
-  cfg <- ddg$SearchConfig(
-    max_results = 3L,
-    timeout = 0.2,
-    max_retries = 1L,
-    retry_delay = 0.0,
-    backoff_multiplier = 1.0,
-    captcha_backoff_base = 0.0,
-    page_load_wait = 0.0,
-    inter_search_delay = 0.0,
-    humanize_timing = FALSE,
-    jitter_factor = 0.0,
-    allow_direct_fallback = FALSE
-  )
+  cfg <- asa_test_fast_search_config(ddg)
 
   expect_error(
     ddg$`_browser_search`(

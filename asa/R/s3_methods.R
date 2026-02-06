@@ -677,6 +677,7 @@ summary.asa_agent <- function(object, ...) {
 #' @param trace_json Structured JSON trace (when available)
 #' @param elapsed_time Execution time in minutes
 #' @param fold_count Number of memory folds performed
+#' @param fold_stats Diagnostic metrics from memory folding (list)
 #' @param prompt The original prompt
 #'
 #' @return An object of class \code{asa_response}
@@ -684,7 +685,7 @@ summary.asa_agent <- function(object, ...) {
 #' @export
 asa_response <- function(message, status_code, raw_response, trace,
                          elapsed_time, fold_count, prompt,
-                         trace_json = "") {
+                         trace_json = "", fold_stats = list()) {
   structure(
     list(
       message = message,
@@ -694,6 +695,7 @@ asa_response <- function(message, status_code, raw_response, trace,
       trace_json = trace_json,
       elapsed_time = elapsed_time,
       fold_count = fold_count,
+      fold_stats = fold_stats,
       prompt = prompt
     ),
     class = "asa_response"
@@ -716,6 +718,13 @@ print.asa_response <- function(x, ...) {
   cat("Time:      ", format_duration(x$elapsed_time), "\n", sep = "")
   if (x$fold_count > 0) {
     cat("Folds:     ", x$fold_count, "\n", sep = "")
+    fs <- x$fold_stats
+    if (length(fs) > 0) {
+      cat("  Last fold:     ", fs$fold_messages_removed %||% 0L, " msgs removed, ",
+          fs$fold_chars_input %||% 0L, " chars input\n", sep = "")
+      cat("  Total removed: ", fs$fold_total_messages_removed %||% 0L, " msgs\n", sep = "")
+      cat("  Summary size:  ", fs$fold_summary_chars %||% 0L, " chars\n", sep = "")
+    }
   }
   cat("\nPrompt:\n")
   cat("  ", truncate_string(x$prompt, 80), "\n", sep = "")
@@ -754,7 +763,9 @@ summary.asa_response <- function(object, show_trace = FALSE, ...) {
     status_code = object$status_code,
     elapsed_time = object$elapsed_time,
     message_length = nchar(object$message %||% ""),
-    trace_length = nchar(object$trace %||% "")
+    trace_length = nchar(object$trace %||% ""),
+    fold_count = object$fold_count,
+    fold_stats = object$fold_stats
   ))
 }
 

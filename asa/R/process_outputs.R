@@ -60,7 +60,7 @@ extract_agent_results <- function(raw_output) {
   if (!startsWith(txt, "{") || !grepl("\"format\"\\s*:\\s*\"asa_trace_v1\"", txt)) {
     return(NULL)
   }
-  parsed <- tryCatch(jsonlite::fromJSON(txt, simplifyVector = FALSE), error = function(e) NULL)
+  parsed <- .try_or(jsonlite::fromJSON(txt, simplifyVector = FALSE))
   if (is.null(parsed) || !identical(parsed$format, "asa_trace_v1")) {
     return(NULL)
   }
@@ -436,7 +436,7 @@ extract_search_tiers <- function(text) {
 
   safe <- .make_json_string_wrapper_safe(x)
   wrapped <- paste0('"', safe, '"')
-  decoded <- tryCatch(jsonlite::fromJSON(wrapped), error = function(e) NULL)
+  decoded <- .try_or(jsonlite::fromJSON(wrapped))
 
   if (is.character(decoded) && length(decoded) == 1L) {
     decoded
@@ -465,7 +465,7 @@ extract_search_tiers <- function(text) {
 
   parse_one <- function(txt) {
     # Prefer the shared robust extractor (handles JSON embedded in text).
-    parsed <- tryCatch(.parse_json_response(txt), error = function(e) NULL)
+    parsed <- .try_or(.parse_json_response(txt))
     if (is.list(parsed) && length(parsed) > 0) {
       return(parsed)
     }
@@ -534,7 +534,7 @@ extract_search_tiers <- function(text) {
     if (length(ai_contents) > 0) {
       # Prefer the most recent AI message
       for (i in rev(seq_along(ai_contents))) {
-        parsed <- tryCatch(.parse_json_response(ai_contents[i]), error = function(e) NULL)
+        parsed <- .try_or(.parse_json_response(ai_contents[i]))
         if (is.list(parsed) && length(parsed) > 0) {
           return(parsed)
         }

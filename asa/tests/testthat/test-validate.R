@@ -651,6 +651,21 @@ test_that(".validate_asa_response accepts valid inputs", {
   expect_silent(.validate_asa_response("msg", 200L, NULL, "trace data", 0.0, 2L, "test prompt"))
 })
 
+test_that(".validate_asa_response accepts valid fold_stats", {
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt", fold_stats = list()))
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, 1L, "prompt", fold_stats = list(
+    fold_messages_removed = 3L,
+    fold_total_messages_removed = 5L,
+    fold_chars_input = 800L,
+    fold_summary_chars = 200L
+  )))
+})
+
+test_that(".validate_asa_response rejects non-list fold_stats", {
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt", fold_stats = "not-a-list"), "be a list")
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt", fold_stats = 42), "be a list")
+})
+
 test_that(".validate_asa_result rejects invalid status", {
   expect_error(.validate_asa_result("prompt", "msg", NULL, "", 1.0, "invalid"), "be one of")
 })

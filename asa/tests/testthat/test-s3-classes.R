@@ -1,12 +1,7 @@
 # Tests for S3 class constructors
 
 test_that("asa_agent constructor creates correct object", {
-  agent <- asa_agent(
-    python_agent = NULL,
-    backend = "openai",
-    model = "gpt-4",
-    config = list(use_memory_folding = TRUE)
-  )
+  agent <- asa_test_mock_agent()
 
   expect_s3_class(agent, "asa_agent")
   expect_equal(agent$backend, "openai")
@@ -31,6 +26,46 @@ test_that("asa_response constructor creates correct object", {
   expect_equal(response$status_code, 200L)
   expect_equal(response$elapsed_time, 1.5)
   expect_equal(response$fold_count, 2L)
+  expect_equal(response$fold_stats, list())
+})
+
+test_that("asa_response stores fold_stats correctly", {
+  stats <- list(
+    fold_messages_removed = 5L,
+    fold_total_messages_removed = 8L,
+    fold_chars_input = 1200L,
+    fold_summary_chars = 350L
+  )
+  response <- asa_response(
+    message = "Test response",
+    status_code = 200L,
+    raw_response = NULL,
+    trace = "trace text",
+    elapsed_time = 1.5,
+    fold_count = 2L,
+    fold_stats = stats,
+    prompt = "Test prompt"
+  )
+
+  expect_equal(response$fold_stats, stats)
+  expect_equal(response$fold_stats$fold_messages_removed, 5L)
+  expect_equal(response$fold_stats$fold_total_messages_removed, 8L)
+  expect_equal(response$fold_stats$fold_chars_input, 1200L)
+  expect_equal(response$fold_stats$fold_summary_chars, 350L)
+})
+
+test_that("asa_response defaults fold_stats to empty list", {
+  response <- asa_response(
+    message = "Test response",
+    status_code = 200L,
+    raw_response = NULL,
+    trace = "trace text",
+    elapsed_time = 1.5,
+    fold_count = 0L,
+    prompt = "Test prompt"
+  )
+
+  expect_equal(response$fold_stats, list())
 })
 
 test_that("asa_result constructor creates correct object", {
@@ -85,7 +120,7 @@ test_that("asa_config defaults and printing are consistent", {
 })
 
 test_that("print methods produce expected headers", {
-  agent <- asa_agent(NULL, "openai", "gpt-4", list())
+  agent <- asa_test_mock_agent(config = list())
   expect_output(print(agent), "ASA Search Agent")
 
   response <- asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt")

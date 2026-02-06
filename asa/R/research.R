@@ -208,7 +208,7 @@ asa_enumerate <- function(query,
     if (!is.null(agent) && inherits(agent, "asa_agent")) {
       config_search <- agent$config$search %||% NULL
     } else if (is.null(agent) && .is_initialized()) {
-      config_search <- tryCatch(get_agent()$config$search %||% NULL, error = function(e) NULL)
+      config_search <- .try_or(get_agent()$config$search %||% NULL)
     }
   }
 

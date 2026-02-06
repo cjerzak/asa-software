@@ -737,7 +737,8 @@
 #' Validate S3 Constructor: asa_response
 #' @keywords internal
 .validate_asa_response <- function(message, status_code, raw_response, trace,
-                                    elapsed_time, fold_count, prompt) {
+                                    elapsed_time, fold_count, prompt,
+                                    fold_stats = list()) {
   # message can be NA
   if (!is.na(message)) {
     .validate_string(message, "message", allow_empty = TRUE)
@@ -754,6 +755,11 @@
   .validate_positive(elapsed_time, "elapsed_time", allow_zero = TRUE)
   .validate_positive(fold_count, "fold_count", allow_zero = TRUE, integer_only = TRUE)
   .validate_string(prompt, "prompt")
+
+  if (!is.list(fold_stats)) {
+    .stop_validation("fold_stats", "be a list", actual = class(fold_stats)[1],
+                     fix = "Provide a list for fold_stats")
+  }
 
   invisible(TRUE)
 }

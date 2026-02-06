@@ -13,6 +13,153 @@
   if (is.null(x)) y else x
 }
 
+#' Try Expression with Fallback
+#'
+#' Evaluates an expression, returning a default value on error.
+#' Replaces the common \code{tryCatch(expr, error = function(e) NULL)} pattern.
+#'
+#' @param expr Expression to evaluate
+#' @param default Value to return on error (default: NULL)
+#'
+#' @return Result of \code{expr}, or \code{default} on error
+#'
+#' @keywords internal
+.try_or <- function(expr, default = NULL) {
+  tryCatch(expr, error = function(e) default)
+}
+
+#' Safe Python Field Extraction
+#'
+#' Safely extracts a field from a Python/reticulate object with optional
+#' type coercion. Handles NULL, missing fields, and conversion errors.
+#'
+#' @param obj Object to extract from (typically a reticulate Python object)
+#' @param field Field name to extract
+#' @param default Value to return if extraction fails
+#' @param as_type Optional coercion function (e.g., \code{as.integer})
+#'
+#' @return Extracted value, or \code{default} on failure
+#'
+#' @keywords internal
+.py_get <- function(obj, field, default = NULL, as_type = NULL) {
+  val <- .try_or(obj[[field]], default = default)
+  if (is.null(val)) return(default)
+  if (!is.null(as_type)) .try_or(as_type(val), default = default) else val
+}
+
+#' Parse JSON from Text Response
+#'
+#' Attempts to parse JSON from a text string. First tries direct parsing,
+#' then scans for embedded JSON objects/arrays using brace counting.
+#'
+#' @param response_text Character string potentially containing JSON
+#'
+#' @return Parsed R object, or NULL if no valid JSON found
+#'
+#' @keywords internal
+.parse_json_response <- function(response_text) {
+  if (is.na(response_text) || response_text == "") {
+    return(NULL)
+  }
+
+  # Try to parse full response first
+  parsed <- .try_or(jsonlite::fromJSON(response_text))
+  if (!is.null(parsed)) {
+    return(parsed)
+  }
+
+  starts <- gregexpr("[\\{\\[]", response_text)[[1]]
+  if (starts[1] == -1) {
+    return(NULL)
+  }
+
+  for (start in starts) {
+    json_str <- .extract_json_object(response_text, start = start)
+    if (is.null(json_str)) {
+      next
+    }
+    parsed <- .try_or(jsonlite::fromJSON(json_str))
+    if (!is.null(parsed)) {
+      return(parsed)
+    }
+  }
+
+  NULL
+}
+
+#' Extract JSON Object from Text
+#'
+#' Uses brace/bracket counting to extract a complete JSON object or array
+#' from a text string starting at a given position.
+#'
+#' @param text Text containing JSON
+#' @param start Optional 1-based start index for extraction
+#'
+#' @return JSON string, or NULL if no complete object found
+#'
+#' @keywords internal
+.extract_json_object <- function(text, start = NULL) {
+  # Try to find JSON object or array in text
+  if (is.null(start)) {
+    start_obj <- regexpr("\\{", text)
+    start_arr <- regexpr("\\[", text)
+
+    starts <- c(start_obj, start_arr)
+    starts <- starts[starts > 0]
+    if (length(starts) == 0) return(NULL)
+
+    start <- min(starts)
+  }
+  if (start <= 0) {
+    return(NULL)
+  }
+
+  # Count braces/brackets to find matching close
+  depth <- 0
+  in_string <- FALSE
+  escape_next <- FALSE
+
+  chars <- strsplit(text, "")[[1]]
+  end <- -1
+
+  for (i in start:length(chars)) {
+    char <- chars[i]
+
+    if (escape_next) {
+      escape_next <- FALSE
+      next
+    }
+
+    if (char == "\\") {
+      escape_next <- TRUE
+      next
+    }
+
+    if (char == '"' && !escape_next) {
+      in_string <- !in_string
+      next
+    }
+
+    if (!in_string) {
+      if (char == "{" || char == "[") depth <- depth + 1
+      if (char == "}" || char == "]") {
+        depth <- depth - 1
+        if (depth == 0) {
+          end <- i
+          break
+        }
+      }
+    }
+  }
+
+  if (end > start) {
+    json_str <- paste(chars[start:end], collapse = "")
+    return(json_str)
+  }
+
+  NULL
+}
+
 #' Resolve Proxy Configuration
 #'
 #' Interprets ASA proxy inputs consistently across functions:
@@ -85,17 +232,17 @@
   if (!inherits(agent, "asa_agent")) return(FALSE)
   if (!inherits(config, "asa_config")) return(FALSE)
 
-  desired_proxy <- tryCatch({
+  desired_proxy <- .try_or({
     info <- .resolve_proxy(config$proxy)
     proxy_value <- info$proxy
     if (identical(info$mode, "auto") && !is.null(proxy_value)) {
-      proxy_value <- tryCatch({
+      proxy_value <- .try_or({
         .validate_proxy_url(proxy_value, "proxy")
         proxy_value
-      }, error = function(e) NULL)
+      })
     }
     proxy_value
-  }, error = function(e) config$proxy)
+  }, config$proxy)
 
   agent_folding <- agent$config$use_memory_folding %||% agent$config$memory_folding
 
@@ -261,10 +408,7 @@ safe_json_parse <- function(x) {
     }
   }
 
-  tryCatch(
-    jsonlite::fromJSON(txt),
-    error = function(e) NULL
-  )
+  .try_or(jsonlite::fromJSON(txt))
 }
 
 #' Run External Command (processx if available, system2 fallback)
@@ -274,7 +418,7 @@ safe_json_parse <- function(x) {
                          timeout = NULL,
                          stdin = NULL,
                          echo = FALSE) {
-  has_processx <- tryCatch(requireNamespace("processx", quietly = TRUE), error = function(e) FALSE)
+  has_processx <- .try_or(requireNamespace("processx", quietly = TRUE), FALSE)
 
   if (has_processx) {
     return(processx::run(
@@ -828,10 +972,7 @@ configure_temporal <- function(time_filter = NULL) {
   search_tool <- asa_env$tools[[2]]
 
   # Store previous value for return
-  prev_filter <- tryCatch(
-    search_tool$api_wrapper$time,
-    error = function(e) "none"
-  )
+  prev_filter <- .try_or(search_tool$api_wrapper$time, "none")
 
   # Update the time filter on the API wrapper
   tryCatch({
@@ -978,7 +1119,7 @@ configure_temporal <- function(time_filter = NULL) {
   }
 
   # Store original setting
-  original_filter <- tryCatch({
+  original_filter <- .try_or({
     if (!is.null(tools) && length(tools) >= 2) {
       tools[[2]]$api_wrapper$time
     } else if (.is_initialized()) {
@@ -986,7 +1127,7 @@ configure_temporal <- function(time_filter = NULL) {
     } else {
       "none"
     }
-  }, error = function(e) "none")
+  }, "none")
 
   set_filter <- function(value, warn = TRUE) {
     if (!is.null(tools) && length(tools) >= 2) {

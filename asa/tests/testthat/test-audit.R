@@ -31,17 +31,17 @@ test_that("asa_audit validates confidence_threshold", {
 
   expect_error(
     asa_audit(df, confidence_threshold = -0.5),
-    "confidence_threshold must be"
+    "confidence_threshold.*must be"
   )
 
   expect_error(
     asa_audit(df, confidence_threshold = 1.5),
-    "confidence_threshold must be"
+    "confidence_threshold.*must be"
   )
 
   expect_error(
     asa_audit(df, confidence_threshold = "high"),
-    "confidence_threshold must be"
+    "confidence_threshold.*must be"
   )
 })
 
@@ -50,12 +50,12 @@ test_that("asa_audit validates timeout", {
 
   expect_error(
     asa_audit(df, timeout = -10),
-    "timeout must be"
+    "timeout.*must be"
   )
 
   expect_error(
     asa_audit(df, timeout = 0),
-    "timeout must be"
+    "timeout.*must be"
   )
 })
 
@@ -116,22 +116,7 @@ test_that("asa_audit_result constructor creates valid object", {
 })
 
 test_that("print.asa_audit_result produces output", {
-  df <- data.frame(
-    name = c("A", "B"),
-    `_audit_flag` = c("ok", "warning"),
-    check.names = FALSE
-  )
-
-  result <- asa_audit_result(
-    data = df,
-    audit_summary = "Test",
-    issues = list(),
-    recommendations = character(),
-    completeness_score = 1.0,
-    consistency_score = 1.0,
-    backend_used = "claude_code",
-    elapsed_time = 1.0
-  )
+  result <- asa_test_mock_audit_result()
 
   output <- capture.output(print(result))
   expect_true(any(grepl("ASA Audit Result", output)))
@@ -140,15 +125,7 @@ test_that("print.asa_audit_result produces output", {
 })
 
 test_that("summary.asa_audit_result produces output", {
-  df <- data.frame(
-    name = c("A", "B"),
-    `_audit_flag` = c("ok", "warning"),
-    check.names = FALSE
-  )
-
-  result <- asa_audit_result(
-    data = df,
-    audit_summary = "Test",
+  result <- asa_test_mock_audit_result(
     issues = list(
       list(severity = "high", description = "Critical issue")
     ),
@@ -174,16 +151,7 @@ test_that("as.data.frame.asa_audit_result returns data", {
     check.names = FALSE
   )
 
-  result <- asa_audit_result(
-    data = df,
-    audit_summary = "Test",
-    issues = list(),
-    recommendations = character(),
-    completeness_score = 1.0,
-    consistency_score = 1.0,
-    backend_used = "claude_code",
-    elapsed_time = 1.0
-  )
+  result <- asa_test_mock_audit_result(data = df)
 
   extracted <- as.data.frame(result)
   expect_equal(nrow(extracted), 3)

@@ -66,6 +66,7 @@
 #'     \item parsing_status: Validation result (if expected_fields provided)
 #'     \item trace: Full execution trace (for "raw" output_format)
 #'     \item fold_count: Number of memory folds (for "raw" output_format)
+#'     \item fold_stats: Memory folding diagnostics list (for "raw" output_format)
 #'   }
 #'
 #' @details
@@ -168,14 +169,14 @@ run_task <- function(prompt,
     if (!is.null(agent) && inherits(agent, "asa_agent")) {
       config_search <- agent$config$search %||% NULL
     } else if (is.null(agent) && .is_initialized()) {
-      config_search <- tryCatch(get_agent()$config$search %||% NULL, error = function(e) NULL)
+      config_search <- .try_or(get_agent()$config$search %||% NULL)
     }
   }
   if (is.null(config_conda_env)) {
     if (!is.null(agent) && inherits(agent, "asa_agent")) {
       config_conda_env <- agent$config$conda_env %||% NULL
     } else if (is.null(agent) && .is_initialized()) {
-      config_conda_env <- tryCatch(get_agent()$config$conda_env %||% NULL, error = function(e) NULL)
+      config_conda_env <- .try_or(get_agent()$config$conda_env %||% NULL)
     }
   }
 
@@ -355,6 +356,7 @@ run_task <- function(prompt,
   if (identical(output_format, "raw")) {
     result$trace <- response$trace
     result$fold_count <- response$fold_count
+    result$fold_stats <- response$fold_stats
     result$status_code <- response$status_code
     result$raw_response <- response$raw_response
   }
@@ -484,110 +486,9 @@ build_prompt <- function(template, ...) {
 }
 
 
-#' Parse JSON Response
-#' @param response_text Response text from agent
-#' @keywords internal
-.parse_json_response <- function(response_text) {
-  if (is.na(response_text) || response_text == "") {
-    return(NULL)
-  }
-
-  # Try to parse full response first
-  parsed <- tryCatch(
-    jsonlite::fromJSON(response_text),
-    error = function(e) NULL
-  )
-  if (!is.null(parsed)) {
-    return(parsed)
-  }
-
-  starts <- gregexpr("[\\{\\[]", response_text)[[1]]
-  if (starts[1] == -1) {
-    return(NULL)
-  }
-
-  for (start in starts) {
-    json_str <- .extract_json_object(response_text, start = start)
-    if (is.null(json_str)) {
-      next
-    }
-    parsed <- tryCatch(
-      jsonlite::fromJSON(json_str),
-      error = function(e) NULL
-    )
-    if (!is.null(parsed)) {
-      return(parsed)
-    }
-  }
-
-  NULL
-}
-
-#' Extract JSON Object from Text
-#' @param text Response text
-#' @param start Optional 1-based start index for extraction
-#' @keywords internal
-.extract_json_object <- function(text, start = NULL) {
-  # Try to find JSON object or array in text
-  if (is.null(start)) {
-    start_obj <- regexpr("\\{", text)
-    start_arr <- regexpr("\\[", text)
-
-    starts <- c(start_obj, start_arr)
-    starts <- starts[starts > 0]
-    if (length(starts) == 0) return(NULL)
-
-    start <- min(starts)
-  }
-  if (start <= 0) {
-    return(NULL)
-  }
-
-  # Count braces/brackets to find matching close
-  depth <- 0
-  in_string <- FALSE
-  escape_next <- FALSE
-
-  chars <- strsplit(text, "")[[1]]
-  end <- -1
-
-  for (i in start:length(chars)) {
-    char <- chars[i]
-
-    if (escape_next) {
-      escape_next <- FALSE
-      next
-    }
-
-    if (char == "\\") {
-      escape_next <- TRUE
-      next
-    }
-
-    if (char == '"' && !escape_next) {
-      in_string <- !in_string
-      next
-    }
-
-    if (!in_string) {
-      if (char == "{" || char == "[") depth <- depth + 1
-      if (char == "}" || char == "]") {
-        depth <- depth - 1
-        if (depth == 0) {
-          end <- i
-          break
-        }
-      }
-    }
-  }
-
-  if (end > start) {
-    json_str <- paste(chars[start:end], collapse = "")
-    return(json_str)
-  }
-
-  NULL
-}
+# NOTE: .parse_json_response() and .extract_json_object() are now defined in
+# helpers.R as shared canonical implementations. They are used by run_task.R,
+# audit.R, and process_outputs.R.
 
 #' Extract Specific Fields from Response
 #' @param text Response text

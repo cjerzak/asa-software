@@ -212,9 +212,8 @@ test_that("asa_enumerate_result constructor works", {
 })
 
 test_that("print.asa_enumerate_result works", {
-  result <- asa_enumerate_result(
+  result <- asa_test_mock_enumerate_result(
     data = data.frame(name = c("A", "B", "C")),
-    status = "complete",
     stop_reason = "novelty_plateau",
     metrics = list(round_number = 5, novelty_rate = 0.02)
   )
@@ -226,8 +225,7 @@ test_that("print.asa_enumerate_result works", {
 })
 
 test_that("summary.asa_enumerate_result works", {
-  result <- asa_enumerate_result(
-    data = data.frame(name = c("A", "B")),
+  result <- asa_test_mock_enumerate_result(
     status = "partial",
     stop_reason = "budget_queries",
     metrics = list(round_number = 8, queries_used = 50),
@@ -241,9 +239,8 @@ test_that("summary.asa_enumerate_result works", {
 
 test_that("as.data.frame.asa_enumerate_result returns data", {
   original_df <- data.frame(name = c("X", "Y", "Z"), value = 1:3)
-  result <- asa_enumerate_result(
+  result <- asa_test_mock_enumerate_result(
     data = original_df,
-    status = "complete",
     stop_reason = NULL,
     metrics = list()
   )
@@ -253,7 +250,7 @@ test_that("as.data.frame.asa_enumerate_result returns data", {
 })
 
 test_that("asa_enumerate_result handles empty data", {
-  result <- asa_enumerate_result(
+  result <- asa_test_mock_enumerate_result(
     data = data.frame(),
     status = "failed",
     stop_reason = "planning_error",

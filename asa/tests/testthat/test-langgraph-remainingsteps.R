@@ -94,21 +94,10 @@ test_that("best-effort recursion_limit output populates required JSON fields (st
 
   # Stub LLM: returns intentionally incomplete JSON so the recursion-limit
   # "best effort" path must populate schema-required keys.
-  reticulate::py_run_string(paste0(
-    "class _StubResponse:\n",
-    "    def __init__(self, content):\n",
-    "        self.content = content\n",
-    "        self.tool_calls = None\n",
-    "\n",
-    "class _StubLLM:\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        # Missing: missing, notes; and item is missing birth_year/field/key_contribution.\n",
-    "        return _StubResponse('{\"status\":\"partial\",\"items\":[{\"name\":\"Ada Lovelace\"}]}')\n",
-    "\n",
-    "stub_llm = _StubLLM()\n"
-  ))
+  asa_test_stub_llm(
+    mode = "json_response",
+    json_content = '{"status":"partial","items":[{"name":"Ada Lovelace"}]}'
+  )
 
   agent <- custom_ddg$create_standard_agent(
     model = reticulate::py$stub_llm,
@@ -167,21 +156,10 @@ test_that("JSON repair populates nested required keys (explicit schema)", {
 
   custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
-  reticulate::py_run_string(paste0(
-    "class _StubResponse:\n",
-    "    def __init__(self, content):\n",
-    "        self.content = content\n",
-    "        self.tool_calls = None\n",
-    "\n",
-    "class _StubLLM:\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        # Missing: meta, and nested meta.counts.total; items[0].info.birth_year.\n",
-    "        return _StubResponse('{\"status\":\"partial\",\"items\":[{\"name\":\"Ada\"}]}')\n",
-    "\n",
-    "stub_llm = _StubLLM()\n"
-  ))
+  asa_test_stub_llm(
+    mode = "json_response",
+    json_content = '{"status":"partial","items":[{"name":"Ada"}]}'
+  )
 
   agent <- custom_ddg$create_standard_agent(
     model = reticulate::py$stub_llm,
@@ -368,20 +346,10 @@ test_that("run_task passes expected_schema into LangGraph state (explicit schema
 
   # Stub LLM: returns incomplete JSON; run_task(expected_schema=...) should
   # trigger best-effort repair even without prompt-based schema inference.
-  reticulate::py_run_string(paste0(
-    "class _StubResponse:\n",
-    "    def __init__(self, content):\n",
-    "        self.content = content\n",
-    "        self.tool_calls = None\n",
-    "\n",
-    "class _StubLLM:\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        return _StubResponse('{\"status\":\"partial\",\"items\":[{\"name\":\"Ada\"}]}')\n",
-    "\n",
-    "stub_llm = _StubLLM()\n"
-  ))
+  asa_test_stub_llm(
+    mode = "json_response",
+    json_content = '{"status":"partial","items":[{"name":"Ada"}]}'
+  )
 
   python_agent <- custom_ddg$create_standard_agent(
     model = reticulate::py$stub_llm,
@@ -529,7 +497,8 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   ai2 <- msgs$AIMessage(content = "old3")
 
   final_state <- agent$invoke(
-    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L),
+    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L,
+         fold_stats = reticulate::dict()),
     config = list(
       recursion_limit = as.integer(30),
       configurable = list(thread_id = "test")
@@ -538,6 +507,15 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
 
   # Ensure we actually folded (otherwise this test is meaningless).
   expect_equal(as.integer(final_state$fold_count), 1L)
+
+  # Verify fold_stats diagnostics are populated
+  fs <- as.list(final_state$fold_stats)
+  expect_true(is.list(fs))
+  expect_true(as.integer(fs$fold_messages_removed) > 0L)
+  expect_true(as.integer(fs$fold_total_messages_removed) > 0L)
+  expect_equal(as.integer(fs$fold_messages_removed), as.integer(fs$fold_total_messages_removed))
+  expect_true(as.integer(fs$fold_chars_input) > 0L)
+  expect_true(as.integer(fs$fold_summary_chars) > 0L)
 
   types <- vapply(
     final_state$messages,
@@ -645,7 +623,8 @@ test_that("memory folding updates summary and injects it into the next system pr
   ai2 <- msgs$AIMessage(content = "beta: old assistant note")
 
   final_state <- agent$invoke(
-    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L),
+    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L,
+         fold_stats = reticulate::dict()),
     config = list(
       recursion_limit = as.integer(40),
       configurable = list(thread_id = "test_plumbing")
@@ -707,17 +686,11 @@ test_that("fold_count stays 0 when folding thresholds are never reached", {
 
   # Stub LLM that immediately returns a short final answer (no tool calls).
   # With very high thresholds, folding should never trigger.
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n",
-    "\n",
-    "class _NoFoldLLM:\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        return AIMessage(content='short answer')\n",
-    "\n",
-    "no_fold_llm = _NoFoldLLM()\n"
-  ))
+  asa_test_stub_llm(
+    mode = "simple",
+    response_content = "short answer",
+    var_name = "no_fold_llm"
+  )
 
   agent <- custom_ddg$create_memory_folding_agent(
     model = reticulate::py$no_fold_llm,
@@ -732,7 +705,8 @@ test_that("fold_count stays 0 when folding thresholds are never reached", {
   initial <- msgs$HumanMessage(content = "hello")
 
   final_state <- agent$invoke(
-    list(messages = list(initial), summary = "", fold_count = 0L),
+    list(messages = list(initial), summary = "", fold_count = 0L,
+         fold_stats = reticulate::dict()),
     config = list(
       recursion_limit = as.integer(20),
       configurable = list(thread_id = "test_no_fold")
@@ -741,6 +715,9 @@ test_that("fold_count stays 0 when folding thresholds are never reached", {
 
   expect_equal(as.integer(final_state$fold_count), 0L)
   expect_true(length(final_state$archive) == 0L)
+  # fold_stats should remain empty when no folding occurs
+  fs <- as.list(final_state$fold_stats)
+  expect_equal(length(fs), 0L)
   # Summary should remain empty (no fold occurred)
   summary_val <- final_state$summary
   if (is.character(summary_val)) {
@@ -765,8 +742,9 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
   mem_mod <- reticulate::import("langgraph.checkpoint.memory", convert = TRUE)
 
-  # Stub LLM with a shared counter: odd calls -> tool call, even calls -> final answer.
-  # Stub summarizer returns deterministic fold JSON.
+  # Stub LLM that alternates: odd calls -> tool call, even calls -> final answer.
+  # This pattern persists across invocations (shared counter), so it cannot use
+  # the standard stub_llm factory which only supports one tool call.
   reticulate::py_run_string(paste0(
     "from langchain_core.tools import Tool\n",
     "from langchain_core.messages import AIMessage\n",
@@ -794,17 +772,12 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
     "            )\n",
     "        return AIMessage(content='done')\n",
     "\n",
-    "class _StubResponse2:\n",
-    "    def __init__(self, content):\n",
-    "        self.content = content\n",
-    "\n",
-    "class _StubSummarizer2:\n",
-    "    def invoke(self, messages):\n",
-    "        return _StubResponse2('{\"version\":1,\"facts\":[\"fold_fact\"],\"decisions\":[],\"open_questions\":[],\"sources\":[],\"warnings\":[]}')\n",
-    "\n",
-    "multi_llm = _MultiInvokeLLM()\n",
-    "multi_summarizer = _StubSummarizer2()\n"
+    "multi_llm = _MultiInvokeLLM()\n"
   ))
+  asa_test_stub_summarizer(
+    summary_json = '{"version":1,"facts":["fold_fact"],"decisions":[],"open_questions":[],"sources":[],"warnings":[]}',
+    var_name = "multi_summarizer"
+  )
 
   checkpointer <- mem_mod$MemorySaver()
 
@@ -827,7 +800,8 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
   h2 <- msgs$HumanMessage(content = "second question also with substantial text content here")
 
   state1 <- agent$invoke(
-    list(messages = list(h1, a1, h2), summary = "", fold_count = 0L),
+    list(messages = list(h1, a1, h2), summary = "", fold_count = 0L,
+         fold_stats = reticulate::dict()),
     config = list(
       recursion_limit = as.integer(40),
       configurable = list(thread_id = thread_id)
@@ -837,9 +811,15 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
   expect_equal(as.integer(state1$fold_count), 1L)
   expect_true(length(state1$archive) >= 1L)
 
+  # Verify fold_stats after first fold
+  fs1 <- as.list(state1$fold_stats)
+  expect_true(as.integer(fs1$fold_messages_removed) > 0L)
+  first_removed <- as.integer(fs1$fold_total_messages_removed)
+
   # Invocation 2: send a new message on the same thread (checkpointer persists state).
-  # Only pass messages — do NOT pass fold_count or summary here, because those
-  # fields have no Annotated reducer and would overwrite the checkpointed values.
+  # Only pass messages — do NOT pass fold_count, summary, or fold_stats here, because
+  # fold_count has no Annotated reducer and would overwrite the checkpointed values.
+  # fold_stats uses merge_dicts reducer, so it accumulates correctly.
   h3 <- msgs$HumanMessage(content = "third question with even more text to again exceed the fold char budget threshold")
 
   state2 <- agent$invoke(
@@ -852,6 +832,10 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
 
   expect_equal(as.integer(state2$fold_count), 2L)
   expect_true(length(state2$archive) >= 2L)
+
+  # Verify fold_total_messages_removed accumulated across both folds
+  fs2 <- as.list(state2$fold_stats)
+  expect_true(as.integer(fs2$fold_total_messages_removed) >= first_removed)
 })
 
 test_that("archive entry fold_count label matches state fold_count", {
@@ -870,7 +854,6 @@ test_that("archive entry fold_count label matches state fold_count", {
   # deterministic summarizer so we can inspect archive structure.
   reticulate::py_run_string(paste0(
     "from langchain_core.tools import Tool\n",
-    "from langchain_core.messages import AIMessage\n",
     "\n",
     "def _fake_search_v3(query: str) -> str:\n",
     "    return 'result'\n",
@@ -879,33 +862,20 @@ test_that("archive entry fold_count label matches state fold_count", {
     "    name='Search',\n",
     "    description='Fake search',\n",
     "    func=_fake_search_v3,\n",
-    ")\n",
-    "\n",
-    "class _ArchiveLLM:\n",
-    "    def __init__(self):\n",
-    "        self.n = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.n += 1\n",
-    "        if self.n == 1:\n",
-    "            return AIMessage(\n",
-    "                content='calling tool',\n",
-    "                tool_calls=[{'name':'Search','args':{'query':'x'},'id':'call_archive'}],\n",
-    "            )\n",
-    "        return AIMessage(content='final answer')\n",
-    "\n",
-    "class _StubResponse3:\n",
-    "    def __init__(self, content):\n",
-    "        self.content = content\n",
-    "\n",
-    "class _StubSummarizer3:\n",
-    "    def invoke(self, messages):\n",
-    "        return _StubResponse3('{\"version\":1,\"facts\":[\"archived_fact\"],\"decisions\":[],\"open_questions\":[],\"sources\":[],\"warnings\":[]}')\n",
-    "\n",
-    "archive_llm = _ArchiveLLM()\n",
-    "archive_summarizer = _StubSummarizer3()\n"
+    ")\n"
   ))
+  asa_test_stub_llm(
+    mode = "tool_call",
+    response_content = "final answer",
+    tool_name = "Search",
+    tool_args = list(query = "x"),
+    tool_call_id = "call_archive",
+    var_name = "archive_llm"
+  )
+  asa_test_stub_summarizer(
+    summary_json = '{"version":1,"facts":["archived_fact"],"decisions":[],"open_questions":[],"sources":[],"warnings":[]}',
+    var_name = "archive_summarizer"
+  )
 
   agent <- custom_ddg$create_memory_folding_agent(
     model = reticulate::py$archive_llm,
@@ -923,7 +893,8 @@ test_that("archive entry fold_count label matches state fold_count", {
   a2 <- msgs$AIMessage(content = "answer two")
 
   final_state <- agent$invoke(
-    list(messages = list(h1, a1, h2, a2), summary = "", fold_count = 0L),
+    list(messages = list(h1, a1, h2, a2), summary = "", fold_count = 0L,
+         fold_stats = reticulate::dict()),
     config = list(
       recursion_limit = as.integer(30),
       configurable = list(thread_id = "test_archive_label")

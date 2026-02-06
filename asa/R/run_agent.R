@@ -69,13 +69,16 @@
 
   # Handle errors
   if (inherits(raw_response, "asa_error")) {
+    error_fold_count <- .try_or(as.integer(raw_response$fold_count %||% 0), 0L)
+    error_fold_stats <- .try_or(as.list(raw_response$fold_stats %||% list()), list())
     return(asa_response(
       message = NA_character_,
       status_code = ASA_STATUS_ERROR,
       raw_response = raw_response,
       trace = raw_response$error,
       elapsed_time = elapsed,
-      fold_count = 0L,
+      fold_count = error_fold_count,
+      fold_stats = error_fold_stats,
       prompt = prompt
     ))
   }
@@ -92,11 +95,13 @@
 
   # Extract memory folding stats
   fold_count <- 0L
+  fold_stats <- list()
   if (use_memory_folding) {
-    fold_count <- tryCatch(
-      as.integer(raw_response$fold_count %||% 0),
-      error = function(e) 0L
-    )
+    fold_count <- .py_get(raw_response, "fold_count", 0L, as.integer)
+    fold_stats <- .try_or({
+      raw_stats <- raw_response$fold_stats
+      if (!is.null(raw_stats)) as.list(raw_stats) else list()
+    }, list())
   }
 
   # Return response object
@@ -108,6 +113,7 @@
     trace_json = trace_json,
     elapsed_time = elapsed,
     fold_count = fold_count,
+    fold_stats = fold_stats,
     prompt = prompt
   )
 }
@@ -130,11 +136,12 @@
     initial_state$expected_schema_source <- "explicit"
   }
 
-  # Only seed summary/fold_count when starting a fresh (ephemeral) thread.
+  # Only seed summary/fold_count/fold_stats when starting a fresh (ephemeral) thread.
   if (is.null(thread_id)) {
     initial_state$summary <- reticulate::dict()
     initial_state$archive <- list()
     initial_state$fold_count <- 0L
+    initial_state$fold_stats <- reticulate::dict()
   }
 
   python_agent$invoke(
@@ -205,20 +212,20 @@
           parts <- parts[!is.na(parts) & nzchar(parts)]
           return(parts)
         }
-        tryCatch(as.character(value), error = function(e) character(0))
+        .try_or(as.character(value), character(0))
       }
 
       # Helper to check if a message is an AIMessage
       is_ai_message <- function(msg) {
-        msg_type <- tryCatch(as.character(msg$`__class__`$`__name__`), error = function(e) "")
+        msg_type <- .try_or(as.character(msg$`__class__`$`__name__`), "")
         msg_type == "AIMessage"
       }
 
       # Helper to extract content from a message
       get_message_content <- function(msg) {
-        text <- tryCatch(msg$text, error = function(e) NULL)
+        text <- .try_or(msg$text)
         if (is.null(text) || length(text) == 0) {
-          text <- tryCatch(msg$content, error = function(e) NULL)
+          text <- .try_or(msg$content)
         }
         text
       }
@@ -242,8 +249,8 @@
 
       # If still no content, return a meaningful message based on stop_reason
       if (length(text_parts) == 0) {
-        stop_reason <- tryCatch(raw_response$stop_reason, error = function(e) NULL)
-        error_msg <- tryCatch(as.character(raw_response$error), error = function(e) "")
+        stop_reason <- .try_or(raw_response$stop_reason)
+        error_msg <- .try_or(as.character(raw_response$error), "")
 
         # Detect recursion limit from stop_reason OR error message
         is_recursion_limit <- (!is.null(stop_reason) && stop_reason == "recursion_limit") ||
@@ -321,26 +328,23 @@
 #' @keywords internal
 .build_trace_json <- function(raw_response) {
   tryCatch({
-    messages <- tryCatch(raw_response$messages, error = function(e) NULL)
+    messages <- .try_or(raw_response$messages)
     if (is.null(messages) || length(messages) == 0) {
       return("")
     }
 
     msg_type <- function(msg) {
       # Prefer __class__.__name__ when available
-      type_name <- tryCatch(
-        as.character(msg$`__class__`$`__name__`),
-        error = function(e) NA_character_
-      )
+      type_name <- .try_or(as.character(msg$`__class__`$`__name__`), NA_character_)
       if (!is.na(type_name) && nzchar(type_name)) {
         return(type_name)
       }
       # Fallback to "type" field if present (e.g., "ai", "human", "tool")
-      tryCatch(as.character(msg$type), error = function(e) NA_character_)
+      .try_or(as.character(msg$type), NA_character_)
     }
 
     msg_content <- function(msg) {
-      content <- tryCatch(msg$content, error = function(e) NULL)
+      content <- .try_or(msg$content)
       if (is.null(content)) return("")
       # Content may be a list of blocks; collapse to a string
       if (is.character(content)) {
@@ -360,21 +364,21 @@
         parts <- parts[!is.na(parts) & nzchar(parts)]
         return(paste(parts, collapse = "\n"))
       }
-      tryCatch(as.character(content), error = function(e) "")
+      .try_or(as.character(content), "")
     }
 
     msg_name <- function(msg) {
-      name <- tryCatch(msg$name, error = function(e) NULL)
+      name <- .try_or(msg$name)
       if (is.null(name)) return(NULL)
-      name <- tryCatch(as.character(name), error = function(e) NULL)
+      name <- .try_or(as.character(name))
       if (is.null(name) || !nzchar(name)) return(NULL)
       name
     }
 
     msg_tool_calls <- function(msg) {
-      tool_calls <- tryCatch(msg$tool_calls, error = function(e) NULL)
+      tool_calls <- .try_or(msg$tool_calls)
       if (is.null(tool_calls)) return(NULL)
-      tryCatch(reticulate::py_to_r(tool_calls), error = function(e) NULL)
+      .try_or(reticulate::py_to_r(tool_calls))
     }
 
     out_messages <- lapply(messages, function(msg) {

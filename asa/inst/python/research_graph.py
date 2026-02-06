@@ -34,9 +34,10 @@ from wikidata_tool import query_known_entity
 
 # Optional strict temporal verification (local module)
 try:
-    from date_extractor import verify_date_constraint
+    from date_extractor import verify_date_constraint, _parse_date_string
 except Exception:  # pragma: no cover
     verify_date_constraint = None
+    _parse_date_string = None
 
 logger = logging.getLogger(__name__)
 
@@ -200,9 +201,19 @@ def _normalize_wikidata_item(item: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _parse_iso_date(date_str: Optional[str]) -> Optional[datetime]:
+    """Parse a date string into a datetime object.
+
+    Delegates to date_extractor._parse_date_string for multi-format parsing,
+    falling back to simple ISO-only parsing if that module is unavailable.
+    """
     if not date_str:
         return None
     try:
+        if _parse_date_string is not None:
+            iso_str = _parse_date_string(date_str)
+            if iso_str:
+                return datetime.strptime(iso_str, "%Y-%m-%d")
+            return None
         return datetime.strptime(date_str, "%Y-%m-%d")
     except Exception:
         return None

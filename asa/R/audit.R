@@ -270,8 +270,8 @@ backend <- match.arg(backend)
   parsed <- tryCatch({
     jsonlite::fromJSON(result$stdout, simplifyVector = FALSE)
   }, error = function(e) {
-    # Try to extract JSON from mixed output
-    .extract_json_from_output(result$stdout)
+    # Try to extract JSON from mixed output using shared parser
+    .parse_json_response(result$stdout)
   })
 
   if (is.null(parsed)) {
@@ -553,30 +553,9 @@ If the data looks complete and consistent, say so with high scores.',
   invisible(TRUE)
 }
 
-#' Extract JSON from Mixed Output
-#'
-#' @noRd
-.extract_json_from_output <- function(output) {
-  if (is.null(output) || output == "") return(NULL)
-
-  # Use safe_json_parse first (handles markdown fences)
-  parsed <- safe_json_parse(output)
-  if (!is.null(parsed)) return(parsed)
-
-  # Fallback: extract embedded JSON object from mixed text
-  json_pattern <- "\\{[^{}]*(?:\\{[^{}]*\\}[^{}]*)*\\}"
-  matches <- regmatches(output, gregexpr(json_pattern, output, perl = TRUE))[[1]]
-
-  for (match in matches) {
-    parsed <- tryCatch(
-      jsonlite::fromJSON(match, simplifyVector = FALSE),
-      error = function(e) NULL
-    )
-    if (!is.null(parsed)) return(parsed)
-  }
-
-  NULL
-}
+# NOTE: .extract_json_from_output() has been replaced by the shared
+# .parse_json_response() from helpers.R, which is a strict superset
+# (handles markdown fences, brace counting, and embedded JSON).
 
 #' Convert Python List to R List
 #'

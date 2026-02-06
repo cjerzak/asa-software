@@ -318,6 +318,163 @@ asa_test_stub_summarizer <- function(
   reticulate::py[[var_name]]
 }
 
+# ---------------------------------------------------------------------------
+# Multi-response stub LLM factory (for tests needing cycling responses)
+# ---------------------------------------------------------------------------
+
+asa_test_stub_multi_response_llm <- function(
+    responses,
+    supports_bind_tools = TRUE,
+    var_name = "stub_llm") {
+
+  # responses is a list of R lists, each with:
+  #   content (string) and optionally tool_calls (list of lists with name/args/id)
+  # The stub cycles through them in order, repeating the last one if exhausted.
+
+  response_defs <- vapply(seq_along(responses), function(i) {
+    r <- responses[[i]]
+    tc <- r$tool_calls
+    if (!is.null(tc) && length(tc) > 0) {
+      tc_str <- paste0("[", paste(vapply(tc, function(t) {
+        sprintf("{'name':%s,'args':%s,'id':%s}",
+                deparse(t$name),
+                jsonlite::toJSON(t$args, auto_unbox = TRUE),
+                deparse(t$id))
+      }, character(1)), collapse = ","), "]")
+      sprintf("            _ResponseObj(content=%s, tool_calls=%s)",
+              deparse(r$content), tc_str)
+    } else {
+      sprintf("            _ResponseObj(content=%s, tool_calls=None)",
+              deparse(r$content))
+    }
+  }, character(1))
+
+  responses_block <- paste(response_defs, collapse = ",\n")
+
+  bind_tools_line <- if (supports_bind_tools) {
+    "    def bind_tools(self, tools):\n        return self\n"
+  } else {
+    ""
+  }
+
+  code <- paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _ResponseObj:\n",
+    "    def __init__(self, content, tool_calls=None):\n",
+    "        self.content = content\n",
+    "        self.tool_calls = tool_calls\n",
+    "        self.usage_metadata = {'total_tokens': 0}\n\n",
+    "class _MultiResponseLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "        self._responses = [\n",
+    responses_block, "\n",
+    "        ]\n",
+    bind_tools_line,
+    "    def invoke(self, messages):\n",
+    "        idx = min(self.n, len(self._responses) - 1)\n",
+    "        self.n += 1\n",
+    "        r = self._responses[idx]\n",
+    "        if r.tool_calls:\n",
+    "            return AIMessage(content=r.content, tool_calls=r.tool_calls)\n",
+    "        return AIMessage(content=r.content)\n\n",
+    var_name, " = _MultiResponseLLM()\n"
+  )
+
+  reticulate::py_run_string(code)
+  reticulate::py[[var_name]]
+}
+
+# ---------------------------------------------------------------------------
+# Test config factories (reduce SearchConfig boilerplate)
+# ---------------------------------------------------------------------------
+
+asa_test_fast_search_config <- function(ddg, ...) {
+  defaults <- list(
+    max_results = 3L,
+    timeout = 0.2,
+    max_retries = 1L,
+    retry_delay = 0.0,
+    backoff_multiplier = 1.0,
+    captcha_backoff_base = 0.0,
+    page_load_wait = 0.0,
+    inter_search_delay = 0.0,
+    humanize_timing = FALSE,
+    jitter_factor = 0.0,
+    allow_direct_fallback = FALSE
+  )
+  overrides <- list(...)
+  args <- modifyList(defaults, overrides)
+  do.call(ddg$SearchConfig, args)
+}
+
+# ---------------------------------------------------------------------------
+# Mock data factories (reduce test object construction boilerplate)
+# ---------------------------------------------------------------------------
+
+asa_test_mock_enumerate_result <- function(
+    data = data.frame(name = c("A", "B"), value = c(1, 2)),
+    status = "complete",
+    stop_reason = "target_reached",
+    metrics = list(round_number = 3, queries_used = 15),
+    provenance = NULL,
+    plan = list(),
+    query = "test query",
+    ...) {
+  asa_enumerate_result(
+    data = data,
+    status = status,
+    stop_reason = stop_reason,
+    metrics = metrics,
+    provenance = provenance,
+    plan = plan,
+    query = query,
+    ...
+  )
+}
+
+asa_test_mock_audit_result <- function(
+    data = data.frame(
+      name = c("A", "B"),
+      `_audit_flag` = c("ok", "warning"),
+      check.names = FALSE
+    ),
+    audit_summary = "Test audit",
+    issues = list(),
+    recommendations = character(),
+    completeness_score = 1.0,
+    consistency_score = 1.0,
+    backend_used = "claude_code",
+    elapsed_time = 1.0,
+    ...) {
+  asa_audit_result(
+    data = data,
+    audit_summary = audit_summary,
+    issues = issues,
+    recommendations = recommendations,
+    completeness_score = completeness_score,
+    consistency_score = consistency_score,
+    backend_used = backend_used,
+    elapsed_time = elapsed_time,
+    ...
+  )
+}
+
+asa_test_mock_agent <- function(
+    python_agent = NULL,
+    backend = "openai",
+    model = "gpt-4",
+    config = list(use_memory_folding = TRUE),
+    ...) {
+  asa_agent(
+    python_agent = python_agent,
+    backend = backend,
+    model = model,
+    config = config,
+    ...
+  )
+}
+
 asa_test_recursion_limit_prompt <- function() {
   paste0(
     "You are doing a multi-step research task.\n",
