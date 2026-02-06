@@ -497,8 +497,8 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   ai2 <- msgs$AIMessage(content = "old3")
 
   final_state <- agent$invoke(
-    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L,
-         fold_stats = reticulate::dict()),
+    list(messages = list(initial, ai1, human2, ai2), summary = "",
+         fold_stats = reticulate::dict(fold_count = 0L)),
     config = list(
       recursion_limit = as.integer(30),
       configurable = list(thread_id = "test")
@@ -506,7 +506,7 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   )
 
   # Ensure we actually folded (otherwise this test is meaningless).
-  expect_equal(as.integer(final_state$fold_count), 1L)
+  expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
 
   # Verify fold_stats diagnostics are populated
   fs <- as.list(final_state$fold_stats)
@@ -623,15 +623,15 @@ test_that("memory folding updates summary and injects it into the next system pr
   ai2 <- msgs$AIMessage(content = "beta: old assistant note")
 
   final_state <- agent$invoke(
-    list(messages = list(initial, ai1, human2, ai2), summary = "", fold_count = 0L,
-         fold_stats = reticulate::dict()),
+    list(messages = list(initial, ai1, human2, ai2), summary = "",
+         fold_stats = reticulate::dict(fold_count = 0L)),
     config = list(
       recursion_limit = as.integer(40),
       configurable = list(thread_id = "test_plumbing")
     )
   )
 
-  expect_equal(as.integer(final_state$fold_count), 1L)
+  expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
   expect_true(is.list(final_state$summary))
   expect_true("facts" %in% names(final_state$summary))
   expect_true("FOLDED_SUMMARY" %in% unlist(final_state$summary$facts))
@@ -705,19 +705,20 @@ test_that("fold_count stays 0 when folding thresholds are never reached", {
   initial <- msgs$HumanMessage(content = "hello")
 
   final_state <- agent$invoke(
-    list(messages = list(initial), summary = "", fold_count = 0L,
-         fold_stats = reticulate::dict()),
+    list(messages = list(initial), summary = "",
+         fold_stats = reticulate::dict(fold_count = 0L)),
     config = list(
       recursion_limit = as.integer(20),
       configurable = list(thread_id = "test_no_fold")
     )
   )
 
-  expect_equal(as.integer(final_state$fold_count), 0L)
+  expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 0L)
   expect_true(length(final_state$archive) == 0L)
-  # fold_stats should remain empty when no folding occurs
+  # fold_stats should only contain fold_count=0 when no folding occurs
   fs <- as.list(final_state$fold_stats)
-  expect_equal(length(fs), 0L)
+  expect_equal(length(fs), 1L)
+  expect_equal(as.integer(fs$fold_count), 0L)
   # Summary should remain empty (no fold occurred)
   summary_val <- final_state$summary
   if (is.character(summary_val)) {
@@ -800,15 +801,15 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
   h2 <- msgs$HumanMessage(content = "second question also with substantial text content here")
 
   state1 <- agent$invoke(
-    list(messages = list(h1, a1, h2), summary = "", fold_count = 0L,
-         fold_stats = reticulate::dict()),
+    list(messages = list(h1, a1, h2), summary = "",
+         fold_stats = reticulate::dict(fold_count = 0L)),
     config = list(
       recursion_limit = as.integer(40),
       configurable = list(thread_id = thread_id)
     )
   )
 
-  expect_equal(as.integer(state1$fold_count), 1L)
+  expect_equal(as.integer(as.list(state1$fold_stats)$fold_count), 1L)
   expect_true(length(state1$archive) >= 1L)
 
   # Verify fold_stats after first fold
@@ -817,9 +818,8 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
   first_removed <- as.integer(fs1$fold_total_messages_removed)
 
   # Invocation 2: send a new message on the same thread (checkpointer persists state).
-  # Only pass messages — do NOT pass fold_count, summary, or fold_stats here, because
-  # fold_count has no Annotated reducer and would overwrite the checkpointed values.
-  # fold_stats uses merge_dicts reducer, so it accumulates correctly.
+  # Only pass messages — do NOT pass summary or fold_stats here, because
+  # fold_stats uses merge_dicts reducer, so it accumulates correctly from checkpoint.
   h3 <- msgs$HumanMessage(content = "third question with even more text to again exceed the fold char budget threshold")
 
   state2 <- agent$invoke(
@@ -830,7 +830,7 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
     )
   )
 
-  expect_equal(as.integer(state2$fold_count), 2L)
+  expect_equal(as.integer(as.list(state2$fold_stats)$fold_count), 2L)
   expect_true(length(state2$archive) >= 2L)
 
   # Verify fold_total_messages_removed accumulated across both folds
@@ -893,8 +893,8 @@ test_that("archive entry fold_count label matches state fold_count", {
   a2 <- msgs$AIMessage(content = "answer two")
 
   final_state <- agent$invoke(
-    list(messages = list(h1, a1, h2, a2), summary = "", fold_count = 0L,
-         fold_stats = reticulate::dict()),
+    list(messages = list(h1, a1, h2, a2), summary = "",
+         fold_stats = reticulate::dict(fold_count = 0L)),
     config = list(
       recursion_limit = as.integer(30),
       configurable = list(thread_id = "test_archive_label")
@@ -902,12 +902,12 @@ test_that("archive entry fold_count label matches state fold_count", {
   )
 
   # Verify fold occurred
-  expect_equal(as.integer(final_state$fold_count), 1L)
+  expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
   expect_true(length(final_state$archive) >= 1L)
 
   # Archive entry fold_count should match the state fold_count
   archive_entry <- final_state$archive[[1]]
-  expect_equal(as.integer(archive_entry$fold_count), as.integer(final_state$fold_count))
+  expect_equal(as.integer(archive_entry$fold_count), as.integer(as.list(final_state$fold_stats)$fold_count))
 
   # Archive entry should contain lossless message records and text
   expect_true("messages" %in% names(archive_entry))

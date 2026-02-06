@@ -65,8 +65,9 @@
 #'     \item search_tier: Which search tier was used ("primp", "selenium", etc.)
 #'     \item parsing_status: Validation result (if expected_fields provided)
 #'     \item trace: Full execution trace (for "raw" output_format)
-#'     \item fold_count: Number of memory folds (for "raw" output_format)
-#'     \item fold_stats: Memory folding diagnostics list (for "raw" output_format)
+#'     \item fold_stats: Memory folding diagnostics list (for "raw" output_format).
+#'       Includes fold_count, fold_messages_removed, fold_total_messages_removed,
+#'       fold_chars_input, and fold_summary_chars.
 #'   }
 #'
 #' @details
@@ -355,7 +356,6 @@ run_task <- function(prompt,
   # For "raw" format, add additional fields for debugging
   if (identical(output_format, "raw")) {
     result$trace <- response$trace
-    result$fold_count <- response$fold_count
     result$fold_stats <- response$fold_stats
     result$status_code <- response$status_code
     result$raw_response <- response$raw_response

@@ -10,9 +10,9 @@ asa_response(
   raw_response,
   trace,
   elapsed_time,
-  fold_count,
   prompt,
-  trace_json = ""
+  trace_json = "",
+  fold_stats = list()
 )
 }
 \arguments{
@@ -26,11 +26,14 @@ asa_response(
 
 \item{elapsed_time}{Execution time in minutes}
 
-\item{fold_count}{Number of memory folds performed}
-
 \item{prompt}{The original prompt}
 
 \item{trace_json}{Structured JSON trace (when available)}
+
+\item{fold_stats}{Diagnostic metrics from memory folding (list).
+Includes \code{fold_count} (integer or error message string),
+\code{fold_messages_removed}, \code{fold_total_messages_removed},
+\code{fold_chars_input}, and \code{fold_summary_chars}.}
 }
 \value{
 An object of class \code{asa_response}

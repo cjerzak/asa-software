@@ -17,7 +17,7 @@ test_that("asa_response constructor creates correct object", {
     raw_response = NULL,
     trace = "trace text",
     elapsed_time = 1.5,
-    fold_count = 2L,
+    fold_stats = list(fold_count = 2L),
     prompt = "Test prompt"
   )
 
@@ -25,12 +25,12 @@ test_that("asa_response constructor creates correct object", {
   expect_equal(response$message, "Test response")
   expect_equal(response$status_code, 200L)
   expect_equal(response$elapsed_time, 1.5)
-  expect_equal(response$fold_count, 2L)
-  expect_equal(response$fold_stats, list())
+  expect_equal(response$fold_stats$fold_count, 2L)
 })
 
 test_that("asa_response stores fold_stats correctly", {
   stats <- list(
+    fold_count = 2L,
     fold_messages_removed = 5L,
     fold_total_messages_removed = 8L,
     fold_chars_input = 1200L,
@@ -42,12 +42,12 @@ test_that("asa_response stores fold_stats correctly", {
     raw_response = NULL,
     trace = "trace text",
     elapsed_time = 1.5,
-    fold_count = 2L,
     fold_stats = stats,
     prompt = "Test prompt"
   )
 
   expect_equal(response$fold_stats, stats)
+  expect_equal(response$fold_stats$fold_count, 2L)
   expect_equal(response$fold_stats$fold_messages_removed, 5L)
   expect_equal(response$fold_stats$fold_total_messages_removed, 8L)
   expect_equal(response$fold_stats$fold_chars_input, 1200L)
@@ -61,7 +61,6 @@ test_that("asa_response defaults fold_stats to empty list", {
     raw_response = NULL,
     trace = "trace text",
     elapsed_time = 1.5,
-    fold_count = 0L,
     prompt = "Test prompt"
   )
 
@@ -123,7 +122,7 @@ test_that("print methods produce expected headers", {
   agent <- asa_test_mock_agent(config = list())
   expect_output(print(agent), "ASA Search Agent")
 
-  response <- asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt")
+  response <- asa_response("msg", 200L, NULL, "", 1.0, "prompt")
   expect_output(print(response), "ASA Agent Response")
 
   result <- asa_result("prompt", "message", NULL, "", 1.0, "success")

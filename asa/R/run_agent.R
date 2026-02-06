@@ -69,15 +69,16 @@
 
   # Handle errors
   if (inherits(raw_response, "asa_error")) {
-    error_fold_count <- .try_or(as.integer(raw_response$fold_count %||% 0), 0L)
     error_fold_stats <- .try_or(as.list(raw_response$fold_stats %||% list()), list())
+    error_fold_stats$fold_count <- paste0(
+      "Error before fold count could be determined: ", raw_response$error
+    )
     return(asa_response(
       message = NA_character_,
       status_code = ASA_STATUS_ERROR,
       raw_response = raw_response,
       trace = raw_response$error,
       elapsed_time = elapsed,
-      fold_count = error_fold_count,
       fold_stats = error_fold_stats,
       prompt = prompt
     ))
@@ -93,15 +94,21 @@
   # Handle rate limiting and timeouts
   .handle_response_issues(trace, verbose)
 
-  # Extract memory folding stats
-  fold_count <- 0L
+  # Extract memory folding stats (fold_count lives inside fold_stats)
   fold_stats <- list()
   if (use_memory_folding) {
-    fold_count <- .py_get(raw_response, "fold_count", 0L, as.integer)
     fold_stats <- .try_or({
       raw_stats <- raw_response$fold_stats
       if (!is.null(raw_stats)) as.list(raw_stats) else list()
     }, list())
+    # Ensure fold_count is present as integer
+    if (is.null(fold_stats$fold_count)) {
+      fold_stats$fold_count <- 0L
+    } else {
+      fold_stats$fold_count <- as.integer(fold_stats$fold_count)
+    }
+  } else {
+    fold_stats$fold_count <- 0L
   }
 
   # Return response object
@@ -112,7 +119,6 @@
     trace = trace,
     trace_json = trace_json,
     elapsed_time = elapsed,
-    fold_count = fold_count,
     fold_stats = fold_stats,
     prompt = prompt
   )
@@ -136,12 +142,11 @@
     initial_state$expected_schema_source <- "explicit"
   }
 
-  # Only seed summary/fold_count/fold_stats when starting a fresh (ephemeral) thread.
+  # Only seed summary/fold_stats when starting a fresh (ephemeral) thread.
   if (is.null(thread_id)) {
     initial_state$summary <- reticulate::dict()
     initial_state$archive <- list()
-    initial_state$fold_count <- 0L
-    initial_state$fold_stats <- reticulate::dict()
+    initial_state$fold_stats <- reticulate::dict(fold_count = 0L)
   }
 
   python_agent$invoke(

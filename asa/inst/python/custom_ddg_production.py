@@ -3659,15 +3659,14 @@ class MemoryFoldingAgentState(TypedDict):
         messages: Working memory - recent messages in the conversation
         summary: Long-term memory - structured summary of older interactions
         archive: Lossless archive of folded content (not injected into the prompt)
-        fold_count: Number of times memory has been folded (for debugging)
-        fold_stats: Diagnostic metrics from the most recent fold (merge_dicts reducer)
+        fold_stats: Diagnostic metrics from the most recent fold (merge_dicts reducer).
+                    Includes fold_count (int) tracking number of times memory has been folded.
         remaining_steps: Managed value populated by LangGraph (steps left before recursion_limit)
         scratchpad: Agent-saved findings that persist across memory folds
     """
     messages: Annotated[list, _add_messages]
     summary: Any
     archive: Annotated[list, add_to_list]
-    fold_count: int
     fold_stats: Annotated[dict, merge_dicts]
     stop_reason: Optional[str]
     remaining_steps: RemainingSteps
@@ -3898,8 +3897,8 @@ def create_memory_folding_agent(
         """
         messages = state.get("messages", [])
         current_summary = state.get("summary", "")
-        fold_count = state.get("fold_count", 0)
         current_fold_stats = state.get("fold_stats", {})
+        fold_count = current_fold_stats.get("fold_count", 0)
 
         def _compute_effective_keep_recent_messages(messages, keep_recent_exchanges):
             # keep_recent_exchanges counts full user/assistant exchanges, where an exchange
@@ -4196,8 +4195,8 @@ def create_memory_folding_agent(
             "summary": new_memory,
             "archive": [archive_entry],
             "messages": remove_messages,
-            "fold_count": fold_count + 1,
             "fold_stats": {
+                "fold_count": fold_count + 1,
                 "fold_messages_removed": fold_messages_removed,
                 "fold_total_messages_removed": fold_total_messages_removed,
                 "fold_chars_input": fold_chars_input,

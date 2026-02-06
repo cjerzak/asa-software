@@ -10,8 +10,8 @@
   raw_response,
   trace,
   elapsed_time,
-  fold_count,
-  prompt
+  prompt,
+  fold_stats = list()
 )
 }
 \description{

@@ -629,31 +629,27 @@ test_that(".validate_asa_agent accepts valid inputs", {
 })
 
 test_that(".validate_asa_response rejects invalid status_code", {
-  expect_error(.validate_asa_response("msg", -1L, NULL, "", 1.0, 0L, "prompt"), "be positive")
-  expect_error(.validate_asa_response("msg", "200", NULL, "", 1.0, 0L, "prompt"), "be a single")
+  expect_error(.validate_asa_response("msg", -1L, NULL, "", 1.0, "prompt"), "be positive")
+  expect_error(.validate_asa_response("msg", "200", NULL, "", 1.0, "prompt"), "be a single")
 })
 
 test_that(".validate_asa_response rejects invalid elapsed_time", {
-  expect_error(.validate_asa_response("msg", 200L, NULL, "", -1.0, 0L, "prompt"), "non-negative")
-})
-
-test_that(".validate_asa_response rejects invalid fold_count", {
-  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, -1L, "prompt"), "non-negative")
-  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, 1.5, "prompt"), "be an integer")
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", -1.0, "prompt"), "non-negative")
 })
 
 test_that(".validate_asa_response rejects non-string trace", {
-  expect_error(.validate_asa_response("msg", 200L, NULL, 123, 1.0, 0L, "prompt"), "character string")
+  expect_error(.validate_asa_response("msg", 200L, NULL, 123, 1.0, "prompt"), "character string")
 })
 
 test_that(".validate_asa_response accepts valid inputs", {
-  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt"))
-  expect_silent(.validate_asa_response("msg", 200L, NULL, "trace data", 0.0, 2L, "test prompt"))
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, "prompt"))
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "trace data", 0.0, "test prompt"))
 })
 
 test_that(".validate_asa_response accepts valid fold_stats", {
-  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt", fold_stats = list()))
-  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, 1L, "prompt", fold_stats = list(
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, "prompt", fold_stats = list()))
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, "prompt", fold_stats = list(
+    fold_count = 1L,
     fold_messages_removed = 3L,
     fold_total_messages_removed = 5L,
     fold_chars_input = 800L,
@@ -661,9 +657,15 @@ test_that(".validate_asa_response accepts valid fold_stats", {
   )))
 })
 
+test_that(".validate_asa_response accepts fold_count as error message in fold_stats", {
+  expect_silent(.validate_asa_response("msg", 200L, NULL, "", 1.0, "prompt", fold_stats = list(
+    fold_count = "Error before fold count could be determined: connection timeout"
+  )))
+})
+
 test_that(".validate_asa_response rejects non-list fold_stats", {
-  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt", fold_stats = "not-a-list"), "be a list")
-  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, 0L, "prompt", fold_stats = 42), "be a list")
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, "prompt", fold_stats = "not-a-list"), "be a list")
+  expect_error(.validate_asa_response("msg", 200L, NULL, "", 1.0, "prompt", fold_stats = 42), "be a list")
 })
 
 test_that(".validate_asa_result rejects invalid status", {

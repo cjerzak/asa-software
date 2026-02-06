@@ -676,15 +676,17 @@ summary.asa_agent <- function(object, ...) {
 #' @param trace Full text trace of agent execution
 #' @param trace_json Structured JSON trace (when available)
 #' @param elapsed_time Execution time in minutes
-#' @param fold_count Number of memory folds performed
-#' @param fold_stats Diagnostic metrics from memory folding (list)
+#' @param fold_stats Diagnostic metrics from memory folding (list).
+#'   Includes \code{fold_count} (integer or error message string),
+#'   \code{fold_messages_removed}, \code{fold_total_messages_removed},
+#'   \code{fold_chars_input}, and \code{fold_summary_chars}.
 #' @param prompt The original prompt
 #'
 #' @return An object of class \code{asa_response}
 #'
 #' @export
 asa_response <- function(message, status_code, raw_response, trace,
-                         elapsed_time, fold_count, prompt,
+                         elapsed_time, prompt,
                          trace_json = "", fold_stats = list()) {
   structure(
     list(
@@ -694,7 +696,6 @@ asa_response <- function(message, status_code, raw_response, trace,
       trace = trace,
       trace_json = trace_json,
       elapsed_time = elapsed_time,
-      fold_count = fold_count,
       fold_stats = fold_stats,
       prompt = prompt
     ),
@@ -716,14 +717,19 @@ print.asa_response <- function(x, ...) {
   cat("==================\n")
   cat("Status:    ", if (x$status_code == 200) "Success" else "Error", " (", x$status_code, ")\n", sep = "")
   cat("Time:      ", format_duration(x$elapsed_time), "\n", sep = "")
-  if (x$fold_count > 0) {
-    cat("Folds:     ", x$fold_count, "\n", sep = "")
-    fs <- x$fold_stats
-    if (length(fs) > 0) {
-      cat("  Last fold:     ", fs$fold_messages_removed %||% 0L, " msgs removed, ",
-          fs$fold_chars_input %||% 0L, " chars input\n", sep = "")
-      cat("  Total removed: ", fs$fold_total_messages_removed %||% 0L, " msgs\n", sep = "")
-      cat("  Summary size:  ", fs$fold_summary_chars %||% 0L, " chars\n", sep = "")
+  fc <- x$fold_stats$fold_count
+  if (!is.null(fc) && !identical(fc, 0L)) {
+    if (is.character(fc)) {
+      cat("Fold error: ", fc, "\n", sep = "")
+    } else {
+      cat("Folds:     ", fc, "\n", sep = "")
+      fs <- x$fold_stats
+      if (length(fs) > 1) {
+        cat("  Last fold:     ", fs$fold_messages_removed %||% 0L, " msgs removed, ",
+            fs$fold_chars_input %||% 0L, " chars input\n", sep = "")
+        cat("  Total removed: ", fs$fold_total_messages_removed %||% 0L, " msgs\n", sep = "")
+        cat("  Summary size:  ", fs$fold_summary_chars %||% 0L, " chars\n", sep = "")
+      }
     }
   }
   cat("\nPrompt:\n")
@@ -764,7 +770,7 @@ summary.asa_response <- function(object, show_trace = FALSE, ...) {
     elapsed_time = object$elapsed_time,
     message_length = nchar(object$message %||% ""),
     trace_length = nchar(object$trace %||% ""),
-    fold_count = object$fold_count,
+    fold_count = object$fold_stats$fold_count,
     fold_stats = object$fold_stats
   ))
 }
