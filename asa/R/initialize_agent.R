@@ -269,7 +269,7 @@ initialize_agent <- function(backend = NULL,
 
   # Create search tools
   if (verbose) message("  Creating search tools...")
-  tools <- .create_tools(proxy, use_browser = use_browser)
+  tools <- .create_tools(proxy, use_browser = use_browser, search = search)
 
   # Create agent
   if (verbose) message("  Creating agent (memory_folding=", use_memory_folding, ")...")
@@ -502,12 +502,30 @@ initialize_agent <- function(backend = NULL,
 #' @param proxy Proxy URL or NULL
 #' @param use_browser Enable Selenium browser tier for DuckDuckGo search
 #' @keywords internal
-.create_tools <- function(proxy, use_browser = ASA_DEFAULT_USE_BROWSER) {
+.create_tools <- function(proxy, use_browser = ASA_DEFAULT_USE_BROWSER, search = NULL) {
+  # Resolve tool output caps (configurable via search_options()).
+  wiki_top_k_results <- ASA_DEFAULT_WIKI_TOP_K
+  wiki_doc_content_chars_max <- ASA_DEFAULT_WIKI_CHARS
+  search_doc_content_chars_max <- 500L
+  search_max_results <- ASA_DEFAULT_MAX_RESULTS
+
+  if (!is.null(search) && inherits(search, "asa_search")) {
+    wiki_top_k_results <- search$wiki_top_k_results %||% wiki_top_k_results
+    wiki_doc_content_chars_max <- search$wiki_doc_content_chars_max %||% wiki_doc_content_chars_max
+    search_doc_content_chars_max <- search$search_doc_content_chars_max %||% search_doc_content_chars_max
+    search_max_results <- search$max_results %||% search_max_results
+  }
+
+  wiki_top_k_results <- as.integer(wiki_top_k_results)
+  wiki_doc_content_chars_max <- as.integer(wiki_doc_content_chars_max)
+  search_doc_content_chars_max <- as.integer(search_doc_content_chars_max)
+  search_max_results <- as.integer(search_max_results)
+
   # Wikipedia tool
   wiki <- asa_env$community_tools$WikipediaQueryRun(
     api_wrapper = asa_env$community_utils$WikipediaAPIWrapper(
-      top_k_results = 5L,
-      doc_content_chars_max = 1000L
+      top_k_results = wiki_top_k_results,
+      doc_content_chars_max = wiki_doc_content_chars_max
     ),
     verbose = FALSE,
     timeout = 90L,
@@ -522,11 +540,11 @@ initialize_agent <- function(backend = NULL,
     api_wrapper = asa_env$custom_ddg$PatchedDuckDuckGoSearchAPIWrapper(
       proxy = proxy,
       use_browser = isTRUE(use_browser),
-      max_results = 10L,
+      max_results = search_max_results,
       safesearch = "moderate",
       time = "none"
     ),
-    doc_content_chars_max = 500L,
+    doc_content_chars_max = search_doc_content_chars_max,
     timeout = 90L,
     verbose = FALSE,
     max_concurrency = 1L

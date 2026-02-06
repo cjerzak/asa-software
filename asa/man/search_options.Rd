@@ -27,7 +27,10 @@ search_options(
   webpage_cache_enabled = NULL,
   webpage_cache_max_entries = NULL,
   webpage_cache_max_text_chars = NULL,
-  webpage_user_agent = NULL
+  webpage_user_agent = NULL,
+  wiki_top_k_results = NULL,
+  wiki_doc_content_chars_max = NULL,
+  search_doc_content_chars_max = NULL
 )
 }
 \arguments{
@@ -94,6 +97,17 @@ store per cached page (separate from \code{webpage_max_chars}, which caps
 tool output).}
 
 \item{webpage_user_agent}{User-Agent string used for webpage fetches.}
+
+\item{wiki_top_k_results}{Number of Wikipedia search results to fetch per
+query (default: 5). Higher values may provide more coverage at the cost of
+latency/noise.}
+
+\item{wiki_doc_content_chars_max}{Maximum number of characters to include
+from each Wikipedia page/summary in the Wikipedia tool output (default: 1000).}
+
+\item{search_doc_content_chars_max}{Maximum number of characters to include
+from DuckDuckGo Search tool outputs (default: 500). This caps the text
+returned to the LLM per Search tool invocation.}
 }
 \value{
 An object of class \code{asa_search}

@@ -4,7 +4,7 @@
 \alias{.create_tools}
 \title{Create Search Tools}
 \usage{
-.create_tools(proxy, use_browser = ASA_DEFAULT_USE_BROWSER)
+.create_tools(proxy, use_browser = ASA_DEFAULT_USE_BROWSER, search = NULL)
 }
 \arguments{
 \item{proxy}{Proxy URL or NULL}

@@ -337,6 +337,14 @@ print.asa_temporal <- function(x, ...) {
 #'   E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1.5.
 #' @param inter_search_delay Minimum delay in seconds between consecutive searches.
 #'   Helps avoid rate limiting from search providers. Default: 1.5.
+#' @param wiki_top_k_results Number of Wikipedia search results to fetch per
+#'   query (default: 5). Higher values may provide more coverage at the cost of
+#'   latency/noise.
+#' @param wiki_doc_content_chars_max Maximum number of characters to include
+#'   from each Wikipedia page/summary in the Wikipedia tool output (default: 1000).
+#' @param search_doc_content_chars_max Maximum number of characters to include
+#'   from DuckDuckGo Search tool outputs (default: 500). This caps the text
+#'   returned to the LLM per Search tool invocation.
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
@@ -432,7 +440,10 @@ search_options <- function(max_results = NULL,
                            webpage_cache_enabled = NULL,
                            webpage_cache_max_entries = NULL,
                            webpage_cache_max_text_chars = NULL,
-                           webpage_user_agent = NULL) {
+                           webpage_user_agent = NULL,
+                           wiki_top_k_results = NULL,
+                           wiki_doc_content_chars_max = NULL,
+                           search_doc_content_chars_max = NULL) {
 
   structure(
     list(
@@ -442,6 +453,9 @@ search_options <- function(max_results = NULL,
       retry_delay = retry_delay %||% 2.0,
       backoff_multiplier = backoff_multiplier %||% 1.5,
       inter_search_delay = inter_search_delay %||% ASA_DEFAULT_INTER_SEARCH_DELAY,
+      wiki_top_k_results = wiki_top_k_results %||% ASA_DEFAULT_WIKI_TOP_K,
+      wiki_doc_content_chars_max = wiki_doc_content_chars_max %||% ASA_DEFAULT_WIKI_CHARS,
+      search_doc_content_chars_max = search_doc_content_chars_max %||% 500L,
       allow_read_webpages = allow_read_webpages %||% FALSE,
       webpage_relevance_mode = webpage_relevance_mode %||% "auto",
       webpage_embedding_provider = webpage_embedding_provider %||% "auto",
@@ -477,6 +491,9 @@ print.asa_search <- function(x, ...) {
       ", timeout=", x$timeout, "s",
       ", retries=", x$max_retries,
       ", delay=", x$inter_search_delay, "s",
+      ", wiki_top_k_results=", x$wiki_top_k_results,
+      ", wiki_doc_content_chars_max=", x$wiki_doc_content_chars_max,
+      ", search_doc_content_chars_max=", x$search_doc_content_chars_max,
       ", allow_read_webpages=", x$allow_read_webpages, sep = "")
   # Only show OpenWebpage size tuning when explicitly set.
   if (!is.null(x$webpage_max_chars)) {

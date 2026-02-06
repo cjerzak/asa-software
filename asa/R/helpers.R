@@ -114,9 +114,36 @@
   same_timeout <- identical(agent$config$timeout, config$timeout)
   same_tor <- identical(agent$config$tor, config$tor)
 
+  # Some search settings affect tool construction (Wikipedia/Search snippet caps).
+  # Treat changes as requiring a new agent instance.
+  agent_search <- agent$config$search %||% NULL
+  config_search <- config$search %||% NULL
+
+  agent_wiki_top_k <- ASA_DEFAULT_WIKI_TOP_K
+  agent_wiki_chars <- ASA_DEFAULT_WIKI_CHARS
+  agent_search_chars <- 500L
+  if (!is.null(agent_search) && (inherits(agent_search, "asa_search") || is.list(agent_search))) {
+    agent_wiki_top_k <- agent_search$wiki_top_k_results %||% agent_wiki_top_k
+    agent_wiki_chars <- agent_search$wiki_doc_content_chars_max %||% agent_wiki_chars
+    agent_search_chars <- agent_search$search_doc_content_chars_max %||% agent_search_chars
+  }
+
+  config_wiki_top_k <- ASA_DEFAULT_WIKI_TOP_K
+  config_wiki_chars <- ASA_DEFAULT_WIKI_CHARS
+  config_search_chars <- 500L
+  if (!is.null(config_search) && (inherits(config_search, "asa_search") || is.list(config_search))) {
+    config_wiki_top_k <- config_search$wiki_top_k_results %||% config_wiki_top_k
+    config_wiki_chars <- config_search$wiki_doc_content_chars_max %||% config_wiki_chars
+    config_search_chars <- config_search$search_doc_content_chars_max %||% config_search_chars
+  }
+
+  same_search_tools <- identical(as.integer(agent_wiki_top_k), as.integer(config_wiki_top_k)) &&
+    identical(as.integer(agent_wiki_chars), as.integer(config_wiki_chars)) &&
+    identical(as.integer(agent_search_chars), as.integer(config_search_chars))
+
   isTRUE(same_backend && same_model && same_conda && same_proxy && same_browser &&
            same_folding && same_threshold && same_keep &&
-           same_rate && same_timeout && same_tor)
+           same_rate && same_timeout && same_tor && same_search_tools)
 }
 
 #' Clean Text for JSON Output
