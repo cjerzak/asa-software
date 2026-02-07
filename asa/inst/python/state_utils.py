@@ -509,31 +509,56 @@ def _default_leaf_value(descriptor: Any, key: Optional[str] = None) -> Any:
     """Default value for an unknown scalar leaf.
 
     Policy (best-effort):
-    - If null is allowed: use None
+    - If "Unknown" is an explicit enum option: use "Unknown"
+    - If null is allowed (and no "Unknown" option): use None
+    - Prefer "partial" for status enum fields when available
     - If it's a string and null is disallowed: use "" (empty string)
-    - If it's an enum like complete|partial: prefer "partial" when available
     - Otherwise: use None
     """
     if not isinstance(descriptor, str):
         return None
 
-    lower = descriptor.lower().strip()
-    if "null" in lower:
+    text = descriptor.strip()
+    if not text:
         return None
+
+    lower = text.lower()
 
     # Prefer "partial" for common status enums when available.
     if key == "status" and "partial" in lower:
         return "partial"
 
-    if "|" in descriptor:
-        parts = [p.strip() for p in descriptor.split("|") if p.strip()]
+    # Handle pipe-separated descriptors (enums or type unions).
+    if "|" in text:
+        parts = [p.strip() for p in text.split("|") if p.strip()]
         type_words = {"string", "integer", "number", "boolean", "null", "object", "array"}
+
+        # Check for "Unknown" sentinel in ANY pipe-separated descriptor.
+        for p in parts:
+            clean = p.strip().strip("\"'")
+            if clean.lower() == "unknown":
+                return clean or "Unknown"
+
+        # Pure enum (no type words): check for "partial", then first value.
         if parts and not any(p.lower() in type_words for p in parts):
-            # Enum of literals (e.g., complete|partial).
             for p in parts:
                 if p.lower() == "partial":
                     return p
             return parts[0]
+
+        # Mixed type descriptor (e.g., "string|null"): check for null.
+        for p in parts:
+            clean = p.strip().strip("\"'")
+            if clean.lower() == "null":
+                return None
+
+    # Non-pipe or fall-through: check for word-boundary "unknown".
+    if re.search(r"\bunknown\b", text, flags=re.IGNORECASE):
+        return "Unknown"
+
+    # Check for word-boundary "null".
+    if re.search(r"\bnull\b", text, flags=re.IGNORECASE):
+        return None
 
     if "array" in lower:
         return []
