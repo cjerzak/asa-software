@@ -3534,10 +3534,71 @@ def _message_is_tool(msg: Any) -> bool:
     return False
 
 
+def _is_empty_like(value: Any) -> bool:
+    """Return True for values that should not count as meaningful schema content."""
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip() == ""
+    if isinstance(value, (list, tuple, dict, set)):
+        return len(value) == 0
+    return False
+
+
+def _count_meaningful_required_values(value: Any, schema: Any) -> int:
+    """Count required schema leaves with non-empty values in a parsed candidate."""
+    if isinstance(schema, dict):
+        if not isinstance(value, dict):
+            return 0
+        total = 0
+        for key, child_schema in schema.items():
+            if key not in value:
+                continue
+            total += _count_meaningful_required_values(value.get(key), child_schema)
+        return total
+
+    if isinstance(schema, list):
+        if not schema or not isinstance(value, list) or not value:
+            return 0
+        elem_schema = schema[0]
+        return max(
+            (_count_meaningful_required_values(item, elem_schema) for item in value),
+            default=0,
+        )
+
+    return 0 if _is_empty_like(value) else 1
+
+
+def _schema_seed_candidate_score(text: str, expected_schema: Any) -> Optional[tuple]:
+    """Rank a tool-output candidate for schema-seeded fallback repair."""
+    try:
+        parsed = parse_llm_json(text)
+    except Exception:
+        return None
+    if not isinstance(parsed, (dict, list)):
+        return None
+
+    try:
+        missing = list_missing_required_keys(parsed, expected_schema, max_items=1000)
+        missing_count = len(missing)
+    except Exception:
+        missing_count = 10**6
+
+    meaningful = _count_meaningful_required_values(parsed, expected_schema)
+    type_match = int(
+        (isinstance(expected_schema, dict) and isinstance(parsed, dict))
+        or (isinstance(expected_schema, list) and isinstance(parsed, list))
+    )
+    # Higher is better.
+    return (meaningful, type_match, -missing_count)
+
+
 def _recent_tool_context_seed(
     messages: Any,
     *,
+    expected_schema: Any = None,
     max_messages: int = 6,
+    max_schema_messages: int = 64,
     max_chars_per_message: int = 12000,
     max_total_chars: int = 30000,
 ) -> Optional[str]:
@@ -3553,8 +3614,14 @@ def _recent_tool_context_seed(
         return None
 
     tool_texts: List[str] = []
+    seed_limit = max(1, int(max_messages))
+    if expected_schema is not None:
+        seed_limit = max(seed_limit, int(max_schema_messages))
+    best_schema_seed: Optional[str] = None
+    best_schema_score: Optional[tuple] = None
+
     for msg in reversed(msg_list):
-        if len(tool_texts) >= max(1, int(max_messages)):
+        if len(tool_texts) >= seed_limit:
             break
         if not _message_is_tool(msg):
             continue
@@ -3570,10 +3637,23 @@ def _recent_tool_context_seed(
         text = _message_content_to_text(content).strip()
         if not text:
             continue
-        tool_texts.append(text[: max(1, int(max_chars_per_message))])
+        truncated = text[: max(1, int(max_chars_per_message))]
+        tool_texts.append(truncated)
+
+        if expected_schema is not None:
+            score = _schema_seed_candidate_score(truncated, expected_schema)
+            if score is not None and (best_schema_score is None or score > best_schema_score):
+                best_schema_score = score
+                best_schema_seed = truncated
+                # Found a complete non-empty schema match; no need to scan older tool outputs.
+                if score[0] > 0 and score[1] > 0 and score[2] == 0:
+                    break
 
     if not tool_texts:
         return None
+
+    if best_schema_seed is not None:
+        return best_schema_seed
 
     # Prefer a single parseable JSON payload if one is present.
     for text in tool_texts:
@@ -3613,7 +3693,10 @@ def _sanitize_finalize_response(
         fallback_text = None
         if expected_schema is not None:
             seed = "[]" if isinstance(expected_schema, list) else "{}"
-            seed_candidate = _recent_tool_context_seed(messages) or seed
+            seed_candidate = _recent_tool_context_seed(
+                messages,
+                expected_schema=expected_schema,
+            ) or seed
             try:
                 fallback_text = repair_json_output_to_schema(
                     seed_candidate,
@@ -3622,7 +3705,7 @@ def _sanitize_finalize_response(
                 )
             except Exception:
                 fallback_text = None
-            if not _message_content_to_text(fallback_text) and seed_candidate is not seed:
+            if not _message_content_to_text(fallback_text) and seed_candidate != seed:
                 try:
                     fallback_text = repair_json_output_to_schema(
                         seed,
@@ -4044,17 +4127,42 @@ class MemoryFoldingAgentState(TypedDict):
 FINALIZE_WHEN_REMAINING_STEPS_LTE = 2
 
 
-def _exception_fallback_text(expected_schema: Any, *, context: str = "agent") -> str:
+def _exception_fallback_text(
+    expected_schema: Any,
+    *,
+    context: str = "agent",
+    messages: Optional[list] = None,
+) -> str:
     """Build a safe terminal fallback payload for invocation failures."""
     if expected_schema is not None:
         seed = "[]" if isinstance(expected_schema, list) else "{}"
+        seed_candidate = _recent_tool_context_seed(
+            messages,
+            expected_schema=expected_schema,
+        ) or seed
         try:
-            repaired = repair_json_output_to_schema(seed, expected_schema, fallback_on_failure=True)
+            repaired = repair_json_output_to_schema(
+                seed_candidate,
+                expected_schema,
+                fallback_on_failure=True,
+            )
             repaired_text = _message_content_to_text(repaired)
             if repaired_text:
                 return repaired_text
         except Exception:
             pass
+        if seed_candidate != seed:
+            try:
+                repaired = repair_json_output_to_schema(
+                    seed,
+                    expected_schema,
+                    fallback_on_failure=True,
+                )
+                repaired_text = _message_content_to_text(repaired)
+                if repaired_text:
+                    return repaired_text
+            except Exception:
+                pass
         return seed
     return f"Unable to complete the {context} step due to an internal error."
 
@@ -4065,6 +4173,7 @@ def _invoke_model_with_fallback(
     expected_schema: Any = None,
     schema_source: Optional[str] = None,
     context: str = "agent",
+    messages: Optional[list] = None,
     debug: bool = False,
 ) -> tuple[Any, Optional[Dict[str, Any]]]:
     """Invoke model callable and convert exceptions into terminal AI responses."""
@@ -4073,7 +4182,11 @@ def _invoke_model_with_fallback(
     except Exception as exc:
         if debug:
             logger.exception("Model invoke failed in %s", context)
-        fallback_text = _exception_fallback_text(expected_schema, context=context)
+        fallback_text = _exception_fallback_text(
+            expected_schema,
+            context=context,
+            messages=messages,
+        )
         try:
             from langchain_core.messages import AIMessage
             response = AIMessage(content=fallback_text)
@@ -4374,6 +4487,7 @@ def create_memory_folding_agent(
                 expected_schema=expected_schema,
                 schema_source=expected_schema_source,
                 context="agent",
+                messages=messages,
                 debug=debug,
             )
         else:
@@ -4385,6 +4499,7 @@ def create_memory_folding_agent(
                 expected_schema=expected_schema,
                 schema_source=expected_schema_source,
                 context="agent",
+                messages=messages,
                 debug=debug,
             )
 
@@ -4451,6 +4566,7 @@ def create_memory_folding_agent(
                 expected_schema=expected_schema,
                 schema_source=expected_schema_source,
                 context="finalize",
+                messages=messages,
                 debug=debug,
             )
         else:
@@ -5063,6 +5179,7 @@ def create_standard_agent(
                 expected_schema=expected_schema,
                 schema_source=expected_schema_source,
                 context="agent",
+                messages=messages,
                 debug=debug,
             )
         else:
@@ -5073,6 +5190,7 @@ def create_standard_agent(
                 expected_schema=expected_schema,
                 schema_source=expected_schema_source,
                 context="agent",
+                messages=messages,
                 debug=debug,
             )
 
@@ -5131,6 +5249,7 @@ def create_standard_agent(
                 expected_schema=expected_schema,
                 schema_source=expected_schema_source,
                 context="finalize",
+                messages=messages,
                 debug=debug,
             )
         else:

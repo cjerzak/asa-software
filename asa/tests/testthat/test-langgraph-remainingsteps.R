@@ -2516,3 +2516,159 @@ test_that(".extract_response_text returns recursion fallback when only tool-call
     "[Agent reached step limit before completing task. Increase recursion_limit or simplify the task.]"
   )
 })
+
+test_that("large-prompt recursion-limit finalize preserves earlier tool facts across many rounds (standard)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_require_langgraph_stack()
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "tool_call_counter_large = {'n': 0}\n\n",
+    "def _fact_search_large(query: str) -> str:\n",
+    "    tool_call_counter_large['n'] += 1\n",
+    "    n = tool_call_counter_large['n']\n",
+    "    if n == 1:\n",
+    "        return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n",
+    "    return '{\"note\":\"irrelevant\",\"n\":' + str(n) + '}'\n\n",
+    "fact_search_tool_large = Tool(\n",
+    "    name='Search',\n",
+    "    description='Deterministic fact search tool for large prompt recursion tests',\n",
+    "    func=_fact_search_large,\n",
+    ")\n\n",
+    "class _ManyRoundsResidualLLM_Standard:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        sys_text = ''\n",
+    "        if messages and hasattr(messages[0], 'content'):\n",
+    "            sys_text = str(messages[0].content or '')\n",
+    "        if 'FINALIZE MODE' in sys_text:\n",
+    "            return AIMessage(\n",
+    "                content='',\n",
+    "                tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_final'}]\n",
+    "            )\n",
+    "        return AIMessage(\n",
+    "            content='continue',\n",
+    "            tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_' + str(self.calls)}]\n",
+    "        )\n\n",
+    "many_rounds_llm_standard = _ManyRoundsResidualLLM_Standard()\n"
+  ))
+
+  expected_schema <- list(
+    prior_occupation = "string",
+    prior_occupation_source = "string"
+  )
+  large_prompt <- paste(rep("LARGE_CONTEXT_BLOCK", 2500), collapse = " ")
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$many_rounds_llm_standard,
+    tools = list(reticulate::py$fact_search_tool_large)
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(
+        role = "user",
+        content = paste0(
+          large_prompt,
+          "\nReturn strict JSON with prior_occupation and prior_occupation_source."
+        )
+      )),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 20L,
+      configurable = list(thread_id = "test_large_prompt_recursion_preserve_standard")
+    )
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+  expect_gt(as.integer(reticulate::py$tool_call_counter_large[["n"]]), 6L)
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_equal(as.character(parsed$prior_occupation), "teacher")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+})
+
+test_that("invoke-exception fallback at recursion edge preserves earlier tool facts (standard)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_require_langgraph_stack()
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "def _fact_search_exception(query: str) -> str:\n",
+    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+    "fact_search_tool_exception = Tool(\n",
+    "    name='Search',\n",
+    "    description='Deterministic fact search tool for exception fallback tests',\n",
+    "    func=_fact_search_exception,\n",
+    ")\n\n",
+    "class _FinalizeExceptionLLM_Standard:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        sys_text = ''\n",
+    "        if messages and hasattr(messages[0], 'content'):\n",
+    "            sys_text = str(messages[0].content or '')\n",
+    "        if 'FINALIZE MODE' in sys_text:\n",
+    "            raise RuntimeError('simulated finalize invoke failure')\n",
+    "        return AIMessage(\n",
+    "            content='calling search',\n",
+    "            tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_1'}]\n",
+    "        )\n\n",
+    "finalize_exception_llm_standard = _FinalizeExceptionLLM_Standard()\n"
+  ))
+
+  expected_schema <- list(
+    prior_occupation = "string",
+    prior_occupation_source = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$finalize_exception_llm_standard,
+    tools = list(reticulate::py$fact_search_tool_exception)
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(
+        role = "user",
+        content = "Return strict JSON with prior_occupation and prior_occupation_source."
+      )),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 4L,
+      configurable = list(thread_id = "test_invoke_exception_preserve_standard")
+    )
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_equal(as.character(parsed$prior_occupation), "teacher")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+
+  repair_events <- tryCatch(reticulate::py_to_r(final_state$json_repair), error = function(e) NULL)
+  expect_true(is.list(repair_events) && length(repair_events) >= 1L)
+  reasons <- vapply(repair_events, function(ev) as.character(ev$repair_reason %||% NA_character_), character(1))
+  expect_true(any(reasons == "invoke_exception_fallback", na.rm = TRUE))
+})
