@@ -3,7 +3,10 @@
 # LangChain-compatible Wikidata SPARQL tool for authoritative entity enumeration.
 # Provides structured queries for known entity types (senators, countries, etc.)
 #
+import json
 import logging
+import os
+import pathlib
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Union
@@ -24,6 +27,8 @@ logger = logging.getLogger(__name__)
 WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql"
 DEFAULT_TIMEOUT = 60.0
 DEFAULT_USER_AGENT = "ASA-Research-Agent/1.0 (https://github.com/cjerzak/asa-software)"
+WIKIDATA_TEMPLATE_ENV = "ASA_WIKIDATA_TEMPLATES"
+DEFAULT_TEMPLATE_PATH = pathlib.Path(__file__).resolve().with_name("wikidata_templates.json")
 
 
 @dataclass
@@ -130,99 +135,54 @@ def _inject_temporal_filter(query: str, date_after: Optional[str], date_before: 
     return modified
 
 
-# Known entity type templates for common enumeration queries
-ENTITY_TEMPLATES = {
-    "us_senators": {
-        "description": "Current United States Senators",
-        "query": """
-SELECT DISTINCT ?person ?personLabel ?state ?stateLabel ?party ?partyLabel
-       ?termStart ?termEnd ?website
-WHERE {
-  ?person wdt:P31 wd:Q5 .  # instance of: human (filter out fictional)
-  ?person wdt:P39 wd:Q4416090 .  # position held: United States senator
-  ?person p:P39 ?statement .
-  ?statement ps:P39 wd:Q4416090 .
-  OPTIONAL { ?statement pq:P580 ?termStart . }
-  OPTIONAL { ?statement pq:P582 ?termEnd . }
-  OPTIONAL { ?statement pq:P768 ?state . }
-  OPTIONAL { ?person wdt:P102 ?party . }
-  OPTIONAL { ?person wdt:P856 ?website . }
-  FILTER NOT EXISTS { ?statement pq:P582 ?end . FILTER(?end < NOW()) }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-}
-ORDER BY ?stateLabel ?personLabel
-""",
-        "schema": ["name", "state", "party", "term_start", "term_end", "website", "wikidata_id"]
-    },
-    "us_representatives": {
-        "description": "Current United States Representatives",
-        "query": """
-SELECT DISTINCT ?person ?personLabel ?district ?districtLabel ?state ?stateLabel ?party ?partyLabel
-WHERE {
-  ?person wdt:P39 wd:Q13218630 .  # position held: member of US House
-  ?person p:P39 ?statement .
-  ?statement ps:P39 wd:Q13218630 .
-  OPTIONAL { ?statement pq:P768 ?district . }
-  OPTIONAL { ?district wdt:P131 ?state . }
-  OPTIONAL { ?person wdt:P102 ?party . }
-  FILTER NOT EXISTS { ?statement pq:P582 ?end . FILTER(?end < NOW()) }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-}
-ORDER BY ?stateLabel ?personLabel
-""",
-        "schema": ["name", "district", "state", "party", "wikidata_id"]
-    },
-    "countries": {
-        "description": "All countries in the world",
-        "query": """
-SELECT DISTINCT ?country ?countryLabel ?capital ?capitalLabel ?population ?area ?iso3
-WHERE {
-  ?country wdt:P31 wd:Q6256 .  # instance of: country
-  OPTIONAL { ?country wdt:P36 ?capital . }
-  OPTIONAL { ?country wdt:P1082 ?population . }
-  OPTIONAL { ?country wdt:P2046 ?area . }
-  OPTIONAL { ?country wdt:P298 ?iso3 . }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-}
-ORDER BY ?countryLabel
-""",
-        "schema": ["name", "capital", "population", "area", "iso3", "wikidata_id"]
-    },
-    "fortune500": {
-        "description": "Fortune 500 companies",
-        "query": """
-SELECT DISTINCT ?company ?companyLabel ?ceo ?ceoLabel ?industry ?industryLabel
-       ?founded ?headquarters ?headquartersLabel ?website
-WHERE {
-  ?company wdt:P361 wd:Q631014 .  # part of: Fortune 500
-  OPTIONAL { ?company wdt:P169 ?ceo . }
-  OPTIONAL { ?company wdt:P452 ?industry . }
-  OPTIONAL { ?company wdt:P571 ?founded . }
-  OPTIONAL { ?company wdt:P159 ?headquarters . }
-  OPTIONAL { ?company wdt:P856 ?website . }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-}
-ORDER BY ?companyLabel
-""",
-        "schema": ["name", "ceo", "industry", "founded", "headquarters", "website", "wikidata_id"]
-    },
-    "us_states": {
-        "description": "US States and territories",
-        "query": """
-SELECT DISTINCT ?state ?stateLabel ?capital ?capitalLabel ?population ?admission ?abbreviation
-WHERE {
-  ?state wdt:P31 wd:Q35657 .  # instance of: US state
-  OPTIONAL { ?state wdt:P36 ?capital . }
-  OPTIONAL { ?state wdt:P1082 ?population . }
-  OPTIONAL { ?state wdt:P571 ?admission . }
-  OPTIONAL { ?state wdt:P5087 ?abbreviation . }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-}
-ORDER BY ?stateLabel
-""",
-        "schema": ["name", "capital", "population", "admission_date", "abbreviation", "wikidata_id"]
-    }
-}
+def _load_entity_templates() -> Dict[str, Dict[str, Any]]:
+    """Load entity templates from external JSON config."""
+    candidates: List[pathlib.Path] = []
+    env_path = os.environ.get(WIKIDATA_TEMPLATE_ENV, "").strip()
+    if env_path:
+        candidates.append(pathlib.Path(env_path).expanduser())
+    candidates.append(DEFAULT_TEMPLATE_PATH)
+
+    for path in candidates:
+        if not path.exists():
+            continue
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.warning("Failed loading Wikidata templates from %s: %s", path, exc)
+            continue
+        if not isinstance(raw, dict):
+            logger.warning("Ignoring invalid template payload at %s (expected object)", path)
+            continue
+        normalized: Dict[str, Dict[str, Any]] = {}
+        for key, template in raw.items():
+            if not isinstance(key, str) or not isinstance(template, dict):
+                continue
+            query = template.get("query")
+            if not isinstance(query, str) or not query.strip():
+                continue
+            normalized[key] = template
+        if normalized:
+            logger.info("Loaded %d Wikidata templates from %s", len(normalized), path)
+            return normalized
+    logger.warning("No Wikidata templates loaded (checked env + default path)")
+    return {}
+
+
+def _template_keywords(template: Dict[str, Any]) -> List[str]:
+    raw_keywords = template.get("keywords")
+    if isinstance(raw_keywords, list):
+        normalized: List[str] = []
+        for keyword in raw_keywords:
+            text = str(keyword).strip().lower()
+            if text:
+                normalized.append(text)
+        if normalized:
+            return normalized
+    return []
+
+
+ENTITY_TEMPLATES = _load_entity_templates()
 
 
 def _extract_wikidata_id(uri: str) -> str:
@@ -374,16 +334,10 @@ def infer_entity_type(query: str) -> Optional[str]:
     """
     query_lower = query.lower()
 
-    # Keywords for each entity type
-    keyword_map = {
-        "us_senators": ["senator", "senators", "senate", "us senate", "united states senator"],
-        "us_representatives": ["representative", "representatives", "congress", "house of representatives", "congressman", "congresswoman"],
-        "countries": ["countries", "country", "nations", "nation", "sovereign"],
-        "fortune500": ["fortune 500", "fortune500", "largest companies", "biggest companies"],
-        "us_states": ["us states", "american states", "states of america", "50 states"]
-    }
-
-    for entity_type, keywords in keyword_map.items():
+    for entity_type, template in ENTITY_TEMPLATES.items():
+        keywords = _template_keywords(template)
+        if not keywords:
+            keywords = [entity_type.replace("_", " ")]
         for keyword in keywords:
             if keyword in query_lower:
                 logger.info(f"Inferred entity type '{entity_type}' from query: {query}")

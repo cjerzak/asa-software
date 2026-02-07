@@ -2910,6 +2910,25 @@ test_that("finalize canonical guard overrides fabricated terminal values from fi
 })
 
 test_that("canonical payload derives class background and fills confidence/justification", {
+  old_domain_flag <- Sys.getenv("ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS", unset = NA_character_)
+  reticulate::py_run_string(
+    "import os\n__asa_old_domain_flag = os.environ.get('ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS')\n"
+  )
+  on.exit({
+    if (is.na(old_domain_flag)) {
+      Sys.unsetenv("ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS")
+    } else {
+      Sys.setenv(ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS = old_domain_flag)
+    }
+    reticulate::py_run_string(
+      "import os, sys\nif globals().get('__asa_old_domain_flag') is None:\n    os.environ.pop('ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS', None)\nelse:\n    os.environ['ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS'] = globals().get('__asa_old_domain_flag')\nsys.modules.pop('custom_ddg_production', None)\n"
+    )
+  }, add = TRUE)
+  Sys.setenv(ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS = "1")
+  reticulate::py_run_string(
+    "import os, sys\nos.environ['ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS'] = '1'\nsys.modules.pop('custom_ddg_production', None)\n"
+  )
+
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   reticulate::py_run_string(paste0(

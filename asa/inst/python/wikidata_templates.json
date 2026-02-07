@@ -1,0 +1,97 @@
+{
+  "us_senators": {
+    "description": "Current United States Senators",
+    "keywords": [
+      "senator",
+      "senators",
+      "senate",
+      "us senate",
+      "united states senator"
+    ],
+    "query": "SELECT DISTINCT ?person ?personLabel ?state ?stateLabel ?party ?partyLabel\n       ?termStart ?termEnd ?website\nWHERE {\n  ?person wdt:P31 wd:Q5 .  # instance of: human (filter out fictional)\n  ?person wdt:P39 wd:Q4416090 .  # position held: United States senator\n  ?person p:P39 ?statement .\n  ?statement ps:P39 wd:Q4416090 .\n  OPTIONAL { ?statement pq:P580 ?termStart . }\n  OPTIONAL { ?statement pq:P582 ?termEnd . }\n  OPTIONAL { ?statement pq:P768 ?state . }\n  OPTIONAL { ?person wdt:P102 ?party . }\n  OPTIONAL { ?person wdt:P856 ?website . }\n  FILTER NOT EXISTS { ?statement pq:P582 ?end . FILTER(?end < NOW()) }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY ?stateLabel ?personLabel\n",
+    "schema": [
+      "name",
+      "state",
+      "party",
+      "term_start",
+      "term_end",
+      "website",
+      "wikidata_id"
+    ]
+  },
+  "us_representatives": {
+    "description": "Current United States Representatives",
+    "keywords": [
+      "representative",
+      "representatives",
+      "congress",
+      "house of representatives",
+      "congressman",
+      "congresswoman"
+    ],
+    "query": "SELECT DISTINCT ?person ?personLabel ?district ?districtLabel ?state ?stateLabel ?party ?partyLabel\nWHERE {\n  ?person wdt:P39 wd:Q13218630 .  # position held: member of US House\n  ?person p:P39 ?statement .\n  ?statement ps:P39 wd:Q13218630 .\n  OPTIONAL { ?statement pq:P768 ?district . }\n  OPTIONAL { ?district wdt:P131 ?state . }\n  OPTIONAL { ?person wdt:P102 ?party . }\n  FILTER NOT EXISTS { ?statement pq:P582 ?end . FILTER(?end < NOW()) }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY ?stateLabel ?personLabel\n",
+    "schema": [
+      "name",
+      "district",
+      "state",
+      "party",
+      "wikidata_id"
+    ]
+  },
+  "countries": {
+    "description": "All countries in the world",
+    "keywords": [
+      "countries",
+      "country",
+      "nations",
+      "nation",
+      "sovereign"
+    ],
+    "query": "SELECT DISTINCT ?country ?countryLabel ?capital ?capitalLabel ?population ?area ?iso3\nWHERE {\n  ?country wdt:P31 wd:Q6256 .  # instance of: country\n  OPTIONAL { ?country wdt:P36 ?capital . }\n  OPTIONAL { ?country wdt:P1082 ?population . }\n  OPTIONAL { ?country wdt:P2046 ?area . }\n  OPTIONAL { ?country wdt:P298 ?iso3 . }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY ?countryLabel\n",
+    "schema": [
+      "name",
+      "capital",
+      "population",
+      "area",
+      "iso3",
+      "wikidata_id"
+    ]
+  },
+  "fortune500": {
+    "description": "Fortune 500 companies",
+    "keywords": [
+      "fortune 500",
+      "fortune500",
+      "largest companies",
+      "biggest companies"
+    ],
+    "query": "SELECT DISTINCT ?company ?companyLabel ?ceo ?ceoLabel ?industry ?industryLabel\n       ?founded ?headquarters ?headquartersLabel ?website\nWHERE {\n  ?company wdt:P361 wd:Q631014 .  # part of: Fortune 500\n  OPTIONAL { ?company wdt:P169 ?ceo . }\n  OPTIONAL { ?company wdt:P452 ?industry . }\n  OPTIONAL { ?company wdt:P571 ?founded . }\n  OPTIONAL { ?company wdt:P159 ?headquarters . }\n  OPTIONAL { ?company wdt:P856 ?website . }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY ?companyLabel\n",
+    "schema": [
+      "name",
+      "ceo",
+      "industry",
+      "founded",
+      "headquarters",
+      "website",
+      "wikidata_id"
+    ]
+  },
+  "us_states": {
+    "description": "US States and territories",
+    "keywords": [
+      "us states",
+      "american states",
+      "states of america",
+      "50 states"
+    ],
+    "query": "SELECT DISTINCT ?state ?stateLabel ?capital ?capitalLabel ?population ?admission ?abbreviation\nWHERE {\n  ?state wdt:P31 wd:Q35657 .  # instance of: US state\n  OPTIONAL { ?state wdt:P36 ?capital . }\n  OPTIONAL { ?state wdt:P1082 ?population . }\n  OPTIONAL { ?state wdt:P571 ?admission . }\n  OPTIONAL { ?state wdt:P5087 ?abbreviation . }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY ?stateLabel\n",
+    "schema": [
+      "name",
+      "capital",
+      "population",
+      "admission_date",
+      "abbreviation",
+      "wikidata_id"
+    ]
+  }
+}

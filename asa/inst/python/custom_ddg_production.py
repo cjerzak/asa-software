@@ -58,6 +58,14 @@ except ImportError:
         message_content_to_text as _shared_message_content_to_text,
     )
 
+try:
+    from schema_profiles import get_schema_profile
+except ImportError:
+    _module_dir = pathlib.Path(__file__).resolve().parent
+    if str(_module_dir) not in sys.path:
+        sys.path.insert(0, str(_module_dir))
+    from schema_profiles import get_schema_profile
+
 logger = logging.getLogger(__name__)
 
 
@@ -387,6 +395,18 @@ def _normalize_optional_str(value: Any) -> str | None:
     return text
 
 
+def _env_flag(name: str, *, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return bool(default)
+    value = str(raw).strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"0", "false", "no", "off"}:
+        return False
+    return bool(default)
+
+
 def _build_ddgs_kwargs(
     *,
     max_results: int,
@@ -588,6 +608,58 @@ def _get_tor_control_port() -> int:
         except ValueError:
             logger.warning("Invalid TOR_CONTROL_PORT '%s', using configured default %d", port_str, _TOR_CONTROL_PORT)
     return _TOR_CONTROL_PORT
+
+
+def _tor_cookie_candidate_paths(control_port: int) -> List[str]:
+    """Build prioritized Tor control cookie paths from env and defaults."""
+    configured: List[str] = []
+    direct_cookie = _normalize_optional_str(os.environ.get("ASA_TOR_CONTROL_COOKIE"))
+    if direct_cookie:
+        configured.append(os.path.expanduser(direct_cookie))
+
+    try:
+        socks_port = max(1, int(control_port) - 100)
+    except Exception:
+        socks_port = 9050
+
+    template = _normalize_optional_str(os.environ.get("ASA_TOR_COOKIE_TEMPLATE"))
+    if template:
+        try:
+            rendered = template.format(control_port=control_port, socks_port=socks_port)
+        except Exception:
+            rendered = template
+        rendered_norm = _normalize_optional_str(rendered)
+        if rendered_norm:
+            configured.append(os.path.expanduser(rendered_norm))
+
+    extra_paths_raw = _normalize_optional_str(os.environ.get("ASA_TOR_COOKIE_PATHS"))
+    if extra_paths_raw:
+        for segment in extra_paths_raw.split(os.pathsep):
+            segment_norm = _normalize_optional_str(segment)
+            if segment_norm:
+                configured.append(os.path.expanduser(segment_norm))
+
+    defaults = [
+        f"/tmp/asa_tor_instance_{socks_port}/control_auth_cookie",
+        f"/tmp/tor_{socks_port}/control_auth_cookie",
+        "/var/lib/tor/control_auth_cookie",
+        os.path.expanduser("~/.tor/control_auth_cookie"),
+        "/opt/homebrew/var/lib/tor/control_auth_cookie",
+        "/usr/local/var/lib/tor/control_auth_cookie",
+    ]
+
+    deduped: List[str] = []
+    seen = set()
+    for path in configured + defaults:
+        normalized = _normalize_optional_str(path)
+        if not normalized:
+            continue
+        expanded = os.path.expanduser(normalized)
+        if expanded in seen:
+            continue
+        seen.add(expanded)
+        deduped.append(expanded)
+    return deduped
 
 # ────────────────────────────────────────────────────────────────────────
 # Shared Tor Exit Registry (SQLite, cross-process)
@@ -1485,14 +1557,7 @@ def _rotate_tor_circuit(force: bool = False, proxy: str | None = None, verify: b
 
                 if not auth_success:
                     # Method 2: Cookie authentication - try known paths
-                    socks_port = control_port - 100  # 9150 -> 9050, etc.
-                    cookie_paths = [
-                        f"/tmp/ELITES_tor_instance_{socks_port}/control_auth_cookie",
-                        f"/tmp/tor_{socks_port}/control_auth_cookie",
-                        "/var/lib/tor/control_auth_cookie",
-                        os.path.expanduser("~/.tor/control_auth_cookie"),
-                        "/opt/homebrew/var/lib/tor/control_auth_cookie",
-                    ]
+                    cookie_paths = _tor_cookie_candidate_paths(control_port)
                     for cookie_path in cookie_paths:
                         if os.path.exists(cookie_path):
                             try:
@@ -3297,6 +3362,20 @@ _FIELD_STATUS_VALID = {
 }
 _DEFAULT_TOOL_CALL_BUDGET = 20
 _DEFAULT_UNKNOWN_AFTER_SEARCHES = 6
+_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS = _env_flag(
+    "ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS",
+    default=False,
+)
+_DOMAIN_SPECIFIC_PROFILE = (
+    get_schema_profile("elite_bio")
+    if _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS
+    else {}
+)
+_SEMANTIC_TOKEN_ALIASES = _DOMAIN_SPECIFIC_PROFILE.get("semantic_token_aliases", {})
+_CLASS_BACKGROUND_HINTS = _DOMAIN_SPECIFIC_PROFILE.get("class_background_hints", {})
+_BIRTH_PLACE_CONTEXT_MARKERS = tuple(
+    _DOMAIN_SPECIFIC_PROFILE.get("birth_place_context_markers", ())
+)
 
 
 def _coerce_positive_int(*values: Any, default: int) -> int:
@@ -3726,61 +3805,6 @@ def _tool_message_payloads(tool_messages: Any) -> list:
     return payloads
 
 
-_SEMANTIC_TOKEN_ALIASES = {
-    "indigenous": {"indigenous", "indigena", "indigena", "originario"},
-    "community": {"community", "comunidad", "comunitaria", "comunitario"},
-    "member": {"member", "miembro", "habitante", "representante"},
-    "leader": {"leader", "dirigente", "lider", "lidera"},
-}
-
-_CLASS_BACKGROUND_HINTS = {
-    "Working class": (
-        "agricult",
-        "artisan",
-        "campesin",
-        "clerical",
-        "clerk",
-        "community member",
-        "driver",
-        "farmer",
-        "fisher",
-        "indigenous",
-        "labor",
-        "manual",
-        "peasant",
-        "service worker",
-        "trade",
-        "vendor",
-    ),
-    "Middle class/professional": (
-        "academic",
-        "accountant",
-        "attorney",
-        "civil servant",
-        "doctor",
-        "economist",
-        "engineer",
-        "journalist",
-        "lawyer",
-        "manager",
-        "nurse",
-        "professor",
-        "teacher",
-    ),
-    "Upper/elite": (
-        "aristocrat",
-        "ceo",
-        "chairman",
-        "executive",
-        "industrialist",
-        "landowner",
-        "magnate",
-        "owner",
-        "tycoon",
-    ),
-}
-
-
 def _normalize_match_text(text: Any) -> str:
     if text is None:
         return ""
@@ -3796,6 +3820,8 @@ def _normalize_match_text(text: Any) -> str:
 def _token_variants(token: str) -> set:
     token_norm = _normalize_match_text(token)
     variants = {token_norm}
+    if not _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS:
+        return {v for v in variants if v}
     for base, alias_set in _SEMANTIC_TOKEN_ALIASES.items():
         normalized_aliases = {_normalize_match_text(v) for v in alias_set}
         normalized_aliases.add(_normalize_match_text(base))
@@ -3849,6 +3875,8 @@ def _source_supports_value(value: Any, source_text: Any) -> bool:
 
 
 def _derive_class_background_from_prior_occupation(prior_occupation: Any) -> Optional[str]:
+    if not _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS:
+        return None
     if _is_empty_like(prior_occupation) or _is_unknown_marker(prior_occupation):
         return None
     text = _normalize_match_text(prior_occupation)
@@ -3864,6 +3892,8 @@ def _derive_class_background_from_prior_occupation(prior_occupation: Any) -> Opt
 
 def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     """Populate deterministic derived fields from already found canonical values."""
+    if not _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS:
+        return field_status
     if not isinstance(field_status, dict):
         return field_status
 
@@ -4174,16 +4204,12 @@ def _promote_terminal_payload_into_field_status(
             source_token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(source_text)))
             if source_token_count >= 8 and not _source_supports_value(value, source_text):
                 continue
-            if key == "birth_place":
+            if _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS and key == "birth_place":
                 source_norm = _normalize_match_text(source_text)
-                birth_markers = (
-                    "nacio",
-                    "nacida",
-                    "lugar de nacimiento",
-                    "birth place",
-                    "born in",
+                has_birth_context = any(
+                    _normalize_match_text(marker) in source_norm
+                    for marker in _BIRTH_PLACE_CONTEXT_MARKERS
                 )
-                has_birth_context = any(marker in source_norm for marker in birth_markers)
                 if not has_birth_context:
                     continue
 
@@ -4436,6 +4462,8 @@ def _apply_canonical_payload_derivations(
     normalized_field_status: Dict[str, Dict[str, Any]],
 ) -> Any:
     if not isinstance(payload, dict):
+        return payload
+    if not _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS:
         return payload
 
     if "class_background" in payload:

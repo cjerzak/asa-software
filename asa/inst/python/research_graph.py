@@ -30,7 +30,7 @@ from state_utils import (
     parse_llm_json,
     should_stop_for_recursion,
 )
-from wikidata_tool import query_known_entity
+from wikidata_tool import get_entity_template, get_known_entity_types, query_known_entity
 
 # Optional strict temporal verification (local module)
 try:
@@ -277,22 +277,39 @@ def _within_date_range(date_str: Optional[str], date_after: Optional[str], date_
 # ────────────────────────────────────────────────────────────────────────
 # Planner Node
 # ────────────────────────────────────────────────────────────────────────
-PLANNER_PROMPT = """You are a research planner. Analyze the query and identify:
-1. The entity type being requested
-2. Whether this matches a known Wikidata entity type
+def _planner_known_entity_lines() -> List[str]:
+    lines: List[str] = []
+    for entity_type in get_known_entity_types():
+        template = get_entity_template(entity_type) or {}
+        description = str(template.get("description") or entity_type)
+        lines.append(f"- {entity_type}: {description}")
+    if not lines:
+        lines.append("- none (no templates configured)")
+    return lines
 
-Known Wikidata entity types:
-- us_senators: Current United States Senators
-- us_representatives: Current US Representatives
-- countries: All countries in the world
-- fortune500: Fortune 500 companies
-- us_states: US States and territories
 
-Query: {query}
+def _planner_wikidata_choices() -> str:
+    known_types = get_known_entity_types()
+    if not known_types:
+        return "null"
+    return "|".join(known_types + ["null"])
 
-Respond in JSON format ONLY (no markdown):
-{{"entity_type": "description of entity type", "wikidata_type": "us_senators|us_representatives|countries|fortune500|us_states|null", "search_queries": ["query1", "query2"]}}
-"""
+
+def _build_planner_prompt(query: str) -> str:
+    known_types_text = "\n".join(_planner_known_entity_lines())
+    wikidata_choices = _planner_wikidata_choices()
+    return (
+        "You are a research planner. Analyze the query and identify:\n"
+        "1. The entity type being requested\n"
+        "2. Whether this matches a known Wikidata entity type\n\n"
+        "Known Wikidata entity types:\n"
+        f"{known_types_text}\n\n"
+        f"Query: {query}\n\n"
+        "Respond in JSON format ONLY (no markdown):\n"
+        "{\"entity_type\": \"description of entity type\", "
+        f"\"wikidata_type\": \"{wikidata_choices}\", "
+        "\"search_queries\": [\"query1\", \"query2\"]}"
+    )
 
 
 def create_planner_node(llm):
@@ -303,7 +320,7 @@ def create_planner_node(llm):
         query = state.get("query", "")
         logger.info(f"Planner analyzing: {query}")
 
-        prompt = PLANNER_PROMPT.format(query=query)
+        prompt = _build_planner_prompt(query)
         messages = [HumanMessage(content=prompt)]
 
         try:
