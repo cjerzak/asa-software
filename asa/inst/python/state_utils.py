@@ -572,6 +572,18 @@ def _default_leaf_value(descriptor: Any, key: Optional[str] = None) -> Any:
     return None
 
 
+def _descriptor_prefers_unknown(descriptor: str) -> bool:
+    """Return True if the descriptor explicitly lists 'Unknown' as an option."""
+    if "|" in descriptor:
+        for part in descriptor.split("|"):
+            clean = part.strip().strip("\"'")
+            if clean.lower() == "unknown":
+                return True
+    elif re.search(r"\bunknown\b", descriptor, flags=re.IGNORECASE):
+        return True
+    return False
+
+
 def list_missing_required_keys(data: Any, schema: Any, *, max_items: int = 1000) -> List[str]:
     """List missing required keys (and required nesting) for a schema tree.
 
@@ -656,7 +668,16 @@ def populate_required_fields(data: Any, schema: Any) -> Any:
                 else:
                     data[key] = _default_leaf_value(child_schema, key=key)
             else:
-                data[key] = populate_required_fields(data[key], child_schema)
+                current = data[key]
+                if (
+                    isinstance(current, str)
+                    and current.strip() == ""
+                    and isinstance(child_schema, str)
+                    and _descriptor_prefers_unknown(child_schema)
+                ):
+                    data[key] = _default_leaf_value(child_schema, key=key)
+                else:
+                    data[key] = populate_required_fields(current, child_schema)
         return data
 
     if isinstance(schema, list):

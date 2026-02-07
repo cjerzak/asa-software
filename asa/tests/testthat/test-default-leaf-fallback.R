@@ -151,3 +151,107 @@ test_that("repair_json_output_to_schema is idempotent with Unknown defaults", {
   out2 <- utils$repair_json_output_to_schema(out1, schema, fallback_on_failure = TRUE)
   expect_equal(out2, out1)
 })
+
+# ---------------------------------------------------------------------------
+# Tests for empty-string replacement in populate_required_fields
+# ---------------------------------------------------------------------------
+
+test_that("populate_required_fields replaces empty strings with Unknown for descriptors with Unknown option", {
+  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
+  utils <- reticulate::import_from_path("state_utils", path = python_path)
+
+  schema <- list(
+    education_level = "High School|Some College|Bachelor|Unknown",
+    disability_status = "No disability|Some disability|Unknown"
+  )
+  data <- list(education_level = "", disability_status = "  ")
+  result <- utils$populate_required_fields(data, schema)
+
+  expect_equal(result$education_level, "Unknown")
+  expect_equal(result$disability_status, "Unknown")
+})
+
+test_that("populate_required_fields preserves empty strings when descriptor lacks Unknown", {
+  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
+  utils <- reticulate::import_from_path("state_utils", path = python_path)
+
+  schema <- list(
+    name = "string",
+    priority = "Low|Medium|High"
+  )
+  data <- list(name = "", priority = "")
+  result <- utils$populate_required_fields(data, schema)
+
+  expect_equal(result$name, "")
+  expect_equal(result$priority, "")
+})
+
+test_that("populate_required_fields does not replace integer 0 for Unknown descriptors", {
+  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
+  utils <- reticulate::import_from_path("state_utils", path = python_path)
+
+  schema <- list(
+    score = "integer|null|Unknown"
+  )
+  data <- list(score = 0L)
+  result <- utils$populate_required_fields(data, schema)
+
+  expect_equal(result$score, 0L)
+})
+
+test_that("repair_json_output_to_schema replaces empty strings with Unknown end-to-end", {
+  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
+  utils <- reticulate::import_from_path("state_utils", path = python_path)
+
+  schema <- list(
+    name = "string",
+    education_level = "High School|Some College|Unknown",
+    lgbtq_status = "Non-LGBTQ|Openly LGBTQ|Unknown"
+  )
+
+  input_json <- '{"name":"","education_level":"","lgbtq_status":""}'
+  out <- utils$repair_json_output_to_schema(input_json, schema, fallback_on_failure = TRUE)
+  parsed <- jsonlite::fromJSON(out, simplifyVector = FALSE)
+
+  expect_equal(parsed$name, "")
+  expect_equal(parsed$education_level, "Unknown")
+  expect_equal(parsed$lgbtq_status, "Unknown")
+})
+
+test_that("_descriptor_prefers_unknown returns correct boolean", {
+  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
+  utils <- reticulate::import_from_path("state_utils", path = python_path)
+
+  expect_true(utils$`_descriptor_prefers_unknown`("High School|Unknown"))
+  expect_true(utils$`_descriptor_prefers_unknown`("string|Unknown"))
+  expect_true(utils$`_descriptor_prefers_unknown`("integer|null|Unknown"))
+  expect_false(utils$`_descriptor_prefers_unknown`("string"))
+  expect_false(utils$`_descriptor_prefers_unknown`("string|null"))
+  expect_false(utils$`_descriptor_prefers_unknown`("Low|Medium|High"))
+})
+
+test_that("populate_required_fields handles nested array elements with empty strings", {
+  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
+  utils <- reticulate::import_from_path("state_utils", path = python_path)
+
+  schema <- list(list(
+    name = "string",
+    education_level = "High School|Some College|Unknown"
+  ))
+  data <- list(
+    list(name = "Alice", education_level = ""),
+    list(name = "", education_level = "Bachelor")
+  )
+  result <- utils$populate_required_fields(data, schema)
+
+  expect_equal(result[[1]]$name, "Alice")
+  expect_equal(result[[1]]$education_level, "Unknown")
+  expect_equal(result[[2]]$name, "")
+  expect_equal(result[[2]]$education_level, "Bachelor")
+})

@@ -4342,7 +4342,7 @@ def _field_status_to_schema_seed(field_status: Any, expected_schema: Any) -> Opt
             if entry.get("status") == _FIELD_STATUS_FOUND and not _is_empty_like(entry.get("value")):
                 return entry.get("value")
             if entry.get("status") == _FIELD_STATUS_UNKNOWN:
-                return None
+                return _unknown_value_for_descriptor(entry.get("descriptor"))
         return None
 
     seed_payload = build(expected_schema)
