@@ -2333,6 +2333,148 @@ test_that("finalize strips residual tool calls and returns non-empty text when n
   )
 })
 
+test_that("recursion-limit finalize preserves earlier tool-derived facts (standard)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_require_langgraph_stack()
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "def _fact_search(query: str) -> str:\n",
+    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+    "fact_search_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Deterministic fact search tool',\n",
+    "    func=_fact_search,\n",
+    ")\n\n",
+    "class _RecursionEdgeResidualLLM_Standard:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        if self.calls == 1:\n",
+    "            return AIMessage(\n",
+    "                content='calling search',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_1'}]\n",
+    "            )\n",
+    "        # Simulate bad recursion-edge response: residual tool call with empty content.\n",
+    "        return AIMessage(\n",
+    "            content='',\n",
+    "            tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_2'}]\n",
+    "        )\n\n",
+    "recursion_edge_llm_standard = _RecursionEdgeResidualLLM_Standard()\n"
+  ))
+
+  expected_schema <- list(
+    prior_occupation = "string",
+    prior_occupation_source = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$recursion_edge_llm_standard,
+    tools = list(reticulate::py$fact_search_tool)
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return strict JSON with prior_occupation and prior_occupation_source.")),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 4L,
+      configurable = list(thread_id = "test_recursion_semantic_preserve_standard")
+    )
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_equal(as.character(parsed$prior_occupation), "teacher")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+})
+
+test_that("recursion-limit finalize preserves earlier tool-derived facts (memory folding)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_require_langgraph_stack()
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "def _fact_search_mem(query: str) -> str:\n",
+    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+    "fact_search_tool_mem = Tool(\n",
+    "    name='Search',\n",
+    "    description='Deterministic fact search tool',\n",
+    "    func=_fact_search_mem,\n",
+    ")\n\n",
+    "class _RecursionEdgeResidualLLM_Memory:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        if self.calls == 1:\n",
+    "            return AIMessage(\n",
+    "                content='calling search',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_1'}]\n",
+    "            )\n",
+    "        # Simulate bad recursion-edge response: residual tool call with empty content.\n",
+    "        return AIMessage(\n",
+    "            content='',\n",
+    "            tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_2'}]\n",
+    "        )\n\n",
+    "recursion_edge_llm_memory = _RecursionEdgeResidualLLM_Memory()\n"
+  ))
+
+  expected_schema <- list(
+    prior_occupation = "string",
+    prior_occupation_source = "string"
+  )
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$recursion_edge_llm_memory,
+    tools = list(reticulate::py$fact_search_tool_mem),
+    checkpointer = NULL,
+    message_threshold = as.integer(999),
+    keep_recent = as.integer(2),
+    fold_char_budget = as.integer(999999),
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return strict JSON with prior_occupation and prior_occupation_source.")),
+      summary = "",
+      archive = list(),
+      fold_stats = reticulate::dict(fold_count = 0L),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 4L,
+      configurable = list(thread_id = "test_recursion_semantic_preserve_memory")
+    )
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_equal(as.character(parsed$prior_occupation), "teacher")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+})
+
 test_that(".extract_response_text returns tool output under recursion_limit when available", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")

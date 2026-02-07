@@ -3513,12 +3513,90 @@ def _strip_response_tool_calls(response: Any) -> Any:
     return response
 
 
+def _message_is_tool(msg: Any) -> bool:
+    """Best-effort check whether a message is a tool/function response."""
+    try:
+        if isinstance(msg, dict):
+            role = str(msg.get("role") or msg.get("type") or "").lower()
+            return role in {"tool", "function"}
+    except Exception:
+        pass
+
+    try:
+        msg_type = type(msg).__name__
+        if msg_type == "ToolMessage":
+            return True
+        role = getattr(msg, "type", None)
+        if isinstance(role, str):
+            return role.lower() in {"tool", "function"}
+    except Exception:
+        pass
+    return False
+
+
+def _recent_tool_context_seed(
+    messages: Any,
+    *,
+    max_messages: int = 6,
+    max_chars_per_message: int = 12000,
+    max_total_chars: int = 30000,
+) -> Optional[str]:
+    """Build a best-effort seed from recent tool outputs for schema repair."""
+    if not messages:
+        return None
+
+    try:
+        msg_list = list(messages)
+    except Exception:
+        return None
+    if not msg_list:
+        return None
+
+    tool_texts: List[str] = []
+    for msg in reversed(msg_list):
+        if len(tool_texts) >= max(1, int(max_messages)):
+            break
+        if not _message_is_tool(msg):
+            continue
+
+        try:
+            if isinstance(msg, dict):
+                content = msg.get("content", msg.get("text"))
+            else:
+                content = getattr(msg, "content", None)
+        except Exception:
+            content = None
+
+        text = _message_content_to_text(content).strip()
+        if not text:
+            continue
+        tool_texts.append(text[: max(1, int(max_chars_per_message))])
+
+    if not tool_texts:
+        return None
+
+    # Prefer a single parseable JSON payload if one is present.
+    for text in tool_texts:
+        try:
+            parsed = parse_llm_json(text)
+            if isinstance(parsed, (dict, list)):
+                return text
+        except Exception:
+            continue
+
+    joined = "\n\n".join(reversed(tool_texts))
+    if len(joined) > max_total_chars:
+        joined = joined[:max_total_chars]
+    return joined.strip() or None
+
+
 def _sanitize_finalize_response(
     response: Any,
     expected_schema: Any,
     *,
     schema_source: Optional[str] = None,
     context: str = "",
+    messages: Optional[list] = None,
     debug: bool = False,
 ) -> tuple[Any, Optional[Dict[str, Any]]]:
     """Ensure finalize responses are terminal (no pending tool calls)."""
@@ -3535,10 +3613,24 @@ def _sanitize_finalize_response(
         fallback_text = None
         if expected_schema is not None:
             seed = "[]" if isinstance(expected_schema, list) else "{}"
+            seed_candidate = _recent_tool_context_seed(messages) or seed
             try:
-                fallback_text = repair_json_output_to_schema(seed, expected_schema, fallback_on_failure=True)
+                fallback_text = repair_json_output_to_schema(
+                    seed_candidate,
+                    expected_schema,
+                    fallback_on_failure=True,
+                )
             except Exception:
                 fallback_text = None
+            if not _message_content_to_text(fallback_text) and seed_candidate is not seed:
+                try:
+                    fallback_text = repair_json_output_to_schema(
+                        seed,
+                        expected_schema,
+                        fallback_on_failure=True,
+                    )
+                except Exception:
+                    fallback_text = None
             # Defensive fallback: even if schema repair fails, emit a valid JSON shell.
             if not _message_content_to_text(fallback_text):
                 fallback_text = seed
@@ -4305,6 +4397,7 @@ def create_memory_folding_agent(
                 expected_schema,
                 schema_source=expected_schema_source,
                 context="agent",
+                messages=messages,
                 debug=debug,
             )
             if finalize_event:
@@ -4370,6 +4463,7 @@ def create_memory_folding_agent(
             expected_schema,
             schema_source=expected_schema_source,
             context="finalize",
+            messages=messages,
             debug=debug,
         )
         if finalize_event:
@@ -4991,6 +5085,7 @@ def create_standard_agent(
                 expected_schema,
                 schema_source=expected_schema_source,
                 context="agent",
+                messages=messages,
                 debug=debug,
             )
             if finalize_event:
@@ -5048,6 +5143,7 @@ def create_standard_agent(
             expected_schema,
             schema_source=expected_schema_source,
             context="finalize",
+            messages=messages,
             debug=debug,
         )
         if finalize_event:
