@@ -2701,6 +2701,76 @@ test_that("field_status unknown-after threshold triggers semantic finalize with 
   expect_true(is.null(parsed$birth_place) || parsed$birth_place == "" || is.na(parsed$birth_place))
 })
 
+test_that("finalize canonical guard overrides fabricated terminal values from field_status", {
+  prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "def _weak_search(query: str) -> str:\n",
+    "    return 'irrelevant unstructured payload'\n\n",
+    "weak_search_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Returns no structured evidence',\n",
+    "    func=_weak_search,\n",
+    ")\n\n",
+    "class _FieldStatusGuardLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        if self.calls == 1:\n",
+    "            return AIMessage(\n",
+    "                content='search first',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'x'},'id':'call_1'}]\n",
+    "            )\n",
+    "        return AIMessage(content='{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":null}')\n\n",
+    "field_status_guard_llm = _FieldStatusGuardLLM()\n"
+  ))
+
+  expected_schema <- list(
+    prior_occupation = "Primary occupation before politics, or 'Unknown'",
+    prior_occupation_source = "URL of source, or null"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$field_status_guard_llm,
+    tools = list(reticulate::py$weak_search_tool)
+  )
+
+  invoke <- asa_test_invoke_json_agent(
+    agent = agent,
+    expected_schema = expected_schema,
+    expected_schema_source = "explicit",
+    input_state = list(
+      messages = list(list(
+        role = "user",
+        content = "Return strict JSON with prior_occupation and prior_occupation_source."
+      )),
+      search_budget_limit = 4L,
+      unknown_after_searches = 1L,
+      finalize_on_all_fields_resolved = TRUE
+    ),
+    config = list(
+      recursion_limit = 12L,
+      configurable = list(thread_id = "test_field_status_terminal_guard")
+    ),
+    backend = "gemini"
+  )
+
+  parsed <- invoke$parsed
+  expect_true(is.list(parsed))
+  expect_equal(as.character(parsed$prior_occupation), "Unknown")
+  expect_true(is.null(parsed$prior_occupation_source) || is.na(parsed$prior_occupation_source))
+
+  final_state <- invoke$final_state
+  json_repair <- tryCatch(reticulate::py_to_r(final_state$json_repair), error = function(e) final_state$json_repair)
+  json_repair_text <- paste(capture.output(str(json_repair)), collapse = "\n")
+  expect_true(grepl("field_status_canonical", json_repair_text, fixed = TRUE))
+})
+
 test_that(".extract_response_text returns tool output under recursion_limit when available", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")

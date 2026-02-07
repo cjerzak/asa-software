@@ -3728,6 +3728,219 @@ def _field_status_to_schema_seed(field_status: Any, expected_schema: Any) -> Opt
     return _message_content_to_text(repaired) if repaired else seed_text
 
 
+def _unknown_value_for_descriptor(descriptor: Any) -> Any:
+    """Choose an unknown sentinel using schema conventions when available."""
+    if isinstance(descriptor, dict):
+        return {}
+    if isinstance(descriptor, list):
+        return []
+    if not isinstance(descriptor, str):
+        return None
+
+    text = descriptor.strip()
+    if not text:
+        return None
+
+    # Prefer explicit Unknown enums/markers when present.
+    if "|" in text:
+        parts = [p.strip() for p in text.split("|") if p.strip()]
+        for part in parts:
+            clean = part.strip().strip("\"'")
+            if clean.lower() == "unknown":
+                return clean or "Unknown"
+        for part in parts:
+            clean = part.strip().strip("\"'")
+            if clean.lower() == "null":
+                return None
+
+    if re.search(r"\bunknown\b", text, flags=re.IGNORECASE):
+        return "Unknown"
+    if re.search(r"\bnull\b", text, flags=re.IGNORECASE):
+        return None
+
+    lower = text.lower()
+    if "array" in lower:
+        return []
+    if "object" in lower:
+        return {}
+    return None
+
+
+def _field_status_entry_for_path(
+    normalized_field_status: Dict[str, Dict[str, Any]],
+    path: str,
+) -> Optional[Dict[str, Any]]:
+    """Fetch the canonical field_status entry for a schema path."""
+    if not isinstance(normalized_field_status, dict):
+        return None
+    aliases = _field_key_aliases(path or "")
+    for alias in aliases:
+        entry = normalized_field_status.get(alias)
+        if isinstance(entry, dict):
+            return entry
+    key = (path or "").replace("[]", "")
+    entry = normalized_field_status.get(key)
+    return entry if isinstance(entry, dict) else None
+
+
+def _json_safe_value(value: Any) -> Any:
+    """Best-effort conversion into JSON-serializable primitives."""
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, dict):
+        out: Dict[str, Any] = {}
+        for k, v in value.items():
+            out[str(k)] = _json_safe_value(v)
+        return out
+    if isinstance(value, (list, tuple, set)):
+        return [_json_safe_value(v) for v in list(value)]
+    return str(value)
+
+
+def _canonical_payload_from_field_status(expected_schema: Any, field_status: Any) -> Optional[Any]:
+    """Build terminal payload from canonical field_status only (no model guesses)."""
+    if expected_schema is None:
+        return None
+    normalized = _normalize_field_status_map(field_status, expected_schema)
+    if not normalized:
+        return None
+    progress = _field_status_progress(normalized)
+    if int(progress.get("resolved_fields", 0) or 0) <= 0:
+        # Do not overwrite model output when canonical ledger has no resolved signal yet.
+        return None
+
+    def build(schema: Any, prefix: str = "") -> Any:
+        if isinstance(schema, dict):
+            out: Dict[str, Any] = {}
+            for key, child in schema.items():
+                child_prefix = f"{prefix}.{key}" if prefix else str(key)
+                out[key] = build(child, child_prefix)
+            return out
+        if isinstance(schema, list):
+            return []
+
+        entry = _field_status_entry_for_path(normalized, prefix)
+        if isinstance(entry, dict):
+            status = str(entry.get("status") or "").lower()
+            value = entry.get("value")
+            if status == _FIELD_STATUS_FOUND and not _is_empty_like(value):
+                return value
+        return _unknown_value_for_descriptor(schema)
+
+    payload = build(expected_schema)
+
+    def enforce_source_requirements(schema_node: Any, payload_node: Any, prefix: str = "") -> None:
+        """If sibling *_source exists and no source URL is known, downgrade value to unknown."""
+        if not isinstance(schema_node, dict) or not isinstance(payload_node, dict):
+            return
+
+        for key, child in schema_node.items():
+            child_prefix = f"{prefix}.{key}" if prefix else str(key)
+            if isinstance(child, dict):
+                enforce_source_requirements(child, payload_node.get(key), child_prefix)
+            elif isinstance(child, list):
+                child_payload = payload_node.get(key)
+                if child and isinstance(child[0], dict) and isinstance(child_payload, list):
+                    for idx, row in enumerate(child_payload):
+                        if isinstance(row, dict):
+                            enforce_source_requirements(child[0], row, f"{child_prefix}[{idx}]")
+
+        for key, source_descriptor in schema_node.items():
+            if not isinstance(key, str) or not key.endswith("_source"):
+                continue
+            base_key = key[:-7]
+            if base_key not in schema_node or base_key not in payload_node:
+                continue
+
+            base_path = f"{prefix}.{base_key}" if prefix else base_key
+            source_path = f"{prefix}.{key}" if prefix else key
+            base_entry = _field_status_entry_for_path(normalized, base_path)
+            source_entry = _field_status_entry_for_path(normalized, source_path)
+
+            source_url = None
+            if isinstance(source_entry, dict):
+                src_status = str(source_entry.get("status") or "").lower()
+                src_value = source_entry.get("value")
+                if src_status == _FIELD_STATUS_FOUND and isinstance(src_value, str) and src_value.startswith("http"):
+                    source_url = src_value
+
+            if source_url is None and isinstance(base_entry, dict):
+                base_source = base_entry.get("source_url")
+                if isinstance(base_source, str) and base_source.startswith("http"):
+                    source_url = base_source
+
+            if source_url:
+                payload_node[key] = source_url
+                continue
+
+            base_found = (
+                isinstance(base_entry, dict)
+                and str(base_entry.get("status") or "").lower() == _FIELD_STATUS_FOUND
+                and not _is_empty_like(base_entry.get("value"))
+            )
+            payload_node[key] = _unknown_value_for_descriptor(source_descriptor)
+            if base_found:
+                payload_node[base_key] = _unknown_value_for_descriptor(schema_node.get(base_key))
+
+    enforce_source_requirements(expected_schema, payload)
+    return payload
+
+
+def _apply_field_status_terminal_guard(
+    response: Any,
+    expected_schema: Any,
+    *,
+    field_status: Any = None,
+    schema_source: Optional[str] = None,
+    context: str = "",
+    debug: bool = False,
+) -> tuple[Any, Optional[Dict[str, Any]]]:
+    """Force terminal JSON to match canonical field_status values."""
+    if expected_schema is None:
+        return response, None
+    if _extract_response_tool_calls(response):
+        return response, None
+
+    payload = _canonical_payload_from_field_status(expected_schema, field_status)
+    if payload is None:
+        return response, None
+
+    try:
+        canonical_text = json.dumps(_json_safe_value(payload), ensure_ascii=False)
+    except Exception:
+        return response, None
+
+    current_content = response.get("content") if isinstance(response, dict) else getattr(response, "content", None)
+    current_text = _message_content_to_text(current_content).strip()
+    if current_text == canonical_text:
+        return response, None
+
+    if isinstance(response, dict):
+        response["content"] = canonical_text
+    else:
+        try:
+            response.content = canonical_text
+        except Exception:
+            try:
+                from langchain_core.messages import AIMessage
+                response = AIMessage(content=canonical_text)
+            except Exception:
+                response = {"role": "assistant", "content": canonical_text}
+
+    event = {
+        "repair_applied": True,
+        "repair_reason": "field_status_canonical",
+        "missing_keys_count": 0,
+        "missing_keys_sample": [],
+        "fallback_on_failure": True,
+        "schema_source": schema_source,
+        "context": context,
+    }
+    if debug or str(os.environ.get("ASA_LOG_JSON_REPAIR", "")).lower() in {"1", "true", "yes"}:
+        logger.info("json_repair=%s", event)
+    return response, event
+
+
 def _make_save_finding_tool():
     """Create the save_finding tool using langchain_core.tools.tool decorator."""
     from langchain_core.tools import tool
@@ -5364,6 +5577,7 @@ def create_memory_folding_agent(
                 repair_events.append(finalize_event)
 
         repair_event = None
+        canonical_event = None
         # Never rewrite intermediate tool-call turns as JSON payloads.
         # Only repair terminal text responses.
         if not _extract_response_tool_calls(response):
@@ -5376,6 +5590,15 @@ def create_memory_folding_agent(
                 context="agent",
                 debug=debug,
             )
+            if force_fallback:
+                response, canonical_event = _apply_field_status_terminal_guard(
+                    response,
+                    expected_schema,
+                    field_status=field_status,
+                    schema_source=expected_schema_source,
+                    context="agent",
+                    debug=debug,
+                )
 
         out = {
             "messages": [response],
@@ -5386,6 +5609,8 @@ def create_memory_folding_agent(
         }
         if repair_event:
             repair_events.append(repair_event)
+        if canonical_event:
+            repair_events.append(canonical_event)
         if repair_events:
             out["json_repair"] = repair_events
         # Set stop_reason when agent_node itself ran in finalize mode,
@@ -5454,6 +5679,14 @@ def create_memory_folding_agent(
             context="finalize",
             debug=debug,
         )
+        response, canonical_event = _apply_field_status_terminal_guard(
+            response,
+            expected_schema,
+            field_status=field_status,
+            schema_source=expected_schema_source,
+            context="finalize",
+            debug=debug,
+        )
 
         out = {
             "messages": [response],
@@ -5463,6 +5696,8 @@ def create_memory_folding_agent(
         }
         if repair_event:
             repair_events.append(repair_event)
+        if canonical_event:
+            repair_events.append(canonical_event)
         if repair_events:
             out["json_repair"] = repair_events
         return out
@@ -6135,6 +6370,7 @@ def create_standard_agent(
                 repair_events.append(finalize_event)
 
         repair_event = None
+        canonical_event = None
         # Never rewrite intermediate tool-call turns as JSON payloads.
         # Only repair terminal text responses.
         if not _extract_response_tool_calls(response):
@@ -6147,6 +6383,15 @@ def create_standard_agent(
                 context="agent",
                 debug=debug,
             )
+            if force_fallback:
+                response, canonical_event = _apply_field_status_terminal_guard(
+                    response,
+                    expected_schema,
+                    field_status=field_status,
+                    schema_source=expected_schema_source,
+                    context="agent",
+                    debug=debug,
+                )
 
         out = {
             "messages": [response],
@@ -6157,6 +6402,8 @@ def create_standard_agent(
         }
         if repair_event:
             repair_events.append(repair_event)
+        if canonical_event:
+            repair_events.append(canonical_event)
         if repair_events:
             out["json_repair"] = repair_events
         # Set stop_reason when agent_node itself ran in finalize mode,
@@ -6220,6 +6467,14 @@ def create_standard_agent(
             context="finalize",
             debug=debug,
         )
+        response, canonical_event = _apply_field_status_terminal_guard(
+            response,
+            expected_schema,
+            field_status=field_status,
+            schema_source=expected_schema_source,
+            context="finalize",
+            debug=debug,
+        )
         out = {
             "messages": [response],
             "stop_reason": "recursion_limit",
@@ -6228,6 +6483,8 @@ def create_standard_agent(
         }
         if repair_event:
             repair_events.append(repair_event)
+        if canonical_event:
+            repair_events.append(canonical_event)
         if repair_events:
             out["json_repair"] = repair_events
         return out
