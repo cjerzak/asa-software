@@ -1272,6 +1272,90 @@ test_that("finalize strips residual tool calls and returns non-empty text when n
   expect_true(nzchar(trimws(response_text)))
 })
 
+test_that("finalize_answer node sanitizes residual tool calls after tools (standard)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "def _fake_search_finalize_path(query: str) -> str:\n",
+    "    return 'result for ' + query\n\n",
+    "search_tool_finalize_path = Tool(\n",
+    "    name='Search',\n",
+    "    description='Fake Search tool',\n",
+    "    func=_fake_search_finalize_path,\n",
+    ")\n\n",
+    "class _FinalizeNodePathLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        if self.calls == 1:\n",
+    "            return AIMessage(\n",
+    "                content='calling tool',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'ada'},'id':'call_1'}],\n",
+    "            )\n",
+    "        return AIMessage(\n",
+    "            content='',\n",
+    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_2'}],\n",
+    "        )\n\n",
+    "finalize_node_path_llm = _FinalizeNodePathLLM()\n"
+  ))
+
+  expected_schema <- list(
+    status = "string",
+    items = "array",
+    missing = "array",
+    notes = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$finalize_node_path_llm,
+    tools = list(reticulate::py$search_tool_finalize_path)
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return JSON")),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(recursion_limit = 4L)
+  )
+
+  expect_equal(final_state$stop_reason, "recursion_limit")
+  expect_equal(as.integer(reticulate::py$finalize_node_path_llm$calls), 2L)
+
+  repair_events <- reticulate::py_to_r(final_state$json_repair)
+  contexts <- character(0)
+  if (is.list(repair_events) && length(repair_events) > 0) {
+    contexts <- vapply(repair_events, function(ev) {
+      if (is.list(ev) && !is.null(ev$context)) as.character(ev$context) else NA_character_
+    }, character(1))
+  }
+  expect_true("finalize" %in% contexts)
+
+  last_msg <- final_state$messages[[length(final_state$messages)]]
+  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
+  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+})
+
 test_that("explicit schema does not rewrite intermediate tool-call turns (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c(
@@ -1417,7 +1501,7 @@ test_that("finalize strips residual tool calls and returns terminal JSON (memory
   expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
 })
 
-test_that("recursion_limit=1 does not produce unhandled crash", {
+test_that("finalize strips residual tool calls and returns non-empty text when no schema (memory folding)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c(
     "langchain_core",
@@ -1429,41 +1513,76 @@ test_that("recursion_limit=1 does not produce unhandled crash", {
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
-  # Stub LLM: returns a direct JSON answer (no tool calls)
-  asa_test_stub_llm(
-    mode = "json_response",
-    json_content = '{"status":"complete","items":[],"missing":[],"notes":"minimal"}',
-    var_name = "limit1_stub_llm"
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _ResidualToolCallNoSchemaLLM_Memory:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(\n",
+    "            content='',\n",
+    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
+    "        )\n\n",
+    "residual_tool_no_schema_llm_memory = _ResidualToolCallNoSchemaLLM_Memory()\n"
+  ))
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$residual_tool_no_schema_llm_memory,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
   )
 
-  agent <- prod$create_standard_agent(
-    model = reticulate::py$limit1_stub_llm,
-    tools = list()
-  )
-
-  # recursion_limit=1 is below the minimum viable limit for LangGraph graphs
-
-  # (the framework may exhaust the budget before routing can reach END).
-  # We verify it either succeeds gracefully or raises GraphRecursionError
-  # (not some other unexpected error).
-  result <- tryCatch(
-    agent$invoke(
-      list(
-        messages = list(list(role = "user", content = "Return JSON")),
-        expected_schema = list(status = "string", items = "array", missing = "array", notes = "string"),
-        expected_schema_source = "explicit"
-      ),
-      config = list(recursion_limit = 1L)
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Give me the best possible answer")),
+      summary = "",
+      archive = list(),
+      fold_stats = reticulate::dict(fold_count = 0L)
     ),
-    error = function(e) {
-      # GraphRecursionError is the expected failure at limit=1
-      expect_true(grepl("GraphRecursionError|Recursion limit", conditionMessage(e)))
-      NULL
-    }
+    config = list(
+      recursion_limit = 2L,
+      configurable = list(thread_id = "test_residual_finalize_memory_no_schema")
+    )
   )
 
-  # If it did succeed, verify stop_reason is set
-  if (!is.null(result)) {
-    expect_equal(result$stop_reason, "recursion_limit")
-  }
+  expect_equal(final_state$stop_reason, "recursion_limit")
+
+  last_msg <- final_state$messages[[length(final_state$messages)]]
+  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
+  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  expect_true(is.character(response_text))
+  expect_true(nzchar(trimws(response_text)))
+  expect_equal(
+    trimws(response_text),
+    "Unable to provide a complete answer with available information."
+  )
+})
+
+test_that(".extract_response_text returns recursion fallback when only tool-call AI content exists", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  raw_response <- list(
+    messages = list(
+      msgs$AIMessage(
+        content = "calling tool",
+        tool_calls = list(list(name = "Search", args = list(query = "ada"), id = "call_1"))
+      ),
+      msgs$ToolMessage(content = "tool output", tool_call_id = "call_1")
+    ),
+    stop_reason = "recursion_limit"
+  )
+
+  response_text <- asa:::.extract_response_text(raw_response, backend = "gemini")
+  expect_equal(
+    response_text,
+    "[Agent reached step limit before completing task. Increase recursion_limit or simplify the task.]"
+  )
 })

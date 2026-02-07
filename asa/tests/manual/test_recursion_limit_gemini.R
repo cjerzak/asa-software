@@ -12,6 +12,12 @@ cat("\n========================================\n")
 cat("Recursion Limit Test with Gemini Flash 3\n")
 cat("========================================\n\n")
 
+# Prefer the project conda environment when present.
+try(
+  suppressWarnings(reticulate::use_condaenv("asa_env", required = FALSE)),
+  silent = TRUE
+)
+
 # Check API key
 api_key <- Sys.getenv("GOOGLE_API_KEY", unset = "")
 if (!nzchar(api_key)) {
@@ -28,6 +34,10 @@ if (!nzchar(python_path)) {
   stop("Could not find asa Python path")
 }
 cat("✓ Python path:", python_path, "\n")
+
+if (!reticulate::py_module_available("bs4")) {
+  stop("Missing Python module 'bs4' in the active reticulate environment. Use asa_env or install beautifulsoup4.")
+}
 
 custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 chat_models <- reticulate::import("langchain_google_genai")

@@ -3912,6 +3912,11 @@ def _create_tool_node_with_scratchpad(base_tool_node):
         result = base_tool_node.invoke(state)
         if scratchpad_entries:
             result["scratchpad"] = scratchpad_entries
+        # Defensive marker: if tool execution happened at the recursion edge,
+        # preserve stop_reason even when routing must end immediately.
+        remaining = remaining_steps_value(state)
+        if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
+            result["stop_reason"] = "recursion_limit"
         return result
     return tool_node_with_scratchpad
 

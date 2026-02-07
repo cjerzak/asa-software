@@ -40,6 +40,7 @@ except Exception:  # pragma: no cover
     _parse_date_string = None
 
 logger = logging.getLogger(__name__)
+RECURSION_STOP_BUFFER = 2
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -302,8 +303,8 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         """Execute search based on plan."""
         # If this is the last allowed step, stop before doing any more work. Otherwise
         # we can still run search->dedupe and let dedupe mark completion on the last step.
-        # Buffer by 1 step to avoid attempting to route to a node we can't execute.
-        if should_stop_for_recursion(state, buffer=1):
+        # Keep a small buffer so we can stop cleanly before graph exhaustion.
+        if should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER):
             return {"status": "complete", "stop_reason": "recursion_limit"}
 
         wikidata_type = state.get("wikidata_type")
@@ -636,8 +637,8 @@ def create_deduper_node():
     def deduper_node(state: ResearchState) -> Dict:
         """Deduplicate results."""
         # If this is the last allowed step, still dedupe, but mark complete so the graph can END.
-        # Buffer by 1 step to avoid routing to stopper when we can't execute it.
-        force_stop = should_stop_for_recursion(state, buffer=1)
+        # Keep a small buffer to avoid routing to nodes we cannot execute.
+        force_stop = should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER)
 
         results = state.get("new_results")
         if results is None:
@@ -731,7 +732,7 @@ def create_stopper_node(config: ResearchConfig):
                     return {"status": "complete", "stop_reason": "novelty_plateau"}
 
         # Stop before LangGraph raises GraphRecursionError.
-        if should_stop_for_recursion(state, buffer=1):
+        if should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER):
             return {"status": "complete", "stop_reason": "recursion_limit"}
 
         return {"status": "searching"}
@@ -749,7 +750,7 @@ def should_continue(state: ResearchState) -> str:
         return "end"
     # Stop before LangGraph raises GraphRecursionError. Use a small buffer to be
     # robust across LangGraph versions / semantics for RemainingSteps.
-    if should_stop_for_recursion(state, buffer=1):
+    if should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER):
         return "end"
     if status == "searching":
         return "search"

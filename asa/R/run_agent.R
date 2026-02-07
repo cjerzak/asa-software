@@ -180,6 +180,16 @@
 .extract_response_text <- function(raw_response, backend) {
   response_text <- tryCatch({
     messages <- raw_response$messages
+    stop_reason <- .try_or(as.character(raw_response$stop_reason), character(0))
+    stop_reason <- if (length(stop_reason) > 0) stop_reason[[1]] else NA_character_
+    error_msg <- .try_or(as.character(raw_response$error), character(0))
+    error_msg <- if (length(error_msg) > 0) error_msg[[1]] else ""
+    is_recursion_limit <- (
+      !is.na(stop_reason) && identical(stop_reason, "recursion_limit")
+    ) ||
+      (is.character(error_msg) && nzchar(error_msg) &&
+         (grepl("recursion", error_msg, ignore.case = TRUE) ||
+            grepl("GraphRecursionError", error_msg, ignore.case = TRUE)))
     if (length(messages) > 0) {
 
       extract_text_blocks <- function(value) {
@@ -222,7 +232,30 @@
       # Helper to check if a message is an AIMessage
       is_ai_message <- function(msg) {
         msg_type <- .try_or(as.character(msg$`__class__`$`__name__`), "")
-        msg_type == "AIMessage"
+        if (length(msg_type) > 0 && identical(msg_type[[1]], "AIMessage")) {
+          return(TRUE)
+        }
+        role <- tolower(.try_or(as.character(msg$role), ""))
+        if (length(role) > 0 && identical(role[[1]], "assistant")) {
+          return(TRUE)
+        }
+        msg_role <- tolower(.try_or(as.character(msg$type), ""))
+        isTRUE(length(msg_role) > 0 && msg_role[[1]] %in% c("assistant", "ai"))
+      }
+
+      # Helper to check if a message has pending tool calls
+      has_tool_calls <- function(msg) {
+        tool_calls <- .try_or(msg$tool_calls)
+        isTRUE(!is.null(tool_calls) && length(tool_calls) > 0)
+      }
+
+      is_tool_message <- function(msg) {
+        msg_type <- .try_or(as.character(msg$`__class__`$`__name__`), "")
+        if (length(msg_type) > 0 && identical(msg_type[[1]], "ToolMessage")) {
+          return(TRUE)
+        }
+        msg_role <- tolower(.try_or(as.character(msg$type), ""))
+        isTRUE(length(msg_role) > 0 && msg_role[[1]] %in% c("tool", "function"))
       }
 
       # Helper to extract content from a message
@@ -234,33 +267,44 @@
         text
       }
 
-      # Try extracting from last message first
-      last_message <- messages[[length(messages)]]
-      text <- get_message_content(last_message)
-      text_parts <- extract_text_blocks(text)
+      text_parts <- character(0)
+      # Prefer the most recent assistant message. Under recursion limits, skip
+      # assistant turns that still contain tool calls (non-terminal).
+      for (i in rev(seq_along(messages))) {
+        msg <- messages[[i]]
+        if (!is_ai_message(msg)) {
+          next
+        }
+        if (is_recursion_limit && has_tool_calls(msg)) {
+          next
+        }
+        text <- get_message_content(msg)
+        text_parts <- extract_text_blocks(text)
+        if (length(text_parts) > 0) {
+          break
+        }
+      }
 
-      # If last message has no content, search backwards for last AIMessage with content
-      if (length(text_parts) == 0) {
-        for (i in rev(seq_along(messages))) {
-          msg <- messages[[i]]
-          if (is_ai_message(msg)) {
-            text <- get_message_content(msg)
-            text_parts <- extract_text_blocks(text)
-            if (length(text_parts) > 0) break
-          }
+      # Non-recursion fallback: keep backward compatibility by allowing content
+      # from the last message even when it's not an assistant message.
+      if (length(text_parts) == 0 && !is_recursion_limit) {
+        last_message <- messages[[length(messages)]]
+        text <- get_message_content(last_message)
+        text_parts <- extract_text_blocks(text)
+      }
+
+      # Recursion-limited fallback: accept last message text only if it's
+      # terminal (not a tool call / tool output message).
+      if (length(text_parts) == 0 && is_recursion_limit) {
+        last_message <- messages[[length(messages)]]
+        if (!has_tool_calls(last_message) && !is_tool_message(last_message)) {
+          text <- get_message_content(last_message)
+          text_parts <- extract_text_blocks(text)
         }
       }
 
       # If still no content, return a meaningful message based on stop_reason
       if (length(text_parts) == 0) {
-        stop_reason <- .try_or(raw_response$stop_reason)
-        error_msg <- .try_or(as.character(raw_response$error), "")
-
-        # Detect recursion limit from stop_reason OR error message
-        is_recursion_limit <- (!is.null(stop_reason) && stop_reason == "recursion_limit") ||
-                              grepl("recursion", error_msg, ignore.case = TRUE) ||
-                              grepl("GraphRecursionError", error_msg, ignore.case = TRUE)
-
         if (is_recursion_limit) {
           return("[Agent reached step limit before completing task. Increase recursion_limit or simplify the task.]")
         }
