@@ -893,6 +893,22 @@ def _resolve_invoke_recursion_limit(config_dict: Optional[Dict[str, Any]]) -> Op
     if config_dict is None:
         return None
 
+    # Common typo guard: fail fast instead of silently falling back to defaults.
+    config_keys = []
+    try:
+        if isinstance(config_dict, dict):
+            config_keys = list(config_dict.keys())
+        elif hasattr(config_dict, "keys"):
+            config_keys = list(config_dict.keys())
+    except Exception:
+        # Ignore key introspection failures; continue with normal parsing.
+        config_keys = []
+    if "recusion_limit" in config_keys and "recursion_limit" not in config_keys:
+        raise ValueError(
+            "Unknown config key 'recusion_limit'. "
+            "Did you mean 'recursion_limit'?"
+        )
+
     recursion_limit = None
     try:
         if isinstance(config_dict, dict):

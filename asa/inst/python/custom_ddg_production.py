@@ -4570,9 +4570,6 @@ def create_memory_folding_agent(
                 return "end"
             return "finalize"
 
-        if state.get("stop_reason") == "recursion_limit":
-            return "end"
-
         last_message = messages[-1]
         last_type = type(last_message).__name__
 
@@ -4631,10 +4628,15 @@ def create_memory_folding_agent(
         if not messages:
             return "end"
 
-        if state.get("stop_reason") == "recursion_limit":
-            return "end"
-
         remaining = remaining_steps_value(state)
+        # Checkpointed threads can carry a stale stop_reason from a prior run.
+        # Treat recursion_limit as terminal only when we're currently at/near
+        # the recursion edge.
+        if (
+            state.get("stop_reason") == "recursion_limit"
+            and (remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE)
+        ):
+            return "end"
         if remaining is not None and remaining <= 0:
             return "end"  # No budget for any more nodes
 
@@ -4854,9 +4856,6 @@ def create_standard_agent(
             if rem is not None and rem <= 0:
                 return "end"
             return "finalize"
-
-        if state.get("stop_reason") == "recursion_limit":
-            return "end"
 
         last_message = messages[-1]
         last_type = type(last_message).__name__

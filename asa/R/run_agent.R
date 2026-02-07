@@ -135,6 +135,9 @@
   initial_message <- from_schema$HumanMessage(content = prompt)
 
   initial_state <- list(messages = list(initial_message))
+  # Reset terminal markers for this invocation so checkpointed threads do not
+  # inherit stale stop signals from prior runs.
+  initial_state$stop_reason <- NULL
 
   if (!is.null(expected_schema)) {
     initial_state$expected_schema <- expected_schema
@@ -160,7 +163,10 @@
 #' Invoke Standard Agent
 #' @keywords internal
 .invoke_standard_agent <- function(python_agent, prompt, recursion_limit, expected_schema = NULL, thread_id = NULL) {
-  initial_state <- list(messages = list(list(role = "user", content = prompt)))
+  initial_state <- list(
+    messages = list(list(role = "user", content = prompt)),
+    stop_reason = NULL
+  )
   if (!is.null(expected_schema)) {
     initial_state$expected_schema <- expected_schema
     initial_state$expected_schema_source <- "explicit"

@@ -211,6 +211,17 @@ test_that("run_research rejects recursion_limit outside [4, 500]", {
     ),
     "between 4 and 500"
   )
+
+  expect_error(
+    research$run_research(
+      graph = reticulate::py$noop_invoke_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recusion_limit = 7L),
+      thread_id = "test-thread-run-research-recusion-typo"
+    ),
+    "recusion_limit"
+  )
 })
 
 test_that("stream_research rejects recursion_limit outside [4, 500]", {
@@ -264,6 +275,17 @@ test_that("stream_research rejects recursion_limit outside [4, 500]", {
       thread_id = "test-thread-stream-research-invalid-high"
     )),
     "between 4 and 500"
+  )
+
+  expect_error(
+    reticulate::iterate(research$stream_research(
+      graph = reticulate::py$noop_stream_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recusion_limit = 9L),
+      thread_id = "test-thread-stream-research-recusion-typo"
+    )),
+    "recusion_limit"
   )
 })
 
@@ -1358,6 +1380,109 @@ test_that("recursion_limit=2 completes without error (no double finalize)", {
   expect_equal(result$stop_reason, "recursion_limit")
   # Verify only 1 LLM call was made (no double finalize)
   expect_equal(as.integer(reticulate::py$counting_stub_llm$call_count), 1L)
+})
+
+test_that("reused thread_id does not let stale recursion stop_reason skip tools", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "langgraph.checkpoint.memory",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  mem_mod <- reticulate::import("langgraph.checkpoint.memory", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n",
+    "\n",
+    "class _PersistStopReasonLLM:\n",
+    "    def __init__(self):\n",
+    "        self.call_count = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.call_count += 1\n",
+    "        if self.call_count == 1:\n",
+    "            return AIMessage(content=",
+    deparse('{"status":"complete","items":[{"name":"Ada"}],"missing":[],"notes":"seed"}'),
+    ")\n",
+    "        if self.call_count == 2:\n",
+    "            return AIMessage(\n",
+    "                content='',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'x'},'id':'call_2','type':'tool_call'}],\n",
+    "            )\n",
+    "        return AIMessage(content=",
+    deparse('{"status":"complete","items":[{"name":"Grace"}],"missing":[],"notes":"after_tool"}'),
+    ")\n",
+    "\n",
+    "def _persist_search(query: str='x') -> str:\n",
+    "    return 'tool output'\n",
+    "\n",
+    "persist_stop_reason_search_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Fake search',\n",
+    "    func=_persist_search,\n",
+    ")\n",
+    "persist_stop_reason_llm = _PersistStopReasonLLM()\n"
+  ))
+
+  schema <- list(
+    status = "string",
+    items = list(list(name = "string")),
+    missing = "array",
+    notes = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$persist_stop_reason_llm,
+    tools = list(reticulate::py$persist_stop_reason_search_tool),
+    checkpointer = mem_mod$MemorySaver()
+  )
+
+  thread_id <- "test_persisted_stop_reason_standard"
+
+  state1 <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "run 1")),
+      expected_schema = schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 2L,
+      configurable = list(thread_id = thread_id)
+    )
+  )
+  expect_equal(state1$stop_reason, "recursion_limit")
+  expect_equal(as.integer(reticulate::py$persist_stop_reason_llm$call_count), 1L)
+
+  state2 <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "run 2 should use a tool")),
+      expected_schema = schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 10L,
+      configurable = list(thread_id = thread_id)
+    )
+  )
+
+  expect_true(as.integer(reticulate::py$persist_stop_reason_llm$call_count) >= 3L)
+
+  has_tool_message <- any(vapply(state2$messages, function(msg) {
+    msg_type <- tryCatch(as.character(msg$`__class__`$`__name__`), error = function(e) character(0))
+    if (length(msg_type) > 0 && identical(msg_type[[1]], "ToolMessage")) {
+      return(TRUE)
+    }
+    msg_role <- tolower(tryCatch(as.character(msg$type), error = function(e) character(0)))
+    isTRUE(length(msg_role) > 0 && msg_role[[1]] %in% c("tool", "function"))
+  }, logical(1)))
+  expect_true(has_tool_message)
 })
 
 test_that("memory finalize reuses terminal response after no-op summarize near limit", {

@@ -268,6 +268,15 @@
 
   config_limit <- NULL
   if (!is.null(config)) {
+    config_names <- names(config) %||% character(0)
+    if ("recusion_limit" %in% config_names && !("recursion_limit" %in% config_names)) {
+      .stop_validation(
+        "config$recursion_limit",
+        "use the correctly spelled key name",
+        actual = "recusion_limit",
+        fix = "Rename `config$recusion_limit` to `config$recursion_limit`"
+      )
+    }
     config_limit <- .normalize_recursion_limit(config$recursion_limit %||% NULL)
   }
   if (!is.null(config_limit)) {
