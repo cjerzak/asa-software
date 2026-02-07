@@ -3505,23 +3505,36 @@ def _sanitize_finalize_response(
     text = _message_content_to_text(content)
     repaired = False
 
-    if not text and expected_schema is not None:
-        seed = "{}" if isinstance(expected_schema, dict) else "[]"
-        fallback_json = repair_json_output_to_schema(seed, expected_schema, fallback_on_failure=True)
-        if fallback_json:
+    if not text:
+        fallback_text = None
+        if expected_schema is not None:
+            seed = "{}" if isinstance(expected_schema, dict) else "[]"
+            fallback_text = repair_json_output_to_schema(seed, expected_schema, fallback_on_failure=True)
+        else:
+            # Ensure a terminal, non-empty response even when no schema is available.
+            fallback_text = "Unable to provide a complete answer with available information."
+
+        if fallback_text:
             repaired = True
             try:
-                response.content = fallback_json
+                response.content = fallback_text
             except Exception:
                 try:
                     from langchain_core.messages import AIMessage
-                    response = AIMessage(content=fallback_json)
+                    response = AIMessage(content=fallback_text)
                 except Exception:
                     pass
 
+    if repaired and not text and expected_schema is None:
+        repair_reason = "residual_tool_calls_no_content_no_schema"
+    elif repaired:
+        repair_reason = "residual_tool_calls_no_content"
+    else:
+        repair_reason = "residual_tool_calls"
+
     event = {
         "repair_applied": True,
-        "repair_reason": "residual_tool_calls_no_content" if repaired else "residual_tool_calls",
+        "repair_reason": repair_reason,
         "missing_keys_count": 0,
         "missing_keys_sample": [],
         "fallback_on_failure": bool(expected_schema is not None),
