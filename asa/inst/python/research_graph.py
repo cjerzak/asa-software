@@ -864,12 +864,16 @@ def _resolve_invoke_recursion_limit(config_dict: Optional[Dict[str, Any]]) -> Op
     try:
         resolved = int(recursion_limit)
     except Exception:
-        logger.warning("Ignoring invalid recursion_limit=%r in run_research config", recursion_limit)
-        return None
+        raise ValueError(
+            "recursion_limit must be an integer between 3 and 500; "
+            f"got {recursion_limit!r}"
+        )
 
-    if resolved <= 0:
-        logger.warning("Ignoring non-positive recursion_limit=%r in run_research config", recursion_limit)
-        return None
+    if resolved < 3 or resolved > 500:
+        raise ValueError(
+            "recursion_limit must be between 3 and 500; "
+            f"got {resolved}"
+        )
 
     return resolved
 

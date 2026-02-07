@@ -159,6 +159,92 @@ test_that("stream_research forwards recursion_limit into graph config", {
   expect_equal(as.integer(captured$recursion_limit), 9L)
 })
 
+test_that("run_research rejects recursion_limit outside [3, 500]", {
+  python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  research <- reticulate::import_from_path("research_graph", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "class _NoopInvokeGraph:\n",
+    "    def invoke(self, initial_state, config):\n",
+    "        return {'results': [], 'status': 'complete', 'stop_reason': None}\n",
+    "\n",
+    "noop_invoke_graph = _NoopInvokeGraph()\n"
+  ))
+
+  expect_error(
+    research$run_research(
+      graph = reticulate::py$noop_invoke_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recursion_limit = 2L),
+      thread_id = "test-thread-run-research-invalid-low"
+    ),
+    "between 3 and 500"
+  )
+
+  expect_error(
+    research$run_research(
+      graph = reticulate::py$noop_invoke_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recursion_limit = 501L),
+      thread_id = "test-thread-run-research-invalid-high"
+    ),
+    "between 3 and 500"
+  )
+})
+
+test_that("stream_research rejects recursion_limit outside [3, 500]", {
+  python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  research <- reticulate::import_from_path("research_graph", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "class _NoopStreamGraph:\n",
+    "    def stream(self, initial_state, config, stream_mode='updates'):\n",
+    "        yield {'planner': {'status': 'complete', 'results': []}}\n",
+    "\n",
+    "noop_stream_graph = _NoopStreamGraph()\n"
+  ))
+
+  expect_error(
+    reticulate::iterate(research$stream_research(
+      graph = reticulate::py$noop_stream_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recursion_limit = 2L),
+      thread_id = "test-thread-stream-research-invalid-low"
+    )),
+    "between 3 and 500"
+  )
+
+  expect_error(
+    reticulate::iterate(research$stream_research(
+      graph = reticulate::py$noop_stream_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recursion_limit = 501L),
+      thread_id = "test-thread-stream-research-invalid-high"
+    )),
+    "between 3 and 500"
+  )
+})
+
 test_that("best-effort recursion_limit output populates required JSON fields (stubbed)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c(
@@ -1300,6 +1386,48 @@ test_that("memory summarize near recursion edge preserves terminal response when
   expect_equal(as.character(parsed$notes), "FIRST")
 })
 
+test_that("summarize stamps recursion stop_reason when budget is exhausted", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  asa_test_stub_llm(mode = "simple", response_content = "")
+  asa_test_stub_summarizer(var_name = "stop_reason_summarizer")
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$stub_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE,
+    message_threshold = 1L,
+    keep_recent = 4L,
+    summarizer_model = reticulate::py$stop_reason_summarizer
+  )
+
+  summarize_state <- reticulate::dict(
+    messages = list(
+      msgs$HumanMessage(content = "user prompt"),
+      msgs$AIMessage(content = "")
+    ),
+    summary = "",
+    archive = list(),
+    fold_stats = reticulate::dict(fold_count = 0L),
+    stop_reason = NULL,
+    remaining_steps = 1L
+  )
+
+  summarize_out <- agent$nodes[["summarize"]]$bound$invoke(summarize_state)
+  expect_equal(as.character(summarize_out$stop_reason), "recursion_limit")
+})
+
 test_that("reused finalize response does not mutate original non-copyable message", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c(
@@ -1341,6 +1469,36 @@ test_that("reused finalize response does not mutate original non-copyable messag
   expect_false(identical(
     as.character(reticulate::py$copy_test_orig_content),
     as.character(reticulate::py$copy_test_reused_content)
+  ))
+})
+
+test_that("reused finalize response gets a fresh message id", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  py <- reticulate::py
+  py$prod_module_id_test <- prod
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "orig_msg_id_test = AIMessage(content='terminal response', id='msg-123')\n",
+    "reused_msg_id_test = prod_module_id_test._reusable_terminal_finalize_response([orig_msg_id_test])\n",
+    "combined_id_test = prod_module_id_test._add_messages([orig_msg_id_test], [reused_msg_id_test])\n",
+    "combined_ids_id_test = [getattr(m, 'id', None) for m in combined_id_test]\n",
+    "combined_has_duplicate_ids = len(combined_ids_id_test) != len(set(combined_ids_id_test))\n"
+  ))
+
+  expect_false(isTRUE(reticulate::py$combined_has_duplicate_ids))
+  expect_false(identical(
+    as.character(reticulate::py$orig_msg_id_test$id),
+    as.character(reticulate::py$reused_msg_id_test$id)
   ))
 })
 
@@ -1874,7 +2032,7 @@ test_that("finalize strips residual tool calls and returns non-empty text when n
   )
 })
 
-test_that(".extract_response_text returns recursion fallback when only tool-call AI content exists", {
+test_that(".extract_response_text returns tool output under recursion_limit when available", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
@@ -1886,6 +2044,25 @@ test_that(".extract_response_text returns recursion fallback when only tool-call
         tool_calls = list(list(name = "Search", args = list(query = "ada"), id = "call_1"))
       ),
       msgs$ToolMessage(content = "tool output", tool_call_id = "call_1")
+    ),
+    stop_reason = "recursion_limit"
+  )
+
+  response_text <- asa:::.extract_response_text(raw_response, backend = "gemini")
+  expect_equal(response_text, "tool output")
+})
+
+test_that(".extract_response_text returns recursion fallback when only tool-call AI content exists", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  raw_response <- list(
+    messages = list(
+      msgs$AIMessage(
+        content = "calling tool",
+        tool_calls = list(list(name = "Search", args = list(query = "ada"), id = "call_1"))
+      )
     ),
     stop_reason = "recursion_limit"
   )

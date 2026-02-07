@@ -3632,7 +3632,26 @@ def _reusable_terminal_finalize_response(messages: list) -> Optional[Any]:
     if not content_text:
         return None
 
-    return _copy_message(last)
+    # Reused finalize responses are appended as new turns; assign a fresh id
+    # so reducers/downstream consumers don't see duplicate message IDs.
+    reused = _copy_message(last)
+    new_id = uuid.uuid4().hex
+    if isinstance(reused, dict):
+        reused["id"] = new_id
+        return reused
+    try:
+        setattr(reused, "id", new_id)
+        return reused
+    except Exception:
+        pass
+    try:
+        if hasattr(reused, "model_copy"):
+            return reused.model_copy(update={"id": new_id})
+        if hasattr(reused, "copy"):
+            return reused.copy(update={"id": new_id})
+    except Exception:
+        pass
+    return reused
 
 
 def _compact_tool_output(content_text: str, full_results_limit: int = 8) -> str:
@@ -4173,7 +4192,17 @@ def create_memory_folding_agent(
         # If summarization consumes the step that would otherwise force finalize,
         # keep at least one recent exchange so terminal content is reusable.
         preserve_terminal_exchange = terminal_response_present and near_finalize_edge
-        summarize_recursion_marker = "recursion_limit" if preserve_terminal_exchange else state.get("stop_reason")
+        summarize_recursion_marker = state.get("stop_reason")
+        if summarize_recursion_marker is None and preserve_terminal_exchange:
+            summarize_recursion_marker = "recursion_limit"
+        # If this summarize step exhausts the budget and we cannot run finalize,
+        # stamp recursion_limit so callers still receive an explicit stop reason.
+        if (
+            summarize_recursion_marker is None
+            and remaining_before_fold is not None
+            and remaining_before_fold <= 1
+        ):
+            summarize_recursion_marker = "recursion_limit"
 
         def _summarize_result(payload: Optional[Dict[str, Any]] = None) -> dict:
             out = dict(payload or {})
@@ -4610,8 +4639,8 @@ def create_memory_folding_agent(
         if remaining is not None and remaining <= 0:
             return "end"  # No budget for any more nodes
 
-        # FIX: Unconditionally route to finalize when near recursion limit
-        # This ensures stop_reason is always set via the finalize node
+        # Route to finalize near the recursion edge only when we still have
+        # budget and the stop reason has not already been stamped.
         if _should_force_finalize(state):
             return "finalize"
 

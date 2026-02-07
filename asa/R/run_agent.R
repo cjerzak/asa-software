@@ -260,9 +260,10 @@
 
       # Helper to extract content from a message
       get_message_content <- function(msg) {
-        text <- .try_or(msg$text)
+        # Prefer canonical `content`; some providers expose `text` as accessor objects.
+        text <- .try_or(msg$content)
         if (is.null(text) || length(text) == 0) {
-          text <- .try_or(msg$content)
+          text <- .try_or(msg$text)
         }
         text
       }
@@ -291,6 +292,23 @@
         last_message <- messages[[length(messages)]]
         text <- get_message_content(last_message)
         text_parts <- extract_text_blocks(text)
+      }
+
+      # Recursion-limited fallback: accept last message text only if it's
+      # terminal (not a tool call / tool output message).
+      if (length(text_parts) == 0 && is_recursion_limit) {
+        # Prefer tool output when recursion cut off the final assistant turn.
+        for (i in rev(seq_along(messages))) {
+          msg <- messages[[i]]
+          if (!is_tool_message(msg)) {
+            next
+          }
+          text <- get_message_content(msg)
+          text_parts <- extract_text_blocks(text)
+          if (length(text_parts) > 0) {
+            break
+          }
+        }
       }
 
       # Recursion-limited fallback: accept last message text only if it's
