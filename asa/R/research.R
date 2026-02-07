@@ -283,6 +283,16 @@ asa_enumerate <- function(query,
     config = recursion_config,
     use_memory_folding = use_memory_folding
   )
+  if (!is.null(config_dict$recursion_limit) &&
+      is.finite(as.numeric(config_dict$recursion_limit)) &&
+      as.integer(config_dict$recursion_limit) < 4L) {
+    .stop_validation(
+      "recursion_limit",
+      "be >= 4 for research graphs",
+      actual = config_dict$recursion_limit,
+      fix = "Use recursion_limit = 4 or higher in research workflows"
+    )
+  }
 
   # Ensure agent is initialized
   if (is.null(agent)) {

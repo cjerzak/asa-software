@@ -116,6 +116,21 @@ test_that("asa_enumerate validates resume_from parameter", {
   )
 })
 
+test_that("asa_enumerate enforces recursion_limit >= 4 for research graphs", {
+  cfg <- asa_config(recursion_limit = 3L)
+  expect_error(
+    asa_enumerate(
+      query = "test",
+      schema = c(name = "character"),
+      config = cfg,
+      checkpoint = FALSE,
+      progress = FALSE,
+      verbose = FALSE
+    ),
+    regexp = "recursion_limit"
+  )
+})
+
 # ============================================================================
 # Schema Normalization Tests
 # ============================================================================

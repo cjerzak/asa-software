@@ -174,6 +174,46 @@ def _token_usage_from_message(message: Any) -> int:
     return 0
 
 
+def _configured_recursion_limit_from_state(state: Any) -> Optional[int]:
+    """Best-effort read of per-run recursion_limit from state.config."""
+    config = None
+    try:
+        if hasattr(state, "get"):
+            config = state.get("config")
+        elif hasattr(state, "__getitem__"):
+            config = state["config"]
+    except Exception:
+        config = None
+
+    if config is None:
+        return None
+
+    recursion_limit = None
+    try:
+        if isinstance(config, dict):
+            recursion_limit = config.get("recursion_limit")
+        elif hasattr(config, "get"):
+            recursion_limit = config.get("recursion_limit")
+    except Exception:
+        recursion_limit = None
+
+    if recursion_limit is None:
+        return None
+
+    try:
+        return int(recursion_limit)
+    except Exception:
+        return None
+
+
+def _effective_recursion_stop_buffer(state: Any) -> int:
+    """Use a tighter buffer for very small limits so one research round can run."""
+    configured_limit = _configured_recursion_limit_from_state(state)
+    if configured_limit is not None and configured_limit <= 4:
+        return 1
+    return RECURSION_STOP_BUFFER
+
+
 def _to_snake_case(name: str) -> str:
     out = []
     for i, ch in enumerate(name):
@@ -301,10 +341,11 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
 
     def searcher_node(state: ResearchState) -> Dict:
         """Execute search based on plan."""
-        # If this is the last allowed step, stop before doing any more work. Otherwise
-        # we can still run search->dedupe and let dedupe mark completion on the last step.
-        # Keep a small buffer so we can stop cleanly before graph exhaustion.
-        if should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER):
+        # If this is the last allowed step, stop before doing any more work. For
+        # tiny limits (<=4), we use a smaller buffer so at least one search round
+        # can run before graceful completion.
+        stop_buffer = _effective_recursion_stop_buffer(state)
+        if should_stop_for_recursion(state, buffer=stop_buffer):
             return {"status": "complete", "stop_reason": "recursion_limit"}
 
         wikidata_type = state.get("wikidata_type")
@@ -638,7 +679,10 @@ def create_deduper_node():
         """Deduplicate results."""
         # If this is the last allowed step, still dedupe, but mark complete so the graph can END.
         # Keep a small buffer to avoid routing to nodes we cannot execute.
-        force_stop = should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER)
+        force_stop = should_stop_for_recursion(
+            state,
+            buffer=_effective_recursion_stop_buffer(state)
+        )
 
         results = state.get("new_results")
         if results is None:
@@ -732,7 +776,7 @@ def create_stopper_node(config: ResearchConfig):
                     return {"status": "complete", "stop_reason": "novelty_plateau"}
 
         # Stop before LangGraph raises GraphRecursionError.
-        if should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER):
+        if should_stop_for_recursion(state, buffer=_effective_recursion_stop_buffer(state)):
             return {"status": "complete", "stop_reason": "recursion_limit"}
 
         return {"status": "searching"}
@@ -750,7 +794,7 @@ def should_continue(state: ResearchState) -> str:
         return "end"
     # Stop before LangGraph raises GraphRecursionError. Use a small buffer to be
     # robust across LangGraph versions / semantics for RemainingSteps.
-    if should_stop_for_recursion(state, buffer=RECURSION_STOP_BUFFER):
+    if should_stop_for_recursion(state, buffer=_effective_recursion_stop_buffer(state)):
         return "end"
     if status == "searching":
         return "search"
@@ -865,13 +909,13 @@ def _resolve_invoke_recursion_limit(config_dict: Optional[Dict[str, Any]]) -> Op
         resolved = int(recursion_limit)
     except Exception:
         raise ValueError(
-            "recursion_limit must be an integer between 3 and 500; "
+            "recursion_limit must be an integer between 4 and 500; "
             f"got {recursion_limit!r}"
         )
 
-    if resolved < 3 or resolved > 500:
+    if resolved < 4 or resolved > 500:
         raise ValueError(
-            "recursion_limit must be between 3 and 500; "
+            "recursion_limit must be between 4 and 500; "
             f"got {resolved}"
         )
 

@@ -159,7 +159,7 @@ test_that("stream_research forwards recursion_limit into graph config", {
   expect_equal(as.integer(captured$recursion_limit), 9L)
 })
 
-test_that("run_research rejects recursion_limit outside [3, 500]", {
+test_that("run_research rejects recursion_limit outside [4, 500]", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
   asa_test_skip_if_missing_python_modules(c(
     "langchain_core",
@@ -187,7 +187,18 @@ test_that("run_research rejects recursion_limit outside [3, 500]", {
       config_dict = list(recursion_limit = 2L),
       thread_id = "test-thread-run-research-invalid-low"
     ),
-    "between 3 and 500"
+    "between 4 and 500"
+  )
+
+  expect_error(
+    research$run_research(
+      graph = reticulate::py$noop_invoke_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recursion_limit = 3L),
+      thread_id = "test-thread-run-research-invalid-low-3"
+    ),
+    "between 4 and 500"
   )
 
   expect_error(
@@ -198,11 +209,11 @@ test_that("run_research rejects recursion_limit outside [3, 500]", {
       config_dict = list(recursion_limit = 501L),
       thread_id = "test-thread-run-research-invalid-high"
     ),
-    "between 3 and 500"
+    "between 4 and 500"
   )
 })
 
-test_that("stream_research rejects recursion_limit outside [3, 500]", {
+test_that("stream_research rejects recursion_limit outside [4, 500]", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
   asa_test_skip_if_missing_python_modules(c(
     "langchain_core",
@@ -230,7 +241,18 @@ test_that("stream_research rejects recursion_limit outside [3, 500]", {
       config_dict = list(recursion_limit = 2L),
       thread_id = "test-thread-stream-research-invalid-low"
     )),
-    "between 3 and 500"
+    "between 4 and 500"
+  )
+
+  expect_error(
+    reticulate::iterate(research$stream_research(
+      graph = reticulate::py$noop_stream_graph,
+      query = "test query",
+      schema = list(name = "character"),
+      config_dict = list(recursion_limit = 3L),
+      thread_id = "test-thread-stream-research-invalid-low-3"
+    )),
+    "between 4 and 500"
   )
 
   expect_error(
@@ -241,8 +263,78 @@ test_that("stream_research rejects recursion_limit outside [3, 500]", {
       config_dict = list(recursion_limit = 501L),
       thread_id = "test-thread-stream-research-invalid-high"
     )),
-    "between 3 and 500"
+    "between 4 and 500"
   )
+})
+
+test_that("run_research with recursion_limit=4 executes at least one search round", {
+  python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  research <- reticulate::import_from_path("research_graph", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "class _StubResponse:\n",
+    "    def __init__(self, content):\n",
+    "        self.content = content\n",
+    "        self.usage_metadata = {'total_tokens': 0}\n",
+    "\n",
+    "class _StubLLM:\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        content = getattr(messages[-1], 'content', '') if messages else ''\n",
+    "        if isinstance(content, str) and 'Respond in JSON format ONLY' in content:\n",
+    "            return _StubResponse('{\"entity_type\":\"test\",\"wikidata_type\":null,\"search_queries\":[]}')\n",
+    "        if isinstance(content, str) and 'Return ONLY a JSON array' in content:\n",
+    "            return _StubResponse('[]')\n",
+    "        return _StubResponse('no tool calls')\n",
+    "\n",
+    "stub_llm_rounds = _StubLLM()\n"
+  ))
+
+  cfg <- research$ResearchConfig(
+    max_rounds = as.integer(999),
+    budget_queries = as.integer(9999),
+    budget_tokens = as.integer(999999),
+    budget_time_sec = as.integer(999999),
+    plateau_rounds = as.integer(0),
+    novelty_min = as.numeric(0),
+    use_wikidata = FALSE,
+    use_web = FALSE,
+    use_wikipedia = FALSE
+  )
+
+  graph <- research$create_research_graph(
+    llm = reticulate::py$stub_llm_rounds,
+    tools = list(),
+    config = cfg,
+    checkpointer = NULL,
+    wikidata_tool = NULL
+  )
+
+  out <- research$run_research(
+    graph = graph,
+    query = "test query",
+    schema = list(name = "character"),
+    config_dict = list(
+      recursion_limit = 4L,
+      use_web = FALSE,
+      use_wikidata = FALSE,
+      use_wikipedia = FALSE
+    ),
+    thread_id = "test-thread-run-research-min-recursion"
+  )
+
+  expect_equal(out$status, "complete")
+  expect_equal(out$stop_reason, "recursion_limit")
+  expect_gte(as.integer(out$metrics$round_number), 1L)
 })
 
 test_that("best-effort recursion_limit output populates required JSON fields (stubbed)", {
@@ -1426,6 +1518,48 @@ test_that("summarize stamps recursion stop_reason when budget is exhausted", {
 
   summarize_out <- agent$nodes[["summarize"]]$bound$invoke(summarize_state)
   expect_equal(as.character(summarize_out$stop_reason), "recursion_limit")
+})
+
+test_that("summarize near edge does not stamp recursion stop_reason prematurely", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_missing_python_modules(c(
+    "langchain_core",
+    "langgraph",
+    "langgraph.prebuilt",
+    "pydantic",
+    "requests"
+  ), method = "import")
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  asa_test_stub_llm(mode = "simple", response_content = "")
+  asa_test_stub_summarizer(var_name = "no_premature_stop_summarizer")
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$stub_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE,
+    message_threshold = 1L,
+    keep_recent = 0L,
+    summarizer_model = reticulate::py$no_premature_stop_summarizer
+  )
+
+  summarize_state <- reticulate::dict(
+    messages = list(
+      msgs$HumanMessage(content = "user prompt"),
+      msgs$AIMessage(content = "{\"status\":\"complete\",\"items\":[],\"missing\":[],\"notes\":\"ok\"}")
+    ),
+    summary = "",
+    archive = list(),
+    fold_stats = reticulate::dict(fold_count = 0L),
+    stop_reason = NULL,
+    remaining_steps = 3L
+  )
+
+  summarize_out <- agent$nodes[["summarize"]]$bound$invoke(summarize_state)
+  expect_null(summarize_out$stop_reason)
 })
 
 test_that("reused finalize response does not mutate original non-copyable message", {

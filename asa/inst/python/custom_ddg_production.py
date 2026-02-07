@@ -4193,10 +4193,9 @@ def create_memory_folding_agent(
         # keep at least one recent exchange so terminal content is reusable.
         preserve_terminal_exchange = terminal_response_present and near_finalize_edge
         summarize_recursion_marker = state.get("stop_reason")
-        if summarize_recursion_marker is None and preserve_terminal_exchange:
-            summarize_recursion_marker = "recursion_limit"
-        # If this summarize step exhausts the budget and we cannot run finalize,
-        # stamp recursion_limit so callers still receive an explicit stop reason.
+        # Only stamp recursion_limit here when summarize itself exhausts the
+        # remaining budget. Near-edge summarization alone should not relabel a
+        # run as recursion-limited if finalize can still execute.
         if (
             summarize_recursion_marker is None
             and remaining_before_fold is not None
