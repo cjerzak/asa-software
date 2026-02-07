@@ -2528,6 +2528,11 @@ test_that("recursion-limit finalize preserves earlier tool-derived facts (standa
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "teacher")
   expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+
+  field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
+  expect_true(is.list(field_status))
+  expect_equal(as.character(field_status$prior_occupation$status), "found")
+  expect_equal(as.character(field_status$prior_occupation$value), "teacher")
 })
 
 test_that("recursion-limit finalize preserves earlier tool-derived facts (memory folding)", {
@@ -2603,6 +2608,175 @@ test_that("recursion-limit finalize preserves earlier tool-derived facts (memory
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "teacher")
   expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+
+  field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
+  expect_true(is.list(field_status))
+  expect_equal(as.character(field_status$prior_occupation$status), "found")
+  expect_equal(as.character(field_status$prior_occupation$value), "teacher")
+})
+
+test_that("field_status is canonical vs scratchpad and is injected into finalize prompts (standard)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_require_langgraph_stack()
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "def _canonical_fact_tool(query: str) -> str:\n",
+    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+    "canonical_fact_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Deterministic fact tool for field_status canonical tests',\n",
+    "    func=_canonical_fact_tool,\n",
+    ")\n\n",
+    "class _FieldStatusCanonicalLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "        self.system_prompts = []\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        try:\n",
+    "            self.system_prompts.append(getattr(messages[0], 'content', None))\n",
+    "        except Exception:\n",
+    "            self.system_prompts.append(None)\n",
+    "        sys_text = str(messages[0].content or '') if messages else ''\n",
+    "        if 'FINALIZE MODE' in sys_text:\n",
+    "            return AIMessage(content='', tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_final'}])\n",
+    "        return AIMessage(\n",
+    "            content='search then note',\n",
+    "            tool_calls=[\n",
+    "                {'name':'Search','args':{'query':'person'},'id':'call_1'},\n",
+    "                {'name':'save_finding','args':{'finding':'prior_occupation=lawyer','category':'fact'},'id':'call_2'}\n",
+    "            ]\n",
+    "        )\n\n",
+    "field_status_canonical_llm = _FieldStatusCanonicalLLM()\n"
+  ))
+
+  expected_schema <- list(
+    prior_occupation = "string",
+    prior_occupation_source = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$field_status_canonical_llm,
+    tools = list(reticulate::py$canonical_fact_tool)
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(
+        role = "user",
+        content = "Return strict JSON with prior_occupation and prior_occupation_source."
+      )),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = 4L,
+      configurable = list(thread_id = "test_field_status_canonical_standard")
+    )
+  )
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_equal(as.character(parsed$prior_occupation), "teacher")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+
+  field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
+  expect_true(is.list(field_status))
+  expect_equal(as.character(field_status$prior_occupation$status), "found")
+  expect_equal(as.character(field_status$prior_occupation$value), "teacher")
+
+  sys_prompts <- reticulate::py_to_r(reticulate::py$field_status_canonical_llm$system_prompts)
+  expect_true(length(sys_prompts) >= 2L)
+  expect_true(grepl("CANONICAL FIELD STATUS", sys_prompts[[2]], fixed = TRUE))
+  expect_true(grepl("prior_occupation: found", sys_prompts[[2]], fixed = TRUE))
+  expect_true(grepl("YOUR SCRATCHPAD", sys_prompts[[2]], fixed = TRUE))
+  expect_true(grepl("prior_occupation=lawyer", sys_prompts[[2]], fixed = TRUE))
+})
+
+test_that("field_status unknown-after threshold triggers semantic finalize with unknowns", {
+  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_require_langgraph_stack()
+
+  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "unknown_budget_tool_calls = {'n': 0}\n\n",
+    "def _unknown_budget_tool(query: str) -> str:\n",
+    "    unknown_budget_tool_calls['n'] += 1\n",
+    "    return '{\"noise\":\"irrelevant\"}'\n\n",
+    "unknown_budget_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Always returns irrelevant payloads',\n",
+    "    func=_unknown_budget_tool,\n",
+    ")\n\n",
+    "class _UnknownBudgetLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        sys_text = str(messages[0].content or '') if messages else ''\n",
+    "        if 'FINALIZE MODE' in sys_text:\n",
+    "            return AIMessage(content='', tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_final'}])\n",
+    "        return AIMessage(content='search more', tool_calls=[{'name':'Search','args':{'query':'more'},'id':'call_' + str(self.calls)}])\n\n",
+    "unknown_budget_llm = _UnknownBudgetLLM()\n"
+  ))
+
+  expected_schema <- list(
+    birth_year = "integer",
+    birth_place = "string"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$unknown_budget_llm,
+    tools = list(reticulate::py$unknown_budget_tool)
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(
+        role = "user",
+        content = "Return strict JSON with birth_year and birth_place."
+      )),
+      expected_schema = expected_schema,
+      expected_schema_source = "explicit",
+      search_budget_limit = 8L,
+      unknown_after_searches = 3L,
+      finalize_on_all_fields_resolved = TRUE
+    ),
+    config = list(
+      recursion_limit = 30L,
+      configurable = list(thread_id = "test_field_status_unknown_finalize")
+    )
+  )
+
+  field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
+  expect_true(is.list(field_status))
+  expect_equal(as.character(field_status$birth_year$status), "unknown")
+  expect_equal(as.character(field_status$birth_place$status), "unknown")
+  expect_true(as.integer(field_status$birth_year$attempts) >= 3L)
+  expect_true(as.integer(field_status$birth_place$attempts) >= 3L)
+
+  budget_state <- tryCatch(reticulate::py_to_r(final_state$budget_state), error = function(e) final_state$budget_state)
+  expect_true(is.list(budget_state))
+  expect_true(isTRUE(as.logical(budget_state$all_resolved)))
+  expect_true(as.integer(budget_state$tool_calls_used) <= 4L)
+
+  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+  parsed <- jsonlite::fromJSON(response_text)
+  expect_true(is.list(parsed))
+  expect_true(all(c("birth_year", "birth_place") %in% names(parsed)))
+  expect_true(is.null(parsed$birth_year) || is.na(parsed$birth_year))
+  expect_true(is.null(parsed$birth_place) || parsed$birth_place == "" || is.na(parsed$birth_place))
 })
 
 test_that(".extract_response_text returns tool output under recursion_limit when available", {
