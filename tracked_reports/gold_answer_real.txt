@@ -1,0 +1,20 @@
+{
+  "education_level": "Unknown",
+  "education_institution": "Unknown",
+  "education_field": "Unknown",
+  "education_source": null,
+  "prior_occupation": "Indigenous leader (President of the Organization of Women - Sub Central Sécure)",
+  "class_background": "Working class",
+  "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "disability_status": "No disability",
+  "disability_source": "https://sisin.oep.org.bo/medios_digitales/14397/detalle",
+  "birth_place": "Unknown",
+  "birth_place_source": null,
+  "birth_year": 1982,
+  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "lgbtq_status": "Non-LGBTQ",
+  "lgbtq_details": null,
+  "lgbtq_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "confidence": "Medium",
+  "justification": "Official Vicepresidency profile confirms birth year (1982) and role as President of the Organization of Women for Sub Central Sécure, indicating a background as a rural indigenous leader (mapped to working class). Specific education details and birth town are not listed in available public records."
+}

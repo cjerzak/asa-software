@@ -1,0 +1,20 @@
+{
+  "education_level": "Unknown",
+  "education_institution": "Unknown",
+  "education_field": "Unknown",
+  "education_source": null,
+  "prior_occupation": "Unknown",
+  "class_background": "Unknown",
+  "prior_occupation_source": null,
+  "disability_status": "Unknown",
+  "disability_source": null,
+  "birth_place": "Unknown",
+  "birth_place_source": null,
+  "birth_year": "Unknown",
+  "birth_year_source": null,
+  "lgbtq_status": "Unknown",
+  "lgbtq_details": null,
+  "lgbtq_source": null,
+  "confidence": "Low",
+  "justification": ""
+}
