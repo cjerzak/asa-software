@@ -2,13 +2,7 @@
 
 test_that("research graph stops with stop_reason='recursion_limit' (RemainingSteps)", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
@@ -82,13 +76,7 @@ test_that("research graph stops with stop_reason='recursion_limit' (RemainingSte
 
 test_that("run_research forwards recursion_limit into graph config", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
@@ -120,13 +108,7 @@ test_that("run_research forwards recursion_limit into graph config", {
 
 test_that("stream_research forwards recursion_limit into graph config", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
@@ -161,13 +143,7 @@ test_that("stream_research forwards recursion_limit into graph config", {
 
 test_that("run_research rejects recursion_limit outside [4, 500]", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
@@ -226,13 +202,7 @@ test_that("run_research rejects recursion_limit outside [4, 500]", {
 
 test_that("stream_research rejects recursion_limit outside [4, 500]", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
@@ -291,13 +261,7 @@ test_that("stream_research rejects recursion_limit outside [4, 500]", {
 
 test_that("run_research with recursion_limit=4 executes at least one search round", {
   python_path <- asa_test_skip_if_no_python(required_files = "research_graph.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
@@ -361,13 +325,7 @@ test_that("run_research with recursion_limit=4 executes at least one search roun
 
 test_that("best-effort recursion_limit output populates required JSON fields (stubbed)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -425,13 +383,7 @@ test_that("best-effort recursion_limit output populates required JSON fields (st
 
 test_that("JSON repair populates nested required keys (explicit schema)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -635,13 +587,7 @@ test_that("standard agent reaches recursion_limit and preserves JSON output (Gem
 
 test_that("run_task passes expected_schema into LangGraph state (explicit schema)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -1330,13 +1276,7 @@ test_that("memory folding finalization respects inferred schema from CSV templat
 
 test_that("recursion_limit=2 completes without error (no double finalize)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -1424,13 +1364,7 @@ test_that("shared router prioritizes pending tool calls when budget allows", {
 
 test_that("tool exceptions produce terminal fallback instead of hard error (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -1479,13 +1413,7 @@ test_that("tool exceptions produce terminal fallback instead of hard error (stan
 
 test_that("model invoke exceptions return schema fallback instead of hard error (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -1642,13 +1570,7 @@ test_that("reused thread_id does not let stale recursion stop_reason skip tools"
 
 test_that("memory finalize reuses terminal response after no-op summarize near limit", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -1698,13 +1620,7 @@ test_that("memory finalize reuses terminal response after no-op summarize near l
 
 test_that("memory summarize near recursion edge preserves terminal response when keep_recent=0", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
@@ -1760,13 +1676,7 @@ test_that("memory summarize near recursion edge preserves terminal response when
 
 test_that("summarize stamps recursion stop_reason when budget is exhausted", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
@@ -1802,13 +1712,7 @@ test_that("summarize stamps recursion stop_reason when budget is exhausted", {
 
 test_that("summarize near edge does not stamp recursion stop_reason prematurely", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
@@ -1844,13 +1748,7 @@ test_that("summarize near edge does not stamp recursion stop_reason prematurely"
 
 test_that("reused finalize response does not mutate original non-copyable message", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
   py <- reticulate::py
@@ -1888,13 +1786,7 @@ test_that("reused finalize response does not mutate original non-copyable messag
 
 test_that("reused finalize response gets a fresh message id", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
   py <- reticulate::py
@@ -1918,13 +1810,7 @@ test_that("reused finalize response gets a fresh message id", {
 
 test_that("finalize strips residual tool calls and returns terminal JSON (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -1980,13 +1866,7 @@ test_that("finalize strips residual tool calls and returns terminal JSON (standa
 
 test_that("finalize stays non-empty when first schema repair attempt fails (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
   py <- reticulate::py
@@ -2061,13 +1941,7 @@ test_that("finalize stays non-empty when first schema repair attempt fails (stan
 
 test_that("finalize strips residual tool calls and returns non-empty text when no schema (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -2112,13 +1986,7 @@ test_that("finalize strips residual tool calls and returns non-empty text when n
 
 test_that("sanitize_finalize_response fills dict content fallback when residual tool calls are stripped", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -2156,13 +2024,7 @@ test_that("sanitize_finalize_response fills dict content fallback when residual 
 
 test_that("sanitize_finalize_response strips invalid tool calls and legacy function_call metadata", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -2205,13 +2067,7 @@ test_that("sanitize_finalize_response strips invalid tool calls and legacy funct
 
 test_that("finalize_answer node sanitizes residual tool calls after tools (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -2289,13 +2145,7 @@ test_that("finalize_answer node sanitizes residual tool calls after tools (stand
 
 test_that("explicit schema does not rewrite intermediate tool-call turns (standard)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -2365,13 +2215,7 @@ test_that("explicit schema does not rewrite intermediate tool-call turns (standa
 
 test_that("finalize strips residual tool calls and returns terminal JSON (memory folding)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 
@@ -2434,13 +2278,7 @@ test_that("finalize strips residual tool calls and returns terminal JSON (memory
 
 test_that("finalize strips residual tool calls and returns non-empty text when no schema (memory folding)", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests"
-  ), method = "import")
+  asa_test_require_langgraph_stack()
 
   prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
 

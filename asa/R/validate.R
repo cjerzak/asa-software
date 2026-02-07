@@ -375,6 +375,91 @@
 }
 
 # ============================================================================
+# SHARED CROSS-FUNCTION VALIDATORS
+# ============================================================================
+
+#' Validate Optional asa_config Argument
+#' @param config Value to check (NULL or asa_config)
+#' @param param_name Name for error message
+#' @keywords internal
+.validate_asa_config <- function(config, param_name = "config") {
+  if (!is.null(config) && !inherits(config, "asa_config")) {
+    stop(sprintf("`%s` must be an asa_config object or NULL", param_name), call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+#' Validate output_format Argument
+#' @param output_format Output format argument
+#' @param param_name Name for error message
+#' @param fix Hint text for invalid non-character values
+#' @keywords internal
+.validate_output_format <- function(
+    output_format,
+    param_name = "output_format",
+    fix = 'Use output_format = "json"'
+) {
+  # output_format: "text", "json", "raw", or character vector of field names
+  if (is.character(output_format)) {
+    if (length(output_format) == 1) {
+      .validate_choice(output_format, param_name, c("text", "json", "raw"))
+    }
+    return(invisible(TRUE))
+  }
+
+  .stop_validation(
+    param_name,
+    'be "text", "json", "raw", or a character vector of field names',
+    actual = output_format,
+    fix = fix
+  )
+}
+
+#' Validate expected_schema Argument
+#' @param expected_schema Value to validate
+#' @param param_name Name for error messages
+#' @param allow_empty_list Whether an empty list is allowed
+#' @param invalid_fix Fix text when schema is wrong type
+#' @param empty_fix Fix text when schema is an empty list
+#' @keywords internal
+.validate_expected_schema <- function(
+    expected_schema,
+    param_name = "expected_schema",
+    allow_empty_list = TRUE,
+    invalid_fix = "Pass a nested list schema or set expected_schema = NULL",
+    empty_fix = "Provide at least one key/element in the schema, or set expected_schema = NULL"
+) {
+  if (is.null(expected_schema)) {
+    return(invisible(TRUE))
+  }
+
+  is_py <- FALSE
+  try({
+    is_py <- reticulate::is_py_object(expected_schema)
+  }, silent = TRUE)
+
+  is_list_schema <- is.list(expected_schema) && !is.data.frame(expected_schema)
+  if (!is_py && !is_list_schema) {
+    .stop_validation(
+      param_name,
+      "be a nested list (or Python dict/list) describing the required JSON shape",
+      actual = expected_schema,
+      fix = invalid_fix
+    )
+  }
+  if (!allow_empty_list && is_list_schema && length(expected_schema) == 0) {
+    .stop_validation(
+      param_name,
+      "not be an empty list",
+      actual = expected_schema,
+      fix = empty_fix
+    )
+  }
+
+  invisible(TRUE)
+}
+
+# ============================================================================
 # FUNCTION-LEVEL VALIDATORS
 # ============================================================================
 
@@ -417,20 +502,10 @@
                                webpage_embedding_model = NULL) {
   .validate_string(prompt, "prompt")
 
-  # output_format: "text", "json", "raw", or character vector of field names
-  if (is.character(output_format)) {
-    if (length(output_format) == 1) {
-      .validate_choice(output_format, "output_format", c("text", "json", "raw"))
-    }
-    # length > 1 means field names, which is valid
-  } else {
-    .stop_validation(
-      "output_format",
-      'be "text", "json", "raw", or a character vector of field names',
-      actual = output_format,
-      fix = 'Use output_format = "json" or output_format = c("field1", "field2")'
-    )
-  }
+  .validate_output_format(
+    output_format,
+    fix = 'Use output_format = "json" or output_format = c("field1", "field2")'
+  )
 
   # agent: NULL or asa_agent
   if (!is.null(agent)) {
@@ -444,31 +519,11 @@
     .validate_string(thread_id, "thread_id")
   }
 
-  # expected_schema: NULL, nested list, or Python object (dict/list)
-  if (!is.null(expected_schema)) {
-    is_py <- FALSE
-    try({
-      is_py <- reticulate::is_py_object(expected_schema)
-    }, silent = TRUE)
-
-    is_list_schema <- is.list(expected_schema) && !is.data.frame(expected_schema)
-    if (!is_py && !is_list_schema) {
-      .stop_validation(
-        "expected_schema",
-        "be a nested list (or Python dict/list) describing the required JSON shape",
-        actual = expected_schema,
-        fix = "Pass a nested list schema (e.g., list(status=\"complete|partial\", items=list(list(name=\"string\")))) or set expected_schema = NULL"
-      )
-    }
-    if (is_list_schema && length(expected_schema) == 0) {
-      .stop_validation(
-        "expected_schema",
-        "not be an empty list",
-        actual = expected_schema,
-        fix = "Provide at least one key/element in the schema, or set expected_schema = NULL"
-      )
-    }
-  }
+  .validate_expected_schema(
+    expected_schema,
+    allow_empty_list = FALSE,
+    invalid_fix = "Pass a nested list schema (e.g., list(status=\"complete|partial\", items=list(list(name=\"string\")))) or set expected_schema = NULL"
+  )
 
   .validate_recursion_limit(recursion_limit, "recursion_limit")
 
@@ -525,19 +580,7 @@
     .validate_string_vector(prompts, "prompts")
   }
 
-  # output_format validation (same as run_task)
-  if (is.character(output_format)) {
-    if (length(output_format) == 1) {
-      .validate_choice(output_format, "output_format", c("text", "json", "raw"))
-    }
-  } else {
-    .stop_validation(
-      "output_format",
-      'be "text", "json", "raw", or a character vector of field names',
-      actual = output_format,
-      fix = 'Use output_format = "json"'
-    )
-  }
+  .validate_output_format(output_format)
 
   if (!is.null(agent)) {
     .validate_s3_class(agent, "agent", "asa_agent")
@@ -561,22 +604,7 @@
 
   .validate_recursion_limit(recursion_limit, "recursion_limit")
 
-  if (!is.null(expected_schema)) {
-    is_py <- FALSE
-    try({
-      is_py <- reticulate::is_py_object(expected_schema)
-    }, silent = TRUE)
-
-    is_list_schema <- is.list(expected_schema) && !is.data.frame(expected_schema)
-    if (!is_py && !is_list_schema) {
-      .stop_validation(
-        "expected_schema",
-        "be a nested list (or Python dict/list) describing the required JSON shape",
-        actual = expected_schema,
-        fix = "Pass a nested list schema or set expected_schema = NULL"
-      )
-    }
-  }
+  .validate_expected_schema(expected_schema)
 
   .validate_logical(verbose, "verbose")
 

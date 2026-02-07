@@ -147,6 +147,43 @@ asa_test_import_module <- function(module_name,
   reticulate::import_from_path(module_name, path = python_path)
 }
 
+ASA_TEST_DATE_EXTRACTOR_MODULES <- c("bs4", "requests")
+ASA_TEST_LANGCHAIN_CORE_MODULES <- c("langchain_core", "pydantic", "requests")
+ASA_TEST_LANGGRAPH_CORE_MODULES <- c("langchain_core", "langgraph", "pydantic", "requests")
+ASA_TEST_LANGGRAPH_MODULES <- c(
+  "langchain_core",
+  "langgraph",
+  "langgraph.prebuilt",
+  "pydantic",
+  "requests"
+)
+
+asa_test_date_extractor <- function() {
+  asa_test_import_module(
+    "date_extractor",
+    required_modules = ASA_TEST_DATE_EXTRACTOR_MODULES
+  )
+}
+
+asa_test_require_langgraph_stack <- function(
+    modules = ASA_TEST_LANGGRAPH_MODULES,
+    method = "import"
+) {
+  asa_test_skip_if_missing_python_modules(modules, method = method)
+  invisible(TRUE)
+}
+
+asa_test_import_research_graph <- function(
+    required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES
+) {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "research_graph.py",
+    initialize = FALSE
+  )
+  asa_test_require_langgraph_stack(required_modules)
+  reticulate::import_from_path("research_graph", path = python_path)
+}
+
 # ---------------------------------------------------------------------------
 # API key skip helpers (reduce 5-10 line boilerplate per test file)
 # ---------------------------------------------------------------------------

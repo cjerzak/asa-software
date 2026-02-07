@@ -2,7 +2,7 @@
 # Tests for temporal filtering functionality across Python modules and R interface
 
 .get_date_extractor <- function() {
-  asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  asa_test_date_extractor()
 }
 
 .mock_article_html <- '
@@ -26,9 +26,7 @@
 }
 
 .get_research_graph_module <- function() {
-  python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "langgraph", "pydantic", "requests"))
-  reticulate::import_from_path("research_graph", path = python_path)
+  asa_test_import_research_graph(required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES)
 }
 
 .create_stopper <- function(target_items = NULL, plateau_rounds = 2L, novelty_min = 0.1) {
@@ -212,7 +210,7 @@ test_that(".create_research_config defaults use_wayback to FALSE", {
 # ============================================================================
 
 test_that("_parse_date_string handles ISO 8601 formats", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   # ISO 8601 with Z suffix
   expect_equal(date_extractor$`_parse_date_string`("2024-01-15T10:30:00Z"), "2024-01-15")
@@ -225,7 +223,7 @@ test_that("_parse_date_string handles ISO 8601 formats", {
 })
 
 test_that("_parse_date_string handles human-readable formats", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   # Full month name
   expect_equal(date_extractor$`_parse_date_string`("January 15, 2024"), "2024-01-15")
@@ -238,7 +236,7 @@ test_that("_parse_date_string handles human-readable formats", {
 })
 
 test_that("_parse_date_string handles edge cases", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   # Empty string
   result <- date_extractor$`_parse_date_string`("")
@@ -254,7 +252,7 @@ test_that("_parse_date_string handles edge cases", {
 })
 
 test_that("_extract_from_url extracts dates from URL patterns", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   # YYYY/MM/DD pattern
   result <- date_extractor$`_extract_from_url`("https://example.com/2024/01/15/article")
@@ -273,7 +271,7 @@ test_that("_extract_from_url extracts dates from URL patterns", {
 })
 
 test_that("_extract_from_url handles ISO date pattern in URL", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   result <- date_extractor$`_extract_from_url`("https://example.com/post-2024-01-15-title")
   expect_true(length(result) > 0)
@@ -281,7 +279,7 @@ test_that("_extract_from_url handles ISO date pattern in URL", {
 })
 
 test_that("_extract_from_url handles boundary dates", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   # Leap year February 29 (valid)
   result <- date_extractor$`_extract_from_url`("https://example.com/2024/02/29/leap")
@@ -336,7 +334,7 @@ test_that("verify_date_constraint validates before constraint", {
 })
 
 test_that("verify_date_constraint handles no date found", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   mock_html <- '<html><body><p>No date here</p></body></html>'
 
@@ -352,7 +350,7 @@ test_that("verify_date_constraint handles no date found", {
 })
 
 test_that("_extract_from_json_ld extracts datePublished", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
   bs4 <- reticulate::import("bs4")
 
   html <- '
@@ -374,7 +372,7 @@ test_that("_extract_from_json_ld extracts datePublished", {
 })
 
 test_that("_extract_from_meta_tags extracts article:published_time", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
   bs4 <- reticulate::import("bs4")
 
   html <- '
@@ -393,7 +391,7 @@ test_that("_extract_from_meta_tags extracts article:published_time", {
 })
 
 test_that("DateExtractionConfig has correct defaults", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   config <- date_extractor$DateExtractionConfig()
 
@@ -403,7 +401,7 @@ test_that("DateExtractionConfig has correct defaults", {
 })
 
 test_that("filter_results_by_date handles empty list", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   result <- date_extractor$filter_results_by_date(
     results = list(),
@@ -422,7 +420,7 @@ test_that("filter_results_by_date handles empty list", {
 
 test_that("_build_temporal_filter generates correct SPARQL", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wikidata <- reticulate::import_from_path("wikidata_tool", path = python_path)
 
   # No dates - empty filter
@@ -448,7 +446,7 @@ test_that("_build_temporal_filter generates correct SPARQL", {
 
 test_that("_inject_temporal_filter modifies query correctly", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wikidata <- reticulate::import_from_path("wikidata_tool", path = python_path)
 
   sample_query <- '
@@ -470,7 +468,7 @@ test_that("_inject_temporal_filter modifies query correctly", {
 
 test_that("WikidataSearchTool._parse_temporal_from_query parses dates", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wikidata <- reticulate::import_from_path("wikidata_tool", path = python_path)
 
   tool <- wikidata$WikidataSearchTool()
@@ -491,7 +489,7 @@ test_that("WikidataSearchTool._parse_temporal_from_query parses dates", {
 
 test_that("create_wikidata_tool accepts temporal parameters", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wikidata <- reticulate::import_from_path("wikidata_tool", path = python_path)
 
   tool <- wikidata$create_wikidata_tool(
@@ -505,7 +503,7 @@ test_that("create_wikidata_tool accepts temporal parameters", {
 
 test_that("create_wikidata_tool handles NULL temporal parameters", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wikidata <- reticulate::import_from_path("wikidata_tool", path = python_path)
 
   tool <- wikidata$create_wikidata_tool()
@@ -516,7 +514,7 @@ test_that("create_wikidata_tool handles NULL temporal parameters", {
 
 test_that("WikidataConfig has correct defaults", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wikidata <- reticulate::import_from_path("wikidata_tool", path = python_path)
 
   config <- wikidata$WikidataConfig()
@@ -533,7 +531,7 @@ test_that("WikidataConfig has correct defaults", {
 
 test_that("WaybackSearchTool._parse_query extracts URL and dates", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wayback <- reticulate::import_from_path("wayback_tool", path = python_path)
 
   tool <- wayback$WaybackSearchTool()
@@ -557,7 +555,7 @@ test_that("WaybackSearchTool._parse_query extracts URL and dates", {
 
 test_that("WaybackSearchTool._parse_query handles URL without prefix", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wayback <- reticulate::import_from_path("wayback_tool", path = python_path)
 
   tool <- wayback$WaybackSearchTool()
@@ -569,7 +567,7 @@ test_that("WaybackSearchTool._parse_query handles URL without prefix", {
 
 test_that("WaybackConfig has correct defaults", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wayback <- reticulate::import_from_path("wayback_tool", path = python_path)
 
   config <- wayback$WaybackConfig()
@@ -583,7 +581,7 @@ test_that("WaybackConfig has correct defaults", {
 
 test_that("create_wayback_tool returns configured tool", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wayback <- reticulate::import_from_path("wayback_tool", path = python_path)
 
   custom_config <- wayback$WaybackConfig(timeout = 60.0, max_results = 50L)
@@ -596,7 +594,7 @@ test_that("create_wayback_tool returns configured tool", {
 
 test_that("create_wayback_tool uses default config when not specified", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wayback <- reticulate::import_from_path("wayback_tool", path = python_path)
 
   tool <- wayback$create_wayback_tool()
@@ -611,7 +609,7 @@ test_that("create_wayback_tool uses default config when not specified", {
 
 test_that("ResearchConfig has temporal field defaults", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "langgraph", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_CORE_MODULES)
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
   config <- research$ResearchConfig()
@@ -625,7 +623,7 @@ test_that("ResearchConfig has temporal field defaults", {
 
 test_that("ResearchConfig accepts temporal parameters", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "langgraph", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_CORE_MODULES)
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
   config <- research$ResearchConfig(
@@ -645,7 +643,7 @@ test_that("ResearchConfig accepts temporal parameters", {
 
 test_that("ResearchConfig accepts all valid time_filter values", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "langgraph", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_CORE_MODULES)
   research <- reticulate::import_from_path("research_graph", path = python_path)
 
   for (filter in c("d", "w", "m", "y")) {
@@ -707,7 +705,7 @@ test_that("stopper continues when novelty remains above threshold", {
 # ============================================================================
 
 test_that("ExtractedDate dataclass works correctly", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   extracted <- date_extractor$ExtractedDate(
     date = "2023-06-15",
@@ -727,7 +725,7 @@ test_that("ExtractedDate dataclass works correctly", {
 # ============================================================================
 
 test_that("Date parsing handles ambiguous MM/DD vs DD/MM formats", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   # Unambiguous MM/DD/YYYY (month > 12 impossible as day)
   result <- date_extractor$`_parse_date_string`("01/15/2024")
@@ -750,7 +748,7 @@ test_that("Date parsing handles ambiguous MM/DD vs DD/MM formats", {
 
 test_that("SPARQL filter injection preserves query structure", {
   python_path <- asa_test_skip_if_no_python(required_files = "date_extractor.py", initialize = FALSE)
-  asa_test_skip_if_missing_python_modules(c("langchain_core", "pydantic", "requests"))
+  asa_test_require_langgraph_stack(ASA_TEST_LANGCHAIN_CORE_MODULES)
   wikidata <- reticulate::import_from_path("wikidata_tool", path = python_path)
 
   query_with_service <- '
@@ -773,7 +771,7 @@ test_that("SPARQL filter injection preserves query structure", {
 })
 
 test_that("URL extraction handles edge cases in paths", {
-  date_extractor <- asa_test_import_module("date_extractor", required_modules = c("bs4", "requests"))
+  date_extractor <- asa_test_date_extractor()
 
   # Date at end of URL
   result <- date_extractor$`_extract_from_url`("https://example.com/news/2024/06/15")

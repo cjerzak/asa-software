@@ -14,7 +14,7 @@ from pydantic import Field
 
 from config_base import BaseNetworkConfig
 from state_utils import parse_date_filters
-from http_utils import make_request, DEFAULT_USER_AGENT
+from http_utils import request_json
 
 logger = logging.getLogger(__name__)
 
@@ -297,7 +297,7 @@ def execute_sparql_query(
 
     logger.info("Executing Wikidata SPARQL query")
 
-    response = make_request(
+    results = request_json(
         url=WIKIDATA_SPARQL_ENDPOINT,
         method="GET",
         params={"query": query, "format": "json"},
@@ -306,8 +306,6 @@ def execute_sparql_query(
         max_retries=config.retry_count,
         retry_delay=config.retry_delay,
     )
-
-    results = response.json()
     parsed = _parse_sparql_results(results)
     logger.info(f"Wikidata query returned {len(parsed)} results")
     return parsed

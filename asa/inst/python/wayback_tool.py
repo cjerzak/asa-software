@@ -15,7 +15,7 @@ from pydantic import Field
 
 from config_base import BaseNetworkConfig
 from state_utils import parse_date_filters
-from http_utils import make_request
+from http_utils import request_json, request_text
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ def check_availability(
         params["timestamp"] = timestamp
 
     try:
-        response = make_request(
+        data = request_json(
             url=WAYBACK_AVAILABILITY_ENDPOINT,
             params=params,
             timeout=config.timeout,
@@ -72,8 +72,6 @@ def check_availability(
             retry_delay=config.retry_delay,
             user_agent=DEFAULT_USER_AGENT,
         )
-
-        data = response.json()
         archived = data.get("archived_snapshots", {})
         closest = archived.get("closest")
 
@@ -128,7 +126,7 @@ def search_cdx(
         params["to"] = to_date
 
     try:
-        response = make_request(
+        data = request_json(
             url=WAYBACK_CDX_ENDPOINT,
             params=params,
             timeout=config.timeout,
@@ -136,8 +134,6 @@ def search_cdx(
             retry_delay=config.retry_delay,
             user_agent=DEFAULT_USER_AGENT,
         )
-
-        data = response.json()
 
         # First row is headers if results exist
         if not data or len(data) < 2:
@@ -188,14 +184,13 @@ def get_snapshot_content(
     config = config or WaybackConfig()
 
     try:
-        response = make_request(
+        return request_text(
             url=wayback_url,
             timeout=config.timeout,
             max_retries=config.retry_count,
             retry_delay=config.retry_delay,
             user_agent=DEFAULT_USER_AGENT,
         )
-        return response.text
 
     except requests.RequestException as e:
         logger.warning(f"Failed to fetch Wayback content from {wayback_url}: {e}")

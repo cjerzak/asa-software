@@ -195,9 +195,7 @@ asa_enumerate <- function(query,
                          conda_env = NULL,
                          verbose = TRUE) {
 
-  if (!is.null(config) && !inherits(config, "asa_config")) {
-    stop("`config` must be an asa_config object or NULL", call. = FALSE)
-  }
+  .validate_asa_config(config)
 
   runtime_inputs <- .resolve_runtime_inputs(
     config,
