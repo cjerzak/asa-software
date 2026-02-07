@@ -5085,7 +5085,8 @@ def create_memory_folding_agent(
 
     # Create save_finding tool and combine with user-provided tools
     save_finding = _make_save_finding_tool()
-    tools_with_scratchpad = list(tools) + [save_finding]
+    primary_tools = list(tools)
+    tools_with_scratchpad = primary_tools + [save_finding]
 
     # Bind tools to model for the agent node
     model_with_tools = model.bind_tools(tools_with_scratchpad)
@@ -5140,6 +5141,116 @@ def create_memory_folding_agent(
             return [system_msg] + msgs
         except Exception:
             return [system_msg] + list(messages)
+
+    user_tool_names: List[str] = []
+    for t in primary_tools:
+        try:
+            tool_name = getattr(t, "name", None)
+            if isinstance(tool_name, str) and tool_name.strip():
+                user_tool_names.append(tool_name.strip())
+        except Exception:
+            continue
+
+    def _extract_required_tool_plan(messages: list) -> Dict[str, Any]:
+        """Infer explicit user mandates like "use Tool X across N steps"."""
+        prompt = _extract_last_user_prompt(messages)
+        if not prompt:
+            return {"required_calls": 0, "tool_names": []}
+        prompt_lower = prompt.lower()
+        mentioned_tools = [
+            name for name in user_tool_names
+            if isinstance(name, str) and name and name.lower() in prompt_lower
+        ]
+        if not mentioned_tools:
+            return {"required_calls": 0, "tool_names": []}
+
+        has_step_language = "step" in prompt_lower
+        has_mandate = (
+            ("must" in prompt_lower)
+            or ("required" in prompt_lower)
+            or ("at each step" in prompt_lower)
+            or ("step plan" in prompt_lower)
+        )
+        if not (has_step_language and has_mandate):
+            return {"required_calls": 0, "tool_names": []}
+
+        step_matches = re.findall(r"step[_\s-]*(\d+)", prompt_lower)
+        required_calls = max((int(m) for m in step_matches), default=0)
+        if required_calls <= 0:
+            step_count_match = re.search(r"\b(\d+)\s*[- ]?step\b", prompt_lower)
+            if step_count_match:
+                required_calls = int(step_count_match.group(1))
+
+        for name in mentioned_tools:
+            call_pat = rf"call\s+{re.escape(name.lower())}\b"
+            required_calls = max(required_calls, len(re.findall(call_pat, prompt_lower)))
+
+        required_calls = max(0, min(int(required_calls), 200))
+        if required_calls <= 0:
+            return {"required_calls": 0, "tool_names": []}
+        return {"required_calls": required_calls, "tool_names": mentioned_tools}
+
+    def _count_completed_user_tool_calls(messages: list, allowed_tool_names: Optional[set] = None) -> int:
+        """Count completed (ToolMessage) calls for user-provided tools."""
+        allowed = set()
+        if allowed_tool_names:
+            allowed = {
+                str(name).strip().lower()
+                for name in allowed_tool_names
+                if isinstance(name, str) and name.strip()
+            }
+
+        completed = 0
+        for msg in list(messages or []):
+            if not _message_is_tool(msg):
+                continue
+            tool_name = None
+            if isinstance(msg, dict):
+                tool_name = msg.get("name") or msg.get("tool_name")
+            else:
+                tool_name = getattr(msg, "name", None)
+            tool_name_norm = str(tool_name).strip().lower() if tool_name is not None else ""
+            if tool_name_norm == "save_finding":
+                continue
+            if allowed and tool_name_norm and tool_name_norm not in allowed:
+                continue
+            completed += 1
+        return completed
+
+    def _is_tool_choice_unsupported_error(exc: Exception) -> bool:
+        msg = str(exc or "").lower()
+        return any(token in msg for token in (
+            "tool_choice",
+            "unexpected keyword argument",
+            "unsupported",
+            "not implemented",
+            "invalid argument",
+            "invalid value",
+            "must be one of",
+        ))
+
+    def _invoke_with_required_user_tools(full_messages: list, preferred_tool_names: list) -> Any:
+        """Best-effort force of user-requested tool calls; falls back safely."""
+        tool_choice_attempts: List[Any] = []
+        for preferred in preferred_tool_names or []:
+            if isinstance(preferred, str) and preferred.strip():
+                tool_choice_attempts.append(preferred.strip())
+        tool_choice_attempts.extend(["required", "any"])
+
+        seen = set()
+        for tool_choice in tool_choice_attempts:
+            if tool_choice in seen:
+                continue
+            seen.add(tool_choice)
+            try:
+                forced_model = model.bind_tools(primary_tools, tool_choice=tool_choice)
+                return forced_model.invoke(full_messages)
+            except Exception as exc:
+                if not _is_tool_choice_unsupported_error(exc):
+                    raise
+
+        # Provider/runtime did not accept tool_choice forcing; use default binding.
+        return model_with_tools.invoke(full_messages)
 
     def agent_node(state: MemoryFoldingAgentState) -> dict:
         """The main agent reasoning node."""
@@ -5205,8 +5316,29 @@ def create_memory_folding_agent(
                 budget_state=budget_state,
             ))
             full_messages = _build_full_messages(system_msg, messages, summary, archive)
+            required_tool_plan = _extract_required_tool_plan(messages)
+            required_tool_calls = int(required_tool_plan.get("required_calls", 0) or 0)
+            completed_tool_calls = _count_completed_user_tool_calls(
+                messages,
+                set(required_tool_plan.get("tool_names", [])),
+            )
+            force_required_tools = required_tool_calls > 0 and completed_tool_calls < required_tool_calls
+            if debug and force_required_tools:
+                logger.info(
+                    "Enforcing tool-call mandate: completed=%s required=%s tools=%s",
+                    completed_tool_calls,
+                    required_tool_calls,
+                    required_tool_plan.get("tool_names", []),
+                )
+            if force_required_tools:
+                invoke_callable = lambda: _invoke_with_required_user_tools(
+                    full_messages,
+                    required_tool_plan.get("tool_names", []),
+                )
+            else:
+                invoke_callable = lambda: model_with_tools.invoke(full_messages)
             response, invoke_event = _invoke_model_with_fallback(
-                lambda: model_with_tools.invoke(full_messages),
+                invoke_callable,
                 expected_schema=expected_schema,
                 field_status=field_status,
                 schema_source=expected_schema_source,
@@ -5421,6 +5553,32 @@ def create_memory_folding_agent(
                 i = end + 1
 
             if len(exchanges) <= keep_recent_exchanges:
+                # A single user exchange can still contain many completed tool rounds.
+                # Fall back to round boundaries so we can fold older rounds instead of
+                # keeping the entire transcript forever.
+                if n <= 1:
+                    return n
+
+                completion_boundaries: List[int] = []
+                for idx, msg in enumerate(messages):
+                    msg_type = type(msg).__name__
+                    if msg_type == "AIMessage":
+                        tool_calls = getattr(msg, "tool_calls", None)
+                        if not tool_calls:
+                            completion_boundaries.append(idx + 1)
+                    elif msg_type == "ToolMessage":
+                        next_type = type(messages[idx + 1]).__name__ if (idx + 1) < n else ""
+                        if next_type != "ToolMessage":
+                            completion_boundaries.append(idx + 1)
+
+                if completion_boundaries:
+                    keep_units = max(1, int(keep_recent_exchanges))
+                    if len(completion_boundaries) >= keep_units:
+                        boundary_idx = completion_boundaries[-keep_units]
+                    else:
+                        boundary_idx = completion_boundaries[0]
+                    boundary_idx = min(max(0, int(boundary_idx)), n - 1)
+                    return max(1, n - boundary_idx)
                 return n
 
             boundary_idx = exchanges[-keep_recent_exchanges][0]
