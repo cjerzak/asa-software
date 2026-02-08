@@ -132,7 +132,7 @@ test_that("as.data.frame.asa_result works", {
   expect_equal(df$age, "30")
 })
 
-test_that("asa_result stores execution metadata", {
+test_that("asa_result stores execution metadata and token_stats", {
   result <- asa_result(
     prompt = "Test query",
     message = "Test answer",
@@ -147,14 +147,20 @@ test_that("asa_result stores execution metadata", {
       tool_calls_used = 2L,
       tool_calls_limit = 5L,
       tool_calls_remaining = 3L,
-      fold_count = 1L,
-      tokens_used = 2500L
+      fold_count = 1L
     )
+  )
+  result$token_stats <- list(
+    tokens_used = 2500L,
+    input_tokens = 1700L,
+    output_tokens = 800L,
+    fold_tokens = 0L,
+    token_trace = list()
   )
 
   expect_equal(result$execution$thread_id, "thread-123")
   expect_equal(result$execution$tool_calls_used, 2L)
-  expect_equal(result$execution$tokens_used, 2500L)
+  expect_equal(result$token_stats$tokens_used, 2500L)
 
   df <- as.data.frame(result)
   expect_equal(df$thread_id, "thread-123")
@@ -209,7 +215,14 @@ test_that("print.asa_result shows tokens when present", {
   result <- asa_result(
     prompt = "p", message = "m", parsed = NULL, raw_output = "",
     elapsed_time = 1.0, status = "success",
-    execution = list(tokens_used = 5678L)
+    execution = list()
+  )
+  result$token_stats <- list(
+    tokens_used = 5678L,
+    input_tokens = 4000L,
+    output_tokens = 1678L,
+    fold_tokens = 0L,
+    token_trace = list()
   )
   output <- capture.output(print(result))
   expect_true(any(grepl("Tokens:", output)))

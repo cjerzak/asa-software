@@ -7,7 +7,7 @@
 build_backend(
   conda_env = NULL,
   conda = "auto",
-  python_version = "3.14",
+  python_version = "3.12",
   force = FALSE,
   check_browser = TRUE,
   fix_browser = FALSE,
@@ -20,7 +20,7 @@ option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 
 \item{conda}{Path to conda executable (default: "auto")}
 
-\item{python_version}{Python version to use (default: "3.14")}
+\item{python_version}{Python version to use (default: "3.12")}
 
 \item{force}{If TRUE, delete and recreate the conda environment if it already exists.}
 
@@ -56,6 +56,11 @@ Python packages:
   \item stem (Tor control)
   \item pysocks, socksio (proxy support)
 }
+
+Python compatibility note:
+Current LangChain releases still import parts of \code{pydantic.v1}, which emits
+warnings on Python 3.14+. Prefer Python 3.12 (or 3.13) until upstream
+dependencies remove that compatibility layer.
 }
 \examples{
 \dontrun{

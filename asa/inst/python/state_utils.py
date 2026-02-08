@@ -740,6 +740,81 @@ def repair_json_output_to_required_schema(output_text: str, prompt: str) -> Opti
     return repair_json_output_to_schema(output_text, schema, fallback_on_failure=False)
 
 
+def _coerce_token_int(value: Any) -> Optional[int]:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        try:
+            return max(0, int(value))
+        except Exception:
+            return None
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return None
+        try:
+            return max(0, int(float(text)))
+        except Exception:
+            return None
+    return None
+
+
+def _usage_from_mapping(payload: Any) -> Optional[Dict[str, int]]:
+    if not isinstance(payload, dict):
+        return None
+
+    input_keys = (
+        "input_tokens",
+        "prompt_tokens",
+        "inputTokenCount",
+        "promptTokenCount",
+        "input_token_count",
+        "prompt_token_count",
+        "prompt_eval_count",
+    )
+    output_keys = (
+        "output_tokens",
+        "completion_tokens",
+        "outputTokenCount",
+        "candidatesTokenCount",
+        "output_token_count",
+        "completion_token_count",
+        "eval_count",
+    )
+    total_keys = (
+        "total_tokens",
+        "totalTokenCount",
+        "total_token_count",
+        "totalTokens",
+    )
+
+    def _first(keys: Tuple[str, ...]) -> Tuple[Optional[int], bool]:
+        for key in keys:
+            if key in payload:
+                return _coerce_token_int(payload.get(key)), True
+        return None, False
+
+    inp, has_inp = _first(input_keys)
+    out, has_out = _first(output_keys)
+    total, has_total = _first(total_keys)
+
+    if not (has_inp or has_out or has_total):
+        return None
+
+    if total is None and inp is not None and out is not None:
+        total = inp + out
+    if inp is None and total is not None and out is not None:
+        inp = max(0, total - out)
+    if out is None and total is not None and inp is not None:
+        out = max(0, total - inp)
+
+    inp = 0 if inp is None else inp
+    out = 0 if out is None else out
+    total = (inp + out) if total is None else total
+
+    return {"input_tokens": inp, "output_tokens": out, "total_tokens": total}
+
+
 def _token_usage_dict_from_message(message: Any) -> Dict[str, int]:
     """Best-effort extraction of token usage breakdown from LangChain message objects.
 
@@ -750,33 +825,49 @@ def _token_usage_dict_from_message(message: Any) -> Dict[str, int]:
     if message is None:
         return zero
 
-    # Newer LangChain: AIMessage.usage_metadata = {"input_tokens":..., "output_tokens":..., "total_tokens":...}
-    usage = getattr(message, "usage_metadata", None)
-    if isinstance(usage, dict):
-        inp = usage.get("input_tokens")
-        out = usage.get("output_tokens")
-        total = usage.get("total_tokens")
-        if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
-            inp, out = int(inp), int(out)
-            total = int(total) if isinstance(total, (int, float)) else inp + out
-            return {"input_tokens": inp, "output_tokens": out, "total_tokens": total}
-        if isinstance(total, (int, float)):
-            return {"input_tokens": 0, "output_tokens": 0, "total_tokens": int(total)}
+    candidates: List[dict] = []
+    seen_ids = set()
 
-    # Some providers: response_metadata contains usage/token_usage
-    resp_meta = getattr(message, "response_metadata", None)
-    if isinstance(resp_meta, dict):
-        token_usage = resp_meta.get("token_usage") or resp_meta.get("usage") or {}
-        if isinstance(token_usage, dict):
-            inp = token_usage.get("prompt_tokens")
-            out = token_usage.get("completion_tokens")
-            total = token_usage.get("total_tokens")
-            if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
-                inp, out = int(inp), int(out)
-                total = int(total) if isinstance(total, (int, float)) else inp + out
-                return {"input_tokens": inp, "output_tokens": out, "total_tokens": total}
-            if isinstance(total, (int, float)):
-                return {"input_tokens": 0, "output_tokens": 0, "total_tokens": int(total)}
+    def _push(candidate: Any) -> None:
+        if not isinstance(candidate, dict):
+            return
+        cid = id(candidate)
+        if cid in seen_ids:
+            return
+        seen_ids.add(cid)
+        candidates.append(candidate)
+
+    if isinstance(message, dict):
+        _push(message)
+
+    _push(getattr(message, "usage_metadata", None))
+    _push(getattr(message, "usage", None))
+    _push(getattr(message, "token_usage", None))
+
+    response_metadata = getattr(message, "response_metadata", None)
+    _push(response_metadata)
+    if isinstance(response_metadata, dict):
+        _push(response_metadata.get("usage_metadata"))
+        _push(response_metadata.get("token_usage"))
+        _push(response_metadata.get("usage"))
+
+    additional_kwargs = getattr(message, "additional_kwargs", None)
+    _push(additional_kwargs)
+    if isinstance(additional_kwargs, dict):
+        _push(additional_kwargs.get("usage_metadata"))
+        _push(additional_kwargs.get("token_usage"))
+        _push(additional_kwargs.get("usage"))
+        nested_response_meta = additional_kwargs.get("response_metadata")
+        _push(nested_response_meta)
+        if isinstance(nested_response_meta, dict):
+            _push(nested_response_meta.get("usage_metadata"))
+            _push(nested_response_meta.get("token_usage"))
+            _push(nested_response_meta.get("usage"))
+
+    for candidate in candidates:
+        parsed = _usage_from_mapping(candidate)
+        if parsed is not None:
+            return parsed
 
     return zero
 

@@ -770,13 +770,13 @@
   }
 
   .validate_string(python_version, "python_version")
-  # Validate python version format (e.g., "3.14", "3.13")
+  # Validate python version format (e.g., "3.12", "3.13")
   if (!grepl("^\\d+\\.\\d+$", python_version)) {
     .stop_validation(
       "python_version",
-      'be in format "X.Y" (e.g., "3.14", "3.13")',
+      'be in format "X.Y" (e.g., "3.12", "3.13")',
       actual = python_version,
-      fix = 'Use format like python_version = "3.14"'
+      fix = 'Use format like python_version = "3.12"'
     )
   }
 

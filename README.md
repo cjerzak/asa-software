@@ -642,7 +642,7 @@ Sys.setenv(OPENAI_API_KEY = "sk-...")
 **Python environment issues?**
 ```r
 # Rebuild the conda environment
-asa::build_backend(conda_env = "asa_env", force = TRUE)
+asa::build_backend(conda_env = "asa_env", python_version = "3.12", force = TRUE)
 ```
 
 **Cost considerations:**
@@ -668,7 +668,7 @@ See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
 ## Requirements
 
 - R >= 4.0
-- Python >= 3.14 (managed via conda)
+- Python 3.12 or 3.13 (managed via conda; 3.14 currently emits upstream `pydantic.v1` warnings in LangChain)
 - reticulate, jsonlite, rlang
 
 **Optional:**

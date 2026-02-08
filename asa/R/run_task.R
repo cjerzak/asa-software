@@ -331,7 +331,6 @@ run_task <- function(prompt,
     tool_calls_limit = tool_calls_limit,
     tool_calls_remaining = tool_calls_remaining,
     fold_count = fold_count,
-    tokens_used = tokens_used,
     fold_stats = response$fold_stats %||% list(),
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
@@ -355,7 +354,6 @@ run_task <- function(prompt,
   # Top-level aliases for backward compat; canonical location is $execution
   result$fold_stats <- response$fold_stats %||% list()
   result$status_code <- response$status_code %||% NA_integer_
-  result$tokens_used <- execution$tokens_used
   result$token_stats <- token_stats
 
   # For "raw" format, add additional fields for debugging
@@ -820,6 +818,10 @@ run_task_batch <- function(prompts,
     prompts$elapsed_time <- vapply(results, function(r) r$elapsed_time %||% NA_real_, numeric(1))
     prompts$search_tier <- vapply(results, function(r) r$search_tier %||% "unknown", character(1))
     prompts$tokens_used <- vapply(results, function(r) {
+      ts <- r$token_stats
+      if (!is.null(ts) && !is.null(ts$tokens_used)) {
+        return(.as_scalar_int(ts$tokens_used) %||% NA_integer_)
+      }
       .as_scalar_int(r$execution$tokens_used) %||% NA_integer_
     }, integer(1))
 

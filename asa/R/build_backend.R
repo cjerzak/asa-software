@@ -6,7 +6,7 @@
 #' @param conda_env Name of the conda environment. Defaults to the package
 #'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #' @param conda Path to conda executable (default: "auto")
-#' @param python_version Python version to use (default: "3.14")
+#' @param python_version Python version to use (default: "3.12")
 #' @param force If TRUE, delete and recreate the conda environment if it already exists.
 #' @param check_browser If TRUE, performs a best-effort check for a system Chrome/Chromium
 #'   binary and `chromedriver`, warning when major versions are incompatible. Set to
@@ -33,6 +33,11 @@
 #'   \item pysocks, socksio (proxy support)
 #' }
 #'
+#' Python compatibility note:
+#' Current LangChain releases still import parts of `pydantic.v1`, which emits
+#' warnings on Python 3.14+. Prefer Python 3.12 (or 3.13) until upstream
+#' dependencies remove that compatibility layer.
+#'
 #' @return Invisibly returns NULL; called for side effects.
 #'
 #' @examples
@@ -50,7 +55,7 @@
 #' @export
 build_backend <- function(conda_env = NULL,
                           conda = "auto",
-                          python_version = "3.14",
+                          python_version = "3.12",
                           force = FALSE,
                           check_browser = TRUE,
                           fix_browser = FALSE,
@@ -71,6 +76,22 @@ build_backend <- function(conda_env = NULL,
     python_version = python_version,
     force = force
   )
+
+  # Upstream LangChain modules still hit pydantic.v1 compatibility paths.
+  # On Python 3.14+, pydantic emits a warning for this path.
+  version_parts <- suppressWarnings(as.integer(strsplit(python_version, ".", fixed = TRUE)[[1]]))
+  if (length(version_parts) == 2 && !any(is.na(version_parts))) {
+    is_python_314_plus <- (version_parts[1] > 3L) || (version_parts[1] == 3L && version_parts[2] >= 14L)
+    if (is_python_314_plus) {
+      warning(
+        paste0(
+          "Python 3.14+ currently triggers upstream LangChain/Pydantic V1 compatibility warnings. ",
+          "Prefer python_version = \"3.12\" (or \"3.13\") until upstream migration is complete."
+        ),
+        call. = FALSE
+      )
+    }
+  }
 
   msg <- function(...) message(sprintf(...))
 

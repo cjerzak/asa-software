@@ -962,7 +962,10 @@ summary.asa_result <- function(object, ...) {
   cat("Status: ", object$status, "\n", sep = "")
   cat("Time: ", format_duration(object$elapsed_time), "\n", sep = "")
   cat("Response length: ", nchar(object$message %||% ""), " chars\n", sep = "")
-  tok <- .as_scalar_int(object$execution$tokens_used)
+  tok <- .as_scalar_int(object$token_stats$tokens_used)
+  if (is.na(tok)) {
+    tok <- .as_scalar_int(object$execution$tokens_used)
+  }
   if (!is.na(tok) && tok > 0L) {
     cat("Tokens: ", tok, "\n", sep = "")
   }
@@ -990,7 +993,7 @@ summary.asa_result <- function(object, ...) {
     tool_calls_used = object$execution$tool_calls_used %||% NA_integer_,
     tool_calls_limit = object$execution$tool_calls_limit %||% NA_integer_,
     tool_calls_remaining = object$execution$tool_calls_remaining %||% NA_integer_,
-    tokens_used = object$execution$tokens_used %||% NA_integer_
+    tokens_used = tok %||% NA_integer_
   ))
 }
 
@@ -1004,6 +1007,10 @@ summary.asa_result <- function(object, ...) {
 #' @method as.data.frame asa_result
 #' @export
 as.data.frame.asa_result <- function(x, ...) {
+  tokens_used <- .as_scalar_int(x$token_stats$tokens_used)
+  if (is.na(tokens_used)) {
+    tokens_used <- .as_scalar_int(x$execution$tokens_used)
+  }
   df <- data.frame(
     prompt = x$prompt,
     message = x$message %||% NA_character_,
@@ -1016,7 +1023,7 @@ as.data.frame.asa_result <- function(x, ...) {
     tool_calls_limit = x$execution$tool_calls_limit %||% NA_integer_,
     tool_calls_remaining = x$execution$tool_calls_remaining %||% NA_integer_,
     fold_count = x$execution$fold_count %||% NA_integer_,
-    tokens_used = x$execution$tokens_used %||% NA_integer_,
+    tokens_used = tokens_used %||% NA_integer_,
     stringsAsFactors = FALSE
   )
 

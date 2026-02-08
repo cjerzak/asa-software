@@ -52,7 +52,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          python-version: '3.14'
+          python-version: '3.12'
           miniforge-version: latest
           activate-environment: asa_env
 
