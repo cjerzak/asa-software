@@ -2993,6 +2993,7 @@ from typing import Annotated, TypedDict, Sequence
 from operator import add as operator_add
 from langgraph.managed import RemainingSteps
 from state_utils import (
+    _token_usage_dict_from_message,
     _token_usage_from_message,
     add_to_list,
     merge_dicts,
@@ -5557,6 +5558,9 @@ class MemoryFoldingAgentState(TypedDict):
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
     tokens_used: int
+    input_tokens: int
+    output_tokens: int
+    token_trace: Annotated[list, add_to_list]
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -6373,13 +6377,17 @@ def create_memory_folding_agent(
                     debug=debug,
                 )
 
+        _usage = _token_usage_dict_from_message(response)
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
-            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
+            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
+            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
+            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+            "token_trace": [{"node": "agent", **_usage}],
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -6488,12 +6496,16 @@ def create_memory_folding_agent(
             debug=debug,
         )
 
+        _usage = _token_usage_dict_from_message(response)
         out = {
             "messages": [response],
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
-            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
+            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
+            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
+            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+            "token_trace": [{"node": "finalize", **_usage}],
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -6887,6 +6899,7 @@ def create_memory_folding_agent(
             current_fold_stats.get("fold_total_messages_removed", 0) + fold_messages_removed
         )
 
+        _usage = _token_usage_dict_from_message(summary_response)
         return _summarize_result({
             "summary": new_memory,
             "archive": [archive_entry],
@@ -6903,7 +6916,10 @@ def create_memory_folding_agent(
                 "fold_parse_success": fold_parse_success,
                 "fold_summarizer_latency_m": fold_summarizer_latency_m,
             },
-            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(summary_response),
+            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
+            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
+            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+            "token_trace": [{"node": "summarize", **_usage}],
         })
 
     def should_continue(state: MemoryFoldingAgentState) -> str:
@@ -7066,6 +7082,9 @@ class StandardAgentState(TypedDict):
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
     tokens_used: int
+    input_tokens: int
+    output_tokens: int
+    token_trace: Annotated[list, add_to_list]
 
 
 def create_standard_agent(
@@ -7206,13 +7225,17 @@ def create_standard_agent(
                     debug=debug,
                 )
 
+        _usage = _token_usage_dict_from_message(response)
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
-            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
+            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
+            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
+            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+            "token_trace": [{"node": "agent", **_usage}],
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -7315,12 +7338,16 @@ def create_standard_agent(
             context="finalize",
             debug=debug,
         )
+        _usage = _token_usage_dict_from_message(response)
         out = {
             "messages": [response],
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
-            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
+            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
+            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
+            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+            "token_trace": [{"node": "finalize", **_usage}],
         }
         if repair_event:
             repair_events.append(repair_event)

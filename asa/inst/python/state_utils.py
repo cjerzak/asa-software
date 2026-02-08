@@ -740,36 +740,50 @@ def repair_json_output_to_required_schema(output_text: str, prompt: str) -> Opti
     return repair_json_output_to_schema(output_text, schema, fallback_on_failure=False)
 
 
-def _token_usage_from_message(message: Any) -> int:
-    """Best-effort extraction of token usage from LangChain message objects."""
+def _token_usage_dict_from_message(message: Any) -> Dict[str, int]:
+    """Best-effort extraction of token usage breakdown from LangChain message objects.
+
+    Returns:
+        Dict with keys "input_tokens", "output_tokens", "total_tokens" (all ints, default 0).
+    """
+    zero = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
     if message is None:
-        return 0
+        return zero
 
     # Newer LangChain: AIMessage.usage_metadata = {"input_tokens":..., "output_tokens":..., "total_tokens":...}
     usage = getattr(message, "usage_metadata", None)
     if isinstance(usage, dict):
-        total = usage.get("total_tokens")
-        if isinstance(total, (int, float)):
-            return int(total)
         inp = usage.get("input_tokens")
         out = usage.get("output_tokens")
+        total = usage.get("total_tokens")
         if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
-            return int(inp + out)
+            inp, out = int(inp), int(out)
+            total = int(total) if isinstance(total, (int, float)) else inp + out
+            return {"input_tokens": inp, "output_tokens": out, "total_tokens": total}
+        if isinstance(total, (int, float)):
+            return {"input_tokens": 0, "output_tokens": 0, "total_tokens": int(total)}
 
     # Some providers: response_metadata contains usage/token_usage
     resp_meta = getattr(message, "response_metadata", None)
     if isinstance(resp_meta, dict):
         token_usage = resp_meta.get("token_usage") or resp_meta.get("usage") or {}
         if isinstance(token_usage, dict):
-            total = token_usage.get("total_tokens")
-            if isinstance(total, (int, float)):
-                return int(total)
             inp = token_usage.get("prompt_tokens")
             out = token_usage.get("completion_tokens")
+            total = token_usage.get("total_tokens")
             if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
-                return int(inp + out)
+                inp, out = int(inp), int(out)
+                total = int(total) if isinstance(total, (int, float)) else inp + out
+                return {"input_tokens": inp, "output_tokens": out, "total_tokens": total}
+            if isinstance(total, (int, float)):
+                return {"input_tokens": 0, "output_tokens": 0, "total_tokens": int(total)}
 
-    return 0
+    return zero
+
+
+def _token_usage_from_message(message: Any) -> int:
+    """Best-effort extraction of total token usage from LangChain message objects."""
+    return _token_usage_dict_from_message(message)["total_tokens"]
 
 
 def parse_date_filters(query: str) -> Tuple[str, Optional[str], Optional[str]]:

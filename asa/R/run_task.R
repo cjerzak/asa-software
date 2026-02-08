@@ -317,6 +317,12 @@ run_task <- function(prompt,
     NA_character_
   }
   tokens_used <- .as_scalar_int(response$tokens_used)
+  token_stats <- .build_token_stats(
+    tokens_used = tokens_used,
+    input_tokens = .as_scalar_int(response$input_tokens),
+    output_tokens = .as_scalar_int(response$output_tokens),
+    token_trace = response$token_trace %||% list()
+  )
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
@@ -329,7 +335,8 @@ run_task <- function(prompt,
     fold_stats = response$fold_stats %||% list(),
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
-    json_repair = response$json_repair %||% list()
+    json_repair = response$json_repair %||% list(),
+    token_stats = token_stats
   )
 
   # Build result object - always return asa_result for consistent API
@@ -349,6 +356,7 @@ run_task <- function(prompt,
   result$fold_stats <- response$fold_stats %||% list()
   result$status_code <- response$status_code %||% NA_integer_
   result$tokens_used <- execution$tokens_used
+  result$token_stats <- token_stats
 
   # For "raw" format, add additional fields for debugging
   if (identical(output_format, "raw")) {

@@ -136,7 +136,10 @@
       budget_state = list(),
       field_status = list(),
       json_repair = list(),
-      tokens_used = NA_integer_
+      tokens_used = NA_integer_,
+      input_tokens = NA_integer_,
+      output_tokens = NA_integer_,
+      token_trace = list()
     ))
   }
 
@@ -174,6 +177,9 @@
 
   # Extract token usage from Python state
   tokens_used <- .as_scalar_int(.try_or(raw_response$tokens_used, NA_integer_))
+  input_tokens <- .as_scalar_int(.try_or(raw_response$input_tokens, NA_integer_))
+  output_tokens <- .as_scalar_int(.try_or(raw_response$output_tokens, NA_integer_))
+  token_trace <- .try_or(as.list(raw_response$token_trace), list())
 
   # Return response object
   asa_response(
@@ -194,7 +200,10 @@
     budget_state = budget_state_out,
     field_status = field_status_out,
     json_repair = json_repair,
-    tokens_used = tokens_used
+    tokens_used = tokens_used,
+    input_tokens = input_tokens,
+    output_tokens = output_tokens,
+    token_trace = token_trace
   )
 }
 
@@ -372,6 +381,9 @@
   }
 
   initial_state$tokens_used <- 0L
+  initial_state$input_tokens <- 0L
+  initial_state$output_tokens <- 0L
+  initial_state$token_trace <- list()
 
   # Only seed summary/fold_stats when starting a fresh (ephemeral) thread.
   if (is.null(thread_id)) {
@@ -402,7 +414,10 @@
   initial_state <- list(
     messages = list(list(role = "user", content = prompt)),
     stop_reason = NULL,
-    tokens_used = 0L
+    tokens_used = 0L,
+    input_tokens = 0L,
+    output_tokens = 0L,
+    token_trace = list()
   )
   if (!is.null(expected_schema)) {
     initial_state$expected_schema <- expected_schema

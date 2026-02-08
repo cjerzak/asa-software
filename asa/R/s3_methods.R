@@ -709,7 +709,10 @@ asa_response <- function(message, status_code, raw_response, trace,
                          thread_id = NULL, stop_reason = NULL,
                          budget_state = list(), field_status = list(),
                          json_repair = list(),
-                         tokens_used = NA_integer_) {
+                         tokens_used = NA_integer_,
+                         input_tokens = NA_integer_,
+                         output_tokens = NA_integer_,
+                         token_trace = list()) {
   structure(
     list(
       message = message,
@@ -726,6 +729,9 @@ asa_response <- function(message, status_code, raw_response, trace,
       field_status = field_status,
       json_repair = json_repair,
       tokens_used = tokens_used,
+      input_tokens = input_tokens,
+      output_tokens = output_tokens,
+      token_trace = token_trace,
       created_at = Sys.time()
     ),
     class = "asa_response"
@@ -891,9 +897,18 @@ print.asa_result <- function(x, ...) {
   if (!is.na(tool_used) && !is.na(tool_lim)) {
     cat("Tools:   ", tool_used, "/", tool_lim, "\n", sep = "")
   }
-  tok <- .as_scalar_int(x$execution$tokens_used)
-  if (!is.na(tok) && tok > 0L) {
-    cat("Tokens:  ", tok, "\n", sep = "")
+  ts <- x$token_stats
+  if (!is.null(ts) && !is.na(ts$tokens_used) && ts$tokens_used > 0L) {
+    cat("Tokens:  ", ts$tokens_used, " (in=", ts$input_tokens,
+        ", out=", ts$output_tokens, ")\n", sep = "")
+    if (!is.na(ts$fold_tokens) && ts$fold_tokens > 0L) {
+      cat("  Fold:  ", ts$fold_tokens, "\n", sep = "")
+    }
+  } else {
+    tok <- .as_scalar_int(x$execution$tokens_used)
+    if (!is.na(tok) && tok > 0L) {
+      cat("Tokens:  ", tok, "\n", sep = "")
+    }
   }
   cat("\n")
   cat("Prompt:\n")
@@ -1088,6 +1103,16 @@ print.asa_enumerate_result <- function(x, n = 6, ...) {
     }
     if (!is.null(x$metrics$novelty_rate)) {
       cat("  Novelty Rate:  ", sprintf("%.1f%%", x$metrics$novelty_rate * 100), "\n", sep = "")
+    }
+    if (!is.null(x$metrics$tokens_used) && x$metrics$tokens_used > 0) {
+      cat("  Tokens Used:   ", x$metrics$tokens_used, "\n", sep = "")
+      if (!is.null(x$metrics$input_tokens)) {
+        cat("    Input:       ", x$metrics$input_tokens, "\n", sep = "")
+        cat("    Output:      ", x$metrics$output_tokens, "\n", sep = "")
+      }
+      if (nrow(x$data) > 0) {
+        cat("  Tokens/Result: ", round(x$metrics$tokens_used / nrow(x$data)), "\n", sep = "")
+      }
     }
   }
 
