@@ -135,7 +135,8 @@
       stop_reason = NA_character_,
       budget_state = list(),
       field_status = list(),
-      json_repair = list()
+      json_repair = list(),
+      tokens_used = NA_integer_
     ))
   }
 
@@ -171,6 +172,9 @@
     fold_stats$fold_count <- 0L
   }
 
+  # Extract token usage from Python state
+  tokens_used <- .as_scalar_int(.try_or(raw_response$tokens_used, NA_integer_))
+
   # Return response object
   asa_response(
     message = response_text,
@@ -189,7 +193,8 @@
     stop_reason = stop_reason,
     budget_state = budget_state_out,
     field_status = field_status_out,
-    json_repair = json_repair
+    json_repair = json_repair,
+    tokens_used = tokens_used
   )
 }
 
@@ -366,6 +371,8 @@
     initial_state$finalize_on_all_fields_resolved <- isTRUE(finalize_on_all_fields_resolved)
   }
 
+  initial_state$tokens_used <- 0L
+
   # Only seed summary/fold_stats when starting a fresh (ephemeral) thread.
   if (is.null(thread_id)) {
     initial_state$summary <- reticulate::dict()
@@ -394,7 +401,8 @@
   resolved_thread_id <- .resolve_thread_id(thread_id)
   initial_state <- list(
     messages = list(list(role = "user", content = prompt)),
-    stop_reason = NULL
+    stop_reason = NULL,
+    tokens_used = 0L
   )
   if (!is.null(expected_schema)) {
     initial_state$expected_schema <- expected_schema

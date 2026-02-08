@@ -363,7 +363,7 @@ asa_enumerate <- function(query,
     }
   )
 
-  elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+  elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
 
   # Process results
   if (verbose) message("Processing results...")

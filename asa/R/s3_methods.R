@@ -708,7 +708,8 @@ asa_response <- function(message, status_code, raw_response, trace,
                          trace_json = "", fold_stats = list(),
                          thread_id = NULL, stop_reason = NULL,
                          budget_state = list(), field_status = list(),
-                         json_repair = list()) {
+                         json_repair = list(),
+                         tokens_used = NA_integer_) {
   structure(
     list(
       message = message,
@@ -723,7 +724,9 @@ asa_response <- function(message, status_code, raw_response, trace,
       stop_reason = stop_reason,
       budget_state = budget_state,
       field_status = field_status,
-      json_repair = json_repair
+      json_repair = json_repair,
+      tokens_used = tokens_used,
+      created_at = Sys.time()
     ),
     class = "asa_response"
   )
@@ -743,6 +746,9 @@ print.asa_response <- function(x, ...) {
   cat("==================\n")
   cat("Status:    ", if (x$status_code == 200) "Success" else "Error", " (", x$status_code, ")\n", sep = "")
   cat("Time:      ", format_duration(x$elapsed_time), "\n", sep = "")
+  if (!is.na(x$tokens_used) && x$tokens_used > 0L) {
+    cat("Tokens:    ", x$tokens_used, "\n", sep = "")
+  }
   fc <- x$fold_stats$fold_count
   if (!is.null(fc) && !identical(fc, 0L)) {
     if (is.character(fc)) {
@@ -852,7 +858,8 @@ asa_result <- function(prompt, message, parsed, raw_output,
       status = status,
       search_tier = search_tier,
       parsing_status = parsing_status,
-      execution = execution
+      execution = execution,
+      created_at = Sys.time()
     ),
     class = "asa_result"
   )
@@ -883,6 +890,10 @@ print.asa_result <- function(x, ...) {
   tool_lim <- .as_scalar_int(x$execution$tool_calls_limit)
   if (!is.na(tool_used) && !is.na(tool_lim)) {
     cat("Tools:   ", tool_used, "/", tool_lim, "\n", sep = "")
+  }
+  tok <- .as_scalar_int(x$execution$tokens_used)
+  if (!is.na(tok) && tok > 0L) {
+    cat("Tokens:  ", tok, "\n", sep = "")
   }
   cat("\n")
   cat("Prompt:\n")
@@ -936,6 +947,10 @@ summary.asa_result <- function(object, ...) {
   cat("Status: ", object$status, "\n", sep = "")
   cat("Time: ", format_duration(object$elapsed_time), "\n", sep = "")
   cat("Response length: ", nchar(object$message %||% ""), " chars\n", sep = "")
+  tok <- .as_scalar_int(object$execution$tokens_used)
+  if (!is.na(tok) && tok > 0L) {
+    cat("Tokens: ", tok, "\n", sep = "")
+  }
   stop_reason <- .try_or(as.character(object$execution$stop_reason), character(0))
   stop_reason_val <- if (length(stop_reason) > 0 && nzchar(stop_reason[[1]])) {
     stop_reason[[1]]
@@ -959,7 +974,8 @@ summary.asa_result <- function(object, ...) {
     status_code = object$execution$status_code %||% NA_integer_,
     tool_calls_used = object$execution$tool_calls_used %||% NA_integer_,
     tool_calls_limit = object$execution$tool_calls_limit %||% NA_integer_,
-    tool_calls_remaining = object$execution$tool_calls_remaining %||% NA_integer_
+    tool_calls_remaining = object$execution$tool_calls_remaining %||% NA_integer_,
+    tokens_used = object$execution$tokens_used %||% NA_integer_
   ))
 }
 
@@ -985,6 +1001,7 @@ as.data.frame.asa_result <- function(x, ...) {
     tool_calls_limit = x$execution$tool_calls_limit %||% NA_integer_,
     tool_calls_remaining = x$execution$tool_calls_remaining %||% NA_integer_,
     fold_count = x$execution$fold_count %||% NA_integer_,
+    tokens_used = x$execution$tokens_used %||% NA_integer_,
     stringsAsFactors = FALSE
   )
 
@@ -1067,7 +1084,7 @@ print.asa_enumerate_result <- function(x, n = 6, ...) {
       cat("  Queries Used:  ", x$metrics$queries_used, "\n", sep = "")
     }
     if (!is.null(x$metrics$elapsed_total)) {
-      cat("  Time Elapsed:  ", format_duration(x$metrics$elapsed_total / 60), "\n", sep = "")
+      cat("  Time Elapsed:  ", format_duration(x$metrics$elapsed_total), "\n", sep = "")
     }
     if (!is.null(x$metrics$novelty_rate)) {
       cat("  Novelty Rate:  ", sprintf("%.1f%%", x$metrics$novelty_rate * 100), "\n", sep = "")
@@ -1122,7 +1139,7 @@ summary.asa_enumerate_result <- function(object, ...) {
       val <- object$metrics[[name]]
       if (is.numeric(val)) {
         if (grepl("time|elapsed", name, ignore.case = TRUE)) {
-          cat("  ", name, ": ", format_duration(val / 60), "\n", sep = "")
+          cat("  ", name, ": ", format_duration(val), "\n", sep = "")
         } else if (grepl("rate", name, ignore.case = TRUE)) {
           cat("  ", name, ": ", sprintf("%.2f", val), "\n", sep = "")
         } else {
@@ -1249,7 +1266,7 @@ print.asa_audit_result <- function(x, n = 6, ...) {
   cat("Completeness: ", sprintf("%.0f%%", x$completeness_score * 100), "\n", sep = "")
   cat("Consistency:  ", sprintf("%.0f%%", x$consistency_score * 100), "\n", sep = "")
   cat("Backend:      ", x$backend_used, "\n", sep = "")
-  cat("Time:         ", sprintf("%.1fs", x$elapsed_time), "\n", sep = "")
+  cat("Time:         ", format_duration(x$elapsed_time), "\n", sep = "")
 
   # Summary
   if (!is.null(x$audit_summary) && x$audit_summary != "") {
@@ -1330,7 +1347,7 @@ summary.asa_audit_result <- function(object, ...) {
   }
   cat("Checks Performed: ", paste(object$checks %||% "all", collapse = ", "), "\n", sep = "")
   cat("Backend: ", object$backend_used, "\n", sep = "")
-  cat("Time: ", sprintf("%.1fs", object$elapsed_time), "\n", sep = "")
+  cat("Time: ", format_duration(object$elapsed_time), "\n", sep = "")
 
   cat("\nScores:\n")
   cat("  Completeness: ", sprintf("%.1f%%", object$completeness_score * 100), "\n", sep = "")

@@ -316,6 +316,7 @@ run_task <- function(prompt,
   } else {
     NA_character_
   }
+  tokens_used <- .as_scalar_int(response$tokens_used)
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
@@ -324,6 +325,7 @@ run_task <- function(prompt,
     tool_calls_limit = tool_calls_limit,
     tool_calls_remaining = tool_calls_remaining,
     fold_count = fold_count,
+    tokens_used = tokens_used,
     fold_stats = response$fold_stats %||% list(),
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
@@ -343,8 +345,10 @@ run_task <- function(prompt,
     parsing_status = parsing_status,
     execution = execution
   )
+  # Top-level aliases for backward compat; canonical location is $execution
   result$fold_stats <- response$fold_stats %||% list()
   result$status_code <- response$status_code %||% NA_integer_
+  result$tokens_used <- execution$tokens_used
 
   # For "raw" format, add additional fields for debugging
   if (identical(output_format, "raw")) {
@@ -807,6 +811,9 @@ run_task_batch <- function(prompts,
     prompts$status <- vapply(results, function(r) r$status %||% NA_character_, character(1))
     prompts$elapsed_time <- vapply(results, function(r) r$elapsed_time %||% NA_real_, numeric(1))
     prompts$search_tier <- vapply(results, function(r) r$search_tier %||% "unknown", character(1))
+    prompts$tokens_used <- vapply(results, function(r) {
+      .as_scalar_int(r$execution$tokens_used) %||% NA_integer_
+    }, integer(1))
 
     # Add parsed fields if JSON output
     if (identical(output_format, "json") || (is.character(output_format) && length(output_format) > 1)) {

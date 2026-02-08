@@ -142,7 +142,7 @@ backend <- match.arg(backend)
     )
   }
 
-  elapsed_time <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+  elapsed_time <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
 
   # Annotate original data with audit results
   annotated_data <- .annotate_results(data, audit_result$flagged_rows)

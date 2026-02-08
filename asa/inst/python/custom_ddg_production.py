@@ -2993,6 +2993,7 @@ from typing import Annotated, TypedDict, Sequence
 from operator import add as operator_add
 from langgraph.managed import RemainingSteps
 from state_utils import (
+    _token_usage_from_message,
     add_to_list,
     merge_dicts,
     infer_required_json_schema_from_messages,
@@ -5555,6 +5556,7 @@ class MemoryFoldingAgentState(TypedDict):
     search_budget_limit: Optional[int]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
+    tokens_used: int
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -6377,6 +6379,7 @@ def create_memory_folding_agent(
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
+            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -6490,6 +6493,7 @@ def create_memory_folding_agent(
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
+            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -6899,6 +6903,7 @@ def create_memory_folding_agent(
                 "fold_parse_success": fold_parse_success,
                 "fold_summarizer_latency_m": fold_summarizer_latency_m,
             },
+            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(summary_response),
         })
 
     def should_continue(state: MemoryFoldingAgentState) -> str:
@@ -7060,6 +7065,7 @@ class StandardAgentState(TypedDict):
     search_budget_limit: Optional[int]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
+    tokens_used: int
 
 
 def create_standard_agent(
@@ -7206,6 +7212,7 @@ def create_standard_agent(
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
+            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -7313,6 +7320,7 @@ def create_standard_agent(
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
+            "tokens_used": state.get("tokens_used", 0) + _token_usage_from_message(response),
         }
         if repair_event:
             repair_events.append(repair_event)

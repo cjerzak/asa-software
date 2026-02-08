@@ -24,6 +24,7 @@ from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import ToolNode
 
 from state_utils import (
+    _token_usage_from_message,
     add_to_list,
     hash_result,
     merge_dicts,
@@ -140,38 +141,6 @@ def _fuzzy_match_name(name1: str, name2: str) -> float:
     overlap = len(words1 & words2)
     total = len(words1 | words2)
     return overlap / total if total > 0 else 0.0
-
-
-def _token_usage_from_message(message: Any) -> int:
-    """Best-effort extraction of token usage from LangChain message objects."""
-    if message is None:
-        return 0
-
-    # Newer LangChain: AIMessage.usage_metadata = {"input_tokens":..., "output_tokens":..., "total_tokens":...}
-    usage = getattr(message, "usage_metadata", None)
-    if isinstance(usage, dict):
-        total = usage.get("total_tokens")
-        if isinstance(total, (int, float)):
-            return int(total)
-        inp = usage.get("input_tokens")
-        out = usage.get("output_tokens")
-        if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
-            return int(inp + out)
-
-    # Some providers: response_metadata contains usage/token_usage
-    resp_meta = getattr(message, "response_metadata", None)
-    if isinstance(resp_meta, dict):
-        token_usage = resp_meta.get("token_usage") or resp_meta.get("usage") or {}
-        if isinstance(token_usage, dict):
-            total = token_usage.get("total_tokens")
-            if isinstance(total, (int, float)):
-                return int(total)
-            inp = token_usage.get("prompt_tokens")
-            out = token_usage.get("completion_tokens")
-            if isinstance(inp, (int, float)) and isinstance(out, (int, float)):
-                return int(inp + out)
-
-    return 0
 
 
 def _configured_recursion_limit_from_state(state: Any) -> Optional[int]:
