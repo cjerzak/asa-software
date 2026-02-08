@@ -198,6 +198,7 @@
 # The internal .run_agent() function above is used by run_task() internally.
 
 #' Resolve Thread ID for Agent Invocation
+#' @importFrom stats runif
 #' @keywords internal
 .resolve_thread_id <- function(thread_id = NULL) {
   if (!is.null(thread_id)) {

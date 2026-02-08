@@ -547,6 +547,18 @@ build_prompt <- function(template, ...) {
 #'   Default TRUE.
 #' @param abort_on_trip If TRUE, abort the batch when circuit breaker trips.
 #'   If FALSE (default), wait for cooldown and continue.
+#' @param field_status Optional named list tracking per-field resolution status.
+#'   Passed through to \code{\link{run_task}}.
+#' @param budget_state Optional list tracking search budget consumption across
+#'   batch items. Passed through to \code{\link{run_task}}.
+#' @param search_budget_limit Optional integer maximum number of searches per
+#'   task. Passed through to \code{\link{run_task}}.
+#' @param unknown_after_searches Optional integer threshold: if a field remains
+#'   unknown after this many searches, mark it resolved. Passed through to
+#'   \code{\link{run_task}}.
+#' @param finalize_on_all_fields_resolved Optional logical; if TRUE, finalize
+#'   immediately when all schema fields are resolved. Passed through to
+#'   \code{\link{run_task}}.
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.

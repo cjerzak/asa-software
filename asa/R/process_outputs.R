@@ -628,7 +628,7 @@ extract_search_tiers <- function(text) {
     # Check if this chunk has a birth date pattern in direct association with the name
     birth_patterns <- c(
       "Fecha de nacimiento:\\s*(?:\\n\\s*)?(\\d{4})",
-      "(?:naci[oó]|born|nacimiento)[^\\n]{0,30}?(\\d{4})",
+      "(?:naci[o\u00f3]|born|nacimiento)[^\\n]{0,30}?(\\d{4})",
       "(?:nacida? en|born in|born on)[^.]{0,50}?(\\d{4})"
     )
     for (pat in birth_patterns) {
@@ -661,13 +661,13 @@ extract_search_tiers <- function(text) {
   # Search tool messages that mention the target person for occupation info.
   # This avoids extracting occupation/activities for suplentes or other people.
   occ_leader_patterns <- c(
-    "(?:Presidenta?|Presidente?)\\s+(?:de\\s+)?(?:la?\\s+)?(?:Organizaci[oó]n|Sub[- ]?[Cc]entral|Central|Federaci[oó]n)[^.;\\n]{3,100}",
-    "(?:dirigente|l[ií]der(?:esa)?|capitana?)\\s+(?:de\\s+)?(?:la?\\s+)?[^.;\\n]{3,100}",
-    "representante\\s+ind[ií]gena[^.;\\n]{0,80}",
-    "ind[ií]gena\\s+que\\s+proviene\\s+(?:del?|de\\s+la?)\\s+[^.;]{3,60}"
+    "(?:Presidenta?|Presidente?)\\s+(?:de\\s+)?(?:la?\\s+)?(?:Organizaci[o\u00f3]n|Sub[- ]?[Cc]entral|Central|Federaci[o\u00f3]n)[^.;\\n]{3,100}",
+    "(?:dirigente|l[i\u00ed]der(?:esa)?|capitana?)\\s+(?:de\\s+)?(?:la?\\s+)?[^.;\\n]{3,100}",
+    "representante\\s+ind[i\u00ed]gena[^.;\\n]{0,80}",
+    "ind[i\u00ed]gena\\s+que\\s+proviene\\s+(?:del?|de\\s+la?)\\s+[^.;]{3,60}"
   )
   occ_generic_patterns <- c(
-    "(?:ocupaci[oó]n|profesi[oó]n|cargo|occupation)[:\\s]+([^.;\\n]{5,120})",
+    "(?:ocupaci[o\u00f3]n|profesi[o\u00f3]n|cargo|occupation)[:\\s]+([^.;\\n]{5,120})",
     "Actividades realizadas\\s*(?:\\n\\s*)?\\.?\\s*([^\\n]{5,200})"
   )
 

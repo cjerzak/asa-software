@@ -13,6 +13,8 @@
 Parsed JSON data as a list, or NULL if no JSON found
 }
 \description{
-Internal function to extract JSON data from raw agent traces.
+Extracts JSON data from raw agent traces. First tries the standard approach
+(last AIMessage JSON), then if the result has >60% Unknown fields, enhances
+it by mining ToolMessage contents for biographical data.
 }
 \keyword{internal}
