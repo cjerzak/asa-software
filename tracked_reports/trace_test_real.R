@@ -1,6 +1,6 @@
 # Rscript: trace_test_real.R
 options(error=NULL)
-devtools::load_all('~/Documents/asa-software/asa')
+# devtools::load_all('~/Documents/asa-software/asa')
 
 # Prefer local package source so trace runs validate current repo code.
 if (requireNamespace("devtools", quietly = TRUE)) {
@@ -84,7 +84,6 @@ Your output must follow this exact schema (JSON schema):
   "confidence": "Low | Medium | High",
   "justification": "One-sentence summary of search findings and reliability assessment."
 }
-
 ```
 
 IMPORTANT REQUIREMENTS:

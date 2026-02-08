@@ -6786,6 +6786,22 @@ def create_memory_folding_agent(
         current_memory = _sanitize_memory_dict(_coerce_memory_summary(current_summary))
         current_memory_json = json.dumps(current_memory, ensure_ascii=True, sort_keys=True)
 
+        # Build schema-aware extraction instruction when expected_schema is available
+        schema_extraction_block = ""
+        _fold_expected_schema = state.get("expected_schema")
+        if _fold_expected_schema and isinstance(_fold_expected_schema, dict):
+            _fold_field_names = sorted(_fold_expected_schema.keys())
+            schema_extraction_block = (
+                "\n\nCRITICAL — SCHEMA FIELD EXTRACTION:\n"
+                "The assistant is filling a structured schema. For EACH field below,\n"
+                "if ANY value was mentioned in the transcript, you MUST include it as a fact\n"
+                "in the format: \"FIELD_EXTRACT: field_name = value (source: URL)\"\n"
+                "Even tentative or unconfirmed values MUST be preserved.\n"
+                "Fields to extract:\n"
+                + "\n".join(f"  - {fn}" for fn in _fold_field_names)
+                + "\n\nDo NOT discard any data that could answer these fields.\n"
+            )
+
         summarize_prompt = (
             "You are updating LONG-TERM MEMORY for an AI research assistant.\n"
             "Return STRICT JSON ONLY. No markdown. No extra text.\n\n"
@@ -6804,6 +6820,7 @@ def create_memory_folding_agent(
             "}\n\n"
             f"Current memory JSON:\n{current_memory_json}\n\n"
             f"New transcript chunk (excerpted):\n{fold_text}\n"
+            f"{schema_extraction_block}"
         )
 
         summarize_started = time.perf_counter()
