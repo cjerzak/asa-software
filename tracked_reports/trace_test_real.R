@@ -188,7 +188,6 @@ tmp <- readr::read_file('~/Documents/asa-software/tracked_reports/trace_real.txt
 final_answer <- asa::extract_agent_results(tmp)[["json_data"]]
 message("Trace test complete")
 
-cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "null"))
 jsonlite::write_json(
   final_answer,
   "~/Documents/asa-software/tracked_reports/our_answer_real.txt",
@@ -196,4 +195,5 @@ jsonlite::write_json(
   pretty = TRUE,
   null = "null"
 )
+cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "null"))
 

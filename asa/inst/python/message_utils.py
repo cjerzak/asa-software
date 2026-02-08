@@ -29,7 +29,7 @@ def message_content_to_text(
     if content is None:
         return ""
     if isinstance(content, str):
-        return content
+        return content.replace("\x00", "")
 
     if isinstance(content, list):
         if list_mode == "stringify":
@@ -59,10 +59,10 @@ def message_content_to_text(
                 item_text = ""
             if item_text.strip():
                 parts.append(item_text)
-        return "\n".join(parts)
+        return "\n".join(parts).replace("\x00", "")
 
     try:
-        return str(content)
+        return str(content).replace("\x00", "")
     except Exception:
         return ""
 

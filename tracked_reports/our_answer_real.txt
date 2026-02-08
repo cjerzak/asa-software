@@ -3,9 +3,9 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "Unknown",
+  "prior_occupation": "Ex Capitán Grande de TCO (indigenous leader)",
   "class_background": "Unknown",
-  "prior_occupation_source": null,
+  "prior_occupation_source": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
   "disability_status": "Unknown",
   "disability_source": null,
   "birth_place": "Unknown",
@@ -16,5 +16,5 @@
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": ""
+  "justification": null
 }

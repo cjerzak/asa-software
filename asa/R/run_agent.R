@@ -628,6 +628,9 @@
         return(NA_character_)
       }
 
+      # Strip embedded NUL bytes (cause "Embedded NUL in string" from reticulate)
+      text <- .strip_nul(text)
+
       # Clean XML tags without stripping inner content
       text <- gsub("</?[^>]+>", "", text)
 
@@ -647,6 +650,19 @@
   })
 
   response_text
+}
+
+#' Strip embedded NUL bytes from a string
+#'
+#' NUL bytes (\x00) in web page content survive UTF-8 decoding and cause
+#' "Embedded NUL in string" errors when passed from Python to R via reticulate.
+#' @keywords internal
+.strip_nul <- function(x) {
+  if (!is.character(x) || length(x) == 0) return(x)
+  vapply(x, function(s) {
+    r <- charToRaw(s)
+    rawToChar(r[r != as.raw(0L)])
+  }, character(1), USE.NAMES = FALSE)
 }
 
 #' Build Trace from Raw Response
@@ -675,10 +691,11 @@
 .build_trace <- function(raw_response) {
   tryCatch({
     cleaned <- .strip_trace_noise(raw_response)
-    paste(
+    out <- paste(
       lapply(unlist(cleaned), function(l) capture.output(l)),
       collapse = "\n\n"
     )
+    .strip_nul(out)
   }, error = function(e) {
     ""
   })

@@ -748,7 +748,7 @@ def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> 
 
         # Best-effort decode
         encoding = r.encoding or "utf-8"
-        html = data.decode(encoding, errors="replace")
+        html = data.decode(encoding, errors="replace").replace("\x00", "")
         return {
             "ok": True,
             "html": html,
