@@ -144,9 +144,9 @@ attempt <- asa::run_task(
     verbose = FALSE,
     agent = asa::initialize_agent(
       #backend = "gemini", model = "gemini-3-pro-preview",
-      #backend = "gemini", model = "gemini-3-flash-preview",
+      backend = "gemini", model = "gemini-3-flash-preview",
       #backend = "openai", model = "gpt-5-mini-2025-08-07",
-      backend = "openai", model = "gpt-5-nano-2025-08-07",
+      #backend = "openai", model = "gpt-5-nano-2025-08-07",
       # proxy = proxy,
       use_browser = FALSE, 
       use_memory_folding = TRUE,
@@ -178,7 +178,10 @@ readr::write_file(prompt, "~/Documents/asa-software/tracked_reports/prompt_examp
 readr::write_file(attempt$trace, "~/Documents/asa-software/tracked_reports/trace_real.txt")
 readr::write_file(paste(unlist(attempt$token_stats), collapse = "\n"), "~/Documents/asa-software/tracked_reports/token_stats_real.txt")
 
-attempt$token_stats
+attempt$token_stats$tokens_used
+attempt$token_stats$input_tokens
+attempt$token_stats$output_tokens
+plot(unlist(attempt$token_stats$token_trace))
 attempt$elapsed_time
 attempt$fold_stats
 

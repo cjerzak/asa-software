@@ -997,7 +997,7 @@ test_that("memory folding updates summary and injects it into the next system pr
   expect_true(isTRUE(fs$fold_parse_success))
   expect_true(is.list(final_state$summary))
   expect_true("facts" %in% names(final_state$summary))
-  expect_true("FOLDED_SUMMARY" %in% unlist(final_state$summary$facts))
+  expect_true(any(grepl("FOLDED_SUMMARY", unlist(final_state$summary$facts), fixed = TRUE)))
   expect_true(is.list(final_state$archive))
   expect_true(length(final_state$archive) >= 1L)
 

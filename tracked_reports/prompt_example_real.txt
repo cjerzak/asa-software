@@ -75,7 +75,6 @@ Your output must follow this exact schema (JSON schema):
   "confidence": "Low | Medium | High",
   "justification": "One-sentence summary of search findings and reliability assessment."
 }
-
 ```
 
 IMPORTANT REQUIREMENTS:
