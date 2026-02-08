@@ -2615,7 +2615,7 @@ test_that("field_status is canonical vs scratchpad and is injected into finalize
 
   sys_prompts <- reticulate::py_to_r(reticulate::py$field_status_canonical_llm$system_prompts)
   expect_true(length(sys_prompts) >= 2L)
-  expect_true(grepl("CANONICAL FIELD STATUS", sys_prompts[[2]], fixed = TRUE))
+  expect_true(grepl("FIELD STATUS:", sys_prompts[[2]], fixed = TRUE))
   expect_true(grepl("prior_occupation: found", sys_prompts[[2]], fixed = TRUE))
   expect_true(grepl("YOUR SCRATCHPAD", sys_prompts[[2]], fixed = TRUE))
   expect_true(grepl("prior_occupation=lawyer", sys_prompts[[2]], fixed = TRUE))

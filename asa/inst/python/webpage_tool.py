@@ -264,7 +264,7 @@ def _validate_url(url: str) -> Tuple[bool, str, str]:
     return True, "ok", u
 
 
-def _extract_main_text(html: str) -> Tuple[str, str]:
+def _extract_main_text(html: str, page_url: str = "") -> Tuple[str, str]:
     """Extract readable text from HTML. Returns (title, text).
 
     Preserves hyperlinks inline so that the agent can discover linked URLs
@@ -308,6 +308,8 @@ def _extract_main_text(html: str) -> Tuple[str, str]:
     base_tag = soup.find("base")
     if base_tag and base_tag.get("href"):
         base_url = base_tag["href"].strip()
+    elif page_url:
+        base_url = page_url
 
     def _should_annotate_link(href: str, link_text: str) -> bool:
         """Decide if a hyperlink is worth inlining in extracted text."""
@@ -821,7 +823,7 @@ class OpenWebpageTool(BaseTool):
                         f"Final URL: {fetched.get('final_url')}"
                     )
 
-                title, text = _extract_main_text(fetched.get("html", ""))
+                title, text = _extract_main_text(fetched.get("html", ""), page_url=fetched.get("final_url") or norm)
                 # Avoid caching huge pages unbounded.
                 max_text = int(cfg.cache_max_text_chars or 200_000)
                 if max_text > 0 and len(text) > max_text:

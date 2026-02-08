@@ -191,7 +191,7 @@ message("Trace test complete")
 cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "null"))
 jsonlite::write_json(
   final_answer,
-  "~/Documents/asa-software/traced_reports/our_answer_real.txt",
+  "~/Documents/asa-software/tracked_reports/our_answer_real.txt",
   auto_unbox = TRUE,
   pretty = TRUE,
   null = "null"

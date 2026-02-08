@@ -471,7 +471,8 @@ initialize_agent <- function(backend = NULL,
       model_name = model,
       openai_api_base = cfg$base,
       temperature = cfg$temperature,
-      streaming = TRUE
+      streaming = TRUE,
+      stream_usage = TRUE
     )
     if (!is.null(cfg$env)) args$openai_api_key <- Sys.getenv(cfg$env)
     if (!is.null(cfg$http_client)) args$http_client <- cfg$http_client
