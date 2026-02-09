@@ -699,6 +699,10 @@ summary.asa_agent <- function(object, ...) {
 #' @param budget_state Tool-call budget state snapshot from agent state.
 #' @param field_status Per-field extraction status map from agent state.
 #' @param json_repair JSON repair/fallback events emitted during execution.
+#' @param tokens_used Total token count for this invocation (integer, or NA).
+#' @param input_tokens Input (prompt) token count (integer, or NA).
+#' @param output_tokens Output (completion) token count (integer, or NA).
+#' @param token_trace Per-step token usage trace (list).
 #'
 #' @return An object of class \code{asa_response}
 #'
