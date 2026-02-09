@@ -1,6 +1,8 @@
 # Rscript: trace_test_real.R
 options(error=NULL)
 # devtools::load_all('~/Documents/asa-software/asa')
+# devtools::install_github( 'cjerzak/asa-software/asa' )
+# asa::build_backend(force = TRUE, fix_browser = TRUE)
 
 # Prefer local package source so trace runs validate current repo code.
 if (requireNamespace("devtools", quietly = TRUE)) {
