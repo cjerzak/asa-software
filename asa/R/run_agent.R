@@ -654,7 +654,7 @@
 
 #' Strip embedded NUL bytes from a string
 #'
-#' NUL bytes (\x00) in web page content survive UTF-8 decoding and cause
+#' NUL bytes (\\x00) in web page content survive UTF-8 decoding and cause
 #' "Embedded NUL in string" errors when passed from Python to R via reticulate.
 #' @keywords internal
 .strip_nul <- function(x) {

@@ -7,7 +7,7 @@
 .strip_nul(x)
 }
 \description{
-NUL bytes (\x00) in web page content survive UTF-8 decoding and cause
+NUL bytes (\\x00) in web page content survive UTF-8 decoding and cause
 "Embedded NUL in string" errors when passed from Python to R via reticulate.
 }
 \keyword{internal}
