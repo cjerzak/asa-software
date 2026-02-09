@@ -1,3 +1,6 @@
+ASA_TEST_LANGGRAPH_CACHE <- new.env(parent = emptyenv())
+ASA_TEST_LANGGRAPH_CACHE$stack_checks <- new.env(parent = emptyenv())
+
 asa_test_import_langgraph_module <- function(module_name,
                                              required_files = paste0(module_name, ".py"),
                                              required_modules = ASA_TEST_LANGGRAPH_MODULES,
@@ -6,8 +9,13 @@ asa_test_import_langgraph_module <- function(module_name,
     required_files = required_files,
     initialize = initialize
   )
+
   if (!is.null(required_modules)) {
-    asa_test_require_langgraph_stack(required_modules)
+    stack_key <- paste(sort(unique(as.character(required_modules))), collapse = "|")
+    if (!exists(stack_key, envir = ASA_TEST_LANGGRAPH_CACHE$stack_checks, inherits = FALSE)) {
+      asa_test_require_langgraph_stack(required_modules)
+      assign(stack_key, TRUE, envir = ASA_TEST_LANGGRAPH_CACHE$stack_checks)
+    }
   }
   reticulate::import_from_path(module_name, path = python_path)
 }

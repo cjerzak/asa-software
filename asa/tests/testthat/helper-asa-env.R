@@ -1,18 +1,53 @@
 # Ensure tests use the standard asa conda environment when available.
 options(asa.default_conda_env = "asa_env")
 
-if (requireNamespace("reticulate", quietly = TRUE)) {
+.asa_test_cache <- new.env(parent = emptyenv())
+.asa_test_cache$python_path <- ""
+.asa_test_cache$conda_env_bound <- ""
+.asa_test_cache$module_availability <- new.env(parent = emptyenv())
+
+.asa_test_bind_conda_once <- function(conda_env = "asa_env") {
+  if (!requireNamespace("reticulate", quietly = TRUE)) {
+    return(invisible(FALSE))
+  }
+  if (!is.character(conda_env) || length(conda_env) != 1L || !nzchar(conda_env)) {
+    return(invisible(FALSE))
+  }
+  if (isTRUE(reticulate::py_available(initialize = FALSE))) {
+    return(invisible(FALSE))
+  }
+  if (identical(.asa_test_cache$conda_env_bound, conda_env)) {
+    return(invisible(TRUE))
+  }
   try(
-    suppressWarnings(reticulate::use_condaenv("asa_env", required = FALSE)),
+    suppressWarnings(reticulate::use_condaenv(conda_env, required = FALSE)),
     silent = TRUE
   )
+  .asa_test_cache$conda_env_bound <- conda_env
+  invisible(TRUE)
 }
+
+.asa_test_bind_conda_once("asa_env")
 
 # ---------------------------------------------------------------------------
 # Shared Python / prompt helpers (avoid duplication across test files)
 # ---------------------------------------------------------------------------
 
 asa_test_python_path <- function(required_files = character()) {
+  cached_path <- .asa_test_cache$python_path
+  if (is.character(cached_path) && length(cached_path) == 1L &&
+      nzchar(cached_path) && dir.exists(cached_path)) {
+    required <- required_files
+    if (is.null(required)) {
+      required <- character(0)
+    }
+    required <- as.character(required)
+    required <- required[nzchar(required)]
+    if (length(required) == 0L || all(file.exists(file.path(cached_path, required)))) {
+      return(cached_path)
+    }
+  }
+
   candidates <- c(
     # Common dev/test entrypoints:
     file.path(getwd(), "inst", "python"),
@@ -41,11 +76,17 @@ asa_test_python_path <- function(required_files = character()) {
         break
       }
     }
-    if (ok) return(path)
+    if (ok) {
+      .asa_test_cache$python_path <- path
+      return(path)
+    }
   }
 
   for (path in candidates) {
-    if (dir.exists(path)) return(path)
+    if (dir.exists(path)) {
+      .asa_test_cache$python_path <- path
+      return(path)
+    }
   }
 
   ""
@@ -69,10 +110,8 @@ asa_test_skip_if_no_python <- function(required_files = character(),
   if (is.null(conda_env)) {
     conda_env <- tryCatch(asa:::.get_default_conda_env(), error = function(e) NULL)
   }
-  # Selecting a conda env is expensive; do it only before Python is initialized.
-  if (!isTRUE(reticulate::py_available(initialize = FALSE)) &&
-      !is.null(conda_env) && is.character(conda_env) && nzchar(conda_env)) {
-    try(reticulate::use_condaenv(conda_env, required = FALSE), silent = TRUE)
+  if (!is.null(conda_env) && is.character(conda_env) && nzchar(conda_env)) {
+    .asa_test_bind_conda_once(conda_env)
   }
 
   if (!reticulate::py_available(initialize = isTRUE(initialize))) {
@@ -103,13 +142,19 @@ asa_test_skip_if_missing_python_modules <- function(modules,
   method <- match.arg(method)
 
   for (module in modules) {
-    ok <- if (method == "py_module_available") {
-      isTRUE(reticulate::py_module_available(module))
+    cache_key <- paste(method, module, sep = "::")
+    if (exists(cache_key, envir = .asa_test_cache$module_availability, inherits = FALSE)) {
+      ok <- isTRUE(get(cache_key, envir = .asa_test_cache$module_availability, inherits = FALSE))
     } else {
-      tryCatch({
-        reticulate::import(module, convert = FALSE)
-        TRUE
-      }, error = function(e) FALSE)
+      ok <- if (method == "py_module_available") {
+        isTRUE(reticulate::py_module_available(module))
+      } else {
+        tryCatch({
+          reticulate::import(module, convert = FALSE)
+          TRUE
+        }, error = function(e) FALSE)
+      }
+      assign(cache_key, ok, envir = .asa_test_cache$module_availability)
     }
 
     if (!ok) {
