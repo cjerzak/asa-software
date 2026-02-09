@@ -17,17 +17,7 @@ test_that("research graph stops with stop_reason='recursion_limit' (RemainingSte
     "stub_llm = _StubLLM()\n"
   ))
 
-  cfg <- research$ResearchConfig(
-    max_rounds = as.integer(999),
-    budget_queries = as.integer(9999),
-    budget_tokens = as.integer(999999),
-    budget_time_sec = as.integer(999999),
-    plateau_rounds = as.integer(0),
-    novelty_min = as.numeric(0),
-    use_wikidata = FALSE,
-    use_web = FALSE,
-    use_wikipedia = FALSE
-  )
+  cfg <- asa_test_minimal_research_config(research)
 
   graph <- research$create_research_graph(
     llm = reticulate::py$stub_llm,
@@ -267,17 +257,7 @@ test_that("run_research with recursion_limit=4 executes at least one search roun
     "stub_llm_rounds = _StubLLM()\n"
   ))
 
-  cfg <- research$ResearchConfig(
-    max_rounds = as.integer(999),
-    budget_queries = as.integer(9999),
-    budget_tokens = as.integer(999999),
-    budget_time_sec = as.integer(999999),
-    plateau_rounds = as.integer(0),
-    novelty_min = as.numeric(0),
-    use_wikidata = FALSE,
-    use_web = FALSE,
-    use_wikipedia = FALSE
-  )
+  cfg <- asa_test_minimal_research_config(research)
 
   graph <- research$create_research_graph(
     llm = reticulate::py$stub_llm_rounds,
@@ -425,10 +405,7 @@ test_that("JSON repair populates nested required keys (explicit schema)", {
 })
 
 test_that("repair_json_output_to_schema is idempotent", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
-  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- asa_test_import_module("state_utils", required_modules = c("pydantic"))
 
   schema <- list(
     status = "complete|partial",
@@ -449,10 +426,7 @@ test_that("repair_json_output_to_schema is idempotent", {
 })
 
 test_that("repair_json_output_to_schema uses shape defaults for array/object leaves", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
-  asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- asa_test_import_module("state_utils", required_modules = c("pydantic"))
 
   schema <- list(
     missing = "array",
@@ -475,17 +449,8 @@ test_that("standard agent reaches recursion_limit and preserves JSON output (Gem
   asa_test_skip_api_tests()
   api_key <- asa_test_require_gemini_key()
 
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests",
-    "langchain_google_genai"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c(ASA_TEST_LANGGRAPH_MODULES, "langchain_google_genai"))
   chat_models <- reticulate::import("langchain_google_genai")
 
   gemini_model <- Sys.getenv("ASA_TEST_GEMINI_MODEL", unset = "")
@@ -566,17 +531,8 @@ test_that("Gemini 3 Flash multi-step folding preserves semantic correctness acro
   asa_test_skip_api_tests()
   api_key <- asa_test_require_gemini_key()
 
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "requests",
-    "langchain_google_genai"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c(ASA_TEST_LANGGRAPH_MODULES, "langchain_google_genai"))
   chat_models <- reticulate::import("langchain_google_genai")
 
   gemini_model <- Sys.getenv("ASA_TEST_GEMINI_MODEL", unset = "")
@@ -751,13 +707,8 @@ test_that("run_task passes expected_schema into LangGraph state (explicit schema
 })
 
 test_that("message reducer assigns ids so memory folding can remove messages", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c("langchain_core", "pydantic"))
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   human <- msgs$HumanMessage(content = "hi")
@@ -780,15 +731,7 @@ test_that("message reducer assigns ids so memory folding can remove messages", {
 })
 
 test_that("memory folding preserves initial HumanMessage for Gemini tool-call ordering", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   # Deterministic tool + stub LLM that calls the tool once (tool-mode), which
@@ -859,24 +802,9 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
 
   # Verify fold_stats diagnostics are populated
-  fs <- as.list(final_state$fold_stats)
-  expect_true(is.list(fs))
-  expect_true(as.integer(fs$fold_messages_removed) > 0L)
-  expect_true(as.integer(fs$fold_total_messages_removed) > 0L)
+  fs <- expect_valid_fold_stats(final_state$fold_stats, fold_count = 1L,
+                                expect_parse_success = FALSE)
   expect_equal(as.integer(fs$fold_messages_removed), as.integer(fs$fold_total_messages_removed))
-  expect_true(as.integer(fs$fold_chars_input) > 0L)
-  expect_true(as.integer(fs$fold_summary_chars) > 0L)
-  expect_true(as.character(fs$fold_trigger_reason) %in% c(
-    "char_budget",
-    "message_threshold",
-    "char_budget_and_message_threshold",
-    "manual_or_unknown"
-  ))
-  expect_true(as.integer(fs$fold_safe_boundary_idx) > 0L)
-  expect_true(is.finite(as.numeric(fs$fold_compression_ratio)))
-  expect_true(as.numeric(fs$fold_compression_ratio) >= 0)
-  expect_false(isTRUE(fs$fold_parse_success))
-  expect_true(as.numeric(fs$fold_summarizer_latency_m) >= 0)
 
   types <- vapply(
     final_state$messages,
@@ -892,15 +820,7 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
 })
 
 test_that("memory folding updates summary and injects it into the next system prompt", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   # Deterministic tool + stub models that:
@@ -1035,15 +955,7 @@ test_that("memory folding updates summary and injects it into the next system pr
 })
 
 test_that("fold_count stays 0 when folding thresholds are never reached", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   # Stub LLM that immediately returns a short final answer (no tool calls).
@@ -1092,16 +1004,8 @@ test_that("fold_count stays 0 when folding thresholds are never reached", {
 })
 
 test_that("fold_count increments to 2 across two invocations via MemorySaver", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "langgraph.checkpoint.memory",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c(ASA_TEST_LANGGRAPH_MODULES, "langgraph.checkpoint.memory"))
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
   mem_mod <- reticulate::import("langgraph.checkpoint.memory", convert = TRUE)
 
@@ -1201,15 +1105,7 @@ test_that("fold_count increments to 2 across two invocations via MemorySaver", {
 })
 
 test_that("archive entry fold_count label matches state fold_count", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   # Same pattern as existing Gemini test: tool-call then final answer, with a
@@ -1281,15 +1177,8 @@ test_that("archive entry fold_count label matches state fold_count", {
 
 test_that("memory folding finalization respects inferred schema from CSV template", {
   python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic",
-    "bs4"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  asa_test_skip_if_missing_python_modules(c("bs4"), method = "import")
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   pkg_root_from_python <- normalizePath(
@@ -1423,13 +1312,8 @@ test_that("recursion_limit=2 completes without error (no double finalize)", {
 })
 
 test_that("shared router prioritizes pending tool calls when budget allows", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "pydantic"
-  ), method = "import")
-
-  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  prod <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c("langchain_core", "pydantic"))
 
   reticulate::py_run_string(paste0(
     "from langchain_core.messages import AIMessage\n",
@@ -1561,17 +1445,8 @@ test_that("model invoke exceptions return schema fallback instead of hard error 
 })
 
 test_that("reused thread_id does not let stale recursion stop_reason skip tools", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "langgraph.checkpoint.memory",
-    "pydantic",
-    "requests"
-  ), method = "import")
-
-  prod <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  prod <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c(ASA_TEST_LANGGRAPH_MODULES, "langgraph.checkpoint.memory"))
   mem_mod <- reticulate::import("langgraph.checkpoint.memory", convert = TRUE)
 
   reticulate::py_run_string(paste0(
@@ -1891,21 +1766,7 @@ test_that("finalize strips residual tool calls and returns terminal JSON (standa
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   # Simulates finalize-time bad behavior: model emits a tool call with empty content.
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n\n",
-    "class _ResidualToolCallLLM:\n",
-    "    def __init__(self):\n",
-    "        self.calls = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.calls += 1\n",
-    "        return AIMessage(\n",
-    "            content='',\n",
-    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
-    "        )\n\n",
-    "residual_tool_llm = _ResidualToolCallLLM()\n"
-  ))
+  asa_test_stub_residual_tool_llm(var_name = "residual_tool_llm")
 
   expected_schema <- list(
     status = "string",
@@ -1963,21 +1824,7 @@ test_that("finalize stays non-empty when first schema repair attempt fails (stan
     add = TRUE
   )
 
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n\n",
-    "class _RepairFailThenRecoverLLM:\n",
-    "    def __init__(self):\n",
-    "        self.calls = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.calls += 1\n",
-    "        return AIMessage(\n",
-    "            content='',\n",
-    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
-    "        )\n\n",
-    "repair_fail_then_recover_llm = _RepairFailThenRecoverLLM()\n"
-  ))
+  asa_test_stub_residual_tool_llm(var_name = "repair_fail_then_recover_llm")
 
   expected_schema <- list(
     status = "string",
@@ -2016,21 +1863,7 @@ test_that("finalize stays non-empty when first schema repair attempt fails (stan
 test_that("finalize strips residual tool calls and returns non-empty text when no schema (standard)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n\n",
-    "class _ResidualToolCallNoSchemaLLM:\n",
-    "    def __init__(self):\n",
-    "        self.calls = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.calls += 1\n",
-    "        return AIMessage(\n",
-    "            content='',\n",
-    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
-    "        )\n\n",
-    "residual_tool_no_schema_llm = _ResidualToolCallNoSchemaLLM()\n"
-  ))
+  asa_test_stub_residual_tool_llm(var_name = "residual_tool_no_schema_llm")
 
   agent <- prod$create_standard_agent(
     model = reticulate::py$residual_tool_no_schema_llm,
@@ -2277,21 +2110,7 @@ test_that("explicit schema does not rewrite intermediate tool-call turns (standa
 test_that("finalize strips residual tool calls and returns terminal JSON (memory folding)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n\n",
-    "class _ResidualToolCallLLM_Memory:\n",
-    "    def __init__(self):\n",
-    "        self.calls = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.calls += 1\n",
-    "        return AIMessage(\n",
-    "            content='',\n",
-    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
-    "        )\n\n",
-    "residual_tool_llm_memory = _ResidualToolCallLLM_Memory()\n"
-  ))
+  asa_test_stub_residual_tool_llm(var_name = "residual_tool_llm_memory")
 
   expected_schema <- list(
     status = "string",
@@ -2340,21 +2159,7 @@ test_that("finalize strips residual tool calls and returns terminal JSON (memory
 test_that("finalize strips residual tool calls and returns non-empty text when no schema (memory folding)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n\n",
-    "class _ResidualToolCallNoSchemaLLM_Memory:\n",
-    "    def __init__(self):\n",
-    "        self.calls = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.calls += 1\n",
-    "        return AIMessage(\n",
-    "            content='',\n",
-    "            tool_calls=[{'name':'save_finding','args':{'finding':'X','category':'fact'},'id':'call_1'}]\n",
-    "        )\n\n",
-    "residual_tool_no_schema_llm_memory = _ResidualToolCallNoSchemaLLM_Memory()\n"
-  ))
+  asa_test_stub_residual_tool_llm(var_name = "residual_tool_no_schema_llm_memory")
 
   agent <- prod$create_memory_folding_agent(
     model = reticulate::py$residual_tool_no_schema_llm_memory,
@@ -3067,7 +2872,7 @@ test_that("terminal promotion requires source text support for non-source values
 })
 
 test_that(".extract_response_text returns tool output under recursion_limit when available", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
@@ -3087,7 +2892,7 @@ test_that(".extract_response_text returns tool output under recursion_limit when
 })
 
 test_that(".extract_response_text prefers AI JSON over tool trace payload under recursion_limit", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
@@ -3119,7 +2924,7 @@ test_that(".extract_response_text prefers AI JSON over tool trace payload under 
 })
 
 test_that(".extract_response_text returns recursion fallback when only tool-call AI content exists", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
@@ -3293,15 +3098,7 @@ test_that("invoke-exception fallback at recursion edge preserves earlier tool fa
 # ── Observation masking preserves compact snippets (Fix 1) ──────────────────
 
 test_that("observation masking uses compact output instead of URL-only stripping", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   # Summarizer that captures the fold_text prompt it receives.
@@ -3424,15 +3221,7 @@ test_that("observation masking uses compact output instead of URL-only stripping
 # ── Degraded fold recovers on summarizer failure (Fix 3) ────────────────────
 
 test_that("degraded fold preserves FIELD_EXTRACT entries when summarizer fails", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   # Summarizer that raises an exception (simulating RemoteProtocolError)
@@ -3514,15 +3303,7 @@ test_that("degraded fold preserves FIELD_EXTRACT entries when summarizer fails",
 # ── Post-fold continuation nudge (Fix 4) ────────────────────────────────────
 
 test_that("post-fold system prompt includes continuation nudge", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
-  asa_test_skip_if_missing_python_modules(c(
-    "langchain_core",
-    "langgraph",
-    "langgraph.prebuilt",
-    "pydantic"
-  ), method = "import")
-
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   reticulate::py_run_string(paste0(
