@@ -69,7 +69,9 @@ asa_test_skip_if_no_python <- function(required_files = character(),
   if (is.null(conda_env)) {
     conda_env <- tryCatch(asa:::.get_default_conda_env(), error = function(e) NULL)
   }
-  if (!is.null(conda_env) && is.character(conda_env) && nzchar(conda_env)) {
+  # Selecting a conda env is expensive; do it only before Python is initialized.
+  if (!isTRUE(reticulate::py_available(initialize = FALSE)) &&
+      !is.null(conda_env) && is.character(conda_env) && nzchar(conda_env)) {
     try(reticulate::use_condaenv(conda_env, required = FALSE), silent = TRUE)
   }
 
