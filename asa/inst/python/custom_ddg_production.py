@@ -4840,6 +4840,62 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
     return plan
 
 
+def _maybe_generate_plan(state: dict, model: Any) -> dict:
+    """Generate a plan if use_plan_mode is on and no plan exists yet.
+
+    Called from within the agent node on its first invocation. Returns
+    a dict of state updates (plan, plan_history, token fields) or an
+    empty dict if planning is not needed.
+    """
+    if not state.get("use_plan_mode", False):
+        return {}
+    if state.get("plan"):
+        return {}  # Plan already exists (resuming thread)
+
+    from langchain_core.messages import SystemMessage, HumanMessage
+
+    messages = state.get("messages", [])
+    prompt_text = ""
+    for msg in messages:
+        msg_type = type(msg).__name__
+        if msg_type == "HumanMessage":
+            prompt_text = getattr(msg, "content", "")
+            break
+        if isinstance(msg, dict) and msg.get("role") in ("user", "human"):
+            prompt_text = msg.get("content", "")
+            break
+    if not prompt_text:
+        return {}
+
+    plan_sys = SystemMessage(content=(
+        "You are a planning assistant. Given the user's research task, "
+        "create a structured execution plan with 3-7 concrete steps.\n\n"
+        "Output ONLY valid JSON:\n"
+        '{"goal": "...", "steps": [{"id": 1, "description": "..."}, ...], '
+        '"version": 1, "current_step": 1}\n\n'
+        "Each step should be a specific, actionable research action."
+    ))
+    plan_human = HumanMessage(content=prompt_text)
+    response = None
+    try:
+        response = model.invoke([plan_sys, plan_human])
+        plan = _parse_plan_response(getattr(response, "content", ""))
+    except Exception:
+        plan = _parse_plan_response("")
+
+    _zero_usage = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
+    _usage = _token_usage_dict_from_message(response) if response is not None else _zero_usage
+
+    return {
+        "plan": plan,
+        "plan_history": [{"version": 1, "plan": plan, "source": "auto"}],
+        "token_trace": [{"node": "planner", **_usage}],
+        "tokens_used": _usage["total_tokens"],
+        "input_tokens": _usage["input_tokens"],
+        "output_tokens": _usage["output_tokens"],
+    }
+
+
 def _base_system_prompt(
     summary: Any = None,
     scratchpad: Any = None,
@@ -6393,6 +6449,12 @@ def create_memory_folding_agent(
 
     def agent_node(state: MemoryFoldingAgentState) -> dict:
         """The main agent reasoning node."""
+        # On first call, generate a plan if plan mode is active.
+        _plan_updates = _maybe_generate_plan(state, model)
+        if _plan_updates:
+            # Apply plan updates so the rest of this node sees them.
+            state = {**state, **_plan_updates}
+
         messages = state.get("messages", [])
         summary = state.get("summary", "")
         archive = state.get("archive", [])
@@ -6593,6 +6655,17 @@ def create_memory_folding_agent(
         # so routing can skip the redundant finalize_answer node.
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             out["stop_reason"] = "recursion_limit"
+        # Merge plan generation updates (plan, plan_history, extra token trace).
+        if _plan_updates:
+            if "plan" in _plan_updates:
+                out["plan"] = _plan_updates["plan"]
+            if "plan_history" in _plan_updates:
+                out["plan_history"] = _plan_updates["plan_history"]
+            if "token_trace" in _plan_updates:
+                out["token_trace"] = _plan_updates["token_trace"] + out.get("token_trace", [])
+            out["tokens_used"] = out.get("tokens_used", 0) + _plan_updates.get("tokens_used", 0)
+            out["input_tokens"] = out.get("input_tokens", 0) + _plan_updates.get("input_tokens", 0)
+            out["output_tokens"] = out.get("output_tokens", 0) + _plan_updates.get("output_tokens", 0)
         return out
 
     def finalize_answer(state: MemoryFoldingAgentState) -> dict:
@@ -7468,71 +7541,16 @@ def create_memory_folding_agent(
         # Otherwise, we've already produced the final AI response.
         return "end"
 
-    def planner_node(state: MemoryFoldingAgentState) -> dict:
-        """Generate a structured execution plan when plan mode is active."""
-        if not state.get("use_plan_mode", False):
-            return {}  # No-op pass-through
-
-        if state.get("plan"):
-            return {}  # Plan already exists (resuming thread)
-
-        messages = state.get("messages", [])
-        # Extract user prompt from first HumanMessage
-        prompt_text = ""
-        for msg in messages:
-            msg_type = type(msg).__name__
-            if msg_type == "HumanMessage":
-                prompt_text = getattr(msg, "content", "")
-                break
-            # Fallback for dict-style messages
-            if isinstance(msg, dict) and msg.get("role") in ("user", "human"):
-                prompt_text = msg.get("content", "")
-                break
-        if not prompt_text:
-            return {}
-
-        # Call LLM WITHOUT tools to generate plan
-        plan_sys = SystemMessage(content=(
-            "You are a planning assistant. Given the user's research task, "
-            "create a structured execution plan with 3-7 concrete steps.\n\n"
-            "Output ONLY valid JSON:\n"
-            '{"goal": "...", "steps": [{"id": 1, "description": "..."}, ...], '
-            '"version": 1, "current_step": 1}\n\n'
-            "Each step should be a specific, actionable research action."
-        ))
-        plan_human = HumanMessage(content=prompt_text)
-        response = None
-        try:
-            response = model.invoke([plan_sys, plan_human])
-            plan = _parse_plan_response(getattr(response, "content", ""))
-        except Exception:
-            plan = _parse_plan_response("")
-
-        _zero_usage = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
-        _usage = _token_usage_dict_from_message(response) if response is not None else _zero_usage
-
-        return {
-            "plan": plan,
-            "plan_history": [{"version": 1, "plan": plan, "source": "auto"}],
-            "token_trace": [{"node": "planner", **_usage}],
-            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
-            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
-            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
-        }
-
     # Build the StateGraph
     workflow = StateGraph(MemoryFoldingAgentState)
 
     # Add nodes
-    workflow.add_node("planner", planner_node)
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tool_node_with_scratchpad)
     workflow.add_node("summarize", summarize_conversation)
     workflow.add_node("finalize", finalize_answer)
 
-    # Set entry point - planner runs first, then unconditionally goes to agent
-    workflow.set_entry_point("planner")
-    workflow.add_edge("planner", "agent")
+    workflow.set_entry_point("agent")
 
     # Add conditional edges from agent
     workflow.add_conditional_edges(
@@ -7622,6 +7640,11 @@ def create_standard_agent(
     tool_node_with_scratchpad = _create_tool_node_with_scratchpad(base_tool_node, debug=debug)
 
     def agent_node(state: StandardAgentState) -> dict:
+        # On first call, generate a plan if plan mode is active.
+        _plan_updates = _maybe_generate_plan(state, model)
+        if _plan_updates:
+            state = {**state, **_plan_updates}
+
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
         plan = state.get("plan")
@@ -7762,6 +7785,17 @@ def create_standard_agent(
         # so routing can skip the redundant finalize_answer node.
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             out["stop_reason"] = "recursion_limit"
+        # Merge plan generation updates (plan, plan_history, extra token trace).
+        if _plan_updates:
+            if "plan" in _plan_updates:
+                out["plan"] = _plan_updates["plan"]
+            if "plan_history" in _plan_updates:
+                out["plan_history"] = _plan_updates["plan_history"]
+            if "token_trace" in _plan_updates:
+                out["token_trace"] = _plan_updates["token_trace"] + out.get("token_trace", [])
+            out["tokens_used"] = out.get("tokens_used", 0) + _plan_updates.get("tokens_used", 0)
+            out["input_tokens"] = out.get("input_tokens", 0) + _plan_updates.get("input_tokens", 0)
+            out["output_tokens"] = out.get("output_tokens", 0) + _plan_updates.get("output_tokens", 0)
         return out
 
     def finalize_answer(state: StandardAgentState) -> dict:
@@ -7899,64 +7933,12 @@ def create_standard_agent(
     def after_tools(state: StandardAgentState) -> str:
         return _route_after_tools_step(state)
 
-    def planner_node(state: StandardAgentState) -> dict:
-        """Generate a structured execution plan when plan mode is active."""
-        if not state.get("use_plan_mode", False):
-            return {}  # No-op pass-through
-
-        if state.get("plan"):
-            return {}  # Plan already exists (resuming thread)
-
-        messages = state.get("messages", [])
-        # Extract user prompt from messages
-        prompt_text = ""
-        for msg in messages:
-            if isinstance(msg, dict) and msg.get("role") in ("user", "human"):
-                prompt_text = msg.get("content", "")
-                break
-            msg_type = type(msg).__name__
-            if msg_type == "HumanMessage":
-                prompt_text = getattr(msg, "content", "")
-                break
-        if not prompt_text:
-            return {}
-
-        plan_sys = SystemMessage(content=(
-            "You are a planning assistant. Given the user's research task, "
-            "create a structured execution plan with 3-7 concrete steps.\n\n"
-            "Output ONLY valid JSON:\n"
-            '{"goal": "...", "steps": [{"id": 1, "description": "..."}, ...], '
-            '"version": 1, "current_step": 1}\n\n'
-            "Each step should be a specific, actionable research action."
-        ))
-        plan_human = HumanMessage(content=prompt_text)
-        response = None
-        try:
-            response = model.invoke([plan_sys, plan_human])
-            plan = _parse_plan_response(getattr(response, "content", ""))
-        except Exception:
-            plan = _parse_plan_response("")
-
-        _zero_usage = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
-        _usage = _token_usage_dict_from_message(response) if response is not None else _zero_usage
-
-        return {
-            "plan": plan,
-            "plan_history": [{"version": 1, "plan": plan, "source": "auto"}],
-            "token_trace": [{"node": "planner", **_usage}],
-            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
-            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
-            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
-        }
-
     workflow = StateGraph(StandardAgentState)
-    workflow.add_node("planner", planner_node)
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tool_node_with_scratchpad)
     workflow.add_node("finalize", finalize_answer)
 
-    workflow.set_entry_point("planner")
-    workflow.add_edge("planner", "agent")
+    workflow.set_entry_point("agent")
 
     workflow.add_conditional_edges(
         "agent",
