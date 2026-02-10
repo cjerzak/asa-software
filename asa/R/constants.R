@@ -23,6 +23,14 @@ ASA_DEFAULT_MODEL <- "gpt-4.1-mini"
 #' @keywords internal
 ASA_DEFAULT_GEMINI_MODEL <- "gemini-3-flash-preview"
 
+#' Default Anthropic Model
+#' @keywords internal
+ASA_DEFAULT_ANTHROPIC_MODEL <- "claude-sonnet-4-5-20250929"
+
+#' Default Bedrock Model
+#' @keywords internal
+ASA_DEFAULT_BEDROCK_MODEL <- "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+
 #' Default Conda Environment
 #' @keywords internal
 ASA_DEFAULT_CONDA_ENV <- "asa_env"
@@ -33,7 +41,7 @@ ASA_DEFAULT_PROXY <- "socks5h://127.0.0.1:9050"
 
 #' Supported Backends
 #' @keywords internal
-ASA_SUPPORTED_BACKENDS <- c("openai", "groq", "xai", "gemini", "exo", "openrouter")
+ASA_SUPPORTED_BACKENDS <- c("openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock")
 
 # ============================================================================
 # API ENDPOINTS
@@ -55,6 +63,8 @@ ASA_API_KEY_ENV_VARS <- list(
   groq = "GROQ_API_KEY",
   xai = "XAI_API_KEY",
   gemini = "GOOGLE_API_KEY",
+  anthropic = "ANTHROPIC_API_KEY",
+  bedrock = "AWS_ACCESS_KEY_ID",
   openrouter = "OPENROUTER_API_KEY",
   exo = NULL  # Local server, no API key needed
 )
@@ -357,6 +367,8 @@ ASA_DEFAULT_TEMPERATURES <- list(
   groq = 0.01,
   xai = 0.5,
   gemini = 1.0,
+  anthropic = 0.5,
+  bedrock = 0.5,
   exo = 0.01,
   openrouter = 0.5
 )
@@ -442,6 +454,12 @@ ASA_TRUNCATE_LENGTH <- 80L
 
   if (identical(backend, "gemini")) {
     return(ASA_DEFAULT_GEMINI_MODEL)
+  }
+  if (identical(backend, "anthropic")) {
+    return(ASA_DEFAULT_ANTHROPIC_MODEL)
+  }
+  if (identical(backend, "bedrock")) {
+    return(ASA_DEFAULT_BEDROCK_MODEL)
   }
 
   ASA_DEFAULT_MODEL

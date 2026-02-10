@@ -56,6 +56,14 @@ Includes \code{fold_count} (integer or error message string),
 \item{field_status}{Per-field extraction status map from agent state.}
 
 \item{json_repair}{JSON repair/fallback events emitted during execution.}
+
+\item{tokens_used}{Total token count for this invocation (integer, or NA).}
+
+\item{input_tokens}{Input (prompt) token count (integer, or NA).}
+
+\item{output_tokens}{Output (completion) token count (integer, or NA).}
+
+\item{token_trace}{Per-step token usage trace (list).}
 }
 \value{
 An object of class \code{asa_response}

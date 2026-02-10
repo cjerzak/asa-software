@@ -117,14 +117,22 @@ build_backend <- function(conda_env = NULL,
     msg("Conda environment '%s' already exists; installing/upgrading dependencies...", conda_env)
   }
 
-  # Helper for pip installation
+  # Helper for pip installation with error handling
   pip_install <- function(pkgs) {
-    reticulate::py_install(
-      packages = pkgs,
-      envname = conda_env,
-      conda = conda,
-      pip = TRUE
-    )
+    tryCatch({
+      reticulate::py_install(
+        packages = pkgs,
+        envname = conda_env,
+        conda = conda,
+        pip = TRUE
+      )
+    }, error = function(e) {
+      warning(
+        sprintf("Failed to install packages [%s]: %s",
+                paste(pkgs, collapse = ", "), e$message),
+        call. = FALSE
+      )
+    })
   }
 
   # Install packages in order
@@ -139,6 +147,8 @@ build_backend <- function(conda_env = NULL,
     "langchain_community",
     "langchain_openai",
     "langchain-google-genai",
+    "langchain-anthropic",
+    "langchain-aws",
     "langgraph",
     "langchain-tavily"
   ))
@@ -578,6 +588,8 @@ check_backend <- function(conda_env = NULL, strict = FALSE) {
       "langchain_groq",
       "langchain_openai",
       "langchain_google_genai",
+      "langchain_anthropic",
+      "langchain_aws",
       "langgraph",
       "ddgs",
       "selenium",

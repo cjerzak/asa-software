@@ -4,7 +4,7 @@
 #' search tools (Wikipedia, DuckDuckGo). The agent can use multiple LLM
 #' backends and supports DeepAgent-style memory folding.
 #'
-#' @param backend LLM backend to use. One of: "openai", "groq", "xai", "gemini", "exo", "openrouter"
+#' @param backend LLM backend to use. One of: "openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock"
 #' @param model Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")
 #' @param conda_env Name of the conda environment with Python dependencies
 #' @param proxy Proxy URL for search tools.
@@ -63,6 +63,9 @@
 #'   \item Groq: \code{GROQ_API_KEY}
 #'   \item xAI: \code{XAI_API_KEY}
 #'   \item Gemini: \code{GOOGLE_API_KEY} (or \code{GEMINI_API_KEY})
+#'   \item Anthropic: \code{ANTHROPIC_API_KEY}
+#'   \item Bedrock: \code{AWS_ACCESS_KEY_ID} + \code{AWS_SECRET_ACCESS_KEY}
+#'     (optionally \code{AWS_DEFAULT_REGION}, defaults to "us-east-1")
 #'   \item OpenRouter: \code{OPENROUTER_API_KEY}
 #' }
 #'
@@ -506,6 +509,25 @@ initialize_agent <- function(backend = NULL,
     }
 
     llm <- do.call(chat_models$ChatGoogleGenerativeAI, args)
+  } else if (backend == "anthropic") {
+    chat_models <- reticulate::import("langchain_anthropic")
+    llm <- chat_models$ChatAnthropic(
+      api_key = Sys.getenv("ANTHROPIC_API_KEY"),
+      model = model,
+      temperature = ASA_DEFAULT_TEMPERATURES$anthropic,
+      rate_limiter = rate_limiter
+    )
+  } else if (backend == "bedrock") {
+    chat_models <- reticulate::import("langchain_aws")
+    region <- Sys.getenv("AWS_DEFAULT_REGION", unset = "us-east-1")
+    llm <- chat_models$ChatBedrockConverse(
+      model_id = model,
+      region_name = region,
+      temperature = ASA_DEFAULT_TEMPERATURES$bedrock
+    )
+  } else {
+    stop("Unsupported backend: '", backend, "'. Supported backends: ",
+         paste(ASA_SUPPORTED_BACKENDS, collapse = ", "), call. = FALSE)
   }
 
   llm

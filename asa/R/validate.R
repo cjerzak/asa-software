@@ -1066,11 +1066,28 @@
     groq = "GROQ_API_KEY",
     xai = "XAI_API_KEY",
     gemini = c("GOOGLE_API_KEY", "GEMINI_API_KEY"),
+    anthropic = "ANTHROPIC_API_KEY",
+    bedrock = c("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"),
     openrouter = "OPENROUTER_API_KEY"
   )
 
   # Exo is local, no API key needed
   if (backend == "exo") {
+    return(invisible(TRUE))
+  }
+
+  # Bedrock uses AWS credentials (both key ID and secret must be set)
+  if (backend == "bedrock") {
+    key_id <- Sys.getenv("AWS_ACCESS_KEY_ID", unset = "")
+    secret <- Sys.getenv("AWS_SECRET_ACCESS_KEY", unset = "")
+    if (!nzchar(key_id) || !nzchar(secret)) {
+      .stop_validation(
+        "AWS credentials",
+        "be set for the bedrock backend",
+        actual = if (!nzchar(key_id)) "AWS_ACCESS_KEY_ID not set" else "AWS_SECRET_ACCESS_KEY not set",
+        fix = "Set both AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables"
+      )
+    }
     return(invisible(TRUE))
   }
 

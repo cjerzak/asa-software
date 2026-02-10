@@ -12,6 +12,12 @@ __pycache__/
 # Local agent settings
 .claude/settings.local.json
 
+# Personal
+*.env
+sync_code.sh
+docs/
+.Renviron
+
 # R build/check artifacts
 *.Rcheck/
 asa_*.tar.gz

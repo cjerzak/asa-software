@@ -1294,21 +1294,23 @@ def _record_captcha_hit(proxy: Optional[str]) -> None:
     """
     global _SESSION_CAPTCHA_COUNT
 
-    # Track session-level CAPTCHAs (even for direct connections)
-    _SESSION_CAPTCHA_COUNT += 1
+    # Track session-level CAPTCHAs (even for direct connections) - thread-safe
+    with _SESSION_STATE_LOCK:
+        _SESSION_CAPTCHA_COUNT += 1
+        captcha_count = _SESSION_CAPTCHA_COUNT
 
     # Check session-level thresholds
-    if _SESSION_CAPTCHA_COUNT >= _SESSION_CAPTCHA_CRITICAL:
+    if captcha_count >= _SESSION_CAPTCHA_CRITICAL:
         logger.error("CRITICAL: Session has hit %d CAPTCHAs - search infrastructure may be blocked",
-                    _SESSION_CAPTCHA_COUNT)
-        raise RuntimeError(f"Session CAPTCHA limit exceeded ({_SESSION_CAPTCHA_COUNT} CAPTCHAs). "
+                    captcha_count)
+        raise RuntimeError(f"Session CAPTCHA limit exceeded ({captcha_count} CAPTCHAs). "
                           "All exit nodes may be blocked. Consider: (1) waiting 10+ minutes, "
                           "(2) using different Tor circuits, (3) reducing request rate.")
 
-    if _SESSION_CAPTCHA_COUNT >= _SESSION_CAPTCHA_THRESHOLD and \
-       _SESSION_CAPTCHA_COUNT % _SESSION_CAPTCHA_THRESHOLD == 0:  # Every 50 CAPTCHAs
+    if captcha_count >= _SESSION_CAPTCHA_THRESHOLD and \
+       captcha_count % _SESSION_CAPTCHA_THRESHOLD == 0:  # Every 50 CAPTCHAs
         logger.warning("Session has hit %d CAPTCHAs - taking extended pause (%.0fs)",
-                      _SESSION_CAPTCHA_COUNT, _SESSION_CAPTCHA_PAUSE_DURATION)
+                      captcha_count, _SESSION_CAPTCHA_PAUSE_DURATION)
         time.sleep(_SESSION_CAPTCHA_PAUSE_DURATION)
 
     if not proxy:

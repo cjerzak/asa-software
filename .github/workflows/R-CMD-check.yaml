@@ -60,7 +60,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda activate asa_env
-          pip install langchain_groq langchain_community langchain_openai langgraph langchain-tavily
+          pip install langchain_groq langchain_community langchain_openai langchain-google-genai langchain-anthropic langchain-aws langgraph langchain-tavily
           pip install ddgs selenium primp beautifulsoup4 requests fake_headers
           pip install httpx pysocks socksio python-dotenv arxiv wikipedia
 
