@@ -4447,6 +4447,13 @@ def _unknown_value_for_descriptor(descriptor: Any) -> Any:
         return []
     if "object" in lower:
         return {}
+
+    # Plain "string" (or similar) descriptor without "|null" means the field is
+    # required.  Return "Unknown" so the canonical payload never emits null for a
+    # required string field.
+    if "string" in lower or "str" in lower:
+        return "Unknown"
+
     return None
 
 
@@ -7445,6 +7452,22 @@ def create_memory_folding_agent(
                 + "\n\nDo NOT discard any data that could answer these fields.\n"
             )
 
+        # Build scratchpad block so the summarizer preserves agent-saved findings.
+        scratchpad_block = ""
+        _fold_scratchpad = state.get("scratchpad") or []
+        if _fold_scratchpad:
+            sp_lines = []
+            for entry in _fold_scratchpad:
+                cat = entry.get("category", "")
+                finding = entry.get("finding", "")
+                prefix = f"[{cat}] " if cat else ""
+                sp_lines.append(f"  - {prefix}{finding}")
+            scratchpad_block = (
+                "\n\nAGENT SCRATCHPAD (explicitly saved findings — treat as verified facts):\n"
+                + "\n".join(sp_lines)
+                + "\n\nYou MUST include every scratchpad finding in the output facts.\n"
+            )
+
         summarize_prompt = (
             "You are updating LONG-TERM MEMORY for an AI research assistant.\n"
             "Return STRICT JSON ONLY. No markdown. No extra text.\n\n"
@@ -7468,6 +7491,7 @@ def create_memory_folding_agent(
             f"Current memory JSON:\n{current_memory_json}\n\n"
             f"New transcript chunk (excerpted):\n{fold_text}\n"
             f"{anchored_block}"
+            f"{scratchpad_block}"
             f"{schema_extraction_block}"
         )
 

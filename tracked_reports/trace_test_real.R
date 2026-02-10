@@ -146,8 +146,8 @@ attempt <- asa::run_task(
     verbose = FALSE,
     use_plan_mode = FALSE, 
     agent = asa::initialize_agent(
-      #backend = "gemini", model = "gemini-3-pro-preview",
-      backend = "gemini", model = "gemini-3-flash-preview",
+      backend = "gemini", model = "gemini-3-pro-preview",
+      #backend = "gemini", model = "gemini-3-flash-preview",
       #backend = "openai", model = "gpt-5-mini-2025-08-07",
       #backend = "openai", model = "gpt-5-nano-2025-08-07",
       # proxy = proxy,
