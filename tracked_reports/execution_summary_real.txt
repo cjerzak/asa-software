@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 2.7677,
+  "elapsed_time": 3.1453,
   "field_status": {
     "education_level": {
       "status": "pending",
@@ -35,23 +35,23 @@
     },
     "prior_occupation": {
       "status": "found",
-      "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)",
+      "source_url": null,
       "evidence": null,
       "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "class_background": {
       "status": "found",
-      "value": "Indigenous",
-      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "value": "Indigenous (Source: https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)",
+      "source_url": null,
       "evidence": null,
       "attempts": 2,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
-      "status": "pending",
-      "value": null,
+      "status": "found",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "source_url": null,
       "evidence": null,
       "attempts": 2,
@@ -75,8 +75,8 @@
     },
     "birth_place": {
       "status": "found",
-      "value": "TIPNIS",
-      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "value": "TIPNIS (Source: https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales)",
+      "source_url": null,
       "evidence": null,
       "attempts": 2,
       "descriptor": "string|Unknown"
@@ -98,8 +98,8 @@
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "pending",
-      "value": null,
+      "status": "found",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "source_url": null,
       "evidence": null,
       "attempts": 2,
