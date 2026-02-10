@@ -35,6 +35,7 @@
     search_budget_limit = search_budget_limit,
     unknown_after_searches = unknown_after_searches,
     finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+    use_plan_mode = use_plan_mode,
     verbose = verbose,
     thread_id = thread_id
   )
@@ -396,9 +397,7 @@
   initial_state$output_tokens <- 0L
   initial_state$token_trace <- list()
 
-  if (isTRUE(use_plan_mode)) {
-    initial_state$use_plan_mode <- TRUE
-  }
+  initial_state$use_plan_mode <- isTRUE(use_plan_mode)
 
   # Only seed summary/fold_stats when starting a fresh (ephemeral) thread.
   if (is.null(thread_id)) {
@@ -454,9 +453,7 @@
   if (!is.null(finalize_on_all_fields_resolved)) {
     initial_state$finalize_on_all_fields_resolved <- isTRUE(finalize_on_all_fields_resolved)
   }
-  if (isTRUE(use_plan_mode)) {
-    initial_state$use_plan_mode <- TRUE
-  }
+  initial_state$use_plan_mode <- isTRUE(use_plan_mode)
 
   response <- python_agent$invoke(
     initial_state,

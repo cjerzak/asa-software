@@ -3532,6 +3532,61 @@ test_that("plan mode generates plan in response (standard agent)", {
   expect_equal(length(plan_r$steps), 3L)
 })
 
+test_that("plan mode planner uses the most recent user prompt", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _LatestPromptLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "        self.planner_prompt = None\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    "            try:\n",
+    "                self.planner_prompt = getattr(messages[1], 'content', None)\n",
+    "            except Exception:\n",
+    "                self.planner_prompt = None\n",
+    '            return AIMessage(content=\'{"goal":"G","steps":[{"id":1,"description":"S1"}],"version":1,"current_step":1}\')\n',
+    "        return AIMessage(content='done')\n\n",
+    "latest_prompt_llm = _LatestPromptLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_standard_agent(
+    model = reticulate::py$latest_prompt_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(
+        list(role = "user", content = "old prompt should not be used"),
+        list(role = "assistant", content = "assistant message"),
+        list(role = "user", content = "new prompt should drive plan")
+      ),
+      stop_reason = NULL,
+      use_plan_mode = TRUE,
+      tokens_used = 0L,
+      input_tokens = 0L,
+      output_tokens = 0L,
+      token_trace = list()
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = "test_plan_latest_user_prompt")
+    )
+  )
+
+  expect_true(!is.null(final_state$plan), info = "Plan should still be generated")
+  planner_prompt <- reticulate::py_to_r(reticulate::py$latest_prompt_llm$planner_prompt)
+  expect_equal(planner_prompt, "new prompt should drive plan")
+})
+
 test_that("plan is injected into system prompt", {
   custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
@@ -3589,6 +3644,84 @@ test_that("plan is injected into system prompt", {
     grepl("YOUR EXECUTION PLAN", p, fixed = TRUE)
   }, logical(1)))
   expect_true(has_plan_block, info = "Agent system prompt should contain the plan block")
+})
+
+test_that("reused thread with use_plan_mode FALSE does not inject stale plan", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c(ASA_TEST_LANGGRAPH_MODULES, "langgraph.checkpoint.memory"))
+  mem_mod <- reticulate::import("langgraph.checkpoint.memory", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _StickyPlanPromptLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "        self.system_prompts = []\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        try:\n",
+    "            self.system_prompts.append(getattr(messages[0], 'content', None))\n",
+    "        except Exception:\n",
+    "            self.system_prompts.append(None)\n",
+    "        if self.n == 1:\n",
+    '            return AIMessage(content=\'{"goal":"G","steps":[{"id":1,"description":"S1"}],"version":1,"current_step":1}\')\n',
+    "        return AIMessage(content='done')\n\n",
+    "sticky_plan_prompt_llm = _StickyPlanPromptLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_standard_agent(
+    model = reticulate::py$sticky_plan_prompt_llm,
+    tools = list(),
+    checkpointer = mem_mod$MemorySaver(),
+    debug = FALSE
+  )
+
+  thread_id <- "test_plan_toggle_same_thread"
+  state1 <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "run 1")),
+      stop_reason = NULL,
+      use_plan_mode = TRUE,
+      tokens_used = 0L,
+      input_tokens = 0L,
+      output_tokens = 0L,
+      token_trace = list()
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = thread_id)
+    )
+  )
+  expect_true(!is.null(state1$plan), info = "Run 1 should generate a plan")
+
+  state2 <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "run 2 with plan mode off")),
+      stop_reason = NULL,
+      use_plan_mode = FALSE,
+      tokens_used = 0L,
+      input_tokens = 0L,
+      output_tokens = 0L,
+      token_trace = list()
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = thread_id)
+    )
+  )
+  expect_true(!is.null(state2$messages), info = "Run 2 should complete normally")
+  expect_true(is.null(state2$plan) || identical(state2$plan, list()),
+    info = "Run 2 should not carry a stale plan when mode is off")
+
+  sys_prompts <- reticulate::py_to_r(reticulate::py$sticky_plan_prompt_llm$system_prompts)
+  has_plan_block <- vapply(sys_prompts, function(p) {
+    is.character(p) && grepl("YOUR EXECUTION PLAN", p, fixed = TRUE)
+  }, logical(1))
+  expect_true(any(has_plan_block), info = "At least one run should include a plan block")
+  expect_false(has_plan_block[[length(has_plan_block)]],
+    info = "Run 2 prompt should not include stale plan block when mode is off")
 })
 
 test_that("update_plan tool call updates plan steps via tool node", {
@@ -3651,6 +3784,115 @@ test_that("update_plan tool call updates plan steps via tool node", {
   # plan_history should have multiple entries
   plan_history <- reticulate::py_to_r(final_state$plan_history)
   expect_true(length(plan_history) >= 2L, info = "plan_history should track versions")
+})
+
+test_that("update_plan matches numeric string step ids", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _UpdatePlanStringIdLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    '            return AIMessage(content=\'{"goal":"G","steps":[{"id":"1","description":"S1"}],"version":1,"current_step":1}\')\n',
+    "        if self.n == 2:\n",
+    "            return AIMessage(\n",
+    "                content='update with int id',\n",
+    "                tool_calls=[{'name':'update_plan','args':{'step_id':1,'status':'completed','findings':'found it'},'id':'call_up_str'}],\n",
+    "            )\n",
+    "        return AIMessage(content='done')\n\n",
+    "update_plan_string_id_llm = _UpdatePlanStringIdLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$update_plan_string_id_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(100),
+    fold_char_budget = as.integer(100000),
+    keep_recent = as.integer(1),
+    debug = FALSE
+  )
+
+  initial <- msgs$HumanMessage(content = "test update plan string id")
+  final_state <- agent$invoke(
+    list(
+      messages = list(initial),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L),
+      use_plan_mode = TRUE
+    ),
+    config = list(
+      recursion_limit = as.integer(30),
+      configurable = list(thread_id = "test_update_plan_string_id")
+    )
+  )
+
+  plan <- reticulate::py_to_r(final_state$plan)
+  expect_true(!is.null(plan), info = "Plan should exist")
+  expect_equal(plan$steps[[1]]$status, "completed")
+  expect_equal(plan$steps[[1]]$findings, "found it")
+  expect_true(plan$version >= 2L)
+})
+
+test_that("update_plan no-op does not increment plan version", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _UpdatePlanNoopLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    '            return AIMessage(content=\'{"goal":"G","steps":[{"id":1,"description":"S1"}],"version":1,"current_step":1}\')\n',
+    "        if self.n == 2:\n",
+    "            return AIMessage(\n",
+    "                content='invalid update',\n",
+    "                tool_calls=[{'name':'update_plan','args':{'step_id':999,'status':'completed','findings':'x'},'id':'call_up_noop'}],\n",
+    "            )\n",
+    "        return AIMessage(content='done')\n\n",
+    "update_plan_noop_llm = _UpdatePlanNoopLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$update_plan_noop_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(100),
+    fold_char_budget = as.integer(100000),
+    keep_recent = as.integer(1),
+    debug = FALSE
+  )
+
+  initial <- msgs$HumanMessage(content = "test update plan noop")
+  final_state <- agent$invoke(
+    list(
+      messages = list(initial),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L),
+      use_plan_mode = TRUE
+    ),
+    config = list(
+      recursion_limit = as.integer(30),
+      configurable = list(thread_id = "test_update_plan_noop")
+    )
+  )
+
+  plan <- reticulate::py_to_r(final_state$plan)
+  expect_true(!is.null(plan), info = "Plan should exist")
+  expect_equal(plan$version, 1L)
+  expect_equal(plan$steps[[1]]$status, "pending")
 })
 
 test_that("_format_plan_for_prompt returns None for empty plan", {

@@ -185,6 +185,7 @@ attempt$token_stats$tokens_used
 attempt$token_stats$input_tokens
 attempt$token_stats$output_tokens
 attempt$plan
+attempt$plan_history
 plot(unlist(lapply(attempt$token_stats$token_trace,function(l_){l_$input_tokens})))
 plot(unlist(attempt$token_stats$token_trace))
 attempt$elapsed_time

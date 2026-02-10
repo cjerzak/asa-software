@@ -633,7 +633,8 @@
                                 field_status = NULL, budget_state = NULL,
                                 search_budget_limit = NULL,
                                 unknown_after_searches = NULL,
-                                finalize_on_all_fields_resolved = NULL) {
+                                finalize_on_all_fields_resolved = NULL,
+                                use_plan_mode = NULL) {
   .validate_string(prompt, "prompt")
 
   if (!is.null(agent)) {
@@ -654,6 +655,9 @@
   }
   if (!is.null(finalize_on_all_fields_resolved)) {
     .validate_logical(finalize_on_all_fields_resolved, "finalize_on_all_fields_resolved")
+  }
+  if (!is.null(use_plan_mode)) {
+    .validate_logical(use_plan_mode, "use_plan_mode")
   }
 
   .validate_logical(verbose, "verbose")

@@ -63,6 +63,8 @@
 #' @param webpage_embedding_model Embedding model identifier. For OpenAI,
 #'   defaults to "text-embedding-3-small". For sentence-transformers, use a
 #'   local model name (e.g., "all-MiniLM-L6-v2").
+#' @param use_plan_mode Logical flag. When TRUE, the agent creates and follows
+#'   a structured execution plan, updating step status during the run.
 #'
 #' @return An \code{asa_result} object with:
 #'   \itemize{

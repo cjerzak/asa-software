@@ -4745,6 +4745,8 @@ def _make_update_plan_tool():
         """Update a step in your execution plan.
 
         Call this when you start, complete, or skip a plan step.
+        For best results, call once with status='in_progress' before work and
+        again with status='completed' (plus findings) when the step is done.
 
         Args:
             step_id: The step number to update (1-based)
@@ -4768,28 +4770,89 @@ def _format_plan_for_prompt(plan: Any) -> Optional[str]:
     lines = ["=== YOUR EXECUTION PLAN ==="]
     if goal:
         lines.append(f"Goal: {goal}")
+    current_step = plan.get("current_step")
+    if current_step is not None:
+        lines.append(f"Current step: {current_step}")
     lines.append("")
-    lines.append("Steps:")
+    lines.append("Checklist:")
     status_labels = {
-        "completed": "COMPLETED",
-        "in_progress": "IN PROGRESS",
-        "skipped": "SKIPPED",
-        "pending": "PENDING",
+        "completed": "[x] COMPLETED",
+        "in_progress": "[-] IN PROGRESS",
+        "skipped": "[~] SKIPPED",
+        "pending": "[ ] PENDING",
     }
     for step in steps:
         sid = step.get("id", "?")
         desc = step.get("description", "")
-        st = status_labels.get(step.get("status", "pending"), "PENDING")
+        st = status_labels.get(step.get("status", "pending"), "[ ] PENDING")
         findings = step.get("findings", "")
-        line = f"{sid}. [{st}] {desc}"
-        if findings and st in ("COMPLETED", "SKIPPED"):
+        completion_criteria = step.get("completion_criteria", "")
+        line = f"{st} Step {sid}: {desc}"
+        if completion_criteria:
+            line += f" | Done when: {completion_criteria}"
+        if findings and step.get("status") in ("completed", "skipped"):
             line += f" -> {findings}"
         lines.append(line)
 
     lines.append("")
-    lines.append("Follow this plan. Update step status with update_plan() as you work.")
+    lines.append(
+        "Execution discipline: mark each step in_progress before you start it,"
+        " and completed immediately after done criteria are met."
+    )
+    lines.append(
+        "Use update_plan(step_id, status, findings) to keep the checklist accurate."
+    )
     lines.append("=== END PLAN ===")
     return "\n".join(lines)
+
+
+def _normalize_plan_step_id(step_id: Any, fallback: Any = None) -> Any:
+    """Normalize plan step identifiers so string/number ids compare consistently."""
+    if isinstance(step_id, bool):
+        return fallback if fallback is not None else step_id
+    if isinstance(step_id, int):
+        return step_id
+    if isinstance(step_id, float):
+        try:
+            if step_id.is_integer():
+                return int(step_id)
+        except Exception:
+            pass
+        return fallback if fallback is not None else step_id
+    if isinstance(step_id, str):
+        text = step_id.strip()
+        if not text:
+            return fallback if fallback is not None else step_id
+        if re.fullmatch(r"[+-]?\d+", text):
+            try:
+                return int(text)
+            except Exception:
+                return text
+        return text
+    return fallback if fallback is not None else step_id
+
+
+def _extract_step_completion_criteria(step: dict) -> str:
+    """Best-effort extraction of completion criteria from planner output."""
+    if not isinstance(step, dict):
+        return ""
+    for key in ("completion_criteria", "done_when", "success_criteria", "definition_of_done"):
+        value = step.get(key)
+        if value is None:
+            continue
+        text = str(value).strip()
+        if text:
+            return text[:300]
+    return ""
+
+
+def _default_step_completion_criteria(description: str) -> str:
+    """Fallback completion criteria used when planner output omits it."""
+    desc = str(description or "").strip() or "the step"
+    return (
+        f"Capture concrete evidence for '{desc}' and mark the step completed "
+        "with update_plan(..., status='completed', findings='...')."
+    )[:300]
 
 
 def _parse_plan_response(content: str) -> Dict[str, Any]:
@@ -4797,7 +4860,13 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
     import json as _json
     fallback = {
         "goal": "Complete the research task",
-        "steps": [{"id": 1, "description": "Research and answer the query", "status": "pending", "findings": ""}],
+        "steps": [{
+            "id": 1,
+            "description": "Research and answer the query",
+            "completion_criteria": "Final answer cites concrete evidence from tool output.",
+            "status": "pending",
+            "findings": "",
+        }],
         "version": 1,
         "current_step": 1,
     }
@@ -4825,9 +4894,26 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
     normalized_steps = []
     for i, step in enumerate(plan.get("steps", [])):
         if isinstance(step, dict):
+            desc = str(step.get("description", "") or "").strip()[:300]
+            if not desc:
+                desc = f"Execute step {i + 1}"
+            completion_criteria = _extract_step_completion_criteria(step)
+            if not completion_criteria:
+                completion_criteria = _default_step_completion_criteria(desc)
+            step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
             normalized_steps.append({
-                "id": step.get("id", i + 1),
-                "description": step.get("description", ""),
+                "id": step_id,
+                "description": desc,
+                "completion_criteria": completion_criteria,
+                "status": "pending",
+                "findings": "",
+            })
+        elif isinstance(step, str) and step.strip():
+            desc = step.strip()[:300]
+            normalized_steps.append({
+                "id": i + 1,
+                "description": desc,
+                "completion_criteria": _default_step_completion_criteria(desc),
                 "status": "pending",
                 "findings": "",
             })
@@ -4855,25 +4941,21 @@ def _maybe_generate_plan(state: dict, model: Any) -> dict:
     from langchain_core.messages import SystemMessage, HumanMessage
 
     messages = state.get("messages", [])
-    prompt_text = ""
-    for msg in messages:
-        msg_type = type(msg).__name__
-        if msg_type == "HumanMessage":
-            prompt_text = getattr(msg, "content", "")
-            break
-        if isinstance(msg, dict) and msg.get("role") in ("user", "human"):
-            prompt_text = msg.get("content", "")
-            break
+    prompt_text = _extract_last_user_prompt(messages)
     if not prompt_text:
         return {}
 
     plan_sys = SystemMessage(content=(
         "You are a planning assistant. Given the user's research task, "
-        "create a structured execution plan with 3-7 concrete steps.\n\n"
+        "create a structured execution checklist with 4-8 concrete steps.\n\n"
         "Output ONLY valid JSON:\n"
-        '{"goal": "...", "steps": [{"id": 1, "description": "..."}, ...], '
+        '{"goal": "...", "steps": [{"id": 1, "description": "...", '
+        '"completion_criteria": "..."}, ...], '
         '"version": 1, "current_step": 1}\n\n'
-        "Each step should be a specific, actionable research action."
+        "Requirements:\n"
+        "- Each step must be specific and action-oriented (avoid generic wording).\n"
+        "- Include explicit completion_criteria describing when the step is done.\n"
+        "- Steps should build toward a final evidence-backed answer."
     ))
     plan_human = HumanMessage(content=prompt_text)
     response = None
@@ -6201,27 +6283,44 @@ def _create_tool_node_with_scratchpad(base_tool_node, *, debug: bool = False):
         result["field_status"] = field_status
         result["budget_state"] = budget_state
 
-        # Apply plan updates if the agent called update_plan
-        if plan_updates and state.get("plan"):
+        # Apply plan updates if plan mode is enabled and the agent called update_plan.
+        plan_mode_enabled = bool(state.get("use_plan_mode", False))
+        if plan_updates and plan_mode_enabled and state.get("plan"):
             import copy as _copy
             current_plan = _copy.deepcopy(state["plan"])
+            steps = current_plan.get("steps", []) if isinstance(current_plan, dict) else []
+            changed = False
             for update in plan_updates:
-                step_id = update.get("step_id")
-                for step in current_plan.get("steps", []):
-                    if step.get("id") == step_id:
+                step_id = _normalize_plan_step_id(update.get("step_id"))
+                if step_id is None:
+                    continue
+                for i, step in enumerate(steps):
+                    if not isinstance(step, dict):
+                        continue
+                    current_step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+                    if current_step_id == step_id:
+                        step["id"] = current_step_id
                         new_status = update.get("status", "")
                         if new_status in ("in_progress", "completed", "skipped"):
-                            step["status"] = new_status
+                            if step.get("status") != new_status:
+                                step["status"] = new_status
+                                changed = True
                         if update.get("findings"):
-                            step["findings"] = str(update["findings"])[:500]
-            current_plan["version"] = current_plan.get("version", 0) + 1
-            # Advance current_step to next pending
-            for step in current_plan.get("steps", []):
-                if step.get("status") == "pending":
-                    current_plan["current_step"] = step["id"]
-                    break
-            result["plan"] = current_plan
-            result["plan_history"] = [{"version": current_plan["version"], "plan": current_plan}]
+                            findings_text = str(update["findings"])[:500]
+                            if step.get("findings") != findings_text:
+                                step["findings"] = findings_text
+                                changed = True
+            if changed:
+                current_plan["version"] = current_plan.get("version", 0) + 1
+                # Advance current_step to next pending, else clear when all steps are done.
+                next_pending = None
+                for i, step in enumerate(steps):
+                    if isinstance(step, dict) and step.get("status") == "pending":
+                        next_pending = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+                        break
+                current_plan["current_step"] = next_pending
+                result["plan"] = current_plan
+                result["plan_history"] = [{"version": current_plan["version"], "plan": current_plan}]
 
         # Defensive marker: if tool execution happened at the recursion edge,
         # preserve stop_reason even when routing must end immediately.
@@ -6459,7 +6558,8 @@ def create_memory_folding_agent(
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
-        plan = state.get("plan")
+        plan_mode_enabled = bool(state.get("use_plan_mode", False))
+        plan = state.get("plan") if plan_mode_enabled else None
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source")
         if expected_schema is None:
@@ -6651,6 +6751,8 @@ def create_memory_folding_agent(
             repair_events.append(canonical_event)
         if repair_events:
             out["json_repair"] = repair_events
+        if not plan_mode_enabled:
+            out["plan"] = None
         # Set stop_reason when agent_node itself ran in finalize mode,
         # so routing can skip the redundant finalize_answer node.
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
@@ -6674,7 +6776,8 @@ def create_memory_folding_agent(
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
-        plan = state.get("plan")
+        plan_mode_enabled = bool(state.get("use_plan_mode", False))
+        plan = state.get("plan") if plan_mode_enabled else None
         remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)
@@ -7647,7 +7750,8 @@ def create_standard_agent(
 
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
-        plan = state.get("plan")
+        plan_mode_enabled = bool(state.get("use_plan_mode", False))
+        plan = state.get("plan") if plan_mode_enabled else None
         remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source")
@@ -7781,6 +7885,8 @@ def create_standard_agent(
             repair_events.append(canonical_event)
         if repair_events:
             out["json_repair"] = repair_events
+        if not plan_mode_enabled:
+            out["plan"] = None
         # Set stop_reason when agent_node itself ran in finalize mode,
         # so routing can skip the redundant finalize_answer node.
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
@@ -7801,7 +7907,8 @@ def create_standard_agent(
     def finalize_answer(state: StandardAgentState) -> dict:
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
-        plan = state.get("plan")
+        plan_mode_enabled = bool(state.get("use_plan_mode", False))
+        plan = state.get("plan") if plan_mode_enabled else None
         remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)

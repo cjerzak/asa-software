@@ -101,6 +101,9 @@ One of: "auto" (default), "openai", "sentence_transformers".}
 defaults to "text-embedding-3-small". For sentence-transformers, use a
 local model name (e.g., "all-MiniLM-L6-v2").}
 
+\item{use_plan_mode}{Logical flag. When TRUE, the agent creates and follows
+a structured execution plan, updating step status during the run.}
+
 \item{recursion_limit}{Optional maximum number of agent steps. Precedence is:
 per-call value (this argument), then configured default from
 \code{initialize_agent()} / \code{asa_config()}, then mode-specific fallback
