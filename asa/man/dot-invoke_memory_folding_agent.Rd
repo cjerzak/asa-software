@@ -14,7 +14,8 @@
   budget_state = NULL,
   search_budget_limit = NULL,
   unknown_after_searches = NULL,
-  finalize_on_all_fields_resolved = NULL
+  finalize_on_all_fields_resolved = NULL,
+  use_plan_mode = FALSE
 )
 }
 \description{

@@ -144,6 +144,7 @@ attempt <- asa::run_task(
     expected_fields = NULL,
     expected_schema = EXPECTED_SCHEMA,
     verbose = FALSE,
+    use_plan_mode = TRUE, 
     agent = asa::initialize_agent(
       #backend = "gemini", model = "gemini-3-pro-preview",
       backend = "gemini", model = "gemini-3-flash-preview",

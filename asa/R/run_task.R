@@ -170,6 +170,7 @@ run_task <- function(prompt,
                      webpage_relevance_mode = NULL,
                      webpage_embedding_provider = NULL,
                      webpage_embedding_model = NULL,
+                     use_plan_mode = FALSE,
                      recursion_limit = NULL) {
 
   # Validate config type early (before any work)
@@ -205,6 +206,7 @@ run_task <- function(prompt,
     webpage_relevance_mode = webpage_relevance_mode,
     webpage_embedding_provider = webpage_embedding_provider,
     webpage_embedding_model = webpage_embedding_model,
+    use_plan_mode = use_plan_mode,
     recursion_limit = recursion_limit
   )
 
@@ -268,6 +270,7 @@ run_task <- function(prompt,
       search_budget_limit = search_budget_limit,
       unknown_after_searches = unknown_after_searches,
       finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+      use_plan_mode = use_plan_mode,
       verbose = verbose
     )
   })
@@ -335,7 +338,9 @@ run_task <- function(prompt,
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
     json_repair = response$json_repair %||% list(),
-    token_stats = token_stats
+    token_stats = token_stats,
+    plan = response$plan %||% list(),
+    plan_history = response$plan_history %||% list()
   )
 
   # Build result object - always return asa_result for consistent API
@@ -355,6 +360,8 @@ run_task <- function(prompt,
   result$fold_stats <- response$fold_stats %||% list()
   result$status_code <- response$status_code %||% NA_integer_
   result$token_stats <- token_stats
+  result$plan <- response$plan %||% list()
+  result$plan_history <- response$plan_history %||% list()
 
   # For "raw" format, add additional fields for debugging
   if (identical(output_format, "raw")) {

@@ -504,7 +504,8 @@
                                allow_read_webpages = NULL,
                                webpage_relevance_mode = NULL,
                                webpage_embedding_provider = NULL,
-                               webpage_embedding_model = NULL) {
+                               webpage_embedding_model = NULL,
+                               use_plan_mode = NULL) {
   .validate_string(prompt, "prompt")
 
   .validate_output_format(
@@ -575,6 +576,10 @@
   }
   if (!is.null(webpage_embedding_model)) {
     .validate_string(webpage_embedding_model, "webpage_embedding_model")
+  }
+
+  if (!is.null(use_plan_mode)) {
+    .validate_logical(use_plan_mode, "use_plan_mode")
   }
 
   invisible(TRUE)

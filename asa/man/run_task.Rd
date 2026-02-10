@@ -23,6 +23,7 @@ run_task(
   webpage_relevance_mode = NULL,
   webpage_embedding_provider = NULL,
   webpage_embedding_model = NULL,
+  use_plan_mode = FALSE,
   recursion_limit = NULL
 )
 }

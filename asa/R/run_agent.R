@@ -21,6 +21,7 @@
                        search_budget_limit = NULL,
                        unknown_after_searches = NULL,
                        finalize_on_all_fields_resolved = NULL,
+                       use_plan_mode = FALSE,
                        verbose = FALSE) {
 
   # Validate inputs
@@ -83,7 +84,8 @@
             budget_state = budget_state,
             search_budget_limit = search_budget_limit,
             unknown_after_searches = unknown_after_searches,
-            finalize_on_all_fields_resolved = finalize_on_all_fields_resolved
+            finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+            use_plan_mode = use_plan_mode
           )
         } else {
           .invoke_standard_agent(
@@ -96,7 +98,8 @@
             budget_state = budget_state,
             search_budget_limit = search_budget_limit,
             unknown_after_searches = unknown_after_searches,
-            finalize_on_all_fields_resolved = finalize_on_all_fields_resolved
+            finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+            use_plan_mode = use_plan_mode
           )
         }
       },
@@ -181,8 +184,12 @@
   output_tokens <- .as_scalar_int(.try_or(raw_response$output_tokens, NA_integer_))
   token_trace <- .try_or(as.list(raw_response$token_trace), list())
 
+  # Extract plan fields from Python state
+  plan <- .try_or(reticulate::py_to_r(raw_response$plan), list())
+  plan_history <- .try_or(reticulate::py_to_r(raw_response$plan_history), list())
+
   # Return response object
-  asa_response(
+  resp <- asa_response(
     message = response_text,
     status_code = if (is.na(response_text) || invoke_exception_fallback) {
       ASA_STATUS_ERROR
@@ -205,6 +212,9 @@
     output_tokens = output_tokens,
     token_trace = token_trace
   )
+  resp$plan <- plan
+  resp$plan_history <- plan_history
+  resp
 }
 
 # NOTE: run_agent() has been removed from public API.
@@ -349,7 +359,8 @@
                                          field_status = NULL, budget_state = NULL,
                                          search_budget_limit = NULL,
                                          unknown_after_searches = NULL,
-                                         finalize_on_all_fields_resolved = NULL) {
+                                         finalize_on_all_fields_resolved = NULL,
+                                         use_plan_mode = FALSE) {
   # Import message type
   from_schema <- reticulate::import("langchain_core.messages")
   initial_message <- from_schema$HumanMessage(content = prompt)
@@ -385,6 +396,10 @@
   initial_state$output_tokens <- 0L
   initial_state$token_trace <- list()
 
+  if (isTRUE(use_plan_mode)) {
+    initial_state$use_plan_mode <- TRUE
+  }
+
   # Only seed summary/fold_stats when starting a fresh (ephemeral) thread.
   if (is.null(thread_id)) {
     initial_state$summary <- reticulate::dict()
@@ -409,7 +424,8 @@
                                    field_status = NULL, budget_state = NULL,
                                    search_budget_limit = NULL,
                                    unknown_after_searches = NULL,
-                                   finalize_on_all_fields_resolved = NULL) {
+                                   finalize_on_all_fields_resolved = NULL,
+                                   use_plan_mode = FALSE) {
   resolved_thread_id <- .resolve_thread_id(thread_id)
   initial_state <- list(
     messages = list(list(role = "user", content = prompt)),
@@ -437,6 +453,9 @@
   }
   if (!is.null(finalize_on_all_fields_resolved)) {
     initial_state$finalize_on_all_fields_resolved <- isTRUE(finalize_on_all_fields_resolved)
+  }
+  if (isTRUE(use_plan_mode)) {
+    initial_state$use_plan_mode <- TRUE
   }
 
   response <- python_agent$invoke(

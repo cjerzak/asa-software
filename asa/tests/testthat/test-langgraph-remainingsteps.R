@@ -3384,3 +3384,320 @@ test_that("post-fold system prompt includes continuation nudge", {
   }, logical(1)))
   expect_true(has_nudge, info = "Post-fold system prompt should contain continuation nudge")
 })
+
+# ===========================================================================
+# Plan Mode Tests
+# ===========================================================================
+
+test_that("plan mode generates plan in response (memory folding)", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  # Stub LLM that returns a plan JSON on first call, then a final answer.
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _PlanModeLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    '            return AIMessage(content=\'{"goal":"Find info","steps":[{"id":1,"description":"Search"},{"id":2,"description":"Summarize"}],"version":1,"current_step":1}\')\n',
+    "        return AIMessage(content='final answer')\n\n",
+    "plan_mode_llm = _PlanModeLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$plan_mode_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(100),
+    fold_char_budget = as.integer(100000),
+    keep_recent = as.integer(1),
+    debug = FALSE
+  )
+
+  initial <- msgs$HumanMessage(content = "Find birth year of Marie Curie")
+  final_state <- agent$invoke(
+    list(
+      messages = list(initial),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L),
+      use_plan_mode = TRUE
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = "test_plan_mode_on")
+    )
+  )
+
+  plan <- final_state$plan
+  expect_true(!is.null(plan), info = "Plan should be populated when plan mode is on")
+  plan_r <- reticulate::py_to_r(plan)
+  expect_equal(plan_r$goal, "Find info")
+  expect_equal(length(plan_r$steps), 2L)
+  expect_equal(plan_r$steps[[1]]$description, "Search")
+  expect_equal(plan_r$steps[[2]]$description, "Summarize")
+
+  plan_history <- reticulate::py_to_r(final_state$plan_history)
+  expect_true(length(plan_history) >= 1L, info = "plan_history should have at least one entry")
+})
+
+test_that("plan mode off leaves plan empty (memory folding)", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  asa_test_stub_llm(
+    mode = "simple",
+    response_content = "done",
+    var_name = "no_plan_llm"
+  )
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$no_plan_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(100),
+    fold_char_budget = as.integer(100000),
+    keep_recent = as.integer(1),
+    debug = FALSE
+  )
+
+  initial <- msgs$HumanMessage(content = "hello")
+  final_state <- agent$invoke(
+    list(
+      messages = list(initial),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L)
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = "test_plan_mode_off")
+    )
+  )
+
+  plan <- final_state$plan
+  # Plan should be None/NULL when plan mode is off
+  expect_true(is.null(plan) || identical(plan, list()),
+    info = "Plan should be empty when plan mode is off")
+})
+
+test_that("plan mode generates plan in response (standard agent)", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _StdPlanLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    '            return AIMessage(content=\'{"goal":"Research task","steps":[{"id":1,"description":"Step A"},{"id":2,"description":"Step B"},{"id":3,"description":"Step C"}],"version":1,"current_step":1}\')\n',
+    "        return AIMessage(content='standard final')\n\n",
+    "std_plan_llm = _StdPlanLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_standard_agent(
+    model = reticulate::py$std_plan_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Do a research task")),
+      stop_reason = NULL,
+      use_plan_mode = TRUE,
+      tokens_used = 0L,
+      input_tokens = 0L,
+      output_tokens = 0L,
+      token_trace = list()
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = "test_std_plan")
+    )
+  )
+
+  plan <- final_state$plan
+  expect_true(!is.null(plan), info = "Standard agent plan should be populated")
+  plan_r <- reticulate::py_to_r(plan)
+  expect_equal(plan_r$goal, "Research task")
+  expect_equal(length(plan_r$steps), 3L)
+})
+
+test_that("plan is injected into system prompt", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  # Use a recording LLM to capture system prompts
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _PlanRecordLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "        self.system_prompts = []\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        try:\n",
+    "            self.system_prompts.append(getattr(messages[0], 'content', None))\n",
+    "        except Exception:\n",
+    "            self.system_prompts.append(None)\n",
+    "        if self.n == 1:\n",
+    '            return AIMessage(content=\'{"goal":"Test goal","steps":[{"id":1,"description":"First step"}],"version":1,"current_step":1}\')\n',
+    "        return AIMessage(content='done')\n\n",
+    "plan_record_llm = _PlanRecordLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$plan_record_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(100),
+    fold_char_budget = as.integer(100000),
+    keep_recent = as.integer(1),
+    debug = FALSE
+  )
+
+  initial <- msgs$HumanMessage(content = "test prompt")
+  final_state <- agent$invoke(
+    list(
+      messages = list(initial),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L),
+      use_plan_mode = TRUE
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = "test_plan_in_prompt")
+    )
+  )
+
+  # The agent_node system prompt (second invocation) should include the plan
+  sys_prompts <- reticulate::py_to_r(reticulate::py$plan_record_llm$system_prompts)
+  # First prompt is the planner, second is the agent
+  agent_prompts <- if (length(sys_prompts) >= 2) sys_prompts[2:length(sys_prompts)] else sys_prompts
+  has_plan_block <- any(vapply(agent_prompts, function(p) {
+    grepl("YOUR EXECUTION PLAN", p, fixed = TRUE)
+  }, logical(1)))
+  expect_true(has_plan_block, info = "Agent system prompt should contain the plan block")
+})
+
+test_that("update_plan tool call updates plan steps via tool node", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  # Stub LLM: first call returns plan, second calls update_plan tool, third returns final
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _UpdatePlanLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    '            return AIMessage(content=\'{"goal":"G","steps":[{"id":1,"description":"S1"},{"id":2,"description":"S2"}],"version":1,"current_step":1}\')\n',
+    "        if self.n == 2:\n",
+    "            return AIMessage(\n",
+    "                content='updating plan',\n",
+    "                tool_calls=[{'name':'update_plan','args':{'step_id':1,'status':'completed','findings':'found it'},'id':'call_up1'}],\n",
+    "            )\n",
+    "        return AIMessage(content='all done')\n\n",
+    "update_plan_llm = _UpdatePlanLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$update_plan_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(100),
+    fold_char_budget = as.integer(100000),
+    keep_recent = as.integer(1),
+    debug = FALSE
+  )
+
+  initial <- msgs$HumanMessage(content = "test update plan")
+  final_state <- agent$invoke(
+    list(
+      messages = list(initial),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L),
+      use_plan_mode = TRUE
+    ),
+    config = list(
+      recursion_limit = as.integer(30),
+      configurable = list(thread_id = "test_update_plan")
+    )
+  )
+
+  plan <- reticulate::py_to_r(final_state$plan)
+  expect_true(!is.null(plan), info = "Plan should exist after update_plan call")
+  # Step 1 should be completed with findings
+  step1 <- plan$steps[[1]]
+  expect_equal(step1$status, "completed")
+  expect_equal(step1$findings, "found it")
+  # Version should have incremented
+  expect_true(plan$version >= 2L, info = "Plan version should increment after update")
+  # plan_history should have multiple entries
+  plan_history <- reticulate::py_to_r(final_state$plan_history)
+  expect_true(length(plan_history) >= 2L, info = "plan_history should track versions")
+})
+
+test_that("_format_plan_for_prompt returns None for empty plan", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  result <- custom_ddg$`_format_plan_for_prompt`(NULL)
+  expect_true(is.null(result))
+  result2 <- custom_ddg$`_format_plan_for_prompt`(list())
+  expect_true(is.null(result2))
+})
+
+test_that("_format_plan_for_prompt formats plan correctly", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  plan <- list(
+    goal = "Test goal",
+    steps = list(
+      list(id = 1L, description = "Step one", status = "completed", findings = "Done"),
+      list(id = 2L, description = "Step two", status = "in_progress", findings = ""),
+      list(id = 3L, description = "Step three", status = "pending", findings = "")
+    ),
+    version = 2L,
+    current_step = 2L
+  )
+  result <- custom_ddg$`_format_plan_for_prompt`(plan)
+  expect_true(grepl("YOUR EXECUTION PLAN", result, fixed = TRUE))
+  expect_true(grepl("Test goal", result, fixed = TRUE))
+  expect_true(grepl("COMPLETED", result, fixed = TRUE))
+  expect_true(grepl("IN PROGRESS", result, fixed = TRUE))
+  expect_true(grepl("PENDING", result, fixed = TRUE))
+  expect_true(grepl("Step one", result, fixed = TRUE))
+  expect_true(grepl("Done", result, fixed = TRUE))
+})
+
+test_that("_parse_plan_response handles valid JSON", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  result <- custom_ddg$`_parse_plan_response`(
+    '{"goal":"G","steps":[{"id":1,"description":"S1"}],"version":1,"current_step":1}'
+  )
+  result_r <- reticulate::py_to_r(result)
+  expect_equal(result_r$goal, "G")
+  expect_equal(length(result_r$steps), 1L)
+  expect_equal(result_r$steps[[1]]$status, "pending")
+})
+
+test_that("_parse_plan_response returns fallback for invalid JSON", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  result <- custom_ddg$`_parse_plan_response`("not json at all")
+  result_r <- reticulate::py_to_r(result)
+  expect_true(!is.null(result_r$goal))
+  expect_true(length(result_r$steps) >= 1L)
+})

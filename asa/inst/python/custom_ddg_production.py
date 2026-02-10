@@ -4736,12 +4736,117 @@ def _make_save_finding_tool():
     return save_finding
 
 
+def _make_update_plan_tool():
+    """Create the update_plan tool for marking plan step progress."""
+    from langchain_core.tools import tool
+
+    @tool
+    def update_plan(step_id: int, status: str, findings: str = "") -> str:
+        """Update a step in your execution plan.
+
+        Call this when you start, complete, or skip a plan step.
+
+        Args:
+            step_id: The step number to update (1-based)
+            status: New status - "in_progress", "completed", or "skipped"
+            findings: What was discovered or accomplished in this step
+        """
+        return f"Plan step {step_id} updated to '{status}'"
+
+    return update_plan
+
+
+def _format_plan_for_prompt(plan: Any) -> Optional[str]:
+    """Format a plan dict for injection into the system prompt."""
+    if not plan or not isinstance(plan, dict):
+        return None
+    goal = plan.get("goal", "")
+    steps = plan.get("steps", [])
+    if not goal and not steps:
+        return None
+
+    lines = ["=== YOUR EXECUTION PLAN ==="]
+    if goal:
+        lines.append(f"Goal: {goal}")
+    lines.append("")
+    lines.append("Steps:")
+    status_labels = {
+        "completed": "COMPLETED",
+        "in_progress": "IN PROGRESS",
+        "skipped": "SKIPPED",
+        "pending": "PENDING",
+    }
+    for step in steps:
+        sid = step.get("id", "?")
+        desc = step.get("description", "")
+        st = status_labels.get(step.get("status", "pending"), "PENDING")
+        findings = step.get("findings", "")
+        line = f"{sid}. [{st}] {desc}"
+        if findings and st in ("COMPLETED", "SKIPPED"):
+            line += f" -> {findings}"
+        lines.append(line)
+
+    lines.append("")
+    lines.append("Follow this plan. Update step status with update_plan() as you work.")
+    lines.append("=== END PLAN ===")
+    return "\n".join(lines)
+
+
+def _parse_plan_response(content: str) -> Dict[str, Any]:
+    """Parse LLM plan response into a structured plan dict."""
+    import json as _json
+    fallback = {
+        "goal": "Complete the research task",
+        "steps": [{"id": 1, "description": "Research and answer the query", "status": "pending", "findings": ""}],
+        "version": 1,
+        "current_step": 1,
+    }
+    if not content or not isinstance(content, str):
+        return fallback
+    # Try to extract JSON from the response (possibly wrapped in markdown fences)
+    text = content.strip()
+    if "```" in text:
+        # Extract content between code fences
+        parts = text.split("```")
+        for part in parts[1:]:
+            candidate = part.strip()
+            if candidate.startswith("json"):
+                candidate = candidate[4:].strip()
+            if candidate.startswith("{"):
+                text = candidate.split("```")[0].strip()
+                break
+    try:
+        plan = _json.loads(text)
+    except (_json.JSONDecodeError, ValueError):
+        return fallback
+    if not isinstance(plan, dict) or "steps" not in plan:
+        return fallback
+    # Normalize steps
+    normalized_steps = []
+    for i, step in enumerate(plan.get("steps", [])):
+        if isinstance(step, dict):
+            normalized_steps.append({
+                "id": step.get("id", i + 1),
+                "description": step.get("description", ""),
+                "status": "pending",
+                "findings": "",
+            })
+    if not normalized_steps:
+        return fallback
+    plan["steps"] = normalized_steps
+    plan.setdefault("version", 1)
+    plan.setdefault("current_step", 1)
+    plan.setdefault("goal", "")
+    return plan
+
+
 def _base_system_prompt(
     summary: Any = None,
     scratchpad: Any = None,
     field_status: Any = None,
     budget_state: Any = None,
     post_fold: bool = False,
+    plan: Any = None,
 ) -> str:
     """Generate system prompt that includes optional structured memory context."""
     budget = _normalize_budget_state(budget_state)
@@ -4764,9 +4869,12 @@ def _base_system_prompt(
     memory_block = _format_memory_for_system_prompt(summary)
     field_status_block = _format_field_status_for_prompt(field_status)
     scratchpad_block = _format_scratchpad_for_prompt(scratchpad)
+    plan_block = _format_plan_for_prompt(plan)
     parts = [base_prompt]
     if field_status_block:
         parts.append(field_status_block)
+    if plan_block:
+        parts.append(plan_block)
     if memory_block:
         parts.append(memory_block)
     if scratchpad_block:
@@ -4788,6 +4896,7 @@ def _final_system_prompt(
     field_status: Any = None,
     budget_state: Any = None,
     remaining: int = None,
+    plan: Any = None,
 ) -> str:
     """System prompt used when we're about to hit the recursion limit."""
     budget = _normalize_budget_state(budget_state)
@@ -4815,9 +4924,12 @@ def _final_system_prompt(
     memory_block = _format_memory_for_system_prompt(summary)
     field_status_block = _format_field_status_for_prompt(field_status)
     scratchpad_block = _format_scratchpad_for_prompt(scratchpad)
+    plan_block = _format_plan_for_prompt(plan)
     parts = [base_prompt]
     if field_status_block:
         parts.append(field_status_block)
+    if plan_block:
+        parts.append(plan_block)
     if scratchpad_block:
         parts.append(scratchpad_block)
     if memory_block:
@@ -5576,6 +5688,9 @@ class MemoryFoldingAgentState(TypedDict):
     input_tokens: int
     output_tokens: int
     token_trace: Annotated[list, add_to_list]
+    plan: Optional[Dict[str, Any]]
+    plan_history: Annotated[list, add_to_list]
+    use_plan_mode: Optional[bool]
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -5963,10 +6078,13 @@ def _route_after_tools_step(state: Any) -> str:
 
 
 def _create_tool_node_with_scratchpad(base_tool_node, *, debug: bool = False):
-    """Wrap a ToolNode to extract save_finding calls into scratchpad state."""
+    """Wrap a ToolNode to extract save_finding and update_plan calls into state."""
+    _INTERNAL_TOOL_NAMES = {"save_finding", "update_plan"}
+
     def tool_node_with_scratchpad(state):
-        """Execute tools, extract scratchpad entries into state."""
+        """Execute tools, extract scratchpad entries and plan updates into state."""
         scratchpad_entries = []
+        plan_updates = []
         tool_calls = []
         last_msg = (state.get("messages") or [None])[-1]
         for tc in getattr(last_msg, "tool_calls", []) or []:
@@ -5979,8 +6097,10 @@ def _create_tool_node_with_scratchpad(base_tool_node, *, debug: bool = False):
                         "finding": finding[:500],
                         "category": category if category in ("fact", "observation", "todo", "insight") else "fact",
                     })
+            elif tc.get("name") == "update_plan":
+                plan_updates.append(tc.get("args") or {})
 
-        search_calls_delta = sum(1 for tc in tool_calls if tc.get("name") != "save_finding")
+        search_calls_delta = sum(1 for tc in tool_calls if tc.get("name") not in _INTERNAL_TOOL_NAMES)
         expected_schema = _state_expected_schema(state)
         field_status = _state_field_status(state)
         prior_budget = _state_budget(state)
@@ -6024,6 +6144,29 @@ def _create_tool_node_with_scratchpad(base_tool_node, *, debug: bool = False):
             result["scratchpad"] = scratchpad_entries
         result["field_status"] = field_status
         result["budget_state"] = budget_state
+
+        # Apply plan updates if the agent called update_plan
+        if plan_updates and state.get("plan"):
+            import copy as _copy
+            current_plan = _copy.deepcopy(state["plan"])
+            for update in plan_updates:
+                step_id = update.get("step_id")
+                for step in current_plan.get("steps", []):
+                    if step.get("id") == step_id:
+                        new_status = update.get("status", "")
+                        if new_status in ("in_progress", "completed", "skipped"):
+                            step["status"] = new_status
+                        if update.get("findings"):
+                            step["findings"] = str(update["findings"])[:500]
+            current_plan["version"] = current_plan.get("version", 0) + 1
+            # Advance current_step to next pending
+            for step in current_plan.get("steps", []):
+                if step.get("status") == "pending":
+                    current_plan["current_step"] = step["id"]
+                    break
+            result["plan"] = current_plan
+            result["plan_history"] = [{"version": current_plan["version"], "plan": current_plan}]
+
         # Defensive marker: if tool execution happened at the recursion edge,
         # preserve stop_reason even when routing must end immediately.
         remaining = remaining_steps_value(state)
@@ -6078,10 +6221,11 @@ def create_memory_folding_agent(
     if summarizer_model is None:
         summarizer_model = model
 
-    # Create save_finding tool and combine with user-provided tools
+    # Create save_finding and update_plan tools, combine with user-provided tools
     save_finding = _make_save_finding_tool()
+    update_plan = _make_update_plan_tool()
     primary_tools = list(tools)
-    tools_with_scratchpad = primary_tools + [save_finding]
+    tools_with_scratchpad = primary_tools + [save_finding, update_plan]
 
     # Bind tools to model for the agent node
     model_with_tools = model.bind_tools(tools_with_scratchpad)
@@ -6253,6 +6397,7 @@ def create_memory_folding_agent(
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
+        plan = state.get("plan")
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source")
         if expected_schema is None:
@@ -6322,6 +6467,7 @@ def create_memory_folding_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 remaining=remaining,
+                plan=plan,
             ))
             full_messages = _build_full_messages(system_msg, messages, summary, archive)
             response, invoke_event = _invoke_model_with_fallback(
@@ -6341,6 +6487,7 @@ def create_memory_folding_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 post_fold=_post_fold,
+                plan=plan,
             ))
             full_messages = _build_full_messages(system_msg, messages, summary, archive)
             required_tool_plan = _extract_required_tool_plan(messages)
@@ -6454,6 +6601,7 @@ def create_memory_folding_agent(
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
+        plan = state.get("plan")
         remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)
@@ -6521,6 +6669,7 @@ def create_memory_folding_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 remaining=remaining,
+                plan=plan,
             ))
             full_messages = _build_full_messages(system_msg, messages, summary, archive)
             if tool_digest:
@@ -7319,17 +7468,71 @@ def create_memory_folding_agent(
         # Otherwise, we've already produced the final AI response.
         return "end"
 
+    def planner_node(state: MemoryFoldingAgentState) -> dict:
+        """Generate a structured execution plan when plan mode is active."""
+        if not state.get("use_plan_mode", False):
+            return {}  # No-op pass-through
+
+        if state.get("plan"):
+            return {}  # Plan already exists (resuming thread)
+
+        messages = state.get("messages", [])
+        # Extract user prompt from first HumanMessage
+        prompt_text = ""
+        for msg in messages:
+            msg_type = type(msg).__name__
+            if msg_type == "HumanMessage":
+                prompt_text = getattr(msg, "content", "")
+                break
+            # Fallback for dict-style messages
+            if isinstance(msg, dict) and msg.get("role") in ("user", "human"):
+                prompt_text = msg.get("content", "")
+                break
+        if not prompt_text:
+            return {}
+
+        # Call LLM WITHOUT tools to generate plan
+        plan_sys = SystemMessage(content=(
+            "You are a planning assistant. Given the user's research task, "
+            "create a structured execution plan with 3-7 concrete steps.\n\n"
+            "Output ONLY valid JSON:\n"
+            '{"goal": "...", "steps": [{"id": 1, "description": "..."}, ...], '
+            '"version": 1, "current_step": 1}\n\n'
+            "Each step should be a specific, actionable research action."
+        ))
+        plan_human = HumanMessage(content=prompt_text)
+        response = None
+        try:
+            response = model.invoke([plan_sys, plan_human])
+            plan = _parse_plan_response(getattr(response, "content", ""))
+        except Exception:
+            plan = _parse_plan_response("")
+
+        _zero_usage = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
+        _usage = _token_usage_dict_from_message(response) if response is not None else _zero_usage
+
+        return {
+            "plan": plan,
+            "plan_history": [{"version": 1, "plan": plan, "source": "auto"}],
+            "token_trace": [{"node": "planner", **_usage}],
+            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
+            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
+            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+        }
+
     # Build the StateGraph
     workflow = StateGraph(MemoryFoldingAgentState)
 
     # Add nodes
+    workflow.add_node("planner", planner_node)
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tool_node_with_scratchpad)
     workflow.add_node("summarize", summarize_conversation)
     workflow.add_node("finalize", finalize_answer)
 
-    # Set entry point
-    workflow.set_entry_point("agent")
+    # Set entry point - planner runs first, then unconditionally goes to agent
+    workflow.set_entry_point("planner")
+    workflow.add_edge("planner", "agent")
 
     # Add conditional edges from agent
     workflow.add_conditional_edges(
@@ -7390,6 +7593,9 @@ class StandardAgentState(TypedDict):
     input_tokens: int
     output_tokens: int
     token_trace: Annotated[list, add_to_list]
+    plan: Optional[Dict[str, Any]]
+    plan_history: Annotated[list, add_to_list]
+    use_plan_mode: Optional[bool]
 
 
 def create_standard_agent(
@@ -7406,9 +7612,10 @@ def create_standard_agent(
     from langchain_core.messages import SystemMessage, HumanMessage
     from langgraph.prebuilt import ToolNode
 
-    # Create save_finding tool and combine with user-provided tools
+    # Create save_finding and update_plan tools, combine with user-provided tools
     save_finding = _make_save_finding_tool()
-    tools_with_scratchpad = list(tools) + [save_finding]
+    update_plan = _make_update_plan_tool()
+    tools_with_scratchpad = list(tools) + [save_finding, update_plan]
 
     model_with_tools = model.bind_tools(tools_with_scratchpad)
     base_tool_node = ToolNode(tools_with_scratchpad)
@@ -7417,6 +7624,7 @@ def create_standard_agent(
     def agent_node(state: StandardAgentState) -> dict:
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
+        plan = state.get("plan")
         remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source")
@@ -7452,6 +7660,7 @@ def create_standard_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 remaining=remaining,
+                plan=plan,
             ))
             full_messages = [system_msg] + list(messages)
             response, invoke_event = _invoke_model_with_fallback(
@@ -7468,6 +7677,7 @@ def create_standard_agent(
                 scratchpad=scratchpad,
                 field_status=field_status,
                 budget_state=budget_state,
+                plan=plan,
             ))
             full_messages = [system_msg] + list(messages)
             response, invoke_event = _invoke_model_with_fallback(
@@ -7557,6 +7767,7 @@ def create_standard_agent(
     def finalize_answer(state: StandardAgentState) -> dict:
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
+        plan = state.get("plan")
         remaining = remaining_steps_value(state)
         expected_schema = state.get("expected_schema")
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)
@@ -7600,6 +7811,7 @@ def create_standard_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 remaining=remaining,
+                plan=plan,
             ))
             full_messages = [system_msg] + list(messages)
             if tool_digest:
@@ -7687,12 +7899,64 @@ def create_standard_agent(
     def after_tools(state: StandardAgentState) -> str:
         return _route_after_tools_step(state)
 
+    def planner_node(state: StandardAgentState) -> dict:
+        """Generate a structured execution plan when plan mode is active."""
+        if not state.get("use_plan_mode", False):
+            return {}  # No-op pass-through
+
+        if state.get("plan"):
+            return {}  # Plan already exists (resuming thread)
+
+        messages = state.get("messages", [])
+        # Extract user prompt from messages
+        prompt_text = ""
+        for msg in messages:
+            if isinstance(msg, dict) and msg.get("role") in ("user", "human"):
+                prompt_text = msg.get("content", "")
+                break
+            msg_type = type(msg).__name__
+            if msg_type == "HumanMessage":
+                prompt_text = getattr(msg, "content", "")
+                break
+        if not prompt_text:
+            return {}
+
+        plan_sys = SystemMessage(content=(
+            "You are a planning assistant. Given the user's research task, "
+            "create a structured execution plan with 3-7 concrete steps.\n\n"
+            "Output ONLY valid JSON:\n"
+            '{"goal": "...", "steps": [{"id": 1, "description": "..."}, ...], '
+            '"version": 1, "current_step": 1}\n\n'
+            "Each step should be a specific, actionable research action."
+        ))
+        plan_human = HumanMessage(content=prompt_text)
+        response = None
+        try:
+            response = model.invoke([plan_sys, plan_human])
+            plan = _parse_plan_response(getattr(response, "content", ""))
+        except Exception:
+            plan = _parse_plan_response("")
+
+        _zero_usage = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
+        _usage = _token_usage_dict_from_message(response) if response is not None else _zero_usage
+
+        return {
+            "plan": plan,
+            "plan_history": [{"version": 1, "plan": plan, "source": "auto"}],
+            "token_trace": [{"node": "planner", **_usage}],
+            "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
+            "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
+            "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+        }
+
     workflow = StateGraph(StandardAgentState)
+    workflow.add_node("planner", planner_node)
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tool_node_with_scratchpad)
     workflow.add_node("finalize", finalize_answer)
 
-    workflow.set_entry_point("agent")
+    workflow.set_entry_point("planner")
+    workflow.add_edge("planner", "agent")
 
     workflow.add_conditional_edges(
         "agent",

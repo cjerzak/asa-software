@@ -20,7 +20,8 @@
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,
   webpage_embedding_provider = NULL,
-  webpage_embedding_model = NULL
+  webpage_embedding_model = NULL,
+  use_plan_mode = NULL
 )
 }
 \description{
