@@ -3401,6 +3401,33 @@ def _format_scratchpad_for_prompt(scratchpad, max_entries=30):
 _FIELD_STATUS_FOUND = "found"
 _FIELD_STATUS_PENDING = "pending"
 _FIELD_STATUS_UNKNOWN = "unknown"
+
+
+def _sync_scratchpad_to_field_status(scratchpad, field_status):
+    """Promote scratchpad findings into field_status so the ledger stays authoritative.
+
+    This must run in every code-path that reads field_status (agent_node AND
+    finalize_answer) — not only at finalization — because the system prompt
+    tells the LLM to treat FIELD STATUS as the single source of truth.
+    """
+    if not scratchpad or not field_status:
+        return field_status
+    for _sp_entry in scratchpad:
+        _finding = _sp_entry.get("finding", "") if isinstance(_sp_entry, dict) else str(_sp_entry)
+        _fe = re.match(
+            r"(?:\[ANCHORED\]\s*)?(?:FIELD_EXTRACT:\s*)?(\S+)\s*=\s*(.+?)(?:\s*\(source:\s*(.*?)\))?\s*$",
+            str(_finding),
+        )
+        if _fe:
+            _fn = _fe.group(1).strip()
+            _fv = _fe.group(2).strip()
+            _fs = (_fe.group(3) or "").strip() or None
+            if _fn in field_status and field_status[_fn].get("status") != _FIELD_STATUS_FOUND:
+                field_status[_fn]["value"] = _fv
+                field_status[_fn]["status"] = _FIELD_STATUS_FOUND
+                if _fs:
+                    field_status[_fn]["source_url"] = _fs
+    return field_status
 _FIELD_STATUS_VALID = {
     _FIELD_STATUS_FOUND,
     _FIELD_STATUS_PENDING,
@@ -6717,6 +6744,10 @@ def create_memory_folding_agent(
                     if _fs:
                         field_status[_fn]["source_url"] = _fs
 
+        # Also sync scratchpad findings into field_status so the ledger is
+        # authoritative even during normal (non-finalize) agent turns.
+        _sync_scratchpad_to_field_status(scratchpad, field_status)
+
         budget_state = _normalize_budget_state(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
@@ -6931,22 +6962,8 @@ def create_memory_folding_agent(
                     if _fs:
                         field_status[_fn]["source_url"] = _fs
 
-        # Also sync FIELD_EXTRACT-style values from scratchpad findings.
-        for _sp_entry in (scratchpad or []):
-            _finding = _sp_entry.get("finding", "") if isinstance(_sp_entry, dict) else str(_sp_entry)
-            _fe = re.match(
-                r"(?:\[ANCHORED\]\s*)?(?:FIELD_EXTRACT:\s*)?(\S+)\s*=\s*(.+?)(?:\s*\(source:\s*(.*?)\))?\s*$",
-                str(_finding),
-            )
-            if _fe:
-                _fn = _fe.group(1).strip()
-                _fv = _fe.group(2).strip()
-                _fs = (_fe.group(3) or "").strip() or None
-                if _fn in field_status and field_status[_fn].get("status") != _FIELD_STATUS_FOUND:
-                    field_status[_fn]["value"] = _fv
-                    field_status[_fn]["status"] = _FIELD_STATUS_FOUND
-                    if _fs:
-                        field_status[_fn]["source_url"] = _fs
+        # Also sync scratchpad findings into field_status.
+        _sync_scratchpad_to_field_status(scratchpad, field_status)
 
         budget_state = _normalize_budget_state(
             state.get("budget_state"),
@@ -7917,6 +7934,9 @@ def create_standard_agent(
         elif expected_schema_source is None:
             expected_schema_source = "explicit"
         field_status = _normalize_field_status_map(state.get("field_status"), expected_schema)
+        # Sync scratchpad findings into field_status so the ledger is
+        # authoritative even during normal (non-finalize) agent turns.
+        _sync_scratchpad_to_field_status(scratchpad, field_status)
         budget_state = _normalize_budget_state(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
@@ -8069,23 +8089,8 @@ def create_standard_agent(
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)
         field_status = _normalize_field_status_map(state.get("field_status"), expected_schema)
 
-        # Sync FIELD_EXTRACT-style values from scratchpad findings into field_status
-        # so that finalize sees all resolved values even if field_status lagged behind.
-        for _sp_entry in (scratchpad or []):
-            _finding = _sp_entry.get("finding", "") if isinstance(_sp_entry, dict) else str(_sp_entry)
-            _fe = re.match(
-                r"(?:\[ANCHORED\]\s*)?(?:FIELD_EXTRACT:\s*)?(\S+)\s*=\s*(.+?)(?:\s*\(source:\s*(.*?)\))?\s*$",
-                str(_finding),
-            )
-            if _fe:
-                _fn = _fe.group(1).strip()
-                _fv = _fe.group(2).strip()
-                _fs = (_fe.group(3) or "").strip() or None
-                if _fn in field_status and field_status[_fn].get("status") != _FIELD_STATUS_FOUND:
-                    field_status[_fn]["value"] = _fv
-                    field_status[_fn]["status"] = _FIELD_STATUS_FOUND
-                    if _fs:
-                        field_status[_fn]["source_url"] = _fs
+        # Sync scratchpad findings into field_status.
+        _sync_scratchpad_to_field_status(scratchpad, field_status)
 
         budget_state = _normalize_budget_state(
             state.get("budget_state"),

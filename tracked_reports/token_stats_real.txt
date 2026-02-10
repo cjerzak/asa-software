@@ -1,62 +1,62 @@
 {
-  "tokens_used": 61891,
-  "input_tokens": 46535,
-  "output_tokens": 15356,
-  "fold_tokens": 19651,
+  "tokens_used": 56555,
+  "input_tokens": 41051,
+  "output_tokens": 15504,
+  "fold_tokens": 20249,
   "token_trace": [
     {
       "node": "agent",
       "input_tokens": 2137,
-      "output_tokens": 212,
-      "total_tokens": 2349
+      "output_tokens": 169,
+      "total_tokens": 2306
     },
     {
       "node": "agent",
-      "input_tokens": 3710,
-      "output_tokens": 692,
-      "total_tokens": 4402
+      "input_tokens": 3388,
+      "output_tokens": 443,
+      "total_tokens": 3831
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4531,
+      "output_tokens": 378,
+      "total_tokens": 4909
     },
     {
       "node": "summarize",
-      "input_tokens": 1637,
-      "output_tokens": 2740,
-      "total_tokens": 4377
+      "input_tokens": 1562,
+      "output_tokens": 2593,
+      "total_tokens": 4155
     },
     {
       "node": "agent",
-      "input_tokens": 6728,
-      "output_tokens": 543,
-      "total_tokens": 7271
+      "input_tokens": 6359,
+      "output_tokens": 470,
+      "total_tokens": 6829
     },
     {
       "node": "summarize",
-      "input_tokens": 2737,
-      "output_tokens": 4399,
-      "total_tokens": 7136
+      "input_tokens": 2396,
+      "output_tokens": 4621,
+      "total_tokens": 7017
     },
     {
       "node": "agent",
-      "input_tokens": 7961,
-      "output_tokens": 447,
-      "total_tokens": 8408
-    },
-    {
-      "node": "agent",
-      "input_tokens": 9106,
-      "output_tokens": 749,
-      "total_tokens": 9855
+      "input_tokens": 8826,
+      "output_tokens": 487,
+      "total_tokens": 9313
     },
     {
       "node": "summarize",
-      "input_tokens": 2997,
-      "output_tokens": 5141,
-      "total_tokens": 8138
+      "input_tokens": 3275,
+      "output_tokens": 5802,
+      "total_tokens": 9077
     },
     {
       "node": "agent",
-      "input_tokens": 9522,
-      "output_tokens": 433,
-      "total_tokens": 9955
+      "input_tokens": 8577,
+      "output_tokens": 541,
+      "total_tokens": 9118
     }
   ]
 }

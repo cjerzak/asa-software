@@ -105,53 +105,10 @@ NOW EXECUTE THE SEARCH AND PROVIDE YOUR RESPONSE.
 
 [ai]
 
-  -> save_finding(fact, Ramona Moye Camaconi is the titular deputy for Circunscripción 6 (Beni), and her substitute is Eloy Cartagena Yoamona. (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428))
-  -> OpenWebpage(http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)
-
-[tool: save_finding]
-Saved to scratchpad: Ramona Moye Camaconi is the titular deputy for Circunscripción 6 (Beni), and her substitute is Eloy Cartagena Yoamona. (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)
-
-
-[tool: OpenWebpage]
-URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609
-Final URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609
-Title: Vicepresidencia del Estado
-Bytes read: 7201
-Cache: MISS
-
-Relevant excerpts:
-
-[1]
-[link: https://www.vicepresidencia.gob.bo]
-senadores
-[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]
-diputados
-[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]
-bancadas
-[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]
-brigadas
-[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]
-comisiones
-[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]
-directiva
-[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]
-RAMONA MOYE CAMACONI
-Diputado uninominal - Circunscripción 6 de MAS para el departamento de Beni
-Fecha de nacimiento:
-1982-01-07
-Suplente:
-ELOY CARTAGENA YOAMONA
-[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428]
-Actividades realizadas
-• Presidenta de la Organización de Mujeres - Sub Central Sécure.
-
-
-
-[ai]
-
-  -> save_finding(birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609), fact)
+  -> save_finding(fact, birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609))
   -> save_finding(fact, prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609))
-  -> Search("Ramona Moye Camaconi" educación formación académica)
+  -> save_finding(Ramona Moye Camaconi is a Diputado uninominal - Circunscripción 6 de MAS for Beni (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609), fact)
+  -> Search(Ramona Moye Camaconi biografia lugar de nacimiento educacion profesion)
 
 [tool: save_finding]
 Saved to scratchpad: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)
@@ -161,10 +118,22 @@ Saved to scratchpad: birth_year = 1982 (source: http://www.vicepresidencia.gob.b
 Saved to scratchpad: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)
 
 
+[tool: save_finding]
+Saved to scratchpad: Ramona Moye Camaconi is a Diputado uninominal - Circunscripción 6 de MAS for Beni (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)
+
+
 [tool: Search]
-__START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis on Facebook. Join Facebook to connect withRamona Moye Camaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> View the profiles of people namedRamona Moye Camaconi. Join Facebook to connect withRamona Moye Camaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Ramona Moye Camaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn't Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Costa formalizó su denuncia "en contra de la diputadaRamona Moye Camaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956 </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Costa formalizó su denuncia "en contra de la diputadaRamona Moye Camaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 6__
+__START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> View the profiles of people namedRamonaMoyeCamaconi. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BiografíaNací en la ciudad del amor Chivay, un sábado 9defebrerode1991, en la ProvinciadeCaylloma, Departamento y RegióndeArequipa. Estudie laEducaciónBásica Regular en milugardenacimiento, laeducacióninicial en el I.E. 075 Divino Niño Jesús (1995 - 1996), laeducaciónprimaria en la I.E. 40375 </CONTENT> <URL> https://gestionandomiprofesion.blogspot.com/p/biografia_4.html </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La ComandantaRamona, mujer indígena tzotzil, fue unadelas representantes del movimiento zapatista que, ademásdedefender los derechosdelos pueblos originarios, también buscó impulsar los derechosdelas mujeres indígenas desafiando las estructuras patriarcales tradicionales. A 19 añosdesu muerte, la nombramos y recordamos con un recuentodesu lucha. En un México donde ser ... </CONTENT> <URL> https://liberaradio.com/comandanta-ramona-simbolo-de-la-resistencia-zapatista-y-de-las-mujeres-indigenas </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> En las jornadas por la Paz y la ReconciliacióndeSan Cristóbaldelas Casas, el subcomandante Marcos le entrega la bandera mexicana a la comandantaRamonapara que la resguardara como esenciadela cultura mexicana. A partirdeese momento la ComandantaRamonava a ser una figura relacionada con la Paz. </CONTENT> <URL> https://insurgenciamagisterial.com/legado-de-la-comandanta-ramona-mujeres-zapatistas-abrieron-otro-horizonte-para-mujeres-indigenas </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ComandantaRamona(1959 - 6deenerode2006) fue un oficial del Ejército ZapatistadeLiberación Nacional (EZLN), una organización autonomista indígena revolucionaria con sede en el estadodeChiapas, en el surdeMéxico. </CONTENT> <URL> https://academia-lab.com/enciclopedia/comandanta-ramona </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn't Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Me podrian ayudar hacer unabiografiasobre mi con mis datos personales. 1)lugardenacimiento(clínica la California) 2)fecha 21/12/2010) nombredemama y papa y profecion (frayeli enfermera y Jonathan contador ) actividades extraescolares (gimnacia y ballet ) cosas random que me molesten y que me pongan feliz. donde estudie ( jardin mi pequeño cometa preescolar y primer grado bolivar y ... </CONTENT> <URL> https://brainly.lat/tarea/71427875 </URL> __END_OF_SOURCE 10__
 
 
 [ai]
-{"education_level": "Unknown", "education_institution": "Unknown", "education_field": "Philosophy (filósofa)", "education_source": null, "prior_occupation": "activista, vocalista", "class_background": "Unknown", "prior_occupation_source": "https://es.wikipedia.org/wiki/Andrea_Barrientos", "disability_status": "Unknown", "disability_source": null, "birth_place": "Cochabamba, Bolivia", "birth_place_source": "https://es.wikipedia.org/wiki/Andrea_Barrientos", "birth_year": "1989 (March 30)", "birth_year_source": "https://es.wikipedia.org/wiki/Andrea_Barrientos", "lgbtq_status": "Unknown", "lgbtq_details": null, "lgbtq_source": null, "confidence": "Low", "justification": "Unknown"}
+
+  -> Search("Ramona Moye Camaconi" hoja de vida educación profesión)
+
+[tool: Search]
+Behavior Therapist · Experience: Moye Consultant Service · Education: Capella University · Location: United States · 139 connections on LinkedIn. View Ramona Moye ’s profile on LinkedIn, a professional community of 1 billion members.Flint, MI. Ramona Moye Camaconi . December 6, 2016 - Formatos modernos que destacan por su diseño innovador, estructura clara y contenido relevante, reflejando la personalidad y profesionalismo del candidato de una manera única y atractiva. ... Formatos de hoja de vida creativas para editar en Word y exportar en formato PDF. Plantillas innovadoras para perfiles y sectores creativos. ¡Destaca tu candidatura! ... Formatos diseñados específicamente para resaltar las habilidades, educación y cualidades de los candidatos que no tienen experiencia laboral previa. También es habitual incluir si posees licencia de conducir y de qué tipo, y, en la actualidad, un enlace hacia el perfil de LinkedIn para brindar una imagen profesional más completa. Aunque no suele figurar en los formatos estándar de hoja de vida ofrecidos por el Estado, realmente vale la pena escribir un perfil cuando puedes escoger el modelo. Este pequeño texto sirve para mostrar tu experiencia, educación, habilidades y logros más relevantes, siendo otro de sus objetivos atraer la atención del comité responsable de selección. August 23, 2021 - Grado a obtener: Profesor de Educación Media (PEM), Licenciado en Ciencias de la Educación con Mención en Matemática ... El objeto de estudio de Arquitectura es el Desarrollo de Proyectos Arquitectónicos para el mejoramiento de la calidad ... HOJA DE VIDA CAMILA RIOS Psicologa EXPERIENCIA Hace tres años desempeño esta bonita profesión en la cuidad de Medellín. Actualmente trabajo en la fundación Regalando Sonrrisas. EXPERIENCiA EDUCACIÓN EDUCACIÓN COLEGIO I.E Santa Teresa En la Institución Educativa Santa Teresa me Estas dinámicas del sujeto tienen que ver con los ámbitos cognoscitivos, funcionales, éticos, de emprendizajes e interaccionales del perfil, relacionados con los valores y cualidades humanas y ciudadanas; y con el “desarrollo del proyecto de vida y con la capacidad de gestión de la profesión y de gerencia socio-política de la misma, a partir de la creación de nuevos escenarios profesionales, con integradores modelos de intervención para realidades complejas y multidimensionales, insertos en procesos de investigación e innovación, a partir de su integración a redes. Con estas perspectivas la Carrera de Pedagogía de la Lengua y la Literatura presenta su perfil de egreso. Parten de procesos y realidades que exigen los siguientes resultados de aprendizaje: Integra la relación entre estado, sociedad y educación en el contexto de la organización social puede llegar a transformar la sociedad y la vida de las personas. Sin embargo, tuve que · limitar la investigación a la solicitud de espacio y tiempo de dicho trabajo. Por ello, quedó · en mí una necesidad de seguir narrando el proceso y poder indagar más profundamente · en factores, ideas, prácticas, etc., que permitiesen comprender mejor cómo se puede · encarar una educación crítica desde la formación permanente del profesorado. Hoja De Vida: Sandra Jackeline Lozano Quituizaca HOJA DE VIDA Datos Personales NOMBRE: Sandra Jackeline Lozano Quituizaca. DOCUMENTO DE IDENTIDAD: 1104622079 PROFESIÓN: Docente de Educación General Básica de segundo a décimo año . DIRECCIÓN: ... Docente de Institutos de Facultades de Teología sobre Educación de Familia cristiana . December 8, 2021 - Descarga de manera gratuita nuestras cartas de presentación, motivación, recomendación, agradecimiento, renuncia, etc. Encuentra todas las cartas que necesitas utilizar a lo largo de tu carrera profesional.
+
+
+[ai]
+{"education_level": "Unknown", "education_institution": "Unknown", "education_field": "Unknown", "education_source": null, "prior_occupation": "Unknown", "class_background": "Unknown", "prior_occupation_source": null, "disability_status": "Unknown", "disability_source": null, "birth_place": "Unknown", "birth_place_source": null, "birth_year": "Unknown", "birth_year_source": null, "lgbtq_status": "Unknown", "lgbtq_details": null, "lgbtq_source": null, "confidence": "Low", "justification": ""}
 
