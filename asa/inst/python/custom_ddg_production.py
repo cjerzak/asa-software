@@ -4758,8 +4758,13 @@ def _make_update_plan_tool():
     return update_plan
 
 
-def _format_plan_for_prompt(plan: Any) -> Optional[str]:
-    """Format a plan dict for injection into the system prompt."""
+def _format_plan_for_prompt(plan: Any, finalize: bool = False) -> Optional[str]:
+    """Format a plan dict for injection into the system prompt.
+
+    When *finalize* is True the output is a read-only summary (no action
+    instructions) so it doesn't conflict with finalize-mode's "no tools"
+    directive.
+    """
     if not plan or not isinstance(plan, dict):
         return None
     goal = plan.get("goal", "")
@@ -4767,7 +4772,8 @@ def _format_plan_for_prompt(plan: Any) -> Optional[str]:
     if not goal and not steps:
         return None
 
-    lines = ["=== YOUR EXECUTION PLAN ==="]
+    header = "=== PLAN PROGRESS (read-only) ===" if finalize else "=== YOUR EXECUTION PLAN ==="
+    lines = [header]
     if goal:
         lines.append(f"Goal: {goal}")
     current_step = plan.get("current_step")
@@ -4788,20 +4794,21 @@ def _format_plan_for_prompt(plan: Any) -> Optional[str]:
         findings = step.get("findings", "")
         completion_criteria = step.get("completion_criteria", "")
         line = f"{st} Step {sid}: {desc}"
-        if completion_criteria:
+        if completion_criteria and not finalize:
             line += f" | Done when: {completion_criteria}"
         if findings and step.get("status") in ("completed", "skipped"):
             line += f" -> {findings}"
         lines.append(line)
 
-    lines.append("")
-    lines.append(
-        "Execution discipline: mark each step in_progress before you start it,"
-        " and completed immediately after done criteria are met."
-    )
-    lines.append(
-        "Use update_plan(step_id, status, findings) to keep the checklist accurate."
-    )
+    if not finalize:
+        lines.append("")
+        lines.append(
+            "Execution discipline: mark each step in_progress before you start it,"
+            " and completed immediately after done criteria are met."
+        )
+        lines.append(
+            "Use update_plan(step_id, status, findings) to keep the checklist accurate."
+        )
     lines.append("=== END PLAN ===")
     return "\n".join(lines)
 
@@ -5062,7 +5069,7 @@ def _final_system_prompt(
     memory_block = _format_memory_for_system_prompt(summary)
     field_status_block = _format_field_status_for_prompt(field_status)
     scratchpad_block = _format_scratchpad_for_prompt(scratchpad)
-    plan_block = _format_plan_for_prompt(plan)
+    plan_block = _format_plan_for_prompt(plan, finalize=True)
     parts = [base_prompt]
     if field_status_block:
         parts.append(field_status_block)
