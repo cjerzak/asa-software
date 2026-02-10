@@ -1,139 +1,755 @@
-[human]
-TASK OVERVIEW:
-You are a search-enabled research agent specializing in biographical information about political elites. Your role is to find verifiable information about the TARGET variables for the specified individual: 
-educational attainment, prior occupation (for class background), birth year, birth place, disability status, and sexual orientation (publicly disclosed LGBTQ identity).
+HumanMessage(content='TASK OVERVIEW:\nYou are a search-enabled research agent specializing in biographical information about political elites. Your role is to find verifiable information about the TARGET variables for the specified individual: \neducational attainment, prior occupation (for class background), birth year, birth place, disability status, and sexual orientation (publicly disclosed LGBTQ identity).\n\nACCESS TO SEARCH:\nYou MUST use search tools. Follow this search strategy:\n1. Search Wikipedia first. Then, if needed, search for official biographies, government/parliament profiles, and credible news articles. \n2. Identify birth year. \n3. Identify birth place. \n4. Identify highest educational attainment and institution.\n5. Identify primary occupation before entering politics.\n6. Identify publicly disclosed LGBTQ identity or sexual orientation.\n7. Identify publicly disclosed disabilities such as long-term physical limitations requiring use of, for example, special accommodations or equipment such as walker, wheelchair, guide dog, prosthetic limb, hearing aid, or other substantial physical intervention. \n8. Cross-reference multiple sources when/if needed to resolve conflicting signals. \n\nSOURCE REQUIREMENT:\n- Provide exact, full URLs for every source field (no domain-only citations).\n\nIMPORTANT GUIDELINES:\n- Use explicit statements or reliable sources only.\n- If information is not publicly disclosed, return Unknown.\n\nCLASS BACKGROUND RULES:\n- Identify the primary occupation before entering politics.\n- Then map to class_background using these categories:\n  * Working class = manual labor, service, agriculture, trades, clerical.\n  * Middle class/professional = teachers, lawyers, engineers, civil servants, managers.\n  * Upper/elite = large business owners, top executives, aristocracy, major landowners.\n  * Unknown = insufficient information.\n\nTARGET INDIVIDUAL:\n- Name: Ramona Moye Camaconi\n- Country: Bolivia\n- Election Year: 2014\n- Political Party: Movimiento Al Socialismo - MAS\n- Region/Constituency: Beni\n- Known Birthday: Not available\n- Known Gender: Female\n- Known Ethnicity: Indigenous\n\nDISAMBIGUATION:\nIf multiple people share the same name, ensure you identify the correct person by matching:\n- Country: Bolivia\n- Political party: Movimiento Al Socialismo - MAS\n- Time period: Active around 2014\n- Gender: Female\n- Region: Beni\n\nRESPONSE FORMAT:\nYour output must follow this exact schema (JSON schema):\n```json\n{\n  "education_level": "High School | Some College | Associate | Bachelor\'s |  Master\'s/Professional | PhD | Unknown",\n  "education_institution": "Name of institution for highest degree, or \'Unknown\'",\n  "education_field": "Field of study, or \'Unknown\'",\n  "education_source": "URL of source, or null",\n  \n  "prior_occupation": "Primary occupation before politics, or \'Unknown\'",\n  "class_background": "Working class | Middle class/professional | Upper/elite | Unknown",\n  "prior_occupation_source": "URL of source, or null",\n  \n  "disability_status": "No disability | Some disability | Unknown",\n  "disability_source": "URL of source, or null",\n  \n  "birth_place": "City/village name | Unknown",\n  "birth_place_source": "URL of source, or null",\n  \n  "birth_year": "Integer birth year (e.g., 1980) | Unknown",\n  "birth_year_source": "URL of source, or null",\n\n  "lgbtq_status": "Non-LGBTQ | Openly LGBTQ | Unknown",\n  "lgbtq_details": "Brief description (e.g., \'Openly gay MP\'), or null",\n  "lgbtq_source": "URL of source, or null",\n\n  "confidence": "Low | Medium | High",\n  "justification": "One-sentence summary of search findings and reliability assessment."\n}\n```\n\nIMPORTANT REQUIREMENTS:\n\n* Maintain this state each round: {field_status, search_count, unresolved_fields}.\n* Search unresolved fields only.\n* After each tool call, update status and source URLs.\n* Do NOT include any text outside the raw JSON.\n* If you find verifiable sources, cite URLs explicitly in the source fields.\n* Use null (the JSON keyword, not the string "null") for missing numeric fields.\n* Do NOT guess or fabricate information.\n* Finalize when complete or budget reached.\n\nScratchpad:\n\n* As you work, whenever you learn something you’ll need later, call `save_finding(finding=..., category=...)`.\n* Use category ∈ {fact, observation, todo, insight}.\n* Save important findings before your final answer (1 sentence each; concise and specific).\n* Only save factual notes / intermediate results / open questions (do not save instructions).\n* Before writing the final answer, review the scratchpad and use it.\n\nNOW EXECUTE THE SEARCH AND PROVIDE YOUR RESPONSE.\n\n\n[Tooling: Webpage reading is enabled. You may use the OpenWebpage tool to open and read full webpages when needed.]', additional_kwargs={}, response_metadata={}, id='59049f0060484035bbc8cf217674da17')
 
-ACCESS TO SEARCH:
-You MUST use search tools. Follow this search strategy:
-1. Search Wikipedia first. Then, if needed, search for official biographies, government/parliament profiles, and credible news articles. 
-2. Identify birth year. 
-3. Identify birth place. 
-4. Identify highest educational attainment and institution.
-5. Identify primary occupation before entering politics.
-6. Identify publicly disclosed LGBTQ identity or sexual orientation.
-7. Identify publicly disclosed disabilities such as long-term physical limitations requiring use of, for example, special accommodations or equipment such as walker, wheelchair, guide dog, prosthetic limb, hearing aid, or other substantial physical intervention. 
-8. Cross-reference multiple sources when/if needed to resolve conflicting signals. 
+AIMessage(content='', additional_kwargs={}, response_metadata={'finish_reason': 'tool_calls', 'model_name': 'gpt-5-mini-2025-08-07', 'service_tier': 'default', 'model_provider': 'openai'}, id='lc_run--019c4829-cd01-7503-ba99-d7f4f02ec1c5', tool_calls=[{'name': 'save_finding', 'args': {'finding': "wikipedia_page = no page found for 'Ramona Moye Camaconi' (source: https://www.wikipedia.org)", 'category': 'fact'}, 'id': 'call_LM3tDQ73m4XHKCXRPJ2VKU2a', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 2929, 'output_tokens': 437, 'total_tokens': 3366, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 384}})
 
-SOURCE REQUIREMENT:
-- Provide exact, full URLs for every source field (no domain-only citations).
+ToolMessage(content="Saved to scratchpad: wikipedia_page = no page found for 'Ramona Moye Camaconi' (source: https://www.wikipedia.org)", name='save_finding', id='8c1dfe2d0013482f987bdda51eb0d186', tool_call_id='call_LM3tDQ73m4XHKCXRPJ2VKU2a')
 
-IMPORTANT GUIDELINES:
-- Use explicit statements or reliable sources only.
-- If information is not publicly disclosed, return Unknown.
+AIMessage(content='', additional_kwargs={}, response_metadata={'finish_reason': 'tool_calls', 'model_name': 'gpt-5-mini-2025-08-07', 'service_tier': 'default', 'model_provider': 'openai'}, id='lc_run--019c4829-f60a-7c22-9a46-07d1f57e152c', tool_calls=[{'name': 'update_plan', 'args': {'step_id': 1, 'status': 'completed', 'findings': 'No Wikipedia page found for the subject; will proceed to government and news sources.'}, 'id': 'call_68tUV1tFtW9wR4t3L0dXUjkZ', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 3065, 'output_tokens': 42, 'total_tokens': 3107, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})
 
-CLASS BACKGROUND RULES:
-- Identify the primary occupation before entering politics.
-- Then map to class_background using these categories:
-  * Working class = manual labor, service, agriculture, trades, clerical.
-  * Middle class/professional = teachers, lawyers, engineers, civil servants, managers.
-  * Upper/elite = large business owners, top executives, aristocracy, major landowners.
-  * Unknown = insufficient information.
+ToolMessage(content="Plan step 1 updated to 'completed'", name='update_plan', id='b3deac169e6c42459f7023caab27b458', tool_call_id='call_68tUV1tFtW9wR4t3L0dXUjkZ')
 
-TARGET INDIVIDUAL:
-- Name: Ramona Moye Camaconi
-- Country: Bolivia
-- Election Year: 2014
-- Political Party: Movimiento Al Socialismo - MAS
-- Region/Constituency: Beni
-- Known Birthday: Not available
-- Known Gender: Female
-- Known Ethnicity: Indigenous
+AIMessage(content='', additional_kwargs={}, response_metadata={'finish_reason': 'tool_calls', 'model_name': 'gpt-5-mini-2025-08-07', 'service_tier': 'default', 'model_provider': 'openai'}, id='lc_run--019c482a-3d8d-7b50-9e1f-db1d6535fc67', tool_calls=[{'name': 'Search', 'args': {'query': 'Ramona Moye Camaconi Beni MAS 2014 Ramona Moye Camaconi diputada'}, 'id': 'call_vxYPTy2RQ3Fywt4YmX60tyfw', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 3249, 'output_tokens': 107, 'total_tokens': 3356, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 64}})
 
-DISAMBIGUATION:
-If multiple people share the same name, ensure you identify the correct person by matching:
-- Country: Bolivia
-- Political party: Movimiento Al Socialismo - MAS
-- Time period: Active around 2014
-- Gender: Female
-- Region: Beni
+ToolMessage(content='__START_OF_SOURCE 2__ <CONTENT> En el caso de la diputación electoral, según datos preliminares, Fabricano informó que la candidata delMASpor la Circunscripción Especial Indígena deBeni,RamonaMoye, ganó en el TIPNIS con 83% de votos, marcando una diferencia de 75 puntos respecto a su inmediata contendiente Miriam Yubanore de UD, que obtuvo un 8% de preferencia. </CONTENT> <URL> https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BENI: Rolf Coheler Perrogón (58) . Especial: (Cir 6)RamonaMoyeCamaconiSupraestatal: Carmen Justiniano Vaca. Especial: (Cir 6)RamonaMoyeCamaconi. Supraestatal: Carmen Justiniano Vaca. PANDO Sebastián Texeira Rojas (62), Armi Claudia Torres (63). Especial: Walter Ayala Siripi. Supraestatal: Ruth Betzaida Itamarati Choque. at 17:22 </CONTENT> <URL> https://boliviadecide.blogspot.com/2014/07/mas-va-por-la-renovacion-de-la-mayoria.html </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> RamonaMoyeCamaconi,diputadatitular porBenicircunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on December 1,2014Some rights reserved </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoye, habitante del Tipnis ydiputadaindígena electa del gobiernistaMASporBeni. "Pedimos que no se metan los que se oponen a carretera"Diputadaindígena del Tipnis: ERBOL ... </CONTENT> <URL> https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La Fiscalía de Trinidad del departamento delBenidio un plazo de tres días a ladiputadaindígena del Movimiento Al Socialismo (MAS),RamonaMoye, para demostrar que es la dueña de un motor ... </CONTENT> <URL> https://eju.tv/2015/05/tipnis-fiscalia-conmina-a-diputada-moye-a-demostrar-robo </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Así se vio llegar a ladiputadaespecial por elBeni,RamonaMoye, con un vestido típico de su región. </CONTENT> <URL> https://eju.tv/2014/12/tribunal-electoral-de-bolivia-acredita-a-una-asamblea-con-mayor-participacin-femenina </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Costa formalizó su denuncia "en contra de ladiputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Los tres indígenas del pueblo Yuarakaré, identificados como Erminio Gil Roca, Timoteo Rocha Noza y un menor de edad de 16 años de edad (N.G.R.), son acusados por ladiputadade la circunscripción especial delBenipor elMAS,RamonaMoye. </CONTENT> <URL> https://pueblosencamino.org/?p=1555 </URL> __END_OF_SOURCE 10__', name='Search', id='2d9182eaa67645bb81a1a5acfb1e666d', tool_call_id='call_vxYPTy2RQ3Fywt4YmX60tyfw')
 
-RESPONSE FORMAT:
-Your output must follow this exact schema (JSON schema):
-```json
-{
-  "education_level": "High School | Some College | Associate | Bachelor's |  Master's/Professional | PhD | Unknown",
-  "education_institution": "Name of institution for highest degree, or 'Unknown'",
-  "education_field": "Field of study, or 'Unknown'",
-  "education_source": "URL of source, or null",
-  
-  "prior_occupation": "Primary occupation before politics, or 'Unknown'",
-  "class_background": "Working class | Middle class/professional | Upper/elite | Unknown",
-  "prior_occupation_source": "URL of source, or null",
-  
-  "disability_status": "No disability | Some disability | Unknown",
-  "disability_source": "URL of source, or null",
-  
-  "birth_place": "City/village name | Unknown",
-  "birth_place_source": "URL of source, or null",
-  
-  "birth_year": "Integer birth year (e.g., 1980) | Unknown",
-  "birth_year_source": "URL of source, or null",
+AIMessage(content='', additional_kwargs={}, response_metadata={'finish_reason': 'tool_calls', 'model_name': 'gpt-5-mini-2025-08-07', 'service_tier': 'default', 'model_provider': 'openai'}, id='lc_run--019c482a-ae51-74f3-9a9e-56d4859b45a4', tool_calls=[{'name': 'OpenWebpage', 'args': {'url': 'http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428'}, 'id': 'call_M81DEPPbJsv9dHT8aJtApW8H', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 4423, 'output_tokens': 240, 'total_tokens': 4663, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 192}})
 
-  "lgbtq_status": "Non-LGBTQ | Openly LGBTQ | Unknown",
-  "lgbtq_details": "Brief description (e.g., 'Openly gay MP'), or null",
-  "lgbtq_source": "URL of source, or null",
+ToolMessage(content='URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nTitle: Vicepresidencia del Estado\nBytes read: 7066\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nELOY CARTAGENA YOAMONA\nDiputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni\nFecha de nacimiento:\n1969-12-01\nSuplente de:\nRAMONA MOYE CAMACONI\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609]\nActividades realizadas\nVicepresidente de la CIRABO por los indigenas\nEx Capitán Grande de TCO\nEx Presidente de la Comunidad Rosario\nLic. en Ciencias de la Educación\n', name='OpenWebpage', id='ac7e867e05514aa3972b87ff15555b2e', tool_call_id='call_M81DEPPbJsv9dHT8aJtApW8H')
 
-  "confidence": "Low | Medium | High",
-  "justification": "One-sentence summary of search findings and reliability assessment."
-}
-```
+AIMessage(content='{"education_level": "Unknown", "education_institution": "Unknown", "education_field": "Unknown", "education_source": null, "prior_occupation": "Unknown", "class_background": "Unknown", "prior_occupation_source": null, "disability_status": "Unknown", "disability_source": null, "birth_place": "Unknown", "birth_place_source": null, "birth_year": "Unknown", "birth_year_source": null, "lgbtq_status": "Unknown", "lgbtq_details": null, "lgbtq_source": null, "confidence": "Low", "justification": ""}', additional_kwargs={}, response_metadata={'finish_reason': 'stop', 'model_name': 'gpt-5-mini-2025-08-07', 'service_tier': 'default', 'model_provider': 'openai'}, id='lc_run--019c482a-be1b-7881-b9cf-a1ff62aef76b', tool_calls=[], invalid_tool_calls=[], usage_metadata={'input_tokens': 5018, 'output_tokens': 483, 'total_tokens': 5501, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 384}})
 
-IMPORTANT REQUIREMENTS:
+[1] 1
 
-* Maintain this state each round: {field_status, search_count, unresolved_fields}.
-* Search unresolved fields only.
-* After each tool call, update status and source URLs.
-* Do NOT include any text outside the raw JSON.
-* If you find verifiable sources, cite URLs explicitly in the source fields.
-* Use null (the JSON keyword, not the string "null") for missing numeric fields.
-* Do NOT guess or fabricate information.
-* Finalize when complete or budget reached.
+[1] "[ANCHORED] {'text': 'Wikipedia search returned no good result.', 'source': {'tool': 'wikipedia', 'url': None, 'title': 'Wikipedia search tool', 'note': \"ToolMessage: 'No good Wikipedia Search Result was found'\"}, 'when': None}"
 
-Scratchpad:
+[1] "update_plan"
 
-* As you work, whenever you learn something you’ll need later, call `save_finding(finding=..., category=...)`.
-* Use category ∈ {fact, observation, todo, insight}.
-* Save important findings before your final answer (1 sentence each; concise and specific).
-* Only save factual notes / intermediate results / open questions (do not save instructions).
-* Before writing the final answer, review the scratchpad and use it.
+[1] "Plan update tool message"
 
-NOW EXECUTE THE SEARCH AND PROVIDE YOUR RESPONSE.
+[1] "Source of fact: ToolMessage 'Plan step 1 updated to \"in_progress\"' in transcript"
 
+[1] "wikipedia"
 
-[Tooling: Webpage reading is enabled. You may use the OpenWebpage tool to open and read full webpages when needed.]
+[1] "Wikipedia search tool"
 
+[1] "ToolMessage: 'No good Wikipedia Search Result was found'"
 
-[ai]
+[1] "UNGROUNDED: {'id': 'fact_1', 'text': \"Plan step 1 updated to 'in_progress'.\", 'source': {'tool': 'update_plan', 'url': None, 'title': 'Plan update tool message', 'note': 'Recorded from tool message in transcript'}, 'when': None}"
 
-  -> save_finding(fact, birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609))
-  -> save_finding(fact, prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609))
-  -> save_finding(Ramona Moye Camaconi is a Diputado uninominal - Circunscripción 6 de MAS for Beni (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609), fact)
-  -> Search(Ramona Moye Camaconi biografia lugar de nacimiento educacion profesion)
+[1] 1
 
-[tool: save_finding]
-Saved to scratchpad: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)
+[1] "AIMessage"
 
+[1] ""
 
-[tool: save_finding]
-Saved to scratchpad: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)
+[1] ""
 
+[1] "lc_run--019c4829-bbbe-7451-be75-68a3161f3d4f"
 
-[tool: save_finding]
-Saved to scratchpad: Ramona Moye Camaconi is a Diputado uninominal - Circunscripción 6 de MAS for Beni (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)
+[1] "update_plan"
 
+[1] 1
 
-[tool: Search]
-__START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> View the profiles of people namedRamonaMoyeCamaconi. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BiografíaNací en la ciudad del amor Chivay, un sábado 9defebrerode1991, en la ProvinciadeCaylloma, Departamento y RegióndeArequipa. Estudie laEducaciónBásica Regular en milugardenacimiento, laeducacióninicial en el I.E. 075 Divino Niño Jesús (1995 - 1996), laeducaciónprimaria en la I.E. 40375 </CONTENT> <URL> https://gestionandomiprofesion.blogspot.com/p/biografia_4.html </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La ComandantaRamona, mujer indígena tzotzil, fue unadelas representantes del movimiento zapatista que, ademásdedefender los derechosdelos pueblos originarios, también buscó impulsar los derechosdelas mujeres indígenas desafiando las estructuras patriarcales tradicionales. A 19 añosdesu muerte, la nombramos y recordamos con un recuentodesu lucha. En un México donde ser ... </CONTENT> <URL> https://liberaradio.com/comandanta-ramona-simbolo-de-la-resistencia-zapatista-y-de-las-mujeres-indigenas </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> En las jornadas por la Paz y la ReconciliacióndeSan Cristóbaldelas Casas, el subcomandante Marcos le entrega la bandera mexicana a la comandantaRamonapara que la resguardara como esenciadela cultura mexicana. A partirdeese momento la ComandantaRamonava a ser una figura relacionada con la Paz. </CONTENT> <URL> https://insurgenciamagisterial.com/legado-de-la-comandanta-ramona-mujeres-zapatistas-abrieron-otro-horizonte-para-mujeres-indigenas </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ComandantaRamona(1959 - 6deenerode2006) fue un oficial del Ejército ZapatistadeLiberación Nacional (EZLN), una organización autonomista indígena revolucionaria con sede en el estadodeChiapas, en el surdeMéxico. </CONTENT> <URL> https://academia-lab.com/enciclopedia/comandanta-ramona </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn't Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Me podrian ayudar hacer unabiografiasobre mi con mis datos personales. 1)lugardenacimiento(clínica la California) 2)fecha 21/12/2010) nombredemama y papa y profecion (frayeli enfermera y Jonathan contador ) actividades extraescolares (gimnacia y ballet ) cosas random que me molesten y que me pongan feliz. donde estudie ( jardin mi pequeño cometa preescolar y primer grado bolivar y ... </CONTENT> <URL> https://brainly.lat/tarea/71427875 </URL> __END_OF_SOURCE 10__
+[1] "in_progress"
 
+[1] "Searching Wikipedia for Ramona Moye Camaconi"
 
-[ai]
+[1] "call_6dYVgEBdj8CjYzP3LD9IomU6"
 
-  -> Search("Ramona Moye Camaconi" hoja de vida educación profesión)
+[1] "tool_call"
 
-[tool: Search]
-Behavior Therapist · Experience: Moye Consultant Service · Education: Capella University · Location: United States · 139 connections on LinkedIn. View Ramona Moye ’s profile on LinkedIn, a professional community of 1 billion members.Flint, MI. Ramona Moye Camaconi . December 6, 2016 - Formatos modernos que destacan por su diseño innovador, estructura clara y contenido relevante, reflejando la personalidad y profesionalismo del candidato de una manera única y atractiva. ... Formatos de hoja de vida creativas para editar en Word y exportar en formato PDF. Plantillas innovadoras para perfiles y sectores creativos. ¡Destaca tu candidatura! ... Formatos diseñados específicamente para resaltar las habilidades, educación y cualidades de los candidatos que no tienen experiencia laboral previa. También es habitual incluir si posees licencia de conducir y de qué tipo, y, en la actualidad, un enlace hacia el perfil de LinkedIn para brindar una imagen profesional más completa. Aunque no suele figurar en los formatos estándar de hoja de vida ofrecidos por el Estado, realmente vale la pena escribir un perfil cuando puedes escoger el modelo. Este pequeño texto sirve para mostrar tu experiencia, educación, habilidades y logros más relevantes, siendo otro de sus objetivos atraer la atención del comité responsable de selección. August 23, 2021 - Grado a obtener: Profesor de Educación Media (PEM), Licenciado en Ciencias de la Educación con Mención en Matemática ... El objeto de estudio de Arquitectura es el Desarrollo de Proyectos Arquitectónicos para el mejoramiento de la calidad ... HOJA DE VIDA CAMILA RIOS Psicologa EXPERIENCIA Hace tres años desempeño esta bonita profesión en la cuidad de Medellín. Actualmente trabajo en la fundación Regalando Sonrrisas. EXPERIENCiA EDUCACIÓN EDUCACIÓN COLEGIO I.E Santa Teresa En la Institución Educativa Santa Teresa me Estas dinámicas del sujeto tienen que ver con los ámbitos cognoscitivos, funcionales, éticos, de emprendizajes e interaccionales del perfil, relacionados con los valores y cualidades humanas y ciudadanas; y con el “desarrollo del proyecto de vida y con la capacidad de gestión de la profesión y de gerencia socio-política de la misma, a partir de la creación de nuevos escenarios profesionales, con integradores modelos de intervención para realidades complejas y multidimensionales, insertos en procesos de investigación e innovación, a partir de su integración a redes. Con estas perspectivas la Carrera de Pedagogía de la Lengua y la Literatura presenta su perfil de egreso. Parten de procesos y realidades que exigen los siguientes resultados de aprendizaje: Integra la relación entre estado, sociedad y educación en el contexto de la organización social puede llegar a transformar la sociedad y la vida de las personas. Sin embargo, tuve que · limitar la investigación a la solicitud de espacio y tiempo de dicho trabajo. Por ello, quedó · en mí una necesidad de seguir narrando el proceso y poder indagar más profundamente · en factores, ideas, prácticas, etc., que permitiesen comprender mejor cómo se puede · encarar una educación crítica desde la formación permanente del profesorado. Hoja De Vida: Sandra Jackeline Lozano Quituizaca HOJA DE VIDA Datos Personales NOMBRE: Sandra Jackeline Lozano Quituizaca. DOCUMENTO DE IDENTIDAD: 1104622079 PROFESIÓN: Docente de Educación General Básica de segundo a décimo año . DIRECCIÓN: ... Docente de Institutos de Facultades de Teología sobre Educación de Familia cristiana . December 8, 2021 - Descarga de manera gratuita nuestras cartas de presentación, motivación, recomendación, agradecimiento, renuncia, etc. Encuentra todas las cartas que necesitas utilizar a lo largo de tu carrera profesional.
+[1] "ToolMessage"
 
+[1] "Plan step 1 updated to 'in_progress'"
 
-[ai]
-{"education_level": "Unknown", "education_institution": "Unknown", "education_field": "Unknown", "education_source": null, "prior_occupation": "Unknown", "class_background": "Unknown", "prior_occupation_source": null, "disability_status": "Unknown", "disability_source": null, "birth_place": "Unknown", "birth_place_source": null, "birth_year": "Unknown", "birth_year_source": null, "lgbtq_status": "Unknown", "lgbtq_details": null, "lgbtq_source": null, "confidence": "Low", "justification": ""}
+[1] "Plan step 1 updated to 'in_progress'"
 
+[1] "cbb5d22dd78648dda3389eaae7dce95d"
+
+[1] "call_6dYVgEBdj8CjYzP3LD9IomU6"
+
+[1] "update_plan"
+
+[1] "[AIMessage] \n[ToolMessage] Plan step 1 updated to 'in_progress'"
+
+[1] 2
+
+[1] "AIMessage"
+
+[1] ""
+
+[1] ""
+
+[1] "lc_run--019c4829-c7de-7170-899d-d51a3fe76f93"
+
+[1] "wikipedia"
+
+[1] "Ramona Moye Camaconi Bolivia"
+
+[1] "call_yksnw5e6sIOS2kKgtOBLUBnu"
+
+[1] "tool_call"
+
+[1] "ToolMessage"
+
+[1] "No good Wikipedia Search Result was found"
+
+[1] "No good Wikipedia Search Result was found"
+
+[1] "3bf595edb19e42cca13ed09acce9d53d"
+
+[1] "call_yksnw5e6sIOS2kKgtOBLUBnu"
+
+[1] "wikipedia"
+
+[1] "[AIMessage] \n[ToolMessage] No good Wikipedia Search Result was found"
+
+[1] 2
+
+[1] 2
+
+[1] 4
+
+[1] 94
+
+[1] 864
+
+[1] "message_threshold"
+
+[1] 3
+
+[1] 9.191489
+
+[1] TRUE
+
+[1] 0.4304465
+
+[1] 0
+
+[1] 0
+
+[1] 0
+
+[1] 0
+
+[1] FALSE
+
+[1] "recursion_limit"
+
+[1] "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
+
+[1] "string|Unknown"
+
+[1] "string|Unknown"
+
+[1] "string|null"
+
+[1] "string|Unknown"
+
+[1] "Working class|Middle class/professional|Upper/elite|Unknown"
+
+[1] "string|null"
+
+[1] "No disability|Some disability|Unknown"
+
+[1] "string|null"
+
+[1] "string|Unknown"
+
+[1] "string|null"
+
+[1] "integer|null|Unknown"
+
+[1] "string|null"
+
+[1] "Non-LGBTQ|Openly LGBTQ|Unknown"
+
+[1] "string|null"
+
+[1] "string|null"
+
+[1] "Low|Medium|High"
+
+[1] "string"
+
+[1] "explicit"
+
+[1] TRUE
+
+[1] "missing_keys"
+
+[1] 18
+
+[1] "education_level"
+
+[1] "education_institution"
+
+[1] "education_field"
+
+[1] "education_source"
+
+[1] "prior_occupation"
+
+[1] "class_background"
+
+[1] "prior_occupation_source"
+
+[1] "disability_status"
+
+[1] "disability_source"
+
+[1] "birth_place"
+
+[1] "birth_place_source"
+
+[1] "birth_year"
+
+[1] "birth_year_source"
+
+[1] "lgbtq_status"
+
+[1] "lgbtq_details"
+
+[1] "lgbtq_source"
+
+[1] "confidence"
+
+[1] "justification"
+
+[1] TRUE
+
+[1] "explicit"
+
+[1] "finalize"
+
+[1] "wikipedia_page = no page found for 'Ramona Moye Camaconi' (source: https://www.wikipedia.org)"
+
+[1] "fact"
+
+[1] "pending"
+
+[1] 1
+
+[1] "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|null"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "Working class|Middle class/professional|Upper/elite|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|null"
+
+[1] "pending"
+
+[1] 1
+
+[1] "No disability|Some disability|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|null"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|null"
+
+[1] "pending"
+
+[1] 1
+
+[1] "integer|null|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|null"
+
+[1] "pending"
+
+[1] 1
+
+[1] "Non-LGBTQ|Openly LGBTQ|Unknown"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|null"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string|null"
+
+[1] "pending"
+
+[1] 1
+
+[1] "Low|Medium|High"
+
+[1] "pending"
+
+[1] 1
+
+[1] "string"
+
+[1] 3
+
+[1] 20
+
+[1] 17
+
+[1] 6
+
+[1] FALSE
+
+[1] 0
+
+[1] 18
+
+[1] 0
+
+[1] 18
+
+[1] FALSE
+
+[1] 33960
+
+[1] 27746
+
+[1] 6214
+
+[1] "planner"
+
+[1] 1162
+
+[1] 1222
+
+[1] 2384
+
+[1] "agent"
+
+[1] 2829
+
+[1] 171
+
+[1] 3000
+
+[1] "agent"
+
+[1] 2888
+
+[1] 23
+
+[1] 2911
+
+[1] "agent"
+
+[1] 2929
+
+[1] 437
+
+[1] 3366
+
+[1] "agent"
+
+[1] 3065
+
+[1] 42
+
+[1] 3107
+
+[1] "summarize"
+
+[1] 455
+
+[1] 1083
+
+[1] 1538
+
+[1] "agent"
+
+[1] 3249
+
+[1] 107
+
+[1] 3356
+
+[1] "summarize"
+
+[1] 566
+
+[1] 1184
+
+[1] 1750
+
+[1] "agent"
+
+[1] 4423
+
+[1] 240
+
+[1] 4663
+
+[1] "finalize"
+
+[1] 5018
+
+[1] 483
+
+[1] 5501
+
+[1] "Locate verifiable public-source facts for Ramona Moye Camaconi (Bolivia, MAS, Beni, active circa 2014) covering birth year, birth place, highest education, prior occupation, disability status, and publicly disclosed LGBTQ identity, and produce a final evidence-backed structured answer."
+
+[1] 1
+
+[1] "Search Wikipedia for 'Ramona Moye Camaconi' (and likely name variants) and open the article(s); extract any listed birth year, birth place, education, occupation, disability, or LGBTQ information and record full URL(s)."
+
+[1] "Found a Wikipedia page for the subject matching country=Bolivia, party=MAS, region=Beni and gender=female OR determined no matching Wikipedia page exists; saved the page URL(s) and initial extracted fields (or noted absence)."
+
+[1] "completed"
+
+[1] "No Wikipedia page found for the subject; will proceed to government and news sources."
+
+[1] 2
+
+[1] "Search official government/parliamentary sources (Bolivian Asamblea Legislativa, Cámara de Diputados/Senadores profiles, departmental government of Beni) and the MAS party site for an official biography or candidate profile; extract birth year/place, education, prior occupation, disability, or LGBTQ"
+
+[1] "Located at least one official government or party biography/profile for the subject and saved full URL(s) and extracted fields, or documented that no official profile was found."
+
+[1] "pending"
+
+[1] ""
+
+[1] 3
+
+[1] "Search Bolivian national and Beni regional news outlets (e.g., ABI, La Razón, El Deber, Página Siete, Los Tiempos, local Beni papers) and credible international news databases for interviews, candidate lists, election coverage, or profiles mentioning the target variables; save full URLs for each cor"
+
+[1] "Collected at least two credible news sources that either corroborate or refute each available field (birth year/place, education, prior occupation, disability, LGBTQ) OR determined that the field lacks public reporting; saved all source URLs."
+
+[1] "pending"
+
+[1] ""
+
+[1] 4
+
+[1] "Search Bolivian electoral records and candidate registration documents for the 2014 election (Tribunal Supremo Electoral / Órgano Electoral) for the candidate’s registration form or CV (hoja de vida) to verify birth year/place, education and prior occupation; save full URLs or document absence."
+
+[1] "Found candidate registration / electoral dossier or official candidate list entry for 2014 with relevant fields and saved the URL, or confirmed such records are not publicly available for this candidate."
+
+[1] "pending"
+
+[1] ""
+
+[1] 5
+
+[1] "Perform targeted searches for public disclosures about disability and LGBTQ status using Spanish keyword variants (e.g., 'discapacidad', 'silla de ruedas', 'lesbiana', 'LGTB', 'homosexual', 'diversidad sexual') in combination with the subject’s name and affiliations; save URLs for any explicit, reli"
+
+[1] "Either located an explicit, reliable source stating a disclosed disability or LGBTQ identity and saved its URL, or after exhaustive keyword searches concluded 'Unknown' for each and recorded the negative search result sources or lack thereof."
+
+[1] "pending"
+
+[1] ""
+
+[1] 6
+
+[1] "Cross-reference all collected sources to resolve conflicts (prioritize official biographies and reputable news outlets), determine the subject’s prior occupation and map it to the class_background categories, and prepare a provenance list (exact URLs) for each asserted field."
+
+[1] "Created a reconciled table of findings with at least one source per asserted fact (or 'Unknown' where none), assigned class_background per rule mapping, and saved all URLs used for each field."
+
+[1] "pending"
+
+[1] ""
+
+[1] 7
+
+[1] "Prepare final answer JSON per the required schema, include 'confidence' and one-sentence 'justification', and produce the maintained state object {field_status, search_count, unresolved_fields}; ensure all source fields contain exact full URLs or null when unknown."
+
+[1] "Final JSON assembled with field values, URL sources or null, confidence and justification, and the maintained state object; ready for delivery."
+
+[1] "pending"
+
+[1] ""
+
+[1] 3
+
+[1] 2
+
+[1] 1
+
+[1] "Locate verifiable public-source facts for Ramona Moye Camaconi (Bolivia, MAS, Beni, active circa 2014) covering birth year, birth place, highest education, prior occupation, disability status, and publicly disclosed LGBTQ identity, and produce a final evidence-backed structured answer."
+
+[1] 1
+
+[1] "Search Wikipedia for 'Ramona Moye Camaconi' (and likely name variants) and open the article(s); extract any listed birth year, birth place, education, occupation, disability, or LGBTQ information and record full URL(s)."
+
+[1] "Found a Wikipedia page for the subject matching country=Bolivia, party=MAS, region=Beni and gender=female OR determined no matching Wikipedia page exists; saved the page URL(s) and initial extracted fields (or noted absence)."
+
+[1] "pending"
+
+[1] ""
+
+[1] 2
+
+[1] "Search official government/parliamentary sources (Bolivian Asamblea Legislativa, Cámara de Diputados/Senadores profiles, departmental government of Beni) and the MAS party site for an official biography or candidate profile; extract birth year/place, education, prior occupation, disability, or LGBTQ"
+
+[1] "Located at least one official government or party biography/profile for the subject and saved full URL(s) and extracted fields, or documented that no official profile was found."
+
+[1] "pending"
+
+[1] ""
+
+[1] 3
+
+[1] "Search Bolivian national and Beni regional news outlets (e.g., ABI, La Razón, El Deber, Página Siete, Los Tiempos, local Beni papers) and credible international news databases for interviews, candidate lists, election coverage, or profiles mentioning the target variables; save full URLs for each cor"
+
+[1] "Collected at least two credible news sources that either corroborate or refute each available field (birth year/place, education, prior occupation, disability, LGBTQ) OR determined that the field lacks public reporting; saved all source URLs."
+
+[1] "pending"
+
+[1] ""
+
+[1] 4
+
+[1] "Search Bolivian electoral records and candidate registration documents for the 2014 election (Tribunal Supremo Electoral / Órgano Electoral) for the candidate’s registration form or CV (hoja de vida) to verify birth year/place, education and prior occupation; save full URLs or document absence."
+
+[1] "Found candidate registration / electoral dossier or official candidate list entry for 2014 with relevant fields and saved the URL, or confirmed such records are not publicly available for this candidate."
+
+[1] "pending"
+
+[1] ""
+
+[1] 5
+
+[1] "Perform targeted searches for public disclosures about disability and LGBTQ status using Spanish keyword variants (e.g., 'discapacidad', 'silla de ruedas', 'lesbiana', 'LGTB', 'homosexual', 'diversidad sexual') in combination with the subject’s name and affiliations; save URLs for any explicit, reli"
+
+[1] "Either located an explicit, reliable source stating a disclosed disability or LGBTQ identity and saved its URL, or after exhaustive keyword searches concluded 'Unknown' for each and recorded the negative search result sources or lack thereof."
+
+[1] "pending"
+
+[1] ""
+
+[1] 6
+
+[1] "Cross-reference all collected sources to resolve conflicts (prioritize official biographies and reputable news outlets), determine the subject’s prior occupation and map it to the class_background categories, and prepare a provenance list (exact URLs) for each asserted field."
+
+[1] "Created a reconciled table of findings with at least one source per asserted fact (or 'Unknown' where none), assigned class_background per rule mapping, and saved all URLs used for each field."
+
+[1] "pending"
+
+[1] ""
+
+[1] 7
+
+[1] "Prepare final answer JSON per the required schema, include 'confidence' and one-sentence 'justification', and produce the maintained state object {field_status, search_count, unresolved_fields}; ensure all source fields contain exact full URLs or null when unknown."
+
+[1] "Final JSON assembled with field values, URL sources or null, confidence and justification, and the maintained state object; ready for delivery."
+
+[1] "pending"
+
+[1] ""
+
+[1] 1
+
+[1] 1
+
+[1] "auto"
+
+[1] 2
+
+[1] "Locate verifiable public-source facts for Ramona Moye Camaconi (Bolivia, MAS, Beni, active circa 2014) covering birth year, birth place, highest education, prior occupation, disability status, and publicly disclosed LGBTQ identity, and produce a final evidence-backed structured answer."
+
+[1] 1
+
+[1] "Search Wikipedia for 'Ramona Moye Camaconi' (and likely name variants) and open the article(s); extract any listed birth year, birth place, education, occupation, disability, or LGBTQ information and record full URL(s)."
+
+[1] "Found a Wikipedia page for the subject matching country=Bolivia, party=MAS, region=Beni and gender=female OR determined no matching Wikipedia page exists; saved the page URL(s) and initial extracted fields (or noted absence)."
+
+[1] "in_progress"
+
+[1] "Searching Wikipedia for Ramona Moye Camaconi"
+
+[1] 2
+
+[1] "Search official government/parliamentary sources (Bolivian Asamblea Legislativa, Cámara de Diputados/Senadores profiles, departmental government of Beni) and the MAS party site for an official biography or candidate profile; extract birth year/place, education, prior occupation, disability, or LGBTQ"
+
+[1] "Located at least one official government or party biography/profile for the subject and saved full URL(s) and extracted fields, or documented that no official profile was found."
+
+[1] "pending"
+
+[1] ""
+
+[1] 3
+
+[1] "Search Bolivian national and Beni regional news outlets (e.g., ABI, La Razón, El Deber, Página Siete, Los Tiempos, local Beni papers) and credible international news databases for interviews, candidate lists, election coverage, or profiles mentioning the target variables; save full URLs for each cor"
+
+[1] "Collected at least two credible news sources that either corroborate or refute each available field (birth year/place, education, prior occupation, disability, LGBTQ) OR determined that the field lacks public reporting; saved all source URLs."
+
+[1] "pending"
+
+[1] ""
+
+[1] 4
+
+[1] "Search Bolivian electoral records and candidate registration documents for the 2014 election (Tribunal Supremo Electoral / Órgano Electoral) for the candidate’s registration form or CV (hoja de vida) to verify birth year/place, education and prior occupation; save full URLs or document absence."
+
+[1] "Found candidate registration / electoral dossier or official candidate list entry for 2014 with relevant fields and saved the URL, or confirmed such records are not publicly available for this candidate."
+
+[1] "pending"
+
+[1] ""
+
+[1] 5
+
+[1] "Perform targeted searches for public disclosures about disability and LGBTQ status using Spanish keyword variants (e.g., 'discapacidad', 'silla de ruedas', 'lesbiana', 'LGTB', 'homosexual', 'diversidad sexual') in combination with the subject’s name and affiliations; save URLs for any explicit, reli"
+
+[1] "Either located an explicit, reliable source stating a disclosed disability or LGBTQ identity and saved its URL, or after exhaustive keyword searches concluded 'Unknown' for each and recorded the negative search result sources or lack thereof."
+
+[1] "pending"
+
+[1] ""
+
+[1] 6
+
+[1] "Cross-reference all collected sources to resolve conflicts (prioritize official biographies and reputable news outlets), determine the subject’s prior occupation and map it to the class_background categories, and prepare a provenance list (exact URLs) for each asserted field."
+
+[1] "Created a reconciled table of findings with at least one source per asserted fact (or 'Unknown' where none), assigned class_background per rule mapping, and saved all URLs used for each field."
+
+[1] "pending"
+
+[1] ""
+
+[1] 7
+
+[1] "Prepare final answer JSON per the required schema, include 'confidence' and one-sentence 'justification', and produce the maintained state object {field_status, search_count, unresolved_fields}; ensure all source fields contain exact full URLs or null when unknown."
+
+[1] "Final JSON assembled with field values, URL sources or null, confidence and justification, and the maintained state object; ready for delivery."
+
+[1] "pending"
+
+[1] ""
+
+[1] 2
+
+[1] 2
+
+[1] 3
+
+[1] "Locate verifiable public-source facts for Ramona Moye Camaconi (Bolivia, MAS, Beni, active circa 2014) covering birth year, birth place, highest education, prior occupation, disability status, and publicly disclosed LGBTQ identity, and produce a final evidence-backed structured answer."
+
+[1] 1
+
+[1] "Search Wikipedia for 'Ramona Moye Camaconi' (and likely name variants) and open the article(s); extract any listed birth year, birth place, education, occupation, disability, or LGBTQ information and record full URL(s)."
+
+[1] "Found a Wikipedia page for the subject matching country=Bolivia, party=MAS, region=Beni and gender=female OR determined no matching Wikipedia page exists; saved the page URL(s) and initial extracted fields (or noted absence)."
+
+[1] "completed"
+
+[1] "No Wikipedia page found for the subject; will proceed to government and news sources."
+
+[1] 2
+
+[1] "Search official government/parliamentary sources (Bolivian Asamblea Legislativa, Cámara de Diputados/Senadores profiles, departmental government of Beni) and the MAS party site for an official biography or candidate profile; extract birth year/place, education, prior occupation, disability, or LGBTQ"
+
+[1] "Located at least one official government or party biography/profile for the subject and saved full URL(s) and extracted fields, or documented that no official profile was found."
+
+[1] "pending"
+
+[1] ""
+
+[1] 3
+
+[1] "Search Bolivian national and Beni regional news outlets (e.g., ABI, La Razón, El Deber, Página Siete, Los Tiempos, local Beni papers) and credible international news databases for interviews, candidate lists, election coverage, or profiles mentioning the target variables; save full URLs for each cor"
+
+[1] "Collected at least two credible news sources that either corroborate or refute each available field (birth year/place, education, prior occupation, disability, LGBTQ) OR determined that the field lacks public reporting; saved all source URLs."
+
+[1] "pending"
+
+[1] ""
+
+[1] 4
+
+[1] "Search Bolivian electoral records and candidate registration documents for the 2014 election (Tribunal Supremo Electoral / Órgano Electoral) for the candidate’s registration form or CV (hoja de vida) to verify birth year/place, education and prior occupation; save full URLs or document absence."
+
+[1] "Found candidate registration / electoral dossier or official candidate list entry for 2014 with relevant fields and saved the URL, or confirmed such records are not publicly available for this candidate."
+
+[1] "pending"
+
+[1] ""
+
+[1] 5
+
+[1] "Perform targeted searches for public disclosures about disability and LGBTQ status using Spanish keyword variants (e.g., 'discapacidad', 'silla de ruedas', 'lesbiana', 'LGTB', 'homosexual', 'diversidad sexual') in combination with the subject’s name and affiliations; save URLs for any explicit, reli"
+
+[1] "Either located an explicit, reliable source stating a disclosed disability or LGBTQ identity and saved its URL, or after exhaustive keyword searches concluded 'Unknown' for each and recorded the negative search result sources or lack thereof."
+
+[1] "pending"
+
+[1] ""
+
+[1] 6
+
+[1] "Cross-reference all collected sources to resolve conflicts (prioritize official biographies and reputable news outlets), determine the subject’s prior occupation and map it to the class_background categories, and prepare a provenance list (exact URLs) for each asserted field."
+
+[1] "Created a reconciled table of findings with at least one source per asserted fact (or 'Unknown' where none), assigned class_background per rule mapping, and saved all URLs used for each field."
+
+[1] "pending"
+
+[1] ""
+
+[1] 7
+
+[1] "Prepare final answer JSON per the required schema, include 'confidence' and one-sentence 'justification', and produce the maintained state object {field_status, search_count, unresolved_fields}; ensure all source fields contain exact full URLs or null when unknown."
+
+[1] "Final JSON assembled with field values, URL sources or null, confidence and justification, and the maintained state object; ready for delivery."
+
+[1] "pending"
+
+[1] ""
+
+[1] 3
+
+[1] 2
+
+[1] TRUE

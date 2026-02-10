@@ -1,10 +1,18 @@
 ASA_TEST_LANGGRAPH_CACHE <- new.env(parent = emptyenv())
 ASA_TEST_LANGGRAPH_CACHE$stack_checks <- new.env(parent = emptyenv())
+ASA_TEST_LANGGRAPH_CACHE$modules <- new.env(parent = emptyenv())
 
 asa_test_import_langgraph_module <- function(module_name,
                                              required_files = paste0(module_name, ".py"),
                                              required_modules = ASA_TEST_LANGGRAPH_MODULES,
                                              initialize = TRUE) {
+  # Return cached module if available (same module + same required_modules set)
+  cache_key <- paste0(module_name, "|",
+    paste(sort(unique(as.character(required_modules %||% ""))), collapse = ","))
+  if (exists(cache_key, envir = ASA_TEST_LANGGRAPH_CACHE$modules, inherits = FALSE)) {
+    return(get(cache_key, envir = ASA_TEST_LANGGRAPH_CACHE$modules, inherits = FALSE))
+  }
+
   python_path <- asa_test_skip_if_no_python(
     required_files = required_files,
     initialize = initialize
@@ -17,7 +25,9 @@ asa_test_import_langgraph_module <- function(module_name,
       assign(stack_key, TRUE, envir = ASA_TEST_LANGGRAPH_CACHE$stack_checks)
     }
   }
-  reticulate::import_from_path(module_name, path = python_path)
+  mod <- reticulate::import_from_path(module_name, path = python_path)
+  assign(cache_key, mod, envir = ASA_TEST_LANGGRAPH_CACHE$modules)
+  mod
 }
 
 
@@ -148,4 +158,54 @@ asa_test_invoke_json_agent <- function(agent,
     response_text = parsed_payload$response_text,
     parsed = parsed_payload$parsed
   )
+}
+
+# ---------------------------------------------------------------------------
+# Fake search tool factory: creates a deterministic Tool(name="Search")
+# that returns `return_value` for any query.
+# ---------------------------------------------------------------------------
+
+asa_test_fake_search_tool <- function(return_value = "ok",
+                                      var_name = "fake_search_tool",
+                                      tool_name = "Search",
+                                      description = "Fake search") {
+  escaped_rv <- gsub("'", "\\\\'", return_value)
+  code <- paste0(
+    "from langchain_core.tools import Tool\n\n",
+    "def _fake_search_", var_name, "(query: str) -> str:\n",
+    "    return '", escaped_rv, "'\n\n",
+    var_name, " = Tool(\n",
+    "    name='", tool_name, "',\n",
+    "    description='", description, "',\n",
+    "    func=_fake_search_", var_name, ",\n",
+    ")\n"
+  )
+  reticulate::py_run_string(code)
+  reticulate::py[[var_name]]
+}
+
+# ---------------------------------------------------------------------------
+# Noop graph stubs for testing run_research / stream_research validation
+# ---------------------------------------------------------------------------
+
+asa_test_noop_invoke_graph <- function(var_name = "noop_invoke_graph") {
+  code <- paste0(
+    "class _NoopInvokeGraph_", var_name, ":\n",
+    "    def invoke(self, initial_state, config):\n",
+    "        return {'results': [], 'status': 'complete', 'stop_reason': None}\n\n",
+    var_name, " = _NoopInvokeGraph_", var_name, "()\n"
+  )
+  reticulate::py_run_string(code)
+  reticulate::py[[var_name]]
+}
+
+asa_test_noop_stream_graph <- function(var_name = "noop_stream_graph") {
+  code <- paste0(
+    "class _NoopStreamGraph_", var_name, ":\n",
+    "    def stream(self, initial_state, config, stream_mode='updates'):\n",
+    "        yield {'planner': {'status': 'complete', 'results': []}}\n\n",
+    var_name, " = _NoopStreamGraph_", var_name, "()\n"
+  )
+  reticulate::py_run_string(code)
+  reticulate::py[[var_name]]
 }

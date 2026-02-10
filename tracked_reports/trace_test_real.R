@@ -1,4 +1,11 @@
 # Rscript: trace_test_real.R
+
+# outputs: 
+#./asa-software/tracked_reports/prompt_example_real.txt
+#./asa-software/tracked_reports/trace_real.txt
+#./asa-software/tracked_reports/token_stats_real.txt
+#./asa-software/tracked_reports/plan_output_real.txt
+# ./asa-software/tracked_reports/our_answer_real.txt
 options(error=NULL)
 # devtools::load_all('~/Documents/asa-software/asa')
 # devtools::install_github( 'cjerzak/asa-software/asa' )
@@ -144,11 +151,11 @@ attempt <- asa::run_task(
     expected_fields = NULL,
     expected_schema = EXPECTED_SCHEMA,
     verbose = FALSE,
-    use_plan_mode = FALSE, 
+    use_plan_mode = TRUE, 
     agent = asa::initialize_agent(
-      backend = "gemini", model = "gemini-3-pro-preview",
+      #backend = "gemini", model = "gemini-3-pro-preview",
       #backend = "gemini", model = "gemini-3-flash-preview",
-      #backend = "openai", model = "gpt-5-mini-2025-08-07",
+      backend = "openai", model = "gpt-5-mini-2025-08-07",
       #backend = "openai", model = "gpt-5-nano-2025-08-07",
       # proxy = proxy,
       use_browser = FALSE, 
@@ -206,4 +213,10 @@ jsonlite::write_json(
   null = "null"
 )
 cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "null"))
-#trace_real.txt token_stats_real.txt our_answer_real.txt
+
+# outputs: 
+#./asa-software/tracked_reports/prompt_example_real.txt
+#./asa-software/tracked_reports/trace_real.txt
+#./asa-software/tracked_reports/token_stats_real.txt
+#./asa-software/tracked_reports/plan_output_real.txt
+# ./asa-software/tracked_reports/our_answer_real.txt

@@ -1,1 +1,56 @@
-[]
+{
+  "goal": "Locate verifiable public-source facts for Ramona Moye Camaconi (Bolivia, MAS, Beni, active circa 2014) covering birth year, birth place, highest education, prior occupation, disability status, and publicly disclosed LGBTQ identity, and produce a final evidence-backed structured answer.",
+  "steps": [
+    {
+      "id": 1,
+      "description": "Search Wikipedia for 'Ramona Moye Camaconi' (and likely name variants) and open the article(s); extract any listed birth year, birth place, education, occupation, disability, or LGBTQ information and record full URL(s).",
+      "completion_criteria": "Found a Wikipedia page for the subject matching country=Bolivia, party=MAS, region=Beni and gender=female OR determined no matching Wikipedia page exists; saved the page URL(s) and initial extracted fields (or noted absence).",
+      "status": "completed",
+      "findings": "No Wikipedia page found for the subject; will proceed to government and news sources."
+    },
+    {
+      "id": 2,
+      "description": "Search official government/parliamentary sources (Bolivian Asamblea Legislativa, Cámara de Diputados/Senadores profiles, departmental government of Beni) and the MAS party site for an official biography or candidate profile; extract birth year/place, education, prior occupation, disability, or LGBTQ",
+      "completion_criteria": "Located at least one official government or party biography/profile for the subject and saved full URL(s) and extracted fields, or documented that no official profile was found.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 3,
+      "description": "Search Bolivian national and Beni regional news outlets (e.g., ABI, La Razón, El Deber, Página Siete, Los Tiempos, local Beni papers) and credible international news databases for interviews, candidate lists, election coverage, or profiles mentioning the target variables; save full URLs for each cor",
+      "completion_criteria": "Collected at least two credible news sources that either corroborate or refute each available field (birth year/place, education, prior occupation, disability, LGBTQ) OR determined that the field lacks public reporting; saved all source URLs.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 4,
+      "description": "Search Bolivian electoral records and candidate registration documents for the 2014 election (Tribunal Supremo Electoral / Órgano Electoral) for the candidate’s registration form or CV (hoja de vida) to verify birth year/place, education and prior occupation; save full URLs or document absence.",
+      "completion_criteria": "Found candidate registration / electoral dossier or official candidate list entry for 2014 with relevant fields and saved the URL, or confirmed such records are not publicly available for this candidate.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 5,
+      "description": "Perform targeted searches for public disclosures about disability and LGBTQ status using Spanish keyword variants (e.g., 'discapacidad', 'silla de ruedas', 'lesbiana', 'LGTB', 'homosexual', 'diversidad sexual') in combination with the subject’s name and affiliations; save URLs for any explicit, reli",
+      "completion_criteria": "Either located an explicit, reliable source stating a disclosed disability or LGBTQ identity and saved its URL, or after exhaustive keyword searches concluded 'Unknown' for each and recorded the negative search result sources or lack thereof.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 6,
+      "description": "Cross-reference all collected sources to resolve conflicts (prioritize official biographies and reputable news outlets), determine the subject’s prior occupation and map it to the class_background categories, and prepare a provenance list (exact URLs) for each asserted field.",
+      "completion_criteria": "Created a reconciled table of findings with at least one source per asserted fact (or 'Unknown' where none), assigned class_background per rule mapping, and saved all URLs used for each field.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 7,
+      "description": "Prepare final answer JSON per the required schema, include 'confidence' and one-sentence 'justification', and produce the maintained state object {field_status, search_count, unresolved_fields}; ensure all source fields contain exact full URLs or null when unknown.",
+      "completion_criteria": "Final JSON assembled with field values, URL sources or null, confidence and justification, and the maintained state object; ready for delivery.",
+      "status": "pending",
+      "findings": ""
+    }
+  ],
+  "version": 3,
+  "current_step": 2
+}

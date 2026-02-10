@@ -125,13 +125,7 @@ test_that("stream_research forwards recursion_limit into graph config", {
 test_that("run_research rejects recursion_limit outside [4, 500]", {
   research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
-  reticulate::py_run_string(paste0(
-    "class _NoopInvokeGraph:\n",
-    "    def invoke(self, initial_state, config):\n",
-    "        return {'results': [], 'status': 'complete', 'stop_reason': None}\n",
-    "\n",
-    "noop_invoke_graph = _NoopInvokeGraph()\n"
-  ))
+  asa_test_noop_invoke_graph()
 
   expect_error(
     research$run_research(
@@ -181,13 +175,7 @@ test_that("run_research rejects recursion_limit outside [4, 500]", {
 test_that("stream_research rejects recursion_limit outside [4, 500]", {
   research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
-  reticulate::py_run_string(paste0(
-    "class _NoopStreamGraph:\n",
-    "    def stream(self, initial_state, config, stream_mode='updates'):\n",
-    "        yield {'planner': {'status': 'complete', 'results': []}}\n",
-    "\n",
-    "noop_stream_graph = _NoopStreamGraph()\n"
-  ))
+  asa_test_noop_stream_graph()
 
   expect_error(
     reticulate::iterate(research$stream_research(
@@ -444,208 +432,7 @@ test_that("repair_json_output_to_schema uses shape defaults for array/object lea
   expect_equal(length(parsed$metadata), 0L)
 })
 
-test_that("standard agent reaches recursion_limit and preserves JSON output (Gemini, best-effort)", {
-
-  asa_test_skip_api_tests()
-  api_key <- asa_test_require_gemini_key()
-
-  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production",
-    required_modules = c(ASA_TEST_LANGGRAPH_MODULES, "langchain_google_genai"))
-  chat_models <- reticulate::import("langchain_google_genai")
-
-  gemini_model <- Sys.getenv("ASA_TEST_GEMINI_MODEL", unset = "")
-  if (!nzchar(gemini_model)) {
-    gemini_model <- Sys.getenv("ASA_GEMINI_MODEL", unset = "")
-  }
-  if (!nzchar(gemini_model)) {
-    gemini_model <- asa:::ASA_DEFAULT_GEMINI_MODEL
-  }
-
-  llm <- chat_models$ChatGoogleGenerativeAI(
-    model = gemini_model,
-    temperature = 0,
-    api_key = api_key
-  )
-
-  # Deterministic tool: we don't care about live web results, only that the
-  # agent attempts tool usage before being cut off by recursion_limit.
-  reticulate::py_run_string(paste0(
-    "from langchain_core.tools import Tool\n",
-    "import json\n",
-    "\n",
-    "def _fake_search(query: str) -> str:\n",
-    "    # Fixed payload so the agent has something it *could* use if the tool ran.\n",
-    "    return json.dumps([\n",
-    "        {\"name\": \"Ada Lovelace\", \"birth_year\": 1815, \"field\": \"mathematics\", \"key_contribution\": None},\n",
-    "        {\"name\": \"Alan Turing\", \"birth_year\": 1912, \"field\": \"computer science\", \"key_contribution\": None},\n",
-    "        {\"name\": \"Grace Hopper\", \"birth_year\": 1906, \"field\": \"computer science\", \"key_contribution\": None}\n",
-    "    ])\n",
-    "\n",
-    "fake_search_tool = Tool(\n",
-    "    name=\"Search\",\n",
-    "    description=\"Deterministic Search tool for recursion-limit tests.\",\n",
-    "    func=_fake_search,\n",
-    ")\n"
-  ))
-
-  agent <- custom_ddg$create_standard_agent(
-    model = llm,
-    tools = list(reticulate::py$fake_search_tool),
-    checkpointer = NULL,
-    debug = FALSE
-  )
-
-  # A deliberately multi-part task that normally requires multiple tool calls.
-  # We also require strict JSON output so the test can validate best-effort
-  # formatting even when the step budget is exhausted.
-  prompt <- asa_test_recursion_limit_prompt()
-
-  final_state <- agent$invoke(
-    list(messages = list(list(role = "user", content = prompt))),
-    config = list(recursion_limit = as.integer(4))
-  )
-
-  expect_equal(final_state$stop_reason, "recursion_limit")
-
-  # Extract response text using the same logic as run_task()/run_agent() so we
-  # verify "best effort" formatting survives Gemini + recursion_limit.
-  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
-  expect_true(nzchar(response_text))
-
-  if (tolower(Sys.getenv("ASA_DEBUG_GEMINI_RECURSION_TEST")) %in% c("true", "1", "yes")) {
-    message("\nGemini best-effort response (recursion_limit):\n", response_text)
-  }
-
-  parsed <- jsonlite::fromJSON(response_text)
-  expect_true(is.list(parsed))
-  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
-
-  if (is.data.frame(parsed$items)) {
-    expect_true(all(c("name", "birth_year", "field") %in% names(parsed$items)))
-    expect_true(any(parsed$items$name %in% c("Ada Lovelace", "Alan Turing", "Grace Hopper")))
-  }
-})
-
-test_that("Gemini 3 Flash multi-step folding preserves semantic correctness across 10 tool steps", {
-
-  asa_test_skip_api_tests()
-  api_key <- asa_test_require_gemini_key()
-
-  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production",
-    required_modules = c(ASA_TEST_LANGGRAPH_MODULES, "langchain_google_genai"))
-  chat_models <- reticulate::import("langchain_google_genai")
-
-  gemini_model <- Sys.getenv("ASA_TEST_GEMINI_MODEL", unset = "")
-  if (!nzchar(gemini_model)) {
-    gemini_model <- "gemini-3-flash-preview"
-  }
-
-  llm <- chat_models$ChatGoogleGenerativeAI(
-    model = gemini_model,
-    temperature = 0,
-    api_key = api_key
-  )
-
-  reticulate::py_run_string(paste0(
-    "from langchain_core.tools import Tool\n",
-    "import json\n",
-    "import re\n\n",
-    "multi_step_counter = {'n': 0}\n\n",
-    "def _multi_step_search(query: str) -> str:\n",
-    "    multi_step_counter['n'] += 1\n",
-    "    m = re.search(r'step_(\\\\d+)', str(query))\n",
-    "    step = int(m.group(1)) if m else int(multi_step_counter['n'])\n",
-    "    payload = {\n",
-    "        'step': step,\n",
-    "        'fact': f'fact_{step}',\n",
-    "        'checksum': step * 11,\n",
-    "        'context_blob': ('STEP_' + str(step) + '_DETAIL_') * 80\n",
-    "    }\n",
-    "    return json.dumps(payload)\n\n",
-    "multi_step_search_tool = Tool(\n",
-    "    name='Search',\n",
-    "    description='Deterministic Search tool for 10-step memory-folding semantic tests.',\n",
-    "    func=_multi_step_search,\n",
-    ")\n"
-  ))
-
-  agent <- custom_ddg$create_memory_folding_agent(
-    model = llm,
-    tools = list(reticulate::py$multi_step_search_tool),
-    checkpointer = NULL,
-    message_threshold = as.integer(4),
-    keep_recent = as.integer(1),
-    fold_char_budget = as.integer(2000),
-    debug = FALSE
-  )
-
-  prompt <- paste0(
-    "You MUST execute a 10-step process and use the Search tool at each step.\n",
-    "Step plan:\n",
-    "1) Call Search with query 'step_1'.\n",
-    "2) Call Search with query 'step_2'.\n",
-    "3) Call Search with query 'step_3'.\n",
-    "4) Call Search with query 'step_4'.\n",
-    "5) Call Search with query 'step_5'.\n",
-    "6) Call Search with query 'step_6'.\n",
-    "7) Call Search with query 'step_7'.\n",
-    "8) Call Search with query 'step_8'.\n",
-    "9) Call Search with query 'step_9'.\n",
-    "10) Call Search with query 'step_10'.\n",
-    "After completing all 10 searches, output STRICT JSON only with this schema:\n",
-    "{\n",
-    "  \"status\": \"complete\"|\"partial\",\n",
-    "  \"steps\": [{\"step\": integer, \"fact\": string, \"checksum\": integer}],\n",
-    "  \"missing\": [integer],\n",
-    "  \"notes\": string\n",
-    "}\n",
-    "Rules:\n",
-    "- Include one entry for each completed step.\n",
-    "- For each step k, fact must be \"fact_k\" and checksum must be k*11.\n",
-    "- If any step is missing, set status=\"partial\" and list missing step numbers.\n",
-    "- Do not include markdown."
-  )
-
-  final_state <- agent$invoke(
-    list(
-      messages = list(list(role = "user", content = prompt)),
-      summary = "",
-      archive = list(),
-      fold_stats = reticulate::dict(fold_count = 0L)
-    ),
-    config = list(
-      recursion_limit = as.integer(80),
-      configurable = list(thread_id = "test_gemini_multistep_memory_folding_semantics")
-    )
-  )
-
-  expect_true(as.integer(reticulate::py$multi_step_counter[["n"]]) >= 10L)
-  expect_true(is.list(final_state$fold_stats))
-  expect_true(as.integer(as.list(final_state$fold_stats)$fold_count) >= 1L)
-  expect_true(is.list(final_state$archive))
-  expect_true(length(final_state$archive) >= 1L)
-
-  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
-  expect_true(is.character(response_text) && nzchar(response_text))
-
-  parsed <- jsonlite::fromJSON(response_text)
-  expect_true(is.list(parsed))
-  expect_true(all(c("status", "steps", "missing", "notes") %in% names(parsed)))
-
-  steps_df <- parsed$steps
-  expect_true(is.data.frame(steps_df))
-  expect_true(all(c("step", "fact", "checksum") %in% names(steps_df)))
-  expect_true(all(1:10 %in% as.integer(steps_df$step)))
-
-  step_1 <- steps_df[steps_df$step == 1, , drop = FALSE]
-  step_10 <- steps_df[steps_df$step == 10, , drop = FALSE]
-  expect_true(nrow(step_1) >= 1L)
-  expect_true(nrow(step_10) >= 1L)
-  expect_equal(as.character(step_1$fact[[1]]), "fact_1")
-  expect_equal(as.integer(step_1$checksum[[1]]), 11L)
-  expect_equal(as.character(step_10$fact[[1]]), "fact_10")
-  expect_equal(as.integer(step_10$checksum[[1]]), 110L)
-})
+# NOTE: Gemini live API tests moved to test-langgraph-gemini-live.R for faster test runs.
 
 test_that("run_task passes expected_schema into LangGraph state (explicit schema)", {
   custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
@@ -1110,18 +897,7 @@ test_that("archive entry fold_count label matches state fold_count", {
 
   # Same pattern as existing Gemini test: tool-call then final answer, with a
   # deterministic summarizer so we can inspect archive structure.
-  reticulate::py_run_string(paste0(
-    "from langchain_core.tools import Tool\n",
-    "\n",
-    "def _fake_search_v3(query: str) -> str:\n",
-    "    return 'result'\n",
-    "\n",
-    "fake_search_tool_v3 = Tool(\n",
-    "    name='Search',\n",
-    "    description='Fake search',\n",
-    "    func=_fake_search_v3,\n",
-    ")\n"
-  ))
+  asa_test_fake_search_tool(return_value = "result", var_name = "fake_search_tool_v3")
   asa_test_stub_llm(
     mode = "tool_call",
     response_content = "final answer",
@@ -1762,11 +1538,8 @@ test_that("reused finalize response gets a fresh message id", {
   ))
 })
 
-test_that("finalize strips residual tool calls and returns terminal JSON (standard)", {
+test_that("finalize strips residual tool calls and returns terminal JSON (standard + memory folding)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
-
-  # Simulates finalize-time bad behavior: model emits a tool call with empty content.
-  asa_test_stub_residual_tool_llm(var_name = "residual_tool_llm")
 
   expected_schema <- list(
     status = "string",
@@ -1775,31 +1548,59 @@ test_that("finalize strips residual tool calls and returns terminal JSON (standa
     notes = "string"
   )
 
-  agent <- prod$create_standard_agent(
-    model = reticulate::py$residual_tool_llm,
-    tools = list()
-  )
+  for (agent_type in c("standard", "memory_folding")) {
+    var_name <- paste0("residual_tool_llm_", agent_type)
+    asa_test_stub_residual_tool_llm(var_name = var_name)
 
-  invoke <- asa_test_invoke_json_agent(
-    agent = agent,
-    expected_schema = expected_schema,
-    prompt = "Return JSON",
-    expected_schema_source = "explicit",
-    config = list(recursion_limit = 2L),
-    backend = "gemini"
-  )
-  final_state <- invoke$final_state
-  response_text <- invoke$response_text
-  parsed <- invoke$parsed
+    if (agent_type == "standard") {
+      agent <- prod$create_standard_agent(
+        model = reticulate::py[[var_name]],
+        tools = list()
+      )
+      invoke <- asa_test_invoke_json_agent(
+        agent = agent,
+        expected_schema = expected_schema,
+        prompt = "Return JSON",
+        expected_schema_source = "explicit",
+        config = list(recursion_limit = 2L),
+        backend = "gemini"
+      )
+    } else {
+      agent <- prod$create_memory_folding_agent(
+        model = reticulate::py[[var_name]],
+        tools = list(),
+        checkpointer = NULL,
+        debug = FALSE
+      )
+      invoke <- asa_test_invoke_json_agent(
+        agent = agent,
+        expected_schema = expected_schema,
+        expected_schema_source = "explicit",
+        input_state = list(
+          messages = list(list(role = "user", content = "Return JSON")),
+          summary = "",
+          archive = list(),
+          fold_stats = reticulate::dict(fold_count = 0L)
+        ),
+        config = list(
+          recursion_limit = 2L,
+          configurable = list(thread_id = paste0("test_residual_finalize_", agent_type))
+        ),
+        backend = "gemini"
+      )
+    }
+    final_state <- invoke$final_state
+    parsed <- invoke$parsed
 
-  expect_equal(final_state$stop_reason, "recursion_limit")
+    expect_equal(final_state$stop_reason, "recursion_limit")
 
-  last_msg <- final_state$messages[[length(final_state$messages)]]
-  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
-  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
+    last_msg <- final_state$messages[[length(final_state$messages)]]
+    tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
+    expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
 
-  expect_true(is.list(parsed))
-  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+    expect_true(is.list(parsed))
+    expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+  }
 })
 
 test_that("finalize stays non-empty when first schema repair attempt fails (standard)", {
@@ -1860,32 +1661,55 @@ test_that("finalize stays non-empty when first schema repair attempt fails (stan
   expect_true(as.integer(repair_calls$n) >= 2L)
 })
 
-test_that("finalize strips residual tool calls and returns non-empty text when no schema (standard)", {
+test_that("finalize strips residual tool calls and returns non-empty text when no schema (standard + memory folding)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
-  asa_test_stub_residual_tool_llm(var_name = "residual_tool_no_schema_llm")
+  for (agent_type in c("standard", "memory_folding")) {
+    var_name <- paste0("residual_tool_no_schema_llm_", agent_type)
+    asa_test_stub_residual_tool_llm(var_name = var_name)
 
-  agent <- prod$create_standard_agent(
-    model = reticulate::py$residual_tool_no_schema_llm,
-    tools = list()
-  )
+    if (agent_type == "standard") {
+      agent <- prod$create_standard_agent(
+        model = reticulate::py[[var_name]],
+        tools = list()
+      )
+      final_state <- agent$invoke(
+        list(
+          messages = list(list(role = "user", content = "Give me the best possible answer"))
+        ),
+        config = list(recursion_limit = 2L)
+      )
+    } else {
+      agent <- prod$create_memory_folding_agent(
+        model = reticulate::py[[var_name]],
+        tools = list(),
+        checkpointer = NULL,
+        debug = FALSE
+      )
+      final_state <- agent$invoke(
+        list(
+          messages = list(list(role = "user", content = "Give me the best possible answer")),
+          summary = "",
+          archive = list(),
+          fold_stats = reticulate::dict(fold_count = 0L)
+        ),
+        config = list(
+          recursion_limit = 2L,
+          configurable = list(thread_id = paste0("test_residual_finalize_no_schema_", agent_type))
+        )
+      )
+    }
 
-  final_state <- agent$invoke(
-    list(
-      messages = list(list(role = "user", content = "Give me the best possible answer"))
-    ),
-    config = list(recursion_limit = 2L)
-  )
+    expect_equal(final_state$stop_reason, "recursion_limit")
 
-  expect_equal(final_state$stop_reason, "recursion_limit")
+    last_msg <- final_state$messages[[length(final_state$messages)]]
+    tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
+    expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
 
-  last_msg <- final_state$messages[[length(final_state$messages)]]
-  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
-  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
-
-  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
-  expect_true(is.character(response_text))
-  expect_true(nzchar(trimws(response_text)))
+    response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
+    expect_true(is.character(response_text))
+    expect_true(nzchar(trimws(response_text)))
+  }
 })
 
 test_that("sanitize_finalize_response fills dict content fallback when residual tool calls are stripped", {
@@ -2107,244 +1931,112 @@ test_that("explicit schema does not rewrite intermediate tool-call turns (standa
   expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
 })
 
-test_that("finalize strips residual tool calls and returns terminal JSON (memory folding)", {
+# NOTE: "finalize strips residual tool calls and returns terminal JSON (memory folding)"
+# merged into parameterized test above.
+
+# NOTE: "finalize strips residual tool calls ... no schema (memory folding)"
+# merged into parameterized test above.
+
+test_that("recursion-limit finalize preserves earlier tool-derived facts (standard + memory folding)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
-
-  asa_test_stub_residual_tool_llm(var_name = "residual_tool_llm_memory")
-
-  expected_schema <- list(
-    status = "string",
-    items = "array",
-    missing = "array",
-    notes = "string"
-  )
-
-  agent <- prod$create_memory_folding_agent(
-    model = reticulate::py$residual_tool_llm_memory,
-    tools = list(),
-    checkpointer = NULL,
-    debug = FALSE
-  )
-
-  invoke <- asa_test_invoke_json_agent(
-    agent = agent,
-    expected_schema = expected_schema,
-    expected_schema_source = "explicit",
-    input_state = list(
-      messages = list(list(role = "user", content = "Return JSON")),
-      summary = "",
-      archive = list(),
-      fold_stats = reticulate::dict(fold_count = 0L)
-    ),
-    config = list(
-      recursion_limit = 2L,
-      configurable = list(thread_id = "test_residual_finalize_memory")
-    ),
-    backend = "gemini"
-  )
-  final_state <- invoke$final_state
-  response_text <- invoke$response_text
-  parsed <- invoke$parsed
-
-  expect_equal(final_state$stop_reason, "recursion_limit")
-
-  last_msg <- final_state$messages[[length(final_state$messages)]]
-  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
-  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
-
-  expect_true(is.list(parsed))
-  expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
-})
-
-test_that("finalize strips residual tool calls and returns non-empty text when no schema (memory folding)", {
-  prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
-
-  asa_test_stub_residual_tool_llm(var_name = "residual_tool_no_schema_llm_memory")
-
-  agent <- prod$create_memory_folding_agent(
-    model = reticulate::py$residual_tool_no_schema_llm_memory,
-    tools = list(),
-    checkpointer = NULL,
-    debug = FALSE
-  )
-
-  final_state <- agent$invoke(
-    list(
-      messages = list(list(role = "user", content = "Give me the best possible answer")),
-      summary = "",
-      archive = list(),
-      fold_stats = reticulate::dict(fold_count = 0L)
-    ),
-    config = list(
-      recursion_limit = 2L,
-      configurable = list(thread_id = "test_residual_finalize_memory_no_schema")
-    )
-  )
-
-  expect_equal(final_state$stop_reason, "recursion_limit")
-
-  last_msg <- final_state$messages[[length(final_state$messages)]]
-  tool_calls <- tryCatch(last_msg$tool_calls, error = function(e) NULL)
-  expect_true(is.null(tool_calls) || length(tool_calls) == 0L)
-
-  response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
-  expect_true(is.character(response_text))
-  expect_true(nzchar(trimws(response_text)))
-  expect_equal(
-    trimws(response_text),
-    "Unable to provide a complete answer with available information."
-  )
-})
-
-test_that("recursion-limit finalize preserves earlier tool-derived facts (standard)", {
-  prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
-
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n",
-    "from langchain_core.tools import Tool\n\n",
-    "def _fact_search(query: str) -> str:\n",
-    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
-    "fact_search_tool = Tool(\n",
-    "    name='Search',\n",
-    "    description='Deterministic fact search tool',\n",
-    "    func=_fact_search,\n",
-    ")\n\n",
-    "class _RecursionEdgeResidualLLM_Standard:\n",
-    "    def __init__(self):\n",
-    "        self.calls = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.calls += 1\n",
-    "        if self.calls == 1:\n",
-    "            return AIMessage(\n",
-    "                content='calling search',\n",
-    "                tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_1'}]\n",
-    "            )\n",
-    "        # Simulate bad recursion-edge response: residual tool call with empty content.\n",
-    "        return AIMessage(\n",
-    "            content='',\n",
-    "            tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_2'}]\n",
-    "        )\n\n",
-    "recursion_edge_llm_standard = _RecursionEdgeResidualLLM_Standard()\n"
-  ))
 
   expected_schema <- list(
     prior_occupation = "string",
     prior_occupation_source = "string"
   )
 
-  agent <- prod$create_standard_agent(
-    model = reticulate::py$recursion_edge_llm_standard,
-    tools = list(reticulate::py$fact_search_tool)
-  )
+  for (agent_type in c("standard", "memory_folding")) {
+    tool_var <- paste0("fact_search_tool_", agent_type)
+    llm_var <- paste0("recursion_edge_llm_", agent_type)
 
-  invoke <- asa_test_invoke_json_agent(
-    agent = agent,
-    expected_schema = expected_schema,
-    prompt = "Return strict JSON with prior_occupation and prior_occupation_source.",
-    expected_schema_source = "explicit",
-    config = list(
-      recursion_limit = 4L,
-      configurable = list(thread_id = "test_recursion_semantic_preserve_standard")
-    ),
-    backend = "gemini"
-  )
-  final_state <- invoke$final_state
-  response_text <- invoke$response_text
-  parsed <- invoke$parsed
+    reticulate::py_run_string(paste0(
+      "from langchain_core.messages import AIMessage\n",
+      "from langchain_core.tools import Tool\n\n",
+      "def _fact_search_", agent_type, "(query: str) -> str:\n",
+      "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+      tool_var, " = Tool(\n",
+      "    name='Search',\n",
+      "    description='Deterministic fact search tool',\n",
+      "    func=_fact_search_", agent_type, ",\n",
+      ")\n\n",
+      "class _RecursionEdgeResidualLLM_", agent_type, ":\n",
+      "    def __init__(self):\n",
+      "        self.calls = 0\n",
+      "    def bind_tools(self, tools):\n",
+      "        return self\n",
+      "    def invoke(self, messages):\n",
+      "        self.calls += 1\n",
+      "        if self.calls == 1:\n",
+      "            return AIMessage(\n",
+      "                content='calling search',\n",
+      "                tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_1'}]\n",
+      "            )\n",
+      "        return AIMessage(\n",
+      "            content='',\n",
+      "            tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_2'}]\n",
+      "        )\n\n",
+      llm_var, " = _RecursionEdgeResidualLLM_", agent_type, "()\n"
+    ))
 
-  expect_equal(final_state$stop_reason, "recursion_limit")
-  expect_true(is.list(parsed))
-  expect_equal(as.character(parsed$prior_occupation), "teacher")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+    if (agent_type == "standard") {
+      agent <- prod$create_standard_agent(
+        model = reticulate::py[[llm_var]],
+        tools = list(reticulate::py[[tool_var]])
+      )
+      invoke <- asa_test_invoke_json_agent(
+        agent = agent,
+        expected_schema = expected_schema,
+        prompt = "Return strict JSON with prior_occupation and prior_occupation_source.",
+        expected_schema_source = "explicit",
+        config = list(
+          recursion_limit = 4L,
+          configurable = list(thread_id = paste0("test_recursion_semantic_preserve_", agent_type))
+        ),
+        backend = "gemini"
+      )
+    } else {
+      agent <- prod$create_memory_folding_agent(
+        model = reticulate::py[[llm_var]],
+        tools = list(reticulate::py[[tool_var]]),
+        checkpointer = NULL,
+        message_threshold = as.integer(999),
+        keep_recent = as.integer(2),
+        fold_char_budget = as.integer(999999),
+        debug = FALSE
+      )
+      invoke <- asa_test_invoke_json_agent(
+        agent = agent,
+        expected_schema = expected_schema,
+        expected_schema_source = "explicit",
+        input_state = list(
+          messages = list(list(
+            role = "user",
+            content = "Return strict JSON with prior_occupation and prior_occupation_source."
+          )),
+          summary = "",
+          archive = list(),
+          fold_stats = reticulate::dict(fold_count = 0L)
+        ),
+        config = list(
+          recursion_limit = 4L,
+          configurable = list(thread_id = paste0("test_recursion_semantic_preserve_", agent_type))
+        ),
+        backend = "gemini"
+      )
+    }
+    final_state <- invoke$final_state
+    parsed <- invoke$parsed
 
-  field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
-  expect_true(is.list(field_status))
-  expect_equal(as.character(field_status$prior_occupation$status), "found")
-  expect_equal(as.character(field_status$prior_occupation$value), "teacher")
-})
+    expect_equal(final_state$stop_reason, "recursion_limit")
+    expect_true(is.list(parsed))
+    expect_equal(as.character(parsed$prior_occupation), "teacher")
+    expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
 
-test_that("recursion-limit finalize preserves earlier tool-derived facts (memory folding)", {
-  prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
-
-  reticulate::py_run_string(paste0(
-    "from langchain_core.messages import AIMessage\n",
-    "from langchain_core.tools import Tool\n\n",
-    "def _fact_search_mem(query: str) -> str:\n",
-    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
-    "fact_search_tool_mem = Tool(\n",
-    "    name='Search',\n",
-    "    description='Deterministic fact search tool',\n",
-    "    func=_fact_search_mem,\n",
-    ")\n\n",
-    "class _RecursionEdgeResidualLLM_Memory:\n",
-    "    def __init__(self):\n",
-    "        self.calls = 0\n",
-    "    def bind_tools(self, tools):\n",
-    "        return self\n",
-    "    def invoke(self, messages):\n",
-    "        self.calls += 1\n",
-    "        if self.calls == 1:\n",
-    "            return AIMessage(\n",
-    "                content='calling search',\n",
-    "                tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_1'}]\n",
-    "            )\n",
-    "        # Simulate bad recursion-edge response: residual tool call with empty content.\n",
-    "        return AIMessage(\n",
-    "            content='',\n",
-    "            tool_calls=[{'name':'save_finding','args':{'finding':'noop','category':'fact'},'id':'call_2'}]\n",
-    "        )\n\n",
-    "recursion_edge_llm_memory = _RecursionEdgeResidualLLM_Memory()\n"
-  ))
-
-  expected_schema <- list(
-    prior_occupation = "string",
-    prior_occupation_source = "string"
-  )
-
-  agent <- prod$create_memory_folding_agent(
-    model = reticulate::py$recursion_edge_llm_memory,
-    tools = list(reticulate::py$fact_search_tool_mem),
-    checkpointer = NULL,
-    message_threshold = as.integer(999),
-    keep_recent = as.integer(2),
-    fold_char_budget = as.integer(999999),
-    debug = FALSE
-  )
-
-  invoke <- asa_test_invoke_json_agent(
-    agent = agent,
-    expected_schema = expected_schema,
-    expected_schema_source = "explicit",
-    input_state = list(
-      messages = list(list(
-        role = "user",
-        content = "Return strict JSON with prior_occupation and prior_occupation_source."
-      )),
-      summary = "",
-      archive = list(),
-      fold_stats = reticulate::dict(fold_count = 0L)
-    ),
-    config = list(
-      recursion_limit = 4L,
-      configurable = list(thread_id = "test_recursion_semantic_preserve_memory")
-    ),
-    backend = "gemini"
-  )
-  final_state <- invoke$final_state
-  response_text <- invoke$response_text
-  parsed <- invoke$parsed
-
-  expect_equal(final_state$stop_reason, "recursion_limit")
-  expect_true(is.list(parsed))
-  expect_equal(as.character(parsed$prior_occupation), "teacher")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
-
-  field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
-  expect_true(is.list(field_status))
-  expect_equal(as.character(field_status$prior_occupation$status), "found")
-  expect_equal(as.character(field_status$prior_occupation$value), "teacher")
+    field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
+    expect_true(is.list(field_status))
+    expect_equal(as.character(field_status$prior_occupation$status), "found")
+    expect_equal(as.character(field_status$prior_occupation$value), "teacher")
+  }
 })
 
 test_that("field_status is canonical vs scratchpad and is injected into finalize prompts (standard)", {
