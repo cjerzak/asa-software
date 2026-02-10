@@ -144,7 +144,7 @@ attempt <- asa::run_task(
     expected_fields = NULL,
     expected_schema = EXPECTED_SCHEMA,
     verbose = FALSE,
-    use_plan_mode = TRUE, 
+    use_plan_mode = FALSE, 
     agent = asa::initialize_agent(
       #backend = "gemini", model = "gemini-3-pro-preview",
       backend = "gemini", model = "gemini-3-flash-preview",
@@ -179,7 +179,9 @@ attempt <- asa::run_task(
 # write to disk for further investigations.
 readr::write_file(prompt, "~/Documents/asa-software/tracked_reports/prompt_example_real.txt")
 writeLines(attempt$trace, "~/Documents/asa-software/tracked_reports/trace_real.txt", useBytes = TRUE)
-readr::write_file(paste(unlist(attempt$token_stats), collapse = "\n"), "~/Documents/asa-software/tracked_reports/token_stats_real.txt")
+readr::write_file(jsonlite::toJSON(attempt$token_stats, auto_unbox = TRUE, pretty = TRUE, null = "null"), "~/Documents/asa-software/tracked_reports/token_stats_real.txt")
+readr::write_file(jsonlite::toJSON(attempt$plan, auto_unbox = TRUE, pretty = TRUE, null = "null"), "~/Documents/asa-software/tracked_reports/plan_output_real.txt")
+
 
 attempt$token_stats$tokens_used
 attempt$token_stats$input_tokens

@@ -4891,11 +4891,26 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
             if candidate.startswith("{"):
                 text = candidate.split("```")[0].strip()
                 break
+    plan = None
     try:
         plan = _json.loads(text)
     except (_json.JSONDecodeError, ValueError):
-        return fallback
-    if not isinstance(plan, dict) or "steps" not in plan:
+        pass
+    # Fallback: extract outermost JSON object by brace matching
+    if plan is None:
+        first_brace = text.find("{")
+        last_brace = text.rfind("}")
+        if first_brace != -1 and last_brace > first_brace:
+            try:
+                plan = _json.loads(text[first_brace:last_brace + 1])
+            except (_json.JSONDecodeError, ValueError):
+                pass
+    if plan is None or not isinstance(plan, dict) or "steps" not in plan:
+        import logging as _logging
+        _logging.getLogger(__name__).debug(
+            "_parse_plan_response: falling back to default plan. "
+            "Raw content (first 200 chars): %s", (content or "")[:200]
+        )
         return fallback
     # Normalize steps
     normalized_steps = []
@@ -4926,6 +4941,39 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
             })
     if not normalized_steps:
         return fallback
+    # Auto-expand a single-step plan into a 4-step research template
+    if len(normalized_steps) == 1:
+        single_desc = normalized_steps[0]["description"]
+        normalized_steps = [
+            {
+                "id": 1,
+                "description": f"Initial search: {single_desc}",
+                "completion_criteria": "At least 2 search queries executed and key facts identified.",
+                "status": "pending",
+                "findings": "",
+            },
+            {
+                "id": 2,
+                "description": "Deep-dive into most promising sources for missing fields",
+                "completion_criteria": "Opened and read at least 1 detailed source page.",
+                "status": "pending",
+                "findings": "",
+            },
+            {
+                "id": 3,
+                "description": "Cross-reference and verify facts across multiple sources",
+                "completion_criteria": "Key facts confirmed or flagged as uncertain.",
+                "status": "pending",
+                "findings": "",
+            },
+            {
+                "id": 4,
+                "description": "Compile final answer with all fields and source URLs",
+                "completion_criteria": "All schema fields populated with values or 'Unknown', sources cited.",
+                "status": "pending",
+                "findings": "",
+            },
+        ]
     plan["steps"] = normalized_steps
     plan.setdefault("version", 1)
     plan.setdefault("current_step", 1)
@@ -4952,17 +5000,35 @@ def _maybe_generate_plan(state: dict, model: Any) -> dict:
     if not prompt_text:
         return {}
 
+    # Build schema-aware hint if expected_schema is available
+    schema_fields = []
+    raw_schema = state.get("expected_schema") or {}
+    if isinstance(raw_schema, dict):
+        schema_fields = [k for k in raw_schema.keys() if not k.endswith("_source")]
+    schema_hint = ""
+    if schema_fields:
+        schema_hint = (
+            "\n\nThe task requires populating these fields: "
+            + ", ".join(schema_fields)
+            + ".\nCreate steps that target specific fields (e.g., "
+            "'Search for birth_year and birth_place') rather than generic "
+            "'Research the topic' steps."
+        )
+
     plan_sys = SystemMessage(content=(
         "You are a planning assistant. Given the user's research task, "
         "create a structured execution checklist with 4-8 concrete steps.\n\n"
-        "Output ONLY valid JSON:\n"
+        "Output ONLY valid JSON. NO markdown fences, NO prose, NO explanation — "
+        "just the raw JSON object.\n"
         '{"goal": "...", "steps": [{"id": 1, "description": "...", '
         '"completion_criteria": "..."}, ...], '
         '"version": 1, "current_step": 1}\n\n'
         "Requirements:\n"
+        "- NEVER produce fewer than 4 steps.\n"
         "- Each step must be specific and action-oriented (avoid generic wording).\n"
         "- Include explicit completion_criteria describing when the step is done.\n"
         "- Steps should build toward a final evidence-backed answer."
+        + schema_hint
     ))
     plan_human = HumanMessage(content=prompt_text)
     response = None

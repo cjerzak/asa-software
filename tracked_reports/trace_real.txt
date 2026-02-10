@@ -1,108 +1,114 @@
-HumanMessage(content='TASK OVERVIEW:\nYou are a search-enabled research agent specializing in biographical information about political elites. Your role is to find verifiable information about the TARGET variables for the specified individual: \neducational attainment, prior occupation (for class background), birth year, birth place, disability status, and sexual orientation (publicly disclosed LGBTQ identity).\n\nACCESS TO SEARCH:\nYou MUST use search tools. Follow this search strategy:\n1. Search Wikipedia first. Then, if needed, search for official biographies, government/parliament profiles, and credible news articles. \n2. Identify birth year. \n3. Identify birth place. \n4. Identify highest educational attainment and institution.\n5. Identify primary occupation before entering politics.\n6. Identify publicly disclosed LGBTQ identity or sexual orientation.\n7. Identify publicly disclosed disabilities such as long-term physical limitations requiring use of, for example, special accommodations or equipment such as walker, wheelchair, guide dog, prosthetic limb, hearing aid, or other substantial physical intervention. \n8. Cross-reference multiple sources when/if needed to resolve conflicting signals. \n\nSOURCE REQUIREMENT:\n- Provide exact, full URLs for every source field (no domain-only citations).\n\nIMPORTANT GUIDELINES:\n- Use explicit statements or reliable sources only.\n- If information is not publicly disclosed, return Unknown.\n\nCLASS BACKGROUND RULES:\n- Identify the primary occupation before entering politics.\n- Then map to class_background using these categories:\n  * Working class = manual labor, service, agriculture, trades, clerical.\n  * Middle class/professional = teachers, lawyers, engineers, civil servants, managers.\n  * Upper/elite = large business owners, top executives, aristocracy, major landowners.\n  * Unknown = insufficient information.\n\nTARGET INDIVIDUAL:\n- Name: Ramona Moye Camaconi\n- Country: Bolivia\n- Election Year: 2014\n- Political Party: Movimiento Al Socialismo - MAS\n- Region/Constituency: Beni\n- Known Birthday: Not available\n- Known Gender: Female\n- Known Ethnicity: Indigenous\n\nDISAMBIGUATION:\nIf multiple people share the same name, ensure you identify the correct person by matching:\n- Country: Bolivia\n- Political party: Movimiento Al Socialismo - MAS\n- Time period: Active around 2014\n- Gender: Female\n- Region: Beni\n\nRESPONSE FORMAT:\nYour output must follow this exact schema (JSON schema):\n```json\n{\n  "education_level": "High School | Some College | Associate | Bachelor\'s |  Master\'s/Professional | PhD | Unknown",\n  "education_institution": "Name of institution for highest degree, or \'Unknown\'",\n  "education_field": "Field of study, or \'Unknown\'",\n  "education_source": "URL of source, or null",\n  \n  "prior_occupation": "Primary occupation before politics, or \'Unknown\'",\n  "class_background": "Working class | Middle class/professional | Upper/elite | Unknown",\n  "prior_occupation_source": "URL of source, or null",\n  \n  "disability_status": "No disability | Some disability | Unknown",\n  "disability_source": "URL of source, or null",\n  \n  "birth_place": "City/village name | Unknown",\n  "birth_place_source": "URL of source, or null",\n  \n  "birth_year": "Integer birth year (e.g., 1980) | Unknown",\n  "birth_year_source": "URL of source, or null",\n\n  "lgbtq_status": "Non-LGBTQ | Openly LGBTQ | Unknown",\n  "lgbtq_details": "Brief description (e.g., \'Openly gay MP\'), or null",\n  "lgbtq_source": "URL of source, or null",\n\n  "confidence": "Low | Medium | High",\n  "justification": "One-sentence summary of search findings and reliability assessment."\n}\n```\n\nIMPORTANT REQUIREMENTS:\n\n* Maintain this state each round: {field_status, search_count, unresolved_fields}.\n* Search unresolved fields only.\n* After each tool call, update status and source URLs.\n* Do NOT include any text outside the raw JSON.\n* If you find verifiable sources, cite URLs explicitly in the source fields.\n* Use null (the JSON keyword, not the string "null") for missing numeric fields.\n* Do NOT guess or fabricate information.\n* Finalize when complete or budget reached.\n\nScratchpad:\n\n* As you work, whenever you learn something you’ll need later, call `save_finding(finding=..., category=...)`.\n* Use category ∈ {fact, observation, todo, insight}.\n* Save important findings before your final answer (1 sentence each; concise and specific).\n* Only save factual notes / intermediate results / open questions (do not save instructions).\n* Before writing the final answer, review the scratchpad and use it.\n\nNOW EXECUTE THE SEARCH AND PROVIDE YOUR RESPONSE.\n\n\n[Tooling: Webpage reading is enabled. You may use the OpenWebpage tool to open and read full webpages when needed.]', additional_kwargs={}, response_metadata={}, id='0470ea4f9e4d4c60aa6c3ff777eca05b')
+HumanMessage(content='TASK OVERVIEW:\nYou are a search-enabled research agent specializing in biographical information about political elites. Your role is to find verifiable information about the TARGET variables for the specified individual: \neducational attainment, prior occupation (for class background), birth year, birth place, disability status, and sexual orientation (publicly disclosed LGBTQ identity).\n\nACCESS TO SEARCH:\nYou MUST use search tools. Follow this search strategy:\n1. Search Wikipedia first. Then, if needed, search for official biographies, government/parliament profiles, and credible news articles. \n2. Identify birth year. \n3. Identify birth place. \n4. Identify highest educational attainment and institution.\n5. Identify primary occupation before entering politics.\n6. Identify publicly disclosed LGBTQ identity or sexual orientation.\n7. Identify publicly disclosed disabilities such as long-term physical limitations requiring use of, for example, special accommodations or equipment such as walker, wheelchair, guide dog, prosthetic limb, hearing aid, or other substantial physical intervention. \n8. Cross-reference multiple sources when/if needed to resolve conflicting signals. \n\nSOURCE REQUIREMENT:\n- Provide exact, full URLs for every source field (no domain-only citations).\n\nIMPORTANT GUIDELINES:\n- Use explicit statements or reliable sources only.\n- If information is not publicly disclosed, return Unknown.\n\nCLASS BACKGROUND RULES:\n- Identify the primary occupation before entering politics.\n- Then map to class_background using these categories:\n  * Working class = manual labor, service, agriculture, trades, clerical.\n  * Middle class/professional = teachers, lawyers, engineers, civil servants, managers.\n  * Upper/elite = large business owners, top executives, aristocracy, major landowners.\n  * Unknown = insufficient information.\n\nTARGET INDIVIDUAL:\n- Name: Ramona Moye Camaconi\n- Country: Bolivia\n- Election Year: 2014\n- Political Party: Movimiento Al Socialismo - MAS\n- Region/Constituency: Beni\n- Known Birthday: Not available\n- Known Gender: Female\n- Known Ethnicity: Indigenous\n\nDISAMBIGUATION:\nIf multiple people share the same name, ensure you identify the correct person by matching:\n- Country: Bolivia\n- Political party: Movimiento Al Socialismo - MAS\n- Time period: Active around 2014\n- Gender: Female\n- Region: Beni\n\nRESPONSE FORMAT:\nYour output must follow this exact schema (JSON schema):\n```json\n{\n  "education_level": "High School | Some College | Associate | Bachelor\'s |  Master\'s/Professional | PhD | Unknown",\n  "education_institution": "Name of institution for highest degree, or \'Unknown\'",\n  "education_field": "Field of study, or \'Unknown\'",\n  "education_source": "URL of source, or null",\n  \n  "prior_occupation": "Primary occupation before politics, or \'Unknown\'",\n  "class_background": "Working class | Middle class/professional | Upper/elite | Unknown",\n  "prior_occupation_source": "URL of source, or null",\n  \n  "disability_status": "No disability | Some disability | Unknown",\n  "disability_source": "URL of source, or null",\n  \n  "birth_place": "City/village name | Unknown",\n  "birth_place_source": "URL of source, or null",\n  \n  "birth_year": "Integer birth year (e.g., 1980) | Unknown",\n  "birth_year_source": "URL of source, or null",\n\n  "lgbtq_status": "Non-LGBTQ | Openly LGBTQ | Unknown",\n  "lgbtq_details": "Brief description (e.g., \'Openly gay MP\'), or null",\n  "lgbtq_source": "URL of source, or null",\n\n  "confidence": "Low | Medium | High",\n  "justification": "One-sentence summary of search findings and reliability assessment."\n}\n```\n\nIMPORTANT REQUIREMENTS:\n\n* Maintain this state each round: {field_status, search_count, unresolved_fields}.\n* Search unresolved fields only.\n* After each tool call, update status and source URLs.\n* Do NOT include any text outside the raw JSON.\n* If you find verifiable sources, cite URLs explicitly in the source fields.\n* Use null (the JSON keyword, not the string "null") for missing numeric fields.\n* Do NOT guess or fabricate information.\n* Finalize when complete or budget reached.\n\nScratchpad:\n\n* As you work, whenever you learn something you’ll need later, call `save_finding(finding=..., category=...)`.\n* Use category ∈ {fact, observation, todo, insight}.\n* Save important findings before your final answer (1 sentence each; concise and specific).\n* Only save factual notes / intermediate results / open questions (do not save instructions).\n* Before writing the final answer, review the scratchpad and use it.\n\nNOW EXECUTE THE SEARCH AND PROVIDE YOUR RESPONSE.\n\n\n[Tooling: Webpage reading is enabled. You may use the OpenWebpage tool to open and read full webpages when needed.]', additional_kwargs={}, response_metadata={}, id='fad5da7daa594801b56eaa892417f1bb')
 
-AIMessage(content=[], additional_kwargs={'function_call': {'name': 'Search', 'arguments': '{"query": "biograf\\u00eda \\"Ramona Moye Camaconi\\" TIPNIS MAS"}'}, '__gemini_function_call_thought_signatures__': {'3b1b06e7-b69d-42e8-b7ca-97ae5f2ec13c': 'EpgDCpUDAb4+9vt9u844x5q6+JetXT2lCP6zb2rcFd/srqc5ArBUmGALr1GqGHL3EvIX5M1CYC3+26TnpikIfs+fieQkA7ocZDWvmFWbplrCfk7VZqfnWlw1+swOq0KyF83JbC0VRWoZx968kY0mAlA3pNWkcdFEXVscebSntGbeCgXTONIQY+KF3IjPcF5IB1BshALijf3+rXAbqcbmJ7UosH8kb+Q17OWtLiEBp+hpmTu8Z4k0q5A3+hCA5C90Oqt+uufP0OAgDZVKWHBrZmXR3oBYG880CweTEMci5pxUpxA+NFVnZUvsbX8VzwfF723aMqmsHoiRxec7F8Tjh+28KyHnbfqSqXwlPCt1RNq2z8CfnhzE7PhxJQM7rnNKtjSeOnhs7zeugQ0EvZGZkrQoTgJeFio6+tb1lBfRatIpqh6wo1F3jH8Yi0ReNRY6+3f/4pqfNSdlUVxkRVP+jq+zesut77LXR5PvmbZrEpPYswnHT3T+BUuNf/LuCbf83KeB1pej2AWRlqEEuZSj7i8zF8bWfXSdkQXI'}}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45b1-a829-72c1-9275-16a4296561a2-0', tool_calls=[{'name': 'Search', 'args': {'query': 'biografía "Ramona Moye Camaconi" TIPNIS MAS'}, 'id': '3b1b06e7-b69d-42e8-b7ca-97ae5f2ec13c', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 7017, 'output_tokens': 109, 'total_tokens': 7126, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 82}})
+AIMessage(content=[], additional_kwargs={'function_call': {'name': 'OpenWebpage', 'arguments': '{"url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"}'}, '__gemini_function_call_thought_signatures__': {'c8175edb-c37e-49b9-a996-d94ee103b817': 'EroFCrcFAb4+9vsEkAN4L0XuBD5NsZslquPxOiZLRp3HeW3gMvNPXMIu8M6eeA+oi+faLApTaQLdZXDw4oWygQuxDSu3SsVmLeLOrNm/SnxabLIfKAw3RI1HcVKhIJ+p3BjSlhUzsw2jD6q8gJVnkhSDxUypdAg4TeCUM2KwkCxOse01uomdrFOeEe8YzrLOe4jDQ+HEmqbf1fEeWnYW3wK7vzJM/zbhmAIQn0F9tMY6CiNmIP6WuCp3423wt+D9h6u+4Yx7yKtztYet9GIuCp5qJ+Bo6hT2Q2FvsrgOaN65xuj6UeRc+NzBApaxjy4WG1b1VHjLKI4XV5yaAP6QnYMnO0oMwoJhYxqVRbdYtuLY/byIfJ8DWBrnWsLGh01qWDV1idqV9BcVNiaTVn/vK9Y5wOtjJgL+WjToSLia3cDKUM8I2E5PRjEJreKWnddkUp4qzvB6zeakCSCSID8w9OMw6hDd6Myu8l9iz4JaCd/lWY2A3WqvN38O78iyIlJFcO4jfBGxeTdeDzpLwltoQkgIgxuxaYe/tBZt/HkN+68maz3S4dPbf4HcY+o2ed3pyy//eWYNZdam8zLwxT2fz2VciRtPkBzmnLI8iMYaUh193DNX8RZ3BVb+jSp17Q0mnB6tdpJaUQLjx+rCaa2jJIHb83hcBrx4dMDjfHRv945b+nhfH66ZU8qFYOTl5Ps/VQPd2fKRWICYzvD4tppIg6iFXyvqCWrEy916bNP5UC0RS5q2Vcc/xTUTnGgCFo868kpm0wXPTADTbockDIgjLuhWHpLMNwc7BgvQrjzGML6BoBAf6atOffuZB005Jz23GIzpIPWkluaiXOb4mnztnDaYYwDxVc5zLD0eNbU1DsxnYg+lgSrwtypquZKmdFOCE23lTw75DawRzZGOqTIUHcJGj/1rPH8nc7I0Ez8='}}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45f3-c65e-71e3-9bb7-5fdd5650b6ac-0', tool_calls=[{'name': 'OpenWebpage', 'args': {'url': 'http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609'}, 'id': 'c8175edb-c37e-49b9-a996-d94ee103b817', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 5597, 'output_tokens': 235, 'total_tokens': 5832, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 186}})
 
-ToolMessage(content='__START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene delTipnisy desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. </CONTENT> <URL> https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Ramona Moye Camaconiis on Facebook. Join Facebook to connect withRamona Moye Camaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Costa formalizó su denuncia "en contra de la diputadaRamona Moye Camaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Costa formalizó su denuncia "en contra de la diputadaRamona Moye Camaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956 </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> View the profiles of people namedRamona Moye Camaconi. Join Facebook to connect withRamona Moye Camaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Ramona Moye Camaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene delTipnisy desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. </CONTENT> <URL> https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia </URL> __END_OF_SOURCE 6__', name='Search', id='3da6cc00de174790b607ecb0f230d32c', tool_call_id='3b1b06e7-b69d-42e8-b7ca-97ae5f2ec13c')
+ToolMessage(content='URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nTitle: Vicepresidencia del Estado\nBytes read: 6895\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nRAMONA MOYE CAMACONI\nDiputado uninominal - Circunscripción 6 de MAS para el departamento de Beni\nFecha de nacimiento:\n1982-01-07\nSuplente:\nELOY CARTAGENA YOAMONA\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428]\nActividades realizadas\n• Presidenta de la Organización de Mujeres - Sub Central Sécure.\n', name='OpenWebpage', id='1e58fad294fa41bba071d63fa80b2998', tool_call_id='c8175edb-c37e-49b9-a996-d94ee103b817')
 
-AIMessage(content=[], additional_kwargs={'function_call': {'name': 'Search', 'arguments': '{"query": "\\"Ramona Moye Camaconi\\" fecha de nacimiento"}'}, '__gemini_function_call_thought_signatures__': {'49b978e8-341c-442f-abd9-314db3743f9f': 'ErIGCq8GAb4+9vtp+dE3tqnW/HsDeQ31EBSRl3XtRu4ix78dchKDSClM29dSsslwKN1XEVp7xqAjNbvg7HwUKK7jfOvJCXeBVupCedCRO2p/g0Dm8wefazC9uZEdz5t8wxx+6okXvPMVWKIjfq6Tq4v8wA33hvAYoUBkfWfQhLfjD/78NOdHq8d42hcU7c5u3HYajjJP89nAAEtmq37flpPgyp4QUv6X99Vl2j1y4w/FrfkNS24kCXzHNrPp8VBUjR5B2vkd3scvpgoQ0PXpAAdc3QTfT93DnFrRANrI0ZPfiKUINdx9+iewrb6Nx3LWkNqfol14Cos/BMVcWDzZU9ljOE/eYmmjB9Q00fgwqVqrRPI4Z55SuJEC7FNvQzdUvhdVj/JAJj6Z7GCYTdMkPgcgLTrbbbxMbSxBO2bbmNL4F7W9ruvVfBYUcoIiYGsavsRDRKZs5Tghi7PauVwc4XEcPyO0AOloyFO9v41y8Uv7Kri8Ov1Y8U0QkrYqSE674rWXMfD87PlGp6NyOIDNMMBdoQQi4QY+IpdccBXkeVa3vrrfeHV2aEhGyFhZE35ZD4C2gCXN1sAB1XslUxT+idggHOwNYaRn/saAA/UKhdZ3+oLgEvWM5JZZHcRCYJgfz2lXFfWMEmDPwpDNeCIxLdA02imX7jy+LMJtv8SiZUEjHjufyUccufAdEwUlTw+L43UaRqClsULTfpLbTtFlCBItkvn2olz4kjdRTWnz4oTaeGBOlZhvF6A7AJOaIPhZCb5UsxUonApF+J4ExGP11RacGlVXztgT30TuHuxdnDHBQTlE3ybuFrnLby5l4lR33n55T/pzFE+O94JgB9DI68jtyE7/3EdjhPmEWYxL0j1JGQVsT8IO7loSqNl7GXQTt/gS3lW7Rqolusk4DUTDPfUjDYq5oubALS9KB1SH5zpp1KWMIB+VsGvCaXo0YRLyzgJWQubLu3Hdb4ofHmSDfLE5wq+k1SPzs7wOfliU6IgXUUlxmTz5BNrNz6Tmct3piikwqAgze2FbxxpdnhQ8QO/9bqFvc9JuqCoxobMT9aSLeM5XA4t8CaK8aZb795VCOmUQmMw='}}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45b2-29a3-7520-9a4c-45d2ba27900a-0', tool_calls=[{'name': 'Search', 'args': {'query': '"Ramona Moye Camaconi" fecha de nacimiento'}, 'id': '49b978e8-341c-442f-abd9-314db3743f9f', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 7124, 'output_tokens': 217, 'total_tokens': 7341, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 192}})
+AIMessage(content=[], additional_kwargs={'function_call': {'name': 'save_finding', 'arguments': '{"finding": "birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "category": "fact"}'}, '__gemini_function_call_thought_signatures__': {'13866b89-61e7-4412-b800-0b19975c8b20': 'EsYECsMEAb4+9vsNjYJLlBGWomZwE25a/Fjl7Ruyy+RRJMfPw9g3guVw8pxLaRj7ojxoTO4C9+cp422G8L9d/fYYnN4rOaUjzWfi7FKUZMdD/I6Kea5i9hm0fRGb28dMF1WURV3g3xdl2ysO9e2zcZfJEAS5vvZeHz2NcXDhu78OlHUPAiOwdnNGrv/78z4JzDXEvPHHB9SM2JIf2JTD8lHThF+3UzPackQ53E0NRc+ZmC3YHanXsUtuCZ7vzgBhA4f4/oVVqKXUFCGFTYkk8aDJoBA1UpshGaj2IRFUADJxgNF6UiXOyX77/ict8Vo1Asj5NUnihETyXIMn7b9FXvFmwDeGK5daJtjPK5wYCfwRKxfWGR5n/09oNXKE+Guf3pFV5YD1CpWRyBFQK9rtMkdEBCblUwYsuFQPlYWJatBlFcXgFWu2TxZ5ZA/JBNfCi+8INOdiuF04BoDHnZ4veB2fh5e3HbGZABErfuAMmD5WsNjGkqpDWqjaVFJXvpVWNf15/CpcOkLVZIYzyrn4oguuC7GlDn7P9CxPb4W3OZ9Ntg8lJqamzyWz3QuHkd9tvpK9RJA1KTRCVOmsbv7UGsEwwa8nVQ67I3k9x4zl/AaqswImwRcEa8lE6GAxJptGxN8bgxOf45sNx9kg7HHzdgz27I8hR/mbu0lQHgHVJJoxEIcJjPzVQ6sF9a+uwFQFJ2ISx/LVWU4if4YTFAdXQXA1XqYtdCRJvBk+kOxaczkBnqsn8xtAkzC3i3xwot4jEyuUMFdNTcaI'}}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45f3-cfb4-7d71-9dc1-36558444545f-0', tool_calls=[{'name': 'save_finding', 'args': {'finding': 'birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)', 'category': 'fact'}, 'id': '13866b89-61e7-4412-b800-0b19975c8b20', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 6369, 'output_tokens': 213, 'total_tokens': 6582, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 145}})
 
-ToolMessage(content="__START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis on Facebook. Join Facebook to connect withRamona Moye Camaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn't Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 2__", name='Search', id='8d60ddebc45f4e508092fcee6f4ecbac', tool_call_id='49b978e8-341c-442f-abd9-314db3743f9f')
+ToolMessage(content='Saved to scratchpad: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)', name='save_finding', id='1ec99aa062a240dd9258c6983f7a08bb', tool_call_id='13866b89-61e7-4412-b800-0b19975c8b20')
 
-AIMessage(content='{"education_level": "Unknown", "education_institution": "Unknown", "education_field": "Unknown", "education_source": null, "prior_occupation": "Unknown", "class_background": "Unknown", "prior_occupation_source": null, "disability_status": "Unknown", "disability_source": null, "birth_place": "Unknown", "birth_place_source": null, "birth_year": "Unknown", "birth_year_source": null, "lgbtq_status": "Unknown", "lgbtq_details": null, "lgbtq_source": null, "confidence": "Low", "justification": ""}', additional_kwargs={'__gemini_function_call_thought_signatures__': {'7c1f724e-903b-4934-9a35-6d25dde41fc9': 'Ep8BCpwBAb4+9vtN9Kz6DSoCRGHHNnFsdtMkz7m7fb9EUMFR8p/K/QhB3duz5cf6iRpmIQaTt2fSSU0pyXG3clNn+Yh08h2DMtmmbjrg91JiXVJ/ESwuKbS6/QeWIJGrWwyYQEiv1IGGN8JuTp17KZwTGlypQbG+YW9kg12rLww8m6mdHe2uawlAM5ZxQpj0e1cVGnAuVoIntRFYE24ko8kj'}}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45b2-33db-7791-8057-8c2a7c9168ca-0', tool_calls=[], invalid_tool_calls=[], usage_metadata={'input_tokens': 6872, 'output_tokens': 53, 'total_tokens': 6925, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 27}}, function_call=None)
+AIMessage(content=[], additional_kwargs={'function_call': {'name': 'Search', 'arguments': '{"query": "Ramona Moye Camaconi estudios biograf\\u00eda lugar de nacimiento"}'}, '__gemini_function_call_thought_signatures__': {'5a7d1f6f-02df-431a-adb6-86936dcf09e9': 'Eo8DCowDAb4+9vuHrgS81nbV+WBitL3vpsIGLGW4xWlAygtn848qO/NzwV2vHOn8Bp+iqK5nBp24nREq+zGnCJapD2VlSz8aoAlWuOlAg+LywVw3LVwZVVVCx2WmfJbjApqo6Jqy0oQdhOFj7/wwbcpwva5OtrItFdqqydIYr+B9ggjBIFOI3YTTady3BmYdjqZU0pjscVAFbU0OWryf7ZeExnGtRe35W8TO2wi/Dx4bSxY7KWkYRY+/ARCg3p5epT+pkQ4W2Y9rBLF3QOK9r7mfnL3OvImKZ/8kDassJErjMZ01OLh4cTAu4cufrWFDBTN58I/io68d7BbqsXU5y5nxVo1uRqtut7Qy/VdI/flb8p8kgoTO8nZsB9Wdxxx0znXAtICUsal/2adpzQ+M9T4MJC9O03wmc7ktfB1LEP4Yxw1iLYfsSHWbGWCz7/aEJ9LPtgvXCUKJBnV98jHiMmzt5bH9KLS0lJRpVq28BqSEnk/3I2Rfc6gOt12RwdFDDvuiEtB6Xah5LmY4aDTN/I57'}}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45f3-dbd8-7c81-9f9a-d4dc13ec0f1a-0', tool_calls=[{'name': 'Search', 'args': {'query': 'Ramona Moye Camaconi estudios biografía lugar de nacimiento'}, 'id': '5a7d1f6f-02df-431a-adb6-86936dcf09e9', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 6717, 'output_tokens': 114, 'total_tokens': 6831, 'input_token_details': {'cache_read': 2025}, 'output_token_details': {'reasoning': 88}})
+
+ToolMessage(content='__START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente)deMAS para el departamentodeBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> En la ciudaddeLa Paz, usando papel membretadodela Asamblea Legislativa Plurinacional (ALP),RamonaMoyeCamaconi, diputada por una Circunscripción Indígena y representantesdecuatro organizaciones del Territorio Indígena y Parque Nacional Isiboro Sécure (TIPNIS), presentaron ante esa instancia legislativa un proyectodeley para ... </CONTENT> <URL> https://ftierra.org/index.php/tema/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MORON OSINAGA, ERIK - UD Diputado uninominal - Circunscripción 09MOYECAMACONI,RAMONA- MAS Diputado uninominal - Circunscripción 09 MUÑOZ COLQUE, TRIFONIA GRISELDA - UD Diputado uninominal - Circunscripción 54 NATTE ROSENDI, ALICIA - MAS Diputado uninominal - Circunscripción 03 ORTIZ, CONCEPCION - MAS Diputado uninominal ... </CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1 </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Costa formalizó su denuncia "en contradela diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudesdelicencia con bajas médicas presuntamente falsificadas", dice el textodela denunciadela legisladora. </CONTENT> <URL> https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas= </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Ramonaes un conocido mexicano artista/banda. Encuentre labiografíay datos interesantesdela carrera y la vida personaldeRamona. Descubra información detallada sobre la altura, el nombre real, las relaciones y los hijosdeRamona. Wiki, Facebook, Instagram y redes sociales.RamonaAltura, edad, zodíaco,biografíay nombre real. </CONTENT> <URL> https://es.popnable.com/méxico/cantantes/106835-ramona/biografia-y-hechos </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> View the profiles of people namedRamonaMoyeCamaconi. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Before moving toRamona\'scurrent city of Aberdeen, MS,Ramonalived in Baltimore MD.Ramonaalso answers to RomonaMoye, and perhaps a couple of other names. Personal details aboutRamonainclude: political affiliation is unknown; ethnicity is African American; and religious views are listed as Christian. As of this date,Ramonais married. </CONTENT> <URL> https://www.mylife.com/ramona-moye/e616426251912 </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Denuncia contra la diputadaRamonaMoyeby Nancy Vacaflor Gonzales on Scribd Además,deacuerdo a la documentación que presentó Costa,Moyees jefadela bancadadeBeni y en esa calidad ... </CONTENT> <URL> https://eju.tv/2018/09/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas </URL> __END_OF_SOURCE 10__', name='Search', id='6e67fb6114e4421484e4afa0ad1d9146', tool_call_id='5a7d1f6f-02df-431a-adb6-86936dcf09e9')
+
+AIMessage(content=[], additional_kwargs={'function_call': {'name': 'Search', 'arguments': '{"query": "\\"Ramona Moye Camaconi\\" formaci\\u00f3n acad\\u00e9mica nivel instrucci\\u00f3n"}'}, '__gemini_function_call_thought_signatures__': {'aeb2e4a3-1df4-43cf-bfd8-91eec9cbf0b3': 'EqAJCp0JAb4+9vu2T77/7btS31nrGy9ntbyZ7/OJNvbRaWD/hJnYeWJgkVDPt8adwjrhBqVVqWkqaHsb+1ewIB8Ni5VHzv8mCHrHYaRPrGMCh1mZYuTF9b3EVIfl3Ea0mY2edV/61IHaFE2bGRhcE3a5ma6zk8vN49v0uadIP/sRWaNHmaBSBY6Ew2cj29sPvwVHQQrj0QSj5urEsZTjWDcBe0v/1g0fMKDXmLdkxCHnxhv2ZxjFBY0czQXP9G25GMceJuNrH0q/rKhILgUtoXy0OdxEqsRCEdzreKl6Zug3Jt90R0jeLpq02ME3+WGRfda4GpD1bUwxs2CYJOy2+TGAjzuGgHCDTEkhIwfd06fCiRDsAxaI2izTRczIW4lZTLbuh3stvLYMm4OIciZcihcs7BaSmL89KXJgiFBZ+DluPA81xbj8Fqqc1iPE9cdn6rCmQfRfSwdQxWgOoZkeoa6b9/TsS2zfe2aZJG5vPSaBogDCYTyAXvOHxXKe0IVNXX8/nuFvmbfHUyb94eCZ4eh3AyTWbRJ2/8dJwFBSDlg1I9gRtOh3D9push33HxH5Xgo5RcUu2A+xJvNnrrNQIZqLZkvW/wSHtmWTGt6C0QmMrGKjbYgAEU3nM+PnurZuQWQefVo7zPa4AuBtNhz3lVPV1fUgYm3wOAJL6J8vo0TICvwDSlKNQVi1BdOAHUXOFnG20n0A+oxS4M8vboq/FEuBspseNu0LNyNrpLUglb+SNs3/Yh/iQfI5uzvBiAAiC/rlUTXjXVX76c6LFwNodgq12w8IxR0Mj9k9JOi6kDriz5IWxTa/I45joh0GsWlnkQJYkFn9gRtYVqp/L6yYAGP6Mezl1u/9Ma6z33N8iVOxleXd9FR3neoc84GgDnjw3x9WZDcJvm4Ljt9b64L6Fwme53TX6CYBJNVTyZKWLCZSkN6PVI+ojGT6Y5n3ZETysHS+cG8CLiDZrdnkbMHe3zbBEASffny6KogaH2+QM5LRJVtrzpbCc1DqftdX/sl3I/rhv26EbpzueL1fyccJfgu+8fXJO/e/jZ8jgYVhHBMafFFnVutuVjnhkZNVafQd7lmjK6HGuvA+fVqFi+vLcBTzdADWvIhOS9aIej7FQ1+ElzpY2SVa1XpCE3oN7eWxDwvX1bGIJfEuoyBQvYt8RF5Pav6OBkvqmzvBaGvA+AJNChk77YJiQnIqvjP98am7i2EMNBkl82a4maJohcHVr2qokOu6VF9gFPX5ZJGMkp2q1eBGhtR2aV9if+Xmt1k2RQ1V3kpvXLnIB79o5R0pYm53BKH2UEKLzad9ysrwigt/u50jzQAwFBT1PTQSJYtuwToeXluz1UA57dHyHfoSLLCYGZ8hZ+G/j/Dh9jV5uei68MEApcGDLQDF0Yw31dl7w0Y7mGQewgKeav+9+XvNzag53T8mNoMlGHGHhx0XM1DLwInSdeZKUFmOjOuCwdCkJgb3OW4lnAt5z1ZH0QTV0x995wfGzgvV9tXPm0uq5AOu758bkawd0DXu6aojjoWFLXFpCBiDvsa3BnVhL7Nk53d+f3jI9k6m2jpZFaI0pmD609w='}}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45f4-9c77-7c90-a431-994ce4aa909c-0', tool_calls=[{'name': 'Search', 'args': {'query': '"Ramona Moye Camaconi" formación académica nivel instrucción'}, 'id': 'aeb2e4a3-1df4-43cf-bfd8-91eec9cbf0b3', 'type': 'tool_call'}], invalid_tool_calls=[], usage_metadata={'input_tokens': 8335, 'output_tokens': 289, 'total_tokens': 8624, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 263}})
+
+ToolMessage(content='__START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis on Facebook. Join Facebook to connect withRamona Moye Camaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn\'t Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Ramona Moye Camaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Costa formalizó su denuncia "en contra de la diputadaRamona Moye Camaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 4__', name='Search', id='46a5b235d2764eeb874eba5823fe0a4f', tool_call_id='aeb2e4a3-1df4-43cf-bfd8-91eec9cbf0b3')
+
+AIMessage(content='{"education_level": "Unknown", "education_institution": "Unknown", "education_field": "Unknown", "education_source": null, "prior_occupation": "President of the Organización de Mujeres - Sub Central Sécure", "class_background": "Unknown", "prior_occupation_source": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609", "disability_status": "Unknown", "disability_source": null, "birth_place": "TIPNIS", "birth_place_source": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia", "birth_year": 1982, "birth_year_source": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609", "lgbtq_status": "Unknown", "lgbtq_details": null, "lgbtq_source": null, "confidence": "Low", "justification": null}', additional_kwargs={}, response_metadata={'finish_reason': 'STOP', 'model_name': 'gemini-3-flash-preview', 'safety_ratings': [], 'model_provider': 'google_genai'}, id='lc_run--019c45f4-abcc-7a83-8d44-fb00fe2b68f0-0', tool_calls=[], invalid_tool_calls=[], usage_metadata={'input_tokens': 8100, 'output_tokens': 1417, 'total_tokens': 9517, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 1052}})
 
 [1] 1
 
-[1] "[ANCHORED] Ramona Moye Camaconi is a politician from the MAS (Movimiento al Socialismo) party representing the department of Beni, Bolivia. (Sources: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428, https://www.flickr.com/photos/194792615@N03/52180793916)"
+[1] "[ANCHORED] FIELD_EXTRACT: birth_place_source = https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia"
 
-[1] "[ANCHORED] There are conflicting official and public records regarding Moye Camaconi's seat: she is variously listed as a substitute (suplente) for Circunscripción 6, a titular deputy for Circunscripción 09, and a titular deputy for the Beni Special Indigenous Constituency. (Sources: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428, https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3, https://www.flickr.com/photos/194792615@N03/52180793916, https://ftierra.org/index.php/tema/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza)"
+[1] "[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)"
 
-[1] "[ANCHORED] Moye Camaconi introduced a bill to the Plurinational Legislative Assembly to repeal Law 180, which protected the 'intangibility' of the TIPNIS territory, on behalf of four indigenous organizations. (Source: https://ftierra.org/index.php/tema/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza)"
+[1] "[ANCHORED] On July 3, 2017, Ramona Moye and Patricia Chávez introduced legislation to permit a highway through the TIPNIS territory (Source: https://woborders.blog/2017/07/13/tipnis-year-seven)."
 
-[1] "[ANCHORED] In September 2018, Legislator Costa filed a formal complaint alleging that Moye Camaconi submitted falsified medical records (bajas médicas) to secure license from her duties in the Chamber of Deputies. (Sources: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956, https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados, https://sisin.oep.org.bo/medios_digitales/14455/detalle, https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=)"
+[1] "[ANCHORED] Ramona Moye acknowledged in May 2017 that coca is produced in the TIPNIS for self-consumption (Source: https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967)."
 
-[1] "[ANCHORED] She joined Twitter in April 2018 (@RCamaconi) and maintains a Facebook profile. (Sources: https://twitter.com/RCamaconi, https://www.facebook.com/ramona.moyecamaconi)"
+[1] "[ANCHORED] Ramona Moye Camaconi is an indigenous politician from the TIPNIS region in Beni, Bolivia, affiliated with the MAS (Movimiento al Socialismo) party (Sources: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html, https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967)."
 
-[1] "What is the correct and current electoral constituency for Ramona Moye Camaconi, given discrepancies between Circunscripción 6, 9, and the Special Indigenous seat?"
+[1] "[ANCHORED] In the 2014 general elections, Ramona Moye Camaconi was elected as a Titular Deputy for Beni (MAS), with Eloy Cartagena Yoamona serving as her substitute; she reportedly won the TIPNIS vote with 83% for the Special Indigenous Constituency (Sources: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428, https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html, https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html)."
 
-[1] "Search"
+[1] "[ANCHORED] Late in her term, Moye was denounced by Deputy Costa for allegedly presenting falsified medical certificates to justify leaves of absence from the Chamber of Deputies (Source: https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados)."
 
-[1] "https://www.facebook.com/ramona.moyecamaconi"
+[1] "[ANCHORED] On July 3, 2017, Ramona Moye and Patricia Chávez introduced legislation to permit a highway through the TIPNIS territory (Source 8)."
 
-[1] "Ramona Moye Camaconi Facebook Profile"
+[1] "[ANCHORED] Ramona Moye acknowledged in May 2017 that coca is produced in the TIPNIS for self-consumption (Source 7)."
 
-[1] "Social media presence."
+[1] "Confirm whether the 2014 seat held by Ramona Moye was officially designated as Circunscripción 6 (Uninominal) or the Special Indigenous Constituency, as documentation from the Vicepresidencia conflicts with media and election reports despite agreement on her titular status."
 
 [1] "Search"
 
 [1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428"
 
-[1] "Vicepresidencia de Bolivia - Parliamentary Profile"
+[1] "Vicepresidencia de Bolivia - Perfil Parlamentario"
 
-[1] "Lists her as suplente for Circunscripción 6."
-
-[1] "Search"
-
-[1] "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956"
-
-[1] "Noticias Fides - Denuncia contra diputada Moye"
-
-[1] "Details on the medical leave falsification allegations."
+[1] "Lists Ramona Moye as the Titular deputy with Eloy Cartagena Yoamona as substitute for Circunscripción 6."
 
 [1] "Search"
 
-[1] "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3"
+[1] "https://www.facebook.com/story.php/?story_fbid=1140703501415732&id=100064282774768"
 
-[1] "Vicepresidencia de Bolivia - List of Parliamentarians"
-
-[1] "Lists her for Circunscripción 09."
+[1] "Fundación Cultural del BCB - Biografía Colectiva Beni"
 
 [1] "Search"
 
-[1] "https://www.flickr.com/photos/194792615@N03/52180793916"
+[1] "https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html"
 
-[1] "Flickr - Ramona Moye Camaconi"
+[1] "Asambleístas electos por el Movimiento al Socialismo"
 
-[1] "Identifies her as titular deputy for Beni Special Constituency; uploaded June 2022."
+[1] "Election results context for 2014; mentions 83% vote in TIPNIS."
 
 [1] "Search"
 
-[1] "https://ftierra.org/index.php/tema/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza"
+[1] "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia"
 
-[1] "Fundación Tierra - Indigenous Rights and TIPNIS"
+[1] "El TIPNIS y el Madidi: las heridas que sangran"
 
-[1] "Discusses her role in the project to abrogate Law 180."
+[1] "Identifies her as indigenous from TIPNIS."
+
+[1] "Search"
+
+[1] "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html"
+
+[1] "Bancadas de UD y del MAS en el Beni"
+
+[1] "Lists her as titular for Special Indigenous Constituency."
+
+[1] "Search"
+
+[1] "https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-coca-en-el-tipnis"
+
+[1] "Diputada del MAS admite coca en el TIPNIS"
+
+[1] "Interview regarding coca production for self-consumption."
+
+[1] "Search"
+
+[1] "https://woborders.blog/2017/07/13/tipnis-year-seven"
+
+[1] "TIPNIS: Year Seven"
+
+[1] "Legislation on highway introduction."
 
 [1] "Search"
 
 [1] "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados"
 
-[1] "Radio Luis de Fuentes - Denuncia Bajas Médicas"
+[1] "Diputada Moye es denunciada por bajas médicas falsificadas"
 
-[1] "Corroborates the denunciations of falsified medical leaves."
+[1] "Report on allegations of falsified medical certificates."
 
-[1] "Search"
+[1] "OpenWebpage"
 
-[1] "https://sisin.oep.org.bo/medios_digitales/14455/detalle"
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428"
 
-[1] "OEP Medios - Denuncia Ramona Moye Camaconi"
+[1] "Vicepresidencia del Estado"
 
-[1] "Official record of the complaint regarding falsified medical licenses."
-
-[1] "Search"
-
-[1] "https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas="
-
-[1] "El Diario - Diputada Moye presentó bajas médicas falsificadas"
-
-[1] "Report dated September 5, 2018, on the medical leave scandal."
-
-[1] "Search"
-
-[1] "https://twitter.com/RCamaconi"
-
-[1] "Twitter - @RCamaconi"
-
-[1] "Personal Twitter account joined in April 2018."
+[1] "There is a documented discrepancy regarding her parliamentary role: the official Vicepresidencia profile associates her with Circunscripción 6 (Uninominal), while other sources (Radiopatuju, election blogs) identify her as the Titular for the Special Indigenous Constituency of Beni."
 
 [1] 1
 
@@ -110,53 +116,29 @@ AIMessage(content='{"education_level": "Unknown", "education_institution": "Unkn
 
 [1] ""
 
-[1] "lc_run--019c45b0-90c5-7c63-84e2-71614d191d91-0"
-
-[1] "update_plan"
-
-[1] "in_progress"
-
-[1] "Starting search for Ramona Moye Camaconi."
-
-[1] 1
-
-[1] "53fedca5-b249-42cf-9162-92ba4093aa0f"
-
-[1] "tool_call"
+[1] "lc_run--019c45f3-5a81-7670-bc62-d14ba94b7972-0"
 
 [1] "Search"
 
-[1] "Ramona Moye Camaconi biografia"
+[1] "Ramona Moye Camaconi biografía Bolivia MAS Beni"
 
-[1] "b65486e0-b7d1-4a0e-82d6-d447f4f0f74d"
+[1] "ed8aed0c-2743-4cf1-9eb8-e1aed86e8f38"
 
 [1] "tool_call"
 
 [1] "ToolMessage"
 
-[1] "Plan step 1 updated to 'in_progress'"
+[1] "__START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BIOGRAFÍACOLECTIVABENIVISIBILIZA LA AMAZONÍA BOLIVIANA La Fundación Cultural del Banco Central deBolivia(FC-BCB) presentó en la Ciudad de la Santísima Trinidad, capital del departamento deBeni... </CONTENT> <URL> https://www.facebook.com/story.php/?story_fbid=1140703501415732&id=100064282774768 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Asambleístas electos por el Movimiento al Socialismo por departamento Gob (6-11-14).- En las elecciones del 12 de octubre de 2014, además de haber conseguido la reelección de Juan Evo Morales Ayma a presidente del Estado Plurinacional deBoliviay de Álvaro Marcelo García Linera a vicepresidente, elMASIPSP obtuvo el 69% de representantes en la Asamblea Legislativa Plurinacional, lo que ... </CONTENT> <URL> https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. </CONTENT> <URL> https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La primer diputada plurinominal titular es Susana Rivero, con su suplente Braulio Gutiérrez Dumay. El segundo diputado plurinominal titular es Walter Roque Gómez y su suplente es Lizeth Veliz Rivero. Resultó elegida en la circunscripción especial indígenaRamonaMoyeCamaconicon su suplente Eloy Cartagena Yuhamona. </CONTENT> <URL> https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El diputado Rafael Quispe manifestó que existen pistas de aterrizaje clandestinas en el TIPNIS y en el polígono 7, dijo que el presidente Evo Morales debe responder dónde va la coca que produce. La Paz, 31 de mayo (ANF).-La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y ... </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967 </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> On July 3,RamonaMoyeand Patricia Chávez, twoMAS-affiliated Deputies in the Plurinational Legislative Assembly, introduced legislation that would open the territory to a highway that is projected to leave it mostly deforested within fifteen years of completion. </CONTENT> <URL> https://woborders.blog/2017/07/13/tipnis-year-seven </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> En el caso de la diputación electoral, Fabricano informó que la candidata delMASpor la Circunscripción Especial Indígena deBeni,RamonaMoye, ganó en el TIPNIS con 83 por ciento de votos. </CONTENT> <URL> https://www.opinion.com.bo/articulo/el-pais/mas-gana-tipnis-75-ciento-obtiene-diputacion/20141013203700502386.html </URL> __END_OF_SOURCE 10__"
 
-[1] "Plan step 1 updated to 'in_progress'"
+[1] "__START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BIOGRAFÍACOLECTIVABENIVISIBILIZA LA AMAZONÍA BOLIVIANA La Fundación Cultural del Banco Central deBolivia(FC-BCB) presentó en la Ciudad de la Santísima Trinidad, capital del departamento deBeni... </CONTENT> <URL> https://www.facebook.com/story.php/?story_fbid=1140703501415732&id=100064282774768 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Asambleístas electos por el Movimiento al Socialismo por departamento Gob (6-11-14).- En las elecciones del 12 de octubre de 2014, además de haber conseguido la reelección de Juan Evo Morales Ayma a presidente del Estado Plurinacional deBoliviay de Álvaro Marcelo García Linera a vicepresidente, elMASIPSP obtuvo el 69% de representantes en la Asamblea Legislativa Plurinacional, lo que ... </CONTENT> <URL> https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. </CONTENT> <URL> https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La primer diputada plurinominal titular es Susana Rivero, con su suplente Braulio Gutiérrez Dumay. El segundo diputado plurinominal titular es Walter Roque Gómez y su suplente es Lizeth Veliz Rivero. Resultó elegida en la circunscripción especial indígenaRamonaMoyeCamaconicon su suplente Eloy Cartagena Yuhamona. </CONTENT> <URL> https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El diputado Rafael Quispe manifestó que existen pistas de aterrizaje clandestinas en el TIPNIS y en el polígono 7, dijo que el presidente Evo Morales debe responder dónde va la coca que produce. La Paz, 31 de mayo (ANF).-La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y ... </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967 </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> On July 3,RamonaMoyeand Patricia Chávez, twoMAS-affiliated Deputies in the Plurinational Legislative Assembly, introduced legislation that would open the territory to a highway that is projected to leave it mostly deforested within fifteen years of completion. </CONTENT> <URL> https://woborders.blog/2017/07/13/tipnis-year-seven </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> En el caso de la diputación electoral, Fabricano informó que la candidata delMASpor la Circunscripción Especial Indígena deBeni,RamonaMoye, ganó en el TIPNIS con 83 por ciento de votos. </CONTENT> <URL> https://www.opinion.com.bo/articulo/el-pais/mas-gana-tipnis-75-ciento-obtiene-diputacion/20141013203700502386.html </URL> __END_OF_SOURCE 10__"
 
-[1] "f91e599dd1d34874bb38730249500171"
+[1] "13877fc229c14eb69119e61cc17144ff"
 
-[1] "53fedca5-b249-42cf-9162-92ba4093aa0f"
-
-[1] "update_plan"
-
-[1] "ToolMessage"
-
-[1] "__START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of people namedRamonaMoyeCamaconi. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RIVERO GUZMAN, SUSANA - MAS Diputado uninominal - Circunscripción 03 ROQUE GOMEZ, WALTER - MAS Diputado uninominal - Circunscripción 04MOYECAMACONI,RAMONA- MAS Diputado uninominal - Circunscripción 09 VIDAL VELASCO, ANA - MAS Diputado uninominal - Circunscripción 33 FERREIRA BECERRA, FERNANDO - MAS Senador MERCIER HERRERA, ELIANA - MAS ... </CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3 </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> En la ciudad de La Paz, usando papel membretado de la Asamblea Legislativa Plurinacional (ALP),RamonaMoyeCamaconi, diputada por una Circunscripción Indígena y representantes de cuatro organizaciones del Territorio Indígena y Parque Nacional Isiboro Sécure (TIPNIS), presentaron ante esa instancia legislativa un proyecto de ley para abrogar la Ley 180 de intangibilidad de aquel territorio ... </CONTENT> <URL> https://ftierra.org/index.php/tema/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 10__"
-
-[1] "__START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of people namedRamonaMoyeCamaconi. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RIVERO GUZMAN, SUSANA - MAS Diputado uninominal - Circunscripción 03 ROQUE GOMEZ, WALTER - MAS Diputado uninominal - Circunscripción 04MOYECAMACONI,RAMONA- MAS Diputado uninominal - Circunscripción 09 VIDAL VELASCO, ANA - MAS Diputado uninominal - Circunscripción 33 FERREIRA BECERRA, FERNANDO - MAS Senador MERCIER HERRERA, ELIANA - MAS ... </CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3 </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> En la ciudad de La Paz, usando papel membretado de la Asamblea Legislativa Plurinacional (ALP),RamonaMoyeCamaconi, diputada por una Circunscripción Indígena y representantes de cuatro organizaciones del Territorio Indígena y Parque Nacional Isiboro Sécure (TIPNIS), presentaron ante esa instancia legislativa un proyecto de ley para abrogar la Ley 180 de intangibilidad de aquel territorio ... </CONTENT> <URL> https://ftierra.org/index.php/tema/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 10__"
-
-[1] "18a1572c6b5a4b2698ecda1a57e5496c"
-
-[1] "b65486e0-b7d1-4a0e-82d6-d447f4f0f74d"
+[1] "ed8aed0c-2743-4cf1-9eb8-e1aed86e8f38"
 
 [1] "Search"
 
-[1] "[AIMessage] \n[ToolMessage] Plan step 1 updated to 'in_progress'\n[ToolMessage] __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of people namedRamonaMoyeCamaconi. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people... </CONTENT> <URL> https://www.facebook.com/public/Ramona-Moye-Camaconi </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RIVERO GUZMAN, SUSANA - MAS Diputado uninominal - Circunscripción 03 ROQUE GOMEZ, WALTER - MAS Diputado uninominal - Circunscripción 04MOYECAMACONI,RAMONA- MAS Diputado uninominal - Circunscripción 09 VIDAL VELASCO, ANA - MAS Diputado uninominal - Circunscripción 33 FERREIRA BECERRA, FERNANDO - MAS Senador MERCIER HERRERA, ELIANA - MAS ... </CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3 </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> En la ciudad de La Paz, usando papel membretado de la Asamblea Legislativa Plurinacional (ALP),RamonaMoyeCamaconi, diputada por una Circunscripción Indígena y representantes de cuatro organizaciones del Territorio Indígena y Parque Nacional Isiboro Sécure (TIPNIS), presentaron ante esa instancia legislativa un proyecto de ley para abrogar la Ley 180 de intangibilidad de aquel territorio ... </CONTENT> <URL> https://ftierra.org/index.php/tema/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 10__"
+[1] "[AIMessage] \n[ToolMessage] __START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BIOGRAFÍACOLECTIVABENIVISIBILIZA LA AMAZONÍA BOLIVIANA La Fundación Cultural del Banco Central deBolivia(FC-BCB) presentó en la Ciudad de la Santísima Trinidad, capital del departamento deBeni... </CONTENT> <URL> https://www.facebook.com/story.php/?story_fbid=1140703501415732&id=100064282774768 </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Asambleístas electos por el Movimiento al Socialismo por departamento Gob (6-11-14).- En las elecciones del 12 de octubre de 2014, además de haber conseguido la reelección de Juan Evo Morales Ayma a presidente del Estado Plurinacional deBoliviay de Álvaro Marcelo García Linera a vicepresidente, elMASIPSP obtuvo el 69% de representantes en la Asamblea Legislativa Plurinacional, lo que ... </CONTENT> <URL> https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. </CONTENT> <URL> https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La primer diputada plurinominal titular es Susana Rivero, con su suplente Braulio Gutiérrez Dumay. El segundo diputado plurinominal titular es Walter Roque Gómez y su suplente es Lizeth Veliz Rivero. Resultó elegida en la circunscripción especial indígenaRamonaMoyeCamaconicon su suplente Eloy Cartagena Yuhamona. </CONTENT> <URL> https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El diputado Rafael Quispe manifestó que existen pistas de aterrizaje clandestinas en el TIPNIS y en el polígono 7, dijo que el presidente Evo Morales debe responder dónde va la coca que produce. La Paz, 31 de mayo (ANF).-La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y ... </CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967 </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> On July 3,RamonaMoyeand Patricia Chávez, twoMAS-affiliated Deputies in the Plurinational Legislative Assembly, introduced legislation that would open the territory to a highway that is projected to leave it mostly deforested within fifteen years of completion. </CONTENT> <URL> https://woborders.blog/2017/07/13/tipnis-year-seven </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Costa formalizó su denuncia \"en contra de la diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudes de licencia con bajas médicas presuntamente falsificadas\", dice el texto de la denuncia de la legisladora. </CONTENT> <URL> https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> En el caso de la diputación electoral, Fabricano informó que la candidata delMASpor la Circunscripción Especial Indígena deBeni,RamonaMoye, ganó en el TIPNIS con 83 por ciento de votos. </CONTENT> <URL> https://www.opinion.com.bo/articulo/el-pais/mas-gana-tipnis-75-ciento-obtiene-diputacion/20141013203700502386.html </URL> __END_OF_SOURCE 10__"
 
 [1] 2
 
@@ -164,107 +146,55 @@ AIMessage(content='{"education_level": "Unknown", "education_institution": "Unkn
 
 [1] ""
 
-[1] "lc_run--019c45b0-a115-7e20-89f5-51ee60a51958-0"
+[1] "lc_run--019c45f3-795d-7281-b04f-5bc560dc7ea6-0"
 
-[1] "save_finding"
+[1] "OpenWebpage"
 
-[1] "fact"
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428"
 
-[1] "Ramona Moye Camaconi was a deputy for MAS, Beni, specifically representing the indigenous special constituency (circunscripción especial). (source: https://www.flickr.com/photos/194792615@N03/52180793916, http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"
-
-[1] "3544af56-9be5-445f-9f63-62207785079f"
-
-[1] "tool_call"
-
-[1] "Search"
-
-[1] "Ramona Moye Camaconi biografia lugar de nacimiento fecha de nacimiento"
-
-[1] "18d7ce90-1bf2-465c-8cca-72c795c98a98"
+[1] "8b4d5255-c55a-4fda-a1c6-ebbf09b027c2"
 
 [1] "tool_call"
 
 [1] "ToolMessage"
 
-[1] "Saved to scratchpad: Ramona Moye Camaconi was a deputy for MAS, Beni, specifically representing the indigenous special constituency (circunscripción especial). (source: https://www.flickr.com/photos/194792615@N03/52180793916, http://www.vicepresidencia.gob.bo/spip.php?pa..."
+[1] "URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nTitle: Vicepresidencia del Estado\nBytes read: 7066\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nELOY CARTAGENA YOAMONA\nDiputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni\nFecha de nacimiento:\n1969-12-01\nSuplente de:\nRAMONA MOYE CAMACONI\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609]\nActividades realizadas\nVicepresidente de la CIRABO por los indigenas\nEx Capitán Grande de TCO\nEx Presidente de la Comunidad Rosario\nLic. en Ciencias de la Educación\n"
 
-[1] "Saved to scratchpad: Ramona Moye Camaconi was a deputy for MAS, Beni, specifically representing the indigenous special constituency (circunscripción especial). (source: https://www.flickr.com/photos/194792615@N03/52180793916, http://www.vicepresidencia.gob.bo/spip.php?pa..."
+[1] "URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nTitle: Vicepresidencia del Estado\nBytes read: 7066\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nELOY CARTAGENA YOAMONA\nDiputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni\nFecha de nacimiento:\n1969-12-01\nSuplente de:\nRAMONA MOYE CAMACONI\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609]\nActividades realizadas\nVicepresidente de la CIRABO por los indigenas\nEx Capitán Grande de TCO\nEx Presidente de la Comunidad Rosario\nLic. en Ciencias de la Educación\n"
 
-[1] "837fd7d0c47f42c8be6ea4bb2c674988"
+[1] "89a6bf930162457d852dc1da29a94900"
 
-[1] "3544af56-9be5-445f-9f63-62207785079f"
+[1] "8b4d5255-c55a-4fda-a1c6-ebbf09b027c2"
 
-[1] "save_finding"
+[1] "OpenWebpage"
 
-[1] "ToolMessage"
-
-[1] "__START_OF_SOURCE 1__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente)deMAS para el departamentodeBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Dateas es el portal líder en gestión, búsqueda y localizacióndedocumentos, registros e información pública, permitiendo acceder a una gran variedaddecontenidos y servicios provistos por una calificada reddeprofesionales, gestores, empresas y nuestros usuarios. </CONTENT> <URL> https://www.dateas.com/es/servicio/filiacion/espana </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Costa formalizó su denuncia \"en contradela diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudesdelicencia con bajas médicas presuntamente falsificadas\", dice el textodela denunciadela legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Costa formalizó su denuncia \"en contradela diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudesdelicencia con bajas médicas presuntamente falsificadas\", dice el textodela denunciadela legisladora. </CONTENT> <URL> https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas= </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Busca a tus antepasados en certificadosdenacimiento, registrosdematrimonio, registrosdecensos y otros documentos. </CONTENT> <URL> https://www.familysearch.org/es/search </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn't Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Iniciativas y Recursos Ciudadano DNI Documento nacionaldeidentidad ActasdeNacimiento, Matrimonio y Defunción Identidad y Certificados Digitales Servicios en línea Empresa Ciudadano Ciudadano Digital Institucional Soporte a los servicios PolíticadePrivacidad MesadePartes Virtual LibrodeReclamaciones Digital PortaldeDatos Abiertos ... </CONTENT> <URL> https://identidad.reniec.gob.pe/buscador </URL> __END_OF_SOURCE 10__"
-
-[1] "__START_OF_SOURCE 1__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente)deMAS para el departamentodeBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Dateas es el portal líder en gestión, búsqueda y localizacióndedocumentos, registros e información pública, permitiendo acceder a una gran variedaddecontenidos y servicios provistos por una calificada reddeprofesionales, gestores, empresas y nuestros usuarios. </CONTENT> <URL> https://www.dateas.com/es/servicio/filiacion/espana </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Costa formalizó su denuncia \"en contradela diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudesdelicencia con bajas médicas presuntamente falsificadas\", dice el textodela denunciadela legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Costa formalizó su denuncia \"en contradela diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudesdelicencia con bajas médicas presuntamente falsificadas\", dice el textodela denunciadela legisladora. </CONTENT> <URL> https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas= </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Busca a tus antepasados en certificadosdenacimiento, registrosdematrimonio, registrosdecensos y otros documentos. </CONTENT> <URL> https://www.familysearch.org/es/search </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn't Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Iniciativas y Recursos Ciudadano DNI Documento nacionaldeidentidad ActasdeNacimiento, Matrimonio y Defunción Identidad y Certificados Digitales Servicios en línea Empresa Ciudadano Ciudadano Digital Institucional Soporte a los servicios PolíticadePrivacidad MesadePartes Virtual LibrodeReclamaciones Digital PortaldeDatos Abiertos ... </CONTENT> <URL> https://identidad.reniec.gob.pe/buscador </URL> __END_OF_SOURCE 10__"
-
-[1] "127366635f0f46e0838a5410276ecda6"
-
-[1] "18d7ce90-1bf2-465c-8cca-72c795c98a98"
-
-[1] "Search"
-
-[1] "[AIMessage] \n[ToolMessage] Saved to scratchpad: Ramona Moye Camaconi was a deputy for MAS, Beni, specifically representing the indigenous special constituency (circunscripción especial). (source: https://www.flickr.com/photos/194792615@N03/52180793916, http://www.vicepresidencia.gob.bo/spip.php?pa...\n[ToolMessage] __START_OF_SOURCE 1__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente)deMAS para el departamentodeBeni </CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> RamonaMoyeCamaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... </CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 </URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. </CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi </URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> View the profiles of professionals named &quot;Ramona Moye&quot; on LinkedIn. There are 4 professionals named &quot;Ramona Moye&quot;, who use LinkedIn to exchange information, ideas, and ... </CONTENT> <URL> https://www.linkedin.com/pub/dir/Ramona/Moye </URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Dateas es el portal líder en gestión, búsqueda y localizacióndedocumentos, registros e información pública, permitiendo acceder a una gran variedaddecontenidos y servicios provistos por una calificada reddeprofesionales, gestores, empresas y nuestros usuarios. </CONTENT> <URL> https://www.dateas.com/es/servicio/filiacion/espana </URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Costa formalizó su denuncia \"en contradela diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudesdelicencia con bajas médicas presuntamente falsificadas\", dice el textodela denunciadela legisladora. </CONTENT> <URL> https://sisin.oep.org.bo/medios_digitales/14455/detalle </URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Costa formalizó su denuncia \"en contradela diputadaRamonaMoyeCamaconi, denuncia que realizo por presentar solicitudesdelicencia con bajas médicas presuntamente falsificadas\", dice el textodela denunciadela legisladora. </CONTENT> <URL> https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas= </URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Busca a tus antepasados en certificadosdenacimiento, registrosdematrimonio, registrosdecensos y otros documentos. </CONTENT> <URL> https://www.familysearch.org/es/search </URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> @RCamaconi Joined April 2018 0Following 3Followers Tweets Tweets & replies Media Likes @RCamaconi hasn't Tweeted </CONTENT> <URL> https://twitter.com/RCamaconi </URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Iniciativas y Recursos Ciudadano DNI Documento nacionaldeidentidad ActasdeNacimiento, Matrimonio y Defunción Identidad y Certificados Digitales Servicios en línea Empresa Ciudadano Ciudadano Digital Institucional Soporte a los servicios PolíticadePrivacidad MesadePartes Virtual LibrodeReclamaciones Digital PortaldeDatos Abiertos ... </CONTENT> <URL> https://identidad.reniec.gob.pe/buscador </URL> __END_OF_SOURCE 10__"
-
-[1] 3
-
-[1] "AIMessage"
-
-[1] ""
-
-[1] "lc_run--019c45b1-08ff-7892-a741-e7b24049d34a-0"
-
-[1] "Search"
-
-[1] "\"Ramona Moye Camaconi\" lugar de nacimiento estudios ocupación \"hoja de vida\""
-
-[1] "d9a6992b-6656-4a54-9a20-03f8b664c0bb"
-
-[1] "tool_call"
-
-[1] "ToolMessage"
-
-[1] "Este documento es una hoja de respuestas para un test MIPS . Contiene espacios para escribir el nombre, fecha de nacimiento, sexo, estado civil, ocupación y estudios de la persona que realiza…Full description 4.6.3. Lugar de nacimiento .................................................................................................................................... 109 · 4.6.4. Lugar de residencia....................................................................................................................................... 110 · 4.6.5. Ocupación ........................................................................................................................................................ Este documento es una hoja de vida de un jugador de fútbol que incluye sus datos personales como nombre, fecha y lugar de nacimiento , ocupación e información de contacto, datos familiares como nombre de padres y hermanos, ocupación y contacto, y datos sobre su club actual como nombre, ... Hoja de vida académica – Universidad Tecnológica del Chocó “Diego Luis Córdoba” · HOJA DE VIDA ACADÉMICA Este documento presenta la hoja de vida de Shari Zuleima Jaime Patiño. Contiene información personal como fecha de nacimiento, lugar de nacimiento, dirección, estudios y experiencia laboral. Detall... by shari6zuleima6jaime6 La hoja de vida presenta los datos personales, estudios y experiencia laboral de Luisa Fernanda Meneses Meneses. Detalla su lugar de nacimiento, educación secundaria y técnica, así como varios cursos de capacitación realizados . Además, enumera sus trabajos previos en seguridad e higiene ... Este documento es la hoja de vida de Bryan Enrique Vásquez Uyaguari. Presenta su información personal como su nombre, fecha y lugar de nacimiento, dirección y contacto. Detalla su formación académica incluyendo su educación primaria y secundaria, así como sus estudios superiores actuales ... Incluye información personal como fecha y lugar de nacimiento , estado civil, documentos de identidad, dirección, estudios universitarios y postgrados, y experiencia laboral en cargos administrativos para el Gobierno Regional de Puno y la Municipalidad Provincial de San Roman entre 2010 y ... Este documento es un resumen de la hoja de vida de Wilson Alfredo Lara Quintana. Proporciona información personal como nombre, documento de identidad, fecha y lugar de nacimiento. También incluye detalles de estudios, experiencia laboral en varias posiciones como camillero y operario, y referencias personales y familiares. HOJA DE VIDA ESTUDIOS REALIZADOS REFERENCIAS PERSONALES NOMBRE: KARINA BRAVO QUINTERO DOCUMENTO DE IDENTIDAD:1007298358 LUGAR DE NACIMIENTO:MONTERIA/ CORDOBA FECHA DE NACIMIENTO: 03 /AGOSTO /1996 ESTADO CIVIL: SOLTERA CELULAR: 3204623304 DIRECCION: CARRERA 3A N 42-04 BOGOT{A D.C"
-
-[1] "Este documento es una hoja de respuestas para un test MIPS . Contiene espacios para escribir el nombre, fecha de nacimiento, sexo, estado civil, ocupación y estudios de la persona que realiza…Full description 4.6.3. Lugar de nacimiento .................................................................................................................................... 109 · 4.6.4. Lugar de residencia....................................................................................................................................... 110 · 4.6.5. Ocupación ........................................................................................................................................................ Este documento es una hoja de vida de un jugador de fútbol que incluye sus datos personales como nombre, fecha y lugar de nacimiento , ocupación e información de contacto, datos familiares como nombre de padres y hermanos, ocupación y contacto, y datos sobre su club actual como nombre, ... Hoja de vida académica – Universidad Tecnológica del Chocó “Diego Luis Córdoba” · HOJA DE VIDA ACADÉMICA Este documento presenta la hoja de vida de Shari Zuleima Jaime Patiño. Contiene información personal como fecha de nacimiento, lugar de nacimiento, dirección, estudios y experiencia laboral. Detall... by shari6zuleima6jaime6 La hoja de vida presenta los datos personales, estudios y experiencia laboral de Luisa Fernanda Meneses Meneses. Detalla su lugar de nacimiento, educación secundaria y técnica, así como varios cursos de capacitación realizados . Además, enumera sus trabajos previos en seguridad e higiene ... Este documento es la hoja de vida de Bryan Enrique Vásquez Uyaguari. Presenta su información personal como su nombre, fecha y lugar de nacimiento, dirección y contacto. Detalla su formación académica incluyendo su educación primaria y secundaria, así como sus estudios superiores actuales ... Incluye información personal como fecha y lugar de nacimiento , estado civil, documentos de identidad, dirección, estudios universitarios y postgrados, y experiencia laboral en cargos administrativos para el Gobierno Regional de Puno y la Municipalidad Provincial de San Roman entre 2010 y ... Este documento es un resumen de la hoja de vida de Wilson Alfredo Lara Quintana. Proporciona información personal como nombre, documento de identidad, fecha y lugar de nacimiento. También incluye detalles de estudios, experiencia laboral en varias posiciones como camillero y operario, y referencias personales y familiares. HOJA DE VIDA ESTUDIOS REALIZADOS REFERENCIAS PERSONALES NOMBRE: KARINA BRAVO QUINTERO DOCUMENTO DE IDENTIDAD:1007298358 LUGAR DE NACIMIENTO:MONTERIA/ CORDOBA FECHA DE NACIMIENTO: 03 /AGOSTO /1996 ESTADO CIVIL: SOLTERA CELULAR: 3204623304 DIRECCION: CARRERA 3A N 42-04 BOGOT{A D.C"
-
-[1] "39d6b064aa3e4002878e9802ace46309"
-
-[1] "d9a6992b-6656-4a54-9a20-03f8b664c0bb"
-
-[1] "Search"
-
-[1] "[AIMessage] \n[ToolMessage] Este documento es una hoja de respuestas para un test MIPS . Contiene espacios para escribir el nombre, fecha de nacimiento, sexo, estado civil, ocupación y estudios de la persona que realiza…Full description 4.6.3. Lugar de nacimiento .................................................................................................................................... 109 · 4.6.4. Lugar de residencia....................................................................................................................................... 110 · 4.6.5. Ocupación ........................................................................................................................................................ Este documento es una hoja de vida de un jugador de fútbol que incluye sus datos personales como nombre, fecha y lugar de nacimiento , ocupación e información de contacto, datos familiares como nombre de padres y hermanos, ocupación y contacto, y datos sobre su club actual como nombre, ... Hoja de vida académica – Universidad Tecnológica del Chocó “Diego Luis Córdoba” · HOJA DE VIDA ACADÉMICA Este documento presenta la hoja de vida de Shari Zuleima Jaime Patiño. Contiene información personal como fecha de nacimiento, lugar de nacimiento, dirección, estudios y experiencia laboral. Detall... by shari6zuleima6jaime6 La hoja de vida presenta los datos personales, estudios y experiencia laboral de Luisa Fernanda Meneses Meneses. Detalla su lugar de nacimiento, educación secundaria y técnica, así como varios cursos de capacitación realizados . Además, enumera sus trabajos previos en seguridad e higiene ... Este documento es la hoja de vida de Bryan Enrique Vásquez Uyaguari. Presenta su información personal como su nombre, fecha y lugar de nacimiento, dirección y contacto. Detalla su formación académica incluyendo su educación primaria y secundaria, así como sus estudios superiores actuales ... Incluye información personal como fecha y lugar de nacimiento , estado civil, documentos de identidad, dirección, estudios universitarios y postgrados, y experiencia laboral en cargos administrativos para el Gobierno Regional de Puno y la Municipalidad Provincial de San Roman entre 2010 y ... Este documento es un resumen de la hoja de vida de Wilson Alfredo Lara Quintana. Proporciona información personal como nombre, documento de identidad, fecha y lugar de nacimiento. También incluye detalles de estudios, experiencia laboral en varias posiciones como camillero y operario, y referencias personales y familiares. HOJA DE VIDA ESTUDIOS REALIZADOS REFERENCIAS PERSONALES NOMBRE: KARINA BRAVO QUINTERO DOCUMENTO DE IDENTIDAD:1007298358 LUGAR DE NACIMIENTO:MONTERIA/ CORDOBA FECHA DE NACIMIENTO: 03 /AGOSTO /1996 ESTADO CIVIL: SOLTERA CELULAR: 3204623304 DIRECCION: CARRERA 3A N 42-04 BOGOT{A D.C"
-
-[1] 3
+[1] "[AIMessage] \n[ToolMessage] URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nTitle: Vicepresidencia del Estado\nBytes read: 7066\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nELOY CARTAGENA YOAMONA\nDiputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni\nFecha de nacimiento:\n1969-12-01\nSuplente de:\nRAMONA MOYE CAMACONI\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609]\nActividades realizadas\nVicepresidente de la CIRABO por los indigenas\nEx Capitán Grande de TCO\nEx Presidente de la Comunidad Rosario\nLic. en Ciencias de la Educación"
 
 [1] 2
 
-[1] 8
+[1] 2
 
-[1] 2053
+[1] 4
 
-[1] 4936
+[1] 1476
 
-[1] "char_budget"
+[1] 5245
+
+[1] "char_budget_and_message_threshold"
 
 [1] 3
 
-[1] 2.404286
+[1] 3.553523
 
 [1] TRUE
 
-[1] 0.504481
+[1] 0.7603411
 
 [1] 0
 
 [1] 0
 
-[1] 0
+[1] 2
 
 [1] 0
 
@@ -312,7 +242,7 @@ AIMessage(content='{"education_level": "Unknown", "education_institution": "Unkn
 
 [1] TRUE
 
-[1] "residual_tool_calls_no_content"
+[1] "field_status_canonical"
 
 [1] 0
 
@@ -320,117 +250,145 @@ AIMessage(content='{"education_level": "Unknown", "education_institution": "Unkn
 
 [1] "explicit"
 
-[1] "agent"
+[1] "finalize"
 
-[1] "Ramona Moye Camaconi was a deputy for MAS, Beni, specifically representing the indigenous special constituency (circunscripción especial). (source: https://www.flickr.com/photos/194792615@N03/52180793916, http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"
+[1] "birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)"
 
 [1] "fact"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "string|Unknown"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "string|Unknown"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "string|null"
 
-[1] "pending"
+[1] "found"
 
-[1] 0
+[1] "President of the Organización de Mujeres - Sub Central Sécure"
+
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+
+[1] "terminal_payload_source_backed"
+
+[1] 2
 
 [1] "string|Unknown"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "Working class|Middle class/professional|Upper/elite|Unknown"
 
-[1] "pending"
+[1] "found"
 
-[1] 0
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+
+[1] "terminal_payload_source_backed"
+
+[1] 2
 
 [1] "string|null"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "No disability|Some disability|Unknown"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "string|null"
 
-[1] "pending"
+[1] "found"
 
-[1] 0
+[1] "TIPNIS"
+
+[1] "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia"
+
+[1] 2
 
 [1] "string|Unknown"
 
-[1] "pending"
+[1] "found"
 
-[1] 0
+[1] "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia"
+
+[1] 1
 
 [1] "string|null"
 
-[1] "pending"
+[1] "found"
 
-[1] 0
+[1] "1982"
+
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+
+[1] 2
 
 [1] "integer|null|Unknown"
 
-[1] "pending"
+[1] "found"
 
-[1] 0
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+
+[1] "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+
+[1] "terminal_payload_source_backed"
+
+[1] 2
 
 [1] "string|null"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "Non-LGBTQ|Openly LGBTQ|Unknown"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "string|null"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "string|null"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "Low|Medium|High"
 
 [1] "pending"
 
-[1] 0
+[1] 2
 
 [1] "string"
 
@@ -444,148 +402,92 @@ AIMessage(content='{"education_level": "Unknown", "education_institution": "Unkn
 
 [1] FALSE
 
-[1] 0
+[1] 6
 
 [1] 18
 
 [1] 0
 
-[1] 18
+[1] 12
 
 [1] FALSE
 
-[1] 62632
+[1] 58613
 
-[1] 42582
+[1] 44967
 
-[1] 20050
-
-[1] "planner"
-
-[1] 1206
-
-[1] 581
-
-[1] 1787
+[1] 13646
 
 [1] "agent"
 
-[1] 2152
+[1] 2137
 
-[1] 470
+[1] 479
 
-[1] 2622
+[1] 2616
 
 [1] "agent"
 
-[1] 3874
+[1] 3881
 
-[1] 454
+[1] 332
 
-[1] 4328
+[1] 4213
 
 [1] "summarize"
 
-[1] 1527
+[1] 1571
 
-[1] 4254
+[1] 2792
 
-[1] 5781
+[1] 4363
 
 [1] "agent"
 
-[1] 6332
+[1] 5597
 
-[1] 157
+[1] 235
 
-[1] 6489
+[1] 5832
+
+[1] "agent"
+
+[1] 6369
+
+[1] 213
+
+[1] 6582
+
+[1] "agent"
+
+[1] 6717
+
+[1] 114
+
+[1] 6831
 
 [1] "summarize"
 
-[1] 2715
+[1] 2260
 
-[1] 7179
+[1] 7775
 
-[1] 9894
-
-[1] "agent"
-
-[1] 7017
-
-[1] 109
-
-[1] 7126
-
-[1] "summarize"
-
-[1] 2557
-
-[1] 5995
-
-[1] 8552
+[1] 10035
 
 [1] "agent"
 
-[1] 7124
+[1] 8335
 
-[1] 217
+[1] 289
 
-[1] 7341
+[1] 8624
 
-[1] "agent"
+[1] "finalize"
 
-[1] 6872
+[1] 8100
 
-[1] 53
+[1] 1417
 
-[1] 6925
+[1] 9517
 
-[1] "Complete the research task"
-
-[1] 1
-
-[1] "Research and answer the query"
-
-[1] "in_progress"
-
-[1] "Starting search for Ramona Moye Camaconi."
-
-[1] 2
-
-[1] 1
-
-[1] 1
-
-[1] "Complete the research task"
-
-[1] 1
-
-[1] "Research and answer the query"
-
-[1] "pending"
-
-[1] ""
-
-[1] 1
-
-[1] 1
-
-[1] "auto"
-
-[1] 2
-
-[1] "Complete the research task"
-
-[1] 1
-
-[1] "Research and answer the query"
-
-[1] "in_progress"
-
-[1] "Starting search for Ramona Moye Camaconi."
-
-[1] 2
-
-[1] 1
-
-[1] TRUE
+[1] FALSE
