@@ -1389,6 +1389,26 @@ configure_temporal <- function(time_filter = NULL) {
 }
 
 
+#' Compare Runtime Configuration Values
+#'
+#' Internal helper that compares two config fragments while ignoring
+#' attribute differences (e.g., integer vs numeric scalars from Python).
+#'
+#' @param lhs Left-hand value/list
+#' @param rhs Right-hand value/list
+#' @return TRUE when equivalent, FALSE otherwise
+#' @keywords internal
+.config_values_equal <- function(lhs, rhs) {
+  if (is.null(lhs) && is.null(rhs)) {
+    return(TRUE)
+  }
+  if (is.null(lhs) || is.null(rhs)) {
+    return(FALSE)
+  }
+  isTRUE(all.equal(lhs, rhs, check.attributes = FALSE))
+}
+
+
 #' Cast a Value to a Single Integer
 #'
 #' Internal helper that converts to a scalar integer, returning \code{default}
@@ -1436,22 +1456,45 @@ configure_temporal <- function(time_filter = NULL) {
     return(fn())
   }
 
+  previous_cfg <- tryCatch(
+    configure_search(conda_env = conda_env),
+    error = function(e) NULL
+  )
+
+  previous <- if (!is.null(previous_cfg)) {
+    list(
+      max_results = previous_cfg$max_results,
+      timeout = previous_cfg$timeout,
+      max_retries = previous_cfg$max_retries,
+      retry_delay = previous_cfg$retry_delay,
+      backoff_multiplier = previous_cfg$backoff_multiplier,
+      captcha_backoff_base = previous_cfg$captcha_backoff_base,
+      page_load_wait = previous_cfg$page_load_wait,
+      inter_search_delay = previous_cfg$inter_search_delay
+    )
+  } else {
+    NULL
+  }
+
+  requested <- list(
+    max_results = search$max_results,
+    timeout = search$timeout,
+    max_retries = search$max_retries,
+    retry_delay = search$retry_delay,
+    backoff_multiplier = search$backoff_multiplier,
+    inter_search_delay = search$inter_search_delay
+  )
+
+  if (!is.null(previous)) {
+    current_requested <- previous[names(requested)]
+    if (.config_values_equal(current_requested, requested)) {
+      return(fn())
+    }
+  }
+
   .with_config_snapshot(
     snapshot_fn = function() {
-      cfg <- configure_search(conda_env = conda_env)
-      if (is.null(cfg)) {
-        return(NULL)
-      }
-      list(
-        max_results = cfg$max_results,
-        timeout = cfg$timeout,
-        max_retries = cfg$max_retries,
-        retry_delay = cfg$retry_delay,
-        backoff_multiplier = cfg$backoff_multiplier,
-        captcha_backoff_base = cfg$captcha_backoff_base,
-        page_load_wait = cfg$page_load_wait,
-        inter_search_delay = cfg$inter_search_delay
-      )
+      previous
     },
     restore_fn = function(previous) {
       configure_search(
@@ -1687,95 +1730,152 @@ configure_temporal <- function(time_filter = NULL) {
     return(fn())
   }
 
-  # Clear cache at the start of this operation (per-run caching semantics).
-  if (isTRUE(allow_read_webpages)) {
+  clear_cache <- function() {
     tryCatch(
       asa_env$webpage_tool$clear_webpage_reader_cache(),
       error = function(e) NULL
     )
   }
 
+  # Clear cache at the start of this operation (per-run caching semantics).
+  if (isTRUE(allow_read_webpages)) {
+    clear_cache()
+  }
+
   allow_arg <- if (is.null(allow_read_webpages)) NULL else isTRUE(allow_read_webpages)
 
-  .with_config_snapshot(
-    snapshot_fn = function() {
-      cfg <- asa_env$webpage_tool$configure_webpage_reader()
-      list(
-        allow_read_webpages = cfg$allow_read_webpages,
-        relevance_mode = cfg$relevance_mode,
-        embedding_provider = cfg$embedding_provider,
-        embedding_model = cfg$embedding_model,
-        timeout = cfg$timeout,
-        max_bytes = cfg$max_bytes,
-        max_chars = cfg$max_chars,
-        max_chunks = cfg$max_chunks,
-        chunk_chars = cfg$chunk_chars,
-        embedding_api_base = cfg$embedding_api_base,
-        prefilter_k = cfg$prefilter_k,
-        use_mmr = cfg$use_mmr,
-        mmr_lambda = cfg$mmr_lambda,
-        cache_enabled = cfg$cache_enabled,
-        cache_max_entries = cfg$cache_max_entries,
-        cache_max_text_chars = cfg$cache_max_text_chars,
-        user_agent = cfg$user_agent
-      )
-    },
-    restore_fn = function(previous) {
-      asa_env$webpage_tool$configure_webpage_reader(
-        allow_read_webpages = previous$allow_read_webpages,
-        relevance_mode = previous$relevance_mode,
-        embedding_provider = previous$embedding_provider,
-        embedding_model = previous$embedding_model,
-        timeout = previous$timeout,
-        max_bytes = previous$max_bytes,
-        max_chars = previous$max_chars,
-        max_chunks = previous$max_chunks,
-        chunk_chars = previous$chunk_chars,
-        embedding_api_base = previous$embedding_api_base,
-        prefilter_k = previous$prefilter_k,
-        use_mmr = previous$use_mmr,
-        mmr_lambda = previous$mmr_lambda,
-        cache_enabled = previous$cache_enabled,
-        cache_max_entries = previous$cache_max_entries,
-        cache_max_text_chars = previous$cache_max_text_chars,
-        user_agent = previous$user_agent
-      )
-    },
-    should_restore = function(previous) {
-      !is.null(previous) && !is.null(previous$allow_read_webpages)
-    },
-    on_exit_fn = function(previous) {
-      # Clear any per-run cache after the operation.
-      if (isTRUE(allow_read_webpages)) {
-        asa_env$webpage_tool$clear_webpage_reader_cache()
+  previous_cfg <- tryCatch(
+    asa_env$webpage_tool$configure_webpage_reader(),
+    error = function(e) NULL
+  )
+
+  previous <- if (!is.null(previous_cfg)) {
+    list(
+      allow_read_webpages = previous_cfg$allow_read_webpages,
+      relevance_mode = previous_cfg$relevance_mode,
+      embedding_provider = previous_cfg$embedding_provider,
+      embedding_model = previous_cfg$embedding_model,
+      timeout = previous_cfg$timeout,
+      max_bytes = previous_cfg$max_bytes,
+      max_chars = previous_cfg$max_chars,
+      max_chunks = previous_cfg$max_chunks,
+      chunk_chars = previous_cfg$chunk_chars,
+      embedding_api_base = previous_cfg$embedding_api_base,
+      prefilter_k = previous_cfg$prefilter_k,
+      use_mmr = previous_cfg$use_mmr,
+      mmr_lambda = previous_cfg$mmr_lambda,
+      cache_enabled = previous_cfg$cache_enabled,
+      cache_max_entries = previous_cfg$cache_max_entries,
+      cache_max_text_chars = previous_cfg$cache_max_text_chars,
+      user_agent = previous_cfg$user_agent
+    )
+  } else {
+    NULL
+  }
+
+  requested <- list(
+    allow_read_webpages = allow_arg,
+    relevance_mode = relevance_mode,
+    embedding_provider = embedding_provider,
+    embedding_model = embedding_model,
+    timeout = timeout,
+    max_bytes = max_bytes,
+    max_chars = max_chars,
+    max_chunks = max_chunks,
+    chunk_chars = chunk_chars,
+    embedding_api_base = embedding_api_base,
+    prefilter_k = prefilter_k,
+    use_mmr = use_mmr,
+    mmr_lambda = mmr_lambda,
+    cache_enabled = cache_enabled,
+    cache_max_entries = cache_max_entries,
+    cache_max_text_chars = cache_max_text_chars,
+    user_agent = user_agent
+  )
+
+  has_requested <- vapply(requested, function(value) !is.null(value), logical(1))
+  needs_update <- TRUE
+  if (!is.null(previous)) {
+    if (!any(has_requested)) {
+      needs_update <- FALSE
+    } else {
+      requested_names <- names(requested)[has_requested]
+      current_requested <- previous[requested_names]
+      requested_values <- requested[requested_names]
+      needs_update <- !.config_values_equal(current_requested, requested_values)
+    }
+  }
+
+  result <- tryCatch(
+    {
+      if (!needs_update) {
+        fn()
+      } else {
+        .with_config_snapshot(
+          snapshot_fn = function() {
+            previous
+          },
+          restore_fn = function(previous) {
+            asa_env$webpage_tool$configure_webpage_reader(
+              allow_read_webpages = previous$allow_read_webpages,
+              relevance_mode = previous$relevance_mode,
+              embedding_provider = previous$embedding_provider,
+              embedding_model = previous$embedding_model,
+              timeout = previous$timeout,
+              max_bytes = previous$max_bytes,
+              max_chars = previous$max_chars,
+              max_chunks = previous$max_chunks,
+              chunk_chars = previous$chunk_chars,
+              embedding_api_base = previous$embedding_api_base,
+              prefilter_k = previous$prefilter_k,
+              use_mmr = previous$use_mmr,
+              mmr_lambda = previous$mmr_lambda,
+              cache_enabled = previous$cache_enabled,
+              cache_max_entries = previous$cache_max_entries,
+              cache_max_text_chars = previous$cache_max_text_chars,
+              user_agent = previous$user_agent
+            )
+          },
+          should_restore = function(previous) {
+            !is.null(previous) && !is.null(previous$allow_read_webpages)
+          },
+          fn = function() {
+            tryCatch(
+              asa_env$webpage_tool$configure_webpage_reader(
+                allow_read_webpages = allow_arg,
+                relevance_mode = relevance_mode,
+                embedding_provider = embedding_provider,
+                embedding_model = embedding_model,
+                timeout = timeout,
+                max_bytes = max_bytes,
+                max_chars = max_chars,
+                max_chunks = max_chunks,
+                chunk_chars = chunk_chars,
+                embedding_api_base = embedding_api_base,
+                prefilter_k = prefilter_k,
+                use_mmr = use_mmr,
+                mmr_lambda = mmr_lambda,
+                cache_enabled = cache_enabled,
+                cache_max_entries = cache_max_entries,
+                cache_max_text_chars = cache_max_text_chars,
+                user_agent = user_agent
+              ),
+              error = function(e) NULL
+            )
+            fn()
+          }
+        )
       }
     },
-    fn = function() {
-      tryCatch(
-        asa_env$webpage_tool$configure_webpage_reader(
-          allow_read_webpages = allow_arg,
-          relevance_mode = relevance_mode,
-          embedding_provider = embedding_provider,
-          embedding_model = embedding_model,
-          timeout = timeout,
-          max_bytes = max_bytes,
-          max_chars = max_chars,
-          max_chunks = max_chunks,
-          chunk_chars = chunk_chars,
-          embedding_api_base = embedding_api_base,
-          prefilter_k = prefilter_k,
-          use_mmr = use_mmr,
-          mmr_lambda = mmr_lambda,
-          cache_enabled = cache_enabled,
-          cache_max_entries = cache_max_entries,
-          cache_max_text_chars = cache_max_text_chars,
-          user_agent = user_agent
-        ),
-        error = function(e) NULL
-      )
-      fn()
+    finally = {
+      # Clear any per-run cache after the operation.
+      if (isTRUE(allow_read_webpages)) {
+        clear_cache()
+      }
     }
   )
+
+  result
 }
 
 
