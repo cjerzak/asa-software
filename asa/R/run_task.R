@@ -79,6 +79,10 @@
 #'     \item parsing_status: Validation result (if expected_fields provided)
 #'     \item execution: Operational metadata (thread_id, stop_reason, status_code,
 #'       tool budget counters, fold_count)
+#'     \item action_ascii: High-level ASCII action map derived from the trace
+#'       (also available at \code{execution$action_ascii})
+#'     \item action_steps: Parsed high-level action steps (also available at
+#'       \code{execution$action_steps})
 #'     \item fold_stats: Memory folding diagnostics list
 #'     \item trace: Full execution trace (for "raw" output_format)
 #'   }
@@ -328,6 +332,20 @@ run_task <- function(prompt,
     output_tokens = .as_scalar_int(response$output_tokens),
     token_trace = response$token_trace %||% list()
   )
+  action_trace <- .try_or(
+    .extract_action_trace(
+      trace_json = response$trace_json %||% "",
+      raw_trace = response$trace %||% "",
+      plan_history = response$plan_history %||% list()
+    ),
+    list(
+      steps = list(),
+      ascii = "",
+      step_count = 0L,
+      omitted_steps = 0L,
+      plan_summary = character(0)
+    )
+  )
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
@@ -342,7 +360,12 @@ run_task <- function(prompt,
     json_repair = response$json_repair %||% list(),
     token_stats = token_stats,
     plan = response$plan %||% list(),
-    plan_history = response$plan_history %||% list()
+    plan_history = response$plan_history %||% list(),
+    action_steps = action_trace$steps %||% list(),
+    action_ascii = action_trace$ascii %||% "",
+    action_step_count = action_trace$step_count %||% 0L,
+    action_omitted_steps = action_trace$omitted_steps %||% 0L,
+    action_plan_summary = action_trace$plan_summary %||% character(0)
   )
 
   # Build result object - always return asa_result for consistent API
@@ -364,6 +387,8 @@ run_task <- function(prompt,
   result$token_stats <- token_stats
   result$plan <- response$plan %||% list()
   result$plan_history <- response$plan_history %||% list()
+  result$action_steps <- action_trace$steps %||% list()
+  result$action_ascii <- action_trace$ascii %||% ""
 
   # For "raw" format, add additional fields for debugging
   if (identical(output_format, "raw")) {

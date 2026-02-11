@@ -70,6 +70,551 @@ extract_agent_results <- function(raw_output) {
   parsed$messages
 }
 
+#' Clip trace/action text to an intuitive preview
+#' @keywords internal
+.clip_action_text <- function(text, max_chars = 88L) {
+  max_chars <- as.integer(max_chars)
+  if (is.na(max_chars) || max_chars < 8L) {
+    max_chars <- 8L
+  }
+
+  if (is.null(text)) {
+    return("")
+  }
+
+  if (!is.character(text)) {
+    text <- .try_or(jsonlite::toJSON(text, auto_unbox = TRUE, null = "null"), "")
+  }
+
+  if (length(text) == 0) {
+    return("")
+  }
+
+  txt <- text[[1]]
+  if (is.na(txt) || !nzchar(txt)) {
+    return("")
+  }
+
+  txt <- trimws(gsub("\\s+", " ", txt))
+  if (!nzchar(txt)) {
+    return("")
+  }
+
+  if (nchar(txt) <= max_chars) {
+    return(txt)
+  }
+
+  paste0(substr(txt, 1L, max_chars - 3L), "...")
+}
+
+#' Normalize tool_calls payload into an R list of call records
+#' @keywords internal
+.normalize_tool_calls <- function(tool_calls) {
+  if (is.null(tool_calls) || length(tool_calls) == 0) {
+    return(list())
+  }
+
+  normalized <- tool_calls
+  if (is.data.frame(normalized)) {
+    normalized <- split(normalized, seq_len(nrow(normalized)))
+  }
+
+  if (!is.list(normalized)) {
+    return(list())
+  }
+
+  out <- list()
+  for (tc in normalized) {
+    tc <- .try_or(reticulate::py_to_r(tc), tc)
+    if (is.list(tc)) {
+      out[[length(out) + 1L]] <- tc
+    }
+  }
+  out
+}
+
+#' Render one tool call as a compact action snippet
+#' @keywords internal
+.summarize_tool_call <- function(tool_call, max_chars = 88L) {
+  if (!is.list(tool_call)) {
+    return("?()")
+  }
+
+  tool_name <- as.character(tool_call$name %||% tool_call$tool %||% "?")
+  if (!length(tool_name) || !nzchar(tool_name[[1]])) {
+    tool_name <- "?"
+  } else {
+    tool_name <- tool_name[[1]]
+  }
+
+  args <- tool_call$args %||% list()
+  args <- .try_or(reticulate::py_to_r(args), args)
+
+  preview_bits <- character(0)
+  if (is.list(args) && length(args) > 0) {
+    key_priority <- c("query", "url", "finding", "step", "status", "step_id", "category")
+    keys <- intersect(key_priority, names(args))
+    keys <- keys[seq_len(min(length(keys), 2L))]
+
+    for (key in keys) {
+      val <- args[[key]]
+      val <- if (is.list(val)) {
+        .try_or(jsonlite::toJSON(val, auto_unbox = TRUE, null = "null"), "")
+      } else {
+        .try_or(as.character(val[[1]]), "")
+      }
+      if (!is.null(val) && nzchar(val)) {
+        preview_bits <- c(
+          preview_bits,
+          paste0(key, "=", .clip_action_text(val, max_chars = max(20L, max_chars %/% 2L)))
+        )
+      }
+    }
+
+    if (length(preview_bits) == 0) {
+      arg_names <- names(args)
+      if (!is.null(arg_names) && length(arg_names) > 0) {
+        shown <- arg_names[seq_len(min(length(arg_names), 3L))]
+        suffix <- if (length(arg_names) > 3L) ", ..." else ""
+        preview_bits <- paste0("args{", paste(shown, collapse = ", "), suffix, "}")
+      }
+    }
+  } else if (is.character(args) && length(args) > 0 && nzchar(args[[1]])) {
+    preview_bits <- .clip_action_text(args[[1]], max_chars = max(20L, max_chars %/% 2L))
+  }
+
+  if (length(preview_bits) == 0 || !nzchar(paste0(preview_bits, collapse = ""))) {
+    return(paste0(tool_name, "()"))
+  }
+
+  paste0(
+    tool_name,
+    "(",
+    .clip_action_text(paste(preview_bits, collapse = ", "), max_chars = max_chars),
+    ")"
+  )
+}
+
+#' Parse high-level action events from legacy raw trace text
+#' @keywords internal
+.parse_trace_raw_events <- function(raw_trace, max_preview_chars = 88L) {
+  if (!is.character(raw_trace) || length(raw_trace) != 1 || is.na(raw_trace) || !nzchar(raw_trace)) {
+    return(list())
+  }
+
+  blocks <- strsplit(raw_trace, "\\n\\s*\\n", perl = TRUE)[[1]]
+  if (length(blocks) == 0) {
+    return(list())
+  }
+
+  events <- list()
+  for (block in blocks) {
+    lines <- strsplit(block, "\n", fixed = TRUE)[[1]]
+    if (length(lines) == 0) next
+
+    header <- trimws(lines[[1]])
+    if (!grepl("^\\[.*\\]$", header)) next
+
+    header_inner <- sub("^\\[", "", sub("\\]$", "", header))
+    header_parts <- strsplit(header_inner, ":", fixed = TRUE)[[1]]
+    msg_type <- tolower(trimws(header_parts[[1]] %||% "message"))
+    msg_name <- if (length(header_parts) > 1L) {
+      trimws(paste(header_parts[-1], collapse = ":"))
+    } else {
+      ""
+    }
+
+    actor <- if (msg_type %in% c("human", "humanmessage", "user")) {
+      "Human"
+    } else if (msg_type %in% c("ai", "aimessage", "assistant")) {
+      "AI"
+    } else if (msg_type %in% c("tool", "toolmessage", "function")) {
+      paste0("Tool ", if (nzchar(msg_name)) msg_name else "?")
+    } else {
+      paste0("Message ", msg_type)
+    }
+
+    summary <- if (grepl("^Tool\\s", actor)) "Returned result" else "Message"
+    content <- if (length(lines) > 1L) paste(lines[-1], collapse = " ") else ""
+    events[[length(events) + 1L]] <- list(
+      type = msg_type,
+      actor = actor,
+      summary = summary,
+      preview = .clip_action_text(content, max_chars = max_preview_chars)
+    )
+  }
+
+  events
+}
+
+#' Convert structured trace messages into compact action events
+#' @keywords internal
+.trace_messages_to_action_events <- function(messages, max_preview_chars = 88L) {
+  events <- list()
+
+  add_event <- function(type, actor, summary, preview = "") {
+    events[[length(events) + 1L]] <<- list(
+      type = type,
+      actor = actor,
+      summary = summary,
+      preview = .clip_action_text(preview, max_chars = max_preview_chars)
+    )
+  }
+
+  if (!is.list(messages)) {
+    return(events)
+  }
+
+  for (m in messages) {
+    if (!is.list(m)) next
+
+    m_type <- tolower(as.character(m$message_type %||% ""))
+    m_name <- as.character(m$name %||% "")
+    if (length(m_name) == 0L || is.na(m_name[[1]])) {
+      m_name <- ""
+    } else {
+      m_name <- m_name[[1]]
+    }
+    m_content <- as.character(m$content %||% "")
+    if (length(m_content) == 0L || is.na(m_content[[1]])) {
+      m_content <- ""
+    } else {
+      m_content <- m_content[[1]]
+    }
+
+    if (m_type %in% c("humanmessage", "human", "user")) {
+      add_event("human", "Human", "Submitted task prompt", m_content)
+      next
+    }
+
+    if (m_type %in% c("aimessage", "ai", "assistant")) {
+      tool_calls <- .normalize_tool_calls(m$tool_calls)
+      if (length(tool_calls) > 0L) {
+        tool_names <- unique(vapply(tool_calls, function(tc) {
+          nm <- as.character(tc$name %||% tc$tool %||% "?")
+          if (length(nm) > 0L && nzchar(nm[[1]])) nm[[1]] else "?"
+        }, character(1)))
+
+        summary <- sprintf(
+          "Requested %d tool call%s (%s)",
+          length(tool_calls),
+          if (length(tool_calls) == 1L) "" else "s",
+          paste(tool_names, collapse = ", ")
+        )
+        call_preview <- paste(
+          vapply(tool_calls, .summarize_tool_call, character(1), max_chars = max_preview_chars),
+          collapse = " | "
+        )
+        add_event("ai_tool_calls", "AI", summary, call_preview)
+      }
+
+      if (nzchar(trimws(m_content))) {
+        answer_type <- if (grepl("^\\s*\\{", m_content)) {
+          "Produced structured answer"
+        } else {
+          "Produced answer"
+        }
+        add_event("ai_response", "AI", answer_type, m_content)
+      }
+      next
+    }
+
+    if (m_type %in% c("toolmessage", "tool", "function")) {
+      actor <- paste0("Tool ", if (nzchar(m_name)) m_name else "?")
+      add_event("tool_result", actor, "Returned result", m_content)
+      next
+    }
+
+    if (nzchar(trimws(m_content))) {
+      add_event("message", paste0("Message ", m_type), "Emitted message", m_content)
+    }
+  }
+
+  events
+}
+
+#' Summarize plan history for action timelines
+#' @keywords internal
+.summarize_plan_history <- function(plan_history, max_chars = 88L) {
+  if (!is.list(plan_history) || length(plan_history) == 0L) {
+    return(character(0))
+  }
+
+  latest <- plan_history[[length(plan_history)]]
+  if (!is.list(latest)) {
+    return(character(0))
+  }
+
+  steps <- latest$steps %||% latest$plan %||% NULL
+  if (is.null(steps) || !is.list(steps) || length(steps) == 0L) {
+    return(character(0))
+  }
+
+  normalize_status <- function(x) {
+    x <- tolower(trimws(as.character(x %||% "unspecified")))
+    if (!nzchar(x)) return("unspecified")
+    if (x %in% c("completed", "complete", "done", "finished", "success")) return("completed")
+    if (x %in% c("in_progress", "in progress", "active", "ongoing", "running")) return("in_progress")
+    if (x %in% c("pending", "todo", "to_do", "not_started", "not started", "planned", "queued")) return("pending")
+    "unspecified"
+  }
+
+  statuses <- vapply(steps, function(step) {
+    if (!is.list(step)) {
+      return("unspecified")
+    }
+    status <- as.character(step$status %||% "unspecified")
+    if (length(status) == 0L || !nzchar(status[[1]])) {
+      "unspecified"
+    } else {
+      normalize_status(status[[1]])
+    }
+  }, character(1))
+
+  completed <- sum(statuses == "completed")
+  in_progress <- sum(statuses == "in_progress")
+  pending <- sum(statuses == "pending")
+  unspecified <- length(statuses) - completed - in_progress - pending
+
+  if (completed == 0L && in_progress == 0L && pending == 0L && unspecified > 0L) {
+    summary_line <- sprintf(
+      "Plan steps: %d total (status metadata not yet populated)",
+      length(steps)
+    )
+  } else {
+    summary_line <- sprintf(
+      "Plan steps: %d total (%d completed, %d in_progress, %d pending%s)",
+      length(steps),
+      completed,
+      in_progress,
+      pending,
+      if (unspecified > 0L) paste0(", ", unspecified, " unspecified") else ""
+    )
+  }
+
+  step_labels <- vapply(steps, function(step) {
+    if (!is.list(step)) return("")
+    label <- as.character(step$step %||% step$title %||% "")
+    if (length(label) == 0L || is.na(label[[1]])) "" else label[[1]]
+  }, character(1))
+  step_labels <- step_labels[nzchar(step_labels)]
+
+  if (length(step_labels) == 0L) {
+    return(summary_line)
+  }
+
+  c(
+    summary_line,
+    paste0(
+      "Step flow: ",
+      .clip_action_text(paste(step_labels, collapse = " -> "), max_chars = max_chars)
+    )
+  )
+}
+
+#' Collapse repetitive consecutive action events for readability
+#' @keywords internal
+.collapse_action_events <- function(events, max_preview_chars = 88L) {
+  if (!is.list(events) || length(events) == 0L) {
+    return(list())
+  }
+
+  collapsed <- list()
+  i <- 1L
+  n <- length(events)
+
+  while (i <= n) {
+    ev <- events[[i]]
+    if (!is.list(ev)) {
+      collapsed[[length(collapsed) + 1L]] <- ev
+      i <- i + 1L
+      next
+    }
+
+    ev_type <- as.character(ev$type %||% "")
+    ev_actor <- as.character(ev$actor %||% "")
+    if (length(ev_type) == 0L || is.na(ev_type[[1]])) ev_type <- "" else ev_type <- ev_type[[1]]
+    if (length(ev_actor) == 0L || is.na(ev_actor[[1]])) ev_actor <- "" else ev_actor <- ev_actor[[1]]
+
+    if (!identical(ev_type, "tool_result") || !nzchar(ev_actor)) {
+      collapsed[[length(collapsed) + 1L]] <- ev
+      i <- i + 1L
+      next
+    }
+
+    j <- i
+    while (j + 1L <= n) {
+      next_ev <- events[[j + 1L]]
+      if (!is.list(next_ev)) break
+      next_type <- as.character(next_ev$type %||% "")
+      next_actor <- as.character(next_ev$actor %||% "")
+      if (length(next_type) == 0L || is.na(next_type[[1]])) next_type <- "" else next_type <- next_type[[1]]
+      if (length(next_actor) == 0L || is.na(next_actor[[1]])) next_actor <- "" else next_actor <- next_actor[[1]]
+      if (!identical(next_type, ev_type) || !identical(next_actor, ev_actor)) break
+      j <- j + 1L
+    }
+
+    run_len <- j - i + 1L
+    if (run_len == 1L) {
+      collapsed[[length(collapsed) + 1L]] <- ev
+      i <- i + 1L
+      next
+    }
+
+    previews <- vapply(events[i:j], function(x) {
+      p <- as.character(x$preview %||% "")
+      if (length(p) == 0L || is.na(p[[1]])) "" else p[[1]]
+    }, character(1))
+    previews <- previews[nzchar(previews)]
+    preview_show <- previews[seq_len(min(length(previews), 3L))]
+    preview_text <- paste(preview_show, collapse = " | ")
+    if (length(previews) > 3L) {
+      preview_text <- paste0(preview_text, " | ... (+", length(previews) - 3L, " more)")
+    }
+
+    collapsed[[length(collapsed) + 1L]] <- list(
+      type = ev_type,
+      actor = ev_actor,
+      summary = sprintf("Returned %d results", run_len),
+      preview = .clip_action_text(preview_text, max_chars = max_preview_chars)
+    )
+    i <- j + 1L
+  }
+
+  collapsed
+}
+
+#' Build compact action trace metadata from run output
+#' @keywords internal
+.extract_action_trace <- function(trace_json = "", raw_trace = "", plan_history = list(),
+                                  max_preview_chars = 88L, max_steps = 200L) {
+  max_preview_chars <- as.integer(max_preview_chars)
+  if (is.na(max_preview_chars) || max_preview_chars < 20L) {
+    max_preview_chars <- 88L
+  }
+  max_steps <- as.integer(max_steps)
+  if (is.na(max_steps) || max_steps < 1L) {
+    max_steps <- 200L
+  }
+
+  messages <- .parse_trace_json_messages(trace_json)
+  raw_steps <- if (!is.null(messages)) {
+    .trace_messages_to_action_events(messages, max_preview_chars = max_preview_chars)
+  } else {
+    .parse_trace_raw_events(raw_trace, max_preview_chars = max_preview_chars)
+  }
+  steps <- .collapse_action_events(raw_steps, max_preview_chars = max_preview_chars)
+
+  total_steps <- length(steps)
+  omitted_steps <- 0L
+  if (total_steps > max_steps) {
+    omitted_steps <- total_steps - max_steps
+    steps <- steps[seq_len(max_steps)]
+  }
+
+  out <- list(
+    step_count = total_steps,
+    omitted_steps = omitted_steps,
+    steps = steps,
+    plan_summary = .summarize_plan_history(plan_history, max_chars = max_preview_chars)
+  )
+  out$ascii <- .render_action_ascii(out)
+  out
+}
+
+#' Render action timeline as high-level ASCII flow
+#' @keywords internal
+.render_action_ascii <- function(action_trace, max_line_chars = 100L) {
+  max_line_chars <- as.integer(max_line_chars)
+  if (is.na(max_line_chars) || max_line_chars < 30L) {
+    max_line_chars <- 100L
+  }
+
+  clip_line <- function(x) {
+    if (!is.character(x) || length(x) == 0L) {
+      return("")
+    }
+    line <- x[[1]]
+    if (is.na(line) || !nzchar(line)) {
+      return("")
+    }
+    leading <- regmatches(line, regexpr("^\\s*", line))
+    core <- sub("^\\s*", "", line)
+    core <- gsub("\\s+", " ", core)
+    merged <- paste0(leading, core)
+    if (nchar(merged) <= max_line_chars) {
+      return(merged)
+    }
+    paste0(substr(merged, 1L, max_line_chars - 3L), "...")
+  }
+
+  steps <- action_trace$steps %||% list()
+  step_count <- .as_scalar_int(action_trace$step_count)
+  if (is.na(step_count)) {
+    step_count <- length(steps)
+  }
+  omitted <- .as_scalar_int(action_trace$omitted_steps)
+  if (is.na(omitted)) {
+    omitted <- 0L
+  }
+
+  lines <- c(
+    "AGENT ACTION MAP",
+    "================",
+    paste0("Steps captured: ", step_count),
+    "START"
+  )
+
+  plan_summary <- action_trace$plan_summary %||% character(0)
+  if (length(plan_summary) > 0L) {
+    for (line in plan_summary) {
+      lines <- c(lines, clip_line(paste0("  +-- [PLAN] ", line)))
+    }
+  }
+
+  if (length(steps) == 0L) {
+    lines <- c(lines, "  +-- [No action trace available]")
+  } else {
+    for (i in seq_along(steps)) {
+      step <- steps[[i]]
+      actor <- as.character(step$actor %||% "Step")
+      summary <- as.character(step$summary %||% "Action")
+      preview <- as.character(step$preview %||% "")
+
+      if (length(actor) == 0L || is.na(actor[[1]]) || !nzchar(actor[[1]])) {
+        actor <- "Step"
+      } else {
+        actor <- actor[[1]]
+      }
+      if (length(summary) == 0L || is.na(summary[[1]]) || !nzchar(summary[[1]])) {
+        summary <- "Action"
+      } else {
+        summary <- summary[[1]]
+      }
+      if (length(preview) == 0L || is.na(preview[[1]])) {
+        preview <- ""
+      } else {
+        preview <- preview[[1]]
+      }
+
+      lines <- c(
+        lines,
+        clip_line(paste0("  +-- [", sprintf("%02d", i), "] ", actor, ": ", summary))
+      )
+      if (nzchar(preview)) {
+        lines <- c(lines, clip_line(paste0("      ", preview)))
+      }
+    }
+  }
+
+  if (omitted > 0L) {
+    lines <- c(lines, paste0("  +-- [... ] ", omitted, " additional step(s) omitted"))
+  }
+
+  lines <- c(lines, "END")
+  paste(lines, collapse = "\n")
+}
+
 #' Extract tool message contents from either text trace or asa_trace_v1 JSON.
 #' @keywords internal
 .extract_tool_contents <- function(text, tool_name) {

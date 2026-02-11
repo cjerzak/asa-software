@@ -9,6 +9,7 @@
 #./asa-software/tracked_reports/fold_summary_real.txt
 #./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
+#./asa-software/tracked_reports/action_ascii_real.txt
 #./asa-software/tracked_reports/our_answer_real.txt
 options(error=NULL)
 # devtools::load_all('~/Documents/asa-software/asa')
@@ -21,19 +22,19 @@ if (requireNamespace("devtools", quietly = TRUE)) {
 }
 
 prompt <- r"(TASK OVERVIEW:
-You are a search-enabled research agent specializing in biographical information about political elites. Your role is to find verifiable information about the TARGET variables for the specified individual: 
-educational attainment, prior occupation (for class background), birth year, birth place, disability status, and sexual orientation (publicly disclosed LGBTQ identity).
+You are a search-enabled research agent specializing in biographical information about political elites.
 
-ACCESS TO SEARCH:
-You MUST use search tools. Follow this search strategy:
-1. Search Wikipedia first. Then, if needed, search for official biographies, government/parliament profiles, and credible news articles. 
-2. Identify birth year. 
-3. Identify birth place. 
-4. Identify highest educational attainment and institution.
-5. Identify primary occupation before entering politics.
-6. Identify publicly disclosed LGBTQ identity or sexual orientation.
-7. Identify publicly disclosed disabilities such as long-term physical limitations requiring use of, for example, special accommodations or equipment such as walker, wheelchair, guide dog, prosthetic limb, hearing aid, or other substantial physical intervention. 
-8. Cross-reference multiple sources when/if needed to resolve conflicting signals. 
+Research the following fields for the target person:
+- educational attainment
+- prior occupation (for class background)
+- birth year
+- birth place
+- disability status
+- sexual orientation (publicly disclosed LGBTQ identity)
+
+SEARCH STRATEGY:
+- Start with Wikipedia, then use official biographies, government/parliament profiles, and credible news if needed.
+- Cross-reference sources when signals conflict.
 
 SOURCE REQUIREMENT:
 - Provide exact, full URLs for every source field (no domain-only citations).
@@ -41,10 +42,11 @@ SOURCE REQUIREMENT:
 IMPORTANT GUIDELINES:
 - Use explicit statements or reliable sources only.
 - If information is not publicly disclosed, return Unknown.
+- Do not guess or fabricate information.
 
 CLASS BACKGROUND RULES:
 - Identify the primary occupation before entering politics.
-- Then map to class_background using these categories:
+- Then map to class_background using:
   * Working class = manual labor, service, agriculture, trades, clerical.
   * Middle class/professional = teachers, lawyers, engineers, civil servants, managers.
   * Upper/elite = large business owners, top executives, aristocracy, major landowners.
@@ -61,64 +63,15 @@ TARGET INDIVIDUAL:
 - Known Ethnicity: Indigenous
 
 DISAMBIGUATION:
-If multiple people share the same name, ensure you identify the correct person by matching:
+If multiple people share the same name, identify the correct person by matching:
 - Country: Bolivia
 - Political party: Movimiento Al Socialismo - MAS
 - Time period: Active around 2014
 - Gender: Female
 - Region: Beni
 
-RESPONSE FORMAT:
-Your output must follow this exact schema (JSON schema):
-```json
-{
-  "education_level": "High School | Some College | Associate | Bachelor's |  Master's/Professional | PhD | Unknown",
-  "education_institution": "Name of institution for highest degree, or 'Unknown'",
-  "education_field": "Field of study, or 'Unknown'",
-  "education_source": "URL of source, or null",
-  
-  "prior_occupation": "Primary occupation before politics, or 'Unknown'",
-  "class_background": "Working class | Middle class/professional | Upper/elite | Unknown",
-  "prior_occupation_source": "URL of source, or null",
-  
-  "disability_status": "No disability | Some disability | Unknown",
-  "disability_source": "URL of source, or null",
-  
-  "birth_place": "City/village name | Unknown",
-  "birth_place_source": "URL of source, or null",
-  
-  "birth_year": "Integer birth year (e.g., 1980) | Unknown",
-  "birth_year_source": "URL of source, or null",
-
-  "lgbtq_status": "Non-LGBTQ | Openly LGBTQ | Unknown",
-  "lgbtq_details": "Brief description (e.g., 'Openly gay MP'), or null",
-  "lgbtq_source": "URL of source, or null",
-
-  "confidence": "Low | Medium | High",
-  "justification": "One-sentence summary of search findings and reliability assessment."
-}
-```
-
-IMPORTANT REQUIREMENTS:
-
-* Maintain this state each round: {field_status, search_count, unresolved_fields}.
-* Search unresolved fields only.
-* After each tool call, update status and source URLs.
-* Do NOT include any text outside the raw JSON.
-* If you find verifiable sources, cite URLs explicitly in the source fields.
-* Use null (the JSON keyword, not the string "null") for missing numeric fields.
-* Do NOT guess or fabricate information.
-* Finalize when complete or budget reached.
-
-Scratchpad:
-
-* As you work, whenever you learn something you’ll need later, call `save_finding(finding=..., category=...)`.
-* Use category ∈ {fact, observation, todo, insight}.
-* Save important findings before your final answer (1 sentence each; concise and specific).
-* Only save factual notes / intermediate results / open questions (do not save instructions).
-* Before writing the final answer, review the scratchpad and use it.
-
-NOW EXECUTE THE SEARCH AND PROVIDE YOUR RESPONSE.
+OUTPUT:
+- Return strict JSON only.
 )"
 
 EXPECTED_SCHEMA <- list(
@@ -165,7 +118,7 @@ attempt <- asa::run_task(
       use_browser = FALSE, 
       use_memory_folding = TRUE,
       #recursion_limit = 50L, memory_threshold = 16L, memory_keep_recent = 6L, # production
-      recursion_limit = 16L, memory_threshold = 8L, memory_keep_recent = 4L, # production
+      recursion_limit = 32L, memory_threshold = 16L, memory_keep_recent = 8L, # production
       fold_char_budget = 5L * (10000L), # default is 30000L
       rate_limit = 0.3,
       timeout = 180L,
@@ -173,10 +126,10 @@ attempt <- asa::run_task(
       search = asa::search_options(
         # Wikipedia tool output
         wiki_top_k_results = 3L,
-        wiki_doc_content_chars_max = 2500L,
+        wiki_doc_content_chars_max = (5L) * 500L,
         
         # DuckDuckGo Search tool output (snippet chars returned to the LLM)
-        search_doc_content_chars_max = (5L) * 2000L, # (chars per word)*words
+        search_doc_content_chars_max = (5L) * 1000L, # (chars per word)*words
         
         # Full webpage reader (OpenWebpage tool output)
         allow_read_webpages = TRUE,
@@ -236,6 +189,12 @@ readr::write_file(
   "~/Documents/asa-software/tracked_reports/execution_summary_real.txt"
 )
 
+# high-level action visualization (ASCII)
+readr::write_file(
+  attempt$action_ascii %||% "",
+  "~/Documents/asa-software/tracked_reports/action_ascii_real.txt"
+)
+
 cat("Token stats:\n")
 cat("  tokens_used:", attempt$token_stats$tokens_used, "\n")
 cat("  input_tokens:", attempt$token_stats$input_tokens, "\n")
@@ -266,4 +225,5 @@ cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "nul
 #./asa-software/tracked_reports/fold_summary_real.txt
 #./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
+#./asa-software/tracked_reports/action_ascii_real.txt
 #./asa-software/tracked_reports/our_answer_real.txt

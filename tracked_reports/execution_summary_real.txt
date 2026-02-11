@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 3.8351,
+  "elapsed_time": 5.7211,
   "field_status": {
     "education_level": {
       "status": "pending",
@@ -42,11 +42,11 @@
       "descriptor": "string|Unknown"
     },
     "class_background": {
-      "status": "found",
-      "value": "Working class (Indigenous leadership/community role, no professional degree listed)",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
@@ -74,11 +74,11 @@
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "found",
-      "value": "TIPNIS",
-      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
@@ -130,10 +130,10 @@
       "descriptor": "string|null"
     },
     "confidence": {
-      "status": "pending",
-      "value": null,
+      "status": "found",
+      "value": "Low",
       "source_url": null,
-      "evidence": null,
+      "evidence": "terminal_payload_source_backed",
       "attempts": 3,
       "descriptor": "Low|Medium|High"
     },

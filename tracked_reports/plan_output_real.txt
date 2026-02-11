@@ -5,10 +5,10 @@
       "id": 1,
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
-      "status": "in_progress",
-      "findings": "Starting research on Ramona Moye Camaconi."
+      "status": "completed",
+      "findings": "Verifying specific indigenous community and ethnicity."
     }
   ],
-  "version": 2,
+  "version": 12,
   "current_step": null
 }
