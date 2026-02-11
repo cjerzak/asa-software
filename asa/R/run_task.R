@@ -83,6 +83,8 @@
 #'       (also available at \code{execution$action_ascii})
 #'     \item action_steps: Parsed high-level action steps (also available at
 #'       \code{execution$action_steps})
+#'     \item action_overall: High-level action summary lines (also available at
+#'       \code{execution$action_overall})
 #'     \item fold_stats: Memory folding diagnostics list
 #'     \item trace: Full execution trace (for "raw" output_format)
 #'   }
@@ -336,7 +338,8 @@ run_task <- function(prompt,
     .extract_action_trace(
       trace_json = response$trace_json %||% "",
       raw_trace = response$trace %||% "",
-      plan_history = response$plan_history %||% list()
+      plan_history = response$plan_history %||% list(),
+      token_trace = token_stats$token_trace %||% list()
     ),
     list(
       steps = list(),
@@ -365,7 +368,8 @@ run_task <- function(prompt,
     action_ascii = action_trace$ascii %||% "",
     action_step_count = action_trace$step_count %||% 0L,
     action_omitted_steps = action_trace$omitted_steps %||% 0L,
-    action_plan_summary = action_trace$plan_summary %||% character(0)
+    action_plan_summary = action_trace$plan_summary %||% character(0),
+    action_overall = action_trace$overall_summary %||% character(0)
   )
 
   # Build result object - always return asa_result for consistent API
@@ -389,6 +393,7 @@ run_task <- function(prompt,
   result$plan_history <- response$plan_history %||% list()
   result$action_steps <- action_trace$steps %||% list()
   result$action_ascii <- action_trace$ascii %||% ""
+  result$action_overall <- action_trace$overall_summary %||% character(0)
 
   # For "raw" format, add additional fields for debugging
   if (identical(output_format, "raw")) {

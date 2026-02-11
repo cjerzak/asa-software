@@ -6,9 +6,9 @@
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
       "status": "completed",
-      "findings": "Verifying specific indigenous community and ethnicity."
+      "findings": "Completed research. Found birth year, prior occupation, party, and region. Education and other personal details are likely not public or non-existent (indigenous leader profile)."
     }
   ],
-  "version": 12,
+  "version": 3,
   "current_step": null
 }

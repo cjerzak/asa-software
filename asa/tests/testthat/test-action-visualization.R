@@ -58,8 +58,12 @@ test_that(".extract_action_trace builds action steps from structured trace", {
   expect_equal(action$step_count, 5L)
   expect_equal(length(action$steps), 5L)
   expect_match(action$ascii, "AGENT ACTION MAP")
+  expect_match(action$ascii, "WHAT HAPPENED OVERALL")
   expect_match(action$ascii, "Requested 2 tool calls")
   expect_match(action$ascii, "Tool Search")
+  expect_match(action$ascii, "by: AI")
+  expect_match(action$ascii, "tok: in=0 out=0 total=0")
+  expect_false(grepl("\\] AI:", action$ascii))
   expect_match(action$ascii, "Plan steps: 1 total")
 })
 
@@ -173,4 +177,55 @@ test_that(".summarize_plan_history uses clear wording for unspecified statuses",
 
   expect_true(length(summary) >= 1L)
   expect_match(summary[[1]], "status metadata not yet populated")
+})
+
+test_that(".summarize_action_overall returns a compact header summary", {
+  raw_steps <- list(
+    list(type = "human", actor = "Human", summary = "Submitted task prompt", preview = "Prompt"),
+    list(type = "ai_tool_calls", actor = "AI", summary = "Requested 1 tool call (Search)", preview = "Search(query=a)"),
+    list(type = "tool_result", actor = "Tool Search", summary = "Returned result", preview = "Result"),
+    list(type = "ai_response", actor = "AI", summary = "Produced structured answer", preview = "{\"ok\":true}")
+  )
+
+  overall <- asa:::.summarize_action_overall(
+    raw_steps,
+    plan_summary = c("Plan steps: 2 total (1 completed, 1 pending)")
+  )
+
+  expect_true(length(overall) >= 4L)
+  expect_true(any(grepl("Human prompts:", overall)))
+  expect_true(any(grepl("Tool results:", overall)))
+  expect_true(any(grepl("Structured terminal answer emitted", overall)))
+})
+
+test_that(".extract_action_trace maps token_trace entries onto visible AI steps", {
+  trace_json <- jsonlite::toJSON(
+    list(
+      format = "asa_trace_v1",
+      messages = list(
+        list(message_type = "HumanMessage", name = NULL, content = "Task", tool_calls = NULL),
+        list(
+          message_type = "AIMessage",
+          name = NULL,
+          content = "",
+          tool_calls = list(list(name = "Search", args = list(query = "tokyo"), id = "c1"))
+        ),
+        list(message_type = "ToolMessage", name = "Search", content = "Tokyo result", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "{\"ok\":true}", tool_calls = list())
+      )
+    ),
+    auto_unbox = TRUE,
+    null = "null"
+  )
+
+  action <- asa:::.extract_action_trace(
+    trace_json = trace_json,
+    token_trace = list(
+      list(node = "agent", input_tokens = 50L, output_tokens = 10L, total_tokens = 60L),
+      list(node = "finalize", input_tokens = 30L, output_tokens = 5L, total_tokens = 35L)
+    )
+  )
+
+  expect_match(action$ascii, "tok: in=50 out=10 total=60")
+  expect_match(action$ascii, "tok: in=30 out=5 total=35")
 })

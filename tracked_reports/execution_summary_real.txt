@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 5.7211,
+  "elapsed_time": 8.9452,
   "field_status": {
     "education_level": {
       "status": "pending",
@@ -42,19 +42,19 @@
       "descriptor": "string|Unknown"
     },
     "class_background": {
-      "status": "pending",
-      "value": null,
+      "status": "found",
+      "value": "Working class",
       "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 2,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "status": "found",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -74,19 +74,19 @@
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "status": "found",
+      "value": "Beni, Bolivia",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "status": "found",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "birth_year": {
@@ -98,11 +98,11 @@
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "status": "found",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -134,7 +134,7 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "Low|Medium|High"
     },
     "justification": {

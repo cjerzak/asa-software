@@ -133,6 +133,78 @@ extract_agent_results <- function(raw_output) {
   out
 }
 
+#' Normalize token usage payload into scalar integer fields
+#' @keywords internal
+.normalize_token_usage <- function(token_usage) {
+  if (is.null(token_usage)) {
+    return(NULL)
+  }
+  token_usage <- .try_or(reticulate::py_to_r(token_usage), token_usage)
+  if (!is.list(token_usage)) {
+    return(NULL)
+  }
+
+  get_first <- function(x, default = NA_integer_) {
+    if (is.null(x)) return(default)
+    if (length(x) == 0L) return(default)
+    .as_scalar_int(x[[1]] %||% x)
+  }
+
+  input_tokens <- get_first(
+    token_usage$input_tokens %||%
+      token_usage$prompt_tokens %||%
+      token_usage$input
+  )
+  output_tokens <- get_first(
+    token_usage$output_tokens %||%
+      token_usage$completion_tokens %||%
+      token_usage$output
+  )
+  total_tokens <- get_first(
+    token_usage$total_tokens %||%
+      token_usage$total
+  )
+
+  if (is.na(total_tokens)) {
+    if (!is.na(input_tokens) || !is.na(output_tokens)) {
+      total_tokens <- sum(c(input_tokens, output_tokens), na.rm = TRUE)
+    } else {
+      return(NULL)
+    }
+  }
+  if (is.na(input_tokens)) input_tokens <- 0L
+  if (is.na(output_tokens)) output_tokens <- 0L
+
+  list(
+    input_tokens = input_tokens,
+    output_tokens = output_tokens,
+    total_tokens = total_tokens
+  )
+}
+
+#' Extract message-level token usage if present
+#' @keywords internal
+.extract_message_token_usage <- function(message) {
+  if (!is.list(message)) {
+    return(NULL)
+  }
+
+  candidates <- list(
+    message$usage_metadata,
+    message$token_usage,
+    message$response_metadata$token_usage %||% NULL,
+    message$additional_kwargs$token_usage %||% NULL
+  )
+
+  for (cand in candidates) {
+    usage <- .normalize_token_usage(cand)
+    if (!is.null(usage)) {
+      return(usage)
+    }
+  }
+  NULL
+}
+
 #' Render one tool call as a compact action snippet
 #' @keywords internal
 .summarize_tool_call <- function(tool_call, max_chars = 88L) {
@@ -252,12 +324,16 @@ extract_agent_results <- function(raw_output) {
 .trace_messages_to_action_events <- function(messages, max_preview_chars = 88L) {
   events <- list()
 
-  add_event <- function(type, actor, summary, preview = "") {
+  add_event <- function(type, actor, summary, preview = "", token_usage = NULL) {
+    token_usage <- .normalize_token_usage(token_usage)
     events[[length(events) + 1L]] <<- list(
       type = type,
       actor = actor,
       summary = summary,
-      preview = .clip_action_text(preview, max_chars = max_preview_chars)
+      preview = .clip_action_text(preview, max_chars = max_preview_chars),
+      input_tokens = .as_scalar_int(token_usage$input_tokens),
+      output_tokens = .as_scalar_int(token_usage$output_tokens),
+      total_tokens = .as_scalar_int(token_usage$total_tokens)
     )
   }
 
@@ -288,6 +364,7 @@ extract_agent_results <- function(raw_output) {
     }
 
     if (m_type %in% c("aimessage", "ai", "assistant")) {
+      usage <- .extract_message_token_usage(m)
       tool_calls <- .normalize_tool_calls(m$tool_calls)
       if (length(tool_calls) > 0L) {
         tool_names <- unique(vapply(tool_calls, function(tc) {
@@ -305,7 +382,7 @@ extract_agent_results <- function(raw_output) {
           vapply(tool_calls, .summarize_tool_call, character(1), max_chars = max_preview_chars),
           collapse = " | "
         )
-        add_event("ai_tool_calls", "AI", summary, call_preview)
+        add_event("ai_tool_calls", "AI", summary, call_preview, token_usage = usage)
       }
 
       if (nzchar(trimws(m_content))) {
@@ -314,7 +391,7 @@ extract_agent_results <- function(raw_output) {
         } else {
           "Produced answer"
         }
-        add_event("ai_response", "AI", answer_type, m_content)
+        add_event("ai_response", "AI", answer_type, m_content, token_usage = usage)
       }
       next
     }
@@ -412,6 +489,84 @@ extract_agent_results <- function(raw_output) {
   )
 }
 
+#' Attach best-effort token counts to action steps
+#' @keywords internal
+.attach_step_token_counts <- function(steps, token_trace = list()) {
+  if (!is.list(steps) || length(steps) == 0L) {
+    return(steps)
+  }
+
+  normalize_token_entry <- function(entry) {
+    entry <- .try_or(reticulate::py_to_r(entry), entry)
+    if (!is.list(entry)) return(NULL)
+    node <- as.character(entry$node %||% "")
+    node <- if (length(node) > 0L && !is.na(node[[1]])) tolower(node[[1]]) else ""
+    list(
+      node = node,
+      input_tokens = .as_scalar_int(entry$input_tokens),
+      output_tokens = .as_scalar_int(entry$output_tokens),
+      total_tokens = .as_scalar_int(entry$total_tokens)
+    )
+  }
+
+  # Ensure token fields exist for all steps.
+  for (i in seq_along(steps)) {
+    if (!is.list(steps[[i]])) next
+    if (is.na(.as_scalar_int(steps[[i]]$input_tokens))) steps[[i]]$input_tokens <- 0L
+    if (is.na(.as_scalar_int(steps[[i]]$output_tokens))) steps[[i]]$output_tokens <- 0L
+    if (is.na(.as_scalar_int(steps[[i]]$total_tokens))) steps[[i]]$total_tokens <- 0L
+  }
+
+  ai_indices <- which(vapply(steps, function(step) {
+    if (!is.list(step)) return(FALSE)
+    st <- as.character(step$type %||% "")
+    if (length(st) == 0L || is.na(st[[1]])) return(FALSE)
+    st <- st[[1]]
+    st %in% c("ai_tool_calls", "ai_response")
+  }, logical(1)))
+  if (length(ai_indices) == 0L) {
+    return(steps)
+  }
+
+  # Prefer explicit message-level usage when present.
+  unresolved_ai <- ai_indices[vapply(ai_indices, function(idx) {
+    tok <- .as_scalar_int(steps[[idx]]$total_tokens)
+    is.na(tok) || tok <= 0L
+  }, logical(1))]
+
+  token_entries <- list()
+  if (is.list(token_trace) && length(token_trace) > 0L) {
+    for (entry in token_trace) {
+      norm <- normalize_token_entry(entry)
+      if (!is.null(norm) && !is.na(norm$total_tokens) && norm$total_tokens > 0L) {
+        token_entries[[length(token_entries) + 1L]] <- norm
+      }
+    }
+  }
+  if (length(token_entries) == 0L || length(unresolved_ai) == 0L) {
+    return(steps)
+  }
+
+  # Map only model-generation nodes; exclude summarize/tool bookkeeping nodes.
+  model_nodes <- token_entries[vapply(token_entries, function(entry) {
+    !(entry$node %in% c("summarize", "tools", "tool", "nudge", "unknown", ""))
+  }, logical(1))]
+  if (length(model_nodes) == 0L) {
+    return(steps)
+  }
+
+  assign_n <- min(length(unresolved_ai), length(model_nodes))
+  target_idx <- tail(unresolved_ai, assign_n)
+  source_entries <- tail(model_nodes, assign_n)
+  for (j in seq_len(assign_n)) {
+    steps[[target_idx[[j]]]]$input_tokens <- source_entries[[j]]$input_tokens %||% 0L
+    steps[[target_idx[[j]]]]$output_tokens <- source_entries[[j]]$output_tokens %||% 0L
+    steps[[target_idx[[j]]]]$total_tokens <- source_entries[[j]]$total_tokens %||% 0L
+  }
+
+  steps
+}
+
 #' Collapse repetitive consecutive action events for readability
 #' @keywords internal
 .collapse_action_events <- function(events, max_preview_chars = 88L) {
@@ -484,10 +639,76 @@ extract_agent_results <- function(raw_output) {
   collapsed
 }
 
+#' Build high-level "what happened overall" lines for action maps
+#' @keywords internal
+.summarize_action_overall <- function(raw_steps, plan_summary = character(0), max_chars = 88L) {
+  if (!is.list(raw_steps) || length(raw_steps) == 0L) {
+    return(c("No action events available."))
+  }
+
+  get_type <- function(step) {
+    t <- as.character(step$type %||% "")
+    if (length(t) == 0L || is.na(t[[1]])) "" else t[[1]]
+  }
+  get_actor <- function(step) {
+    a <- as.character(step$actor %||% "")
+    if (length(a) == 0L || is.na(a[[1]])) "" else a[[1]]
+  }
+  get_summary <- function(step) {
+    s <- as.character(step$summary %||% "")
+    if (length(s) == 0L || is.na(s[[1]])) "" else s[[1]]
+  }
+
+  types <- vapply(raw_steps, get_type, character(1))
+  actors <- vapply(raw_steps, get_actor, character(1))
+  summaries <- vapply(raw_steps, get_summary, character(1))
+
+  human_prompts <- sum(types == "human")
+  ai_tool_turns <- sum(types == "ai_tool_calls")
+  ai_answer_turns <- sum(types == "ai_response")
+  tool_results <- sum(types == "tool_result")
+
+  tool_actor_counts <- table(actors[types == "tool_result"])
+  tool_actor_counts <- sort(tool_actor_counts, decreasing = TRUE)
+  tool_actor_labels <- if (length(tool_actor_counts) > 0L) {
+    paste(
+      paste0(names(tool_actor_counts), "=", as.integer(tool_actor_counts)),
+      collapse = ", "
+    )
+  } else {
+    "none"
+  }
+
+  final_answer <- "No terminal AI answer detected"
+  ai_idx <- which(types == "ai_response")
+  if (length(ai_idx) > 0L) {
+    last_summary <- summaries[ai_idx[length(ai_idx)]]
+    if (grepl("structured", tolower(last_summary), fixed = TRUE)) {
+      final_answer <- "Structured terminal answer emitted"
+    } else {
+      final_answer <- "Terminal answer emitted"
+    }
+  }
+
+  lines <- c(
+    sprintf("Human prompts: %d", human_prompts),
+    sprintf("AI turns: %d tool-call turn(s), %d answer turn(s)", ai_tool_turns, ai_answer_turns),
+    sprintf("Tool results: %d total (%s)", tool_results, tool_actor_labels),
+    final_answer
+  )
+
+  if (length(plan_summary) > 0L) {
+    lines <- c(lines, paste0("Plan status: ", plan_summary[[1]]))
+  }
+
+  vapply(lines, .clip_action_text, character(1), max_chars = max_chars, USE.NAMES = FALSE)
+}
+
 #' Build compact action trace metadata from run output
 #' @keywords internal
 .extract_action_trace <- function(trace_json = "", raw_trace = "", plan_history = list(),
-                                  max_preview_chars = 88L, max_steps = 200L) {
+                                  max_preview_chars = 88L, max_steps = 200L,
+                                  token_trace = list()) {
   max_preview_chars <- as.integer(max_preview_chars)
   if (is.na(max_preview_chars) || max_preview_chars < 20L) {
     max_preview_chars <- 88L
@@ -504,6 +725,13 @@ extract_agent_results <- function(raw_output) {
     .parse_trace_raw_events(raw_trace, max_preview_chars = max_preview_chars)
   }
   steps <- .collapse_action_events(raw_steps, max_preview_chars = max_preview_chars)
+  steps <- .attach_step_token_counts(steps, token_trace = token_trace)
+  plan_summary <- .summarize_plan_history(plan_history, max_chars = max_preview_chars)
+  overall_summary <- .summarize_action_overall(
+    raw_steps,
+    plan_summary = plan_summary,
+    max_chars = max_preview_chars
+  )
 
   total_steps <- length(steps)
   omitted_steps <- 0L
@@ -516,7 +744,8 @@ extract_agent_results <- function(raw_output) {
     step_count = total_steps,
     omitted_steps = omitted_steps,
     steps = steps,
-    plan_summary = .summarize_plan_history(plan_history, max_chars = max_preview_chars)
+    plan_summary = plan_summary,
+    overall_summary = overall_summary
   )
   out$ascii <- .render_action_ascii(out)
   out
@@ -562,8 +791,22 @@ extract_agent_results <- function(raw_output) {
     "AGENT ACTION MAP",
     "================",
     paste0("Steps captured: ", step_count),
+    "",
+    "WHAT HAPPENED OVERALL",
+    "---------------------",
+    clip_line("  +-- Summary"),
+    {
+      overview <- action_trace$overall_summary %||% character(0)
+      if (length(overview) == 0L) {
+        clip_line("      No summary available")
+      } else {
+        vapply(overview, function(line) clip_line(paste0("      ", line)), character(1))
+      }
+    },
+    "",
     "START"
   )
+  lines <- unlist(lines, use.names = FALSE)
 
   plan_summary <- action_trace$plan_summary %||% character(0)
   if (length(plan_summary) > 0L) {
@@ -599,10 +842,20 @@ extract_agent_results <- function(raw_output) {
 
       lines <- c(
         lines,
-        clip_line(paste0("  +-- [", sprintf("%02d", i), "] ", actor, ": ", summary))
+        clip_line(paste0("  +-- [", sprintf("%02d", i), "] ", summary)),
+        clip_line(paste0("      by: ", actor))
       )
+      tok_in <- .as_scalar_int(step$input_tokens)
+      tok_out <- .as_scalar_int(step$output_tokens)
+      tok_total <- .as_scalar_int(step$total_tokens)
+      token_line <- if (!is.na(tok_total) && tok_total > 0L) {
+        paste0("      tok: in=", tok_in %||% 0L, " out=", tok_out %||% 0L, " total=", tok_total)
+      } else {
+        "      tok: in=0 out=0 total=0"
+      }
+      lines <- c(lines, clip_line(token_line))
       if (nzchar(preview)) {
-        lines <- c(lines, clip_line(paste0("      ", preview)))
+        lines <- c(lines, clip_line(paste0("      detail: ", preview)))
       }
     }
   }
