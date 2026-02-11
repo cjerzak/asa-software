@@ -5,10 +5,10 @@
       "id": 1,
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
-      "status": "completed",
-      "findings": "Completed research. Found birth year, prior occupation, party, and region. Education and other personal details are likely not public or non-existent (indigenous leader profile)."
+      "status": "in_progress",
+      "findings": "Starting research on Ramona Moye Camaconi."
     }
   ],
-  "version": 3,
+  "version": 2,
   "current_step": null
 }

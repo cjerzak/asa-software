@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 8.9452,
+  "elapsed_time": 1.8241,
   "field_status": {
     "education_level": {
       "status": "pending",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,7 +22,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "education_source": {
@@ -30,7 +30,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "prior_occupation": {
@@ -42,18 +42,18 @@
       "descriptor": "string|Unknown"
     },
     "class_background": {
-      "status": "found",
-      "value": "Working class",
+      "status": "pending",
+      "value": null,
       "source_url": null,
-      "evidence": "terminal_payload_source_backed",
+      "evidence": null,
       "attempts": 2,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
-      "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
+      "evidence": null,
       "attempts": 2,
       "descriptor": "string|null"
     },
@@ -62,7 +62,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
@@ -70,22 +70,22 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "found",
-      "value": "Beni, Bolivia",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
+      "evidence": null,
       "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
-      "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
+      "evidence": null,
       "attempts": 2,
       "descriptor": "string|null"
     },
@@ -98,10 +98,10 @@
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
+      "evidence": null,
       "attempts": 2,
       "descriptor": "string|null"
     },
@@ -110,7 +110,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,7 +118,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
@@ -126,14 +126,14 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "confidence": {
-      "status": "found",
-      "value": "Low",
+      "status": "pending",
+      "value": null,
       "source_url": null,
-      "evidence": "terminal_payload_source_backed",
+      "evidence": null,
       "attempts": 2,
       "descriptor": "Low|Medium|High"
     },
@@ -142,7 +142,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 2,
       "descriptor": "string"
     }
   }
