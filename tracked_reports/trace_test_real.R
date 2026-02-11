@@ -6,6 +6,8 @@
 #./asa-software/tracked_reports/token_stats_real.txt
 #./asa-software/tracked_reports/plan_output_real.txt
 #./asa-software/tracked_reports/fold_stats_real.txt
+#./asa-software/tracked_reports/fold_summary_real.txt
+#./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
 #./asa-software/tracked_reports/our_answer_real.txt
 options(error=NULL)
@@ -164,7 +166,7 @@ attempt <- asa::run_task(
       use_memory_folding = TRUE,
       #recursion_limit = 50L, memory_threshold = 16L, memory_keep_recent = 6L, # production
       recursion_limit = 16L, memory_threshold = 8L, memory_keep_recent = 4L, # production
-      fold_char_budget = 5L * (2000L), # default is 30000L
+      fold_char_budget = 5L * (10000L), # default is 30000L
       rate_limit = 0.3,
       timeout = 180L,
       verbose = TRUE,
@@ -201,6 +203,25 @@ readr::write_file(jsonlite::toJSON(attempt$plan, auto_unbox = TRUE, pretty = TRU
 readr::write_file(
   jsonlite::toJSON(attempt$fold_stats, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   "~/Documents/asa-software/tracked_reports/fold_stats_real.txt"
+)
+
+# summary/archive from memory folding state (if present)
+summary_state <- NULL
+archive_state <- NULL
+if (!is.null(attempt$raw_response)) {
+  summary_state <- tryCatch(reticulate::py_to_r(attempt$raw_response$summary), error = function(e) NULL)
+  archive_state <- tryCatch(reticulate::py_to_r(attempt$raw_response$archive), error = function(e) NULL)
+}
+if (is.null(summary_state)) summary_state <- list()
+if (is.null(archive_state)) archive_state <- list()
+
+readr::write_file(
+  jsonlite::toJSON(summary_state, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  "~/Documents/asa-software/tracked_reports/fold_summary_real.txt"
+)
+readr::write_file(
+  jsonlite::toJSON(archive_state, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  "~/Documents/asa-software/tracked_reports/fold_archive_real.txt"
 )
 
 # execution summary (elapsed_time, field_status)
@@ -242,5 +263,7 @@ cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "nul
 #./asa-software/tracked_reports/token_stats_real.txt
 #./asa-software/tracked_reports/plan_output_real.txt
 #./asa-software/tracked_reports/fold_stats_real.txt
+#./asa-software/tracked_reports/fold_summary_real.txt
+#./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
 #./asa-software/tracked_reports/our_answer_real.txt

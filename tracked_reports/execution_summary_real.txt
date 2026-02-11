@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 2.4275,
+  "elapsed_time": 3.8351,
   "field_status": {
     "education_level": {
       "status": "pending",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,7 +22,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "education_source": {
@@ -30,7 +30,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "prior_occupation": {
@@ -43,8 +43,8 @@
     },
     "class_background": {
       "status": "found",
-      "value": "Indigenous",
-      "source_url": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales",
+      "value": "Working class (Indigenous leadership/community role, no professional degree listed)",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
       "attempts": 2,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
@@ -54,7 +54,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,7 +62,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
@@ -70,13 +70,13 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "birth_place": {
       "status": "found",
       "value": "TIPNIS",
-      "source_url": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales",
+      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
       "evidence": null,
       "attempts": 2,
       "descriptor": "string|Unknown"
@@ -86,7 +86,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "birth_year": {
@@ -102,7 +102,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,7 +118,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
@@ -126,7 +126,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "confidence": {
@@ -134,7 +134,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
@@ -142,7 +142,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string"
     }
   }

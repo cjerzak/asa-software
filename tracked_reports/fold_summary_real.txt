@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "facts": ["[ANCHORED] Fernanda Elena San Martin Carrasco is listed as UD Diputado uninominal for Circunscripción 06 (Note: likely different department, possibly La Paz, contrasting with Ramona Moye in Beni) (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "[ANCHORED] Ramona Moye Camaconi is the Diputada Uninominal Titular for Circunscripción 6, Beni, representing MAS (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "[ANCHORED] Eloy Cartagena Yoamona is the Diputada Uninominal Suplente for Circunscripción 6, Beni (MAS), serving as the substitute for Ramona Moye Camaconi (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "[ANCHORED] Ramona Moye Camaconi is an indigenous woman from the TIPNIS territory (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] Ramona Moye admitted that coca is produced in the TIPNIS territory but stated it is for traditional consumption (autoconsumption) (source: https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967)", "[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] Ramona Moye Camaconi date of birth: 1982-01-07 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: class_background = Working class (Indigenous leadership role, no professional degree listed) (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)"],
+  "decisions": [],
+  "open_questions": "Confirm the specific department for Fernanda Elena San Martin Carrasco's Circunscripción 06 seat (suspected La Paz) to fully differentiate from Ramona Moye (Beni).",
+  "sources": [
+    {
+      "tool": "Search",
+      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "title": "Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni",
+      "note": "Primary source for Ramona Moye role (Beni) - establishes Eloy Cartagena as her Suplente"
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967",
+      "title": "Diputada del MAS admite que en el TIPNIS se produce coca...",
+      "note": "Source for statements on coca production"
+    },
+    {
+      "tool": "Search",
+      "url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "title": "El TIPNIS y el Madidi...",
+      "note": "Biographical details and political stance"
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "title": "SAN MARTIN CARRASCO, FERNANDA ELENA - UD Diputado uninominal - Circunscripción 06",
+      "note": "Reference to another C-06 deputy (likely different dept)"
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia del Estado - Ramona Moye Camaconi",
+      "note": "Detailed bio profile for Ramona Moye (DOB, Prior Occupation)"
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia del Estado",
+      "note": null
+    }
+  ],
+  "warnings": ["Resolved Contradiction: Earlier data was unclear on Ramona Moye's status (Titular vs Suplente). New evidence (VP id 428 & 609) confirms Eloy Cartagena is her Suplente, making Ramona the Titular.", "Dual Circunscripción 6: Both Ramona Moye (Beni) and Fernanda Elena San Martin Carrasco (likely La Paz) hold C-06 seats in different departments."]
+}

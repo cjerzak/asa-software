@@ -1,0 +1,161 @@
+[
+  {
+    "fold_count": 1,
+    "messages": [
+      {
+        "type": "AIMessage",
+        "content": "",
+        "content_raw": [],
+        "id": "lc_run--019c4aa0-7d7c-7581-a589-fb233210fe6c-0",
+        "tool_calls": [
+          {
+            "name": "update_plan",
+            "args": {
+              "findings": "Starting research on Ramona Moye Camaconi.",
+              "step_id": 1,
+              "status": "in_progress"
+            },
+            "id": "37163be0-a2ae-4bf3-8eae-6461301c55a1",
+            "type": "tool_call"
+          },
+          {
+            "name": "Search",
+            "args": {
+              "query": "Ramona Moye Camaconi Bolivia MAS Beni biography"
+            },
+            "id": "2611f2d0-2762-4026-95ab-680e23b2d6ac",
+            "type": "tool_call"
+          }
+        ]
+      },
+      {
+        "type": "ToolMessage",
+        "content": "Plan step 1 updated to 'in_progress'",
+        "content_raw": "Plan step 1 updated to 'in_progress'",
+        "id": "71183d9385a041b893d2327a32baa2aa",
+        "tool_call_id": "37163be0-a2ae-4bf3-8eae-6461301c55a1",
+        "name": "update_plan"
+      },
+      {
+        "type": "ToolMessage",
+        "content": "__START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni <\/CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> LaRamonaBolivia. 10,786 likes · 72 talking about this. LaRamona- Página Oficial Contactos: 68580269 - 69481201 <\/CONTENT> <URL> https://www.facebook.com/ramona.cbba <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> SAN MARTIN CARRASCO, FERNANDA ELENA - UD Diputado uninominal - Circunscripción 06 <\/CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La Paz, 31 de mayo (ANF).- La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y Parque Nacional Isibro Sécure (TIPNIS) se produce coca aunque manifestó que el producto es para el consumo tradicional. <\/CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 107 Followers, 190 Following, 8 Posts -RamonaMaye (@ramonamaye) on Instagram: \"\" <\/CONTENT> <URL> https://www.instagram.com/ramonamaye <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Asambleístas electos por el Movimiento al Socialismo por departamento Gob (6-11-14).- En las elecciones del 12 de octubre de 2014, además de haber conseguido la reelección de Juan Evo Morales Ayma a presidente del Estado Plurinacional deBoliviay de Álvaro Marcelo García Linera a vicepresidente, elMASIPSP obtuvo el 69% de representantes en la Asamblea Legislativa Plurinacional, lo que ... <\/CONTENT> <URL> https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html <\/URL> __END_OF_SOURCE 10__",
+        "content_raw": "__START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni <\/CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> LaRamonaBolivia. 10,786 likes · 72 talking about this. LaRamona- Página Oficial Contactos: 68580269 - 69481201 <\/CONTENT> <URL> https://www.facebook.com/ramona.cbba <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> SAN MARTIN CARRASCO, FERNANDA ELENA - UD Diputado uninominal - Circunscripción 06 <\/CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La Paz, 31 de mayo (ANF).- La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y Parque Nacional Isibro Sécure (TIPNIS) se produce coca aunque manifestó que el producto es para el consumo tradicional. <\/CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 107 Followers, 190 Following, 8 Posts -RamonaMaye (@ramonamaye) on Instagram: \"\" <\/CONTENT> <URL> https://www.instagram.com/ramonamaye <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Asambleístas electos por el Movimiento al Socialismo por departamento Gob (6-11-14).- En las elecciones del 12 de octubre de 2014, además de haber conseguido la reelección de Juan Evo Morales Ayma a presidente del Estado Plurinacional deBoliviay de Álvaro Marcelo García Linera a vicepresidente, elMASIPSP obtuvo el 69% de representantes en la Asamblea Legislativa Plurinacional, lo que ... <\/CONTENT> <URL> https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html <\/URL> __END_OF_SOURCE 10__",
+        "id": "ce019022c30940029e74fcbe0003d648",
+        "tool_call_id": "2611f2d0-2762-4026-95ab-680e23b2d6ac",
+        "name": "Search"
+      }
+    ],
+    "text": "[AIMessage] \n[ToolMessage] Plan step 1 updated to 'in_progress'\n[ToolMessage] __START_OF_SOURCE 2__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni <\/CONTENT> <URL> http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> LaRamonaBolivia. 10,786 likes · 72 talking about this. LaRamona- Página Oficial Contactos: 68580269 - 69481201 <\/CONTENT> <URL> https://www.facebook.com/ramona.cbba <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> RamonaMoyeCamaconiis on Facebook. Join Facebook to connect withRamonaMoyeCamaconiand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/ramona.moyecamaconi <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> SAN MARTIN CARRASCO, FERNANDA ELENA - UD Diputado uninominal - Circunscripción 06 <\/CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La Paz, 31 de mayo (ANF).- La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y Parque Nacional Isibro Sécure (TIPNIS) se produce coca aunque manifestó que el producto es para el consumo tradicional. <\/CONTENT> <URL> https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 107 Followers, 190 Following, 8 Posts -RamonaMaye (@ramonamaye) on Instagram: \"\" <\/CONTENT> <URL> https://www.instagram.com/ramonamaye <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Asambleístas electos por el Movimiento al Socialismo por departamento Gob (6-11-14).- En las elecciones del 12 de octubre de 2014, además de haber conseguido la reelección de Juan Evo Morales Ayma a presidente del Estado Plurinacional deBoliviay de Álvaro Marcelo García Linera a vicepresidente, elMASIPSP obtuvo el 69% de representantes en la Asamblea Legislativa Plurinacional, lo que ... <\/CONTENT> <URL> https://adolfomendozaleigue.blogspot.com/2014/11/asambleistas-electos-por-el-movimiento.html <\/URL> __END_OF_SOURCE 10__"
+  },
+  {
+    "fold_count": 2,
+    "messages": [
+      {
+        "type": "AIMessage",
+        "content": "",
+        "content_raw": [],
+        "id": "lc_run--019c4aa0-8ed6-72a2-9c66-41eede39aad7-0",
+        "tool_calls": [
+          {
+            "name": "save_finding",
+            "args": {
+              "category": "fact",
+              "finding": "Elected as Diputada uninominal (suplente) for Circunscripción 6, Beni, MAS party (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"
+            },
+            "id": "77c3c2f7-287c-46a2-9ef8-319d0565b478",
+            "type": "tool_call"
+          },
+          {
+            "name": "save_finding",
+            "args": {
+              "category": "fact",
+              "finding": "She is indigenous from TIPNIS (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)"
+            },
+            "id": "40891910-3953-4aae-a02b-6db311cb108e",
+            "type": "tool_call"
+          },
+          {
+            "name": "OpenWebpage",
+            "args": {
+              "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428"
+            },
+            "id": "5b51e2e0-dca1-4a3d-8b17-2968ec8fbf3d",
+            "type": "tool_call"
+          }
+        ]
+      },
+      {
+        "type": "ToolMessage",
+        "content": "Saved to scratchpad: Elected as Diputada uninominal (suplente) for Circunscripción 6, Beni, MAS party (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)",
+        "content_raw": "Saved to scratchpad: Elected as Diputada uninominal (suplente) for Circunscripción 6, Beni, MAS party (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)",
+        "id": "5589f4a213e447c486af5a98314f9953",
+        "tool_call_id": "77c3c2f7-287c-46a2-9ef8-319d0565b478",
+        "name": "save_finding"
+      },
+      {
+        "type": "ToolMessage",
+        "content": "Saved to scratchpad: She is indigenous from TIPNIS (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)",
+        "content_raw": "Saved to scratchpad: She is indigenous from TIPNIS (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)",
+        "id": "9df71f4b8df34a4f87a27d1eee650082",
+        "tool_call_id": "40891910-3953-4aae-a02b-6db311cb108e",
+        "name": "save_finding"
+      },
+      {
+        "type": "ToolMessage",
+        "content": "URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nTitle: Vicepresidencia del Estado\nBytes read: 7066\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nELOY CARTAGENA YOAMONA\nDiputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni\nFecha de nacimiento:\n1969-12-01\nSuplente de:\nRAMONA MOYE CAMACONI\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609]\nActividades realizadas\nVicepresidente de la CIRABO por los indigenas\nEx Capitán Grande de TCO\nEx Presidente de la Comunidad Rosario\nLic. en Ciencias de la Educación\n",
+        "content_raw": "URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nTitle: Vicepresidencia del Estado\nBytes read: 7066\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nELOY CARTAGENA YOAMONA\nDiputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni\nFecha de nacimiento:\n1969-12-01\nSuplente de:\nRAMONA MOYE CAMACONI\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609]\nActividades realizadas\nVicepresidente de la CIRABO por los indigenas\nEx Capitán Grande de TCO\nEx Presidente de la Comunidad Rosario\nLic. en Ciencias de la Educación\n",
+        "id": "cc28bfbe51764015bc11c4575a1e5116",
+        "tool_call_id": "5b51e2e0-dca1-4a3d-8b17-2968ec8fbf3d",
+        "name": "OpenWebpage"
+      }
+    ],
+    "text": "[AIMessage] \n[ToolMessage] Saved to scratchpad: Elected as Diputada uninominal (suplente) for Circunscripción 6, Beni, MAS party (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)\n[ToolMessage] Saved to scratchpad: She is indigenous from TIPNIS (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)\n[ToolMessage] URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\nTitle: Vicepresidencia del Estado\nBytes read: 7066\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nELOY CARTAGENA YOAMONA\nDiputado uninominal - Circunscripción 6 (suplente) de MAS para el departamento de Beni\nFecha de nacimiento:\n1969-12-01\nSuplente de:\nRAMONA MOYE CAMACONI\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609]\nActividades realizadas\nVicepresidente de la CIRABO por los indigenas\nEx Capitán Grande de TCO\nEx Presidente de la Comunidad Rosario\nLic. en Ciencias de la Educación"
+  },
+  {
+    "fold_count": 3,
+    "messages": [
+      {
+        "type": "AIMessage",
+        "content": "",
+        "content_raw": [],
+        "id": "lc_run--019c4aa0-a93a-7273-ae7b-bb245fa2559a-0",
+        "tool_calls": [
+          {
+            "name": "save_finding",
+            "args": {
+              "category": "fact",
+              "finding": "Ramona Moye Camaconi is the Titular Deputy (Diputada uninominal titular) for Circunscripción 6, Beni (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"
+            },
+            "id": "70af31bc-1058-4bc8-936a-421f26b77df1",
+            "type": "tool_call"
+          },
+          {
+            "name": "OpenWebpage",
+            "args": {
+              "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+            },
+            "id": "28a61f48-3e7b-462b-a946-bca180637c75",
+            "type": "tool_call"
+          }
+        ]
+      },
+      {
+        "type": "ToolMessage",
+        "content": "Saved to scratchpad: Ramona Moye Camaconi is the Titular Deputy (Diputada uninominal titular) for Circunscripción 6, Beni (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)",
+        "content_raw": "Saved to scratchpad: Ramona Moye Camaconi is the Titular Deputy (Diputada uninominal titular) for Circunscripción 6, Beni (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)",
+        "id": "d1251b0064f5480d846132d4c6d1f86c",
+        "tool_call_id": "70af31bc-1058-4bc8-936a-421f26b77df1",
+        "name": "save_finding"
+      },
+      {
+        "type": "ToolMessage",
+        "content": "URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nTitle: Vicepresidencia del Estado\nBytes read: 6895\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nRAMONA MOYE CAMACONI\nDiputado uninominal - Circunscripción 6 de MAS para el departamento de Beni\nFecha de nacimiento:\n1982-01-07\nSuplente:\nELOY CARTAGENA YOAMONA\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428]\nActividades realizadas\n• Presidenta de la Organización de Mujeres - Sub Central Sécure.\n",
+        "content_raw": "URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nTitle: Vicepresidencia del Estado\nBytes read: 6895\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nRAMONA MOYE CAMACONI\nDiputado uninominal - Circunscripción 6 de MAS para el departamento de Beni\nFecha de nacimiento:\n1982-01-07\nSuplente:\nELOY CARTAGENA YOAMONA\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428]\nActividades realizadas\n• Presidenta de la Organización de Mujeres - Sub Central Sécure.\n",
+        "id": "692c34335733405f8376b47f2d0b5cc6",
+        "tool_call_id": "28a61f48-3e7b-462b-a946-bca180637c75",
+        "name": "OpenWebpage"
+      }
+    ],
+    "text": "[AIMessage] \n[ToolMessage] Saved to scratchpad: Ramona Moye Camaconi is the Titular Deputy (Diputada uninominal titular) for Circunscripción 6, Beni (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)\n[ToolMessage] URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nFinal URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\nTitle: Vicepresidencia del Estado\nBytes read: 6895\nCache: MISS\n\nRelevant excerpts:\n\n[1]\n[link: https://www.vicepresidencia.gob.bo]\nsenadores\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=1]\ndiputados\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=2]\nbancadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=3]\nbrigadas\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=4]\ncomisiones\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=5]\ndirectiva\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_parlamentario=0&id_pestana=6]\nRAMONA MOYE CAMACONI\nDiputado uninominal - Circunscripción 6 de MAS para el departamento de Beni\nFecha de nacimiento:\n1982-01-07\nSuplente:\nELOY CARTAGENA YOAMONA\n[link: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428]\nActividades realizadas\n• Presidenta de la Organización de Mujeres - Sub Central Sécure."
+  }
+]

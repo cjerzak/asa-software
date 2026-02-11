@@ -6,9 +6,9 @@
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
       "status": "in_progress",
-      "findings": "Found official bio with birth year (1982) and prior role (Presidenta de la Organización de Mujeres). Education is missing from official bio."
+      "findings": "Starting research on Ramona Moye Camaconi."
     }
   ],
-  "version": 3,
+  "version": 2,
   "current_step": null
 }

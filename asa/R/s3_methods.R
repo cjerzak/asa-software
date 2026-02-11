@@ -689,7 +689,9 @@ summary.asa_agent <- function(object, ...) {
 #' @param fold_stats Diagnostic metrics from memory folding (list).
 #'   Includes \code{fold_count} (integer or error message string),
 #'   \code{fold_messages_removed}, \code{fold_total_messages_removed},
-#'   \code{fold_chars_input}, \code{fold_summary_chars},
+#'   \code{fold_chars_input}, \code{fold_summary_chars} (effective per-fold
+#'   summary growth chars), \code{fold_summary_total_chars},
+#'   \code{fold_summary_delta_chars},
 #'   \code{fold_trigger_reason}, \code{fold_safe_boundary_idx},
 #'   \code{fold_compression_ratio}, \code{fold_parse_success}, and
 #'   \code{fold_summarizer_latency_m}.
@@ -770,7 +772,14 @@ print.asa_response <- function(x, ...) {
         cat("  Last fold:     ", fs$fold_messages_removed %||% 0L, " msgs removed, ",
             fs$fold_chars_input %||% 0L, " chars input\n", sep = "")
         cat("  Total removed: ", fs$fold_total_messages_removed %||% 0L, " msgs\n", sep = "")
-        cat("  Summary size:  ", fs$fold_summary_chars %||% 0L, " chars\n", sep = "")
+        cat("  Summary growth:", fs$fold_summary_chars %||% 0L, " chars\n", sep = "")
+        if (!is.null(fs$fold_summary_total_chars)) {
+          cat("  Summary total: ", fs$fold_summary_total_chars, " chars\n", sep = "")
+        }
+        if (!is.null(fs$fold_compression_ratio)) {
+          cat("  Compression:   ", format(round(as.numeric(fs$fold_compression_ratio), 3), nsmall = 3),
+              "x (input/growth)\n", sep = "")
+        }
       }
     }
   }
