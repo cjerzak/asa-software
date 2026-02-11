@@ -1,68 +1,68 @@
 {
-  "tokens_used": 72231,
-  "input_tokens": 55267,
-  "output_tokens": 16964,
-  "fold_tokens": 19434,
+  "tokens_used": 57020,
+  "input_tokens": 43717,
+  "output_tokens": 13303,
+  "fold_tokens": 14571,
   "token_trace": [
     {
       "node": "planner",
       "input_tokens": 1363,
-      "output_tokens": 1071,
-      "total_tokens": 2434
+      "output_tokens": 1084,
+      "total_tokens": 2447
     },
     {
       "node": "agent",
       "input_tokens": 2237,
-      "output_tokens": 315,
-      "total_tokens": 2552
+      "output_tokens": 322,
+      "total_tokens": 2559
     },
     {
       "node": "agent",
-      "input_tokens": 5082,
-      "output_tokens": 890,
-      "total_tokens": 5972
+      "input_tokens": 3766,
+      "output_tokens": 665,
+      "total_tokens": 4431
     },
     {
       "node": "summarize",
-      "input_tokens": 2731,
-      "output_tokens": 3125,
-      "total_tokens": 5856
+      "input_tokens": 1646,
+      "output_tokens": 2172,
+      "total_tokens": 3818
     },
     {
       "node": "agent",
-      "input_tokens": 7241,
-      "output_tokens": 573,
-      "total_tokens": 7814
+      "input_tokens": 5717,
+      "output_tokens": 288,
+      "total_tokens": 6005
+    },
+    {
+      "node": "agent",
+      "input_tokens": 6703,
+      "output_tokens": 848,
+      "total_tokens": 7551
     },
     {
       "node": "summarize",
-      "input_tokens": 3231,
-      "output_tokens": 3549,
-      "total_tokens": 6780
+      "input_tokens": 2288,
+      "output_tokens": 2752,
+      "total_tokens": 5040
     },
     {
       "node": "agent",
-      "input_tokens": 7924,
-      "output_tokens": 963,
-      "total_tokens": 8887
+      "input_tokens": 8324,
+      "output_tokens": 260,
+      "total_tokens": 8584
     },
     {
       "node": "summarize",
-      "input_tokens": 3057,
-      "output_tokens": 3741,
-      "total_tokens": 6798
+      "input_tokens": 2413,
+      "output_tokens": 3300,
+      "total_tokens": 5713
     },
     {
       "node": "agent",
-      "input_tokens": 9769,
-      "output_tokens": 596,
-      "total_tokens": 10365
-    },
-    {
-      "node": "finalize",
-      "input_tokens": 11269,
-      "output_tokens": 1070,
-      "total_tokens": 12339
+      "input_tokens": 7897,
+      "output_tokens": 528,
+      "total_tokens": 8425
     }
   ]
 }

@@ -5,10 +5,10 @@
       "id": 1,
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
-      "status": "completed",
-      "findings": "Starting research on Ramona Moye Camaconi."
+      "status": "in_progress",
+      "findings": "Found official bio with birth year (1982) and prior role (Presidenta de la Organización de Mujeres). Education is missing from official bio."
     }
   ],
-  "version": 2,
+  "version": 3,
   "current_step": null
 }
