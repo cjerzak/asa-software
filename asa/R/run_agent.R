@@ -782,6 +782,8 @@
     }
     .strip_nul(paste(parts, collapse = "\n\n"))
   }, error = function(e) {
+    warning("[build_trace] Failed to build trace text: ",
+            conditionMessage(e), call. = FALSE)
     ""
   })
 }
@@ -861,6 +863,8 @@
       null = "null"
     )
   }, error = function(e) {
+    warning("[build_trace_json] Failed to serialise trace: ",
+            conditionMessage(e), call. = FALSE)
     ""
   })
 }

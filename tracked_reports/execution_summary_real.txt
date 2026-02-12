@@ -1,146 +1,146 @@
 {
-  "elapsed_time": 4.3722,
+  "elapsed_time": 3.5581,
   "field_status": {
     "education_level": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|Unknown"
     },
     "education_field": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|Unknown"
     },
     "education_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "prior_occupation": {
       "status": "found",
-      "value": "inhabitant of TIPNIS / social organization representative",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis, https:/www.cejis.sinnersite.com/noticias/chavez-no-se-puede-jugar-con-el-estomago-de-los-indigenas",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|Unknown"
     },
     "class_background": {
       "status": "found",
-      "value": "indigenous from TIPNIS / social organization representative",
-      "source_url": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales, https:/boliviadecide.blogspot.com/2014/07/mas-va-por-la-renovacion-de-la-mayoria.html",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
       "status": "found",
-      "value": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "disability_status": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "birth_place": {
       "status": "found",
-      "value": "TIPNIS",
-      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
       "status": "found",
-      "value": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
-      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "confidence": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "no information found",
+      "source_url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string"

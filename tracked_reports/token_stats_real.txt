@@ -1,122 +1,110 @@
 {
-  "tokens_used": 161396,
-  "input_tokens": 120760,
-  "output_tokens": 40636,
-  "fold_tokens": 50609,
+  "tokens_used": 68032,
+  "input_tokens": 51075,
+  "output_tokens": 16957,
+  "fold_tokens": 14401,
   "token_trace": [
     {
       "node": "planner",
-      "input_tokens": 662,
-      "output_tokens": 1100,
-      "total_tokens": 1762
+      "input_tokens": 627,
+      "output_tokens": 2123,
+      "total_tokens": 2750
     },
     {
       "node": "agent",
-      "input_tokens": 1536,
-      "output_tokens": 343,
-      "total_tokens": 1879
+      "input_tokens": 2102,
+      "output_tokens": 45,
+      "total_tokens": 2147
     },
     {
       "node": "agent",
-      "input_tokens": 3260,
-      "output_tokens": 286,
-      "total_tokens": 3546
+      "input_tokens": 2163,
+      "output_tokens": 23,
+      "total_tokens": 2186
     },
     {
       "node": "agent",
-      "input_tokens": 4847,
-      "output_tokens": 265,
-      "total_tokens": 5112
+      "input_tokens": 2204,
+      "output_tokens": 65,
+      "total_tokens": 2269
     },
     {
       "node": "agent",
-      "input_tokens": 5385,
-      "output_tokens": 165,
-      "total_tokens": 5550
+      "input_tokens": 2394,
+      "output_tokens": 36,
+      "total_tokens": 2430
     },
     {
       "node": "agent",
-      "input_tokens": 6036,
-      "output_tokens": 198,
-      "total_tokens": 6234
+      "input_tokens": 2460,
+      "output_tokens": 228,
+      "total_tokens": 2688
     },
     {
       "node": "agent",
-      "input_tokens": 6665,
-      "output_tokens": 269,
-      "total_tokens": 6934
-    },
-    {
-      "node": "agent",
-      "input_tokens": 7341,
-      "output_tokens": 277,
-      "total_tokens": 7618
-    },
-    {
-      "node": "agent",
-      "input_tokens": 8053,
-      "output_tokens": 380,
-      "total_tokens": 8433
-    },
-    {
-      "node": "summarize",
-      "input_tokens": 1570,
-      "output_tokens": 6185,
-      "total_tokens": 7755
-    },
-    {
-      "node": "agent",
-      "input_tokens": 10270,
+      "input_tokens": 3004,
       "output_tokens": 232,
-      "total_tokens": 10502
-    },
-    {
-      "node": "summarize",
-      "input_tokens": 3332,
-      "output_tokens": 9696,
-      "total_tokens": 13028
+      "total_tokens": 3236
     },
     {
       "node": "agent",
-      "input_tokens": 11708,
-      "output_tokens": 272,
-      "total_tokens": 11980
-    },
-    {
-      "node": "summarize",
-      "input_tokens": 3454,
-      "output_tokens": 4129,
-      "total_tokens": 7583
+      "input_tokens": 3568,
+      "output_tokens": 108,
+      "total_tokens": 3676
     },
     {
       "node": "agent",
-      "input_tokens": 12460,
-      "output_tokens": 527,
-      "total_tokens": 12987
+      "input_tokens": 3628,
+      "output_tokens": 30,
+      "total_tokens": 3658
     },
     {
       "node": "summarize",
-      "input_tokens": 3760,
-      "output_tokens": 7205,
-      "total_tokens": 10965
+      "input_tokens": 531,
+      "output_tokens": 1637,
+      "total_tokens": 2168
     },
     {
       "node": "agent",
-      "input_tokens": 13045,
-      "output_tokens": 278,
-      "total_tokens": 13323
+      "input_tokens": 4209,
+      "output_tokens": 28,
+      "total_tokens": 4237
     },
     {
       "node": "summarize",
-      "input_tokens": 4089,
-      "output_tokens": 7189,
-      "total_tokens": 11278
+      "input_tokens": 697,
+      "output_tokens": 2142,
+      "total_tokens": 2839
     },
     {
       "node": "agent",
-      "input_tokens": 12625,
-      "output_tokens": 540,
-      "total_tokens": 13165
+      "input_tokens": 6084,
+      "output_tokens": 44,
+      "total_tokens": 6128
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 1607,
+      "output_tokens": 2850,
+      "total_tokens": 4457
+    },
+    {
+      "node": "agent",
+      "input_tokens": 6622,
+      "output_tokens": 238,
+      "total_tokens": 6860
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 1567,
+      "output_tokens": 3370,
+      "total_tokens": 4937
+    },
+    {
+      "node": "agent",
+      "input_tokens": 6981,
+      "output_tokens": 1635,
+      "total_tokens": 8616
     }
   ]
 }

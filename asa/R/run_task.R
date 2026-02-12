@@ -344,16 +344,63 @@ run_task <- function(prompt,
     output_tokens = .as_scalar_int(response$output_tokens),
     token_trace = response$token_trace %||% list()
   )
+  # Evaluate each argument defensively so a single bad conversion doesn't
+  # kill the entire action-trace extraction.
+  at_trace_json <- tryCatch(
+    as.character(response$trace_json %||% ""),
+    error = function(e) {
+      warning("[action_trace:arg] trace_json coercion failed: ",
+              conditionMessage(e), call. = FALSE)
+      ""
+    }
+  )
+  at_raw_trace <- tryCatch(
+    as.character(response$trace %||% ""),
+    error = function(e) {
+      warning("[action_trace:arg] raw_trace coercion failed: ",
+              conditionMessage(e), call. = FALSE)
+      ""
+    }
+  )
+  at_plan_history <- tryCatch(
+    response$plan_history %||% list(),
+    error = function(e) {
+      warning("[action_trace:arg] plan_history access failed: ",
+              conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
+  at_token_trace <- tryCatch(
+    token_stats$token_trace %||% list(),
+    error = function(e) {
+      warning("[action_trace:arg] token_trace access failed: ",
+              conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
+  at_wall_time <- tryCatch(
+    response$elapsed_time %||% NA_real_,
+    error = function(e) {
+      warning("[action_trace:arg] wall_time access failed: ",
+              conditionMessage(e), call. = FALSE)
+      NA_real_
+    }
+  )
   action_trace <- tryCatch(
     .extract_action_trace(
-      trace_json = as.character(response$trace_json %||% ""),
-      raw_trace = as.character(response$trace %||% ""),
-      plan_history = response$plan_history %||% list(),
-      token_trace = token_stats$token_trace %||% list(),
-      wall_time_minutes = response$elapsed_time %||% NA_real_
+      trace_json = at_trace_json,
+      raw_trace = at_raw_trace,
+      plan_history = at_plan_history,
+      token_trace = at_token_trace,
+      wall_time_minutes = at_wall_time
     ),
     error = function(e) {
-      message("[action_trace] Error: ", conditionMessage(e))
+      warning(
+        "[action_trace] Extraction failed: ", conditionMessage(e),
+        " | trace_json class=", paste(class(at_trace_json), collapse = ","),
+        " nchar=", nchar(at_trace_json),
+        call. = FALSE
+      )
       list(
         steps = list(),
         ascii = "",

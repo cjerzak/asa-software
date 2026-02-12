@@ -1,99 +1,21 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] Ramona Moye Camaconi supports the construction of the highway through the TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure). (source: https://www.cejis.sinnersite.com/noticias/chavez-no-se-puede-jugar-con-el-estomago-de-los-indigenas)", "[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: class_background = indigenous from TIPNIS / social organization representative (source: https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales, https://boliviadecide.blogspot.com/2014/07/mas-va-por-la-renovacion-de-la-mayoria.html)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = inhabitant of TIPNIS / social organization representative (source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis, https://www.cejis.sinnersite.com/noticias/chavez-no-se-puede-jugar-con-el-estomago-de-los-indigenas)", "[ANCHORED] Early 2014 (July): The MAS party prioritized the renovation of candidates by favoring representatives from social organizations, including Ramona Moye. (source: https://boliviadecide.blogspot.com/2014/07/mas-va-por-la-renovacion-de-la-mayoria.html)", "[ANCHORED] Mid 2014 (October): Candidates for the Beni special indigenous seat included Ramona Moye (MAS), Miriam Yubanure (UD), and Ángela Noza (PVB). (source: https://eju.tv/2014/10/mujeres-del-tipnis-search-un-escao-indgena-en-la-asamblea-legislativa)", "[ANCHORED] Late 2014 (October): Ramona Moye Camaconi (MAS) won the Special Indigenous Constituency of Beni (TIPNIS) with approximately 83% of the vote, defeating Miriam Yubanure (UD) who received 8%. (source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni, https://www.flickr.com/photos/194792615@N03/52180793916)", "[ANCHORED] Late 2014 (December): Moye publicly warned indigenous opponents of the TIPNIS highway not to interfere with the project. (source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "[ANCHORED] Mid 2017: Ramona Moye Camaconi and representatives of four TIPNIS organizations presented a bill to the Plurinational Legislative Assembly to repeal Law 180, which established the TIPNIS as an intangible territory. (source: Source 9 transcript snippet)", "[ANCHORED] Late 2018 (September): Legislator Costa filed a complaint against Ramona Moye Camaconi for allegedly submitting falsified medical certificates to justify licenses and absences. (source: https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=, https://sisin.oep.org.bo/medios_digitales/14455/detalle)", "[ANCHORED] Mid 2019 (April): Moye defended the MAS government, claiming she fought for regional progress and denying that indigenous leaders faced government persecution. (source: https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales)", "[ANCHORED] Late 2014 (October): Susana Rivero was the first titular plurinominal deputy for Beni, with Braulio Gutiérrez Dumay as her substitute. (source: previous memory)", "[ANCHORED] Margarita del Carmen Fernandez Claure is listed as the UD Uninominal Deputy for Beni Circunscripción 03 and a MAS substitute deputy for Beni Circunscripción 06, which clarifies the record in Source 7. (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "[ANCHORED] Late 2017 (November): Ramona Moye Camaconi is identified as an Indigenous Legislator (Deputy) in the Chamber of Deputies of the Plurinational Legislative Assembly. (source: Search result transcript snippet dated Nov 17, 2017)", "[ANCHORED] FIELD_EXTRACT: birth_place_source = https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis (source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)"],
-  "decisions": [],
-  "open_questions": ["What is Ramona Moye Camaconi's exact date of birth and specific place (town) of birth?", "What is the educational background and level of Ramona Moye Camaconi?", "What was the final official count of special indigenous seats won by MAS in 2014 (5 vs 6)?"],
+  "facts": ["[ANCHORED] wikipedia_search = no direct article found for 'Ramona Moye Camaconi' (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi; when: late; note: AGENT SCRATCHPAD)", "[ANCHORED] FIELD_EXTRACT: birth_place = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: birth_place_source = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: birth_year = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: birth_year_source = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: class_background = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: confidence = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: disability_source = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: disability_status = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: education_field = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: education_institution = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: education_level = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: education_source = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: justification = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: lgbtq_details = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: lgbtq_source = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: lgbtq_status = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = no information found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)", "[ANCHORED] Plan step 1 updated to 'completed' (source: update_plan tool)"],
+  "decisions": "Plan step 1 updated to 'completed' (source: update_plan tool)",
+  "open_questions": [],
   "sources": [
     {
-      "tool": "Search",
-      "url": "https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "El MAS gana en el TIPNIS con 75% y obtiene la diputación especial indígena de Beni",
-      "note": "Reports election results for Ramona Moye in TIPNIS."
+      "tool": "wikipedia_search",
+      "url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
+      "title": "Wikipedia search results for 'Ramona Moye Camaconi'",
+      "note": "Search returned no direct article for 'Ramona Moye Camaconi'. (saved in agent scratchpad)"
     },
     {
-      "tool": "Search",
-      "url": "https://www.opinion.com.bo/articulo/el-pais/mas-gana-tipnis-75-ciento-obtiene-diputacion/20141013203700502386.html",
-      "title": "MAS gana en TIPNIS con 75 por ciento y obtiene diputación",
-      "note": "Confirms election results and percentage."
-    },
-    {
-      "tool": "Search",
-      "url": "https://boliviadecide.blogspot.com/2014/07/mas-va-por-la-renovacion-de-la-mayoria.html",
-      "title": "MAS va por la renovación de la mayoría de sus candidaturas",
-      "note": "Describes MAS strategy of candidate renovation and social organization priority."
-    },
-    {
-      "tool": "Search",
-      "url": "https://eju.tv/2014/10/mujeres-del-tipnis-buscan-un-escao-indgena-en-la-asamblea-legislativa",
-      "title": "Mujeres del TIPNIS buscan un escaño indígena en la Asamblea Legislativa",
-      "note": "Lists candidates for the special indigenous seat."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
-      "title": "Ramona Moye Camaconi Photo",
-      "note": "Provides full name and confirms status as titular deputy for Beni special constituency."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.cejis.sinnersite.com/noticias/chavez-no-se-puede-jugar-con-el-estomago-de-los-indigenas",
-      "title": "Chávez: No se puede jugar con el estómago de los indígenas",
-      "note": "Mentions Moye's support for the TIPNIS highway and claims MAS won 6 of 7 seats."
-    },
-    {
-      "tool": "Search",
-      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": "Parlamentario - Vicepresidencia de Bolivia",
-      "note": "Links to a record for Margarita del Carmen Fernandez Claure, clarifying the substitute deputy role for Uninominal 6 in Beni."
-    },
-    {
-      "tool": "Search",
-      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/17102014/el_mas_logra_cinco_de_los_siete_escanos_especiales",
-      "title": "El MAS logra cinco de los siete escaños especiales",
-      "note": "Reports MAS won 5 seats according to CIDOB."
-    },
-    {
-      "tool": "Search",
-      "url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
-      "title": "El Tipnis y el Madidi: las heridas que sangran en el rostro indígena de Bolivia",
-      "note": "Describes Moye as indigenous from TIPNIS and deputy for MAS."
-    },
-    {
-      "tool": "Search",
-      "url": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales",
-      "title": "Tipnis y Madidi: las heridas que sangran en el rostro indígena de Bolivia",
-      "note": "Quotes Moye on progress and lack of leader persecution."
-    },
-    {
-      "tool": "Search",
-      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indígenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "title": "Diputada oficialista amenaza a indígenas que se oponen a carretera por el TIPNIS",
-      "note": "Quotes Moye warning highway opponents in Dec 2014."
-    },
-    {
-      "tool": "Search",
-      "url": "https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=",
-      "title": "Diputada Moye presentó bajas médicas falsificadas",
-      "note": "Reports on the 2018 complaint of falsified medical leaves."
-    },
-    {
-      "tool": "Search",
-      "url": "https://sisin.oep.org.bo/medios_digitales/14455/detalle",
-      "title": "Detalle de noticia - SISIN OEP",
-      "note": "Confirms formal complaint against Moye regarding medical certificates."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.facebook.com/ramona.moyecamaconi",
-      "title": "Ramona Moye Camaconi - Facebook",
-      "note": "Social media profile for Ramona Moye Camaconi."
-    },
-    {
-      "tool": "Search",
+      "tool": "update_plan",
       "url": null,
-      "title": "Transcript Search snippet (Nov 17, 2017)",
-      "note": "Snippet identifying Ramona Moye Camaconi as an Indigenous Legislator in the Chamber of Deputies."
+      "title": "Plan update tool",
+      "note": "Plan step 1 updated to 'completed' (tool output)."
     }
   ],
-  "warnings": ["There is a discrepancy in reports regarding the total number of special indigenous seats won by MAS in 2014: Source 6 (CEJIS) says 6 seats, while Source 8 (CIDOB/ERBOL) says 5 seats.", "Potential role confusion resolved: The Vicepresidencia record (Source 7) refers to Margarita del Carmen Fernandez Claure, not Ramona Moye Camaconi, though both were involved in Beni representation."]
+  "warnings": "UNGROUNDED: {'note': \"AGENT SCRATCHPAD: wikipedia_search = no direct article found for 'Ramona Moye Camaconi'.\", 'when': 'late', 'source': 'https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi'}"
 }
