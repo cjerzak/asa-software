@@ -23,6 +23,14 @@
 #' @param memory_threshold Messages before folding triggers
 #' @param memory_keep_recent Exchanges to preserve after folding. An exchange is
 #'   a user turn plus the assistant response, including any tool calls and tool outputs.
+#' @param use_observational_memory Enable observational memory pipeline.
+#' @param om_observation_token_budget Token budget for stored observation messages.
+#' @param om_reflection_token_budget Token budget for reflection summaries.
+#' @param om_buffer_tokens Token budget for buffered context before reflection.
+#' @param om_buffer_activation Fraction of buffer usage that triggers reflection.
+#' @param om_block_after Fraction of context usage where buffering blocks generation.
+#' @param om_async_prebuffer Whether to pre-buffer observations asynchronously.
+#' @param om_cross_thread_memory Whether observational memory is shared across threads.
 #' @param recursion_limit Optional default maximum number of agent steps.
 #'   When NULL, mode-specific defaults are used at runtime unless overridden in
 #'   \code{\link{run_task}}/\code{\link{run_task_batch}}.

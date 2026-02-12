@@ -28,6 +28,14 @@
 #' @param fold_char_budget Total character budget across all messages before
 #'   memory folding triggers (default: 30000). Lower values fold more
 #'   aggressively; higher values preserve more raw conversation.
+#' @param use_observational_memory Enable observational memory pipeline.
+#' @param om_observation_token_budget Token budget for stored observation messages.
+#' @param om_reflection_token_budget Token budget for reflection summaries.
+#' @param om_buffer_tokens Token budget for buffered context before reflection.
+#' @param om_buffer_activation Fraction of buffer usage that triggers reflection.
+#' @param om_block_after Fraction of context usage where buffering blocks generation.
+#' @param om_async_prebuffer Whether to pre-buffer observations asynchronously.
+#' @param om_cross_thread_memory Whether observational memory is shared across threads.
 #' @param rate_limit Requests per second for rate limiting (default: 0.1)
 #' @param timeout Request timeout in seconds (default: 120)
 #' @param recursion_limit Optional default maximum number of agent steps to

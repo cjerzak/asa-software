@@ -797,14 +797,21 @@
       return("")
     }
 
+    first_non_empty <- function(value, default = NULL) {
+      chars <- .try_or(as.character(value), character(0))
+      chars <- chars[!is.na(chars) & nzchar(chars)]
+      if (length(chars) == 0) return(default)
+      chars[[1]]
+    }
+
     msg_type <- function(msg) {
       # Prefer __class__.__name__ when available
-      type_name <- .try_or(as.character(msg$`__class__`$`__name__`), NA_character_)
-      if (!is.na(type_name) && nzchar(type_name)) {
+      type_name <- first_non_empty(msg$`__class__`$`__name__`, default = NULL)
+      if (!is.null(type_name)) {
         return(type_name)
       }
       # Fallback to "type" field if present (e.g., "ai", "human", "tool")
-      .try_or(as.character(msg$type), NA_character_)
+      first_non_empty(msg$type, default = NA_character_)
     }
 
     msg_content <- function(msg) {
@@ -832,11 +839,7 @@
     }
 
     msg_name <- function(msg) {
-      name <- .try_or(msg$name)
-      if (is.null(name)) return(NULL)
-      name <- .try_or(as.character(name))
-      if (is.null(name) || !nzchar(name)) return(NULL)
-      name
+      first_non_empty(msg$name, default = NULL)
     }
 
     msg_tool_calls <- function(msg) {

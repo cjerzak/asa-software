@@ -57,6 +57,22 @@ auto-detect from environment variables (\code{ASA_PROXY}, \code{HTTP_PROXY},
 \item{memory_keep_recent}{Exchanges to preserve after folding. An exchange is
 a user turn plus the assistant response, including any tool calls and tool outputs.}
 
+\item{use_observational_memory}{Enable observational memory pipeline.}
+
+\item{om_observation_token_budget}{Token budget for stored observation messages.}
+
+\item{om_reflection_token_budget}{Token budget for reflection summaries.}
+
+\item{om_buffer_tokens}{Token budget for buffered context before reflection.}
+
+\item{om_buffer_activation}{Fraction of buffer usage that triggers reflection.}
+
+\item{om_block_after}{Fraction of context usage where buffering blocks generation.}
+
+\item{om_async_prebuffer}{Whether to pre-buffer observations asynchronously.}
+
+\item{om_cross_thread_memory}{Whether observational memory is shared across threads.}
+
 \item{temporal}{Temporal filtering options (use \code{temporal_options()})}
 
 \item{search}{Search configuration (use \code{search_options()})}

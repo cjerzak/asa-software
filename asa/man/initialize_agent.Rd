@@ -65,6 +65,22 @@ including any tool calls and tool outputs.}
 memory folding triggers (default: 30000). Lower values fold more
 aggressively; higher values preserve more raw conversation.}
 
+\item{use_observational_memory}{Enable observational memory pipeline.}
+
+\item{om_observation_token_budget}{Token budget for stored observation messages.}
+
+\item{om_reflection_token_budget}{Token budget for reflection summaries.}
+
+\item{om_buffer_tokens}{Token budget for buffered context before reflection.}
+
+\item{om_buffer_activation}{Fraction of buffer usage that triggers reflection.}
+
+\item{om_block_after}{Fraction of context usage where buffering blocks generation.}
+
+\item{om_async_prebuffer}{Whether to pre-buffer observations asynchronously.}
+
+\item{om_cross_thread_memory}{Whether observational memory is shared across threads.}
+
 \item{rate_limit}{Requests per second for rate limiting (default: 0.1)}
 
 \item{timeout}{Request timeout in seconds (default: 120)}
