@@ -2194,7 +2194,7 @@ test_that("field_status unknown-after threshold triggers semantic finalize with 
   expect_true(is.list(parsed))
   expect_true(all(c("birth_year", "birth_place") %in% names(parsed)))
   expect_true(is.null(parsed$birth_year) || is.na(parsed$birth_year))
-  expect_true(is.null(parsed$birth_place) || parsed$birth_place == "" || is.na(parsed$birth_place))
+  expect_equal(as.character(parsed$birth_place), "Unknown")
 })
 
 test_that("field_status parses Search source blocks with embedded JSON facts", {

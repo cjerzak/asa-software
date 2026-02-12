@@ -10,7 +10,19 @@ asa_test_import_langgraph_module <- function(module_name,
   cache_key <- paste0(module_name, "|",
     paste(sort(unique(as.character(required_modules %||% ""))), collapse = ","))
   if (exists(cache_key, envir = ASA_TEST_LANGGRAPH_CACHE$modules, inherits = FALSE)) {
-    return(get(cache_key, envir = ASA_TEST_LANGGRAPH_CACHE$modules, inherits = FALSE))
+    module_loaded <- TRUE
+    try({
+      module_name_escaped <- gsub("'", "\\\\'", as.character(module_name))
+      reticulate::py_run_string(paste0(
+        "import sys\n",
+        "__asa_test_module_loaded = '", module_name_escaped, "' in sys.modules\n"
+      ))
+      module_loaded <- isTRUE(reticulate::py_to_r(reticulate::py$`__asa_test_module_loaded`))
+    }, silent = TRUE)
+    if (isTRUE(module_loaded)) {
+      return(get(cache_key, envir = ASA_TEST_LANGGRAPH_CACHE$modules, inherits = FALSE))
+    }
+    rm(list = cache_key, envir = ASA_TEST_LANGGRAPH_CACHE$modules)
   }
 
   python_path <- asa_test_skip_if_no_python(
