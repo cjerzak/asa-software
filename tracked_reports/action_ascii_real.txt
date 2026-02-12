@@ -1,0 +1,129 @@
+AGENT ACTION MAP
+================
+Steps captured: 16
+LangGraph timed steps: 31
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 7 tool-call turn(s), 1 answer turn(s)
+      Tool results: 7 total (Tool Search=3, Tool OpenWebpage=2, Tool save_finding=2)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 15 total (status metadata not yet populated)
+
+START
+  +-- [PLAN] Plan steps: 15 total (status metadata not yet populated)
+  +-- [LANGGRAPH] Per-node timing (minutes)
+      planner: 0.2307m (tok=1663)
+      agent: 0.2779m (tok=2226)
+      tools: 0.0000m (tok=0)
+      agent: 0.0284m (tok=2136)
+      tools: 0.0037m (tok=0)
+      agent: 0.1019m (tok=2469)
+      tools: 0.0000m (tok=0)
+      agent: 0.0230m (tok=2352)
+      tools: 0.0000m (tok=0)
+      agent: 0.0508m (tok=2436)
+      tools: 0.0001m (tok=0)
+      agent: 0.0599m (tok=2510)
+      tools: 0.5588m (tok=0)
+      agent: 0.0446m (tok=3867)
+      tools: 0.0214m (tok=0)
+      agent: 0.0285m (tok=4338)
+      tools: 0.0000m (tok=0)
+      summarize: 0.4657m (tok=2896)
+      agent: 0.0462m (tok=4854)
+      tools: 0.0136m (tok=0)
+      summarize: 0.3231m (tok=3139)
+      agent: 0.0710m (tok=5491)
+      tools: 0.0000m (tok=0)
+      summarize: 0.5414m (tok=4402)
+      agent: 0.0572m (tok=6105)
+      tools: 0.3116m (tok=0)
+      summarize: 0.6808m (tok=4934)
+      agent: 0.0322m (tok=7207)
+      tools: 0.2452m (tok=0)
+      summarize: 0.7437m (tok=6094)
+      agent: 0.5241m (tok=9368)
+  +-- [TIMING] wall=5.2558m nodes=5.4856m overhead=-0.2298m
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/am
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 1 tool call (Search)
+      by: AI
+      tok: in=2458 out=52 total=2510
+      min: 0.0599m
+      detail: Search(query=Ramona Moye Camaconi Beni MAS Diputada 20...)
+  +-- [03] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/am
+      detail: __START_OF_SOURCE 1__ <CONTENT> En el caso de la diputación electoral, según datos ...
+  +-- [04] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3755 out=112 total=3867
+      min: 0.0446m
+      detail: OpenWebpage(url=http://www.vicepresidencia.gob.bo/spip.ph...)
+  +-- [05] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/am
+      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario...
+  +-- [06] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=4256 out=82 total=4338
+      min: 0.0285m
+      detail: save_finding(finding=vicepresidencia_parliament_profile_URL = ..., category=fact)
+  +-- [07] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/am
+      detail: Saved to scratchpad: vicepresidencia_parliament_profile_URL = http://www.vicepresid...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4742 out=112 total=4854
+      min: 0.0462m
+      detail: OpenWebpage(url=http://www.vicepresidencia.gob.bo/spip.ph...)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/am
+      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario...
+  +-- [10] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=5436 out=55 total=5491
+      min: 0.0710m
+      detail: save_finding(finding=birth_year = 1982 (source: http://www.vic..., category=fact)
+  +-- [11] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/am
+      detail: Saved to scratchpad: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/s...
+  +-- [12] Requested 1 tool call (Search)
+      by: AI
+      tok: in=5863 out=242 total=6105
+      min: 0.0572m
+      detail: Search(query="Ramona Moye" nacimiento lugar "Beni" "Ra...)
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/am
+      detail: Ramona is an 1884 American novel written by Helen Hunt Jackson. Set in Southern Cal...
+  +-- [14] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7147 out=60 total=7207
+      min: 0.0322m
+      detail: Search(query="Ramona Moye Camaconi" nacimiento lugar "...)
+  +-- [15] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/am
+  +-- [16] Produced structured answer
+      by: AI
+      tok: in=6291 out=3077 total=9368
+      min: 0.5241m
+      detail: {"education_level": "Unknown", "education_institution": "Unknown", "education_field...
+END

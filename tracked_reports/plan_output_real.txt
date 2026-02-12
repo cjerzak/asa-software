@@ -1,61 +1,88 @@
 {
-  "goal": "Locate and verify educational attainment, prior occupation (for class background), birth year, birth place, disability status, and publicly disclosed LGBTQ identity for Ramona Moye Camaconi (Bolivia, Movimiento Al Socialismo - MAS, active ~2014, constituency Beni) using Wikipedia, official biographies, government/parliament profiles, and credible news sources; cross-check conflicting signals and produce evidence-backed values with source URLs.",
+  "goal": "Find and verify biographical details for Ramona Moye Camaconi (Bolivia, MAS, Beni) focusing on education, prior occupation (class background), birth year, birth place, disability status, and publicly disclosed LGBTQ identity, using reliable sources (Wikipedia, official biographies, government/parliament pages, credible news) and return Unknown where not publicly disclosed.",
   "steps": [
     {
       "id": 1,
-      "description": "Search Wikipedia for 'Ramona Moye Camaconi' and variants (including diacritics and ordering 'Moye Camaconi, Ramona') to find a dedicated article or a mention in lists of MAS legislators; save full URL(s) or record that no page exists.",
-      "completion_criteria": "Either a Wikipedia page or specific Wikipedia mentions (with full URL(s)) for Ramona Moye Camaconi are captured, or a documented negative result (search logs or URLs showing absence) is saved.",
+      "description": "Search Wikipedia for 'Ramona Moye Camaconi' and review any matching article for education, occupation, birth details, disability status, and LGBTQ information; record exact URLs for all findings.",
+      "completion_criteria": "Either a Wikipedia article for Ramona Moye Camaconi is found and full URL(s) recorded with cited fields, or no Wikipedia article exists and search results are saved showing no match (URL recorded).",
       "status": "completed",
-      "findings": "No dedicated Wikipedia article found; search result saved."
+      "findings": "No Wikipedia article found for Ramona Moye Camaconi (searched Special:Search)"
     },
     {
       "id": 2,
-      "description": "Search official Bolivian government and legislative sources (Chamber of Deputies, Asamblea Legislativa Plurinacional, regional Beni government pages) for a parliamentary or candidate profile of Ramona Moye Camaconi; capture full URL(s) and download biographical details.",
-      "completion_criteria": "At least one official government/parliamentary profile URL is captured with biographical fields (or a documented absence if profile not found).",
+      "description": "Search Bolivian official government or legislative websites (e.g., Asamblea Legislativa Plurinacional, Chamber of Deputies profiles) for a profile of Ramona Moye Camaconi; extract education, prior occupation, birth year/place, disability, and LGBTQ statements with exact profile URL(s).",
+      "completion_criteria": "At least one official government/parliamentary profile URL is located and any relevant fields are extracted and recorded; if none found, record searched URLs showing absence.",
       "status": "in_progress",
-      "findings": "Searching Bolivian legislative and government sources for parliament profile"
+      "findings": "Searching official Bolivian legislative and government websites for Ramona Moye Camaconi profile."
     },
     {
       "id": 3,
-      "description": "Search Movimiento Al Socialismo (MAS) party resources, candidate lists for the 2014 election, and archived MAS press releases for any profile or announcement referencing Ramona Moye Camaconi; capture exact URLs.",
-      "completion_criteria": "MAS official candidate list entries or press releases mentioning Ramona Moye Camaconi are found and their full URLs recorded, or a documented negative result is saved.",
+      "description": "Search MAS party materials and regional (Beni) government or election candidate lists from 2014 for candidate biography of Ramona Moye Camaconi; capture URLs and note any biographical claims about education, occupation, birth, disability, or sexual orientation.",
+      "completion_criteria": "At least one MAS party or regional candidate-list URL is found and relevant fields are extracted and recorded, or search results recorded showing no relevant information.",
       "status": "pending",
       "findings": ""
     },
     {
       "id": 4,
-      "description": "Search credible Bolivian national and Beni regional news outlets (e.g., La Razón, El Deber, Página Siete, Erbol, ABI, regional Beni papers) for interviews, candidate profiles, election coverage or obituaries that mention education, prior occupation, birth year/place, disability status, or LGBTQ iden",
-      "completion_criteria": "At least two independent news-source URLs (or one plus an official source) that mention any of the target fields are captured, or a documented set of searches showing no reliable mentions exist.",
+      "description": "Search credible Bolivian national and regional news outlets (e.g., La Razón, El Deber, Página Siete, ABI) and international databases for articles mentioning Ramona Moye Camaconi around 2014–2016; extract any corroborating biographical details and record exact article URLs.",
+      "completion_criteria": "A set of news article URLs (or none) is compiled and any corroborating or conflicting biographical information is recorded with source links.",
       "status": "pending",
       "findings": ""
     },
     {
       "id": 5,
-      "description": "Extract and record specific fields from gathered sources: (a) education_level, education_institution, education_field; (b) prior_occupation; (c) birth_year and birth_place; (d) disability_status; (e) lgbtq_status and lgbtq_details — for each field note the exact source URL(s) and direct quote or par",
-      "completion_criteria": "Each target field has either (1) one or more cited source URLs with exact supporting text/quote, or (2) is explicitly marked 'Unknown' with an explanation and search evidence (URLs showing absence).",
+      "description": "Cross-reference all gathered sources to confirm consistency for each field (education, prior occupation, birth year/place, disability, LGBTQ); where conflicts exist, prioritize official and multiple independent reputable sources and record reasoning and URLs.",
+      "completion_criteria": "For each target field, either a consistent sourced value with at least one exact URL is recorded, or the field is set to 'Unknown' with an explanation and source URLs showing absence/conflict.",
       "status": "pending",
       "findings": ""
     },
     {
       "id": 6,
-      "description": "Cross-check conflicting information and finalize class_background mapping: determine primary pre-political occupation and map to working/middle/upper/unknown per rules; compile final JSON answers with justification and a list of exact full URLs for every piece of evidence.",
-      "completion_criteria": "A final, evidence-backed set of values for all required fields is compiled with full URLs for each source, class_background determined per rules, and a documented confidence score and justification for each field.",
+      "description": "Prepare final filled biographical fields (education_level, education_institution, education_field, prior_occupation, class_background, disability_status, birth_place, birth_year, lgbtq_status, lgbtq_details) with exact source URLs for each field and a short justification summarizing evidence and con",
+      "completion_criteria": "Final JSON-ready values for all required fields are compiled with direct source URLs and a concise justification and confidence score; all fields populated (use 'Unknown' where data not publicly available).",
       "status": "pending",
       "findings": ""
     }
   ],
   "version": 4,
   "current_step": 3,
-  "education_level": "Unknown",
-  "education_institution": "Unknown",
-  "education_field": "Unknown",
-  "prior_occupation": "Unknown",
-  "class_background": "Unknown",
-  "disability_status": "Unknown",
-  "birth_place": "Unknown",
-  "birth_year": "Unknown",
-  "lgbtq_status": "Unknown",
-  "lgbtq_details": "Unknown",
-  "confidence": 0,
-  "justification": "No source searches have been executed yet. This plan will first attempt to locate a Wikipedia article, then official parliamentary/government and MAS party profiles, then credible national and regional news sources. Each discovered claim will be recorded with its exact full URL. If a field is not found in reliable public sources, it will be set to 'Unknown' per instructions. Final values, confidence, and class_background mapping will be assigned only after completing the steps and collecting source URLs."
+  "education_level": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "education_institution": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "education_field": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "prior_occupation": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "class_background": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "disability_status": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "birth_place": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "birth_year": {
+    "value": "Unknown",
+    "source": "Unknown"
+  },
+  "lgbtq_status": {
+    "value": "Unknown",
+    "lgbtq_details": "Unknown",
+    "source": "Unknown"
+  },
+  "confidence": "low",
+  "justification": "Initial plan created; no sources yet consulted. Actual biographical details will be populated after executing the outlined search steps."
 }

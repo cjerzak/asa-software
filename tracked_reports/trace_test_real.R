@@ -12,36 +12,13 @@
 #./asa-software/tracked_reports/action_ascii_real.txt
 #./asa-software/tracked_reports/our_answer_real.txt
 options(error=NULL)
+# install.packages( "~/Documents/asa-software/asa",repos = NULL, type = "source",force = F);
 # devtools::load_all('~/Documents/asa-software/asa')
 # devtools::install_github( 'cjerzak/asa-software/asa' )
 # asa::build_backend(force = TRUE, fix_browser = TRUE)
 
 # Prefer local package source so trace runs validate current repo code.
-# Resolve relative to this script so behavior is stable regardless of cwd.
-script_file <- commandArgs(trailingOnly = FALSE)
-script_path <- sub("^--file=", "", script_file[grep("^--file=", script_file)])
-if (length(script_path) == 0L || !nzchar(script_path[[1]])) {
-  script_path <- file.path(getwd(), "tracked_reports", "trace_test_real.R")
-}
-script_dir <- dirname(normalizePath(script_path[[1]], winslash = "/", mustWork = FALSE))
-local_asa_path <- normalizePath(file.path(script_dir, "..", "asa"), winslash = "/", mustWork = FALSE)
-
-loaded_local_asa <- FALSE
-if (requireNamespace("devtools", quietly = TRUE)) {
-  loaded_local_asa <- !inherits(
-    try(devtools::load_all(local_asa_path, quiet = TRUE), silent = TRUE),
-    "try-error"
-  )
-}
-if (!loaded_local_asa) {
-  warning(
-    sprintf(
-      "Using installed asa package from '%s'; local load_all failed or devtools is unavailable.",
-      find.package("asa")
-    ),
-    call. = FALSE
-  )
-}
+devtools::load_all('~/Documents/asa-software/asa')
 
 prompt <- r"(TASK OVERVIEW:
 You are a search-enabled research agent specializing in biographical information about political elites.
@@ -124,7 +101,7 @@ EXPECTED_SCHEMA <- list(
 )
 
 system("brew services start tor")
-attempt <- asa::run_task(
+attempt <- run_task(
     prompt = prompt,
     #output_format = "json",
     output_format = "raw",
@@ -132,7 +109,7 @@ attempt <- asa::run_task(
     expected_schema = EXPECTED_SCHEMA,
     verbose = FALSE,
     use_plan_mode = TRUE, 
-    agent = asa::initialize_agent(
+    agent = initialize_agent(
       #backend = "gemini", model = "gemini-2.5-pro",
       #backend = "gemini", model = "gemini-3-pro-preview",
       #backend = "gemini", model = "gemini-3-flash-preview",
@@ -147,7 +124,7 @@ attempt <- asa::run_task(
       rate_limit = 0.3,
       timeout = 180L,
       verbose = TRUE,
-      search = asa::search_options(
+      search = search_options(
         # Wikipedia tool output
         wiki_top_k_results = 3L,
         wiki_doc_content_chars_max = (5L) * 500L,
@@ -246,7 +223,7 @@ cat("  fold_stats:", jsonlite::toJSON(attempt$fold_stats, auto_unbox = TRUE), "\
 
 # save final answer (extract from structured trace on disk)
 tmp <- readr::read_file("~/Documents/asa-software/tracked_reports/trace_real.txt")
-final_answer <- asa::extract_agent_results(tmp)[["json_data"]]
+final_answer <- extract_agent_results(tmp)[["json_data"]]
 message("Trace test complete")
 
 jsonlite::write_json(

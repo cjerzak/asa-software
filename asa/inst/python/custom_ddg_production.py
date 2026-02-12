@@ -8448,7 +8448,7 @@ def create_memory_folding_agent(
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
-            "token_trace": [build_node_trace_entry("summarize", usage=_usage, started_at=node_started_at)],
+            "token_trace": [build_node_trace_entry(token_trace_node, usage=_usage, started_at=node_started_at)],
         })
 
     def should_fold_messages(messages: list) -> bool:
