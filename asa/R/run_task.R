@@ -370,6 +370,22 @@ run_task <- function(prompt,
       list()
     }
   )
+  at_plan <- tryCatch(
+    response$plan %||% list(),
+    error = function(e) {
+      warning("[action_trace:arg] plan access failed: ",
+              conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
+  at_field_status <- tryCatch(
+    response$field_status %||% list(),
+    error = function(e) {
+      warning("[action_trace:arg] field_status access failed: ",
+              conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
   at_token_trace <- tryCatch(
     token_stats$token_trace %||% list(),
     error = function(e) {
@@ -391,6 +407,8 @@ run_task <- function(prompt,
       trace_json = at_trace_json,
       raw_trace = at_raw_trace,
       plan_history = at_plan_history,
+      plan = at_plan,
+      field_status = at_field_status,
       token_trace = at_token_trace,
       wall_time_minutes = at_wall_time
     ),
@@ -407,6 +425,9 @@ run_task <- function(prompt,
         step_count = 0L,
         omitted_steps = 0L,
         plan_summary = character(0),
+        investigator_summary = character(0),
+        field_metrics = list(),
+        overall_summary = character(0),
         langgraph_step_timings = list()
       )
     }
@@ -434,6 +455,7 @@ run_task <- function(prompt,
     action_step_count = action_trace$step_count %||% 0L,
     action_omitted_steps = action_trace$omitted_steps %||% 0L,
     action_plan_summary = action_trace$plan_summary %||% character(0),
+    action_investigator_summary = action_trace$investigator_summary %||% character(0),
     action_overall = action_trace$overall_summary %||% character(0),
     langgraph_step_timings = action_trace$langgraph_step_timings %||% list()
   )
@@ -462,6 +484,7 @@ run_task <- function(prompt,
   result$reflections <- response$reflections %||% list()
   result$action_steps <- action_trace$steps %||% list()
   result$action_ascii <- action_trace$ascii %||% ""
+  result$action_investigator_summary <- action_trace$investigator_summary %||% character(0)
   result$action_overall <- action_trace$overall_summary %||% character(0)
   result$langgraph_step_timings <- action_trace$langgraph_step_timings %||% list()
 

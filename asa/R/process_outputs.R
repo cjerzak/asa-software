@@ -104,6 +104,21 @@ extract_agent_results <- function(raw_output) {
     return(txt)
   }
 
+  # For URLs/identifiers, preserve both prefix and suffix so investigators
+  # can still disambiguate records like IDs and query tails.
+  if (grepl("(https?://|www\\.|\\?|&|\\bid_[a-z_]+\\b|[[:alnum:]_%-]+=)", txt, ignore.case = TRUE)) {
+    keep_chars <- max_chars - 3L
+    head_chars <- max(8L, floor(keep_chars * 0.65))
+    tail_chars <- max(5L, keep_chars - head_chars)
+    if ((head_chars + tail_chars + 3L) < nchar(txt)) {
+      return(paste0(
+        substr(txt, 1L, head_chars),
+        "...",
+        substr(txt, nchar(txt) - tail_chars + 1L, nchar(txt))
+      ))
+    }
+  }
+
   paste0(substr(txt, 1L, max_chars - 3L), "...")
 }
 
@@ -412,28 +427,50 @@ extract_agent_results <- function(raw_output) {
 
 #' Summarize plan history for action timelines
 #' @keywords internal
-.summarize_plan_history <- function(plan_history, max_chars = 88L) {
-  if (!is.list(plan_history) || length(plan_history) == 0L) {
-    return(character(0))
-  }
+.normalize_progress_status <- function(x) {
+  x <- tolower(trimws(as.character(x %||% "unspecified")))
+  if (!nzchar(x)) return("unspecified")
+  if (x %in% c("found", "resolved", "verified", "confirmed")) return("found")
+  if (x %in% c("unknown", "not_found", "unavailable", "undetermined")) return("unknown")
+  if (x %in% c("completed", "complete", "done", "finished", "success")) return("completed")
+  if (x %in% c("in_progress", "in progress", "active", "ongoing", "running")) return("in_progress")
+  if (x %in% c("pending", "todo", "to_do", "not_started", "not started", "planned", "queued")) return("pending")
+  "unspecified"
+}
 
-  latest <- plan_history[[length(plan_history)]]
-  if (!is.list(latest)) {
-    return(character(0))
+#' Extract steps list from plan payload
+#' @keywords internal
+.extract_plan_steps <- function(plan_state) {
+  if (!is.list(plan_state)) {
+    return(NULL)
   }
-
-  steps <- latest$steps %||% latest$plan %||% NULL
+  steps <- plan_state$steps %||% plan_state$plan %||% NULL
   if (is.null(steps) || !is.list(steps) || length(steps) == 0L) {
-    return(character(0))
+    return(NULL)
+  }
+  steps
+}
+
+#' Summarize plan history for action timelines
+#' @keywords internal
+.summarize_plan_history <- function(plan_history, plan = list(), max_chars = 88L) {
+  steps <- NULL
+
+  if (is.list(plan_history) && length(plan_history) > 0L) {
+    for (idx in seq(length(plan_history), 1L)) {
+      candidate <- .extract_plan_steps(plan_history[[idx]])
+      if (!is.null(candidate)) {
+        steps <- candidate
+        break
+      }
+    }
   }
 
-  normalize_status <- function(x) {
-    x <- tolower(trimws(as.character(x %||% "unspecified")))
-    if (!nzchar(x)) return("unspecified")
-    if (x %in% c("completed", "complete", "done", "finished", "success")) return("completed")
-    if (x %in% c("in_progress", "in progress", "active", "ongoing", "running")) return("in_progress")
-    if (x %in% c("pending", "todo", "to_do", "not_started", "not started", "planned", "queued")) return("pending")
-    "unspecified"
+  if (is.null(steps)) {
+    steps <- .extract_plan_steps(plan)
+  }
+  if (is.null(steps)) {
+    return(character(0))
   }
 
   statuses <- vapply(steps, function(step) {
@@ -444,7 +481,7 @@ extract_agent_results <- function(raw_output) {
     if (length(status) == 0L || !nzchar(status[[1]])) {
       "unspecified"
     } else {
-      normalize_status(status[[1]])
+      .normalize_progress_status(status[[1]])
     }
   }, character(1))
 
@@ -559,6 +596,189 @@ extract_agent_results <- function(raw_output) {
     return(na_label)
   }
   sprintf(paste0("%.", as.integer(digits), "f"), minutes)
+}
+
+#' Format step minutes with "m" suffix only when numeric
+#' @keywords internal
+.format_step_minutes_with_unit <- function(value, digits = 4L, na_label = "n/a") {
+  min_txt <- .format_step_minutes(value, digits = digits, na_label = na_label)
+  if (!is.character(min_txt) || length(min_txt) == 0L) {
+    return(na_label)
+  }
+  min_txt <- min_txt[[1]]
+  if (!nzchar(min_txt) || identical(min_txt, na_label)) {
+    return(na_label)
+  }
+  paste0(min_txt, "m")
+}
+
+#' Build field-status metrics used for investigator summaries and flags
+#' @keywords internal
+.field_status_metrics <- function(field_status = list()) {
+  empty_metrics <- list(
+    all = list(total = 0L, found = 0L, unknown = 0L, pending = 0L, unspecified = 0L),
+    core = list(total = 0L, found = 0L, unknown = 0L, pending = 0L, unspecified = 0L),
+    source_backed_found = 0L,
+    unresolved_core_fields = character(0),
+    low_evidence = FALSE
+  )
+
+  if (!is.list(field_status) || length(field_status) == 0L) {
+    return(empty_metrics)
+  }
+
+  field_names <- names(field_status)
+  if (is.null(field_names)) {
+    field_names <- rep("", length(field_status))
+  }
+
+  statuses <- character(length(field_status))
+  has_source_url <- logical(length(field_status))
+
+  for (i in seq_along(field_status)) {
+    entry <- field_status[[i]]
+    if (is.list(entry)) {
+      status_raw <- as.character(entry$status %||% "unspecified")
+      statuses[[i]] <- if (length(status_raw) == 0L || !nzchar(status_raw[[1]])) {
+        "unspecified"
+      } else {
+        .normalize_progress_status(status_raw[[1]])
+      }
+
+      src <- as.character(entry$source_url %||% "")
+      has_source_url[[i]] <- length(src) > 0L && !is.na(src[[1]]) && nzchar(trimws(src[[1]]))
+    } else {
+      statuses[[i]] <- .normalize_progress_status(entry)
+      has_source_url[[i]] <- FALSE
+    }
+  }
+
+  summarize_statuses <- function(mask) {
+    sub_status <- statuses[mask]
+    list(
+      total = as.integer(length(sub_status)),
+      found = as.integer(sum(sub_status == "completed" | sub_status == "found")),
+      unknown = as.integer(sum(sub_status == "unknown")),
+      pending = as.integer(sum(sub_status == "pending" | sub_status == "in_progress")),
+      unspecified = as.integer(sum(sub_status == "unspecified"))
+    )
+  }
+
+  # Normalize any non-plan status values that may leak through.
+  statuses <- ifelse(statuses == "completed", "found", statuses)
+  statuses[statuses == "in_progress"] <- "pending"
+
+  is_source_field <- nzchar(field_names) & grepl("_source$", field_names, ignore.case = TRUE)
+  is_meta_field <- field_names %in% c("confidence", "justification")
+  is_core_field <- !(is_source_field | is_meta_field)
+  if (!any(is_core_field)) {
+    is_core_field <- rep(TRUE, length(field_status))
+  }
+
+  all_metrics <- summarize_statuses(rep(TRUE, length(field_status)))
+  core_metrics <- summarize_statuses(is_core_field)
+  source_backed_found <- sum((statuses == "found") & has_source_url)
+  unresolved_core_fields <- field_names[
+    is_core_field &
+      (statuses %in% c("unknown", "pending", "unspecified")) &
+      nzchar(field_names)
+  ]
+
+  unresolved_core <- core_metrics$unknown + core_metrics$pending + core_metrics$unspecified
+  low_evidence <- isTRUE(core_metrics$total >= 3L) &&
+    ((core_metrics$found == 0L) || ((unresolved_core / core_metrics$total) >= 0.60))
+
+  list(
+    all = all_metrics,
+    core = core_metrics,
+    source_backed_found = as.integer(source_backed_found),
+    unresolved_core_fields = unresolved_core_fields,
+    low_evidence = isTRUE(low_evidence)
+  )
+}
+
+#' Summarize field resolution status for investigators
+#' @keywords internal
+.summarize_field_status <- function(field_status = list(), max_chars = 88L) {
+  metrics <- .field_status_metrics(field_status)
+  if (metrics$core$total <= 0L) {
+    return(character(0))
+  }
+
+  core <- metrics$core
+  unresolved <- core$unknown + core$pending + core$unspecified
+  unresolved_label <- if (core$unspecified > 0L) {
+    paste0(", ", core$unspecified, " unspecified")
+  } else {
+    ""
+  }
+
+  lines <- c(
+    sprintf(
+      "Field resolution: %d found, %d unknown, %d pending%s (%d core fields)",
+      core$found, core$unknown, core$pending, unresolved_label, core$total
+    ),
+    sprintf(
+      "Source-backed found values: %d (across %d tracked fields)",
+      metrics$source_backed_found, metrics$all$total
+    )
+  )
+
+  if (unresolved > 0L && length(metrics$unresolved_core_fields) > 0L) {
+    unresolved_fields <- metrics$unresolved_core_fields
+    shown <- unresolved_fields[seq_len(min(length(unresolved_fields), 4L))]
+    extra_n <- length(unresolved_fields) - length(shown)
+    lines <- c(lines, paste0(
+      "Unresolved focus: ",
+      paste(shown, collapse = ", "),
+      if (extra_n > 0L) paste0(" (+", extra_n, " more)") else ""
+    ))
+  }
+
+  if (isTRUE(metrics$low_evidence)) {
+    lines <- c(lines, "Risk signal: LOW_EVIDENCE_FINAL_ANSWER")
+  }
+
+  vapply(lines, .clip_action_text, character(1), max_chars = max_chars, USE.NAMES = FALSE)
+}
+
+#' Tokenize action text for coarse relevance checks
+#' @keywords internal
+.tokenize_action_text <- function(text) {
+  if (!is.character(text) || length(text) == 0L || is.na(text[[1]]) || !nzchar(text[[1]])) {
+    return(character(0))
+  }
+  txt <- tolower(text[[1]])
+  txt <- gsub("https?://", " ", txt)
+  txt <- gsub("[^[:alnum:]_]+", " ", txt)
+  parts <- strsplit(txt, "\\s+", perl = TRUE)[[1]]
+  parts <- parts[nzchar(parts)]
+  if (length(parts) == 0L) {
+    return(character(0))
+  }
+  stop_words <- c(
+    "http", "https", "www", "com", "org", "net", "html",
+    "query", "url", "tool", "search", "openwebpage", "save", "finding",
+    "result", "results", "returned", "call", "calls",
+    "the", "and", "for", "with", "from", "this", "that", "are",
+    "del", "las", "los", "con", "por", "para", "una", "uno", "que"
+  )
+  unique(parts[nchar(parts) >= 3L & !(parts %in% stop_words)])
+}
+
+#' Extract candidate query tokens from an AI Search tool-call preview
+#' @keywords internal
+.extract_search_query_terms <- function(preview) {
+  if (!is.character(preview) || length(preview) == 0L || is.na(preview[[1]]) || !nzchar(preview[[1]])) {
+    return(character(0))
+  }
+  txt <- preview[[1]]
+  capture <- regmatches(
+    txt,
+    regexec("query\\s*=\\s*([^\\)]+)", txt, ignore.case = TRUE, perl = TRUE)
+  )[[1]]
+  query_txt <- if (length(capture) >= 2L) capture[[2]] else txt
+  .tokenize_action_text(query_txt)
 }
 
 #' Attach best-effort token counts to action steps
@@ -712,9 +932,118 @@ extract_agent_results <- function(raw_output) {
   collapsed
 }
 
+#' Attach anomaly flags to action steps
+#' @keywords internal
+.attach_step_anomaly_flags <- function(steps, field_status = list(), field_metrics = NULL) {
+  if (!is.list(steps) || length(steps) == 0L) {
+    return(steps)
+  }
+
+  if (is.null(field_metrics)) {
+    field_metrics <- .field_status_metrics(field_status)
+  }
+
+  for (i in seq_along(steps)) {
+    if (!is.list(steps[[i]])) next
+    if (is.null(steps[[i]]$flags) || !is.character(steps[[i]]$flags)) {
+      steps[[i]]$flags <- character(0)
+    }
+  }
+
+  for (i in seq_along(steps)) {
+    step <- steps[[i]]
+    if (!is.list(step)) next
+
+    step_type <- as.character(step$type %||% "")
+    step_actor <- as.character(step$actor %||% "")
+    step_preview <- as.character(step$preview %||% "")
+    if (length(step_type) == 0L || is.na(step_type[[1]])) step_type <- "" else step_type <- step_type[[1]]
+    if (length(step_actor) == 0L || is.na(step_actor[[1]])) step_actor <- "" else step_actor <- step_actor[[1]]
+    if (length(step_preview) == 0L || is.na(step_preview[[1]])) step_preview <- "" else step_preview <- step_preview[[1]]
+
+    if (identical(step_type, "tool_result")) {
+      if (!nzchar(trimws(step_preview))) {
+        steps[[i]]$flags <- unique(c(steps[[i]]$flags, "EMPTY_RESULT"))
+      }
+
+      if (identical(step_actor, "Tool Search") && nzchar(step_preview) && i > 1L) {
+        prev_ai_idx <- which(vapply(steps[seq_len(i - 1L)], function(s) {
+          if (!is.list(s)) return(FALSE)
+          s_type <- as.character(s$type %||% "")
+          s_preview <- as.character(s$preview %||% "")
+          if (length(s_type) == 0L || is.na(s_type[[1]])) return(FALSE)
+          if (length(s_preview) == 0L || is.na(s_preview[[1]])) return(FALSE)
+          identical(s_type[[1]], "ai_tool_calls") && grepl("Search\\(", s_preview[[1]])
+        }, logical(1)))
+
+        if (length(prev_ai_idx) > 0L) {
+          last_ai <- prev_ai_idx[length(prev_ai_idx)]
+          query_terms <- .extract_search_query_terms(steps[[last_ai]]$preview %||% "")
+          result_terms <- .tokenize_action_text(step_preview)
+          if (length(query_terms) >= 3L) {
+            overlap <- intersect(query_terms, result_terms)
+            if (length(overlap) < 2L) {
+              steps[[i]]$flags <- unique(c(steps[[i]]$flags, "OFF_TOPIC_RESULT"))
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (isTRUE(field_metrics$low_evidence)) {
+    final_ai <- which(vapply(steps, function(s) {
+      if (!is.list(s)) return(FALSE)
+      s_type <- as.character(s$type %||% "")
+      if (length(s_type) == 0L || is.na(s_type[[1]])) return(FALSE)
+      identical(s_type[[1]], "ai_response")
+    }, logical(1)))
+    if (length(final_ai) > 0L) {
+      final_idx <- final_ai[length(final_ai)]
+      steps[[final_idx]]$flags <- unique(c(steps[[final_idx]]$flags, "LOW_EVIDENCE_FINAL_ANSWER"))
+    }
+  }
+
+  steps
+}
+
+#' Summarize anomaly flags across action steps
+#' @keywords internal
+.summarize_step_anomalies <- function(steps, max_chars = 88L) {
+  if (!is.list(steps) || length(steps) == 0L) {
+    return(character(0))
+  }
+
+  per_step_flags <- lapply(steps, function(step) {
+    if (!is.list(step)) return(character(0))
+    flags <- as.character(step$flags %||% character(0))
+    flags <- flags[!is.na(flags) & nzchar(flags)]
+    unique(flags)
+  })
+  flagged_step_count <- sum(vapply(per_step_flags, function(x) length(x) > 0L, logical(1)))
+  if (flagged_step_count == 0L) {
+    return(character(0))
+  }
+
+  all_flags <- unlist(per_step_flags, use.names = FALSE)
+  if (length(all_flags) == 0L) {
+    return(character(0))
+  }
+  counts <- sort(table(all_flags), decreasing = TRUE)
+  labels <- paste0(names(counts), "=", as.integer(counts))
+  .clip_action_text(
+    sprintf(
+      "Anomalies: %d flagged step(s) (%s)",
+      flagged_step_count,
+      paste(labels, collapse = ", ")
+    ),
+    max_chars = max_chars
+  )
+}
+
 #' Build high-level "what happened overall" lines for action maps
 #' @keywords internal
-.summarize_action_overall <- function(raw_steps, plan_summary = character(0), max_chars = 88L) {
+.summarize_action_overall <- function(raw_steps, steps = list(), plan_summary = character(0), max_chars = 88L) {
   if (!is.list(raw_steps) || length(raw_steps) == 0L) {
     return(c("No action events available."))
   }
@@ -773,6 +1102,10 @@ extract_agent_results <- function(raw_output) {
   if (length(plan_summary) > 0L) {
     lines <- c(lines, paste0("Plan status: ", plan_summary[[1]]))
   }
+  anomaly_line <- .summarize_step_anomalies(steps, max_chars = max_chars)
+  if (length(anomaly_line) > 0L && nzchar(anomaly_line[[1]])) {
+    lines <- c(lines, anomaly_line[[1]])
+  }
 
   vapply(lines, .clip_action_text, character(1), max_chars = max_chars, USE.NAMES = FALSE)
 }
@@ -780,6 +1113,8 @@ extract_agent_results <- function(raw_output) {
 #' Build compact action trace metadata from run output
 #' @keywords internal
 .extract_action_trace <- function(trace_json = "", raw_trace = "", plan_history = list(),
+                                  plan = list(),
+                                  field_status = list(),
                                   max_preview_chars = 88L, max_steps = 200L,
                                   token_trace = list(),
                                   wall_time_minutes = NA_real_) {
@@ -798,6 +1133,13 @@ extract_agent_results <- function(raw_output) {
   if (is.na(max_steps) || max_steps < 1L) {
     max_steps <- 200L
   }
+  field_metrics <- tryCatch(
+    .field_status_metrics(field_status),
+    error = function(e) {
+      warning("[action_trace:field_metrics] ", conditionMessage(e), call. = FALSE)
+      .field_status_metrics(list())
+    }
+  )
 
   messages <- tryCatch(
     .parse_trace_json_messages(trace_json),
@@ -831,6 +1173,17 @@ extract_agent_results <- function(raw_output) {
       steps
     }
   )
+  steps <- tryCatch(
+    .attach_step_anomaly_flags(
+      steps,
+      field_status = field_status,
+      field_metrics = field_metrics
+    ),
+    error = function(e) {
+      warning("[action_trace:flags] ", conditionMessage(e), call. = FALSE)
+      steps
+    }
+  )
   langgraph_step_timings <- tryCatch(
     .extract_langgraph_step_timings(token_trace),
     error = function(e) {
@@ -839,15 +1192,23 @@ extract_agent_results <- function(raw_output) {
     }
   )
   plan_summary <- tryCatch(
-    .summarize_plan_history(plan_history, max_chars = max_preview_chars),
+    .summarize_plan_history(plan_history, plan = plan, max_chars = max_preview_chars),
     error = function(e) {
       warning("[action_trace:plan_summary] ", conditionMessage(e), call. = FALSE)
+      character(0)
+    }
+  )
+  investigator_summary <- tryCatch(
+    .summarize_field_status(field_status, max_chars = max_preview_chars),
+    error = function(e) {
+      warning("[action_trace:investigator_summary] ", conditionMessage(e), call. = FALSE)
       character(0)
     }
   )
   overall_summary <- tryCatch(
     .summarize_action_overall(
       raw_steps,
+      steps = steps,
       plan_summary = plan_summary,
       max_chars = max_preview_chars
     ),
@@ -870,6 +1231,8 @@ extract_agent_results <- function(raw_output) {
     steps = steps,
     langgraph_step_timings = langgraph_step_timings,
     plan_summary = plan_summary,
+    investigator_summary = investigator_summary,
+    field_metrics = field_metrics,
     overall_summary = overall_summary,
     wall_time_minutes = .as_scalar_minutes(wall_time_minutes)
   )
@@ -881,6 +1244,70 @@ extract_agent_results <- function(raw_output) {
     }
   )
   out
+}
+
+#' Aggregate LangGraph timings by node for compact reporting
+#' @keywords internal
+.aggregate_langgraph_timings <- function(langgraph_timings = list()) {
+  if (!is.list(langgraph_timings) || length(langgraph_timings) == 0L) {
+    return(list())
+  }
+
+  buckets <- list()
+  for (timing in langgraph_timings) {
+    if (!is.list(timing)) next
+    node <- as.character(timing$node %||% "unknown")
+    if (length(node) == 0L || is.na(node[[1]]) || !nzchar(node[[1]])) {
+      node <- "unknown"
+    } else {
+      node <- node[[1]]
+    }
+    elapsed <- .as_scalar_minutes(timing$elapsed_minutes, default = 0)
+    tok_total <- .as_scalar_int(timing$total_tokens)
+    if (is.na(tok_total)) tok_total <- 0L
+
+    if (is.null(buckets[[node]])) {
+      buckets[[node]] <- list(
+        node = node,
+        elapsed_minutes = 0,
+        total_tokens = 0L,
+        count = 0L
+      )
+    }
+    buckets[[node]]$elapsed_minutes <- buckets[[node]]$elapsed_minutes + elapsed
+    buckets[[node]]$total_tokens <- as.integer(buckets[[node]]$total_tokens + tok_total)
+    buckets[[node]]$count <- as.integer(buckets[[node]]$count + 1L)
+  }
+
+  if (length(buckets) == 0L) {
+    return(list())
+  }
+  out <- unname(buckets)
+  ord <- order(
+    vapply(out, function(x) x$elapsed_minutes %||% 0, numeric(1)),
+    decreasing = TRUE
+  )
+  out[ord]
+}
+
+#' Return top slowest individual LangGraph timing rows
+#' @keywords internal
+.top_langgraph_timings <- function(langgraph_timings = list(), n = 5L) {
+  if (!is.list(langgraph_timings) || length(langgraph_timings) == 0L) {
+    return(list())
+  }
+  n <- max(1L, as.integer(n))
+  times <- vapply(langgraph_timings, function(t) {
+    if (!is.list(t)) return(NA_real_)
+    .as_scalar_minutes(t$elapsed_minutes)
+  }, numeric(1))
+  valid <- which(!is.na(times))
+  if (length(valid) == 0L) {
+    return(list())
+  }
+  ord <- order(times[valid], decreasing = TRUE)
+  pick <- valid[ord][seq_len(min(length(valid), n))]
+  langgraph_timings[pick]
 }
 
 #' Render action timeline as high-level ASCII flow
@@ -918,18 +1345,33 @@ extract_agent_results <- function(raw_output) {
   if (is.na(omitted)) {
     omitted <- 0L
   }
+  langgraph_timings <- action_trace$langgraph_step_timings %||% list()
+  investigator_summary <- action_trace$investigator_summary %||% character(0)
+  overview <- action_trace$overall_summary %||% character(0)
 
   lines <- c(
     "AGENT ACTION MAP",
     "================",
     paste0("Steps captured: ", step_count),
-    paste0("LangGraph timed steps: ", length(action_trace$langgraph_step_timings %||% list())),
+    paste0("LangGraph timed steps: ", length(langgraph_timings)),
+    "",
+    "INVESTIGATOR SIGNALS",
+    "--------------------",
+    if (length(investigator_summary) == 0L) {
+      clip_line("  +-- none")
+    } else {
+      c(
+        clip_line("  +-- Summary"),
+        vapply(investigator_summary, function(line) {
+          clip_line(paste0("      ", line))
+        }, character(1))
+      )
+    },
     "",
     "WHAT HAPPENED OVERALL",
     "---------------------",
     clip_line("  +-- Summary"),
     {
-      overview <- action_trace$overall_summary %||% character(0)
       if (length(overview) == 0L) {
         clip_line("      No summary available")
       } else {
@@ -948,15 +1390,17 @@ extract_agent_results <- function(raw_output) {
     }
   }
 
-  langgraph_timings <- action_trace$langgraph_step_timings %||% list()
-  lines <- c(lines, "  +-- [LANGGRAPH] Per-node timing (minutes)")
-  if (length(langgraph_timings) == 0L) {
+  langgraph_agg <- .aggregate_langgraph_timings(langgraph_timings)
+  lines <- c(lines, "  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)")
+  if (length(langgraph_agg) == 0L) {
     lines <- c(lines, clip_line("      none"))
   } else {
-    for (timing in langgraph_timings) {
+    for (timing in langgraph_agg) {
       if (!is.list(timing)) next
       node <- as.character(timing$node %||% "unknown")
       if (length(node) == 0L || is.na(node[[1]]) || !nzchar(node[[1]])) node <- "unknown" else node <- node[[1]]
+      invocations <- .as_scalar_int(timing$count)
+      if (is.na(invocations) || invocations < 1L) invocations <- 1L
       tok_total <- .as_scalar_int(timing$total_tokens)
       lines <- c(
         lines,
@@ -965,10 +1409,43 @@ extract_agent_results <- function(raw_output) {
             "      ",
             node,
             ": ",
-            .format_step_minutes(timing$elapsed_minutes),
-            "m",
+            .format_step_minutes_with_unit(timing$elapsed_minutes),
             " (tok=",
             if (is.na(tok_total)) 0L else tok_total,
+            ", n=",
+            invocations,
+            ")"
+          )
+        )
+      )
+    }
+  }
+
+  slowest <- .top_langgraph_timings(langgraph_timings, n = 5L)
+  lines <- c(lines, "  +-- [LANGGRAPH] Slowest timed invocations")
+  if (length(slowest) == 0L) {
+    lines <- c(lines, clip_line("      none"))
+  } else {
+    for (timing in slowest) {
+      if (!is.list(timing)) next
+      node <- as.character(timing$node %||% "unknown")
+      if (length(node) == 0L || is.na(node[[1]]) || !nzchar(node[[1]])) node <- "unknown" else node <- node[[1]]
+      idx <- .as_scalar_int(timing$step_index)
+      if (is.na(idx) || idx < 1L) idx <- 0L
+      tok_total <- .as_scalar_int(timing$total_tokens)
+      if (is.na(tok_total)) tok_total <- 0L
+      lines <- c(
+        lines,
+        clip_line(
+          paste0(
+            "      #",
+            sprintf("%02d", idx),
+            " ",
+            node,
+            ": ",
+            .format_step_minutes_with_unit(timing$elapsed_minutes),
+            " (tok=",
+            tok_total,
             ")"
           )
         )
@@ -983,10 +1460,15 @@ extract_agent_results <- function(raw_output) {
   }, numeric(1)))
   wall_min <- .as_scalar_minutes(action_trace$wall_time_minutes)
   if (!is.na(wall_min) && wall_min > 0) {
-    overhead_min <- wall_min - node_sum_min
+    delta_min <- wall_min - node_sum_min
+    delta_note <- if (delta_min < 0) {
+      "overlap likely"
+    } else {
+      "overhead"
+    }
     lines <- c(lines, clip_line(sprintf(
-      "  +-- [TIMING] wall=%.4fm nodes=%.4fm overhead=%.4fm",
-      wall_min, node_sum_min, overhead_min
+      "  +-- [TIMING] wall=%.4fm nodes=%.4fm delta=%+.4fm (%s)",
+      wall_min, node_sum_min, delta_min, delta_note
     )))
   }
 
@@ -1032,9 +1514,14 @@ extract_agent_results <- function(raw_output) {
       lines <- c(
         lines,
         clip_line(
-          paste0("      min: ", .format_step_minutes(step$elapsed_minutes), "m")
+          paste0("      min: ", .format_step_minutes_with_unit(step$elapsed_minutes))
         )
       )
+      step_flags <- as.character(step$flags %||% character(0))
+      step_flags <- unique(step_flags[!is.na(step_flags) & nzchar(step_flags)])
+      if (length(step_flags) > 0L) {
+        lines <- c(lines, clip_line(paste0("      flag: ", paste(step_flags, collapse = ", "))))
+      }
       if (nzchar(preview)) {
         lines <- c(lines, clip_line(paste0("      detail: ", preview)))
       }

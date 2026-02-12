@@ -88,6 +88,15 @@ test_that(".extract_action_trace truncates long previews", {
   expect_true(endsWith(preview, "..."))
 })
 
+test_that(".clip_action_text preserves URL tail identifiers for disambiguation", {
+  txt <- "OpenWebpage(url=http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"
+  clipped <- asa:::.clip_action_text(txt, max_chars = 64L)
+
+  expect_true(nchar(clipped) <= 64L)
+  expect_true(grepl("\\.\\.\\.", clipped))
+  expect_true(grepl("id_parlamentario=428\\)?$", clipped) || grepl("428", clipped))
+})
+
 test_that(".extract_action_trace falls back to raw trace parsing", {
   raw_trace <- paste(
     "[human]",
@@ -180,6 +189,21 @@ test_that(".summarize_plan_history uses clear wording for unspecified statuses",
   expect_match(summary[[1]], "status metadata not yet populated")
 })
 
+test_that(".summarize_plan_history falls back to current plan when history is empty", {
+  summary <- asa:::.summarize_plan_history(
+    plan_history = list(),
+    plan = list(
+      steps = list(
+        list(step = "Locate profile", status = "completed"),
+        list(step = "Extract fields", status = "pending")
+      )
+    )
+  )
+
+  expect_true(length(summary) >= 1L)
+  expect_match(summary[[1]], "2 total \\(1 completed, 0 in_progress, 1 pending\\)")
+})
+
 test_that(".summarize_action_overall returns a compact header summary", {
   raw_steps <- list(
     list(type = "human", actor = "Human", summary = "Submitted task prompt", preview = "Prompt"),
@@ -197,6 +221,44 @@ test_that(".summarize_action_overall returns a compact header summary", {
   expect_true(any(grepl("Human prompts:", overall)))
   expect_true(any(grepl("Tool results:", overall)))
   expect_true(any(grepl("Structured terminal answer emitted", overall)))
+})
+
+test_that(".extract_action_trace annotates anomalies and investigator summary", {
+  trace_json <- jsonlite::toJSON(
+    list(
+      format = "asa_trace_v1",
+      messages = list(
+        list(message_type = "HumanMessage", name = NULL, content = "Find bio fields for Alice Brown", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "", tool_calls = list(
+          list(name = "Search", args = list(query = "Alice Brown parliament profile 2014"))
+        )),
+        list(message_type = "ToolMessage", name = "Search", content = "Ramona is an 1884 American novel set in California.", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "", tool_calls = list(
+          list(name = "Search", args = list(query = "Alice Brown birth year"))
+        )),
+        list(message_type = "ToolMessage", name = "Search", content = "", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "{\"birth_year\":\"Unknown\"}", tool_calls = list())
+      )
+    ),
+    auto_unbox = TRUE,
+    null = "null"
+  )
+
+  action <- asa:::.extract_action_trace(
+    trace_json = trace_json,
+    field_status = list(
+      birth_year = list(status = "unknown"),
+      birth_place = list(status = "unknown"),
+      education_level = list(status = "pending")
+    )
+  )
+
+  expect_match(action$ascii, "INVESTIGATOR SIGNALS")
+  expect_match(action$ascii, "Field resolution:")
+  expect_match(action$ascii, "flag: OFF_TOPIC_RESULT")
+  expect_match(action$ascii, "flag: EMPTY_RESULT")
+  expect_match(action$ascii, "LOW_EVIDENCE_FINAL_ANSWER")
+  expect_true(any(grepl("Anomalies:", action$overall_summary)))
 })
 
 test_that(".extract_action_trace maps token_trace entries onto visible AI steps", {
@@ -343,7 +405,7 @@ test_that(".collapse_action_events returns NA when all group members lack timing
   expect_true(is.na(collapsed[[1]]$elapsed_minutes))
 })
 
-test_that(".render_action_ascii includes LANGGRAPH per-node section", {
+test_that(".render_action_ascii includes LANGGRAPH aggregate and slowest sections", {
   action_trace <- list(
     steps = list(),
     step_count = 0L,
@@ -358,9 +420,10 @@ test_that(".render_action_ascii includes LANGGRAPH per-node section", {
   )
 
   ascii <- asa:::.render_action_ascii(action_trace)
-  expect_match(ascii, "\\[LANGGRAPH\\] Per-node timing")
-  expect_match(ascii, "agent: 0\\.1500m \\(tok=100\\)")
-  expect_match(ascii, "tools: 0\\.3200m \\(tok=0\\)")
+  expect_match(ascii, "\\[LANGGRAPH\\] Node aggregates")
+  expect_match(ascii, "\\[LANGGRAPH\\] Slowest timed invocations")
+  expect_match(ascii, "agent: 0\\.1500m \\(tok=100, n=1\\)")
+  expect_match(ascii, "tools: 0\\.3200m \\(tok=0, n=1\\)")
 })
 
 test_that(".render_action_ascii shows TIMING sanity check when wall_time_minutes provided", {
@@ -382,7 +445,8 @@ test_that(".render_action_ascii shows TIMING sanity check when wall_time_minutes
   expect_match(ascii, "\\[TIMING\\]")
   expect_match(ascii, "wall=0\\.5500m")
   expect_match(ascii, "nodes=0\\.4500m")
-  expect_match(ascii, "overhead=0\\.1000m")
+  expect_match(ascii, "delta=\\+0\\.1000m")
+  expect_match(ascii, "\\(overhead\\)")
 })
 
 test_that(".render_action_ascii omits TIMING line when wall_time_minutes is NA", {
@@ -433,6 +497,34 @@ test_that("min: timing lines appear on AI steps in ASCII output", {
   )
 
   expect_match(action$ascii, "min: 0\\.0777m")
+})
+
+test_that(".render_action_ascii does not append 'm' to n/a minute labels", {
+  action_trace <- list(
+    steps = list(
+      list(
+        type = "tool_result",
+        actor = "Tool Search",
+        summary = "Returned result",
+        preview = "Result",
+        input_tokens = 0L,
+        output_tokens = 0L,
+        total_tokens = 0L,
+        elapsed_minutes = NA_real_
+      )
+    ),
+    step_count = 1L,
+    omitted_steps = 0L,
+    langgraph_step_timings = list(),
+    plan_summary = character(0),
+    investigator_summary = character(0),
+    overall_summary = character(0),
+    wall_time_minutes = NA_real_
+  )
+
+  ascii <- asa:::.render_action_ascii(action_trace)
+  expect_false(grepl("n/am", ascii, fixed = TRUE))
+  expect_match(ascii, "min: n/a")
 })
 
 # --- .try_or_warn tests ---
