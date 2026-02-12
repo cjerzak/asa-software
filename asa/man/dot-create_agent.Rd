@@ -10,7 +10,8 @@
   use_memory_folding,
   memory_threshold,
   memory_keep_recent,
-  fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET
+  fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET,
+  om_config = NULL
 )
 }
 \arguments{

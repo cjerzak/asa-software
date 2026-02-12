@@ -1,13 +1,13 @@
 AGENT ACTION MAP
 ================
-Steps captured: 16
+Steps captured: 15
 LangGraph timed steps: 31
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 1 found, 8 unknown, 1 pending (10 core fields)
-      Source-backed found values: 2 (across 18 tracked fields)
+      Field resolution: 2 found, 7 unknown, 1 pending (10 core fields)
+      Source-backed found values: 4 (across 18 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
@@ -15,107 +15,100 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 7 tool-call turn(s), 1 answer turn(s)
-      Tool results: 7 total (Tool Search=3, Tool OpenWebpage=2, Tool save_finding=2)
+      AI turns: 6 tool-call turn(s), 1 answer turn(s)
+      Tool results: 7 total (Tool OpenWebpage=2, Tool save_fi...date_plan=1, Tool wikipedia=1)
       Structured terminal answer emitted
-      Plan status: Plan steps: 6 total (1 completed, 1 in_progress, 4 pending)
-      Anomalies: 4 flagged step(s) (OFF_TOPIC_RESULT=2, EMPTY..., LOW_EVIDENCE_FINAL_ANSWER=1)
+      Plan status: Plan steps: 17 total (status metadata not yet populated)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
-  +-- [PLAN] Plan steps: 6 total (1 completed, 1 in_progress, 4 pending)
+  +-- [PLAN] Plan steps: 17 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      summarize: 2.7547m (tok=21465, n=5)
-      agent: 1.3457m (tok=55359, n=13)
-      tools: 1.1544m (tok=0, n=12)
-      planner: 0.2307m (tok=1663, n=1)
+      summarize: 3.3484m (tok=30380, n=5)
+      agent: 1.2530m (tok=71463, n=13)
+      planner: 0.3219m (tok=1941, n=1)
+      tools: 0.1825m (tok=0, n=12)
   +-- [LANGGRAPH] Slowest timed invocations
-      #30 summarize: 0.7437m (tok=6094)
-      #27 summarize: 0.6808m (tok=4934)
-      #13 tools: 0.5588m (tok=0)
-      #24 summarize: 0.5414m (tok=4402)
-      #31 agent: 0.5241m (tok=9368)
-  +-- [TIMING] wall=5.2984m nodes=5.4855m delta=-0.1871m (overlap likely)
+      #27 summarize: 0.9032m (tok=7528)
+      #24 summarize: 0.7068m (tok=6116)
+      #21 summarize: 0.5899m (tok=5992)
+      #30 summarize: 0.5780m (tok=7065)
+      #18 summarize: 0.5705m (tok=3679)
+  +-- [TIMING] wall=4.7847m nodes=5.1058m delta=-0.3211m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (Search)
+  +-- [02] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=2458 out=52 total=2510
-      min: 0.0599m
-      detail: Search(query=Ramona Moye Camaconi Beni MAS Diputada 20...)
+      tok: in=5102 out=76 total=5178
+      min: 0.0525m
+      detail: OpenWebpage(url=https://anteriorportal.erb...cia_comunitaria)
   +-- [03] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> En el caso de la diputa...28 </URL> __END_OF_SOURCE...
-  +-- [04] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=3755 out=112 total=3867
-      min: 0.0446m
-      detail: OpenWebpage(url=http://www.vicepresidencia...rlamentario=428)
-  +-- [05] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=pa...c. en Ciencias de la Educ...
-  +-- [06] Requested 1 tool call (save_finding)
+      detail: URL: https://anteriorportal.erbol.com.bo/noticia/indige...no del presidente Evo Mor...
+  +-- [04] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=4256 out=82 total=4338
-      min: 0.0285m
-      detail: save_finding(finding=vicepresidencia_parliament...lamentario=428), category=fact)
-  +-- [07] Returned result
+      tok: in=5380 out=562 total=5942
+      min: 0.1086m
+      detail: save_finding(finding=birth_place = "born in TIP...ia_comunitaria), category=fact)
+  +-- [05] Returned result
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: vicepresidencia_parliament_profile...mentario&id_parlamentario...
-  +-- [08] Requested 1 tool call (OpenWebpage)
+      detail: Saved to scratchpad: birth_place = "born in TIPNIS / in..._rechaza_justicia_comunit...
+  +-- [06] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=4742 out=112 total=4854
-      min: 0.0462m
+      tok: in=6474 out=55 total=6529
+      min: 0.0251m
       detail: OpenWebpage(url=http://www.vicepresidencia...rlamentario=609)
-  +-- [09] Returned result
+  +-- [07] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
       detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=pa...Mujeres - Sub Central Sé...
-  +-- [10] Requested 1 tool call (save_finding)
+  +-- [08] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=5436 out=55 total=5491
-      min: 0.0710m
+      tok: in=6900 out=157 total=7057
+      min: 0.0485m
       detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
-  +-- [11] Returned result
+  +-- [09] Returned result
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
       detail: Saved to scratchpad: birth_year = 1982 (source: http://...mentario&id_parlamentario...
-  +-- [12] Requested 1 tool call (Search)
+  +-- [10] Requested 1 tool call (wikipedia)
       by: AI
-      tok: in=5863 out=242 total=6105
-      min: 0.0572m
-      detail: Search(query="Ramona Moye" nacimiento lugar "Beni" "Ra...)
-  +-- [13] Returned result
+      tok: in=7698 out=52 total=7750
+      min: 0.0244m
+      detail: wikipedia(query=Ramona Moye Camaconi Bolivia)
+  +-- [11] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: No good Wikipedia Search Result was found
+  +-- [12] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: Ramona is an 1884 American novel written by Helen Hunt ...ans. New patients are wel...
-  +-- [14] Requested 1 tool call (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...as </URL> __END_OF_SOURCE...
+  +-- [13] Requested 1 tool call (update_plan)
       by: AI
-      tok: in=7147 out=60 total=7207
-      min: 0.0322m
-      detail: Search(query="Ramona Moye Camaconi" nacimiento lugar "...)
-  +-- [15] Returned result
-      by: Tool Search
+      tok: in=8879 out=555 total=9434
+      min: 0.1249m
+      detail: update_plan(status=in_progress, step_id=1)
+  +-- [14] Returned result
+      by: Tool update_plan
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
-  +-- [16] Produced structured answer
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [15] Produced structured answer
       by: AI
-      tok: in=6291 out=3077 total=9368
-      min: 0.5241m
+      tok: in=7803 out=472 total=8275
+      min: 0.1079m
       flag: LOW_EVIDENCE_FINAL_ANSWER
       detail: {"education_level": "Unknown", "education_institution":...", "justification": "Unkn...
 END

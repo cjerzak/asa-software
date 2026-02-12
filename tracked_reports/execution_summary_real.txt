@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 5.2984,
+  "elapsed_time": 4.8121,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,7 +22,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "education_source": {
@@ -30,7 +30,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "prior_occupation": {
@@ -38,7 +38,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "class_background": {
@@ -46,7 +46,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
@@ -54,7 +54,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,7 +62,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
@@ -70,23 +70,23 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
+      "status": "found",
+      "value": "\"born in TIPNIS / in that territory\"",
+      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https:/anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunita",
       "evidence": null,
       "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https:/anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunita",
+      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https:/anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunita",
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "birth_year": {
@@ -94,7 +94,7 @@
       "value": 1982,
       "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
@@ -102,7 +102,7 @@
       "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,7 +118,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
@@ -126,7 +126,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "confidence": {
@@ -134,7 +134,7 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
@@ -142,7 +142,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string"
     }
   }

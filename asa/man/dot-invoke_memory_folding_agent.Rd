@@ -15,7 +15,8 @@
   search_budget_limit = NULL,
   unknown_after_searches = NULL,
   finalize_on_all_fields_resolved = NULL,
-  use_plan_mode = FALSE
+  use_plan_mode = FALSE,
+  om_config = NULL
 )
 }
 \description{

@@ -123,6 +123,14 @@ An \code{asa_result} object with:
     \item parsing_status: Validation result (if expected_fields provided)
     \item execution: Operational metadata (thread_id, stop_reason, status_code,
       tool budget counters, fold_count)
+    \item action_ascii: High-level ASCII action map derived from the trace
+      (also available at \code{execution$action_ascii})
+    \item action_steps: Parsed high-level action steps (also available at
+      \code{execution$action_steps})
+    \item action_overall: High-level action summary lines (also available at
+      \code{execution$action_overall})
+    \item langgraph_step_timings: Per-node LangGraph timings in minutes
+      (also available at \code{execution$langgraph_step_timings})
     \item fold_stats: Memory folding diagnostics list
     \item trace: Full execution trace (for "raw" output_format)
   }

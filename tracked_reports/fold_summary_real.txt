@@ -1,33 +1,51 @@
 {
   "version": 1,
-  "facts": ["{'fact': 'wikipedia_article = not found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi)', 'source_url': 'https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi', 'note': 'No dedicated Wikipedia article found via the provided...", "{'fact': 'vicepresidencia_parliament_profile_URL = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428', 'source_url': 'http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428', 'note': 'Parliamentary profile URL saved...", "{'fact': 'FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)', 'source_url': 'http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609', 'note': 'Birth year reported on a Vicep...", "{'fact': 'FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)', 'source_url': 'http://www.vicepresidencia.gob.bo/spip....", "{'fact': 'FIELD_EXTRACT: birth_place = unknown (source: none)', 'source_url': None, 'note': 'No birth place was mentioned in the transcript/scratchpad; recorded as unknown for schema completeness.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: birth_place_source = none', 'source_url': None, 'note': 'No source available for birth_place.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: class_background = unknown (source: none)', 'source_url': None, 'note': 'No class/background information mentioned in transcript; recorded as unknown.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: confidence = unknown (source: none)', 'source_url': None, 'note': 'No confidence score/field provided in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: disability_status = unknown (source: none)', 'source_url': None, 'note': 'No disability status mentioned in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: disability_source = none', 'source_url': None, 'note': 'No source available for disability_status.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: education_field = unknown (source: none)', 'source_url': None, 'note': 'No education field mentioned in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: education_institution = unknown (source: none)', 'source_url': None, 'note': 'No education institution mentioned in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: education_level = unknown (source: none)', 'source_url': None, 'note': 'No education level mentioned in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: education_source = none', 'source_url': None, 'note': 'No source available for education fields.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: justification = unknown (source: none)', 'source_url': None, 'note': 'No justification text provided in transcript for schema field.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: lgbtq_status = unknown (source: none)', 'source_url': None, 'note': 'No LGBTQ status/details mentioned in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: lgbtq_details = unknown (source: none)', 'source_url': None, 'note': 'No LGBTQ details mentioned in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: lgbtq_source = none', 'source_url': None, 'note': 'No source available for LGBTQ fields.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: prior_occupation = unknown (source: none)', 'source_url': None, 'note': 'No prior occupation mentioned in transcript.', 'discovered': 'late'}", "{'fact': 'FIELD_EXTRACT: prior_occupation_source = none', 'source_url': None, 'note': 'No source available for prior_occupation.', 'discovered': 'late'}", "{'fact': 'plan_step_1_status = completed', 'source_url': None, 'note': \"ToolMessage in transcript: Plan step 1 updated to 'completed' (update_plan tool).\", 'discovered': 'late'}", "{'fact': 'plan_step_1_status = in_progress', 'source_url': None, 'note': \"Earlier tool report saved in memory: Plan step 1 updated to 'in_progress' (update_plan tool). Conflicts with a later report that set it to 'completed'.\", 'discovered': 'mid'}", "{'fact': 'plan_step_2_status = in_progress', 'source_url': None, 'note': \"ToolMessage in the new transcript chunk: Plan step 2 updated to 'in_progress' (update_plan tool).\", 'discovered': 'late'}"],
+  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_place = born in TIPNIS / in that territory (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria) (discovered: early)", "[ANCHORED] FIELD_EXTRACT: birth_place_source = https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (discovered: early)", "[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609) (discovered: early)", "[ANCHORED] FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (discovered: early)", "[ANCHORED] FIELD_EXTRACT: role = diputada titular por la Circunscripción Especial Indígena de Beni (Movimiento Al Socialismo) (source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni) (discovered: early)", "[ANCHORED] FIELD_EXTRACT: suplente = ELOY CARTAGENA YOAMONA (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428) (discovered: late)", "La Razón reported Ramona Moye won the 2014 TIPNIS deputy seat with ~75% of the vote (source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni) (discovered: early)", "Contemporaneous preliminary reports (13-14 Oct 2014) reported Ramona Moye received ~83% of the vote in the 2014 TIPNIS election (source: unspecified preliminary news reports dated 2014-10-13/14) (discovered: early)", "Conflict: La Razón's 75% figure vs contemporaneous preliminary reports' ~83% figure for the 2014 TIPNIS election; both figures retained pending primary-source reconciliation (sources: La Razón URL and unspecified preliminary reports) (status: conflict recorded) (discovered: ea...", "2015-05-25: ERBOL reported Ramona Moye (MAS, diputada de la circunscripción especial indígena de Beni) rejected resolving an alleged outboard motor theft via indigenous/community justice after she reported the incident to the Fiscalía in Trinidad, Beni (source: https://anterio...", "Photographic evidence: Flickr image titled/tagged 'Ramona Moye Camaconi, diputada titular por Beni circunscripción especial (Movimiento al Socialismo)', uploaded 2022-06-29 and taken 2014-12-01 (source: https://www.flickr.com/photos/194792615@N03/52180793916) (discovered: early)", "Name variants observed across sources: 'Ramona Moye' and 'Ramona Moye Camaconi' (sources: Flickr, Vicepresidencia, ERBOL) (discovered: early)", "Ungrounded / unverified: alleged pro-road stance for Ramona Moye in 2014 reported in OPIB coverage; original citation truncated and unverified (source: truncated prior memory OPIB URL) (discovered: early)", "Agent-saved fact: suplente = ELOY CARTAGENA YOAMONA (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "[ANCHORED] FIELD_EXTRACT: role = diputada titular por la Circunscripción Especial Indígena de Beni (Movimiento Al Socialismo) (source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni) (discovered: e...", "[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: birth_place_source = https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justic...", "[ANCHORED] FIELD_EXTRACT: suplente = ELOY CARTAGENA YOAMONA (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"],
   "decisions": [],
-  "open_questions": [],
+  "open_questions": ["Confirm primary sources for contemporaneous preliminary reports that reported ~83% for Ramona Moye in the 2014 TIPNIS election (target sources: contemporaneous news archives from 2014-10-13/14).", "Verify canonical full name: confirm whether 'Ramona Moye Camaconi' is the official/complete name used in government records and whether 'Ramona Moye' is an acceptable short form (sources to check: official parliamenta..."],
   "sources": [
     {
-      "tool": "web",
-      "url": "https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi",
-      "title": "Wikipedia search: Ramona Moye Camaconi",
-      "note": "Search returned no dedicated article (not found)."
-    },
-    {
-      "tool": "web",
+      "tool": "",
       "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": "Vicepresidencia.gob.bo — parlamentario profile (id=428)",
-      "note": "Parliamentary profile URL saved from vice presidency site (recorded in transcript/scratchpad)."
+      "title": "Vicepresidencia del Estado - Parlamentario (id_parlamentario=428)",
+      "note": "Lists ELOY CARTAGENA YOAMONA as suplente and names RAMONA MOYE CAMACONI as titular (includes suplente DOB 1969-12-01)."
     },
     {
-      "tool": "web",
+      "tool": "",
       "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "title": "Vicepresidencia.gob.bo — parlamentario profile (id=609)",
-      "note": "Profile page that lists birth_year = 1982 (used for FIELD_EXTRACT)."
+      "title": "Vicepresidencia del Estado - Parlamentario (id_parlamentario=609)",
+      "note": "Parliamentary profile referenced for birth_year=1982 and other role details."
     },
     {
-      "tool": "update_plan",
+      "tool": "",
+      "url": "https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
+      "title": "La Razón: 'El MAS gana en el TIPNIS con 75%' (2014-10-14)",
+      "note": "Reports 75% result for 2014 TIPNIS deputy seat."
+    },
+    {
+      "tool": "",
+      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "title": "ERBOL: Diputada indígena del MAS rechaza justicia comunitaria (2015-05-25)",
+      "note": "Reports birthplace in TIPNIS and the 2015 indigenous-justice incident."
+    },
+    {
+      "tool": "",
+      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
+      "title": "Flickr photo: 'Ramona Moye Camaconi' (uploaded 2022-06-29, taken 2014-12-01)",
+      "note": "Photographic evidence showing name variant/tagging."
+    },
+    {
+      "tool": "",
       "url": null,
-      "title": "update_plan tool calls",
-      "note": "Tool reported plan step updates: earlier 'in_progress' for step 1, later 'completed' for step 1, and step 2 set to 'in_progress' (transcript tool messages)."
+      "title": "Unspecified contemporaneous preliminary news reports (2014-10-13/14)",
+      "note": "Referenced in memory as reporting ~83% for the 2014 TIPNIS election; specific URLs to be located."
+    },
+    {
+      "tool": "",
+      "url": null,
+      "title": "OPIB coverage (truncated prior memory URL)",
+      "note": "Previously cited regarding alleged pro-road stance; original memory URL was truncated and needs rechecking."
     }
   ],
-  "warnings": ["UNGROUNDED: wikipedia_article = not found (source: https://en.wikipedia.org/wiki/Special:Search?search=Ramona+Moye+Camaconi) [discovered: mid, late]", "UNGROUNDED: vicepresidencia_parliament_profile_URL = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlame...", "CONFLICT: plan_step_1_status has two recorded values: 'in_progress' (discovered: mid) and 'completed' (discovered: late). Both are retained; later record indicates completion."]
+  "warnings": ["Earlier automatic extractions were flagged UNGROUNDED; corresponding facts above now include explicit news/public-source URLs where available.", "Name variants observed across sources (e.g., 'Ramona Moye' vs 'Ramona Moye Camaconi'); verify canonical full name when needed (sources: Vicepresidencia, ERBOL, Flickr).", "Conflict recorded: La Razón reported 75% for the 2014 TIPNIS result while contemporaneous preliminary reports reported ~83% (13-14 Oct 2014); both figures retained pending primary-source reconciliation.", "UNGROUNDED: alleged pro-road stance (2014) remains unconfirmed due to truncated prior citation (OPIB); treat as unverified until full source is retrieved."]
 }

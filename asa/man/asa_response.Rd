@@ -42,7 +42,9 @@ asa_response(
 \item{fold_stats}{Diagnostic metrics from memory folding (list).
 Includes \code{fold_count} (integer or error message string),
 \code{fold_messages_removed}, \code{fold_total_messages_removed},
-\code{fold_chars_input}, \code{fold_summary_chars},
+\code{fold_chars_input}, \code{fold_summary_chars} (effective per-fold
+summary growth chars), \code{fold_summary_total_chars},
+\code{fold_summary_delta_chars},
 \code{fold_trigger_reason}, \code{fold_safe_boundary_idx},
 \code{fold_compression_ratio}, \code{fold_parse_success}, and
 \code{fold_summarizer_latency_m}.}
