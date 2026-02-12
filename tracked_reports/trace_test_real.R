@@ -123,6 +123,7 @@ EXPECTED_SCHEMA <- list(
   justification = "string"
 )
 
+system("brew services start tor")
 attempt <- asa::run_task(
     prompt = prompt,
     #output_format = "json",
@@ -137,7 +138,7 @@ attempt <- asa::run_task(
       #backend = "gemini", model = "gemini-3-flash-preview",
       backend = "openai", model = "gpt-5-mini-2025-08-07",
       #backend = "openai", model = "gpt-5-nano-2025-08-07",
-      # proxy = proxy,
+      proxy = "socks5h://127.0.0.1:9050",
       use_browser = FALSE, 
       use_memory_folding = TRUE,
       recursion_limit = 32L, memory_threshold = 16L, memory_keep_recent = 8L, # production
