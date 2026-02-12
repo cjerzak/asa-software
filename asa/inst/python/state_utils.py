@@ -8,6 +8,7 @@ import json
 import pathlib
 import re
 import sys
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
@@ -875,6 +876,62 @@ def _token_usage_dict_from_message(message: Any) -> Dict[str, int]:
 def _token_usage_from_message(message: Any) -> int:
     """Best-effort extraction of total token usage from LangChain message objects."""
     return _token_usage_dict_from_message(message)["total_tokens"]
+
+
+def elapsed_minutes_from_perf_counter(
+    started_at: Optional[float],
+    ended_at: Optional[float] = None
+) -> float:
+    """Compute non-negative elapsed wall time in minutes from perf_counter values."""
+    if started_at is None:
+        return 0.0
+    if ended_at is None:
+        ended_at = time.perf_counter()
+    try:
+        elapsed_seconds = float(ended_at) - float(started_at)
+    except Exception:
+        return 0.0
+    if elapsed_seconds < 0:
+        elapsed_seconds = 0.0
+    return elapsed_seconds / 60.0
+
+
+def build_node_trace_entry(
+    node: str,
+    usage: Optional[Dict[str, int]] = None,
+    *,
+    started_at: Optional[float] = None,
+    ended_at: Optional[float] = None,
+    elapsed_minutes: Optional[float] = None,
+) -> Dict[str, Any]:
+    """Build a normalized per-node trace entry with token and timing data."""
+    parsed_usage = _usage_from_mapping(usage if isinstance(usage, dict) else {}) or {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+    }
+
+    elapsed_val = elapsed_minutes
+    if elapsed_val is None:
+        elapsed_val = elapsed_minutes_from_perf_counter(started_at, ended_at)
+    try:
+        elapsed_val = float(elapsed_val)
+    except Exception:
+        elapsed_val = 0.0
+    if elapsed_val < 0:
+        elapsed_val = 0.0
+
+    node_name = str(node).strip() if node is not None else ""
+    if not node_name:
+        node_name = "unknown"
+
+    return {
+        "node": node_name,
+        "input_tokens": int(parsed_usage.get("input_tokens", 0) or 0),
+        "output_tokens": int(parsed_usage.get("output_tokens", 0) or 0),
+        "total_tokens": int(parsed_usage.get("total_tokens", 0) or 0),
+        "elapsed_minutes": elapsed_val,
+    }
 
 
 def parse_date_filters(query: str) -> Tuple[str, Optional[str], Optional[str]]:

@@ -110,15 +110,16 @@ attempt <- asa::run_task(
     verbose = FALSE,
     use_plan_mode = TRUE, 
     agent = asa::initialize_agent(
-      backend = "gemini", model = "gemini-3-pro-preview",
-      #backend = "gemini", model = "gemini-3-flash-preview",
+      #backend = "gemini", model = "gemini-2.5-pro",
+      #backend = "gemini", model = "gemini-3-pro-preview",
+      backend = "gemini", model = "gemini-3-flash-preview",
       #backend = "openai", model = "gpt-5-mini-2025-08-07",
       #backend = "openai", model = "gpt-5-nano-2025-08-07",
       # proxy = proxy,
       use_browser = FALSE, 
       use_memory_folding = TRUE,
-      #recursion_limit = 50L, memory_threshold = 16L, memory_keep_recent = 6L, # production
-      recursion_limit = 64L, memory_threshold = 32L, memory_keep_recent = 16L, # production
+      recursion_limit = 32L, memory_threshold = 16L, memory_keep_recent = 8L, # production
+      #recursion_limit = 64L, memory_threshold = 32L, memory_keep_recent = 16L, # production
       fold_char_budget = 5L * (10000L), # default is 30000L
       rate_limit = 0.3,
       timeout = 180L,

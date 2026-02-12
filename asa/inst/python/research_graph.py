@@ -24,6 +24,7 @@ from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import ToolNode
 
 from state_utils import (
+    build_node_trace_entry,
     _token_usage_dict_from_message,
     _token_usage_from_message,
     add_to_list,
@@ -187,6 +188,23 @@ def _effective_recursion_stop_buffer(state: Any) -> int:
     return RECURSION_STOP_BUFFER
 
 
+def _with_node_timing(
+    payload: Dict[str, Any],
+    *,
+    node: str,
+    started_at: float,
+    usage: Optional[Dict[str, int]] = None
+) -> Dict[str, Any]:
+    """Attach a normalized per-node timing entry to payload.token_trace."""
+    out = dict(payload or {})
+    token_trace = out.get("token_trace")
+    if not isinstance(token_trace, list):
+        token_trace = []
+    token_trace.append(build_node_trace_entry(node, usage=usage, started_at=started_at))
+    out["token_trace"] = token_trace
+    return out
+
+
 def _to_snake_case(name: str) -> str:
     out = []
     for i, ch in enumerate(name):
@@ -290,6 +308,7 @@ def create_planner_node(llm):
 
     def planner_node(state: ResearchState) -> Dict:
         """Analyze query and create research plan."""
+        node_started_at = time.perf_counter()
         query = state.get("query", "")
         logger.info(f"Planner analyzing: {query}")
 
@@ -304,7 +323,7 @@ def create_planner_node(llm):
             logger.info(f"Plan: entity={plan.get('entity_type')}, wikidata={plan.get('wikidata_type')}")
 
             usage = _token_usage_dict_from_message(response)
-            return {
+            return _with_node_timing({
                 "plan": plan,
                 "entity_type": plan.get("entity_type", "unknown"),
                 "wikidata_type": plan.get("wikidata_type"),
@@ -313,16 +332,15 @@ def create_planner_node(llm):
                 "tokens_used": state.get("tokens_used", 0) + usage["total_tokens"],
                 "input_tokens": state.get("input_tokens", 0) + usage["input_tokens"],
                 "output_tokens": state.get("output_tokens", 0) + usage["output_tokens"],
-                "token_trace": [{"node": "planner", **usage}],
-            }
+            }, node="planner", started_at=node_started_at, usage=usage)
 
         except Exception as e:
             logger.error(f"Planner error: {e}")
-            return {
+            return _with_node_timing({
                 "status": "failed",
                 "stop_reason": f"Planning failed: {str(e)}",
                 "errors": [{"stage": "planner", "error": str(e)}]
-            }
+            }, node="planner", started_at=node_started_at)
 
     return planner_node
 
@@ -335,12 +353,17 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
 
     def searcher_node(state: ResearchState) -> Dict:
         """Execute search based on plan."""
+        node_started_at = time.perf_counter()
         # If this is the last allowed step, stop before doing any more work. For
         # tiny limits (<=4), we use a smaller buffer so at least one search round
         # can run before graceful completion.
         stop_buffer = _effective_recursion_stop_buffer(state)
         if should_stop_for_recursion(state, buffer=stop_buffer):
-            return {"status": "complete", "stop_reason": "recursion_limit"}
+            return _with_node_timing(
+                {"status": "complete", "stop_reason": "recursion_limit"},
+                node="searcher",
+                started_at=node_started_at,
+            )
 
         wikidata_type = state.get("wikidata_type")
         query = state.get("query", "")
@@ -387,6 +410,9 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         tokens_used = state.get("tokens_used", 0)
         input_tokens = state.get("input_tokens", 0)
         output_tokens = state.get("output_tokens", 0)
+        start_tokens_used = tokens_used
+        start_input_tokens = input_tokens
+        start_output_tokens = output_tokens
         local_token_trace = []
         total_unique = len(seen_hashes)
         needs_more = target_items is not None and total_unique < target_items
@@ -519,7 +545,6 @@ Use the Search tool to find information."""
                     tokens_used += _usage["total_tokens"]
                     input_tokens += _usage["input_tokens"]
                     output_tokens += _usage["output_tokens"]
-                    local_token_trace.append({"node": "searcher", **_usage})
                     messages.append(response)
                     queries_used += 1
 
@@ -562,7 +587,6 @@ Use the Search tool to find information."""
                     tokens_used += _ext_usage["total_tokens"]
                     input_tokens += _ext_usage["input_tokens"]
                     output_tokens += _ext_usage["output_tokens"]
-                    local_token_trace.append({"node": "searcher_extract", **_ext_usage})
                     queries_used += 1
 
                     parsed = parse_llm_json(extraction_response.content)
@@ -664,7 +688,12 @@ Use the Search tool to find information."""
                     logger.info(f"Strict temporal filtering dropped {dropped} web results")
                 results = filtered
 
-        return {
+        node_usage = {
+            "input_tokens": max(0, int(input_tokens) - int(start_input_tokens)),
+            "output_tokens": max(0, int(output_tokens) - int(start_output_tokens)),
+            "total_tokens": max(0, int(tokens_used) - int(start_tokens_used)),
+        }
+        return _with_node_timing({
             "new_results": results,
             "queries_used": queries_used,
             "tokens_used": tokens_used,
@@ -672,7 +701,7 @@ Use the Search tool to find information."""
             "output_tokens": output_tokens,
             "token_trace": local_token_trace,
             "round_number": state.get("round_number", 0) + 1
-        }
+        }, node="searcher", started_at=node_started_at, usage=node_usage)
 
     return searcher_node
 
@@ -685,6 +714,7 @@ def create_deduper_node():
 
     def deduper_node(state: ResearchState) -> Dict:
         """Deduplicate results."""
+        node_started_at = time.perf_counter()
         # If this is the last allowed step, still dedupe, but mark complete so the graph can END.
         # Keep a small buffer to avoid routing to nodes we cannot execute.
         force_stop = should_stop_for_recursion(
@@ -739,7 +769,7 @@ def create_deduper_node():
         if force_stop:
             out["status"] = "complete"
             out["stop_reason"] = "recursion_limit"
-        return out
+        return _with_node_timing(out, node="deduper", started_at=node_started_at)
 
     return deduper_node
 
@@ -752,6 +782,7 @@ def create_stopper_node(config: ResearchConfig):
 
     def stopper_node(state: ResearchState) -> Dict:
         """Evaluate if we should stop."""
+        node_started_at = time.perf_counter()
         round_num = state.get("round_number", 0)
         queries = state.get("queries_used", 0)
         tokens = state.get("tokens_used", 0)
@@ -762,32 +793,64 @@ def create_stopper_node(config: ResearchConfig):
 
         # Check limits
         if config.budget_time_sec and elapsed >= config.budget_time_sec:
-            return {"status": "complete", "stop_reason": "budget_time"}
+            return _with_node_timing(
+                {"status": "complete", "stop_reason": "budget_time"},
+                node="stopper",
+                started_at=node_started_at,
+            )
 
         if queries >= config.budget_queries:
-            return {"status": "complete", "stop_reason": "budget_queries"}
+            return _with_node_timing(
+                {"status": "complete", "stop_reason": "budget_queries"},
+                node="stopper",
+                started_at=node_started_at,
+            )
 
         if config.budget_tokens and tokens >= config.budget_tokens:
-            return {"status": "complete", "stop_reason": "budget_tokens"}
+            return _with_node_timing(
+                {"status": "complete", "stop_reason": "budget_tokens"},
+                node="stopper",
+                started_at=node_started_at,
+            )
 
         if round_num >= config.max_rounds:
-            return {"status": "complete", "stop_reason": "max_rounds"}
+            return _with_node_timing(
+                {"status": "complete", "stop_reason": "max_rounds"},
+                node="stopper",
+                started_at=node_started_at,
+            )
 
         if config.target_items and total_unique >= config.target_items:
-            return {"status": "complete", "stop_reason": "target_reached"}
+            return _with_node_timing(
+                {"status": "complete", "stop_reason": "target_reached"},
+                node="stopper",
+                started_at=node_started_at,
+            )
 
         novelty_history = state.get("novelty_history", [])
         if config.plateau_rounds and config.novelty_min is not None:
             if len(novelty_history) >= config.plateau_rounds:
                 recent = novelty_history[-config.plateau_rounds:]
                 if all(rate < config.novelty_min for rate in recent):
-                    return {"status": "complete", "stop_reason": "novelty_plateau"}
+                    return _with_node_timing(
+                        {"status": "complete", "stop_reason": "novelty_plateau"},
+                        node="stopper",
+                        started_at=node_started_at,
+                    )
 
         # Stop before LangGraph raises GraphRecursionError.
         if should_stop_for_recursion(state, buffer=_effective_recursion_stop_buffer(state)):
-            return {"status": "complete", "stop_reason": "recursion_limit"}
+            return _with_node_timing(
+                {"status": "complete", "stop_reason": "recursion_limit"},
+                node="stopper",
+                started_at=node_started_at,
+            )
 
-        return {"status": "searching"}
+        return _with_node_timing(
+            {"status": "searching"},
+            node="stopper",
+            started_at=node_started_at,
+        )
 
     return stopper_node
 

@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "tokens_used": 0,
   "input_tokens": 0,
   "output_tokens": 0,
@@ -27,6 +28,126 @@
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0
+=======
+  "tokens_used": 168816,
+  "input_tokens": 130530,
+  "output_tokens": 38286,
+  "fold_tokens": 45639,
+  "token_trace": [
+    {
+      "node": "planner",
+      "input_tokens": 662,
+      "output_tokens": 1117,
+      "total_tokens": 1779
+    },
+    {
+      "node": "agent",
+      "input_tokens": 1536,
+      "output_tokens": 330,
+      "total_tokens": 1866
+    },
+    {
+      "node": "agent",
+      "input_tokens": 3162,
+      "output_tokens": 394,
+      "total_tokens": 3556
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4117,
+      "output_tokens": 140,
+      "total_tokens": 4257
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4794,
+      "output_tokens": 383,
+      "total_tokens": 5177
+    },
+    {
+      "node": "agent",
+      "input_tokens": 6485,
+      "output_tokens": 369,
+      "total_tokens": 6854
+    },
+    {
+      "node": "agent",
+      "input_tokens": 7892,
+      "output_tokens": 288,
+      "total_tokens": 8180
+    },
+    {
+      "node": "agent",
+      "input_tokens": 8768,
+      "output_tokens": 315,
+      "total_tokens": 9083
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 1588,
+      "output_tokens": 7035,
+      "total_tokens": 8623
+    },
+    {
+      "node": "agent",
+      "input_tokens": 11077,
+      "output_tokens": 485,
+      "total_tokens": 11562
+    },
+    {
+      "node": "agent",
+      "input_tokens": 11998,
+      "output_tokens": 461,
+      "total_tokens": 12459
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 2962,
+      "output_tokens": 5303,
+      "total_tokens": 8265
+    },
+    {
+      "node": "agent",
+      "input_tokens": 12759,
+      "output_tokens": 690,
+      "total_tokens": 13449
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 2811,
+      "output_tokens": 3832,
+      "total_tokens": 6643
+    },
+    {
+      "node": "agent",
+      "input_tokens": 13678,
+      "output_tokens": 299,
+      "total_tokens": 13977
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 3599,
+      "output_tokens": 5479,
+      "total_tokens": 9078
+    },
+    {
+      "node": "agent",
+      "input_tokens": 14124,
+      "output_tokens": 884,
+      "total_tokens": 15008
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 3864,
+      "output_tokens": 9166,
+      "total_tokens": 13030
+    },
+    {
+      "node": "agent",
+      "input_tokens": 13992,
+      "output_tokens": 199,
+      "total_tokens": 14191
+>>>>>>> b7b44ed (add files)
     }
   ]
 }

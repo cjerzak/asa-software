@@ -489,24 +489,83 @@ extract_agent_results <- function(raw_output) {
   )
 }
 
+#' Coerce a value to scalar minutes (double)
+#' @keywords internal
+.as_scalar_minutes <- function(value, default = NA_real_) {
+  if (is.null(value) || length(value) == 0L) {
+    return(default)
+  }
+  candidate <- suppressWarnings(as.numeric(value[[1]] %||% value))
+  if (is.na(candidate) || !is.finite(candidate)) {
+    return(default)
+  }
+  if (candidate < 0) {
+    return(default)
+  }
+  as.numeric(candidate)
+}
+
+#' Normalize one token/timing trace entry
+#' @keywords internal
+.normalize_token_trace_entry <- function(entry) {
+  entry <- .try_or(reticulate::py_to_r(entry), entry)
+  if (!is.list(entry)) return(NULL)
+  node <- as.character(entry$node %||% "")
+  node <- if (length(node) > 0L && !is.na(node[[1]])) tolower(trimws(node[[1]])) else ""
+  elapsed_minutes <- .as_scalar_minutes(
+    entry$elapsed_minutes %||%
+      entry$duration_minutes %||%
+      {
+        elapsed_seconds <- .as_scalar_minutes(entry$elapsed_seconds)
+        if (!is.na(elapsed_seconds)) elapsed_seconds / 60 else NA_real_
+      }
+  )
+  list(
+    node = node,
+    input_tokens = .as_scalar_int(entry$input_tokens),
+    output_tokens = .as_scalar_int(entry$output_tokens),
+    total_tokens = .as_scalar_int(entry$total_tokens),
+    elapsed_minutes = elapsed_minutes
+  )
+}
+
+#' Extract normalized LangGraph step timing rows from token_trace
+#' @keywords internal
+.extract_langgraph_step_timings <- function(token_trace = list()) {
+  if (!is.list(token_trace) || length(token_trace) == 0L) {
+    return(list())
+  }
+  out <- list()
+  for (entry in token_trace) {
+    norm <- .normalize_token_trace_entry(entry)
+    if (is.null(norm) || !nzchar(norm$node)) next
+    out[[length(out) + 1L]] <- list(
+      step_index = length(out) + 1L,
+      node = norm$node,
+      elapsed_minutes = norm$elapsed_minutes,
+      input_tokens = norm$input_tokens %||% 0L,
+      output_tokens = norm$output_tokens %||% 0L,
+      total_tokens = norm$total_tokens %||% 0L
+    )
+  }
+  out
+}
+
+#' Format step minutes for ASCII/action reporting
+#' @keywords internal
+.format_step_minutes <- function(value, digits = 4L, na_label = "n/a") {
+  minutes <- .as_scalar_minutes(value)
+  if (is.na(minutes)) {
+    return(na_label)
+  }
+  sprintf(paste0("%.", as.integer(digits), "f"), minutes)
+}
+
 #' Attach best-effort token counts to action steps
 #' @keywords internal
 .attach_step_token_counts <- function(steps, token_trace = list()) {
   if (!is.list(steps) || length(steps) == 0L) {
     return(steps)
-  }
-
-  normalize_token_entry <- function(entry) {
-    entry <- .try_or(reticulate::py_to_r(entry), entry)
-    if (!is.list(entry)) return(NULL)
-    node <- as.character(entry$node %||% "")
-    node <- if (length(node) > 0L && !is.na(node[[1]])) tolower(node[[1]]) else ""
-    list(
-      node = node,
-      input_tokens = .as_scalar_int(entry$input_tokens),
-      output_tokens = .as_scalar_int(entry$output_tokens),
-      total_tokens = .as_scalar_int(entry$total_tokens)
-    )
   }
 
   # Ensure token fields exist for all steps.
@@ -515,6 +574,7 @@ extract_agent_results <- function(raw_output) {
     if (is.na(.as_scalar_int(steps[[i]]$input_tokens))) steps[[i]]$input_tokens <- 0L
     if (is.na(.as_scalar_int(steps[[i]]$output_tokens))) steps[[i]]$output_tokens <- 0L
     if (is.na(.as_scalar_int(steps[[i]]$total_tokens))) steps[[i]]$total_tokens <- 0L
+    if (is.na(.as_scalar_minutes(steps[[i]]$elapsed_minutes))) steps[[i]]$elapsed_minutes <- NA_real_
   }
 
   ai_indices <- which(vapply(steps, function(step) {
@@ -531,14 +591,18 @@ extract_agent_results <- function(raw_output) {
   # Prefer explicit message-level usage when present.
   unresolved_ai <- ai_indices[vapply(ai_indices, function(idx) {
     tok <- .as_scalar_int(steps[[idx]]$total_tokens)
-    is.na(tok) || tok <= 0L
+    tm <- .as_scalar_minutes(steps[[idx]]$elapsed_minutes)
+    is.na(tok) || tok <= 0L || is.na(tm)
   }, logical(1))]
 
   token_entries <- list()
   if (is.list(token_trace) && length(token_trace) > 0L) {
     for (entry in token_trace) {
-      norm <- normalize_token_entry(entry)
-      if (!is.null(norm) && !is.na(norm$total_tokens) && norm$total_tokens > 0L) {
+      norm <- .normalize_token_trace_entry(entry)
+      if (is.null(norm)) next
+      has_tokens <- !is.na(norm$total_tokens) && norm$total_tokens > 0L
+      has_time <- !is.na(norm$elapsed_minutes)
+      if (has_tokens || has_time) {
         token_entries[[length(token_entries) + 1L]] <- norm
       }
     }
@@ -549,7 +613,7 @@ extract_agent_results <- function(raw_output) {
 
   # Map only model-generation nodes; exclude summarize/tool bookkeeping nodes.
   model_nodes <- token_entries[vapply(token_entries, function(entry) {
-    !(entry$node %in% c("summarize", "tools", "tool", "nudge", "unknown", ""))
+    !(entry$node %in% c("summarize", "tools", "tool", "nudge", "planner", "deduper", "stopper", "unknown", ""))
   }, logical(1))]
   if (length(model_nodes) == 0L) {
     return(steps)
@@ -562,6 +626,7 @@ extract_agent_results <- function(raw_output) {
     steps[[target_idx[[j]]]]$input_tokens <- source_entries[[j]]$input_tokens %||% 0L
     steps[[target_idx[[j]]]]$output_tokens <- source_entries[[j]]$output_tokens %||% 0L
     steps[[target_idx[[j]]]]$total_tokens <- source_entries[[j]]$total_tokens %||% 0L
+    steps[[target_idx[[j]]]]$elapsed_minutes <- source_entries[[j]]$elapsed_minutes %||% NA_real_
   }
 
   steps
@@ -627,11 +692,19 @@ extract_agent_results <- function(raw_output) {
       preview_text <- paste0(preview_text, " | ... (+", length(previews) - 3L, " more)")
     }
 
+    # Carry elapsed_minutes from the group (use max: all tool results in a
+    # collapsed group come from the same tools-node invocation).
+    group_minutes <- vapply(events[i:j], function(x) {
+      .as_scalar_minutes(x$elapsed_minutes)
+    }, numeric(1))
+    best_minutes <- if (all(is.na(group_minutes))) NA_real_ else max(group_minutes, na.rm = TRUE)
+
     collapsed[[length(collapsed) + 1L]] <- list(
       type = ev_type,
       actor = ev_actor,
       summary = sprintf("Returned %d results", run_len),
-      preview = .clip_action_text(preview_text, max_chars = max_preview_chars)
+      preview = .clip_action_text(preview_text, max_chars = max_preview_chars),
+      elapsed_minutes = best_minutes
     )
     i <- j + 1L
   }
@@ -708,7 +781,8 @@ extract_agent_results <- function(raw_output) {
 #' @keywords internal
 .extract_action_trace <- function(trace_json = "", raw_trace = "", plan_history = list(),
                                   max_preview_chars = 88L, max_steps = 200L,
-                                  token_trace = list()) {
+                                  token_trace = list(),
+                                  wall_time_minutes = NA_real_) {
   max_preview_chars <- as.integer(max_preview_chars)
   if (is.na(max_preview_chars) || max_preview_chars < 20L) {
     max_preview_chars <- 88L
@@ -718,19 +792,62 @@ extract_agent_results <- function(raw_output) {
     max_steps <- 200L
   }
 
-  messages <- .parse_trace_json_messages(trace_json)
-  raw_steps <- if (!is.null(messages)) {
-    .trace_messages_to_action_events(messages, max_preview_chars = max_preview_chars)
-  } else {
-    .parse_trace_raw_events(raw_trace, max_preview_chars = max_preview_chars)
-  }
-  steps <- .collapse_action_events(raw_steps, max_preview_chars = max_preview_chars)
-  steps <- .attach_step_token_counts(steps, token_trace = token_trace)
-  plan_summary <- .summarize_plan_history(plan_history, max_chars = max_preview_chars)
-  overall_summary <- .summarize_action_overall(
-    raw_steps,
-    plan_summary = plan_summary,
-    max_chars = max_preview_chars
+  messages <- tryCatch(
+    .parse_trace_json_messages(trace_json),
+    error = function(e) {
+      warning("[action_trace:parse_json] ", conditionMessage(e), call. = FALSE)
+      NULL
+    }
+  )
+  raw_steps <- tryCatch(
+    if (!is.null(messages)) {
+      .trace_messages_to_action_events(messages, max_preview_chars = max_preview_chars)
+    } else {
+      .parse_trace_raw_events(raw_trace, max_preview_chars = max_preview_chars)
+    },
+    error = function(e) {
+      warning("[action_trace:build_events] ", conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
+  steps <- tryCatch(
+    .collapse_action_events(raw_steps, max_preview_chars = max_preview_chars),
+    error = function(e) {
+      warning("[action_trace:collapse] ", conditionMessage(e), call. = FALSE)
+      raw_steps
+    }
+  )
+  steps <- tryCatch(
+    .attach_step_token_counts(steps, token_trace = token_trace),
+    error = function(e) {
+      warning("[action_trace:token_counts] ", conditionMessage(e), call. = FALSE)
+      steps
+    }
+  )
+  langgraph_step_timings <- tryCatch(
+    .extract_langgraph_step_timings(token_trace),
+    error = function(e) {
+      warning("[action_trace:lg_timings] ", conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
+  plan_summary <- tryCatch(
+    .summarize_plan_history(plan_history, max_chars = max_preview_chars),
+    error = function(e) {
+      warning("[action_trace:plan_summary] ", conditionMessage(e), call. = FALSE)
+      character(0)
+    }
+  )
+  overall_summary <- tryCatch(
+    .summarize_action_overall(
+      raw_steps,
+      plan_summary = plan_summary,
+      max_chars = max_preview_chars
+    ),
+    error = function(e) {
+      warning("[action_trace:overall_summary] ", conditionMessage(e), call. = FALSE)
+      character(0)
+    }
   )
 
   total_steps <- length(steps)
@@ -744,10 +861,18 @@ extract_agent_results <- function(raw_output) {
     step_count = total_steps,
     omitted_steps = omitted_steps,
     steps = steps,
+    langgraph_step_timings = langgraph_step_timings,
     plan_summary = plan_summary,
-    overall_summary = overall_summary
+    overall_summary = overall_summary,
+    wall_time_minutes = .as_scalar_minutes(wall_time_minutes)
   )
-  out$ascii <- .render_action_ascii(out)
+  out$ascii <- tryCatch(
+    .render_action_ascii(out),
+    error = function(e) {
+      warning("[action_trace:ascii_render] ", conditionMessage(e), call. = FALSE)
+      "=== AGENT ACTION MAP ===\n[Rendering failed]\n"
+    }
+  )
   out
 }
 
@@ -791,6 +916,7 @@ extract_agent_results <- function(raw_output) {
     "AGENT ACTION MAP",
     "================",
     paste0("Steps captured: ", step_count),
+    paste0("LangGraph timed steps: ", length(action_trace$langgraph_step_timings %||% list())),
     "",
     "WHAT HAPPENED OVERALL",
     "---------------------",
@@ -813,6 +939,48 @@ extract_agent_results <- function(raw_output) {
     for (line in plan_summary) {
       lines <- c(lines, clip_line(paste0("  +-- [PLAN] ", line)))
     }
+  }
+
+  langgraph_timings <- action_trace$langgraph_step_timings %||% list()
+  lines <- c(lines, "  +-- [LANGGRAPH] Per-node timing (minutes)")
+  if (length(langgraph_timings) == 0L) {
+    lines <- c(lines, clip_line("      none"))
+  } else {
+    for (timing in langgraph_timings) {
+      if (!is.list(timing)) next
+      node <- as.character(timing$node %||% "unknown")
+      if (length(node) == 0L || is.na(node[[1]]) || !nzchar(node[[1]])) node <- "unknown" else node <- node[[1]]
+      tok_total <- .as_scalar_int(timing$total_tokens)
+      lines <- c(
+        lines,
+        clip_line(
+          paste0(
+            "      ",
+            node,
+            ": ",
+            .format_step_minutes(timing$elapsed_minutes),
+            "m",
+            " (tok=",
+            if (is.na(tok_total)) 0L else tok_total,
+            ")"
+          )
+        )
+      )
+    }
+  }
+
+  # Timing sanity check: compare global wall time to sum of node timings
+  node_sum_min <- sum(vapply(langgraph_timings, function(t) {
+    m <- .as_scalar_minutes(t$elapsed_minutes)
+    if (is.na(m)) 0 else m
+  }, numeric(1)))
+  wall_min <- .as_scalar_minutes(action_trace$wall_time_minutes)
+  if (!is.na(wall_min) && wall_min > 0) {
+    overhead_min <- wall_min - node_sum_min
+    lines <- c(lines, clip_line(sprintf(
+      "  +-- [TIMING] wall=%.4fm nodes=%.4fm overhead=%.4fm",
+      wall_min, node_sum_min, overhead_min
+    )))
   }
 
   if (length(steps) == 0L) {
@@ -854,6 +1022,12 @@ extract_agent_results <- function(raw_output) {
         "      tok: in=0 out=0 total=0"
       }
       lines <- c(lines, clip_line(token_line))
+      lines <- c(
+        lines,
+        clip_line(
+          paste0("      min: ", .format_step_minutes(step$elapsed_minutes), "m")
+        )
+      )
       if (nzchar(preview)) {
         lines <- c(lines, clip_line(paste0("      detail: ", preview)))
       }

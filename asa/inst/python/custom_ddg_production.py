@@ -2995,6 +2995,7 @@ from typing import Annotated, TypedDict, Sequence
 from operator import add as operator_add
 from langgraph.managed import RemainingSteps
 from state_utils import (
+    build_node_trace_entry,
     _token_usage_dict_from_message,
     _token_usage_from_message,
     add_to_list,
@@ -5560,6 +5561,7 @@ def _maybe_generate_plan(state: dict, model: Any) -> dict:
         + schema_hint
     ))
     plan_human = HumanMessage(content=prompt_text)
+    planner_started_at = time.perf_counter()
     response = None
     try:
         response = model.invoke([plan_sys, plan_human])
@@ -5573,7 +5575,7 @@ def _maybe_generate_plan(state: dict, model: Any) -> dict:
     return {
         "plan": plan,
         "plan_history": [{"version": 1, "plan": plan, "source": "auto"}],
-        "token_trace": [{"node": "planner", **_usage}],
+        "token_trace": [build_node_trace_entry("planner", usage=_usage, started_at=planner_started_at)],
         "tokens_used": _usage["total_tokens"],
         "input_tokens": _usage["input_tokens"],
         "output_tokens": _usage["output_tokens"],
@@ -6558,6 +6560,8 @@ def _is_retryable_invoke_exception(exc: Exception) -> bool:
         "unsupported",
         "not found",
         "recursion",
+        "exceeded your current quota",
+        "quota exceeded",
     )
     if any(tok in msg for tok in non_retryable_tokens):
         return False
@@ -6913,6 +6917,7 @@ def _create_tool_node_with_scratchpad(base_tool_node, *, debug: bool = False):
 
     def tool_node_with_scratchpad(state):
         """Execute tools, extract scratchpad entries and plan updates into state."""
+        node_started_at = time.perf_counter()
         scratchpad_entries = []
         plan_updates = []
         tool_calls = []
@@ -7034,6 +7039,11 @@ def _create_tool_node_with_scratchpad(base_tool_node, *, debug: bool = False):
         remaining = remaining_steps_value(state)
         if remaining is not None and remaining <= FINALIZE_WHEN_REMAINING_STEPS_LTE:
             result["stop_reason"] = "recursion_limit"
+        existing_trace = result.get("token_trace")
+        if not isinstance(existing_trace, list):
+            existing_trace = []
+        existing_trace.append(build_node_trace_entry("tools", started_at=node_started_at))
+        result["token_trace"] = existing_trace
         return result
     return tool_node_with_scratchpad
 
@@ -7258,6 +7268,7 @@ def create_memory_folding_agent(
 
     def agent_node(state: MemoryFoldingAgentState) -> dict:
         """The main agent reasoning node."""
+        node_started_at = time.perf_counter()
         # On first call, generate a plan if plan mode is active.
         _plan_updates = _maybe_generate_plan(state, model)
         if _plan_updates:
@@ -7468,7 +7479,7 @@ def create_memory_folding_agent(
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
-            "token_trace": [{"node": "agent", **_usage}],
+            "token_trace": [build_node_trace_entry("agent", usage=_usage, started_at=node_started_at)],
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -7497,6 +7508,7 @@ def create_memory_folding_agent(
 
     def finalize_answer(state: MemoryFoldingAgentState) -> dict:
         """Best-effort final answer when we're near the recursion limit."""
+        node_started_at = time.perf_counter()
         messages = state.get("messages", [])
         summary = state.get("summary", "")
         archive = state.get("archive", [])
@@ -7635,7 +7647,7 @@ def create_memory_folding_agent(
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
-            "token_trace": [{"node": "finalize", **_usage}],
+            "token_trace": [build_node_trace_entry("finalize", usage=_usage, started_at=node_started_at)],
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -7711,6 +7723,7 @@ def create_memory_folding_agent(
         - Tool response messages must always follow their corresponding AI tool_calls
         - We fold complete "rounds" of conversation, not partial sequences
         """
+        node_started_at = time.perf_counter()
         messages = state.get("messages", [])
         current_summary = state.get("summary", "")
         current_observations = _state_observations(state)
@@ -7742,6 +7755,9 @@ def create_memory_folding_agent(
             out = dict(payload or {})
             if summarize_recursion_marker and out.get("stop_reason") is None:
                 out["stop_reason"] = summarize_recursion_marker
+            token_trace = out.get("token_trace")
+            if not isinstance(token_trace, list) or len(token_trace) == 0:
+                out["token_trace"] = [build_node_trace_entry("summarize", started_at=node_started_at)]
             return out
 
         total_chars_pre = sum(
@@ -8432,7 +8448,11 @@ def create_memory_folding_agent(
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
+<<<<<<< HEAD
             "token_trace": [{"node": token_trace_node, **_usage}],
+=======
+            "token_trace": [build_node_trace_entry("summarize", usage=_usage, started_at=node_started_at)],
+>>>>>>> b7b44ed (add files)
         })
 
     def should_fold_messages(messages: list) -> bool:
@@ -8513,6 +8533,7 @@ def create_memory_folding_agent(
 
     def nudge_node(state: MemoryFoldingAgentState) -> dict:
         """Inject a continuation message when the agent tries to end with unresolved fields."""
+        node_started_at = time.perf_counter()
         field_status = _state_field_status(state)
         pending = [
             fn for fn, fs in field_status.items()
@@ -8532,6 +8553,7 @@ def create_memory_folding_agent(
         return {
             "messages": [nudge_msg],
             "budget_state": {"premature_end_nudge_count": nudge_count + 1},
+            "token_trace": [build_node_trace_entry("nudge", started_at=node_started_at)],
         }
 
     def after_tools(state: MemoryFoldingAgentState) -> str:
@@ -8756,6 +8778,7 @@ def create_standard_agent(
     tool_node_with_scratchpad = _create_tool_node_with_scratchpad(base_tool_node, debug=debug)
 
     def agent_node(state: StandardAgentState) -> dict:
+        node_started_at = time.perf_counter()
         # On first call, generate a plan if plan mode is active.
         _plan_updates = _maybe_generate_plan(state, model)
         if _plan_updates:
@@ -8900,7 +8923,7 @@ def create_standard_agent(
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
-            "token_trace": [{"node": "agent", **_usage}],
+            "token_trace": [build_node_trace_entry("agent", usage=_usage, started_at=node_started_at)],
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -8928,6 +8951,7 @@ def create_standard_agent(
         return out
 
     def finalize_answer(state: StandardAgentState) -> dict:
+        node_started_at = time.perf_counter()
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
@@ -9039,7 +9063,7 @@ def create_standard_agent(
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
-            "token_trace": [{"node": "finalize", **_usage}],
+            "token_trace": [build_node_trace_entry("finalize", usage=_usage, started_at=node_started_at)],
         }
         if repair_event:
             repair_events.append(repair_event)
@@ -9082,6 +9106,7 @@ def create_standard_agent(
 
     def nudge_node(state: StandardAgentState) -> dict:
         """Inject a continuation message when the agent tries to end with unresolved fields."""
+        node_started_at = time.perf_counter()
         field_status = _state_field_status(state)
         pending = [
             fn for fn, fs in field_status.items()
@@ -9101,6 +9126,7 @@ def create_standard_agent(
         return {
             "messages": [nudge_msg],
             "budget_state": {"premature_end_nudge_count": nudge_count + 1},
+            "token_trace": [build_node_trace_entry("nudge", started_at=node_started_at)],
         }
 
     def after_tools(state: StandardAgentState) -> str:

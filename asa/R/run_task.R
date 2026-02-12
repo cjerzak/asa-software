@@ -85,6 +85,8 @@
 #'       \code{execution$action_steps})
 #'     \item action_overall: High-level action summary lines (also available at
 #'       \code{execution$action_overall})
+#'     \item langgraph_step_timings: Per-node LangGraph timings in minutes
+#'       (also available at \code{execution$langgraph_step_timings})
 #'     \item fold_stats: Memory folding diagnostics list
 #'     \item trace: Full execution trace (for "raw" output_format)
 #'   }
@@ -342,20 +344,23 @@ run_task <- function(prompt,
     output_tokens = .as_scalar_int(response$output_tokens),
     token_trace = response$token_trace %||% list()
   )
-  action_trace <- .try_or(
+  action_trace <- .try_or_warn(
     .extract_action_trace(
       trace_json = response$trace_json %||% "",
       raw_trace = response$trace %||% "",
       plan_history = response$plan_history %||% list(),
-      token_trace = token_stats$token_trace %||% list()
+      token_trace = token_stats$token_trace %||% list(),
+      wall_time_minutes = response$elapsed_time %||% NA_real_
     ),
-    list(
+    default = list(
       steps = list(),
       ascii = "",
       step_count = 0L,
       omitted_steps = 0L,
-      plan_summary = character(0)
-    )
+      plan_summary = character(0),
+      langgraph_step_timings = list()
+    ),
+    context = "extract_action_trace"
   )
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
@@ -380,7 +385,8 @@ run_task <- function(prompt,
     action_step_count = action_trace$step_count %||% 0L,
     action_omitted_steps = action_trace$omitted_steps %||% 0L,
     action_plan_summary = action_trace$plan_summary %||% character(0),
-    action_overall = action_trace$overall_summary %||% character(0)
+    action_overall = action_trace$overall_summary %||% character(0),
+    langgraph_step_timings = action_trace$langgraph_step_timings %||% list()
   )
 
   # Build result object - always return asa_result for consistent API
@@ -408,6 +414,7 @@ run_task <- function(prompt,
   result$action_steps <- action_trace$steps %||% list()
   result$action_ascii <- action_trace$ascii %||% ""
   result$action_overall <- action_trace$overall_summary %||% character(0)
+  result$langgraph_step_timings <- action_trace$langgraph_step_timings %||% list()
 
   # For "raw" format, add additional fields for debugging
   if (identical(output_format, "raw")) {

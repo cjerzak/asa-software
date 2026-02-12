@@ -7,14 +7,22 @@
   "class_background": "Unknown",
   "prior_occupation_source": null,
   "disability_status": "Unknown",
+<<<<<<< HEAD
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
   "birth_year": "Unknown",
   "birth_year_source": null,
+=======
+  "disability_source": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
+  "birth_place": "TIPNIS region, Beni department, Bolivia",
+  "birth_place_source": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+  "birth_year": 1982,
+  "birth_year_source": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+>>>>>>> b7b44ed (add files)
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": "Unknown"
+  "justification": "Ramona Moye Camaconi is an indigenous MAS politician serving as a deputy for Beni, notable for her representation of the TIPNIS region and facing legal allegations concerning falsified medical leave"
 }

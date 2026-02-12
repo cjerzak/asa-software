@@ -279,7 +279,7 @@
 
   # Permanent failures we should not retry.
   if (grepl(
-    "invalid api key|authentication|unauthoriz|forbidden|permission|validation|bad request|unsupported|not found",
+    "invalid api key|authentication|unauthoriz|forbidden|permission|validation|bad request|unsupported|not found|exceeded your current quota|quota exceeded",
     msg
   )) {
     return(FALSE)

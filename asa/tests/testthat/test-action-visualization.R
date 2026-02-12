@@ -63,6 +63,7 @@ test_that(".extract_action_trace builds action steps from structured trace", {
   expect_match(action$ascii, "Tool Search")
   expect_match(action$ascii, "by: AI")
   expect_match(action$ascii, "tok: in=0 out=0 total=0")
+  expect_match(action$ascii, "LangGraph timed steps:")
   expect_false(grepl("\\] AI:", action$ascii))
   expect_match(action$ascii, "Plan steps: 1 total")
 })
@@ -221,11 +222,270 @@ test_that(".extract_action_trace maps token_trace entries onto visible AI steps"
   action <- asa:::.extract_action_trace(
     trace_json = trace_json,
     token_trace = list(
-      list(node = "agent", input_tokens = 50L, output_tokens = 10L, total_tokens = 60L),
-      list(node = "finalize", input_tokens = 30L, output_tokens = 5L, total_tokens = 35L)
+      list(node = "agent", input_tokens = 50L, output_tokens = 10L, total_tokens = 60L, elapsed_minutes = 0.12),
+      list(node = "finalize", input_tokens = 30L, output_tokens = 5L, total_tokens = 35L, elapsed_minutes = 0.04)
     )
   )
 
   expect_match(action$ascii, "tok: in=50 out=10 total=60")
   expect_match(action$ascii, "tok: in=30 out=5 total=35")
+  expect_match(action$ascii, "min: 0.1200m")
+  expect_match(action$ascii, "min: 0.0400m")
+  expect_equal(length(action$langgraph_step_timings), 2L)
+  expect_equal(action$langgraph_step_timings[[1]]$node, "agent")
+  expect_equal(action$langgraph_step_timings[[2]]$node, "finalize")
+})
+
+# --- Timing helper tests ---
+
+test_that(".as_scalar_minutes handles valid numeric input", {
+  expect_equal(asa:::.as_scalar_minutes(1.5), 1.5)
+  expect_equal(asa:::.as_scalar_minutes(0), 0)
+  expect_equal(asa:::.as_scalar_minutes(0.001), 0.001)
+})
+
+test_that(".as_scalar_minutes returns default for NULL/NA/negative", {
+  expect_true(is.na(asa:::.as_scalar_minutes(NULL)))
+  expect_true(is.na(asa:::.as_scalar_minutes(NA)))
+  expect_true(is.na(asa:::.as_scalar_minutes(-1)))
+  expect_true(is.na(asa:::.as_scalar_minutes(character(0))))
+  expect_equal(asa:::.as_scalar_minutes(NULL, default = 0), 0)
+})
+
+test_that(".as_scalar_minutes handles string input", {
+  expect_equal(asa:::.as_scalar_minutes("0.1234"), 0.1234)
+  expect_true(is.na(asa:::.as_scalar_minutes("not_a_number")))
+})
+
+test_that(".normalize_token_trace_entry reads elapsed_minutes correctly", {
+  entry <- list(node = "agent", input_tokens = 100L, output_tokens = 50L,
+                total_tokens = 150L, elapsed_minutes = 0.25)
+  norm <- asa:::.normalize_token_trace_entry(entry)
+
+  expect_equal(norm$node, "agent")
+  expect_equal(norm$input_tokens, 100L)
+  expect_equal(norm$output_tokens, 50L)
+  expect_equal(norm$total_tokens, 150L)
+  expect_equal(norm$elapsed_minutes, 0.25)
+})
+
+test_that(".normalize_token_trace_entry falls back to elapsed_seconds", {
+  entry <- list(node = "tools", elapsed_seconds = 6.0)
+  norm <- asa:::.normalize_token_trace_entry(entry)
+  expect_equal(norm$elapsed_minutes, 0.1)
+})
+
+test_that(".normalize_token_trace_entry handles missing timing gracefully", {
+  entry <- list(node = "agent", total_tokens = 100L)
+  norm <- asa:::.normalize_token_trace_entry(entry)
+  expect_true(is.na(norm$elapsed_minutes))
+})
+
+test_that(".extract_langgraph_step_timings aggregates multiple entries", {
+  trace <- list(
+    list(node = "agent", input_tokens = 50L, output_tokens = 10L,
+         total_tokens = 60L, elapsed_minutes = 0.10),
+    list(node = "tools", input_tokens = 0L, output_tokens = 0L,
+         total_tokens = 0L, elapsed_minutes = 0.30),
+    list(node = "agent", input_tokens = 40L, output_tokens = 8L,
+         total_tokens = 48L, elapsed_minutes = 0.08),
+    list(node = "finalize", input_tokens = 30L, output_tokens = 5L,
+         total_tokens = 35L, elapsed_minutes = 0.04)
+  )
+
+  timings <- asa:::.extract_langgraph_step_timings(trace)
+  expect_equal(length(timings), 4L)
+  expect_equal(timings[[1]]$node, "agent")
+  expect_equal(timings[[2]]$node, "tools")
+  expect_equal(timings[[3]]$node, "agent")
+  expect_equal(timings[[4]]$node, "finalize")
+  expect_equal(timings[[1]]$elapsed_minutes, 0.10)
+  expect_equal(timings[[2]]$elapsed_minutes, 0.30)
+})
+
+test_that(".extract_langgraph_step_timings returns empty list for empty input", {
+  expect_equal(asa:::.extract_langgraph_step_timings(list()), list())
+  expect_equal(asa:::.extract_langgraph_step_timings(NULL), list())
+})
+
+test_that(".format_step_minutes formats correctly", {
+  expect_equal(asa:::.format_step_minutes(0.1234), "0.1234")
+  expect_equal(asa:::.format_step_minutes(0.1234, digits = 2L), "0.12")
+  expect_equal(asa:::.format_step_minutes(NULL), "n/a")
+  expect_equal(asa:::.format_step_minutes(NA), "n/a")
+  expect_equal(asa:::.format_step_minutes(NA, na_label = "---"), "---")
+})
+
+test_that(".collapse_action_events carries elapsed_minutes through collapsed groups", {
+  events <- list(
+    list(type = "tool_result", actor = "Tool Search", summary = "Returned result",
+         preview = "result A", elapsed_minutes = 0.05),
+    list(type = "tool_result", actor = "Tool Search", summary = "Returned result",
+         preview = "result B", elapsed_minutes = 0.03),
+    list(type = "tool_result", actor = "Tool Search", summary = "Returned result",
+         preview = "result C", elapsed_minutes = NA_real_)
+  )
+  collapsed <- asa:::.collapse_action_events(events)
+
+  expect_equal(length(collapsed), 1L)
+  expect_equal(collapsed[[1]]$summary, "Returned 3 results")
+  expect_equal(collapsed[[1]]$elapsed_minutes, 0.05)
+})
+
+test_that(".collapse_action_events returns NA when all group members lack timing", {
+  events <- list(
+    list(type = "tool_result", actor = "Tool Search", summary = "Returned result", preview = "a"),
+    list(type = "tool_result", actor = "Tool Search", summary = "Returned result", preview = "b")
+  )
+  collapsed <- asa:::.collapse_action_events(events)
+
+  expect_equal(length(collapsed), 1L)
+  expect_true(is.na(collapsed[[1]]$elapsed_minutes))
+})
+
+test_that(".render_action_ascii includes LANGGRAPH per-node section", {
+  action_trace <- list(
+    steps = list(),
+    step_count = 0L,
+    omitted_steps = 0L,
+    langgraph_step_timings = list(
+      list(node = "agent", elapsed_minutes = 0.15, total_tokens = 100L),
+      list(node = "tools", elapsed_minutes = 0.32, total_tokens = 0L)
+    ),
+    plan_summary = character(0),
+    overall_summary = character(0),
+    wall_time_minutes = NA_real_
+  )
+
+  ascii <- asa:::.render_action_ascii(action_trace)
+  expect_match(ascii, "\\[LANGGRAPH\\] Per-node timing")
+  expect_match(ascii, "agent: 0\\.1500m \\(tok=100\\)")
+  expect_match(ascii, "tools: 0\\.3200m \\(tok=0\\)")
+})
+
+test_that(".render_action_ascii shows TIMING sanity check when wall_time_minutes provided", {
+  action_trace <- list(
+    steps = list(),
+    step_count = 0L,
+    omitted_steps = 0L,
+    langgraph_step_timings = list(
+      list(node = "agent", elapsed_minutes = 0.10, total_tokens = 50L),
+      list(node = "tools", elapsed_minutes = 0.30, total_tokens = 0L),
+      list(node = "finalize", elapsed_minutes = 0.05, total_tokens = 20L)
+    ),
+    plan_summary = character(0),
+    overall_summary = character(0),
+    wall_time_minutes = 0.55
+  )
+
+  ascii <- asa:::.render_action_ascii(action_trace)
+  expect_match(ascii, "\\[TIMING\\]")
+  expect_match(ascii, "wall=0\\.5500m")
+  expect_match(ascii, "nodes=0\\.4500m")
+  expect_match(ascii, "overhead=0\\.1000m")
+})
+
+test_that(".render_action_ascii omits TIMING line when wall_time_minutes is NA", {
+  action_trace <- list(
+    steps = list(),
+    step_count = 0L,
+    omitted_steps = 0L,
+    langgraph_step_timings = list(
+      list(node = "agent", elapsed_minutes = 0.10, total_tokens = 50L)
+    ),
+    plan_summary = character(0),
+    overall_summary = character(0),
+    wall_time_minutes = NA_real_
+  )
+
+  ascii <- asa:::.render_action_ascii(action_trace)
+  expect_false(grepl("\\[TIMING\\]", ascii))
+})
+
+test_that(".extract_action_trace passes wall_time_minutes through to output", {
+  action <- asa:::.extract_action_trace(
+    trace_json = "",
+    raw_trace = "",
+    wall_time_minutes = 1.23
+  )
+  expect_equal(action$wall_time_minutes, 1.23)
+})
+
+test_that("min: timing lines appear on AI steps in ASCII output", {
+  trace_json <- jsonlite::toJSON(
+    list(
+      format = "asa_trace_v1",
+      messages = list(
+        list(message_type = "HumanMessage", name = NULL, content = "Task", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "{\"ok\":true}", tool_calls = list())
+      )
+    ),
+    auto_unbox = TRUE,
+    null = "null"
+  )
+
+  action <- asa:::.extract_action_trace(
+    trace_json = trace_json,
+    token_trace = list(
+      list(node = "agent", input_tokens = 20L, output_tokens = 5L,
+           total_tokens = 25L, elapsed_minutes = 0.0777)
+    )
+  )
+
+  expect_match(action$ascii, "min: 0\\.0777m")
+})
+
+# --- .try_or_warn tests ---
+
+test_that(".try_or_warn emits warning and returns default on error", {
+  warns <- character(0)
+  result <- withCallingHandlers(
+    asa:::.try_or_warn(stop("boom"), default = "fallback", context = "test_ctx"),
+    warning = function(w) {
+      warns[[length(warns) + 1L]] <<- conditionMessage(w)
+      invokeRestart("muffleWarning")
+    }
+  )
+  expect_equal(result, "fallback")
+  expect_true(any(grepl("\\[test_ctx\\]", warns)))
+  expect_true(any(grepl("boom", warns)))
+})
+
+test_that(".try_or_warn passes through result on success", {
+  result <- asa:::.try_or_warn(42L, default = 0L, context = "test_ctx")
+  expect_equal(result, 42L)
+})
+
+test_that(".try_or_warn works without context label", {
+  warns <- character(0)
+  result <- withCallingHandlers(
+    asa:::.try_or_warn(stop("oops"), default = NULL),
+    warning = function(w) {
+      warns[[length(warns) + 1L]] <<- conditionMessage(w)
+      invokeRestart("muffleWarning")
+    }
+  )
+  expect_null(result)
+  expect_true(any(grepl("oops", warns)))
+  expect_false(any(grepl("^\\[", warns)))
+})
+
+# --- Real trace data test ---
+
+test_that(".extract_action_trace succeeds on real trace_real.txt data", {
+  trace_path <- file.path(
+    testthat::test_path(), "..", "..", "..", "tracked_reports", "trace_real.txt"
+  )
+  trace_path <- normalizePath(trace_path, mustWork = FALSE)
+  skip_if_not(file.exists(trace_path), "trace_real.txt not available")
+  skip_if(file.size(trace_path) < 100L, "trace_real.txt too small")
+
+  trace_json <- readLines(trace_path, warn = FALSE)
+  trace_json <- paste(trace_json, collapse = "\n")
+
+  action <- asa:::.extract_action_trace(trace_json = trace_json)
+
+  expect_match(action$ascii, "AGENT ACTION MAP")
+  expect_true(nchar(action$ascii) > 50L)
+  expect_true(action$step_count > 0L)
 })

@@ -1,3 +1,17 @@
 {
-  "fold_count": 0
+  "fold_count": 5,
+  "fold_messages_removed": 2,
+  "fold_total_messages_removed": 12,
+  "fold_chars_input": 2694,
+  "fold_summary_chars": 8237,
+  "fold_trigger_reason": "message_threshold",
+  "fold_safe_boundary_idx": 3,
+  "fold_compression_ratio": 3.0575,
+  "fold_parse_success": true,
+  "fold_summarizer_latency_m": 0.7744,
+  "fold_field_recovery_count": 0,
+  "fold_masked_tool_messages": 0,
+  "fold_anchored_facts_preserved": 0,
+  "fold_ungrounded_facts": 1,
+  "fold_degraded": false
 }

@@ -28,6 +28,26 @@
   tryCatch(expr, error = function(e) default)
 }
 
+#' Try Expression with Fallback and Warning
+#'
+#' Like \code{.try_or()} but emits a \code{warning()} with the error message
+#' and a context label before returning the default.
+#'
+#' @param expr Expression to evaluate
+#' @param default Value to return on error (default: NULL)
+#' @param context Label included in the warning message (default: "")
+#'
+#' @return Result of \code{expr}, or \code{default} on error (with warning)
+#'
+#' @keywords internal
+.try_or_warn <- function(expr, default = NULL, context = "") {
+  tryCatch(expr, error = function(e) {
+    label <- if (nzchar(context)) paste0("[", context, "] ") else ""
+    warning(label, "Falling back to default: ", conditionMessage(e), call. = FALSE)
+    default
+  })
+}
+
 #' Safe Python Field Extraction
 #'
 #' Safely extracts a field from a Python/reticulate object with optional
