@@ -2,7 +2,7 @@
 
 # outputs:
 #./asa-software/tracked_reports/prompt_example_real.txt
-#./asa-software/tracked_reports/trace_real.txt          (asa_trace_v1 structured JSON)
+#./asa-software/tracked_reports/trace_real.txt        
 #./asa-software/tracked_reports/token_stats_real.txt
 #./asa-software/tracked_reports/plan_output_real.txt
 #./asa-software/tracked_reports/fold_stats_real.txt
@@ -17,8 +17,30 @@ options(error=NULL)
 # asa::build_backend(force = TRUE, fix_browser = TRUE)
 
 # Prefer local package source so trace runs validate current repo code.
+# Resolve relative to this script so behavior is stable regardless of cwd.
+script_file <- commandArgs(trailingOnly = FALSE)
+script_path <- sub("^--file=", "", script_file[grep("^--file=", script_file)])
+if (length(script_path) == 0L || !nzchar(script_path[[1]])) {
+  script_path <- file.path(getwd(), "tracked_reports", "trace_test_real.R")
+}
+script_dir <- dirname(normalizePath(script_path[[1]], winslash = "/", mustWork = FALSE))
+local_asa_path <- normalizePath(file.path(script_dir, "..", "asa"), winslash = "/", mustWork = FALSE)
+
+loaded_local_asa <- FALSE
 if (requireNamespace("devtools", quietly = TRUE)) {
-  try(devtools::load_all("asa", quiet = TRUE), silent = TRUE)
+  loaded_local_asa <- !inherits(
+    try(devtools::load_all(local_asa_path, quiet = TRUE), silent = TRUE),
+    "try-error"
+  )
+}
+if (!loaded_local_asa) {
+  warning(
+    sprintf(
+      "Using installed asa package from '%s'; local load_all failed or devtools is unavailable.",
+      find.package("asa")
+    ),
+    call. = FALSE
+  )
 }
 
 prompt <- r"(TASK OVERVIEW:
@@ -191,8 +213,26 @@ readr::write_file(
 )
 
 # high-level action visualization (ASCII)
+action_ascii_text <- attempt$action_ascii %||% attempt$execution$action_ascii %||% ""
+if (!nzchar(action_ascii_text) &&
+    is.character(attempt$trace_json) &&
+    length(attempt$trace_json) == 1L &&
+    nzchar(attempt$trace_json) &&
+    exists(".extract_action_trace", envir = asNamespace("asa"), inherits = FALSE)) {
+  action_ascii_text <- tryCatch(
+    asa:::.extract_action_trace(
+      trace_json = attempt$trace_json,
+      raw_trace = attempt$trace %||% "",
+      plan_history = attempt$plan_history %||% list(),
+      token_trace = attempt$token_stats$token_trace %||% list(),
+      wall_time_minutes = attempt$elapsed_time %||% NA_real_
+    )$ascii %||% "",
+    error = function(e) ""
+  )
+}
+
 readr::write_file(
-  attempt$action_ascii %||% "",
+  action_ascii_text,
   "~/Documents/asa-software/tracked_reports/action_ascii_real.txt"
 )
 

@@ -1,153 +1,122 @@
 {
-<<<<<<< HEAD
-  "tokens_used": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "fold_tokens": 0,
-  "token_trace": [
-    {
-      "node": "planner",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0
-    },
-    {
-      "node": "agent",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0
-    },
-    {
-      "node": "agent",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0
-    },
-    {
-      "node": "agent",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0
-=======
-  "tokens_used": 168816,
-  "input_tokens": 130530,
-  "output_tokens": 38286,
-  "fold_tokens": 45639,
+  "tokens_used": 161396,
+  "input_tokens": 120760,
+  "output_tokens": 40636,
+  "fold_tokens": 50609,
   "token_trace": [
     {
       "node": "planner",
       "input_tokens": 662,
-      "output_tokens": 1117,
-      "total_tokens": 1779
+      "output_tokens": 1100,
+      "total_tokens": 1762
     },
     {
       "node": "agent",
       "input_tokens": 1536,
-      "output_tokens": 330,
-      "total_tokens": 1866
+      "output_tokens": 343,
+      "total_tokens": 1879
     },
     {
       "node": "agent",
-      "input_tokens": 3162,
-      "output_tokens": 394,
-      "total_tokens": 3556
+      "input_tokens": 3260,
+      "output_tokens": 286,
+      "total_tokens": 3546
     },
     {
       "node": "agent",
-      "input_tokens": 4117,
-      "output_tokens": 140,
-      "total_tokens": 4257
+      "input_tokens": 4847,
+      "output_tokens": 265,
+      "total_tokens": 5112
     },
     {
       "node": "agent",
-      "input_tokens": 4794,
-      "output_tokens": 383,
-      "total_tokens": 5177
+      "input_tokens": 5385,
+      "output_tokens": 165,
+      "total_tokens": 5550
     },
     {
       "node": "agent",
-      "input_tokens": 6485,
-      "output_tokens": 369,
-      "total_tokens": 6854
+      "input_tokens": 6036,
+      "output_tokens": 198,
+      "total_tokens": 6234
     },
     {
       "node": "agent",
-      "input_tokens": 7892,
-      "output_tokens": 288,
-      "total_tokens": 8180
+      "input_tokens": 6665,
+      "output_tokens": 269,
+      "total_tokens": 6934
     },
     {
       "node": "agent",
-      "input_tokens": 8768,
-      "output_tokens": 315,
-      "total_tokens": 9083
+      "input_tokens": 7341,
+      "output_tokens": 277,
+      "total_tokens": 7618
+    },
+    {
+      "node": "agent",
+      "input_tokens": 8053,
+      "output_tokens": 380,
+      "total_tokens": 8433
     },
     {
       "node": "summarize",
-      "input_tokens": 1588,
-      "output_tokens": 7035,
-      "total_tokens": 8623
+      "input_tokens": 1570,
+      "output_tokens": 6185,
+      "total_tokens": 7755
     },
     {
       "node": "agent",
-      "input_tokens": 11077,
-      "output_tokens": 485,
-      "total_tokens": 11562
-    },
-    {
-      "node": "agent",
-      "input_tokens": 11998,
-      "output_tokens": 461,
-      "total_tokens": 12459
+      "input_tokens": 10270,
+      "output_tokens": 232,
+      "total_tokens": 10502
     },
     {
       "node": "summarize",
-      "input_tokens": 2962,
-      "output_tokens": 5303,
-      "total_tokens": 8265
+      "input_tokens": 3332,
+      "output_tokens": 9696,
+      "total_tokens": 13028
     },
     {
       "node": "agent",
-      "input_tokens": 12759,
-      "output_tokens": 690,
-      "total_tokens": 13449
+      "input_tokens": 11708,
+      "output_tokens": 272,
+      "total_tokens": 11980
     },
     {
       "node": "summarize",
-      "input_tokens": 2811,
-      "output_tokens": 3832,
-      "total_tokens": 6643
+      "input_tokens": 3454,
+      "output_tokens": 4129,
+      "total_tokens": 7583
     },
     {
       "node": "agent",
-      "input_tokens": 13678,
-      "output_tokens": 299,
-      "total_tokens": 13977
+      "input_tokens": 12460,
+      "output_tokens": 527,
+      "total_tokens": 12987
     },
     {
       "node": "summarize",
-      "input_tokens": 3599,
-      "output_tokens": 5479,
-      "total_tokens": 9078
+      "input_tokens": 3760,
+      "output_tokens": 7205,
+      "total_tokens": 10965
     },
     {
       "node": "agent",
-      "input_tokens": 14124,
-      "output_tokens": 884,
-      "total_tokens": 15008
+      "input_tokens": 13045,
+      "output_tokens": 278,
+      "total_tokens": 13323
     },
     {
       "node": "summarize",
-      "input_tokens": 3864,
-      "output_tokens": 9166,
-      "total_tokens": 13030
+      "input_tokens": 4089,
+      "output_tokens": 7189,
+      "total_tokens": 11278
     },
     {
       "node": "agent",
-      "input_tokens": 13992,
-      "output_tokens": 199,
-      "total_tokens": 14191
->>>>>>> b7b44ed (add files)
+      "input_tokens": 12625,
+      "output_tokens": 540,
+      "total_tokens": 13165
     }
   ]
 }

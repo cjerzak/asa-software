@@ -344,23 +344,25 @@ run_task <- function(prompt,
     output_tokens = .as_scalar_int(response$output_tokens),
     token_trace = response$token_trace %||% list()
   )
-  action_trace <- .try_or_warn(
+  action_trace <- tryCatch(
     .extract_action_trace(
-      trace_json = response$trace_json %||% "",
-      raw_trace = response$trace %||% "",
+      trace_json = as.character(response$trace_json %||% ""),
+      raw_trace = as.character(response$trace %||% ""),
       plan_history = response$plan_history %||% list(),
       token_trace = token_stats$token_trace %||% list(),
       wall_time_minutes = response$elapsed_time %||% NA_real_
     ),
-    default = list(
-      steps = list(),
-      ascii = "",
-      step_count = 0L,
-      omitted_steps = 0L,
-      plan_summary = character(0),
-      langgraph_step_timings = list()
-    ),
-    context = "extract_action_trace"
+    error = function(e) {
+      message("[action_trace] Error: ", conditionMessage(e))
+      list(
+        steps = list(),
+        ascii = "",
+        step_count = 0L,
+        omitted_steps = 0L,
+        plan_summary = character(0),
+        langgraph_step_timings = list()
+      )
+    }
   )
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,

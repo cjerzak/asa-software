@@ -5,15 +5,10 @@
       "id": 1,
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
-<<<<<<< HEAD
-      "status": "pending",
-      "findings": ""
-=======
       "status": "in_progress",
-      "findings": "Starting research for Ramona Moye Camaconi."
->>>>>>> b7b44ed (add files)
+      "findings": "Starting research on Ramona Moye Camaconi."
     }
   ],
-  "version": 1,
-  "current_step": 1
+  "version": 2,
+  "current_step": null
 }

@@ -783,6 +783,13 @@ extract_agent_results <- function(raw_output) {
                                   max_preview_chars = 88L, max_steps = 200L,
                                   token_trace = list(),
                                   wall_time_minutes = NA_real_) {
+  # Defensive coercion: trace_json / raw_trace may arrive as jsonlite "json"
+
+  # class objects or reticulate wrappers; force plain character.
+  trace_json <- as.character(trace_json %||% "")
+  if (length(trace_json) != 1L) trace_json <- paste0(trace_json, collapse = "")
+  raw_trace <- as.character(raw_trace %||% "")
+  if (length(raw_trace) != 1L) raw_trace <- paste0(raw_trace, collapse = "")
   max_preview_chars <- as.integer(max_preview_chars)
   if (is.na(max_preview_chars) || max_preview_chars < 20L) {
     max_preview_chars <- 88L

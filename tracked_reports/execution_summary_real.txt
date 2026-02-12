@@ -1,44 +1,28 @@
 {
-<<<<<<< HEAD
-  "elapsed_time": 5.9222,
-=======
-  "elapsed_time": 3.9972,
->>>>>>> b7b44ed (add files)
+  "elapsed_time": 4.3722,
   "field_status": {
     "education_level": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "pending",
+      "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "pending",
+      "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "string|Unknown"
     },
     "education_field": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "pending",
+      "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "string|Unknown"
     },
     "education_source": {
@@ -46,77 +30,53 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "string|null"
     },
     "prior_occupation": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
+      "status": "found",
+      "value": "inhabitant of TIPNIS / social organization representative",
+      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis, https:/www.cejis.sinnersite.com/noticias/chavez-no-se-puede-jugar-con-el-estomago-de-los-indigenas",
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|Unknown"
     },
     "class_background": {
-<<<<<<< HEAD
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-=======
       "status": "found",
-      "value": "Indigenous woman from the TIPNIS region",
-      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
->>>>>>> b7b44ed (add files)
+      "value": "indigenous from TIPNIS / social organization representative",
+      "source_url": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales, https:/boliviadecide.blogspot.com/2014/07/mas-va-por-la-renovacion-de-la-mayoria.html",
       "evidence": null,
       "attempts": 0,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
       "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "value": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 3,
->>>>>>> b7b44ed (add files)
       "descriptor": "string|null"
     },
     "disability_status": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "pending",
+      "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
-      "status": "found",
-      "value": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
-      "source_url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "birth_place": {
-<<<<<<< HEAD
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-=======
       "status": "found",
-      "value": "TIPNIS region, Beni department, Bolivia",
+      "value": "TIPNIS",
       "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
->>>>>>> b7b44ed (add files)
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|Unknown"
@@ -126,39 +86,31 @@
       "value": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
       "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 3,
->>>>>>> b7b44ed (add files)
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "pending",
+      "value": null,
       "source_url": null,
       "evidence": null,
       "attempts": 0,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
       "evidence": null,
       "attempts": 0,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "pending",
+      "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -166,11 +118,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "string|null"
     },
     "lgbtq_source": {
@@ -178,36 +126,21 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-<<<<<<< HEAD
       "attempts": 0,
-=======
-      "attempts": 4,
->>>>>>> b7b44ed (add files)
       "descriptor": "string|null"
     },
     "confidence": {
-      "status": "found",
-      "value": "Low",
+      "status": "pending",
+      "value": null,
       "source_url": null,
-<<<<<<< HEAD
-      "evidence": "terminal_payload_source_backed",
+      "evidence": null,
       "attempts": 0,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "pending",
+      "value": null,
       "source_url": null,
-=======
-      "evidence": null,
-      "attempts": 4,
-      "descriptor": "Low|Medium|High"
-    },
-    "justification": {
-      "status": "found",
-      "value": "Ramona Moye Camaconi is an indigenous MAS politician serving as a deputy for Beni, notable for her representation of the TIPNIS region and facing legal allegations concerning falsified medical leave",
-      "source_url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
->>>>>>> b7b44ed (add files)
       "evidence": null,
       "attempts": 0,
       "descriptor": "string"
