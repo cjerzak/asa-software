@@ -81,6 +81,11 @@ result$parsed$nationality
 | `$status` | `"success"` or `"error"` |
 | `$elapsed_time` | Execution time in minutes |
 | `$raw_output` | Full agent trace for debugging |
+| `$token_stats` | Token usage breakdown (input, output, fold) |
+| `$fold_stats` | Memory folding statistics |
+| `$action_ascii` | ASCII visualization of agent actions |
+| `$action_steps` | Structured list of agent action steps |
+| `$plan` | Agent's execution plan |
 
 ## Template-Based Prompts
 
@@ -305,6 +310,14 @@ agent <- asa::initialize_agent(
 | `timeout` | `120` | Request timeout in seconds |
 | `rate_limit` | `0.1` | Max requests per second (conservative default for heavy workloads) |
 | `verbose` | `TRUE` | Print initialization status messages |
+| `search` | `NULL` | `search_options()` object for search configuration |
+| `use_memory_folding` | `TRUE` | Enable memory compression |
+| `memory_threshold` | `10` | Message count before triggering fold |
+| `memory_keep_recent` | `4` | Recent exchanges to keep after fold |
+| `fold_char_budget` | `30000` | Character budget triggering fold |
+| `use_observational_memory` | `FALSE` | Enable observational memory subsystem |
+| `tor` | `tor_options()` | Tor routing configuration |
+| `recursion_limit` | `NULL` | Max LangGraph steps (NULL = framework default) |
 
 ### Configuration Classes
 
