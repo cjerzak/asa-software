@@ -55,10 +55,11 @@ tuning knobs (e.g., \code{webpage_max_chars}, \code{webpage_max_chunks},
 
 \item{use_memory_folding}{Enable DeepAgent-style memory compression (default: TRUE)}
 
-\item{memory_threshold}{Number of messages before folding triggers (default: 4)}
+\item{memory_threshold}{Number of messages before folding triggers (default: 10;
+message-count backstop alongside \code{fold_char_budget})}
 
 \item{memory_keep_recent}{Number of recent exchanges to preserve after folding
-(default: 2). An exchange is a user turn plus the assistant response,
+(default: 4). An exchange is a user turn plus the assistant response,
 including any tool calls and tool outputs.}
 
 \item{fold_char_budget}{Total character budget across all messages before

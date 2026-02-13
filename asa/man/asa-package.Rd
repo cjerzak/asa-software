@@ -11,7 +11,8 @@ AI search tasks at large scales using web search capabilities.
 
 The agent uses a ReAct (Reasoning + Acting) pattern implemented via
 LangGraph, with tools for searching DuckDuckGo and Wikipedia. It supports
-multiple LLM backends (OpenAI, Groq, xAI, Gemini, OpenRouter, Exo) and implements DeepAgent-style
+multiple LLM backends (OpenAI, Groq, xAI, Gemini, Anthropic, Bedrock,
+OpenRouter, Exo) and implements DeepAgent-style
 memory folding for managing long conversations.
 }
 \section{Main Functions}{

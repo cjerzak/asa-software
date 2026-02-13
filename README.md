@@ -282,6 +282,8 @@ asa_audit(senators, backend = "langgraph", agent = agent)
 | `groq` | `llama-3.3-70b-versatile` | `GROQ_API_KEY` |
 | `xai` | `grok-2-1212`, `grok-3` | `XAI_API_KEY` |
 | `gemini` | `gemini-3-flash-preview` | `GOOGLE_API_KEY` (or `GEMINI_API_KEY`) |
+| `anthropic` | `claude-sonnet-4-5-20250929` | `ANTHROPIC_API_KEY` |
+| `bedrock` | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` | `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` |
 | `openrouter` | `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.3-70b-instruct:free` | `OPENROUTER_API_KEY` |
 | `exo` | Local models | (none) |
 
@@ -395,8 +397,8 @@ agent <- asa::initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
   use_memory_folding = TRUE,   # Enable memory compression (default)
-  memory_threshold = 6,         # Fold after 6 messages (default: 4)
-  memory_keep_recent = 3        # Keep 3 recent exchanges after fold (default: 2)
+  memory_threshold = 6,         # Fold after 6 messages (default: 10)
+  memory_keep_recent = 3        # Keep 3 recent exchanges after fold (default: 4)
 )
 
 # Monitor folding activity in responses
@@ -418,8 +420,8 @@ agent_simple <- asa::initialize_agent(
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `use_memory_folding` | `TRUE` | Enable DeepAgent-style memory compression |
-| `memory_threshold` | `4` | Number of messages that trigger folding |
-| `memory_keep_recent` | `2` | Recent exchanges to preserve after each fold |
+| `memory_threshold` | `10` | Number of messages that trigger folding (message-count backstop) |
+| `memory_keep_recent` | `4` | Recent exchanges to preserve after each fold |
 
 An exchange is a user turn plus the assistant response, including any tool calls and tool outputs.
 
@@ -484,11 +486,11 @@ Fine-tune search behavior globally:
 # Configure search parameters for reliability
 asa::configure_search(
   max_results = 15,          # Results per search (default: 10)
-  timeout = 20,              # Request timeout in seconds (default: 15)
+  timeout = 20,              # Request timeout in seconds (default: 30)
   max_retries = 5,           # Retry attempts (default: 3)
   retry_delay = 3,           # Seconds between retries (default: 2)
   backoff_multiplier = 2.0,  # Exponential backoff factor (default: 1.5)
-  inter_search_delay = 3.0   # Delay between searches in seconds (default: 2.0)
+  inter_search_delay = 3.0   # Delay between searches in seconds (default: 1.5)
 )
 
 # Enable debug logging for troubleshooting
@@ -497,9 +499,9 @@ asa::configure_search_logging("DEBUG")  # Options: DEBUG, INFO, WARNING, ERROR, 
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `inter_search_delay` | `2.0` | Seconds between consecutive searches (humanized with jitter) |
+| `inter_search_delay` | `1.5` | Seconds between consecutive searches (humanized with jitter) |
 | `max_results` | `10` | Maximum results per search |
-| `timeout` | `15` | HTTP request timeout in seconds |
+| `timeout` | `30` | HTTP request timeout in seconds |
 | `max_retries` | `3` | Retry attempts on failure |
 | `retry_delay` | `2` | Initial delay between retries |
 | `backoff_multiplier` | `1.5` | Exponential backoff factor |
