@@ -3433,6 +3433,12 @@ def _sanitize_memory_dict(memory: Dict[str, Any]) -> Dict[str, Any]:
             return 1
         return 2
 
+    def _extract_urls(text: str) -> list:
+        if not text:
+            return []
+        matches = re.findall(r"https?://[^\s)>\]\}\"']+", str(text))
+        return _dedupe_keep_order([str(m).strip() for m in matches if str(m).strip()])
+
     def _cap_string_items(
         items: list,
         *,
@@ -3440,6 +3446,7 @@ def _sanitize_memory_dict(memory: Dict[str, Any]) -> Dict[str, Any]:
         max_total_chars: int,
         max_item_chars: int,
         priority_fn: Optional[Callable[[str], int]] = None,
+        preserve_urls: bool = False,
     ) -> list:
         ranked: List[tuple] = []
         for idx, raw in enumerate(items):
@@ -3448,18 +3455,30 @@ def _sanitize_memory_dict(memory: Dict[str, Any]) -> Dict[str, Any]:
             text = str(raw).strip()
             if not text:
                 continue
-            if len(text) > max_item_chars:
+            has_url = bool(_extract_urls(text))
+            # Preserve full URLs in memory facts for stable provenance.
+            if len(text) > max_item_chars and not (preserve_urls and has_url):
                 text = text[: max(1, max_item_chars - 3)].rstrip() + "..."
             prio = priority_fn(text) if callable(priority_fn) else 0
-            ranked.append((prio, idx, text))
+            ranked.append((prio, idx, text, has_url))
 
         ranked.sort(key=lambda row: (row[0], row[1]))
         kept: list = []
         total_chars = 0
-        for _, _, text in ranked:
+        for _, _, text, has_url in ranked:
             if len(kept) >= max_items:
                 break
             if (total_chars + len(text)) > max_total_chars:
+                if preserve_urls and has_url:
+                    urls = _extract_urls(text)
+                    if urls:
+                        fallback = f"SOURCE_URLS: {', '.join(urls)}"
+                        if (
+                            len(kept) < max_items
+                            and (total_chars + len(fallback)) <= max_total_chars
+                        ):
+                            kept.append(fallback)
+                            total_chars += len(fallback)
                 continue
             kept.append(text)
             total_chars += len(text)
@@ -3485,6 +3504,7 @@ def _sanitize_memory_dict(memory: Dict[str, Any]) -> Dict[str, Any]:
                 max_total_chars=_MEMORY_FACT_MAX_TOTAL_CHARS,
                 max_item_chars=_MEMORY_FACT_MAX_ITEM_CHARS,
                 priority_fn=_fact_priority,
+                preserve_urls=True,
             )
         else:
             out[key] = _cap_string_items(
@@ -3523,6 +3543,42 @@ def _sanitize_memory_dict(memory: Dict[str, Any]) -> Dict[str, Any]:
             }
         )
     out["sources"] = _dedupe_keep_order(cleaned_sources)[:_MEMORY_SOURCE_MAX_ITEMS]
+
+    # Final shape hardening for downstream consumers.
+    for key in ("facts", "decisions", "open_questions", "warnings"):
+        vals = out.get(key, [])
+        if isinstance(vals, list):
+            normalized = []
+            for v in vals:
+                if v is None:
+                    continue
+                text = str(v).strip()
+                if text:
+                    normalized.append(text)
+            out[key] = normalized
+        elif vals is None:
+            out[key] = []
+        else:
+            text = str(vals).strip()
+            out[key] = [text] if text else []
+
+    if not isinstance(out.get("sources"), list):
+        out["sources"] = []
+    else:
+        normalized_sources = []
+        for src in out.get("sources", []):
+            if not isinstance(src, dict):
+                continue
+            normalized_sources.append(
+                {
+                    "tool": str(src.get("tool") or "").strip(),
+                    "url": str(src.get("url")).strip() if src.get("url") else None,
+                    "title": str(src.get("title")).strip() if src.get("title") else None,
+                    "note": str(src.get("note")).strip() if src.get("note") else None,
+                }
+            )
+        out["sources"] = normalized_sources[:_MEMORY_SOURCE_MAX_ITEMS]
+
     return out
 
 
@@ -8175,6 +8231,78 @@ def create_memory_folding_agent(
                     + "\nPreserve validated reflections unless contradicted by new evidence.\n"
                 )
 
+        def _initial_task_constraints_block(all_messages: list) -> str:
+            """Extract compact disambiguation/scope constraints from the first user turn."""
+            first_user_text = ""
+            for _msg in all_messages or []:
+                if type(_msg).__name__ != "HumanMessage":
+                    continue
+                first_user_text = _message_content_to_text(getattr(_msg, "content", "")) or ""
+                if first_user_text.strip():
+                    break
+            if not first_user_text.strip():
+                return ""
+
+            keyword_hits = (
+                "target individual",
+                "disambiguation",
+                "country:",
+                "region",
+                "constituency",
+                "political party",
+                "election year",
+                "source requirement",
+                "important guidelines",
+                "class background rules",
+                "temporal context",
+                "known ",
+                "output:",
+            )
+            selected_lines: list = []
+            in_header_block = False
+            header_prefixes = (
+                "target individual:",
+                "disambiguation:",
+                "source requirement:",
+                "important guidelines:",
+                "class background rules:",
+                "output:",
+                "temporal context:",
+            )
+            for raw_line in first_user_text.splitlines():
+                line = str(raw_line).strip()
+                low = line.lower()
+                if not line:
+                    if in_header_block and selected_lines and selected_lines[-1] != "":
+                        selected_lines.append("")
+                    continue
+                if any(low.startswith(h) for h in header_prefixes):
+                    in_header_block = True
+                    selected_lines.append(line)
+                    continue
+                if in_header_block and (line.startswith("-") or line.startswith("*")):
+                    selected_lines.append(line)
+                    continue
+                if any(k in low for k in keyword_hits):
+                    in_header_block = False
+                    selected_lines.append(line)
+
+            constraints_text = "\n".join(selected_lines).strip()
+            if not constraints_text:
+                constraints_text = first_user_text.strip()
+
+            max_chars = 2200
+            if len(constraints_text) > max_chars:
+                constraints_text = constraints_text[:max_chars].rstrip() + "\n...[truncated]"
+
+            return (
+                "\n\nTASK CONSTRAINTS FROM INITIAL USER REQUEST (for disambiguation and scope):\n"
+                + constraints_text
+                + "\nUse these constraints to avoid entity conflation while merging memory facts.\n"
+            )
+
+        task_constraints_block = _initial_task_constraints_block(messages)
+
         summarize_prompt = (
             "You are updating LONG-TERM MEMORY for an AI research assistant.\n"
             "Return STRICT JSON ONLY. No markdown. No extra text.\n\n"
@@ -8185,6 +8313,7 @@ def create_memory_folding_agent(
             "- Preserve high-signal findings and durable evidence; compress low-signal details once represented.\n"
             "- Preserve temporal ordering — note WHEN facts were discovered (early/mid/late) if discernible.\n"
             "- For every fact, note the source URL if available.\n"
+            "- Never abbreviate or truncate URLs. Preserve full URLs verbatim (no '...' inside URLs).\n"
             "- If new information contradicts existing memory, keep BOTH with a note about the conflict.\n\n"
             f"Memory size targets: <= {_MEMORY_FACT_MAX_ITEMS} facts and <= {_MEMORY_FACT_MAX_TOTAL_CHARS} total fact chars.\n\n"
             "Required JSON keys (all required):\n"
@@ -8203,6 +8332,7 @@ def create_memory_folding_agent(
             f"{observation_block}"
             f"{reflection_block}"
             f"{schema_extraction_block}"
+            f"{task_constraints_block}"
         )
 
         summarize_started = time.perf_counter()

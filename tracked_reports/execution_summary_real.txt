@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 6.4449,
+  "elapsed_time": 9.2235,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,79 +14,79 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|Unknown"
     },
     "education_field": {
-      "status": "found",
-      "value": "Ciencias de la Educación",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "evidence": null,
-      "attempts": 4,
-      "descriptor": "string|Unknown"
-    },
-    "education_source": {
-      "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "evidence": null,
-      "attempts": 4,
-      "descriptor": "string|null"
-    },
-    "prior_occupation": {
-      "status": "found",
-      "value": "Ex Capitán Grande de TCO; Ex Presidente de la Comunidad Rosario",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "evidence": null,
-      "attempts": 4,
-      "descriptor": "string|Unknown"
-    },
-    "class_background": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
+      "descriptor": "string|Unknown"
+    },
+    "education_source": {
+      "status": "unknown",
+      "value": null,
+      "source_url": null,
+      "evidence": null,
+      "attempts": 0,
+      "descriptor": "string|null"
+    },
+    "prior_occupation": {
+      "status": "found",
+      "value": "Indigenous community inhabitant/member in the TIPNIS region",
+      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "evidence": null,
+      "attempts": 0,
+      "descriptor": "string|Unknown"
+    },
+    "class_background": {
+      "status": "found",
+      "value": "Working class",
+      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "evidence": null,
+      "attempts": 0,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
       "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "value": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|null"
     },
     "disability_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 4,
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 0,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
+      "status": "found",
+      "value": "TIPNIS, Bolivia",
+      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "source_url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|null"
     },
     "birth_year": {
@@ -94,15 +94,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "pending",
-      "value": null,
+      "status": "found",
+      "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,39 +110,39 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string|null"
     },
     "confidence": {
       "status": "found",
-      "value": "Low",
+      "value": "High for political affiliation and regional representation; Low for specific biographical dates and educational background.",
       "source_url": null,
-      "evidence": "terminal_payload_source_backed",
-      "attempts": 4,
+      "evidence": null,
+      "attempts": 0,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
+      "status": "found",
+      "value": "Moye is an indigenous inhabitant of the rural TIPNIS region; her background as a community member suggests manual or agricultural labor, mapping to Working Class.",
+      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
       "evidence": null,
-      "attempts": 4,
+      "attempts": 0,
       "descriptor": "string"
     }
   }

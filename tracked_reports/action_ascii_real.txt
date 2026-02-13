@@ -1,40 +1,41 @@
 AGENT ACTION MAP
 ================
-Steps captured: 16
-LangGraph timed steps: 31
+Steps captured: 8
+LangGraph timed steps: 32
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 2 found, 7 unknown, 1 pending (10 core fields)
-      Source-backed found values: 4 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, class_background, disabilit...
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 6 (across 18 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, disability...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 7 tool-call turn(s), 1 answer turn(s)
-      Tool results: 7 total (Tool OpenWebpage=7)
+      AI turns: 3 tool-call turn(s), 1 answer turn(s)
+      Tool results: 3 total (Tool Search=2, Tool OpenWebpage=1)
       Structured terminal answer emitted
       Plan status: Plan steps: 4 total (status metadata not yet populated)
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER=1)
+      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
   +-- [PLAN] Plan steps: 4 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      summarize: 4.5657m (tok=55403, n=5)
-      agent: 1.3751m (tok=109745, n=13)
-      tools: 0.4761m (tok=0, n=12)
-      planner: 0.4365m (tok=4214, n=1)
+      summarize: 4.2512m (tok=73464, n=8)
+      tools: 4.1117m (tok=0, n=11)
+      agent: 0.5657m (tok=73038, n=11)
+      finalize: 0.2625m (tok=9692, n=1)
+      planner: 0.1787m (tok=1722, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #20 summarize: 1.3521m (tok=14999)
-      #23 summarize: 1.1376m (tok=15834)
-      #30 summarize: 0.8920m (tok=9178)
-      #14 summarize: 0.6347m (tok=8168)
-      #17 summarize: 0.5493m (tok=7224)
-  +-- [TIMING] wall=6.4178m nodes=6.8534m delta=-0.4356m (overlap likely)
+      #16 summarize: 0.8635m (tok=13357)
+      #07 tools: 0.8599m (tok=0)
+      #09 tools: 0.8175m (tok=0)
+      #30 tools: 0.7074m (tok=0)
+      #31 summarize: 0.6742m (tok=10979)
+  +-- [TIMING] wall=9.1921m nodes=9.3698m delta=-0.1776m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -42,78 +43,38 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=10868 out=431 total=11299
-      min: 0.0505m
-      detail: OpenWebpage(url=http://www.vicepresidencia...rlamentario=609)
+      tok: in=7823 out=158 total=7981
+      min: 0.0348m
+      detail: OpenWebpage(url=http://www.vicepresidencia...rlamentario=428)
   +-- [03] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=pa...Mujeres - Sub Central Sé...
-  +-- [04] Requested 1 tool call (OpenWebpage)
+      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=pa...c. en Ciencias de la Educ...
+  +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=12181 out=55 total=12236
-      min: 0.0148m
-      detail: OpenWebpage(url=https://www.noticiasfides....ificadas-390956)
+      tok: in=8444 out=178 total=8622
+      min: 0.0318m
+      detail: Search(query=site:vicepresidencia.gob.bo "RAMONA MOYE ...)
   +-- [05] Returned result
-      by: Tool OpenWebpage
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.noticiasfides.com/nacional/politica/di...ciasfides.com/nacional] L...
-  +-- [06] Requested 1 tool call (OpenWebpage)
+      detail: MOYE CAMACONI, RAMONA - MAS Diputado uninominal - Circunscripción 09 · Nombre: RAMO...
+  +-- [06] Requested 1 tool call (Search)
       by: AI
-      tok: in=13208 out=60 total=13268
-      min: 0.0156m
-      detail: OpenWebpage(args{cursor, id})
+      tok: in=8018 out=121 total=8139
+      min: 0.0267m
+      detail: Search(query=site:vicepresidencia.gob.bo "RAMONA MOYE ...)
   +-- [07] Returned result
-      by: Tool OpenWebpage
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor'...e fix the error and try a...
-  +-- [08] Requested 1 tool call (OpenWebpage)
+      flag: EMPTY_RESULT
+  +-- [08] Produced structured answer
       by: AI
-      tok: in=13468 out=55 total=13523
-      min: 0.0174m
-      detail: OpenWebpage(url=https://www.noticiasfides....ificadas-390956)
-  +-- [09] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://www.noticiasfides.com/nacional/politica/di...ciasfides.com/nacional] L...
-  +-- [10] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=7732 out=22 total=7754
-      min: 0.0118m
-      detail: OpenWebpage(args{cursor, loc})
-  +-- [11] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor': 1, 'loc': 400} with error:...
-  +-- [12] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=7804 out=22 total=7826
-      min: 0.0553m
-      detail: OpenWebpage(args{cursor, loc})
-  +-- [13] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor': 1, 'loc': 700} with error:...
-  +-- [14] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=7876 out=22 total=7898
-      min: 0.0605m
-      detail: OpenWebpage(args{cursor, id})
-  +-- [15] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor': 1, 'id': 0} with error: ur...
-  +-- [16] Produced structured answer
-      by: AI
-      tok: in=7340 out=3987 total=11327
-      min: 0.4346m
+      tok: in=7120 out=2572 total=9692
+      min: 0.2625m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":...", "justification": "Unkn...
+      detail: {"education_level": "Unknown", "education_institution":...r, mapping to Working Cla...
 END

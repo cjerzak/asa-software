@@ -1,21 +1,63 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] FIELD_EXTRACT: education_field = Ciencias de la Educación (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "[ANCHORED] FIELD_EXTRACT: education_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Ex Capitán Grande de TCO; Ex Presidente de la Comunidad Rosario (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "NAME: Eloy Cartagena Yoamona (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "AFFILIATION: MAS (Diputado uninominal - Circunscripción 6 suplente, para el departamento de Beni) (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "POSITION: Suplente de diputado uninominal - Circunscripción 6, MAS, Beni (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"],
-  "decisions": [],
-  "open_questions": "What is Eloy Cartagena Yoamona's current political status and whether he holds any other positions?",
+  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS, Bolivia (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: birth_place_source = https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: birth_year = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: birth_year_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: class_background = Working class (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "[ANCHORED] FIELD_EXTRACT: confidence = High for political affiliation and regional representation; Low for specific biographical dates and educational background. (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: disability_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: disability_status = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_field = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_institution = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_level = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: justification = Moye is an indigenous inhabitant of the rural TIPNIS region; her background as a community member suggests manual or agricultural labor, mapping to Working Class. (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "[ANCHORED] FIELD_EXTRACT: lgbtq_details = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: lgbtq_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: lgbtq_status = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Indigenous community inhabitant/member in the TIPNIS region (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "Ramona Moye Camaconi was elected as a deputy for the Movimiento al Socialismo (MAS) party representing the Beni Department, active around 2014. (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "Official parliamentary records list Moye as a substitute (suplente) for Circunscripción 6, Beni, while media and social media sources identify her as a 'titular' (principal) deputy. (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428; https://www.flickr.com/photos/194792615@N03/52180793916)", "In April 2019, Moye was denounced by legislator Costa for allegedly using falsified medical certificates to obtain legislative leave. (source: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956)", "Moye rejected the use of indigenous community justice in a 2015 TIPNIS theft case, preferring the Public Prosecutor's Office in Trinidad. (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "Moye presented a bill to the Legislative Assembly to repeal Law 180 (TIPNIS Intangibility Law) on behalf of four TIPNIS indigenous organizations. (source: http://www.ftierra.org/index.php/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza)", "She has publicly denied that TIPNIS leaders face government persecution and maintains that she works for the regional progress of the territory. (source: https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "Ramona Moye Camaconi maintains active profiles on Facebook and Twitter (@RCamaconi, joined April 2018). (source: https://www.facebook.com/ramona.moyecamaconi; https://twitter.com/RCamaconi)", "LinkedIn profiles for a 'Ramona Moye' in Flint, Michigan, are confirmed to be a different individual (teacher). (source: https://www.linkedin.com/in/ramona-moye-74819354)"],
+  "decisions": "Exclude biographical data from LinkedIn profiles linked to Ramona Moye in Flint, Michigan.",
+  "open_questions": ["What is Ramona Moye Camaconi's specific date of birth?", "What was her specific level of education or formal training prior to entering the Plurinational Legislative Assembly?", "Is her current status as 'titular' or 'suplente' clarified in more recent official gazettes?", "Does the 2013 publication 'Biografías: historias de vida en la Asamblea Legislativa Plurinacional' by Inés Gonzales Salas provide her specific birth date?"],
   "sources": [
     {
-      "tool": "OpenWebpage",
+      "tool": "Search",
       "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": null,
-      "note": "Biographical page including Eloy Cartagena Yoamona; Ramona Moye supplencia info"
+      "title": "Vicepresidencia de Bolivia - Perfil Parlamentario",
+      "note": "Lists Moye as Suplente for Circunscripción 6 in Beni."
     },
     {
-      "tool": "OpenWebpage",
-      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": "Vicepresidencia del Estado",
-      "note": null
+      "tool": "Search",
+      "url": "https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "title": "El TIPNIS y el Madidi: las heridas que sangran en el rostro indígena de Bolivia",
+      "note": "Confirms she is an indigenous woman from TIPNIS, a MAS deputy, and denies leader persecution."
+    },
+    {
+      "tool": "Search",
+      "url": "https://noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
+      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
+      "note": "Reports on the 2019 legal complaint regarding medical leave."
+    },
+    {
+      "tool": "Search",
+      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "title": "Diputada indígena del MAS rechaza justicia comunitaria",
+      "note": "Details her 2015 rejection of community justice and working class background."
+    },
+    {
+      "tool": "Search",
+      "url": "http://www.ftierra.org/index.php/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza",
+      "title": "Indígenas del TIPNIS se refugian en su territorio",
+      "note": "Describes her presentation of the bill to repeal Law 180."
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
+      "title": "Flickr - Ramona Moye Camaconi",
+      "note": "Identifies her as 'diputada titular por Beni'."
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.facebook.com/ramona.moyecamaconi",
+      "title": "Ramona Moye Camaconi Facebook",
+      "note": "Politician's social media presence."
+    },
+    {
+      "tool": "Search",
+      "url": "https://twitter.com/RCamaconi",
+      "title": "Twitter - @RCamaconi",
+      "note": "Twitter profile joined in April 2018."
+    },
+    {
+      "tool": "Search",
+      "url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "title": "Observatorio CCD Bolivia - El TIPNIS y el Madidi",
+      "note": "Identifies birth place as TIPNIS, Bolivia."
     }
   ],
-  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1969 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "UNGROUNDED: FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "UNGROUNDED: FIELD_EXTRACT: birth_date = 1969-12-01 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "UNGROUNDED: FIELD_EXTRACT: education_level = Lic (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "UNGROUNDED: FIELD_EXTRACT: prior_occupation_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)"]
+  "warnings": ["Discrepancy in parliamentary role: Official Vicepresidencia records list her as 'suplente' (substitute) while other media/Flickr sources list her as 'titular' (principal).", "Potential entity conflation: LinkedIn results for 'Ramona Moye' in Flint, Michigan, are a different person."]
 }

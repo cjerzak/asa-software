@@ -3636,3 +3636,116 @@ test_that("_parse_plan_response returns fallback for invalid JSON", {
   expect_true(!is.null(result_r$goal))
   expect_true(length(result_r$steps) >= 1L)
 })
+
+test_that("_sanitize_memory_dict preserves full URLs in long facts", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  long_prefix <- paste(rep("context", 90), collapse = " ")
+  url <- "https://example.com/research/records/ramona-moye-camaconi/profile?source=asa&view=full"
+  long_fact <- paste0(long_prefix, " (source: ", url, ")")
+
+  memory <- list(
+    version = 1L,
+    facts = list(long_fact),
+    decisions = list(),
+    open_questions = list(),
+    sources = list(),
+    warnings = list()
+  )
+
+  out <- reticulate::py_to_r(custom_ddg$`_sanitize_memory_dict`(memory))
+  expect_true(is.character(out$facts))
+  expect_true(length(out$facts) >= 1L)
+  expect_true(grepl(url, out$facts[[1]], fixed = TRUE))
+  expect_false(grepl(paste0(substr(url, 1, 20), ".*\\.\\.\\."), out$facts[[1]]))
+})
+
+test_that("_sanitize_memory_dict coerces scalar summary fields to list form", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  out <- reticulate::py_to_r(custom_ddg$`_sanitize_memory_dict`(list(
+    version = 1L,
+    facts = "fact item",
+    decisions = "decision item",
+    open_questions = "question item",
+    warnings = "warning item",
+    sources = list()
+  )))
+
+  expect_true(is.character(out$facts))
+  expect_true(is.character(out$decisions))
+  expect_true(is.character(out$open_questions))
+  expect_true(is.character(out$warnings))
+  expect_equal(length(out$facts), 1L)
+  expect_equal(length(out$decisions), 1L)
+  expect_equal(length(out$open_questions), 1L)
+  expect_equal(length(out$warnings), 1L)
+})
+
+test_that("fold summarizer prompt includes initial disambiguation constraints", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  asa_test_fake_search_tool(
+    return_value = "__START_OF_SOURCE 1__ <CONTENT> profile snippet </CONTENT> <URL> https://example.com/profile </URL> __END_OF_SOURCE 1__",
+    var_name = "fake_search_disambig"
+  )
+  asa_test_stub_llm(
+    mode = "tool_call",
+    tool_name = "Search",
+    tool_args = list(query = "Ramona Moye Camaconi"),
+    tool_call_id = "call_disambig",
+    response_content = "final answer",
+    var_name = "disambig_stub_llm"
+  )
+  asa_test_stub_summarizer(var_name = "disambig_stub_summarizer")
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$disambig_stub_llm,
+    tools = list(reticulate::py$fake_search_disambig),
+    checkpointer = NULL,
+    message_threshold = as.integer(5),
+    keep_recent = as.integer(1),
+    summarizer_model = reticulate::py$disambig_stub_summarizer,
+    debug = FALSE
+  )
+
+  initial <- msgs$HumanMessage(content = paste(
+    "TASK OVERVIEW:",
+    "Research biographical facts.",
+    "",
+    "TARGET INDIVIDUAL:",
+    "- Name: Ramona Moye Camaconi",
+    "- Country: Bolivia",
+    "- Political Party: Movimiento Al Socialismo - MAS",
+    "",
+    "DISAMBIGUATION:",
+    "- Country: Bolivia",
+    "- Time period: Active around 2014",
+    "- Region: Beni",
+    sep = "\n"
+  ))
+  ai1 <- msgs$AIMessage(content = "alpha: old assistant answer")
+  human2 <- msgs$HumanMessage(content = "followup")
+  ai2 <- msgs$AIMessage(content = "beta: old assistant note")
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(initial, ai1, human2, ai2),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L)
+    ),
+    config = list(
+      recursion_limit = as.integer(40),
+      configurable = list(thread_id = "test_fold_disambiguation_constraints")
+    )
+  )
+
+  expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
+  expect_equal(as.integer(reticulate::py$disambig_stub_summarizer$calls), 1L)
+  last_prompt <- as.character(reticulate::py$disambig_stub_summarizer$last_prompt)
+  expect_true(grepl("TASK CONSTRAINTS FROM INITIAL USER REQUEST", last_prompt, fixed = TRUE))
+  expect_true(grepl("DISAMBIGUATION", last_prompt, fixed = TRUE))
+  expect_true(grepl("Ramona Moye Camaconi", last_prompt, fixed = TRUE))
+  expect_true(grepl("Country: Bolivia", last_prompt, fixed = TRUE))
+})
