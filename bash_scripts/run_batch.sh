@@ -191,6 +191,7 @@ seq "$START_IDX" "$STOP_IDX" | \
         '
         IDX=$(( {%} - 1 ))
         PORT=$(( 9050 + IDX ))
+        CTRL_PORT=$(( 9150 + IDX ))
 
         # Set proxy environment for this job
         export HTTP_PROXY="socks5h://127.0.0.1:${PORT}"
@@ -201,6 +202,8 @@ seq "$START_IDX" "$STOP_IDX" | \
         export all_proxy="$HTTP_PROXY"
         export no_proxy=localhost,127.0.0.1
         export NO_PROXY=localhost,127.0.0.1
+        # Keep Tor circuit rotation bound to this worker'"'"'s Tor instance.
+        export TOR_CONTROL_PORT="${CTRL_PORT}"
 
         # Disable browser crash reporters
         export MOZ_CRASHREPORTER_DISABLE=1

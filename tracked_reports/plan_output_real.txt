@@ -1,74 +1,49 @@
 {
-  "goal": "Collect verifiable biographical data for Ramona Moye Camaconi (Bolivia, MAS, Beni, active ~2014) focusing on education, prior occupation/class background, birth year, birth place, disability status, and publicly disclosed LGBTQ identity; produce an evidence-backed profile and a 4–8 step execution checklist.",
-  "education_level": "Unknown",
-  "education_institution": "Unknown",
-  "education_field": "Unknown",
-  "prior_occupation": "Unknown",
-  "class_background": "Unknown",
-  "disability_status": "Unknown",
-  "birth_place": "Unknown",
-  "birth_year": "Unknown",
-  "lgbtq_status": "Unknown",
-  "lgbtq_details": "Unknown",
-  "confidence": "low",
-  "justification": "Initial automated search found insufficient reliable public information about Ramona Moye Camaconi. No explicit, verifiable sources located that state education, prior occupation, birth year/place, disability status, or publicly disclosed LGBTQ identity. follow-up targeted searches of official parliamentary records, MAS party lists, local Beni press archives, and electoral registries are required. All fields set to Unknown per guideline to avoid guessing.",
-  "sources": {
-    "initial_wikipedia_search": "https://www.google.com/search?q=Ramona+Moye+Camaconi+Wikipedia",
-    "mas_candidate_lists_search": "https://www.google.com/search?q=Ramona+Moye+Camaconi+MAS+Beni+2014",
-    "bolivia_parliament_search": "https://www.google.com/search?q=Ramona+Moye+Camaconi+Asamblea+Bolivia+Beni",
-    "regional_news_search": "https://www.google.com/search?q=Ramona+Moye+Camaconi+Beni+noticias"
-  },
+  "goal": "Compile verified biographical fields for Ramona Moye Camaconi (Bolivia, MAS, active around 2014) focusing on education, prior occupation, birth details, disability, and LGBTQ status with sources.",
   "steps": [
     {
       "id": 1,
-      "description": "Open and review the Spanish Wikipedia and English Wikipedia pages for 'Ramona Moye Camaconi' and variant spellings (Moye, Moye Camaconi) to extract any biographical fields and cited sources.",
-      "completion_criteria": "Found Wikipedia page(s) or confirmed absence; saved full URLs of any pages and extracted cited reference URLs or noted none exist.",
-      "status": "in_progress",
-      "findings": "Searching Wikipedia for Ramona Moye Camaconi"
+      "description": "Search Wikipedia for 'Ramona Moye Camaconi' and allied spellings to locate a biography page with birth, education, and occupation data; record at least one full URL source.",
+      "completion_criteria": "At least one Wikipedia page URL identified containing core biographical data (education, occupation, region, party) or a note that page is not found.",
+      "status": "pending",
+      "findings": ""
     },
     {
       "id": 2,
-      "description": "Search official Bolivian government and Asamblea Legislativa Plurinacional (parliament) websites for a deputy profile or electoral registry entry for Ramona Moye Camaconi (2014–2015 period) and download or record the exact profile URL.",
-      "completion_criteria": "Located an official parliamentary or electoral profile with URL that either contains biographical fields or confirmed no profile exists; capture screenshot/URL.",
+      "description": "Search official MAS party biographies and Bolivian government/court profiles (e.g., Congreso Nacional, Asamblea Legislativa) from around 2014 to verify education, birth details, and prior occupation; record full URLs for each relevant source.",
+      "completion_criteria": "Found one or more official sources with full URLs confirming education or occupation data; all URLs captured.",
       "status": "pending",
       "findings": ""
     },
     {
       "id": 3,
-      "description": "Search Movimiento al Socialismo (MAS) party materials: candidate lists, press releases, and archived MAS regional (Beni) publications from the 2014 election cycle for candidate biography information; record exact URLs.",
-      "completion_criteria": "Collected at least one MAS official document or archived page listing Ramona Moye Camaconi with a URL, or documented absence of her in MAS archives.",
+      "description": "Cross-check credible news outlets (Reuters, AP, local Bolivian outlets) for any public disclosures of Ramona Moye Camaconi's birth year/place, disability status, and LGBTQ identity; record URLs.",
+      "completion_criteria": "At least one credible news source with a URL corroborating any biographical details; note if information is Unknown.",
       "status": "pending",
       "findings": ""
     },
     {
       "id": 4,
-      "description": "Search reputable Bolivian news outlets (e.g., La Razón, El Deber, ABI, Página Siete, local Beni outlets) for articles mentioning Ramona Moye Camaconi around 2014–2016 to find statements about education, prior occupation, birthplace, birth year, disability, or sexual orientation; save exact article U",
-      "completion_criteria": "Assembled URLs of any news articles containing explicit biographical claims or confirmed none exist; note conflicting claims for cross-checking.",
+      "description": "If multiple individuals with the same name exist, apply disambiguation using country (Bolivia), party (MAS), timeframe (circa 2014), gender (female), and region (Beni); document the reasoning and capture supporting URLs.",
+      "completion_criteria": "Disambiguation resolved with clear justification and URLs linking to each candidate page.",
       "status": "pending",
       "findings": ""
     },
     {
       "id": 5,
-      "description": "Search public electoral records and candidate registration documents (Tribunal Supremo Electoral - TSE) for the 2014 legislative candidates from Beni to find declared birth year/place, occupation, and education fields; download the candidate registration PDF or capture URL.",
-      "completion_criteria": "Retrieved candidate registration entry or affidavit with URL/PDF containing declarative fields (or documented no accessible record).",
+      "description": "Populate the class_background by mapping the primary occupation prior to politics to one of: Working class, Middle class/professional, Upper/elite, Unknown; cite source(s) for the occupation and the mapping decision.",
+      "completion_criteria": "Primary occupation identified and mapped; occupation source URL(s) recorded; class_background value documented.",
       "status": "pending",
       "findings": ""
     },
     {
       "id": 6,
-      "description": "Cross-reference any found data points (education, occupation, birth year/place, disability, LGBTQ status) across at least two independent reliable sources (official bio, TSE, major news outlet).",
-      "completion_criteria": "Each non-Unknown field must have at least two corroborating URLs recorded in the sources object; unresolved fields remain 'Unknown' with documented search results.",
-      "status": "pending",
-      "findings": ""
-    },
-    {
-      "id": 7,
-      "description": "Compile final verified profile: fill fields education_level, education_institution, education_field, prior_occupation, class_background (apply mapping rules), birth_year, birth_place, disability_status, lgbtq_status, lgbtq_details; include exact source URLs for each filled field and set confidence l",
-      "completion_criteria": "Produce a completed JSON profile with sources for each field; if data absent, field must be 'Unknown' and source list must show searches attempted.",
+      "description": "Compile final data fields (education_level, education_institution, education_field, prior_occupation, class_background, disability_status, birth_place, birth_year, lgbtq_status, lgbtq_details) with confidence rating and justification, including all source URLs; indicate Unknown where not publicly di",
+      "completion_criteria": "All fields attempted; each field has a value or 'Unknown' and a justification plus confidence score; all sources cited with full URLs.",
       "status": "pending",
       "findings": ""
     }
   ],
-  "version": 2,
-  "current_step": 2
+  "version": 1,
+  "current_step": 1
 }

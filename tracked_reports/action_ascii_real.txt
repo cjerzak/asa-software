@@ -1,6 +1,6 @@
 AGENT ACTION MAP
 ================
-Steps captured: 15
+Steps captured: 16
 LangGraph timed steps: 31
 
 INVESTIGATOR SIGNALS
@@ -8,33 +8,33 @@ INVESTIGATOR SIGNALS
   +-- Summary
       Field resolution: 2 found, 7 unknown, 1 pending (10 core fields)
       Source-backed found values: 4 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Unresolved focus: education_level, education_institution, class_background, disabilit...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 6 tool-call turn(s), 1 answer turn(s)
-      Tool results: 7 total (Tool OpenWebpage=2, Tool save_fi...date_plan=1, Tool wikipedia=1)
+      AI turns: 7 tool-call turn(s), 1 answer turn(s)
+      Tool results: 7 total (Tool OpenWebpage=7)
       Structured terminal answer emitted
-      Plan status: Plan steps: 17 total (status metadata not yet populated)
+      Plan status: Plan steps: 4 total (status metadata not yet populated)
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
-  +-- [PLAN] Plan steps: 17 total (status metadata not yet populated)
+  +-- [PLAN] Plan steps: 4 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      summarize: 3.3484m (tok=30380, n=5)
-      agent: 1.2530m (tok=71463, n=13)
-      planner: 0.3219m (tok=1941, n=1)
-      tools: 0.1825m (tok=0, n=12)
+      summarize: 4.5657m (tok=55403, n=5)
+      agent: 1.3751m (tok=109745, n=13)
+      tools: 0.4761m (tok=0, n=12)
+      planner: 0.4365m (tok=4214, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #27 summarize: 0.9032m (tok=7528)
-      #24 summarize: 0.7068m (tok=6116)
-      #21 summarize: 0.5899m (tok=5992)
-      #30 summarize: 0.5780m (tok=7065)
-      #18 summarize: 0.5705m (tok=3679)
-  +-- [TIMING] wall=4.7847m nodes=5.1058m delta=-0.3211m (overlap likely)
+      #20 summarize: 1.3521m (tok=14999)
+      #23 summarize: 1.1376m (tok=15834)
+      #30 summarize: 0.8920m (tok=9178)
+      #14 summarize: 0.6347m (tok=8168)
+      #17 summarize: 0.5493m (tok=7224)
+  +-- [TIMING] wall=6.4178m nodes=6.8534m delta=-0.4356m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -42,73 +42,78 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=5102 out=76 total=5178
-      min: 0.0525m
-      detail: OpenWebpage(url=https://anteriorportal.erb...cia_comunitaria)
+      tok: in=10868 out=431 total=11299
+      min: 0.0505m
+      detail: OpenWebpage(url=http://www.vicepresidencia...rlamentario=609)
   +-- [03] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://anteriorportal.erbol.com.bo/noticia/indige...no del presidente Evo Mor...
-  +-- [04] Requested 1 tool call (save_finding)
+      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=pa...Mujeres - Sub Central Sé...
+  +-- [04] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=5380 out=562 total=5942
-      min: 0.1086m
-      detail: save_finding(finding=birth_place = "born in TIP...ia_comunitaria), category=fact)
+      tok: in=12181 out=55 total=12236
+      min: 0.0148m
+      detail: OpenWebpage(url=https://www.noticiasfides....ificadas-390956)
   +-- [05] Returned result
-      by: Tool save_finding
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: birth_place = "born in TIPNIS / in..._rechaza_justicia_comunit...
+      detail: URL: https://www.noticiasfides.com/nacional/politica/di...ciasfides.com/nacional] L...
   +-- [06] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=6474 out=55 total=6529
-      min: 0.0251m
-      detail: OpenWebpage(url=http://www.vicepresidencia...rlamentario=609)
+      tok: in=13208 out=60 total=13268
+      min: 0.0156m
+      detail: OpenWebpage(args{cursor, id})
   +-- [07] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=pa...Mujeres - Sub Central Sé...
-  +-- [08] Requested 1 tool call (save_finding)
+      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor'...e fix the error and try a...
+  +-- [08] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=6900 out=157 total=7057
-      min: 0.0485m
-      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
+      tok: in=13468 out=55 total=13523
+      min: 0.0174m
+      detail: OpenWebpage(url=https://www.noticiasfides....ificadas-390956)
   +-- [09] Returned result
-      by: Tool save_finding
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: birth_year = 1982 (source: http://...mentario&id_parlamentario...
-  +-- [10] Requested 1 tool call (wikipedia)
+      detail: URL: https://www.noticiasfides.com/nacional/politica/di...ciasfides.com/nacional] L...
+  +-- [10] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=7698 out=52 total=7750
-      min: 0.0244m
-      detail: wikipedia(query=Ramona Moye Camaconi Bolivia)
+      tok: in=7732 out=22 total=7754
+      min: 0.0118m
+      detail: OpenWebpage(args{cursor, loc})
   +-- [11] Returned result
-      by: Tool wikipedia
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: No good Wikipedia Search Result was found
-  +-- [12] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...as </URL> __END_OF_SOURCE...
-  +-- [13] Requested 1 tool call (update_plan)
+      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor': 1, 'loc': 400} with error:...
+  +-- [12] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=8879 out=555 total=9434
-      min: 0.1249m
-      detail: update_plan(status=in_progress, step_id=1)
-  +-- [14] Returned result
-      by: Tool update_plan
+      tok: in=7804 out=22 total=7826
+      min: 0.0553m
+      detail: OpenWebpage(args{cursor, loc})
+  +-- [13] Returned result
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Plan step 1 updated to 'in_progress'
-  +-- [15] Produced structured answer
+      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor': 1, 'loc': 700} with error:...
+  +-- [14] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=7803 out=472 total=8275
-      min: 0.1079m
+      tok: in=7876 out=22 total=7898
+      min: 0.0605m
+      detail: OpenWebpage(args{cursor, id})
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Error invoking tool 'OpenWebpage' with kwargs {'cursor': 1, 'id': 0} with error: ur...
+  +-- [16] Produced structured answer
+      by: AI
+      tok: in=7340 out=3987 total=11327
+      min: 0.4346m
       flag: LOW_EVIDENCE_FINAL_ANSWER
       detail: {"education_level": "Unknown", "education_institution":...", "justification": "Unkn...
 END

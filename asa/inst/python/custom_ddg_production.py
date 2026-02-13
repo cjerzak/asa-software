@@ -588,6 +588,7 @@ _TOR_CONTROL_PORT = 9051  # Fallback when env var is absent/invalid
 _TOR_CONTROL_PASSWORD = os.environ.get("TOR_CONTROL_PASSWORD", "")
 _TOR_LAST_ROTATION = 0.0
 _TOR_MIN_ROTATION_INTERVAL = 5.0  # Minimum seconds between rotations (reduced from 10s)
+_TOR_CONTROL_PORT_WARNED = False  # "warn once" for ControlPort connection refused
 
 
 def _get_tor_control_port() -> int:
@@ -1496,7 +1497,7 @@ def _rotate_tor_circuit(force: bool = False, proxy: str | None = None, verify: b
     Returns:
         True if rotation succeeded (and IP changed if verify=True), False otherwise
     """
-    global _TOR_LAST_ROTATION
+    global _TOR_LAST_ROTATION, _TOR_CONTROL_PORT_WARNED
 
     # Get control port dynamically (supports per-worker assignment)
     control_port = _get_tor_control_port()
@@ -1537,7 +1538,13 @@ def _rotate_tor_circuit(force: bool = False, proxy: str | None = None, verify: b
     except ImportError:
         logger.debug("stem library not available, trying raw socket")
     except Exception as e:
-        logger.warning("stem rotation failed on port %d: %s", control_port, e)
+        is_conn_refused = "Connection refused" in str(e) or "Errno 61" in str(e) or "Errno 111" in str(e)
+        if is_conn_refused and _TOR_CONTROL_PORT_WARNED:
+            logger.debug("stem rotation failed on port %d: %s (suppressed repeated warning)", control_port, e)
+        else:
+            logger.warning("stem rotation failed on port %d: %s", control_port, e)
+            if is_conn_refused:
+                _TOR_CONTROL_PORT_WARNED = True
 
     # Fallback: raw socket communication (only if stem didn't succeed)
     if not rotation_success:
@@ -1598,7 +1605,11 @@ def _rotate_tor_circuit(force: bool = False, proxy: str | None = None, verify: b
                     return False
 
         except ConnectionRefusedError:
-            logger.warning("Tor control port %d: connection refused (is Tor running with ControlPort enabled?)", control_port)
+            if _TOR_CONTROL_PORT_WARNED:
+                logger.debug("Tor control port %d: connection refused (suppressed repeated warning)", control_port)
+            else:
+                logger.warning("Tor control port %d: connection refused (is Tor running with ControlPort enabled?)", control_port)
+                _TOR_CONTROL_PORT_WARNED = True
             return False
         except Exception as e:
             logger.warning("Raw socket Tor rotation failed on port %d: %s", control_port, e)
@@ -1619,20 +1630,28 @@ def _rotate_tor_circuit(force: bool = False, proxy: str | None = None, verify: b
         new_exit_ip = _get_exit_ip(proxy, force_refresh=True)
 
         if new_exit_ip:
-            if old_exit_ip and new_exit_ip == old_exit_ip:
-                logger.warning(
-                    "Tor rotation FAILED to change exit IP: still %s (signal sent but circuit unchanged)",
+            if not old_exit_ip or new_exit_ip != old_exit_ip:
+                logger.info(
+                    "Tor rotation VERIFIED: exit IP changed%s %s",
+                    f" from {old_exit_ip}" if old_exit_ip else "",
                     new_exit_ip,
                 )
-                return False
-            logger.info(
-                "Tor rotation VERIFIED: exit IP changed%s %s",
-                f" from {old_exit_ip}" if old_exit_ip else "",
-                new_exit_ip,
+                return True
+            # Same IP — retry; new circuit may not be used by next connection yet
+            logger.debug(
+                "Tor rotation attempt %d/3: exit IP still %s, retrying...",
+                attempt + 1, new_exit_ip,
             )
-            return True
 
-    logger.warning("Tor rotation could not verify exit change (all lookups failed)")
+    # All retries exhausted — IP never changed
+    if old_exit_ip:
+        logger.info(
+            "Tor rotation: exit IP unchanged after 3 attempts (still %s). "
+            "This is normal when few exit relays are available.",
+            old_exit_ip,
+        )
+    else:
+        logger.warning("Tor rotation could not verify exit change (all lookups failed)")
     return False
 
 
@@ -1653,7 +1672,9 @@ def configure_tor(
     Returns:
         Dict with current configuration
     """
-    global _TOR_CONTROL_PORT, _TOR_CONTROL_PASSWORD, _TOR_MIN_ROTATION_INTERVAL
+    global _TOR_CONTROL_PORT, _TOR_CONTROL_PASSWORD, _TOR_MIN_ROTATION_INTERVAL, _TOR_CONTROL_PORT_WARNED
+
+    _TOR_CONTROL_PORT_WARNED = False  # Reset so reconfiguration re-tests ControlPort
 
     if control_port is not None:
         _TOR_CONTROL_PORT = control_port

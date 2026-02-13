@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 4.8121,
+  "elapsed_time": 6.4449,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,31 +14,31 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|Unknown"
     },
     "education_field": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
+      "status": "found",
+      "value": "Ciencias de la Educación",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|Unknown"
     },
     "education_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "prior_occupation": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
+      "status": "found",
+      "value": "Ex Capitán Grande de TCO; Ex Presidente de la Comunidad Rosario",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|Unknown"
     },
     "class_background": {
@@ -46,15 +46,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
-      "status": "pending",
-      "value": null,
-      "source_url": null,
+      "status": "found",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,7 +62,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
@@ -70,39 +70,39 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "found",
-      "value": "\"born in TIPNIS / in that territory\"",
-      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https:/anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunita",
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
       "evidence": null,
-      "attempts": 2,
+      "attempts": 4,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
-      "status": "found",
-      "value": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https:/anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunita",
-      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria (source: https:/anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunita",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "found",
-      "value": 1982,
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "found",
-      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "status": "pending",
+      "value": null,
+      "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,7 +118,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
@@ -126,7 +126,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "confidence": {
@@ -134,7 +134,7 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
@@ -142,7 +142,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 4,
       "descriptor": "string"
     }
   }
