@@ -9,7 +9,7 @@
 #'   \itemize{
 #'     \item "text": Returns response text (default)
 #'     \item "json": Parse response as JSON
-#'     \item "raw": Include full trace in result for debugging
+#'     \item "raw": Include raw Python response object for debugging
 #'     \item Character vector: Extract specific fields from response
 #'   }
 #' @param temporal Named list or \code{asa_temporal} object for temporal filtering:
@@ -71,7 +71,7 @@
 #'     \item prompt: The original prompt
 #'     \item message: The agent's response text
 #'     \item parsed: Parsed output (list for JSON/field extraction, NULL for text/raw)
-#'     \item raw_output: Full agent trace (always included, verbose for "raw" format)
+#'     \item raw_output: Full agent trace (always included)
 #'     \item trace_json: Structured trace JSON (when available)
 #'     \item elapsed_time: Execution time in minutes
 #'     \item status: "success" or "error"
@@ -88,14 +88,16 @@
 #'     \item langgraph_step_timings: Per-node LangGraph timings in minutes
 #'       (also available at \code{execution$langgraph_step_timings})
 #'     \item fold_stats: Memory folding diagnostics list
-#'     \item trace: Full execution trace (for "raw" output_format)
+#'     \item raw_response: Full underlying Python response object
+#'       (for \code{output_format = "raw"})
 #'   }
 #'
 #' @details
 #' This function provides the primary interface for running research tasks.
 #' For simple text responses, use \code{output_format = "text"}. For structured
 #' outputs, use \code{output_format = "json"} or specify field names to extract.
-#' For debugging and full trace access, use \code{output_format = "raw"}.
+#' For debugging with full underlying response access, use
+#' \code{output_format = "raw"}.
 #'
 #' When temporal filtering is specified, the search tool's time filter is
 #' temporarily set for this task and restored afterward. Date hints (after/before)
@@ -129,7 +131,8 @@
 #'   output_format = "raw",
 #'   agent = agent
 #' )
-#' cat(result$trace)  # View full agent trace
+#' cat(result$raw_output)  # View full agent trace
+#' str(result$raw_response)  # Inspect full underlying Python response
 #'
 #' # With temporal filtering (past year only)
 #' result <- run_task(
@@ -446,6 +449,8 @@ run_task <- function(prompt,
     json_repair = response$json_repair %||% list(),
     token_stats = token_stats,
     om_stats = response$om_stats %||% list(),
+    observations = response$observations %||% list(),
+    reflections = response$reflections %||% list(),
     observation_count = length(response$observations %||% list()),
     reflection_count = length(response$reflections %||% list()),
     plan = response$plan %||% list(),
@@ -459,6 +464,9 @@ run_task <- function(prompt,
     action_overall = action_trace$overall_summary %||% character(0),
     langgraph_step_timings = action_trace$langgraph_step_timings %||% list()
   )
+  if (identical(output_format, "raw")) {
+    execution$raw_response <- response$raw_response
+  }
 
   # Build result object - always return asa_result for consistent API
   result <- asa_result(
@@ -473,25 +481,53 @@ run_task <- function(prompt,
     parsing_status = parsing_status,
     execution = execution
   )
-  # Top-level aliases for backward compat; canonical location is $execution
-  result$fold_stats <- response$fold_stats %||% list()
-  result$status_code <- response$status_code %||% NA_integer_
-  result$token_stats <- token_stats
-  result$plan <- response$plan %||% list()
-  result$plan_history <- response$plan_history %||% list()
-  result$om_stats <- response$om_stats %||% list()
-  result$observations <- response$observations %||% list()
-  result$reflections <- response$reflections %||% list()
-  result$action_steps <- action_trace$steps %||% list()
-  result$action_ascii <- action_trace$ascii %||% ""
-  result$action_investigator_summary <- action_trace$investigator_summary %||% character(0)
-  result$action_overall <- action_trace$overall_summary %||% character(0)
-  result$langgraph_step_timings <- action_trace$langgraph_step_timings %||% list()
+  result <- .attach_result_aliases(
+    result = result,
+    include_raw_response = identical(output_format, "raw"),
+    raw_response = response$raw_response
+  )
 
   # For "raw" format, add additional fields for debugging
-  if (identical(output_format, "raw")) {
-    result$trace <- response$trace
-    result$raw_response <- response$raw_response
+  result
+}
+
+#' Attach Top-Level Backward-Compatibility Aliases to asa_result
+#'
+#' Canonical fields now live under \code{result$execution}; this helper keeps
+#' legacy top-level fields synchronized to avoid drift.
+#'
+#' @param result asa_result object
+#' @param include_raw_response Logical; attach top-level \code{raw_response}
+#' @param raw_response Raw Python response object to attach when requested
+#' @return Modified asa_result
+#' @keywords internal
+.attach_result_aliases <- function(result,
+                                   include_raw_response = FALSE,
+                                   raw_response = NULL) {
+  execution <- result$execution %||% list()
+
+  alias_defaults <- list(
+    fold_stats = list(),
+    status_code = NA_integer_,
+    token_stats = list(),
+    plan = list(),
+    plan_history = list(),
+    om_stats = list(),
+    observations = list(),
+    reflections = list(),
+    action_steps = list(),
+    action_ascii = "",
+    action_investigator_summary = character(0),
+    action_overall = character(0),
+    langgraph_step_timings = list()
+  )
+
+  for (alias_name in names(alias_defaults)) {
+    result[[alias_name]] <- execution[[alias_name]] %||% alias_defaults[[alias_name]]
+  }
+
+  if (isTRUE(include_raw_response)) {
+    result$raw_response <- raw_response
   }
 
   result
@@ -713,7 +749,9 @@ build_prompt <- function(template, ...) {
 #'   task. See \code{\link{run_task}}.
 #'
 #' @return A list of asa_result objects, or if prompts was a data frame,
-#'   the data frame with result columns added. If circuit breaker aborts,
+#'   the data frame with result columns added (including per-row operational
+#'   metadata and full per-row \code{asa_result} objects via list column
+#'   \code{asa_result} and attribute \code{asa_results}). If circuit breaker aborts,
 #'   includes attribute "circuit_breaker_aborted" = TRUE.
 #'
 #' @examples
@@ -957,6 +995,13 @@ run_task_batch <- function(prompts,
     prompts$status <- vapply(results, function(r) r$status %||% NA_character_, character(1))
     prompts$elapsed_time <- vapply(results, function(r) r$elapsed_time %||% NA_real_, numeric(1))
     prompts$search_tier <- vapply(results, function(r) r$search_tier %||% "unknown", character(1))
+    prompts$stop_reason <- vapply(results, function(r) r$execution$stop_reason %||% NA_character_, character(1))
+    prompts$thread_id <- vapply(results, function(r) r$execution$thread_id %||% NA_character_, character(1))
+    prompts$status_code <- vapply(results, function(r) .as_scalar_int(r$execution$status_code), integer(1))
+    prompts$tool_calls_used <- vapply(results, function(r) .as_scalar_int(r$execution$tool_calls_used), integer(1))
+    prompts$tool_calls_limit <- vapply(results, function(r) .as_scalar_int(r$execution$tool_calls_limit), integer(1))
+    prompts$tool_calls_remaining <- vapply(results, function(r) .as_scalar_int(r$execution$tool_calls_remaining), integer(1))
+    prompts$fold_count <- vapply(results, function(r) .as_scalar_int(r$execution$fold_count), integer(1))
     prompts$tokens_used <- vapply(results, function(r) {
       ts <- r$token_stats
       if (!is.null(ts) && !is.null(ts$tokens_used)) {
@@ -964,19 +1009,26 @@ run_task_batch <- function(prompts,
       }
       .as_scalar_int(r$execution$tokens_used) %||% NA_integer_
     }, integer(1))
+    prompts$trace_json <- vapply(results, function(r) r$trace_json %||% "", character(1))
+    prompts$raw_output <- vapply(results, function(r) r$raw_output %||% "", character(1))
+    prompts$parsed <- I(lapply(results, function(r) r$parsed %||% NULL))
+    prompts$parsing_status <- I(lapply(results, function(r) r$parsing_status %||% list()))
+    prompts$execution <- I(lapply(results, function(r) r$execution %||% list()))
+    prompts$token_stats <- I(lapply(results, function(r) r$token_stats %||% list()))
+    prompts$asa_result <- I(results)
 
     # Add parsed fields if JSON output
     if (identical(output_format, "json") || (is.character(output_format) && length(output_format) > 1)) {
-      # Try to extract common fields from first successful result
-      first_parsed <- NULL
-      for (r in results) {
-        if (!is.null(r$parsed)) {
-          first_parsed <- r$parsed
-          break
+      all_parsed_fields <- unique(unlist(lapply(results, function(r) {
+        parsed <- r$parsed
+        if (!is.list(parsed)) {
+          return(character(0))
         }
-      }
+        nm <- names(parsed) %||% character(0)
+        nm[!is.na(nm) & nzchar(nm)]
+      }), use.names = FALSE))
 
-      if (!is.null(first_parsed) && is.list(first_parsed)) {
+      if (length(all_parsed_fields) > 0) {
         coerce_value <- function(val) {
           if (is.null(val)) return(NA_character_)
           if (is.list(val)) {
@@ -987,7 +1039,7 @@ run_task_batch <- function(prompts,
           as.character(jsonlite::toJSON(val, auto_unbox = TRUE))
         }
 
-        for (field in names(first_parsed)) {
+        for (field in all_parsed_fields) {
           prompts[[field]] <- vapply(results, function(r) {
             if (!is.null(r$parsed) && field %in% names(r$parsed)) {
               coerce_value(r$parsed[[field]])
@@ -998,6 +1050,7 @@ run_task_batch <- function(prompts,
         }
       }
     }
+    attr(prompts, "asa_results") <- results
 
     # Add circuit breaker metadata
     if (aborted) {

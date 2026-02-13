@@ -34,7 +34,7 @@ run_task(
 \itemize{
   \item "text": Returns response text (default)
   \item "json": Parse response as JSON
-  \item "raw": Include full trace in result for debugging
+  \item "raw": Include raw Python response object for debugging
   \item Character vector: Extract specific fields from response
 }}
 
@@ -115,7 +115,7 @@ An \code{asa_result} object with:
     \item prompt: The original prompt
     \item message: The agent's response text
     \item parsed: Parsed output (list for JSON/field extraction, NULL for text/raw)
-    \item raw_output: Full agent trace (always included, verbose for "raw" format)
+    \item raw_output: Full agent trace (always included)
     \item trace_json: Structured trace JSON (when available)
     \item elapsed_time: Execution time in minutes
     \item status: "success" or "error"
@@ -132,7 +132,8 @@ An \code{asa_result} object with:
     \item langgraph_step_timings: Per-node LangGraph timings in minutes
       (also available at \code{execution$langgraph_step_timings})
     \item fold_stats: Memory folding diagnostics list
-    \item trace: Full execution trace (for "raw" output_format)
+    \item raw_response: Full underlying Python response object
+      (for \code{output_format = "raw"})
   }
 }
 \description{
@@ -144,7 +145,8 @@ agent tasks.
 This function provides the primary interface for running research tasks.
 For simple text responses, use \code{output_format = "text"}. For structured
 outputs, use \code{output_format = "json"} or specify field names to extract.
-For debugging and full trace access, use \code{output_format = "raw"}.
+For debugging with full underlying response access, use
+\code{output_format = "raw"}.
 
 When temporal filtering is specified, the search tool's time filter is
 temporarily set for this task and restored afterward. Date hints (after/before)
@@ -178,7 +180,8 @@ result <- run_task(
   output_format = "raw",
   agent = agent
 )
-cat(result$trace)  # View full agent trace
+cat(result$raw_output)  # View full agent trace
+str(result$raw_response)  # Inspect full underlying Python response
 
 # With temporal filtering (past year only)
 result <- run_task(

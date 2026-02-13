@@ -396,6 +396,159 @@ test_that("run_task_batch rejects invalid temporal", {
   )
 })
 
+test_that(".attach_result_aliases keeps top-level aliases synchronized with execution", {
+  base <- asa_result(
+    prompt = "p",
+    message = "m",
+    parsed = NULL,
+    raw_output = "trace",
+    trace_json = "{}",
+    elapsed_time = 0.1,
+    status = "success",
+    execution = list(
+      fold_stats = list(fold_count = 2L),
+      status_code = 200L,
+      token_stats = list(tokens_used = 12L),
+      plan = list(step = "x"),
+      plan_history = list(),
+      om_stats = list(enabled = TRUE),
+      observations = list("obs"),
+      reflections = list("refl"),
+      action_steps = list(list(type = "ai")),
+      action_ascii = "ascii",
+      action_investigator_summary = c("summary"),
+      action_overall = c("overall"),
+      langgraph_step_timings = list(list(node = "agent"))
+    )
+  )
+
+  aliased <- asa:::.attach_result_aliases(base, include_raw_response = FALSE)
+  expect_equal(aliased$fold_stats$fold_count, 2L)
+  expect_equal(aliased$status_code, 200L)
+  expect_equal(aliased$token_stats$tokens_used, 12L)
+  expect_equal(aliased$action_ascii, "ascii")
+  expect_false("raw_response" %in% names(aliased))
+  expect_false("trace" %in% names(aliased))
+
+  aliased_raw <- asa:::.attach_result_aliases(
+    base,
+    include_raw_response = TRUE,
+    raw_response = list(ok = TRUE)
+  )
+  expect_true("raw_response" %in% names(aliased_raw))
+  expect_true(is.list(aliased_raw$raw_response))
+  expect_true(isTRUE(aliased_raw$raw_response$ok))
+})
+
+test_that("run_task_batch data frame output preserves metadata and unions parsed fields", {
+  result1 <- asa_result(
+    prompt = "p1",
+    message = "m1",
+    parsed = list(a = 1L, b = "x"),
+    raw_output = "trace-1",
+    trace_json = "{\"run\":1}",
+    elapsed_time = 0.25,
+    status = "success",
+    search_tier = "primp",
+    execution = list(
+      thread_id = "t1",
+      stop_reason = "done",
+      status_code = 200L,
+      tool_calls_used = 1L,
+      tool_calls_limit = 5L,
+      tool_calls_remaining = 4L,
+      fold_count = 0L,
+      token_stats = list(
+        tokens_used = 10L,
+        input_tokens = 7L,
+        output_tokens = 3L,
+        fold_tokens = 0L,
+        token_trace = list()
+      )
+    )
+  )
+  result1 <- asa:::.attach_result_aliases(result1)
+
+  result2 <- asa_result(
+    prompt = "p2",
+    message = "m2",
+    parsed = list(b = "y", c = 2L),
+    raw_output = "trace-2",
+    trace_json = "{\"run\":2}",
+    elapsed_time = 0.5,
+    status = "error",
+    search_tier = "unknown",
+    execution = list(
+      thread_id = "t2",
+      stop_reason = "recursion_limit",
+      status_code = 100L,
+      tool_calls_used = 5L,
+      tool_calls_limit = 5L,
+      tool_calls_remaining = 0L,
+      fold_count = 1L,
+      token_stats = list(
+        tokens_used = 22L,
+        input_tokens = 14L,
+        output_tokens = 8L,
+        fold_tokens = 0L,
+        token_trace = list()
+      )
+    )
+  )
+  result2 <- asa:::.attach_result_aliases(result2)
+
+  idx <- 0L
+  testthat::local_mocked_bindings(
+    run_task = function(...) {
+      idx <<- idx + 1L
+      list(result1, result2)[[idx]]
+    },
+    .package = "asa"
+  )
+
+  prompts <- data.frame(
+    prompt = c("Prompt 1", "Prompt 2"),
+    stringsAsFactors = FALSE
+  )
+  out <- run_task_batch(
+    prompts = prompts,
+    output_format = "json",
+    parallel = FALSE,
+    progress = FALSE,
+    circuit_breaker = FALSE
+  )
+
+  expect_s3_class(out, "data.frame")
+  expect_equal(out$response, c("m1", "m2"))
+  expect_equal(out$status, c("success", "error"))
+  expect_equal(out$thread_id, c("t1", "t2"))
+  expect_equal(out$stop_reason, c("done", "recursion_limit"))
+  expect_equal(out$status_code, c(200L, 100L))
+  expect_equal(out$tool_calls_used, c(1L, 5L))
+  expect_equal(out$tool_calls_limit, c(5L, 5L))
+  expect_equal(out$tool_calls_remaining, c(4L, 0L))
+  expect_equal(out$fold_count, c(0L, 1L))
+  expect_equal(out$tokens_used, c(10L, 22L))
+
+  # Union of parsed fields across all results (not first parsed row only)
+  expect_true(all(c("a", "b", "c") %in% names(out)))
+  expect_equal(out$a, c("1", NA_character_))
+  expect_equal(out$b, c("x", "y"))
+  expect_equal(out$c, c(NA_character_, "2"))
+
+  # Rich per-row metadata and full result object are preserved.
+  expect_true(all(c("parsed", "parsing_status", "execution", "token_stats", "asa_result") %in% names(out)))
+  expect_true(is.list(out$parsed))
+  expect_true(is.list(out$execution))
+  expect_true(is.list(out$asa_result))
+  expect_s3_class(out$asa_result[[1]], "asa_result")
+  expect_equal(out$execution[[2]]$thread_id, "t2")
+
+  results_attr <- attr(out, "asa_results")
+  expect_true(is.list(results_attr))
+  expect_length(results_attr, 2L)
+})
+
 # ============================================================================
 # Integration Tests (Skip if no agent)
 # ============================================================================

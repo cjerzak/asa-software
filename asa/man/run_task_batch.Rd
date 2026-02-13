@@ -91,7 +91,9 @@ task. See \code{\link{run_task}}.}
 }
 \value{
 A list of asa_result objects, or if prompts was a data frame,
-  the data frame with result columns added. If circuit breaker aborts,
+  the data frame with result columns added (including per-row operational
+  metadata and full per-row \code{asa_result} objects via list column
+  \code{asa_result} and attribute \code{asa_results}). If circuit breaker aborts,
   includes attribute "circuit_breaker_aborted" = TRUE.
 }
 \description{
