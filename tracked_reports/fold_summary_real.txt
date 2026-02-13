@@ -1,69 +1,39 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_place = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: birth_place_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: class_background = Working class (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: justification = Ramona Moye Camaconi's background as an indigenous inhabitant of TIPNIS and her role as President of the Women's Organization of the Sub Central Sécure indicate a working-class background involving community leadership in a rural indigenous territory (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: confidence = High (source: Multiple sources confirm identity and role)", "[ANCHORED] FIELD_EXTRACT: disability_status = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: disability_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_level = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_field = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_institution = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: education_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: lgbtq_status = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: lgbtq_details = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: lgbtq_source = Unknown (source: Unknown)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi (born January 7, 1982) is an indigenous MAS party member from the TIPNIS region who served as the Titular Deputy for Beni's Special Indigenous Circumscription (Circunscripción 6) after winning the 2014 election with 83% of the vote (Sources: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609; https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni).", "Moye previously served as Presidenta de la Organización de Mujeres - Sub Central Sécure (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609).", "She was denounced for allegedly submitting falsified medical leave certificates to the Legislative Assembly (Sources: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956; https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=).", "Moye rejects the use of indigenous community justice for criminal cases and supports the construction of a highway through TIPNIS, having reportedly threatened groups opposed to the project (Sources: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria; https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis).", "Moye presented a bill for TIPNIS to the Legislative Assembly alongside representatives from four indigenous organizations (Source: https://www.flickr.com/photos/194792615@N03/52180793916).", "A conflict exists in official records regarding her constituency: her profile lists the Special Indigenous Circumscription (C6), while a parliamentary list associates her with Circunscripción 09 (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1).", "Ramona Moye Camaconi maintains a personal profile on Facebook (Source: https://www.facebook.com/ramona.moyecamaconi).", "[fact] birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[fact] birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[fact] prior_occupation_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)"],
-  "decisions": "Mapped class_background to 'Working class' based on her prior occupation as a community leader (Presidenta de la Organización de Mujeres) in an indigenous rural territory.",
-  "open_questions": "What is Ramona Moye Camaconi's specific level and field of education?",
+  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS, Beni, Bolivia (source: https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: birth_place_source = https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia (source: https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure; Indigenous inhabitant and leader in TIPNIS (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609, https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: class_background = Working class (based on indigenous inhabitant and regional community background) (source: https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Indigenous inhabitant and leader in TIPNIS (source: https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia (source: https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[fact] birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi (born January 7, 1982) is an indigenous female politician from the Beni region (TIPNIS), Bolivia, active with the Movimiento Al Socialismo (MAS) party (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609, https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "Moye served as a titular deputy for the department of Beni (Circunscripción 6 and Special Indigenous Constituency); Eloy Cartagena Yoamona served as her substitute (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428, http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609, https://www.flickr.com/photos/194792615@N03/52180793916)", "In late 2018, Moye was denounced by fellow legislator Costa for allegedly presenting falsified medical certificates to obtain leave from the Chamber of Deputies (source: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956)", "Moye has publicly defended traditional coca consumption within the TIPNIS region (source: mid-research transcript)"],
+  "decisions": [],
+  "open_questions": ["What is the specific education level, institution, and field for Ramona Moye Camaconi (noting that the profile for substitute Eloy Cartagena lists education that is not her own)?", "Are there any publicly disclosed details regarding disability status or LGBTQ+ status for Ramona Moye Camaconi?", "Can the birth place be narrowed down to a specific community or municipality within TIPNIS?"],
   "sources": [
     {
-      "tool": "Search",
+      "tool": "web_search",
       "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "title": "Parlamentario Ramona Moye Camaconi (ID 609)",
-      "note": "Official profile confirming birth date (1982-01-07), circumscription 6, and prior occupation."
+      "title": "Vicepresidencia del Estado Plurinacional de Bolivia - Perfil Parlamentario (609)",
+      "note": "Source for birth date 1982-01-07, uninominal profile, and role as President of the Organization of Women - Sub Central Sécure."
     },
     {
-      "tool": "Search",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
-      "title": "Listado de Parlamentarios",
-      "note": "Source containing conflicting constituency information (Circunscripción 09)."
+      "tool": "web_search",
+      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "title": "Vicepresidencia del Estado Plurinacional de Bolivia - Perfil Parlamentario (428)",
+      "note": "Source for substitute deputy status of Eloy Cartagena and relationship to Ramona Moye."
     },
     {
-      "tool": "Search",
-      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
-      "title": "Flickr - Ramona Moye Camaconi",
-      "note": "Confirms titular status and special circumscription for Beni."
+      "tool": "web_search",
+      "url": "https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+      "title": "El TIPNIS y el Madidi: las heridas que sangran en el rostro indígena de Bolivia",
+      "note": "Detailed profile on indigenous background and TIPNIS origin."
     },
     {
-      "tool": "Search",
+      "tool": "web_search",
       "url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
-      "title": "Noticias Fides - Denuncia contra diputada Moye",
-      "note": "Details medical certificate controversy."
+      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
+      "note": "Source for 2018 legal denunciation regarding medical certificates."
     },
     {
-      "tool": "Search",
-      "url": "https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=",
-      "title": "El Diario - Diputada Moye presentó bajas médicas falsificadas",
-      "note": "Secondary source detailing the medical certificate forgery denunciation."
-    },
-    {
-      "tool": "Search",
-      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
-      "title": "ERBOL - Diputada rechaza justicia comunitaria",
-      "note": "Details stance on indigenous justice."
-    },
-    {
-      "tool": "Search",
-      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "title": "EJU.TV - Diputada apoya carretera in Tipnis",
-      "note": "Details stance on highway and threats to opposition."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "La Razón - El MAS gana en el TIPNIS",
-      "note": "Details 2014 election victory percentage and opponent."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.facebook.com/ramona.moyecamaconi",
-      "title": "Facebook Profile - Ramona Moye Camaconi",
-      "note": "Personal social media profile."
-    },
-    {
-      "tool": "OpenWebpage",
-      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "title": "Vicepresidencia del Estado",
-      "note": null
+      "tool": "web_search",
+      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
+      "title": "Ramona Moye Camaconi, diputada titular por Beni",
+      "note": "Confirmation of titular status for special constituency."
     }
   ],
-  "warnings": "Ramona Moye Camaconi is confirmed as the Titular deputy for Beni's Special Indigenous Circumscription (C6), though one official listing contains a conflicting constituency number (09)."
+  "warnings": []
 }

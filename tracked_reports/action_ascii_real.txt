@@ -1,41 +1,40 @@
 AGENT ACTION MAP
 ================
-Steps captured: 8
-LangGraph timed steps: 32
+Steps captured: 16
+LangGraph timed steps: 31
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Field resolution: 3 found, 6 unknown, 1 pending (10 core fields)
       Source-backed found values: 6 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, disability...
+      Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 3 tool-call turn(s), 1 answer turn(s)
-      Tool results: 3 total (Tool Search=3)
+      AI turns: 7 tool-call turn(s), 1 answer turn(s)
+      Tool results: 7 total (Tool Search=6, Tool OpenWebpage=1)
       Structured terminal answer emitted
       Plan status: Plan steps: 4 total (status metadata not yet populated)
-      Anomalies: 3 flagged step(s) (OFF_TOPIC_RESULT=2, LOW_EVIDENCE_FINAL_ANSWER=1)
+      Anomalies: 6 flagged step(s) (OFF_TOPIC_RESULT=5, LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
   +-- [PLAN] Plan steps: 4 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      summarize: 5.0394m (tok=88279, n=8)
-      tools: 2.1615m (tok=0, n=11)
-      agent: 0.7278m (tok=86081, n=11)
-      finalize: 0.2137m (tok=11282, n=1)
-      planner: 0.1743m (tok=1660, n=1)
+      summarize: 2.8924m (tok=45175, n=5)
+      tools: 1.7096m (tok=0, n=12)
+      agent: 0.6895m (tok=93030, n=13)
+      planner: 0.1689m (tok=1618, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #28 summarize: 1.2727m (tok=20192)
-      #19 summarize: 0.8022m (tok=12928)
-      #31 summarize: 0.6854m (tok=12139)
-      #24 tools: 0.5701m (tok=0)
-      #18 tools: 0.5425m (tok=0)
-  +-- [TIMING] wall=8.1434m nodes=8.3166m delta=-0.1732m (overlap likely)
+      #20 tools: 0.7676m (tok=0)
+      #24 summarize: 0.7100m (tok=11186)
+      #26 tools: 0.6743m (tok=0)
+      #30 summarize: 0.6136m (tok=9895)
+      #27 summarize: 0.5827m (tok=10118)
+  +-- [TIMING] wall=5.2924m nodes=5.4604m delta=-0.1679m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -43,40 +42,83 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=9899 out=332 total=10231
-      min: 0.0534m
-      detail: Search(query="Ramona Moye Camaconi" "Directorio Legisl...)
+      tok: in=5297 out=172 total=5469
+      min: 0.0349m
+      detail: Search(query=Ramona Moye Camaconi lugar de nacimiento ...)
   +-- [03] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: Ramona is an 1884 American novel written by Helen Hunt ...nta Maria and the San Vic...
+      detail: __START_OF_SOURCE 1__ <CONTENT> El informe puede inclui...ya </URL> __END_OF_SOURCE...
   +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=10212 out=199 total=10411
-      min: 0.0398m
-      detail: Search(query="Ramona Moye Camaconi" diputada Bolivia e...)
+      tok: in=6584 out=187 total=6771
+      min: 0.0390m
+      detail: Search(query=Ramona Moye Camaconi biografia camara de ...)
   +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: November 7, 2025 - En Bolivia, el Bachillerato es ... Adultos, por lo que el Minist...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Página oficialdelaCámar...56 </URL> __END_OF_SOURCE...
   +-- [06] Requested 1 tool call (Search)
       by: AI
-      tok: in=9663 out=395 total=10058
-      min: 0.0627m
-      detail: Search(query="Ramona Moye Camaconi" TIPNIS nació en)
+      tok: in=8094 out=235 total=8329
+      min: 0.0413m
+      detail: Search(query="Ramona Moye Camaconi" Diccionario biográ...)
   +-- [07] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...oni </URL> __END_OF_SOURC...
-  +-- [08] Produced structured answer
+  +-- [08] Requested 1 tool call (Search)
       by: AI
-      tok: in=9108 out=2174 total=11282
-      min: 0.2137m
+      tok: in=8517 out=160 total=8677
+      min: 0.0402m
+      detail: Search(query="Ramona Moye Camaconi" biografía estudios...)
+  +-- [09] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: Allí, completó su formación en dos maestrías: Psicologí...s de su hermano mayor Vic...
+  +-- [10] Requested 1 tool call (Search)
+      by: AI
+      tok: in=11020 out=273 total=11293
+      min: 0.0503m
+      detail: Search(query="Ramona Moye Camaconi" candidate profile ...)
+  +-- [11] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...dos </URL> __END_OF_SOURC...
+  +-- [12] Requested 1 tool call (Search)
+      by: AI
+      tok: in=11632 out=342 total=11974
+      min: 0.0564m
+      detail: Search(query="Ramona Moye Camaconi" TIPNIS "nació en")
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: Las áreas naturales del Tipnis y el Madidi, ambas en la Amazonía boliviana, son el ...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=11790 out=179 total=11969
+      min: 0.0343m
+      detail: OpenWebpage(url=https://tierraderesistente...gena-de-bolivia)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t.../sernap.gob.bo/isiborosec...
+  +-- [16] Produced structured answer
+      by: AI
+      tok: in=11779 out=49 total=11828
+      min: 0.0195m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":...a rural indigenous territ...
+      detail: {"education_level": "Unknown", "education_institution":...", "justification": "Unkn...
 END

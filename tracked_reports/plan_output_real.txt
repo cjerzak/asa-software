@@ -5,7 +5,7 @@
       "id": 1,
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
-      "status": "completed",
+      "status": "in_progress",
       "findings": "Starting research for Ramona Moye Camaconi."
     }
   ],
