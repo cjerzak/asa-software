@@ -54,6 +54,23 @@ sys.modules['primp'] = types.SimpleNamespace(Client=_StubClient)
   )
 }
 
+.install_curl_cffi_fail_stub <- function() {
+  reticulate::py_run_string(
+    "
+import sys
+import types
+
+class _FailModule:
+    class requests:
+        @staticmethod
+        def get(*args, **kwargs):
+            raise ConnectionError('curl_cffi stub: forced failure for testing')
+
+sys.modules['curl_cffi'] = _FailModule()
+"
+  )
+}
+
 .install_ddgs_stub <- function(ddg) {
   original_ddgs <- reticulate::py_get_attr(ddg, "DDGS", convert = FALSE)
   reticulate::py_run_string(
@@ -188,6 +205,7 @@ test_that("PRIMP tier parses a local fixture without network access", {
     fixture
   )
 
+  .install_curl_cffi_fail_stub()
   .install_primp_stub(fixture)
 
   wrapper <- ddg$PatchedDuckDuckGoSearchAPIWrapper(
@@ -224,6 +242,7 @@ test_that("DDGS tier returns stubbed results when PRIMP is empty", {
     fixture
   )
 
+  .install_curl_cffi_fail_stub()
   .install_primp_stub(fixture)
   cleanup_ddgs <- .install_ddgs_stub(ddg)
   on.exit(cleanup_ddgs(), add = TRUE)

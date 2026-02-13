@@ -13,7 +13,10 @@
 #'   \item search_snippets: Character vector of search result content
 #'   \item search_urls: Character vector of URLs from search results
 #'   \item wikipedia_snippets: Character vector of Wikipedia content
-#'   \item json_data: Extracted JSON data as a list (if present)
+#'   \item json_data: Extracted JSON data (canonical by default; see option
+#'     \code{asa.enable_trace_field_mining})
+#'   \item json_data_canonical: Canonical terminal JSON extracted from trace
+#'   \item json_data_inferred: Optional inferred JSON with trace-mining enabled
 #'   \item search_tiers: Character vector of unique search tiers used
 #'     (e.g., "primp", "selenium", "ddgs", "requests")
 #' }
@@ -34,18 +37,24 @@ extract_agent_results <- function(raw_output) {
       search_urls = character(0),
       wikipedia_snippets = character(0),
       json_data = NULL,
+      json_data_canonical = NULL,
+      json_data_inferred = NULL,
       search_tiers = character(0)
     ))
   }
 
   # Extract components
   json_data <- .extract_json_from_trace(raw_output)
+  json_data_canonical <- .extract_json_from_trace_inner(raw_output)
+  json_data_inferred <- .extract_json_from_trace(raw_output, allow_trace_mining = TRUE)
 
   list(
     search_snippets = extract_search_snippets(raw_output),
     search_urls = extract_urls(raw_output),
     wikipedia_snippets = extract_wikipedia_content(raw_output),
     json_data = json_data,
+    json_data_canonical = json_data_canonical,
+    json_data_inferred = json_data_inferred,
     search_tiers = extract_search_tiers(raw_output)
   )
 }
@@ -1816,7 +1825,7 @@ extract_search_tiers <- function(text) {
 
   tool_contents <- .extract_tool_contents(text, "search")
   if (!is.null(tool_contents) && length(tool_contents) > 0) {
-    tier_pattern <- "['\"]_tier['\"]:\\s*['\"]?(primp|selenium|ddgs|requests)['\"]?"
+    tier_pattern <- "['\"]_tier['\"]:\\s*['\"]?(curl_cffi|primp|selenium|ddgs|requests)['\"]?"
     tiers <- character(0)
     for (content in tool_contents) {
       matches <- gregexpr(tier_pattern, content, perl = TRUE)[[1]]
@@ -1830,7 +1839,7 @@ extract_search_tiers <- function(text) {
 
   # Match '_tier': 'primp' patterns in Python dict repr
   # Handle both single and double quotes
-  tier_pattern <- "['\"]_tier['\"]:\\s*['\"]?(primp|selenium|ddgs|requests)['\"]?"
+  tier_pattern <- "['\"]_tier['\"]:\\s*['\"]?(curl_cffi|primp|selenium|ddgs|requests)['\"]?"
   matches <- gregexpr(tier_pattern, text, perl = TRUE)[[1]]
 
   if (matches[1] == -1) {
@@ -2240,31 +2249,68 @@ extract_search_tiers <- function(text) {
   result
 }
 
-#' Extract JSON from Agent Traces
+.trace_field_mining_enabled <- function() {
+  opt <- getOption("asa.enable_trace_field_mining", default = NULL)
+  if (is.logical(opt) && length(opt) == 1L && !is.na(opt)) {
+    return(isTRUE(opt))
+  }
+
+  env <- Sys.getenv("ASA_ENABLE_TRACE_FIELD_MINING", unset = "")
+  if (!nzchar(env)) {
+    return(FALSE)
+  }
+
+  tolower(trimws(env)) %in% c("1", "true", "t", "yes", "y", "on")
+}
+
+#' Get unknown-ratio threshold for optional trace mining fallback
+#' @keywords internal
+.trace_field_mining_unknown_ratio <- function(default = 0.6) {
+  threshold <- suppressWarnings(as.numeric(getOption(
+    "asa.trace_field_mining_unknown_ratio",
+    default = default
+  )))
+  if (is.na(threshold) || threshold < 0 || threshold > 1) {
+    return(default)
+  }
+  threshold
+}
+
+#' Extract JSON from trace, with optional heuristic trace mining
 #'
-#' Extracts JSON data from raw agent traces. First tries the standard approach
-#' (last AIMessage JSON), then if the result has >60% Unknown fields, enhances
-#' it by mining ToolMessage contents for biographical data.
+#' By default this returns canonical terminal JSON extracted from the trace.
+#' Heuristic mining of tool messages is opt-in via option/env var or explicit
+#' `allow_trace_mining = TRUE`.
 #'
 #' @param text Raw trace text
+#' @param allow_trace_mining Optional logical override. When NULL, uses
+#'   `getOption("asa.enable_trace_field_mining", FALSE)` (or corresponding env).
 #' @return Parsed JSON data as a list, or NULL if no JSON found
 #' @keywords internal
-.extract_json_from_trace <- function(text) {
+.extract_json_from_trace <- function(text, allow_trace_mining = NULL) {
   # Try the standard extraction first
   json_data <- .extract_json_from_trace_inner(text)
+  if (is.null(json_data)) {
+    return(NULL)
+  }
+
+  if (is.null(allow_trace_mining)) {
+    allow_trace_mining <- .trace_field_mining_enabled()
+  }
+  if (!isTRUE(allow_trace_mining)) {
+    return(json_data)
+  }
 
   # If mostly Unknown, enhance with trace mining
-  if (!is.null(json_data)) {
-    unknown_ratio <- .count_unknown_ratio(json_data)
-    if (unknown_ratio > 0.6) {
-      mined <- .mine_trace_for_fields(text)
-      if (!is.null(mined) && is.list(mined)) {
-        for (field in names(mined)) {
-          current_val <- json_data[[field]]
-          if (is.null(current_val) ||
-              (is.character(current_val) && tolower(current_val) %in% c("unknown", ""))) {
-            json_data[[field]] <- mined[[field]]
-          }
+  unknown_ratio <- .count_unknown_ratio(json_data)
+  if (unknown_ratio > .trace_field_mining_unknown_ratio()) {
+    mined <- .mine_trace_for_fields(text)
+    if (!is.null(mined) && is.list(mined)) {
+      for (field in names(mined)) {
+        current_val <- json_data[[field]]
+        if (is.null(current_val) ||
+            (is.character(current_val) && tolower(current_val) %in% c("unknown", ""))) {
+          json_data[[field]] <- mined[[field]]
         }
       }
     }

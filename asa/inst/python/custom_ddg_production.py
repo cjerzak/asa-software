@@ -2681,9 +2681,163 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     _cleanup_expired_blocks()
                 _reselect_exit("blocklist")
 
-        # tier 0 - primp
+        # tier 0 - curl_cffi
         # ────────────────────────────────────────────────────────────────────────
-        # Tier 0 — PRIMP (fast HTTP client with browser impersonation)
+        # Tier 0 — curl_cffi (libcurl + BoringSSL with browser impersonation)
+        # Requires: `pip install curl_cffi` (https://github.com/lexiforest/curl_cffi)
+        # Notes:
+        #   • Uses libcurl under the hood — different TLS stack from PRIMP (Rust/reqwest).
+        #   • Stateless: no session reuse across calls for anonymity.
+        #   • Supports browser impersonation via `impersonate=` parameter.
+        #   • Includes retry logic for CAPTCHA with delay and impersonation rotation.
+        logger.debug("curl_cffi starting search for: %s", query[:60])
+
+        _curl_impersonations = [
+            "chrome131",
+            "chrome130",
+            "firefox133",
+            "safari18_0",
+            "edge131",
+        ]
+        _curl_max_retries = cfg.max_retries
+        _curl_retry_delay = cfg.retry_delay
+
+        for _curl_attempt in range(_curl_max_retries):
+            try:
+                from curl_cffi import requests as curl_requests
+
+                # Map DuckDuckGo params
+                _params = {"q": query}
+                if self.safesearch:
+                    _ss = str(self.safesearch).lower()
+                    _params["kp"] = {"off": "-1", "moderate": "0", "safe": "1", "strict": "1"}.get(_ss, "0")
+                if self.time:
+                    _params["df"] = self.time
+                if self.region:
+                    _params["kl"] = self.region
+
+                # Rotate impersonation on retries
+                _curl_imp = _curl_impersonations[_curl_attempt % len(_curl_impersonations)]
+
+                # Proxy handling — always use proxy if configured
+                _curl_proxy = self.proxy
+                if _curl_attempt >= 2 and self.proxy and cfg.allow_direct_fallback:
+                    _curl_proxy = None
+                    logger.warning("ANONYMITY WARNING: curl_cffi falling back to DIRECT IP (no proxy) - "
+                                  "your real IP will be exposed. Set allow_direct_fallback=False to disable.")
+                if _curl_attempt > 0:
+                    proxy_status = "with proxy" if _curl_proxy else "DIRECT IP (no proxy)"
+                    logger.info("curl_cffi retry %d/%d with impersonation: %s, %s",
+                               _curl_attempt, _curl_max_retries - 1, _curl_imp, proxy_status)
+
+                _curl_proxies = {"https": _curl_proxy, "http": _curl_proxy} if _curl_proxy else None
+
+                _curl_resp = curl_requests.get(
+                    "https://html.duckduckgo.com/html",
+                    params=_params,
+                    impersonate=_curl_imp,
+                    proxies=_curl_proxies,
+                    timeout=cfg.timeout,
+                )
+                logger.debug("curl_cffi response status: %d, length: %d",
+                            _curl_resp.status_code, len(_curl_resp.text) if _curl_resp.text else 0)
+
+                if 200 <= _curl_resp.status_code < 300 and _curl_resp.text:
+                    from bs4 import BeautifulSoup
+                    from urllib.parse import urlparse, parse_qs, unquote
+
+                    _soup = BeautifulSoup(_curl_resp.text, "html.parser")
+                    _links = _soup.select("a.result__a")
+                    _snips = _soup.select("div.result__snippet, a.result__snippet")
+                    logger.debug("curl_cffi found %d links, %d snippets", len(_links), len(_snips))
+
+                    # Check for CAPTCHA or rate limiting
+                    if len(_links) == 0:
+                        _page_text = _curl_resp.text.lower()
+                        if _is_captcha_page(_page_text, has_results=False):
+                            logger.warning("curl_cffi CAPTCHA detected on attempt %d (proxy=%s, query=%s...)",
+                                         _curl_attempt + 1, self.proxy or "direct", query[:30])
+                            _record_captcha_hit(self.proxy)
+                            _mark_exit_bad(self.proxy, reason="captcha_curl_cffi")
+                            if _curl_attempt < _curl_max_retries - 1:
+                                if self.proxy and "socks" in self.proxy.lower():
+                                    if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                                        logger.info("Tor circuit rotated (forced) - new exit node for curl_cffi retry")
+                                    else:
+                                        logger.warning("Tor rotation FAILED - check control port auth")
+                                _reselect_exit("curl_cffi CAPTCHA")
+                                _humanized_retry = _humanize_delay(_curl_retry_delay, cfg)
+                                logger.info("curl_cffi waiting %.1fs before retry (humanized)...", _humanized_retry)
+                                time.sleep(_humanized_retry)
+                            _curl_retry_delay *= cfg.backoff_multiplier
+                            continue
+                        elif "rate" in _page_text and "limit" in _page_text:
+                            logger.warning("curl_cffi rate limiting detected")
+                            _mark_exit_bad(self.proxy, reason="rate_limit_curl_cffi")
+                            if self.proxy and "socks" in self.proxy.lower():
+                                if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                                    logger.info("Tor circuit rotated (forced) after rate limit")
+                                else:
+                                    logger.warning("Tor rotation FAILED after rate limit")
+                            _reselect_exit("curl_cffi rate-limit")
+                        else:
+                            logger.debug("curl_cffi no results - page title: %s",
+                                       _soup.title.string if _soup.title else 'N/A')
+
+                    _out = []
+                    _limit = int(max_results or cfg.max_results)
+                    for i, a in enumerate(_links[:_limit], 1):
+                        _raw = a.get("href", "")
+                        _parsed = urlparse(_raw)
+                        _real = unquote(parse_qs(_parsed.query).get("uddg", [_raw])[0])
+                        _real = _canonicalize_url(_real) or _real
+                        if _is_noise_source_url(_real):
+                            continue
+
+                        _snip = ""
+                        if i - 1 < len(_snips):
+                            try:
+                                _snip = _snips[i - 1].get_text(strip=True)
+                            except (AttributeError, IndexError) as e:
+                                logger.debug("Snippet extraction failed for result %d: %s", i, e)
+                        _out.append(
+                            {
+                                "id": i,
+                                "title": a.get_text(strip=True),
+                                "href": _raw,
+                                "body": f"__START_OF_SOURCE {i}__ <CONTENT> {_snip} </CONTENT> <URL> {_real} </URL> __END_OF_SOURCE {i}__",
+                                "_tier": "curl_cffi",
+                            }
+                        )
+                    if _out:
+                        logger.info("curl_cffi SUCCESS: returning %d results", len(_out))
+                        _mark_exit_good(self.proxy)
+                        return _out
+                    else:
+                        logger.debug("curl_cffi no output generated, falling through to next tier")
+                        break  # Don't retry if we got a valid response with no results
+
+            except Exception as _curl_exc:
+                logger.warning("curl_cffi exception on attempt %d: %s: %s",
+                              _curl_attempt + 1, type(_curl_exc).__name__, _curl_exc)
+                if _curl_attempt < _curl_max_retries - 1:
+                    _humanized_retry = _humanize_delay(_curl_retry_delay, cfg)
+                    time.sleep(_humanized_retry)
+                    _curl_retry_delay *= cfg.backoff_multiplier
+                else:
+                    logger.debug("curl_cffi tier failed after %d attempts: %s", _curl_max_retries, _curl_exc)
+        # End tier 0 (curl_cffi)
+
+        # Inter-tier rotation: get fresh exit before trying PRIMP
+        if self.proxy and "socks" in self.proxy.lower():
+            logger.info("curl_cffi tier exhausted - rotating circuit before PRIMP fallback")
+            if _rotate_tor_circuit(force=True, proxy=self.proxy):
+                logger.info("Circuit rotated successfully before PRIMP tier")
+            _reselect_exit("tier_fallback_primp")
+
+        # tier 1 - primp
+        # ────────────────────────────────────────────────────────────────────────
+        # Tier 1 — PRIMP (fast HTTP client with browser impersonation, fallback)
         # Requires: `pip install -U primp` (https://github.com/deedy5/primp)
         # Notes for massive parallel runs:
         #   • We create a fresh client per call (cookie_store=False) and close it immediately.
@@ -2853,7 +3007,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     _retry_delay *= cfg.backoff_multiplier
                 else:
                     logger.debug("PRIMP tier failed after %d attempts: %s", _max_retries, _primp_exc)
-        # End tier 0
+        # End tier 1 (primp)
 
         # Inter-tier rotation: get fresh exit before trying Selenium
         if self.proxy and "socks" in self.proxy.lower():
@@ -2862,7 +3016,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 logger.info("Circuit rotated successfully before Selenium tier")
             _reselect_exit("tier_fallback")
 
-        # Tier 1 – Selenium
+        # Tier 2 – Selenium
         if self.use_browser:
             try:
                 return _browser_search(
@@ -2890,7 +3044,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 logger.info("Circuit rotated successfully before DDGS tier")
             _reselect_exit("tier_fallback_ddgs")
 
-        # Tier 2 – ddgs HTTP API
+        # Tier 3 – ddgs HTTP API
         logger.debug("Trying DDGS tier...")
         try:
             ddgs_kwargs = _build_ddgs_kwargs(
@@ -2921,7 +3075,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 _rotate_tor_circuit(force=True, proxy=self.proxy)
                 _reselect_exit("tier_fallback_requests")
 
-        # Tier 3 – raw Requests scrape
+        # Tier 4 – raw Requests scrape
         logger.debug("Trying requests scrape tier...")
         return _requests_scrape(
             query,

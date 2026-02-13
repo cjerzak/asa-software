@@ -10,7 +10,7 @@
 #./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
 #./asa-software/tracked_reports/action_ascii_real.txt
-#./asa-software/tracked_reports/our_answer_real.txt
+#./asa-software/tracked_reports/answer_pred_real.txt
 options(error=NULL)
 # install.packages( "~/Documents/asa-software/asa",repos = NULL, type = "source",force = F);
 # devtools::load_all('~/Documents/asa-software/asa')
@@ -118,8 +118,8 @@ attempt <- run_task(
       proxy = "socks5h://127.0.0.1:9050",
       use_browser = FALSE, 
       use_memory_folding = TRUE,
-      recursion_limit = 32L, memory_threshold = 8L, memory_keep_recent = 4L, # production
-      #recursion_limit = 32L, memory_threshold = 16L, memory_keep_recent = 8L, # production
+      #recursion_limit = 32L, memory_threshold = 8L, memory_keep_recent = 4L, # production
+      recursion_limit = 32L, memory_threshold = 16L, memory_keep_recent = 8L, # production
       #recursion_limit = 64L, memory_threshold = 32L, memory_keep_recent = 16L, # production
       #fold_char_budget = 5L * (10000L), # default is 30000L
       fold_char_budget = 5L * (10000L), # default is 30000L
@@ -236,15 +236,3 @@ jsonlite::write_json(
   null = "null"
 )
 cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "null"))
-
-# outputs:
-#./asa-software/tracked_reports/prompt_example_real.txt
-#./asa-software/tracked_reports/trace_real.txt          (asa_trace_v1 structured JSON)
-#./asa-software/tracked_reports/token_stats_real.txt
-#./asa-software/tracked_reports/plan_output_real.txt
-#./asa-software/tracked_reports/fold_stats_real.txt
-#./asa-software/tracked_reports/fold_summary_real.txt
-#./asa-software/tracked_reports/fold_archive_real.txt
-#./asa-software/tracked_reports/execution_summary_real.txt
-#./asa-software/tracked_reports/action_ascii_real.txt
-#./asa-software/tracked_reports/our_answer_real.txt

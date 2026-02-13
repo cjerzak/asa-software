@@ -1,0 +1,85 @@
+========================================================================
+BENCHMARK: PRIMP vs curl_cffi — DuckDuckGo HTML search
+Query: 'Ramona Moye Camaconi Bolivia'
+Iterations: 5, Inter-delay: 3.0s
+========================================================================
+
+--- curl_cffi+tor ---
+  Success: 5/5
+  Total time (s): mean=1.576  median=1.604  min=1.498  max=1.635
+                  stdev=0.060
+  Links:          mean=10.0  min=10  max=10
+  Body length:    mean=35373  min=35373  max=35373
+  iter  status   total_s  links  body_len  error
+     1     200     1.616     10     35373  
+     2     200     1.528     10     35373  
+     3     200     1.498     10     35373  
+     4     200     1.604     10     35373  
+     5     200     1.635     10     35373  
+
+--- primp+tor ---
+  Success: 5/10
+  FAIL iter 1: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 2: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 3: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 4: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 5: AttributeError: 'Client' object has no attribute 'close'
+  Total time (s): mean=1.687  median=1.666  min=1.493  max=1.903
+                  stdev=0.149
+  Links:          mean=10.0  min=10  max=10
+  Body length:    mean=35373  min=35373  max=35373
+  iter  status   total_s  links  body_len  error
+     1     200     1.493     10     35373  
+     1      -1     1.602      0         0  AttributeError: 'Client' object has no attribute 'close'
+     2     200     1.666     10     35373  
+     2      -1     1.677      0         0  AttributeError: 'Client' object has no attribute 'close'
+     3     200     1.640     10     35373  
+     3      -1     1.651      0         0  AttributeError: 'Client' object has no attribute 'close'
+     4     200     1.732     10     35373  
+     4      -1     1.742      0         0  AttributeError: 'Client' object has no attribute 'close'
+     5     200     1.903     10     35373  
+     5      -1     1.911      0         0  AttributeError: 'Client' object has no attribute 'close'
+
+--- curl_cffi+direct ---
+  Success: 5/5
+  Total time (s): mean=0.409  median=0.187  min=0.143  max=0.803
+                  stdev=0.332
+  Links:          mean=4.0  min=0  max=10
+  Body length:    mean=22710  min=14262  max=35373
+  iter  status   total_s  links  body_len  error
+     1     200     0.803     10     35373  
+     2     200     0.740     10     35373  
+     3     202     0.187      0     14268  
+     4     202     0.171      0     14274  
+     5     202     0.143      0     14262  
+
+--- primp+direct ---
+  Success: 5/10
+  FAIL iter 1: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 2: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 3: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 4: AttributeError: 'Client' object has no attribute 'close'
+  FAIL iter 5: AttributeError: 'Client' object has no attribute 'close'
+  Total time (s): mean=0.751  median=0.711  min=0.704  max=0.901
+                  stdev=0.085
+  Links:          mean=10.0  min=10  max=10
+  Body length:    mean=35373  min=35373  max=35373
+  iter  status   total_s  links  body_len  error
+     1     200     0.705     10     35373  
+     1      -1     0.717      0         0  AttributeError: 'Client' object has no attribute 'close'
+     2     200     0.711     10     35373  
+     2      -1     0.728      0         0  AttributeError: 'Client' object has no attribute 'close'
+     3     200     0.704     10     35373  
+     3      -1     0.717      0         0  AttributeError: 'Client' object has no attribute 'close'
+     4     200     0.732     10     35373  
+     4      -1     0.767      0         0  AttributeError: 'Client' object has no attribute 'close'
+     5     200     0.901     10     35373  
+     5      -1     0.918      0         0  AttributeError: 'Client' object has no attribute 'close'
+
+========================================================================
+COMPARATIVE SUMMARY
+========================================================================
+
+  [TOR]  primp=1.687s  curl_cffi=1.576s  diff=-6.6%  winner=curl_cffi
+
+  [DIRECT]  primp=0.751s  curl_cffi=0.409s  diff=-45.5%  winner=curl_cffi

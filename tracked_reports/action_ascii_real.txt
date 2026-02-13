@@ -16,65 +16,67 @@ WHAT HAPPENED OVERALL
   +-- Summary
       Human prompts: 1
       AI turns: 3 tool-call turn(s), 1 answer turn(s)
-      Tool results: 3 total (Tool Search=2, Tool OpenWebpage=1)
+      Tool results: 3 total (Tool Search=3)
       Structured terminal answer emitted
       Plan status: Plan steps: 4 total (status metadata not yet populated)
-      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDENCE_FINAL_ANSWER=1)
+      Anomalies: 3 flagged step(s) (OFF_TOPIC_RESULT=2, LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
   +-- [PLAN] Plan steps: 4 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      summarize: 4.2512m (tok=73464, n=8)
-      tools: 4.1117m (tok=0, n=11)
-      agent: 0.5657m (tok=73038, n=11)
-      finalize: 0.2625m (tok=9692, n=1)
-      planner: 0.1787m (tok=1722, n=1)
+      summarize: 5.0394m (tok=88279, n=8)
+      tools: 2.1615m (tok=0, n=11)
+      agent: 0.7278m (tok=86081, n=11)
+      finalize: 0.2137m (tok=11282, n=1)
+      planner: 0.1743m (tok=1660, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #16 summarize: 0.8635m (tok=13357)
-      #07 tools: 0.8599m (tok=0)
-      #09 tools: 0.8175m (tok=0)
-      #30 tools: 0.7074m (tok=0)
-      #31 summarize: 0.6742m (tok=10979)
-  +-- [TIMING] wall=9.1921m nodes=9.3698m delta=-0.1776m (overlap likely)
+      #28 summarize: 1.2727m (tok=20192)
+      #19 summarize: 0.8022m (tok=12928)
+      #31 summarize: 0.6854m (tok=12139)
+      #24 tools: 0.5701m (tok=0)
+      #18 tools: 0.5425m (tok=0)
+  +-- [TIMING] wall=8.1434m nodes=8.3166m delta=-0.1732m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (OpenWebpage)
+  +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=7823 out=158 total=7981
-      min: 0.0348m
-      detail: OpenWebpage(url=http://www.vicepresidencia...rlamentario=428)
+      tok: in=9899 out=332 total=10231
+      min: 0.0534m
+      detail: Search(query="Ramona Moye Camaconi" "Directorio Legisl...)
   +-- [03] Returned result
-      by: Tool OpenWebpage
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: http://www.vicepresidencia.gob.bo/spip.php?page=pa...c. en Ciencias de la Educ...
+      flag: OFF_TOPIC_RESULT
+      detail: Ramona is an 1884 American novel written by Helen Hunt ...nta Maria and the San Vic...
   +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=8444 out=178 total=8622
-      min: 0.0318m
-      detail: Search(query=site:vicepresidencia.gob.bo "RAMONA MOYE ...)
+      tok: in=10212 out=199 total=10411
+      min: 0.0398m
+      detail: Search(query="Ramona Moye Camaconi" diputada Bolivia e...)
   +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: MOYE CAMACONI, RAMONA - MAS Diputado uninominal - Circunscripción 09 · Nombre: RAMO...
+      flag: OFF_TOPIC_RESULT
+      detail: November 7, 2025 - En Bolivia, el Bachillerato es ... Adultos, por lo que el Minist...
   +-- [06] Requested 1 tool call (Search)
       by: AI
-      tok: in=8018 out=121 total=8139
-      min: 0.0267m
-      detail: Search(query=site:vicepresidencia.gob.bo "RAMONA MOYE ...)
+      tok: in=9663 out=395 total=10058
+      min: 0.0627m
+      detail: Search(query="Ramona Moye Camaconi" TIPNIS nació en)
   +-- [07] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...oni </URL> __END_OF_SOURC...
   +-- [08] Produced structured answer
       by: AI
-      tok: in=7120 out=2572 total=9692
-      min: 0.2625m
+      tok: in=9108 out=2174 total=11282
+      min: 0.2137m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":...r, mapping to Working Cla...
+      detail: {"education_level": "Unknown", "education_institution":...a rural indigenous territ...
 END

@@ -1,0 +1,12 @@
+{
+  "run_id": "20260213T134902Z",
+  "status": "timeout",
+  "run_started_at": "2026-02-13T13:49:02Z",
+  "run_finished_at": "2026-02-13T13:49:23Z",
+  "elapsed_seconds": 20.9801,
+  "error": "! callr timed out",
+  "git_sha": "fc8fecfcb04499392eb889d97ed21545415217b8",
+  "strict_export_gate": true,
+  "timed_out": true,
+  "wall_limit_sec": 20
+}

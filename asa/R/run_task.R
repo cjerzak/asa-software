@@ -1140,7 +1140,10 @@ run_task_batch <- function(prompts,
   }
 
   # Check for tier markers in order of preference (most specific first)
-  # The Python code adds "_tier": "primp"/"selenium"/"ddgs"/"requests" to results
+  # The Python code adds "_tier": "curl_cffi"/"primp"/"selenium"/"ddgs"/"requests" to results
+  if (grepl("'_tier':\\s*'curl_cffi'|\"_tier\":\\s*\"curl_cffi\"", trace_str, ignore.case = TRUE)) {
+    return("curl_cffi")
+  }
   if (grepl("'_tier':\\s*'primp'|\"_tier\":\\s*\"primp\"", trace_str, ignore.case = TRUE)) {
     return("primp")
   }
@@ -1155,6 +1158,9 @@ run_task_batch <- function(prompts,
   }
 
   # Fallback: check for tier keywords in log messages
+  if (grepl("curl_cffi SUCCESS|curl_cffi.*returning", trace_str, ignore.case = TRUE)) {
+    return("curl_cffi")
+  }
   if (grepl("PRIMP SUCCESS|PRIMP.*returning", trace_str, ignore.case = TRUE)) {
     return("primp")
   }
