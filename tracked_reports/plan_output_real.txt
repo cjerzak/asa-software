@@ -6,7 +6,7 @@
       "description": "Research and answer the query",
       "completion_criteria": "Final answer cites concrete evidence from tool output.",
       "status": "in_progress",
-      "findings": "Starting research on Ramona Moye Camaconi."
+      "findings": "Starting research for Ramona Moye Camaconi."
     }
   ],
   "version": 2,

@@ -3,18 +3,18 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "Habitante del TIPNIS (Inhabitant of TIPNIS)",
+  "prior_occupation": "President of the Women's Organization - Sub Central Sécure (Presidenta de la Organización de Mujeres - Sub Central Sécure)",
   "class_background": "Working class",
-  "prior_occupation_source": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+  "prior_occupation_source": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "disability_status": "Unknown",
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
   "birth_year": 1982,
-  "birth_year_source": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+  "birth_year_source": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": "Identified as an inhabitant of the rural TIPNIS indigenous territory; MAS candidate selection prioritized representatives from social organizations and rural backgrounds."
+  "justification": "Source-backed searches resolved 6 fields (including prior_occupation, class_background, prior_occupation_source), while 12 fields remain unknown due to limited verifiable evidence."
 }

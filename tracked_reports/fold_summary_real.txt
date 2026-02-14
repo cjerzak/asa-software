@@ -1,105 +1,57 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_year_source = https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis", "[ANCHORED] FIELD_EXTRACT: class_background = Working class (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "[ANCHORED] FIELD_EXTRACT: justification = Identified as an inhabitant of the rural TIPNIS indigenous territory; MAS candidate selection prioritized representatives from social organizations and rural backgrounds. (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Habitante del TIPNIS (Inhabitant of TIPNIS) (source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "Ramona Moye Camaconi was born in 1982. (Source: https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios)", "Moye was elected as the titular deputy for the Special Indigenous Constituency of Beni, Bolivia, in the 2014 general elections for the Movimiento al Socialismo (MAS). (Source: https://www.flickr.com/photos/194792615@N03/52180793916; https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)", "Official parliamentary records list Moye as a uninominal deputy for C09 or a substitute for C6, conflicting with her election as a titular deputy for the special constituency. (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1; http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "Moye's substitute deputy for the special constituency was Eloy Cartagena Yuhamona. (Source: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html)", "Moye won the 2014 election in the TIPNIS area with a reported majority between 75% and 83% of the vote, defeating Miriam Yubanore of the Unidad Demócrata (UD). (Source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni; https://www.opinion.com.bo/articulo/el-pais/mas-gana-tipnis-75-ciento-obtiene-diputacion/20141013203700502386.html)", "Moye supports the construction of a highway through the TIPNIS territory and denies that indigenous leaders face persecution by the government. (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "In June 2019, Moye acknowledged that coca is produced in the TIPNIS territory for traditional consumption (autoconsumo). (Source: https://correodelsur.com/politica/20190601/diputada-moye-en-tipnis-se-produce-hoja-de-coca.html; https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967)", "In September 2018, Deputy Jimena Costa (UD) denounced Moye to the Ethics Commission for allegedly presenting falsified medical leaves to the Chamber of Deputies. (Source: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsified-390956)", "Ramona Moye Camaconi maintains a public Facebook profile and an inactive Twitter account (@RCamaconi) joined in April 2018. (Source: https://www.facebook.com/ramona.moyecamaconi; https://twitter.com/RCamaconi)"],
+  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609", "[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = President of the Women's Organization - Sub Central Sécure (Presidenta de la Organización de Mujeres - Sub Central Sécure) (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: class_background = Working class (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi was born on January 7, 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609).", "Ramona Moye Camaconi was elected as the titular deputy for the Special Indigenous Constituency (Circunscripción Especial Indígena) of Beni in the 2014 Bolivian general elections representing the Movimiento Al Socialismo (MAS) (source: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html).", "In the 2014 election, Ramona Moye Camaconi won the Special Indigenous Constituency seat with 83% of the vote in the TIPNIS region and approximately 75% overall (sources: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni, https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis).", "Eloy Cartagena Yuhamona served as the alternate (suplente) deputy for Ramona Moye Camaconi in the Beni Special Indigenous Constituency (source: https://clajadep.lahaine.org/?p=15892).", "Ramona Moye Camaconi is an inhabitant of the TIPNIS territory and has been an advocate for the construction of a highway through the region (source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis).", "In September 2018, Ramona Moye Camaconi was denounced by a fellow legislator for allegedly submitting forged medical certificates to justify leave from her duties (source: https://www.anoticia2.com/2018/09/diputada-moye-es-denunciada-por.html).", "Ramona Moye Camaconi maintains a presence on Facebook and a Twitter account (@RCamaconi) which she joined in April 2018 (sources: https://www.facebook.com/ramona.moyecamaconi, https://twitter.com/RCamaconi)."],
   "decisions": [],
-  "open_questions": ["What is the exact birth date (day and month) and birth place of Ramona Moye Camaconi?", "What is the highest level of education attained by Ramona Moye Camaconi?", "What was the outcome of the Ethics Commission investigation regarding the alleged falsified medical leaves?"],
+  "open_questions": ["What is the specific educational level and field of study for Ramona Moye Camaconi?", "Does Ramona Moye Camaconi have any recorded disability status?"],
   "sources": [
     {
       "tool": "Search",
-      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
-      "title": "Ramona Moye Camaconi, diputada titular por Beni",
-      "note": "Confirmed role and party."
+      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia de Bolivia - Perfil Parlamentario Ramona Moye",
+      "note": "Primary source for birth date, prior occupation, and class background."
     },
     {
       "tool": "Search",
       "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
-      "title": "Bancadas de UD y del MAS en the Beni",
-      "note": "Identifies substitute deputy."
+      "title": "Bancadas de UD y del MAS en el Beni",
+      "note": "Confirms election results and alternate deputy."
     },
     {
       "tool": "Search",
       "url": "https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "El MAS gana en el TIPNIS con 75%",
-      "note": "Details election results."
+      "title": "El MAS gana en el Tipnis con 75% y obtiene la diputación especial indígena de Beni",
+      "note": "Details on the 2014 election victory margin."
     },
     {
       "tool": "Search",
-      "url": "https://www.opinion.com.bo/articulo/el-pais/mas-gana-tipnis-75-ciento-obtiene-diputacion/20141013203700502386.html",
-      "title": "MAS gana en el TIPNIS con 75 por ciento",
-      "note": "Election results."
+      "url": "https://clajadep.lahaine.org/?p=15892",
+      "title": "Candidatos a Diputados Especiales",
+      "note": "Lists candidates for indigenous constituencies."
     },
     {
       "tool": "Search",
       "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "title": "Diputada oficialista amenaza a indígenas",
-      "note": "Background and political stance."
+      "title": "Diputada indígena del Tipnis",
+      "note": "Information regarding her residence and stance on the TIPNIS highway."
     },
     {
       "tool": "Search",
-      "url": "https://www.cejis.sinnersite.com/noticias/chavez-no-se-puede-jugar-con-el-estomago-de-los-indigenas",
-      "title": "Chávez: No se puede jugar con el estómago",
-      "note": "Support for TIPNIS highway."
-    },
-    {
-      "tool": "Search",
-      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": "Ficha Parlamentaria - Ramona Moye Camaconi",
-      "note": "Official record conflict."
-    },
-    {
-      "tool": "Search",
-      "url": "https://correodelsur.com/politica/20190601/diputada-moye-en-tipnis-se-produce-hoja-de-coca.html",
-      "title": "Diputada Moye: en TIPNIS se produce hoja de coca",
-      "note": "Coca production statement."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsified-390956",
-      "title": "Diputada Moye es denunciada",
-      "note": "Ethics complaint details."
-    },
-    {
-      "tool": "Search",
-      "url": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
-      "title": "Parlamentarios - Vicepresidencia de Bolivia",
-      "note": "Source for birth year."
+      "url": "https://www.anoticia2.com/2018/09/diputada-moye-es-denunciada-por.html",
+      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
+      "note": "Report on the 2018 legal complaint regarding medical certificates."
     },
     {
       "tool": "Search",
       "url": "https://www.facebook.com/ramona.moyecamaconi",
-      "title": "Ramona Moye Camaconi on Facebook",
+      "title": "Ramona Moye Camaconi Facebook Profile",
       "note": "Social media profile."
     },
     {
       "tool": "Search",
-      "url": "https://sisin.oep.org.bo/medios_digitales/14455/detalle",
-      "title": "Denuncia de Jimena Costa contra Ramona Moye",
-      "note": "Formal complaint text."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967",
-      "title": "Diputada del MAS admite coca en TIPNIS",
-      "note": "Coca production admission."
-    },
-    {
-      "tool": "Search",
-      "url": "https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=",
-      "title": "Diputada Moye presentó bajas médicas falsificadas",
-      "note": "Complaint formalization."
-    },
-    {
-      "tool": "Search",
-      "url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
-      "title": "El TIPNIS y el Madidi",
-      "note": "Moye's background and stance."
-    },
-    {
-      "tool": "Search",
       "url": "https://twitter.com/RCamaconi",
-      "title": "Ramona Moye Camaconi on Twitter",
-      "note": "Inactive account."
+      "title": "Ramona Moye Camaconi Twitter (@RCamaconi)",
+      "note": "Twitter account profile."
     }
   ],
-  "warnings": "There is a role discrepancy: Journalistic sources identify Moye as the Titular Deputy for the Special Indigenous Constituency of Beni, while official Vicepresidencia records list her as a uninominal or substitute deputy."
+  "warnings": []
 }

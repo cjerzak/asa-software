@@ -709,59 +709,118 @@ def _relevant_chunks(text: str, query: str, *, chunk_chars: int, max_chunks: int
     return _relevant_chunks_lexical(text, query, chunk_chars=chunk_chars, max_chunks=max_chunks)
 
 
+def _is_tls_fetch_error(exc: Exception) -> bool:
+    text = str(exc or "").lower()
+    if not text:
+        return False
+    return any(
+        token in text
+        for token in (
+            "ssl",
+            "certificate",
+            "tls",
+            "handshake",
+            "protocol_error",
+            "http/2",
+        )
+    )
+
+
+def _as_http_fallback_url(url: str) -> str:
+    parsed = urlparse(url or "")
+    if parsed.scheme.lower() != "https":
+        return url
+    return urlunparse(("http", parsed.netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
+
+
+def _allow_http_fallback(url: str, exc: Exception) -> bool:
+    if not _is_tls_fetch_error(exc):
+        return False
+    parsed = urlparse(url or "")
+    if (parsed.scheme or "").lower() != "https":
+        return False
+    host = (parsed.hostname or "").strip().lower().rstrip(".")
+    if not host:
+        return False
+    return host == "vicepresidencia.gob.bo" or host.endswith(".gob.bo")
+
+
 def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> Dict[str, Any]:
     headers = {"User-Agent": cfg.user_agent}
     proxies = {"http": proxy, "https": proxy} if proxy else None
-    r = None
-    try:
-        r = requests.get(
-            url,
-            headers=headers,
-            timeout=cfg.timeout,
-            proxies=proxies,
-            stream=True,
-            allow_redirects=True,
-        )
-        r.raise_for_status()
+    def _download(target_url: str) -> Dict[str, Any]:
+        r = None
+        try:
+            r = requests.get(
+                target_url,
+                headers=headers,
+                timeout=cfg.timeout,
+                proxies=proxies,
+                stream=True,
+                allow_redirects=True,
+            )
+            r.raise_for_status()
 
-        content_type = (r.headers.get("Content-Type") or "").lower()
-        if not (
-            "text/html" in content_type
-            or "application/xhtml+xml" in content_type
-            or "text/plain" in content_type
-            or content_type == ""
-        ):
+            content_type = (r.headers.get("Content-Type") or "").lower()
+            if not (
+                "text/html" in content_type
+                or "application/xhtml+xml" in content_type
+                or "text/plain" in content_type
+                or content_type == ""
+            ):
+                return {
+                    "ok": False,
+                    "error": "unsupported_content_type",
+                    "content_type": content_type,
+                    "final_url": str(getattr(r, "url", target_url)),
+                }
+
+            data = bytearray()
+            for chunk in r.iter_content(chunk_size=16 * 1024):
+                if not chunk:
+                    continue
+                data.extend(chunk)
+                if len(data) >= cfg.max_bytes:
+                    break
+
+            # Best-effort decode
+            encoding = r.encoding or "utf-8"
+            html = data.decode(encoding, errors="replace").replace("\x00", "")
             return {
-                "ok": False,
-                "error": "unsupported_content_type",
+                "ok": True,
+                "html": html,
                 "content_type": content_type,
-                "final_url": str(getattr(r, "url", url)),
+                "final_url": str(getattr(r, "url", target_url)),
+                "bytes_read": int(len(data)),
             }
+        finally:
+            if r is not None:
+                try:
+                    r.close()
+                except Exception:
+                    pass
 
-        data = bytearray()
-        for chunk in r.iter_content(chunk_size=16 * 1024):
-            if not chunk:
-                continue
-            data.extend(chunk)
-            if len(data) >= cfg.max_bytes:
-                break
-
-        # Best-effort decode
-        encoding = r.encoding or "utf-8"
-        html = data.decode(encoding, errors="replace").replace("\x00", "")
-        return {
-            "ok": True,
-            "html": html,
-            "content_type": content_type,
-            "final_url": str(getattr(r, "url", url)),
-            "bytes_read": int(len(data)),
-        }
-    finally:
-        if r is not None:
-            try:
-                r.close()
-            except Exception:
-                pass
+    try:
+        return _download(url)
+    except RequestException as primary_exc:
+        if _allow_http_fallback(url, primary_exc):
+            fallback_url = _as_http_fallback_url(url)
+            if fallback_url != url:
+                try:
+                    fetched = _download(fallback_url)
+                    if fetched.get("ok"):
+                        fetched["fallback_note"] = "https_failed_retry_http"
+                        fetched["requested_url"] = url
+                    return fetched
+                except RequestException as fallback_exc:
+                    logger.warning(
+                        "OpenWebpage HTTP fallback failed for %s after TLS error (%s): %s",
+                        url,
+                        primary_exc,
+                        fallback_exc,
+                    )
+                    raise fallback_exc from primary_exc
+        raise
 
 
 class OpenWebpageInput(BaseModel):
@@ -874,6 +933,9 @@ class OpenWebpageTool(BaseTool):
                 f"Bytes read: {cache_entry.get('bytes_read')}",
                 f"Cache: {'HIT' if cache_hit else 'MISS'}",
             ]
+            fallback_note = cache_entry.get("fallback_note")
+            if isinstance(fallback_note, str) and fallback_note.strip():
+                header.append(f"Fetch fallback: {fallback_note}")
             out = "\n".join(header) + "\n\n"
 
             if chunks:

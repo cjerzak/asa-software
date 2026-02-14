@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 8.0567,
+  "elapsed_time": 6.6161,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,7 +22,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|Unknown"
     },
     "education_source": {
@@ -30,31 +30,31 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "prior_occupation": {
       "status": "found",
-      "value": "Habitante del TIPNIS (Inhabitant of TIPNIS)",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "value": "President of the Women's Organization - Sub Central Sécure (Presidenta de la Organización de Mujeres - Sub Central Sécure)",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "class_background": {
       "status": "found",
       "value": "Working class",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
       "status": "found",
-      "value": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,7 +62,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
@@ -70,7 +70,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "birth_place": {
@@ -78,7 +78,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
@@ -86,23 +86,23 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "birth_year": {
       "status": "found",
       "value": 1982,
-      "source_url": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
       "status": "found",
-      "value": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
-      "source_url": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,7 +118,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
@@ -126,7 +126,7 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "confidence": {
@@ -134,15 +134,15 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
       "status": "found",
-      "value": "Identified as an inhabitant of the rural TIPNIS indigenous territory; MAS candidate selection prioritized representatives from social organizations and rural backgrounds.",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "value": "Source-backed searches resolved 6 fields (including prior_occupation, class_background, prior_occupation_source), while 12 fields remain unknown due to limited verifiable evidence.",
+      "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 4,
       "descriptor": "string"
     }
   }
