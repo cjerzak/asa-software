@@ -803,6 +803,15 @@ class OpenWebpageTool(BaseTool):
         try:
             chunk_chars = max(200, int(cfg.chunk_chars))
             max_chunks = max(1, int(cfg.max_chunks))
+            query_text = str(query or "").strip()
+
+            # Prevent runaway prompt growth from very large pages while still
+            # preserving focused evidence excerpts for the agent.
+            if query_text:
+                max_chunks = min(max_chunks, 6)
+            else:
+                max_chunks = 1
+                chunk_chars = min(chunk_chars, 1800)
 
             cache_hit = False
             cache_entry = None
@@ -851,7 +860,7 @@ class OpenWebpageTool(BaseTool):
 
             chunks = _relevant_chunks(
                 text,
-                query or "",
+                query_text,
                 chunk_chars=chunk_chars,
                 max_chunks=max_chunks,
                 cfg=cfg,
@@ -875,8 +884,13 @@ class OpenWebpageTool(BaseTool):
                 out += "No readable text extracted."
 
             # Enforce output size cap.
-            if len(out) > cfg.max_chars:
-                out = out[: cfg.max_chars] + "\n\n[Truncated]"
+            max_chars = max(500, int(cfg.max_chars))
+            if query_text:
+                max_chars = min(max_chars, 12_000)
+            else:
+                max_chars = min(max_chars, 6_000)
+            if len(out) > max_chars:
+                out = out[: max_chars] + "\n\n[Truncated]"
             return out
 
         except RequestException as e:

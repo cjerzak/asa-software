@@ -6,9 +6,9 @@ LangGraph timed steps: 31
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 3 found, 6 unknown, 1 pending (10 core fields)
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
       Source-backed found values: 6 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, class_back...
+      Unresolved focus: education_level, education_institution, education_field, disability...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
@@ -16,25 +16,25 @@ WHAT HAPPENED OVERALL
   +-- Summary
       Human prompts: 1
       AI turns: 7 tool-call turn(s), 1 answer turn(s)
-      Tool results: 7 total (Tool Search=6, Tool OpenWebpage=1)
+      Tool results: 7 total (Tool Search=5, Tool OpenWebpage=1, Tool save_finding=1)
       Structured terminal answer emitted
       Plan status: Plan steps: 4 total (status metadata not yet populated)
-      Anomalies: 6 flagged step(s) (OFF_TOPIC_RESULT=5, LOW_EVIDENCE_FINAL_ANSWER=1)
+      Anomalies: 5 flagged step(s) (OFF_TOPIC_RESULT=4, LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
   +-- [PLAN] Plan steps: 4 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      summarize: 2.8924m (tok=45175, n=5)
-      tools: 1.7096m (tok=0, n=12)
-      agent: 0.6895m (tok=93030, n=13)
-      planner: 0.1689m (tok=1618, n=1)
+      tools: 3.6693m (tok=0, n=12)
+      summarize: 3.5908m (tok=59717, n=5)
+      agent: 0.7524m (tok=119233, n=13)
+      planner: 0.2251m (tok=2247, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #20 tools: 0.7676m (tok=0)
-      #24 summarize: 0.7100m (tok=11186)
-      #26 tools: 0.6743m (tok=0)
-      #30 summarize: 0.6136m (tok=9895)
-      #27 summarize: 0.5827m (tok=10118)
-  +-- [TIMING] wall=5.2924m nodes=5.4604m delta=-0.1679m (overlap likely)
+      #30 summarize: 1.0946m (tok=17021)
+      #15 tools: 0.9817m (tok=0)
+      #11 tools: 0.8994m (tok=0)
+      #27 summarize: 0.7868m (tok=14142)
+      #13 tools: 0.7489m (tok=0)
+  +-- [TIMING] wall=8.0134m nodes=8.2376m delta=-0.2242m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -42,83 +42,82 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=5297 out=172 total=5469
-      min: 0.0349m
-      detail: Search(query=Ramona Moye Camaconi lugar de nacimiento ...)
+      tok: in=8290 out=130 total=8420
+      min: 0.0317m
+      detail: Search(query="Ramona Moye Camaconi" formación académic...)
   +-- [03] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> El informe puede inclui...ya </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: La Reconfiguraci...df </URL> __END_OF_SOURCE...
   +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=6584 out=187 total=6771
-      min: 0.0390m
-      detail: Search(query=Ramona Moye Camaconi biografia camara de ...)
+      tok: in=9998 out=244 total=10242
+      min: 0.0444m
+      detail: Search(query="Ramona Moye Camaconi" site:vicepresidenc...)
   +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Página oficialdelaCámar...56 </URL> __END_OF_SOURCE...
-  +-- [06] Requested 1 tool call (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...ios </URL> __END_OF_SOURC...
+  +-- [06] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=8094 out=235 total=8329
-      min: 0.0413m
-      detail: Search(query="Ramona Moye Camaconi" Diccionario biográ...)
+      tok: in=10434 out=250 total=10684
+      min: 0.0518m
+      detail: OpenWebpage(url=https://vicepresidencia.go...rlamentario=428)
   +-- [07] Returned result
-      by: Tool Search
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...oni </URL> __END_OF_SOURC...
-  +-- [08] Requested 1 tool call (Search)
+      detail: Request error opening URL: https://vicepresidencia.gob....s.html first for more det...
+  +-- [08] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=8517 out=160 total=8677
-      min: 0.0402m
-      detail: Search(query="Ramona Moye Camaconi" biografía estudios...)
+      tok: in=12111 out=360 total=12471
+      min: 0.0489m
+      detail: save_finding(finding=birth_year = 1982 (source:...parlamentarios), category=fact)
   +-- [09] Returned result
-      by: Tool Search
+      by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: Allí, completó su formación en dos maestrías: Psicologí...s de su hermano mayor Vic...
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...pestana=2&page=parlamenta...
   +-- [10] Requested 1 tool call (Search)
       by: AI
-      tok: in=11020 out=273 total=11293
-      min: 0.0503m
-      detail: Search(query="Ramona Moye Camaconi" candidate profile ...)
+      tok: in=13772 out=134 total=13906
+      min: 0.0306m
+      detail: Search(query="Ramona Moye Camaconi" biografía lugar de...)
   +-- [11] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...dos </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...dos </URL> __END_OF_SOURC...
   +-- [12] Requested 1 tool call (Search)
       by: AI
-      tok: in=11632 out=342 total=11974
-      min: 0.0564m
-      detail: Search(query="Ramona Moye Camaconi" TIPNIS "nació en")
+      tok: in=13607 out=251 total=13858
+      min: 0.0412m
+      detail: Search(query="Ramona Moye Camaconi" educación profesió...)
   +-- [13] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: Las áreas naturales del Tipnis y el Madidi, ambas en la Amazonía boliviana, son el ...
-  +-- [14] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Título de grado ...df </URL> __END_OF_SOURCE...
+  +-- [14] Requested 1 tool call (Search)
       by: AI
-      tok: in=11790 out=179 total=11969
-      min: 0.0343m
-      detail: OpenWebpage(url=https://tierraderesistente...gena-de-bolivia)
+      tok: in=13970 out=259 total=14229
+      min: 0.0427m
+      detail: Search(query="Ramona Moye Camaconi" lugar de nacimiento)
   +-- [15] Returned result
-      by: Tool OpenWebpage
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t.../sernap.gob.bo/isiborosec...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
   +-- [16] Produced structured answer
       by: AI
-      tok: in=11779 out=49 total=11828
-      min: 0.0195m
+      tok: in=12432 out=178 total=12610
+      min: 0.0360m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":...", "justification": "Unkn...
+      detail: {"education_level": "Unknown", "education_institution":...tions and rural backgroun...
 END

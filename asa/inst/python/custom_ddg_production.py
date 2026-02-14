@@ -2589,6 +2589,10 @@ def _requests_scrape(
             if parent:
                 body = parent.get_text(strip=True)[:300]
         results.append({"id": i, "title": a.get_text(strip=True), "href": href, "body": body, "_tier": "requests"})
+    results = _rerank_search_results(query, results, max_results=max_results)
+    normalized_results = _normalize_tool_result_rows(results, max_results=max_results)
+    if normalized_results:
+        results = normalized_results
     if results:
         _mark_exit_good(proxy)
     return results
@@ -2810,6 +2814,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                             }
                         )
                     if _out:
+                        _out = _rerank_search_results(query, _out, max_results=_limit)
+                        normalized_out = _normalize_tool_result_rows(_out, max_results=_limit)
+                        if normalized_out:
+                            _out = normalized_out
                         logger.info("curl_cffi SUCCESS: returning %d results", len(_out))
                         _mark_exit_good(self.proxy)
                         return _out
@@ -2979,6 +2987,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                                 }
                             )
                         if _out:
+                            _out = _rerank_search_results(query, _out, max_results=_limit)
+                            normalized_out = _normalize_tool_result_rows(_out, max_results=_limit)
+                            if normalized_out:
+                                _out = normalized_out
                             logger.info("PRIMP SUCCESS: returning %d results", len(_out))
                             _mark_exit_good(self.proxy)
                             return _out
@@ -3066,6 +3078,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
             # Add tier info to each result
             for item in ddgs_results:
                 item["_tier"] = "ddgs"
+            ddgs_results = _rerank_search_results(query, ddgs_results, max_results=max_results)
+            normalized_ddgs = _normalize_tool_result_rows(ddgs_results, max_results=max_results)
+            if normalized_ddgs:
+                ddgs_results = normalized_ddgs
             _mark_exit_good(self.proxy)
             return ddgs_results
         except DDGSException as exc:
@@ -3848,6 +3864,24 @@ _RETRIEVE_TRIGGERS = (
     "what did", "from our conversation", "from the conversation", "as mentioned",
 )
 
+_QUERY_CONTEXT_NOISE_TOKENS = {
+    "biografia", "bio", "biography", "formacion", "academica", "academic",
+    "education", "educacion", "estudios", "study", "birth", "born",
+    "nacimiento", "lugar", "place", "year", "ano", "party", "partido",
+    "country", "pais", "region", "constituency", "diputada", "deputy",
+    "mas", "movimiento", "socialismo", "bolivia",
+}
+
+_LOW_SIGNAL_HOST_FRAGMENTS = (
+    "brainly.",
+    "pinterest.",
+    "facebook.com",
+    "twitter.com",
+    "x.com",
+    "linkedin.com",
+    "sites.google.com",
+)
+
 
 def _tokenize_for_retrieval(text: str) -> set:
     if not text:
@@ -3857,6 +3891,261 @@ def _tokenize_for_retrieval(text: str) -> set:
         return set()
     tokens = [w for w in t.split() if len(w) >= 3 and w not in _RETRIEVE_STOPWORDS]
     return set(tokens)
+
+
+def _query_entity_tokens(query: Any, *, max_tokens: int = 8) -> List[str]:
+    """Extract likely entity-bearing tokens from a free-form search query."""
+    text = str(query or "")
+    if not text.strip():
+        return []
+
+    candidates: List[str] = []
+
+    # Prefer explicitly quoted entities when available.
+    for quoted in re.findall(r'"([^"]+)"', text):
+        normalized = _normalize_match_text(quoted)
+        if not normalized:
+            continue
+        for token in normalized.split():
+            if len(token) < 3 or token in _QUERY_CONTEXT_NOISE_TOKENS:
+                continue
+            candidates.append(token)
+
+    # Fallback: title-cased words usually capture person names and places.
+    if not candidates:
+        for raw_token in re.findall(r"[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'-]{2,}", text):
+            if not raw_token[:1].isupper():
+                continue
+            token = _normalize_match_text(raw_token)
+            if len(token) < 3 or token in _QUERY_CONTEXT_NOISE_TOKENS:
+                continue
+            candidates.append(token)
+
+    # Last fallback: non-stopword normalized query tokens.
+    if not candidates:
+        for token in _tokenize_for_retrieval(_normalize_match_text(text)):
+            if token in _QUERY_CONTEXT_NOISE_TOKENS:
+                continue
+            candidates.append(token)
+
+    deduped: List[str] = []
+    seen: set = set()
+    for token in candidates:
+        if token in seen:
+            continue
+        seen.add(token)
+        deduped.append(token)
+        if len(deduped) >= max(1, int(max_tokens)):
+            break
+    return deduped
+
+
+def _normalize_tool_result_rows(
+    rows: Any,
+    *,
+    max_results: Any = None,
+) -> List[Dict[str, Any]]:
+    """Normalize search rows so every item carries structured source+URL text."""
+    if not isinstance(rows, list) or not rows:
+        return []
+
+    limit = len(rows)
+    try:
+        if max_results is not None:
+            limit = max(1, int(max_results))
+    except Exception:
+        limit = len(rows)
+
+    out: List[Dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+
+        item = dict(row)
+        raw_href = item.get("href") or item.get("link") or item.get("url")
+        href = _canonicalize_url(raw_href) or str(raw_href or "").strip()
+        if not href or _is_noise_source_url(href):
+            continue
+
+        title = str(item.get("title") or "").strip()
+        raw_body = str(item.get("body") or item.get("snippet") or item.get("content") or "").strip()
+        if not raw_body:
+            raw_body = title or href
+
+        if "__START_OF_SOURCE" in raw_body and "<URL>" in raw_body:
+            body = raw_body
+        else:
+            snippet = re.sub(r"\s+", " ", raw_body)
+            snippet = re.sub(r"[<>]", " ", snippet).strip()
+            if title:
+                snippet = f"Title: {title}. {snippet}"
+            source_id = len(out) + 1
+            body = (
+                f"__START_OF_SOURCE {source_id}__ "
+                f"<CONTENT> {snippet} </CONTENT> "
+                f"<URL> {href} </URL> "
+                f"__END_OF_SOURCE {source_id}__"
+            )
+
+        item["href"] = href
+        item["body"] = body
+        item["id"] = len(out) + 1
+        out.append(item)
+        if len(out) >= limit:
+            break
+
+    return out
+
+
+def _rerank_search_results(
+    query: str,
+    results: Any,
+    *,
+    max_results: Any = None,
+    min_results: int = 3,
+) -> List[Dict[str, Any]]:
+    """Prefer search snippets that overlap with the query entity/context tokens."""
+    if not isinstance(results, list) or not results:
+        return []
+
+    limit = len(results)
+    try:
+        if max_results is not None:
+            limit = max(1, int(max_results))
+    except Exception:
+        limit = len(results)
+
+    query_tokens = _tokenize_for_retrieval(query)
+    entity_tokens = _query_entity_tokens(query)
+    if not query_tokens:
+        # Keep stable IDs when no lexical signal is available.
+        out = []
+        for idx, row in enumerate(results[:limit], 1):
+            if not isinstance(row, dict):
+                continue
+            item = dict(row)
+            item["id"] = idx
+            out.append(item)
+        return out
+
+    normalized_query = _normalize_match_text(query)
+    query_words = [
+        tok for tok in normalized_query.split()
+        if len(tok) >= 3 and tok not in _RETRIEVE_STOPWORDS
+    ]
+    query_phrases = set()
+    for i in range(max(0, len(query_words) - 1)):
+        query_phrases.add(f"{query_words[i]} {query_words[i + 1]}")
+    if len(query_words) >= 3:
+        query_phrases.add(" ".join(query_words[: min(4, len(query_words))]))
+
+    scored: List[Any] = []
+    for idx, row in enumerate(results):
+        if not isinstance(row, dict):
+            continue
+        title = str(row.get("title") or "")
+        body = str(row.get("body") or row.get("snippet") or row.get("content") or "")
+        href = str(row.get("href") or row.get("url") or row.get("link") or "")
+        haystack = f"{title} {body}"
+        doc_tokens = _tokenize_for_retrieval(haystack)
+        overlap = len(query_tokens & doc_tokens)
+        haystack_norm = _normalize_match_text(haystack)
+        phrase_hits = sum(1 for phrase in query_phrases if phrase and phrase in haystack_norm)
+        href_norm = _normalize_match_text(href)
+        href_hits = sum(1 for token in list(query_tokens)[:8] if token in href_norm)
+        entity_hits = sum(
+            1 for token in entity_tokens
+            if token and (token in haystack_norm or token in href_norm)
+        )
+        strong_entity_match = bool(entity_tokens) and entity_hits >= min(2, len(entity_tokens))
+        trusted_domain_bonus = 0.0
+        href_lower = href.lower()
+        if any(
+            domain in href_lower
+            for domain in (
+                "wikipedia.org",
+                "vicepresidencia.gob.bo",
+                ".gob.bo",
+                "oep.org.bo",
+                "diputados.bo",
+                "parlamento",
+            )
+        ):
+            trusted_domain_bonus = 1.25
+        low_signal_penalty = 0.0
+        try:
+            host = str(urlparse(href).hostname or "").lower()
+        except Exception:
+            host = ""
+        if any(fragment in host for fragment in _LOW_SIGNAL_HOST_FRAGMENTS):
+            low_signal_penalty = 0.75
+        score = (
+            float(overlap)
+            + (1.5 * float(phrase_hits))
+            + (0.25 * float(href_hits))
+            + (1.1 * float(entity_hits))
+            + (2.0 if strong_entity_match else 0.0)
+            + trusted_domain_bonus
+            - low_signal_penalty
+        )
+        scored.append((score, overlap, entity_hits, trusted_domain_bonus, idx, row))
+
+    if not scored:
+        return []
+
+    scored.sort(key=lambda item: (-item[0], -item[1], -item[2], item[4]))
+
+    chosen: List[Any] = []
+    seen_idx: set = set()
+    min_keep = max(1, min(int(min_results), limit))
+
+    def _append_candidate(candidate: Any) -> None:
+        orig_idx = int(candidate[4])
+        if orig_idx in seen_idx:
+            return
+        chosen.append(candidate)
+        seen_idx.add(orig_idx)
+
+    # Prefer candidates with explicit entity support or trusted domains.
+    for candidate in scored:
+        _, _, entity_hits, trusted_bonus, _, _ = candidate
+        if entity_hits > 0 or trusted_bonus > 0:
+            _append_candidate(candidate)
+            if len(chosen) >= limit:
+                break
+
+    # Backfill if focused filtering got too strict.
+    if len(chosen) < min_keep:
+        for candidate in scored:
+            _append_candidate(candidate)
+            if len(chosen) >= min_keep:
+                break
+
+    if len(chosen) < limit:
+        for candidate in scored:
+            _append_candidate(candidate)
+            if len(chosen) >= limit:
+                break
+
+    reranked: List[Dict[str, Any]] = []
+    for new_id, (_, _, _, _, _, row) in enumerate(chosen, 1):
+        item = dict(row)
+        body = item.get("body")
+        if isinstance(body, str) and "__START_OF_SOURCE" in body:
+            body = re.sub(
+                r"__START_OF_SOURCE\s+\d+__",
+                f"__START_OF_SOURCE {new_id}__",
+                body,
+            )
+            body = re.sub(
+                r"__END_OF_SOURCE\s+\d+__",
+                f"__END_OF_SOURCE {new_id}__",
+                body,
+            )
+            item["body"] = body
+        item["id"] = new_id
+        reranked.append(item)
+    return reranked
 
 
 def _archive_entry_text(entry: Any) -> str:
@@ -3993,6 +4282,24 @@ def _parse_field_extract_entry(raw_text: Any) -> Optional[tuple]:
     return field_name, field_value, source_url
 
 
+def _is_informative_field_extract(
+    field_name: Any,
+    field_value: Any,
+    source_url: Any = None,
+) -> bool:
+    """Return True when FIELD_EXTRACT carries concrete, usable signal."""
+    name = str(field_name or "").strip()
+    value = str(field_value or "").strip()
+    if not name or not value:
+        return False
+    if _is_unknown_marker(value):
+        return False
+    if name.endswith("_source"):
+        normalized = _normalize_url_match(value) or _normalize_url_match(source_url)
+        return bool(normalized)
+    return True
+
+
 def _sync_scratchpad_to_field_status(scratchpad, field_status):
     """Promote scratchpad findings into field_status so the ledger stays authoritative.
 
@@ -4007,12 +4314,81 @@ def _sync_scratchpad_to_field_status(scratchpad, field_status):
         _parsed = _parse_field_extract_entry(_finding)
         if _parsed:
             _fn, _fv, _fs = _parsed
-            if _fn in field_status and field_status[_fn].get("status") != _FIELD_STATUS_FOUND:
-                field_status[_fn]["value"] = _fv
-                field_status[_fn]["status"] = _FIELD_STATUS_FOUND
-                if _fs:
-                    field_status[_fn]["source_url"] = _fs
+            if not _is_informative_field_extract(_fn, _fv, _fs):
+                continue
+            if _fn in field_status:
+                _entry = field_status[_fn]
+                _status = str(_entry.get("status") or "").lower()
+                _value = _entry.get("value")
+                if (
+                    _status == _FIELD_STATUS_FOUND
+                    and not _is_empty_like(_value)
+                    and not _is_unknown_marker(_value)
+                ):
+                    continue
+                if str(_fn).endswith("_source"):
+                    normalized_source = _normalize_url_match(_fv) or _normalize_url_match(_fs)
+                    if not normalized_source:
+                        continue
+                    _entry["value"] = normalized_source
+                    _entry["source_url"] = normalized_source
+                else:
+                    _entry["value"] = _fv
+                    if _fs:
+                        normalized_source = _normalize_url_match(_fs)
+                        if normalized_source:
+                            _entry["source_url"] = normalized_source
+                _entry["status"] = _FIELD_STATUS_FOUND
+                field_status[_fn] = _entry
     return field_status
+
+
+def _sync_summary_facts_to_field_status(summary, field_status):
+    """Promote informative FIELD_EXTRACT summary facts into field_status."""
+    if not field_status:
+        return field_status
+
+    summary_facts = []
+    if isinstance(summary, dict):
+        summary_facts = summary.get("facts") or []
+    elif isinstance(summary, str) and summary.strip():
+        summary_facts = (_coerce_memory_summary(summary).get("facts") or [])
+
+    for fact in summary_facts:
+        parsed = _parse_field_extract_entry(fact)
+        if not parsed:
+            continue
+        field_name, field_value, source_url = parsed
+        if not _is_informative_field_extract(field_name, field_value, source_url):
+            continue
+        if field_name not in field_status:
+            continue
+        entry = field_status.get(field_name) or {}
+        existing_status = str(entry.get("status") or "").lower()
+        existing_value = entry.get("value")
+        if (
+            existing_status == _FIELD_STATUS_FOUND
+            and not _is_empty_like(existing_value)
+            and not _is_unknown_marker(existing_value)
+        ):
+            continue
+
+        if str(field_name).endswith("_source"):
+            normalized_source = _normalize_url_match(field_value) or _normalize_url_match(source_url)
+            if not normalized_source:
+                continue
+            entry["value"] = normalized_source
+            entry["source_url"] = normalized_source
+        else:
+            entry["value"] = field_value
+            normalized_source = _normalize_url_match(source_url)
+            if normalized_source:
+                entry["source_url"] = normalized_source
+
+        entry["status"] = _FIELD_STATUS_FOUND
+        field_status[field_name] = entry
+    return field_status
+
 _FIELD_STATUS_VALID = {
     _FIELD_STATUS_FOUND,
     _FIELD_STATUS_PENDING,
@@ -4390,6 +4766,18 @@ def _lookup_path_value(payload: Any, path: str) -> Any:
     return current
 
 
+def _lookup_path_with_presence(payload: Any, path: str) -> tuple:
+    """Return (present, value) for a dotted path, preserving explicit nulls."""
+    if not path or not isinstance(payload, dict):
+        return False, None
+    current = payload
+    for part in path.replace("[]", "").split("."):
+        if not isinstance(current, dict) or part not in current:
+            return False, None
+        current = current.get(part)
+    return True, current
+
+
 def _lookup_key_recursive(payload: Any, key: str) -> Any:
     """Find key value in nested dict/list structures by normalized key token."""
     if not key:
@@ -4417,6 +4805,35 @@ def _lookup_key_recursive(payload: Any, key: str) -> Any:
                 if isinstance(item, (dict, list)):
                     queue.append(item)
     return None
+
+
+def _lookup_key_recursive_with_presence(payload: Any, key: str) -> tuple:
+    """Return (present, value) for recursive key lookup, preserving nulls."""
+    if not key:
+        return False, None
+    target = _normalize_key_token(key)
+    queue = [payload]
+    seen_ids = set()
+    while queue:
+        node = queue.pop(0)
+        node_id = id(node)
+        if node_id in seen_ids:
+            continue
+        seen_ids.add(node_id)
+
+        if isinstance(node, dict):
+            for raw_k, raw_v in node.items():
+                if _normalize_key_token(raw_k) == target:
+                    return True, raw_v
+                if isinstance(raw_v, (dict, list)):
+                    queue.append(raw_v)
+            continue
+
+        if isinstance(node, list):
+            for item in node:
+                if isinstance(item, (dict, list)):
+                    queue.append(item)
+    return False, None
 
 
 def _tool_message_payloads(tool_messages: Any) -> list:
@@ -4533,8 +4950,6 @@ def _source_supports_value(value: Any, source_text: Any) -> bool:
 
 
 def _derive_class_background_from_prior_occupation(prior_occupation: Any) -> Optional[str]:
-    if not _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS:
-        return None
     if _is_empty_like(prior_occupation) or _is_unknown_marker(prior_occupation):
         return None
     text = _normalize_match_text(prior_occupation)
@@ -4545,13 +4960,28 @@ def _derive_class_background_from_prior_occupation(prior_occupation: Any) -> Opt
         for hint in _CLASS_BACKGROUND_HINTS.get(label, ()):
             if _normalize_match_text(hint) in text:
                 return label
+    # Generic fallback heuristics keep derivation available even when
+    # domain-specific profiles are disabled.
+    if re.search(
+        r"\b(manual|labor|worker|service|agricultur|farmer|peasant|trade|clerical|community|indigen)\b",
+        text,
+    ):
+        return "Working class"
+    if re.search(
+        r"\b(teacher|lawyer|engineer|civil servant|manager|professor|doctor|nurse|accountant)\b",
+        text,
+    ):
+        return "Middle class/professional"
+    if re.search(
+        r"\b(owner|business|executive|ceo|aristocrat|landowner|industrialist|tycoon)\b",
+        text,
+    ):
+        return "Upper/elite"
     return None
 
 
 def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     """Populate deterministic derived fields from already found canonical values."""
-    if not _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS:
-        return field_status
     if not isinstance(field_status, dict):
         return field_status
 
@@ -4705,22 +5135,65 @@ def _extract_field_status_updates(
     return field_status
 
 
-def _collect_tool_urls_from_messages(messages: Any, *, max_urls: int = 256) -> set:
-    """Collect known source URLs from tool outputs in the current transcript."""
+def _collect_tool_urls_from_messages(
+    messages: Any,
+    *,
+    summary: Any = None,
+    archive: Any = None,
+    max_urls: int = 256,
+) -> set:
+    """Collect known source URLs from live tool outputs and folded memory."""
+    limit = max(1, int(max_urls))
     urls = set()
+
+    def _add_url(raw_url: Any) -> bool:
+        normalized = _normalize_url_match(raw_url)
+        if normalized and not _is_noise_source_url(normalized):
+            urls.add(normalized)
+        return len(urls) >= limit
+
+    # 1) URLs from live tool messages in the current transcript.
     for payload_item in _tool_message_payloads(messages):
         for url in payload_item.get("urls") or []:
-            normalized = _normalize_url_match(url)
-            if normalized and not _is_noise_source_url(normalized):
-                urls.add(normalized)
-            if len(urls) >= max(1, int(max_urls)):
+            if _add_url(url):
                 return urls
+
+    # 2) URLs from folded summary sources/facts.
+    memory_summary = _coerce_memory_summary(summary)
+    for src in memory_summary.get("sources") or []:
+        if not isinstance(src, dict):
+            continue
+        if _add_url(src.get("url")):
+            return urls
+    for fact in memory_summary.get("facts") or []:
+        for extracted in _extract_url_candidates(str(fact), max_urls=8):
+            if _add_url(extracted):
+                return urls
+
+    # 3) URLs from archived folded transcripts (recent tail only).
+    archive_items = list(archive) if isinstance(archive, list) else []
+    for entry in archive_items[-12:]:
+        if not isinstance(entry, dict):
+            continue
+        text = str(entry.get("text") or "")
+        for extracted in _extract_url_candidates(text, max_urls=16):
+            if _add_url(extracted):
+                return urls
+        for msg in entry.get("messages") or []:
+            if not isinstance(msg, dict):
+                continue
+            msg_text = str(msg.get("content") or "")
+            for extracted in _extract_url_candidates(msg_text, max_urls=8):
+                if _add_url(extracted):
+                    return urls
     return urls
 
 
 def _collect_tool_source_text_index(
     messages: Any,
     *,
+    summary: Any = None,
+    archive: Any = None,
     max_sources: int = 512,
     max_chars_per_source: int = 8000,
 ) -> Dict[str, str]:
@@ -4758,6 +5231,49 @@ def _collect_tool_source_text_index(
                 index[normalized_url] = merged[: max(128, int(max_chars_per_source))]
                 if len(index) >= max(1, int(max_sources)):
                     return index
+
+    memory_summary = _coerce_memory_summary(summary)
+    for src in memory_summary.get("sources") or []:
+        if not isinstance(src, dict):
+            continue
+        normalized_url = _normalize_url_match(src.get("url"))
+        if not normalized_url or _is_noise_source_url(normalized_url):
+            continue
+        note_bits = [
+            str(src.get("title") or "").strip(),
+            str(src.get("note") or "").strip(),
+        ]
+        note_text = " ".join([bit for bit in note_bits if bit]).strip()
+        if not note_text:
+            continue
+        existing = index.get(normalized_url, "")
+        merged = f"{existing} {note_text}".strip() if existing else note_text
+        index[normalized_url] = merged[: max(128, int(max_chars_per_source))]
+        if len(index) >= max(1, int(max_sources)):
+            return index
+
+    archive_items = list(archive) if isinstance(archive, list) else []
+    for entry in archive_items[-12:]:
+        if not isinstance(entry, dict):
+            continue
+        entry_text = str(entry.get("text") or "")
+        if not entry_text:
+            continue
+        for block in _parse_source_blocks(entry_text):
+            normalized_url = _normalize_url_match(block.get("url"))
+            if not normalized_url or _is_noise_source_url(normalized_url):
+                continue
+            content = str(block.get("content") or block.get("raw") or "").strip()
+            content = re.sub(r"\s+", " ", content)
+            if not content:
+                continue
+            existing = index.get(normalized_url, "")
+            if content in existing:
+                continue
+            merged = f"{existing} {content}".strip() if existing else content
+            index[normalized_url] = merged[: max(128, int(max_chars_per_source))]
+            if len(index) >= max(1, int(max_sources)):
+                return index
     return index
 
 
@@ -4930,16 +5446,45 @@ def _sync_field_status_from_terminal_payload(
         if not isinstance(entry, dict):
             continue
 
-        value = _lookup_path_value(parsed, path)
-        if _is_empty_like(value):
+        present, value = _lookup_path_with_presence(parsed, path)
+        if not present:
             for alias in aliases:
-                value = _lookup_key_recursive(parsed, alias)
-                if not _is_empty_like(value):
+                present, value = _lookup_key_recursive_with_presence(parsed, alias)
+                if present:
                     break
-        if _is_empty_like(value):
+        if not present:
             continue
 
         descriptor = entry.get("descriptor")
+        if _is_empty_like(value):
+            # Keep unresolved nullable fields pending unless they are metadata
+            # fields tied to an already-unknown parent field.
+            demote_empty = False
+            if key.endswith("_source"):
+                base_key = key[:-7]
+                base_entry = normalized.get(base_key)
+                demote_empty = (
+                    isinstance(base_entry, dict)
+                    and str(base_entry.get("status") or "").lower() == _FIELD_STATUS_UNKNOWN
+                )
+            elif key.endswith("_details"):
+                status_key = re.sub(r"_details$", "_status", key)
+                status_entry = normalized.get(status_key)
+                demote_empty = (
+                    isinstance(status_entry, dict)
+                    and str(status_entry.get("status") or "").lower() == _FIELD_STATUS_UNKNOWN
+                )
+
+            if not demote_empty:
+                continue
+
+            entry["status"] = _FIELD_STATUS_UNKNOWN
+            entry["value"] = _unknown_value_for_descriptor(descriptor)
+            if key.endswith("_source"):
+                entry["source_url"] = None
+            normalized[key] = entry
+            continue
+
         if _is_unknown_marker(value):
             entry["status"] = _FIELD_STATUS_UNKNOWN
             entry["value"] = _unknown_value_for_descriptor(descriptor)
@@ -5255,20 +5800,26 @@ def _apply_canonical_payload_derivations(
 ) -> Any:
     if not isinstance(payload, dict):
         return payload
-    if not _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS:
-        return payload
 
     if "class_background" in payload:
         prior_occupation = payload.get("prior_occupation")
         class_background = payload.get("class_background")
-        if _is_empty_like(class_background) or _is_unknown_marker(class_background):
+        class_background_allowed = {
+            "Working class",
+            "Middle class/professional",
+            "Upper/elite",
+            "Unknown",
+        }
+        class_background_valid = str(class_background).strip() in class_background_allowed
+        if _is_empty_like(class_background) or _is_unknown_marker(class_background) or not class_background_valid:
             derived = _derive_class_background_from_prior_occupation(prior_occupation)
             if derived:
                 payload["class_background"] = derived
 
     if "confidence" in payload:
         confidence = payload.get("confidence")
-        if _is_empty_like(confidence) or _is_unknown_marker(confidence):
+        confidence_valid = str(confidence).strip() in {"Low", "Medium", "High"}
+        if _is_empty_like(confidence) or _is_unknown_marker(confidence) or not confidence_valid:
             payload["confidence"] = _derive_confidence_from_field_status(normalized_field_status)
 
     if "justification" in payload:
@@ -7526,25 +8077,9 @@ def create_memory_folding_agent(
             expected_schema_source = "explicit"
         field_status = _normalize_field_status_map(state.get("field_status"), expected_schema)
 
-        # Sync FIELD_EXTRACT entries from summary facts into field_status.
-        _summary_facts = []
-        if isinstance(summary, dict):
-            _summary_facts = summary.get("facts") or []
-        elif isinstance(summary, str) and summary.strip():
-            _coerced = _coerce_memory_summary(summary)
-            _summary_facts = _coerced.get("facts") or []
-        for _fact in _summary_facts:
-            _parsed = _parse_field_extract_entry(_fact)
-            if _parsed:
-                _fn, _fv, _fs = _parsed
-                if _fn in field_status and field_status[_fn].get("status") != _FIELD_STATUS_FOUND:
-                    field_status[_fn]["value"] = _fv
-                    field_status[_fn]["status"] = _FIELD_STATUS_FOUND
-                    if _fs:
-                        field_status[_fn]["source_url"] = _fs
-
-        # Also sync scratchpad findings into field_status so the ledger is
+        # Sync informative FIELD_EXTRACT entries into field_status so the ledger is
         # authoritative even during normal (non-finalize) agent turns.
+        _sync_summary_facts_to_field_status(summary, field_status)
         _sync_scratchpad_to_field_status(scratchpad, field_status)
 
         budget_state = _normalize_budget_state(
@@ -7672,8 +8207,16 @@ def create_memory_folding_agent(
                 context="agent",
                 debug=debug,
             )
-            allowed_source_urls = _collect_tool_urls_from_messages(messages)
-            source_text_index = _collect_tool_source_text_index(messages)
+            allowed_source_urls = _collect_tool_urls_from_messages(
+                messages,
+                summary=summary,
+                archive=archive,
+            )
+            source_text_index = _collect_tool_source_text_index(
+                messages,
+                summary=summary,
+                archive=archive,
+            )
             field_status = _promote_terminal_payload_into_field_status(
                 response=response,
                 field_status=field_status,
@@ -7691,13 +8234,12 @@ def create_memory_folding_agent(
                     context="agent",
                     debug=debug,
                 )
-                if canonical_event:
-                    field_status = _sync_field_status_from_terminal_payload(
-                        response=response,
-                        field_status=field_status,
-                        expected_schema=expected_schema,
-                    )
-                    budget_state.update(_field_status_progress(field_status))
+            field_status = _sync_field_status_from_terminal_payload(
+                response=response,
+                field_status=field_status,
+                expected_schema=expected_schema,
+            )
+            budget_state.update(_field_status_progress(field_status))
 
         _usage = _token_usage_dict_from_message(response)
         out = {
@@ -7753,25 +8295,8 @@ def create_memory_folding_agent(
         expected_schema_source = state.get("expected_schema_source") or ("explicit" if expected_schema is not None else None)
         field_status = _normalize_field_status_map(state.get("field_status"), expected_schema)
 
-        # Sync FIELD_EXTRACT entries from summary facts into field_status
-        # (mirrors the same logic in agent_node to ensure finalize sees all resolved values).
-        _summary_facts = []
-        if isinstance(summary, dict):
-            _summary_facts = summary.get("facts") or []
-        elif isinstance(summary, str) and summary.strip():
-            _coerced = _coerce_memory_summary(summary)
-            _summary_facts = _coerced.get("facts") or []
-        for _fact in _summary_facts:
-            _parsed = _parse_field_extract_entry(_fact)
-            if _parsed:
-                _fn, _fv, _fs = _parsed
-                if _fn in field_status and field_status[_fn].get("status") != _FIELD_STATUS_FOUND:
-                    field_status[_fn]["value"] = _fv
-                    field_status[_fn]["status"] = _FIELD_STATUS_FOUND
-                    if _fs:
-                        field_status[_fn]["source_url"] = _fs
-
-        # Also sync scratchpad findings into field_status.
+        # Sync informative FIELD_EXTRACT entries into field_status.
+        _sync_summary_facts_to_field_status(summary, field_status)
         _sync_scratchpad_to_field_status(scratchpad, field_status)
 
         budget_state = _normalize_budget_state(
@@ -7843,8 +8368,16 @@ def create_memory_folding_agent(
             context="finalize",
             debug=debug,
         )
-        allowed_source_urls = _collect_tool_urls_from_messages(messages)
-        source_text_index = _collect_tool_source_text_index(messages)
+        allowed_source_urls = _collect_tool_urls_from_messages(
+            messages,
+            summary=summary,
+            archive=archive,
+        )
+        source_text_index = _collect_tool_source_text_index(
+            messages,
+            summary=summary,
+            archive=archive,
+        )
         field_status = _promote_terminal_payload_into_field_status(
             response=response,
             field_status=field_status,
@@ -7861,13 +8394,12 @@ def create_memory_folding_agent(
             context="finalize",
             debug=debug,
         )
-        if canonical_event:
-            field_status = _sync_field_status_from_terminal_payload(
-                response=response,
-                field_status=field_status,
-                expected_schema=expected_schema,
-            )
-            budget_state.update(_field_status_progress(field_status))
+        field_status = _sync_field_status_from_terminal_payload(
+            response=response,
+            field_status=field_status,
+            expected_schema=expected_schema,
+        )
+        budget_state.update(_field_status_progress(field_status))
 
         _usage = _token_usage_dict_from_message(response)
         out = {
@@ -8289,6 +8821,30 @@ def create_memory_folding_agent(
         fold_text = "\n".join(fold_text_parts).strip()
         if not fold_text:
             return _summarize_result()
+        fold_chars_input_raw = len(fold_text)
+        fold_prompt_char_budget = _coerce_positive_int(
+            os.getenv("ASA_FOLD_PROMPT_MAX_CHARS"),
+            default=18000,
+        )
+        fold_input_truncated = False
+        if fold_chars_input_raw > fold_prompt_char_budget:
+            fold_input_truncated = True
+            head_chars = max(1, int(fold_prompt_char_budget * 0.65))
+            tail_chars = max(0, fold_prompt_char_budget - head_chars)
+            if tail_chars > 0:
+                fold_text = (
+                    fold_text[:head_chars].rstrip()
+                    + "\n...[middle truncated for fold budget]...\n"
+                    + fold_text[-tail_chars:].lstrip()
+                )
+            else:
+                fold_text = fold_text[:fold_prompt_char_budget].rstrip()
+            if debug:
+                logger.info(
+                    "Fold prompt truncated from %s to %s chars",
+                    fold_chars_input_raw,
+                    len(fold_text),
+                )
 
         current_memory = _sanitize_memory_dict(_coerce_memory_summary(current_summary))
 
@@ -8296,10 +8852,15 @@ def create_memory_folding_agent(
         # Facts that survived a previous fold are prefixed "[ANCHORED] " and are
         # protected from re-summarisation to prevent drift across multiple folds.
         _ANCHOR_PREFIX = "[ANCHORED] "
-        anchored_facts = [
-            f for f in (current_memory.get("facts") or [])
-            if isinstance(f, str) and f.startswith(_ANCHOR_PREFIX)
-        ]
+        anchored_facts = []
+        for _raw_fact in (current_memory.get("facts") or []):
+            if not isinstance(_raw_fact, str) or not _raw_fact.startswith(_ANCHOR_PREFIX):
+                continue
+            _core_fact = _raw_fact[len(_ANCHOR_PREFIX):].strip()
+            _parsed_fact = _parse_field_extract_entry(_core_fact)
+            if _parsed_fact and not _is_informative_field_extract(*_parsed_fact):
+                continue
+            anchored_facts.append(_raw_fact)
         transient_facts = [
             f for f in (current_memory.get("facts") or [])
             if not (isinstance(f, str) and f.startswith(_ANCHOR_PREFIX))
@@ -8327,12 +8888,13 @@ def create_memory_folding_agent(
             schema_extraction_block = (
                 "\n\nCRITICAL — SCHEMA FIELD EXTRACTION:\n"
                 "The assistant is filling a structured schema. For EACH field below,\n"
-                "if ANY value was mentioned in the transcript, you MUST include it as a fact\n"
+                "if a concrete value was mentioned in the transcript, include it as a fact\n"
                 "in the format: \"FIELD_EXTRACT: field_name = value (source: URL)\"\n"
-                "Even tentative or unconfirmed values MUST be preserved.\n"
+                "Only include values with actual signal; do NOT emit placeholders like\n"
+                "\"Unknown\", \"N/A\", \"null\", or \"none\" as FIELD_EXTRACT values.\n"
                 "Fields to extract:\n"
                 + "\n".join(f"  - {fn}" for fn in _fold_field_names)
-                + "\n\nDo NOT discard any data that could answer these fields.\n"
+                + "\n\nDo NOT discard concrete data that could answer these fields.\n"
             )
 
         # Build scratchpad block so the summarizer preserves agent-saved findings.
@@ -8521,7 +9083,7 @@ def create_memory_folding_agent(
                 re.MULTILINE | re.IGNORECASE,
             ):
                 _fe_name, _fe_val = _fe_match.group(1).strip(), _fe_match.group(2).strip()
-                if _fe_name and _fe_val:
+                if _is_informative_field_extract(_fe_name, _fe_val):
                     degraded_facts.append(f"FIELD_EXTRACT: {_fe_name} = {_fe_val}")
             degraded_memory = dict(current_memory)
             degraded_memory["facts"] = degraded_facts
@@ -8539,7 +9101,7 @@ def create_memory_folding_agent(
                 re.MULTILINE | re.IGNORECASE,
             ):
                 fname, fval = match.group(1).strip(), match.group(2).strip()
-                if fname and fval:
+                if _is_informative_field_extract(fname, fval):
                     input_fields[fname] = fval
 
             if input_fields:
@@ -8601,9 +9163,12 @@ def create_memory_folding_agent(
                 continue
             fact_core = fact_str[len(_ANCHOR_PREFIX):].strip() if fact_str.startswith(_ANCHOR_PREFIX) else fact_str
             fact_core_lower = fact_core.lower()
+            parsed_field_extract = _parse_field_extract_entry(fact_core)
+            if parsed_field_extract and not _is_informative_field_extract(*parsed_field_extract):
+                continue
             should_anchor = (
                 fact_core_lower in anchored_cores_lower
-                or fact_core_lower.startswith("field_extract:")
+                or bool(parsed_field_extract)
             )
             normalized_facts.append(f"{_ANCHOR_PREFIX}{fact_core}" if should_anchor else fact_core)
         new_memory["facts"] = _dedupe_keep_order(normalized_facts)
@@ -8735,6 +9300,9 @@ def create_memory_folding_agent(
                 "fold_messages_removed": fold_messages_removed,
                 "fold_total_messages_removed": fold_total_messages_removed,
                 "fold_chars_input": fold_chars_input,
+                "fold_chars_input_raw": fold_chars_input_raw,
+                "fold_input_truncated": fold_input_truncated,
+                "fold_prompt_char_budget": fold_prompt_char_budget,
                 "fold_summary_chars": fold_summary_chars,
                 "fold_summary_total_chars": fold_summary_total_chars,
                 "fold_summary_delta_chars": fold_summary_delta_chars,
@@ -9206,13 +9774,12 @@ def create_standard_agent(
                     context="agent",
                     debug=debug,
                 )
-                if canonical_event:
-                    field_status = _sync_field_status_from_terminal_payload(
-                        response=response,
-                        field_status=field_status,
-                        expected_schema=expected_schema,
-                    )
-                    budget_state.update(_field_status_progress(field_status))
+            field_status = _sync_field_status_from_terminal_payload(
+                response=response,
+                field_status=field_status,
+                expected_schema=expected_schema,
+            )
+            budget_state.update(_field_status_progress(field_status))
 
         _usage = _token_usage_dict_from_message(response)
         out = {
@@ -9348,13 +9915,12 @@ def create_standard_agent(
             context="finalize",
             debug=debug,
         )
-        if canonical_event:
-            field_status = _sync_field_status_from_terminal_payload(
-                response=response,
-                field_status=field_status,
-                expected_schema=expected_schema,
-            )
-            budget_state.update(_field_status_progress(field_status))
+        field_status = _sync_field_status_from_terminal_payload(
+            response=response,
+            field_status=field_status,
+            expected_schema=expected_schema,
+        )
+        budget_state.update(_field_status_progress(field_status))
         _usage = _token_usage_dict_from_message(response)
         out = {
             "messages": [response],
