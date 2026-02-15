@@ -1,51 +1,39 @@
 {
   "version": 1,
-  "facts": "Ramona Moye Camaconi served as a substitute (suplente) uninominal deputy for Circunscripción 6, department of Beni, representing the Movimiento Al Socialismo (MAS) party (early information source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428).",
+  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: birth_year_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "[ANCHORED] FIELD_EXTRACT: prior_occupation_source = http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi was born in 1982. (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Prior to her political career, Ramona Moye Camaconi served as the President of the Women's Organization - Sub Central Sécure (Presidenta de la Organización de Mujeres - Sub Central Sécure). (Source: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)"],
   "decisions": [],
-  "open_questions": ["What was the final outcome or sanction resulting from the Ethics Committee investigation into the forged medical certificates?", "What are the specific details of Ramona Moye Camaconi's educational background and prior occupation?"],
+  "open_questions": [],
   "sources": [
     {
       "tool": "Search",
       "url": "https://sisin.oep.org.bo/medios_digitales/14455/detalle",
-      "title": "Monitoreo de Noticias - Costa formalizó su denuncia",
-      "note": null
+      "title": "Detalle de Medio Digital - OEP",
+      "note": "Report on the falsified medical leave complaint filed by Costa."
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia del Estado - Perfil Parlamentario",
+      "note": "Parliamentary profile confirming birth year and prior occupation."
     },
     {
       "tool": "Search",
-      "url": "https://www.facebook.com/ramona.moyecamaconi",
-      "title": "Ramona Moye Camaconi on Facebook",
-      "note": null
+      "url": "https://www.flickr.com/photos/194792615@N03/521807...",
+      "title": "Flickr - Ramona Moye Camaconi Description",
+      "note": "Source identifying her as a titular deputy for Beni special constituency."
     },
     {
-      "tool": "Search",
+      "tool": "OpenWebpage",
       "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": "Vicepresidencia del Estado - Diputado uninominal Beni",
+      "title": "Vicepresidencia del Estado",
       "note": null
     },
     {
-      "tool": "Search",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "title": "Vicepresidencia del Estado - Parlamentario Detail",
-      "note": "Source for birth year 1982"
-    },
-    {
-      "tool": "Search",
-      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados",
-      "title": "DIPUTADA MOYE DEL MAS ES DENUNCIADA POR PRESENTAR BAJAS",
-      "note": null
-    },
-    {
-      "tool": "Search",
-      "url": "https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=",
-      "title": "El Diario - Diputada Moye presentó bajas médicas falsificadas",
-      "note": null
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
-      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
+      "tool": "OpenWebpage",
+      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia del Estado",
       "note": null
     }
   ],
-  "warnings": ["Conflict: Medical status documentation was allegedly forged, creating uncertainty regarding any actual health-related disability or status.", "UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: FIELD_EXTRACT: birth_year_source = https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: In September 2018, Deputy Jimena Costa (UD) formally denounced Ramona Moye Camaconi before the Ethics Committee for presenting allegedly forged medical certificates to obtain licenses in the Chamber of Deputies (mid information source: https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados).", "UNGROUNDED: The allegedly forged medical certificates presented by Moye were signed by individuals claiming to be doctors at the Caja Petrolera Regional La Paz, but they were not registered with the Medical College of Bolivia or the La Paz Medical College (mid information source: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956)."]
+  "warnings": ["UNGROUNDED: Ramona Moye Camaconi is a titular deputy representing the Beni department's special indigenous constituency for the Movimiento al Socialismo (MAS) party. (Source: https://www.flickr.com/photos/194792615@N03/521807...)", "UNGROUNDED: A formal complaint was filed against Ramona Moye Camaconi by legislator Costa for allegedly presenting license requests with falsified medical certificates. (Source: https://sisin.oep.org.bo/medios_digitales/14455/detalle)"]
 }

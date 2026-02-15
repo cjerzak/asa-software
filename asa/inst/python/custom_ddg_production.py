@@ -5561,6 +5561,7 @@ def _promote_terminal_payload_into_field_status(
     expected_schema: Any,
     allowed_source_urls: Any = None,
     source_text_index: Any = None,
+    entity_tokens: Optional[List[str]] = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Promote source-backed terminal JSON values into canonical field_status."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -5658,6 +5659,12 @@ def _promote_terminal_payload_into_field_status(
                 source_token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(source_text)))
                 if source_token_count >= 8 and not _source_supports_value(value, source_text):
                     continue
+                # Entity-grounding gate: reject source text that is not about the target entity.
+                if entity_tokens and source_text and source_token_count >= 20:
+                    source_norm = _normalize_match_text(source_text)
+                    entity_hits = sum(1 for t in entity_tokens if t in source_norm)
+                    if len(entity_tokens) >= 2 and entity_hits < 2:
+                        continue
                 if _ENABLE_DOMAIN_SPECIFIC_DERIVATIONS and key == "birth_place":
                     source_norm = _normalize_match_text(source_text)
                     has_birth_context = any(
@@ -6127,7 +6134,11 @@ def _json_safe_value(value: Any) -> Any:
     return str(value)
 
 
-def _canonical_payload_from_field_status(expected_schema: Any, field_status: Any) -> Optional[Any]:
+def _canonical_payload_from_field_status(
+    expected_schema: Any,
+    field_status: Any,
+    unknown_after_searches: Optional[int] = None,
+) -> Optional[Any]:
     """Build terminal payload from canonical field_status only (no model guesses)."""
     if expected_schema is None:
         return None
@@ -6156,6 +6167,18 @@ def _canonical_payload_from_field_status(expected_schema: Any, field_status: Any
             value = entry.get("value")
             if status == _FIELD_STATUS_FOUND and not _is_empty_like(value):
                 return _coerce_found_value_for_descriptor(value, schema)
+            # Negative-evidence default: for 3-option enums (Baseline|Positive|Unknown),
+            # use the first option (baseline) when search is exhausted instead of "Unknown".
+            unknown_after = unknown_after_searches if unknown_after_searches is not None else _DEFAULT_UNKNOWN_AFTER_SEARCHES
+            attempts = int(entry.get("attempts", 0))
+            if attempts >= unknown_after:
+                descriptor = str(schema) if isinstance(schema, str) else ""
+                if "|" in descriptor:
+                    parts = [p.strip() for p in descriptor.split("|")]
+                    if (len(parts) == 3
+                            and parts[-1].lower() == "unknown"
+                            and not any(p.lower() in {"string", "integer", "null", "number"} for p in parts)):
+                        return parts[0]
         return _unknown_value_for_descriptor(schema)
 
     payload = build(expected_schema)
@@ -6226,6 +6249,7 @@ def _apply_field_status_terminal_guard(
     schema_source: Optional[str] = None,
     context: str = "",
     debug: bool = False,
+    unknown_after_searches: Optional[int] = None,
 ) -> tuple[Any, Optional[Dict[str, Any]]]:
     """Force terminal JSON to match canonical field_status values."""
     if expected_schema is None:
@@ -6233,7 +6257,7 @@ def _apply_field_status_terminal_guard(
     if _extract_response_tool_calls(response):
         return response, None
 
-    payload = _canonical_payload_from_field_status(expected_schema, field_status)
+    payload = _canonical_payload_from_field_status(expected_schema, field_status, unknown_after_searches=unknown_after_searches)
     if payload is None:
         # Canonical payload not built (e.g. no resolved fields), but still
         # apply derivations (justification, confidence) to model's raw output.
@@ -6648,19 +6672,24 @@ def _base_system_prompt(
         "MANDATORY — save_finding after every discovery: Every time you discover a value for a schema field, "
         "you MUST IMMEDIATELY call save_finding(finding='field_name = value (source: URL)', category='fact') "
         "BEFORE doing anything else. This is non-negotiable — findings not saved WILL be lost.\n"
-        "Example: After finding birth_year=1982 on a webpage, call save_finding(finding='birth_year = 1982 (source: https://example.com/bio)', category='fact')\n\n"
+        "Example: After finding birth_year=1982 on a webpage, call save_finding(finding='birth_year = 1982 (source: https://example.com/bio)', category='fact')\n"
+        "When you open any authoritative page about the target, scan it for ALL schema fields and call save_finding for EACH one before moving on.\n\n"
         "Canonical extraction rule: when a FIELD STATUS ledger is present, treat it as authoritative. "
         "Use scratchpad as optional working notes only.\n\n"
         f"Tool-call budget: {budget['tool_calls_used']}/{budget['tool_calls_limit']} used. "
         f"Stop searching when budget is exhausted. "
         "After EVERY search result, save any discovered field values using save_finding before continuing.\n\n"
         "SEARCH STRATEGY:\n"
-        "1. Always quote the full name in your first search query (e.g. \"First Last\").\n"
+        "1. Include the target's full name (quoted) in EVERY search query. Never search without the target's name.\n"
         "2. When results are off-topic or sparse, vary your approach: try name variants, "
         "the target's local language, role/title keywords, or site-specific searches.\n"
         "3. When you find a promising URL in search snippets, use OpenWebpage to read the full page — "
         "do NOT rely solely on search snippets for field extraction.\n"
-        "4. After 2+ off-topic searches, change your query strategy rather than repeating similar queries.\n\n"
+        "4. After 2+ off-topic searches, change your query strategy rather than repeating similar queries.\n"
+        "5. If a source document does not mention the target by name, do not use it to fill schema fields — "
+        "the information may describe a different entity.\n"
+        "6. Distinguish between a page that describes the target vs. a page that merely mentions the target in passing. "
+        "Only extract field values from descriptions that are clearly about the target.\n\n"
         "When a webpage mentions a person by name with a hyperlink [link: URL], follow that URL to find their detailed profile.\n\n"
         "When Search returns an official profile URL (especially *.gob.bo, page=parlamentario, or page=parlamentarios), "
         "you MUST call OpenWebpage on that URL before concluding unknown.\n\n"
@@ -8009,6 +8038,12 @@ def _create_tool_node_with_scratchpad(base_tool_node, *, debug: bool = False):
             )
 
         tool_messages = result.get("messages", [])
+        # Truncate oversized ToolMessage content to reduce context inflation.
+        _MAX_TOOL_MSG_CHARS = 12000
+        for msg in tool_messages:
+            content = getattr(msg, "content", "")
+            if isinstance(content, str) and len(content) > _MAX_TOOL_MSG_CHARS:
+                msg.content = content[:8000] + "\n\n... [truncated, see save_finding for key facts]"
         field_status = _extract_field_status_updates(
             existing_field_status=field_status,
             expected_schema=expected_schema,
@@ -8479,7 +8514,7 @@ def create_memory_folding_agent(
         # Never rewrite intermediate tool-call turns as JSON payloads.
         # Only repair terminal text responses.
         if not _extract_response_tool_calls(response):
-            force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
+            force_fallback = _should_force_finalize(state) or expected_schema is not None
             response, repair_event = _repair_best_effort_json(
                 expected_schema,
                 response,
@@ -8498,12 +8533,14 @@ def create_memory_folding_agent(
                 summary=summary,
                 archive=archive,
             )
+            entity_tokens = _query_entity_tokens(_extract_last_user_prompt(messages))
             field_status = _promote_terminal_payload_into_field_status(
                 response=response,
                 field_status=field_status,
                 expected_schema=expected_schema,
                 allowed_source_urls=allowed_source_urls,
                 source_text_index=source_text_index,
+                entity_tokens=entity_tokens,
             )
             budget_state.update(_field_status_progress(field_status))
             if force_fallback:
@@ -8514,6 +8551,7 @@ def create_memory_folding_agent(
                     schema_source=expected_schema_source,
                     context="agent",
                     debug=debug,
+                    unknown_after_searches=budget_state.get("unknown_after_searches"),
                 )
             field_status = _sync_field_status_from_terminal_payload(
                 response=response,
@@ -8594,7 +8632,7 @@ def create_memory_folding_agent(
                 messages,
                 expected_schema=expected_schema,
                 max_messages=20,
-                max_total_chars=50000,
+                max_total_chars=20000,
             )
             system_msg = SystemMessage(content=_final_system_prompt(
                 summary,
@@ -8659,12 +8697,14 @@ def create_memory_folding_agent(
             summary=summary,
             archive=archive,
         )
+        entity_tokens = _query_entity_tokens(_extract_last_user_prompt(messages))
         field_status = _promote_terminal_payload_into_field_status(
             response=response,
             field_status=field_status,
             expected_schema=expected_schema,
             allowed_source_urls=allowed_source_urls,
             source_text_index=source_text_index,
+            entity_tokens=entity_tokens,
         )
         budget_state.update(_field_status_progress(field_status))
         response, canonical_event = _apply_field_status_terminal_guard(
@@ -8674,6 +8714,7 @@ def create_memory_folding_agent(
             schema_source=expected_schema_source,
             context="finalize",
             debug=debug,
+            unknown_after_searches=budget_state.get("unknown_after_searches"),
         )
         field_status = _sync_field_status_from_terminal_payload(
             response=response,
@@ -10079,7 +10120,7 @@ def create_standard_agent(
         # Never rewrite intermediate tool-call turns as JSON payloads.
         # Only repair terminal text responses.
         if not _extract_response_tool_calls(response):
-            force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
+            force_fallback = _should_force_finalize(state) or expected_schema is not None
             response, repair_event = _repair_best_effort_json(
                 expected_schema,
                 response,
@@ -10090,12 +10131,14 @@ def create_standard_agent(
             )
             allowed_source_urls = _collect_tool_urls_from_messages(messages)
             source_text_index = _collect_tool_source_text_index(messages)
+            entity_tokens = _query_entity_tokens(_extract_last_user_prompt(messages))
             field_status = _promote_terminal_payload_into_field_status(
                 response=response,
                 field_status=field_status,
                 expected_schema=expected_schema,
                 allowed_source_urls=allowed_source_urls,
                 source_text_index=source_text_index,
+                entity_tokens=entity_tokens,
             )
             budget_state.update(_field_status_progress(field_status))
             if force_fallback:
@@ -10106,6 +10149,7 @@ def create_standard_agent(
                     schema_source=expected_schema_source,
                     context="agent",
                     debug=debug,
+                    unknown_after_searches=budget_state.get("unknown_after_searches"),
                 )
             field_status = _sync_field_status_from_terminal_payload(
                 response=response,
@@ -10178,7 +10222,7 @@ def create_standard_agent(
                 messages,
                 expected_schema=expected_schema,
                 max_messages=20,
-                max_total_chars=50000,
+                max_total_chars=20000,
             )
             system_msg = SystemMessage(content=_final_system_prompt(
                 scratchpad=scratchpad,
@@ -10232,12 +10276,14 @@ def create_standard_agent(
         )
         allowed_source_urls = _collect_tool_urls_from_messages(messages)
         source_text_index = _collect_tool_source_text_index(messages)
+        entity_tokens = _query_entity_tokens(_extract_last_user_prompt(messages))
         field_status = _promote_terminal_payload_into_field_status(
             response=response,
             field_status=field_status,
             expected_schema=expected_schema,
             allowed_source_urls=allowed_source_urls,
             source_text_index=source_text_index,
+            entity_tokens=entity_tokens,
         )
         budget_state.update(_field_status_progress(field_status))
         response, canonical_event = _apply_field_status_terminal_guard(
@@ -10247,6 +10293,7 @@ def create_standard_agent(
             schema_source=expected_schema_source,
             context="finalize",
             debug=debug,
+            unknown_after_searches=budget_state.get("unknown_after_searches"),
         )
         field_status = _sync_field_status_from_terminal_payload(
             response=response,

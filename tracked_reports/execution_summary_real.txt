@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 5.6393,
+  "elapsed_time": 5.5313,
   "field_status": {
     "education_level": {
       "status": "unknown",
@@ -35,10 +35,10 @@
     },
     "prior_occupation": {
       "status": "found",
-      "value": "Médico",
-      "source_url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
-      "evidence": "Title: Diputada Moye es denunciada por presentar bajas médicas .... Diputada Moye es denunciada por presentar bajas médicas falsificadas La diputada Jimena Costa hizo la denuncia ante la Comisión de Ética de la Cámara de Diputados . Los gal",
-      "attempts": 0,
+      "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": null,
+      "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "class_background": {
@@ -51,8 +51,8 @@
     },
     "prior_occupation_source": {
       "status": "found",
-      "value": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
-      "source_url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
       "attempts": 2,
       "descriptor": "string|null"
@@ -75,16 +75,16 @@
     },
     "birth_place": {
       "status": "found",
-      "value": "el Tipnis, fue uno de sus líderes",
-      "source_url": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales",
-      "evidence": "Title: El Tipnis y el Madidi: las heridas que sangran en el rostro. En el centro del Tipnis y en una parte ... Marcial Fabricano Noe, un veterano dirigente indígena que nació en el Tipnis, fue uno de sus líderes.",
+      "value": "Puerto Rico y se destacó como",
+      "source_url": "https://www.tiktok.com/@valentinelaleman/video/7606065267394956565",
+      "evidence": "Title: George Guzmán nació en Puerto Rico y se destacó como .... Video de TikTok de valentinelaleman (@valentinelaleman): “George Guzmán nació en Puerto Rico y se destacó como percusionista y director de orquesta dentro del movimiento del b",
       "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
       "status": "found",
-      "value": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales",
-      "source_url": "https://es.mongabay.com/2019/04/tipnis-madidi-bolivia-areas-protegidas-defensores-ambientales",
+      "value": "https://www.tiktok.com/@valentinelaleman/video/7606065267394956565",
+      "source_url": "https://www.tiktok.com/@valentinelaleman/video/7606065267394956565",
       "evidence": null,
       "attempts": 2,
       "descriptor": "string|null"
@@ -92,15 +92,15 @@
     "birth_year": {
       "status": "found",
       "value": 1982,
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
       "attempts": 2,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
       "status": "found",
-      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "value": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": null,
       "attempts": 2,
       "descriptor": "string|null"
@@ -139,7 +139,7 @@
     },
     "justification": {
       "status": "found",
-      "value": "Source-backed searches resolved 4 fields (including prior_occupation, birth_place, birth_year), while 14 fields remain unknown due to limited verifiable evidence.",
+      "value": "Source-backed searches resolved 6 fields (including prior_occupation, prior_occupation_source, birth_place), while 12 fields remain unknown due to limited verifiable evidence.",
       "source_url": null,
       "evidence": null,
       "attempts": 2,
