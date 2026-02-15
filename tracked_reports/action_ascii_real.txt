@@ -1,6 +1,6 @@
 AGENT ACTION MAP
 ================
-Steps captured: 16
+Steps captured: 20
 LangGraph timed steps: 31
 
 INVESTIGATOR SIGNALS
@@ -8,33 +8,33 @@ INVESTIGATOR SIGNALS
   +-- Summary
       Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
       Source-backed found values: 6 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, disability...
+      Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 7 tool-call turn(s), 1 answer turn(s)
-      Tool results: 7 total (Tool Search=7)
+      AI turns: 9 tool-call turn(s), 1 answer turn(s)
+      Tool results: 9 total (Tool Search=6, Tool OpenWebpage=2, Tool save_finding=1)
       Structured terminal answer emitted
       Plan status: Plan steps: 4 total (status metadata not yet populated)
-      Anomalies: 7 flagged step(s) (OFF_TOPIC_RESULT=6, LOW_EVIDENCE_FINAL_ANSWER=1)
+      Anomalies: 6 flagged step(s) (OFF_TOPIC_RESULT=5, LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
   +-- [PLAN] Plan steps: 4 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 3.9616m (tok=0, n=12)
-      summarize: 2.1839m (tok=38869, n=5)
-      agent: 0.8378m (tok=101563, n=13)
-      planner: 0.1980m (tok=1837, n=1)
+      tools: 4.4716m (tok=0, n=12)
+      agent: 0.6998m (tok=77267, n=13)
+      summarize: 0.4411m (tok=6418, n=5)
+      planner: 0.1908m (tok=1655, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #11 tools: 1.0293m (tok=0)
-      #20 tools: 0.7954m (tok=0)
-      #17 tools: 0.5954m (tok=0)
-      #13 tools: 0.5859m (tok=0)
-      #26 tools: 0.5807m (tok=0)
-  +-- [TIMING] wall=6.9843m nodes=7.1814m delta=-0.1971m (overlap likely)
+      #29 tools: 0.8851m (tok=0)
+      #09 tools: 0.8422m (tok=0)
+      #07 tools: 0.8400m (tok=0)
+      #23 tools: 0.8344m (tok=0)
+      #11 tools: 0.7028m (tok=0)
+  +-- [TIMING] wall=5.6132m nodes=5.8033m delta=-0.1901m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -42,84 +42,103 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=7152 out=422 total=7574
-      min: 0.0893m
-      detail: Search(query=Ramona Moye Camaconi "Quien es quien" bio...)
+      tok: in=3919 out=174 total=4093
+      min: 0.0356m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
   +-- [03] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Comandanta Ramon...mpo </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...al </URL> __END_OF_SOURCE...
   +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=7952 out=343 total=8295
-      min: 0.0538m
-      detail: Search(query=id_parlamentario "Ramona Moye Camaconi")
+      tok: in=5232 out=66 total=5298
+      min: 0.0264m
+      detail: Search(query="Ramona Moye Camaconi" site:gob.bo)
   +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...oni </URL> __END_OF_SOURC...
-  +-- [06] Requested 1 tool call (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...rio </URL> __END_OF_SOURC...
+  +-- [06] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=8391 out=261 total=8652
-      min: 0.0422m
-      detail: Search(query=biografía "Ramona Moye Camaconi" Cámara d...)
+      tok: in=5419 out=169 total=5588
+      min: 0.0317m
+      detail: OpenWebpage(url=https://vicepresidencia.go...e=parlamentario)
   +-- [07] Returned result
-      by: Tool Search
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Cámara de Diputa...nal </URL> __END_OF_SOURC...
-  +-- [08] Requested 1 tool call (Search)
+      detail: URL: https://vicepresidencia.gob.bo/spip.php?id_parlame...c. en Ciencias de la Educ...
+  +-- [08] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=10571 out=221 total=10792
-      min: 0.0415m
-      detail: Search(query=Candidatos 2014 Bolivia "Ramona Moye Cama...)
+      tok: in=6147 out=114 total=6261
+      min: 0.0252m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
   +-- [09] Returned result
-      by: Tool Search
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: LISTA DE CANDIDA...pdf </URL> __END_OF_SOURC...
-  +-- [10] Requested 1 tool call (Search)
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
+  +-- [10] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=10679 out=222 total=10901
-      min: 0.0406m
-      detail: Search(query="Ramona Moye Camaconi" subcentral TIPNIS ...)
+      tok: in=6798 out=259 total=7057
+      min: 0.0462m
+      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
   +-- [11] Returned result
-      by: Tool Search
+      by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...rio </URL> __END_OF_SOURC...
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
   +-- [12] Requested 1 tool call (Search)
       by: AI
-      tok: in=10736 out=228 total=10964
-      min: 0.0396m
-      detail: Search(query="Ramona Moye Camaconi" bajas medicas denu...)
+      tok: in=7237 out=102 total=7339
+      min: 0.0405m
+      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient...)
   +-- [13] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Biografía - Ramo...189 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
   +-- [14] Requested 1 tool call (Search)
       by: AI
-      tok: in=10482 out=216 total=10698
-      min: 0.0402m
-      detail: Search(query=filetype:pdf "Ramona Moye Camaconi")
+      tok: in=7915 out=121 total=8036
+      min: 0.0371m
+      detail: Search(query="Ramona Moye Camaconi" TIPNIS "Sub Centra...)
   +-- [15] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ms.Ramona Moye Camaconi...pdf </URL> __END_OF_SOURC...
-  +-- [16] Produced structured answer
+      flag: OFF_TOPIC_RESULT
+      detail: No good DuckDuckGo Search Result was found
+  +-- [16] Requested 1 tool call (Search)
       by: AI
-      tok: in=9671 out=629 total=10300
-      min: 0.0822m
+      tok: in=8076 out=188 total=8264
+      min: 0.0351m
+      detail: Search(query="Ramona Moye Camaconi" Beni nacimiento ed...)
+  +-- [17] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...as= </URL> __END_OF_SOURC...
+  +-- [18] Requested 1 tool call (Search)
+      by: AI
+      tok: in=9116 out=200 total=9316
+      min: 0.0495m
+      detail: Search(query="Ramona Moye Camaconi" "nació en")
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...les </URL> __END_OF_SOURC...
+  +-- [20] Produced structured answer
+      by: AI
+      tok: in=8755 out=511 total=9266
+      min: 0.0674m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":...abor and agricultural rol...
+      detail: {"education_level": "Unknown", "education_institution":...limited verifiable eviden...
 END

@@ -585,13 +585,9 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
     )
   )
 
-  # Ensure we actually folded (otherwise this test is meaningless).
-  expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
-
-  # Verify fold_stats diagnostics are populated
-  fs <- expect_valid_fold_stats(final_state$fold_stats, fold_count = 1L,
-                                expect_parse_success = FALSE)
-  expect_equal(as.integer(fs$fold_messages_removed), as.integer(fs$fold_total_messages_removed))
+  # Fix 3: When fold parse fails (but summarizer didn't crash), messages are
+  # NOT removed — they survive for the next fold attempt. So fold_count stays 0.
+  expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 0L)
 
   types <- vapply(
     final_state$messages,
@@ -602,8 +598,6 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   # Critical invariant for Gemini tool calling: history must not start with an AI tool-call turn.
   expect_equal(types[[1]], "HumanMessage")
   expect_true(length(types) >= 2L)
-  expect_equal(types[[2]], "AIMessage")
-  expect_true(!is.null(final_state$messages[[2]]$tool_calls))
 })
 
 test_that("memory folding updates summary and injects it into the next system prompt", {

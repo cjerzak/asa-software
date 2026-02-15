@@ -665,6 +665,7 @@ initialize_agent <- function(backend = NULL,
 .create_agent <- function(llm, tools, use_memory_folding,
                           memory_threshold, memory_keep_recent,
                           fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET,
+                          min_fold_batch = ASA_DEFAULT_MIN_FOLD_BATCH,
                           om_config = NULL) {
   if (use_memory_folding) {
     # Use custom memory folding agent with unified API
@@ -675,6 +676,7 @@ initialize_agent <- function(backend = NULL,
       message_threshold = as.integer(memory_threshold),
       keep_recent = as.integer(memory_keep_recent),
       fold_char_budget = as.integer(fold_char_budget),
+      min_fold_batch = as.integer(min_fold_batch),
       debug = FALSE,
       om_config = om_config %||% list(enabled = FALSE, scope = "thread", cross_thread_memory = FALSE)
     )

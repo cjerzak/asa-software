@@ -5009,6 +5009,12 @@ def _tool_message_payloads(tool_messages: Any) -> list:
             normalized_url = _normalize_url_match(extracted_url)
             if normalized_url and normalized_url not in urls:
                 urls.append(normalized_url)
+        source_texts = []
+        for block in source_blocks:
+            bc = str(block.get("content") or "").strip()
+            bu = block.get("url")
+            if bc:
+                source_texts.append({"url": bu, "content": bc})
         payloads.append({
             "tool_name": tool_name,
             "text": text,
@@ -5017,6 +5023,7 @@ def _tool_message_payloads(tool_messages: Any) -> list:
             "source_payloads": source_payloads,
             "has_structured_payload": parsed is not None or bool(source_payloads),
             "urls": urls,
+            "source_texts": source_texts,
         })
     return payloads
 
@@ -5156,6 +5163,116 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
     return field_status
 
 
+# ---------------------------------------------------------------------------
+# Text-based lead extraction patterns
+# ---------------------------------------------------------------------------
+_LEAD_PATTERNS: Dict[str, list] = {
+    "birth_year": [
+        re.compile(
+            r"(?:naci[oó]|born|nacida|edad|tiene\s+\d+\s+a[ñn]os|b\.\s*)"
+            r"[^0-9]{0,40}((?:19|20)\d{2})",
+            re.IGNORECASE,
+        ),
+    ],
+    "birth_place": [
+        re.compile(
+            r"(?:naci[oó]|nacida|born|natural\s+de)\s+en\s+([A-Z\u00C0-\u024F][A-Za-z\u00C0-\u024F\s,]{2,60})",
+            re.IGNORECASE,
+        ),
+    ],
+    "education_level": [
+        re.compile(
+            r"\b(licenciatura|bachiller|master|phd|doctorado|ingenier[ií]a|"
+            r"abogad[oa]|m\.?s\.?c\.?|b\.?a\.?|b\.?s\.?|m\.?b\.?a\.?)\b",
+            re.IGNORECASE,
+        ),
+    ],
+    "prior_occupation": [
+        re.compile(
+            r"\b(abogad[oa]|profesor(?:a)?|m[eé]dic[oa]|ingenier[oa]|"
+            r"economista|periodista|contador(?:a)?|architect[oa]|"
+            r"lawyer|teacher|doctor|engineer|journalist|accountant)\b",
+            re.IGNORECASE,
+        ),
+    ],
+}
+
+# Patterns that are suggestive (stored as leads) rather than definitive
+_SUGGESTIVE_PATTERNS: Dict[str, list] = {
+    "birth_place": [
+        re.compile(
+            r"(?:habita|vive|reside|residente)\s+en\s+([A-Z\u00C0-\u024F][A-Za-z\u00C0-\u024F\s,]{2,60})",
+            re.IGNORECASE,
+        ),
+    ],
+}
+
+
+def _text_lead_extraction(
+    field_key: str,
+    entry: Dict[str, Any],
+    payloads: list,
+) -> None:
+    """Scan snippet text for regex-based leads when structured extraction found nothing.
+
+    Modifies *entry* in-place:
+    - Hard facts (unambiguous match with source URL) flip status to "found".
+    - Suggestive matches are stored in ``entry["leads"]`` for the nudge node.
+    """
+    if entry.get("status") == _FIELD_STATUS_FOUND and not _is_empty_like(entry.get("value")):
+        return
+
+    # Collect all source texts from payloads
+    all_snippets: list = []
+    for payload_item in payloads:
+        for st in payload_item.get("source_texts") or []:
+            if st.get("content"):
+                all_snippets.append(st)
+
+    if not all_snippets:
+        return
+
+    # Try hard-fact patterns first
+    hard_patterns = _LEAD_PATTERNS.get(field_key, [])
+    for pat in hard_patterns:
+        for snippet in all_snippets:
+            m = pat.search(snippet["content"])
+            if m:
+                value = m.group(1).strip().rstrip(",. ")
+                source_url = snippet.get("url")
+                if source_url and not _is_empty_like(value):
+                    entry["status"] = _FIELD_STATUS_FOUND
+                    entry["value"] = value
+                    entry["source_url"] = _normalize_url_match(source_url) or source_url
+                    entry["evidence"] = snippet["content"][:240]
+                    return
+
+    # Try suggestive patterns -> store as leads
+    suggestive = _SUGGESTIVE_PATTERNS.get(field_key, [])
+    leads = list(entry.get("leads") or [])
+    for pat in suggestive:
+        for snippet in all_snippets:
+            m = pat.search(snippet["content"])
+            if m:
+                value = m.group(1).strip().rstrip(",. ")
+                if not _is_empty_like(value):
+                    leads.append({
+                        "value": value,
+                        "url": snippet.get("url") or "",
+                        "evidence": snippet["content"][:240],
+                    })
+    if leads:
+        # Deduplicate by value
+        seen = set()
+        deduped: list = []
+        for lead in leads:
+            lv = str(lead.get("value", "")).strip().lower()
+            if lv and lv not in seen:
+                seen.add(lv)
+                deduped.append(lead)
+        entry["leads"] = deduped[:5]
+
+
 def _extract_field_status_updates(
     *,
     existing_field_status: Any,
@@ -5170,11 +5287,16 @@ def _extract_field_status_updates(
         return field_status
 
     payloads = _tool_message_payloads(tool_messages)
-    # Count "search attempts" by round only when deterministic extraction
-    # had structured payloads to evaluate.
+    # Count "search attempts" by round when tool calls returned structured
+    # payloads (deterministic extraction material).  Text-only snippets are
+    # handled separately by _text_lead_extraction and do not inflate the
+    # attempts counter — they either resolve a field directly via regex or
+    # store leads for the nudge node.
     attempts_delta = 0
     if int(tool_calls_delta) > 0:
-        has_structured_payload = any(bool(item.get("has_structured_payload")) for item in payloads)
+        has_structured_payload = any(
+            bool(item.get("has_structured_payload")) for item in payloads
+        )
         if has_structured_payload:
             attempts_delta = 1
 
@@ -5263,6 +5385,11 @@ def _extract_field_status_updates(
                 entry["evidence"] = found_evidence
             field_status[key] = entry
             continue
+
+        # --- Text-based lead extraction from search snippets ---
+        # When structured JSON extraction found nothing, scan raw snippet
+        # text for regex-based "hard fact" patterns.
+        _text_lead_extraction(key, entry, payloads)
 
         if attempts_delta > 0:
             entry["attempts"] = int(entry.get("attempts", 0)) + attempts_delta
@@ -5958,10 +6085,8 @@ def _apply_canonical_payload_derivations(
                 payload["class_background"] = derived
 
     if "confidence" in payload:
-        confidence = payload.get("confidence")
-        confidence_valid = str(confidence).strip() in {"Low", "Medium", "High"}
-        if _is_empty_like(confidence) or _is_unknown_marker(confidence) or not confidence_valid:
-            payload["confidence"] = _derive_confidence_from_field_status(normalized_field_status)
+        # Always clamp to evidence-based confidence from field_status.
+        payload["confidence"] = _derive_confidence_from_field_status(normalized_field_status)
 
     if "justification" in payload:
         justification = payload.get("justification")
@@ -6364,7 +6489,7 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
             "_parse_plan_response: falling back to default plan. "
             "Raw content (first 200 chars): %s", (content or "")[:200]
         )
-        return fallback
+        plan = fallback
     # Normalize steps
     normalized_steps = []
     for i, step in enumerate(plan.get("steps", [])):
@@ -6529,6 +6654,13 @@ def _base_system_prompt(
         f"Tool-call budget: {budget['tool_calls_used']}/{budget['tool_calls_limit']} used. "
         f"Stop searching when budget is exhausted. "
         "After EVERY search result, save any discovered field values using save_finding before continuing.\n\n"
+        "SEARCH STRATEGY:\n"
+        "1. Always quote the full name in your first search query (e.g. \"First Last\").\n"
+        "2. When results are off-topic or sparse, vary your approach: try name variants, "
+        "the target's local language, role/title keywords, or site-specific searches.\n"
+        "3. When you find a promising URL in search snippets, use OpenWebpage to read the full page — "
+        "do NOT rely solely on search snippets for field extraction.\n"
+        "4. After 2+ off-topic searches, change your query strategy rather than repeating similar queries.\n\n"
         "When a webpage mentions a person by name with a hyperlink [link: URL], follow that URL to find their detailed profile.\n\n"
         "When Search returns an official profile URL (especially *.gob.bo, page=parlamentario, or page=parlamentarios), "
         "you MUST call OpenWebpage on that URL before concluding unknown.\n\n"
@@ -7989,6 +8121,7 @@ def create_memory_folding_agent(
     message_threshold: int = 10,
     keep_recent: int = 4,
     fold_char_budget: int = 30000,
+    min_fold_batch: int = 6,
     summarizer_model = None,
     debug: bool = False,
     om_config: Optional[Dict[str, Any]] = None,
@@ -8020,6 +8153,11 @@ def create_memory_folding_agent(
     if summarizer_model is None:
         summarizer_model = model
     om_config = _normalize_om_config(om_config)
+
+    # Auto-clamp min_fold_batch so aggressive test configs (threshold=2) still fold.
+    # For production (threshold=16): effective = min(6, 8) = 6
+    # For tests    (threshold=5):  effective = min(6, 2) = 2
+    min_fold_batch = min(min_fold_batch, max(1, message_threshold // 2))
 
     # Create save_finding and update_plan tools, combine with user-provided tools
     save_finding = _make_save_finding_tool()
@@ -8803,6 +8941,16 @@ def create_memory_folding_agent(
         if not summary_candidates:
             return _summarize_result()
 
+        # Fix 1: Minimum fold batch — skip fold if too few messages are eligible.
+        # Tiny folds (2-3 messages) cost ~7K summarizer tokens but compress almost nothing.
+        if len(summary_candidates) < min_fold_batch:
+            if debug:
+                logger.info(
+                    "Skipping fold: only %d candidates (min_fold_batch=%d)",
+                    len(summary_candidates), min_fold_batch,
+                )
+            return _summarize_result()
+
         if debug:
             logger.info(
                 f"Folding {len(summary_candidates)} messages into summary (safe boundary at {safe_fold_idx})"
@@ -9371,6 +9519,11 @@ def create_memory_folding_agent(
         if extra_sources:
             new_memory["sources"] = _dedupe_keep_order((new_memory.get("sources") or []) + extra_sources)
 
+        # Guard: if summarizer returned unparseable output but didn't crash,
+        # skip message removal so messages survive for the next fold attempt.
+        if not fold_parse_success and not fold_degraded:
+            return _summarize_result()
+
         # Create RemoveMessage objects for old messages.
         remove_messages = []
         removable = messages_to_fold[1:] if preserve_first_user else messages_to_fold
@@ -9567,19 +9720,38 @@ def create_memory_folding_agent(
         field_status = _state_field_status(state)
         pending = [
             fn for fn, fs in field_status.items()
-            if fs.get("status") == _FIELD_STATUS_PENDING
+            if fs.get("status") in (_FIELD_STATUS_PENDING, "unknown")
             and not fn.endswith("_source")
             and fn not in ("confidence", "justification")
         ]
+        # Collect leads from field_status to surface in nudge message
+        lead_hints: list = []
+        for fn, fs in field_status.items():
+            leads = fs.get("leads") or []
+            if leads and fs.get("status") != _FIELD_STATUS_FOUND:
+                for lead in leads[:2]:
+                    lead_url = lead.get("url", "")
+                    lead_value = lead.get("value", "")
+                    lead_hints.append(
+                        f"- {fn}: possible value '{lead_value}' (see {lead_url})"
+                    )
         nudge_count = int((state.get("budget_state") or {}).get("premature_end_nudge_count", 0))
-        nudge_msg = HumanMessage(content=(
+        nudge_text = (
             f"CONTINUE SEARCHING — {len(pending)} fields are still unresolved: "
             f"{', '.join(pending[:10])}. "
             "Use Search or OpenWebpage to find this information. "
             "Do NOT produce a final answer yet. "
             "For each value you discover, call save_finding(finding='field_name = value "
             "(source: URL)', category='fact')."
-        ))
+        )
+        if lead_hints:
+            nudge_text += (
+                "\n\nLEADS TO FOLLOW UP:\n"
+                + "\n".join(lead_hints)
+                + "\nFor each lead, call OpenWebpage on the URL and look for "
+                "explicit confirmation."
+            )
+        nudge_msg = HumanMessage(content=nudge_text)
         return {
             "messages": [nudge_msg],
             "budget_state": {"premature_end_nudge_count": nudge_count + 1},
@@ -10138,19 +10310,38 @@ def create_standard_agent(
         field_status = _state_field_status(state)
         pending = [
             fn for fn, fs in field_status.items()
-            if fs.get("status") == _FIELD_STATUS_PENDING
+            if fs.get("status") in (_FIELD_STATUS_PENDING, "unknown")
             and not fn.endswith("_source")
             and fn not in ("confidence", "justification")
         ]
+        # Collect leads from field_status to surface in nudge message
+        lead_hints: list = []
+        for fn, fs in field_status.items():
+            leads = fs.get("leads") or []
+            if leads and fs.get("status") != _FIELD_STATUS_FOUND:
+                for lead in leads[:2]:
+                    lead_url = lead.get("url", "")
+                    lead_value = lead.get("value", "")
+                    lead_hints.append(
+                        f"- {fn}: possible value '{lead_value}' (see {lead_url})"
+                    )
         nudge_count = int((state.get("budget_state") or {}).get("premature_end_nudge_count", 0))
-        nudge_msg = HumanMessage(content=(
+        nudge_text = (
             f"CONTINUE SEARCHING — {len(pending)} fields are still unresolved: "
             f"{', '.join(pending[:10])}. "
             "Use Search or OpenWebpage to find this information. "
             "Do NOT produce a final answer yet. "
             "For each value you discover, call save_finding(finding='field_name = value "
             "(source: URL)', category='fact')."
-        ))
+        )
+        if lead_hints:
+            nudge_text += (
+                "\n\nLEADS TO FOLLOW UP:\n"
+                + "\n".join(lead_hints)
+                + "\nFor each lead, call OpenWebpage on the URL and look for "
+                "explicit confirmation."
+            )
+        nudge_msg = HumanMessage(content=nudge_text)
         return {
             "messages": [nudge_msg],
             "budget_state": {"premature_end_nudge_count": nudge_count + 1},
