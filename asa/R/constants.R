@@ -94,6 +94,13 @@ ASA_DEFAULT_MEMORY_KEEP_RECENT <- 4L
 #' @keywords internal
 ASA_DEFAULT_FOLD_CHAR_BUDGET <- 30000L
 
+#' Default Minimum Fold Batch Size
+#' @description Minimum number of messages that must be eligible for folding
+#'   before a fold is triggered. Prevents tiny folds (2-3 messages) that cost
+#'   ~7K tokens in summarizer overhead but compress almost nothing.
+#' @keywords internal
+ASA_DEFAULT_MIN_FOLD_BATCH <- 6L
+
 #' Default Observational Memory Enabled
 #' @keywords internal
 ASA_DEFAULT_USE_OBSERVATIONAL_MEMORY <- FALSE

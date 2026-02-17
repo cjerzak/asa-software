@@ -268,7 +268,7 @@ def _extract_main_text(html: str, page_url: str = "") -> Tuple[str, str]:
     """Extract readable text from HTML. Returns (title, text).
 
     Preserves hyperlinks inline so that the agent can discover linked URLs
-    (e.g., profile pages referenced from a suplente listing).
+    (e.g., profile pages referenced from index/listing pages).
     """
     soup = BeautifulSoup(html or "", "html.parser")
 
@@ -322,8 +322,15 @@ def _extract_main_text(html: str, page_url: str = "") -> Tuple[str, str]:
             return False
         # Always annotate links with parliamentary/government patterns
         gov_patterns = [
-            "parlamentario", "diputado", "senador", "congreso",
-            "asamblea", "legislativ", "gob.bo", "gov.", "gobierno",
+            "parliament",
+            "senate",
+            "congress",
+            "assembly",
+            "legislature",
+            ".gov",
+            ".gob",
+            "government",
+            "official",
         ]
         for pat in gov_patterns:
             if pat in href_lower or pat in text_lower:
@@ -742,7 +749,12 @@ def _allow_http_fallback(url: str, exc: Exception) -> bool:
     host = (parsed.hostname or "").strip().lower().rstrip(".")
     if not host:
         return False
-    return host == "vicepresidencia.gob.bo" or host.endswith(".gob.bo")
+    return (
+        host.endswith(".gov")
+        or ".gov." in host
+        or host.endswith(".gob")
+        or ".gob." in host
+    )
 
 
 def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> Dict[str, Any]:

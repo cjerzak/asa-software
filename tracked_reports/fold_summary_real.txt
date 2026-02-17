@@ -1,69 +1,57 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS, Beni, Bolivia (source: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Indigenous inhabitant and leader in the TIPNIS region (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "[ANCHORED] FIELD_EXTRACT: class_background = Working class (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "[ANCHORED] FIELD_EXTRACT: justification = Class background is identified as working class due to her primary background as an indigenous inhabitant and community leader in the TIPNIS, associated with manual labor and agricultural roles. (source: https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia)", "Ramona Moye Camaconi is an indigenous woman from the TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure) and served as a Deputy for the department of Beni representing the Movement for Socialism (MAS). (source: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio)", "Early Fact: She was elected in the 2014 general elections, reportedly winning approximately 75% of the vote in the TIPNIS region. (source: https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)", "Mid Fact: In May 2015, Moye rejected the use of indigenous community justice in a case involving the theft of an outboard motor, opting to pursue the case through the civil prosecutor's office in Trinidad. (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "Late Fact: In September 2018, Deputy Rafael Costa filed a formal legal complaint against Moye for allegedly submitting falsified medical certificates to justify legislative leave. (source: https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=)", "Conflicting official records exist regarding her seat: one parliamentary profile lists her as a substitute (suplente) for Circumscription 6, while an official list for the 2015-2020 period lists her as a Uninominal Deputy for Circumscription 09. (sources: http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428, https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "She has publicly stated that coca production within the TIPNIS region is conducted for traditional consumption purposes. (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)"],
+  "facts": "She was elected as a titular deputy for the Special Indigenous Constituency (Circunscripción Especial Indígena) of Beni for the Movimiento Al Socialismo (MAS) party in the 2014 elections. (Source: https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)",
   "decisions": [],
-  "open_questions": "Clarify whether Ramona Moye Camaconi served as a substitute for Beni's Circumscription 6, a titular deputy for Circumscription 09, or as the Titular Deputy for the Special Indigenous Constituency, as official and medi...",
+  "open_questions": ["What is the specific educational level and field of study for Ramona Moye Camaconi?", "What was her specific occupation before entering formal politics beyond community leadership?", "What is her specific date and month of birth?"],
   "sources": [
     {
       "tool": "Search",
-      "url": "https://sisin.oep.org.bo/medios_digitales/14455/detalle",
-      "title": "Denuncia contra Ramona Moye por bajas médicas",
-      "note": "Early report on falsified medical leave allegations."
-    },
-    {
-      "tool": "Search",
-      "url": "http://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": "Vicepresidencia de Bolivia - Perfil de Parlamentario",
-      "note": "Lists her as a substitute (suplente) for Circumscription 6 in Beni."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
-      "title": "Vicepresidencia de Bolivia - Lista de Parlamentarios",
-      "note": "Official list placing her in Circumscription 09 for the 2015-2020 term."
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
-      "title": "Flickr - Ramona Moye Camaconi",
-      "note": "Identifies her as Titular Deputy for Beni's special indigenous constituency."
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia del Estado - Perfil Parlamentario",
+      "note": "Official government source for birth year (1982)."
     },
     {
       "tool": "Search",
       "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "MAS gana en el TIPNIS con 75%",
-      "note": "Details 2014 election results for the indigenous constituency."
+      "title": "MAS gana en el TIPNIS con 75% y obtiene la diputación especial indígena de Beni",
+      "note": "Report on 2014 election results and constituency."
     },
     {
       "tool": "Search",
-      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
-      "title": "Diputada indígena del MAS rechaza justicia comunitaria",
-      "note": "Covers 2015 legal dispute regarding outboard motor theft."
+      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "title": "Diputada oficialista amenaza a indígenas que se oponen a carretera por el TIPNIS",
+      "note": "Source confirming she is an inhabitant of TIPNIS and an indigenous deputy."
     },
     {
       "tool": "Search",
-      "url": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran",
-      "title": "El TIPNIS y el Madidi: Las heridas que sangran",
-      "note": "Context on her indigenous background and class."
+      "url": "https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html",
+      "title": "Diputada del MAS admite que en el TIPNIS se produce coca",
+      "note": "Source regarding her background and statements on traditional production."
+    },
+    {
+      "tool": "Search",
+      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/",
+      "title": "Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE",
+      "note": "Documentary archive regarding her role in the TIPNIS highway project."
     },
     {
       "tool": "Search",
       "url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
       "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
-      "note": "Details on the 2018 legal complaint by Deputy Costa."
+      "note": "Source for legal/ethical controversy during her term."
     },
     {
-      "tool": "Search",
-      "url": "https://pub.eldiario.net/noticias/2018/2018_09/nt180905/sociedad.php?n=93&-diputada-moye-presento-bajas-medicas-falsificadas=",
-      "title": "El Diario - Diputada Moye presentó bajas médicas falsificadas",
-      "note": "Confirmation of the 2018 falsification charges."
+      "tool": "OpenWebpage",
+      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/",
+      "title": "Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE",
+      "note": null
     },
     {
-      "tool": "Search",
-      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio",
-      "title": "Tipnis Bolivia - Movimiento Indígena",
-      "note": "Information on her origins and leadership in the TIPNIS region."
+      "tool": "OpenWebpage",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "title": "Vicepresidencia del Estado",
+      "note": null
     }
   ],
-  "warnings": ["CONFLICT: Official Vicepresidencia sources (Source 2 and 3) contradict each other and media sources (Source 4, 5) regarding her specific constituency and titular vs. substitute status.", "DISAMBIGUATION: Do not confuse the subject with 'Comandanta Ramona' of the Zapatista Army (EZLN) in Mexico, who died in 2006."]
+  "warnings": ["There is a minor discrepancy in constituency labeling: government lists occasionally refer to 'Circunscripción 09' (Source 6) while most news sources explicitly state 'Circunscripción Especial Indígena de Beni'.", "UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: FIELD_EXTRACT: birth_year_source = https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609 (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: FIELD_EXTRACT: birth_place = TIPNIS, Beni, Bolivia (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "UNGROUNDED: FIELD_EXTRACT: birth_place_source = https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "UNGROUNDED: FIELD_EXTRACT: prior_occupation = Indigenous community leader and inhabitant of TIPNIS; involved in traditional agriculture. (Source: https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html)", "UNGROUNDED: FIELD_EXTRACT: prior_occupation_source = https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html (Source: https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html)", "UNGROUNDED: Ramona Moye Camaconi was born in 1982. (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: Ramona Moye Camaconi is an indigenous leader from the TIPNIS (Isiboro Sécure National Park and Indigenous Territory) region in the department of Beni, Bolivia. (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "UNGROUNDED: Moye has been a prominent advocate for the construction of a highway through the TIPNIS territory and presented a project to repeal Law 180 (Intangibility of TIPNIS) in 2017. (Source: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/)", "UNGROUNDED: She acknowledged that traditional coca production occurs within the TIPNIS territory for local consumption. (Source: https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html)", "UNGROUNDED: In 2017, she faced allegations of presenting falsified medical leave requests to the Legislative Assembly. (Source: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956)"]
 }
