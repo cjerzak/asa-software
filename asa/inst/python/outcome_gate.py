@@ -6,24 +6,10 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
 
-
-def _flatten_schema_leaf_paths(schema: Any, prefix: str = "") -> List[Tuple[str, Any]]:
-    """Return dotted leaf paths for a JSON-like schema tree."""
-    if isinstance(schema, dict):
-        out: List[Tuple[str, Any]] = []
-        for key, child in schema.items():
-            child_prefix = f"{prefix}.{key}" if prefix else str(key)
-            out.extend(_flatten_schema_leaf_paths(child, child_prefix))
-        return out
-    if isinstance(schema, list):
-        if not schema:
-            return []
-        child_prefix = f"{prefix}[]" if prefix else "[]"
-        return _flatten_schema_leaf_paths(schema[0], child_prefix)
-    if not prefix:
-        return []
-    return [(prefix, schema)]
-
+from asa_backend.schema_state import (
+    field_key_aliases as _field_key_aliases,
+    schema_leaf_paths as _flatten_schema_leaf_paths,
+)
 
 def _normalize_field_status_map(field_status: Any) -> Dict[str, Dict[str, Any]]:
     """Best-effort conversion to a canonical field_status dictionary."""
@@ -44,9 +30,7 @@ def _lookup_field_entry(field_status: Dict[str, Dict[str, Any]], path: str) -> O
     """Resolve a schema path to a field_status entry using conservative aliases."""
     if not path:
         return None
-    normalized_path = path.replace("[]", "")
-    leaf = normalized_path.split(".")[-1]
-    for alias in (path, normalized_path, leaf):
+    for alias in (path, *_field_key_aliases(path)):
         entry = field_status.get(alias)
         if isinstance(entry, dict):
             return entry

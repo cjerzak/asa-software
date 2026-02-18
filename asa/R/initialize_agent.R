@@ -301,7 +301,7 @@ initialize_agent <- function(backend = NULL,
   }
   # Keep env in sync so worker processes see the chosen control port
   Sys.setenv(TOR_CONTROL_PORT = as.character(control_port))
-  ddg_module <- asa_env$custom_ddg %||% reticulate::import("custom_ddg_production")
+  ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
   ddg_module$configure_tor(
     control_port = as.integer(control_port),
     control_password = control_password,
@@ -399,11 +399,11 @@ initialize_agent <- function(backend = NULL,
   asa_env$httpx <- reticulate::import("httpx")
   asa_env$fake_headers <- reticulate::import("fake_headers", convert = FALSE)
 
-  # Import custom DDG module from package
+  # Import backend API module from package
   python_path <- .get_python_path()
   if (python_path != "" && dir.exists(python_path)) {
-    asa_env$custom_ddg <- reticulate::import_from_path(
-      "custom_ddg_production",
+    asa_env$backend_api <- reticulate::import_from_path(
+      "asa_backend.agent_api",
       path = python_path
     )
     # Optional tool: webpage reader (disabled by default via Python config)
@@ -621,10 +621,10 @@ initialize_agent <- function(backend = NULL,
   )
 
   # DuckDuckGo search with custom patched wrapper
-  search <- asa_env$custom_ddg$PatchedDuckDuckGoSearchRun(
+  search <- asa_env$backend_api$PatchedDuckDuckGoSearchRun(
     name = "Search",
     description = "DuckDuckGo web search",
-    api_wrapper = asa_env$custom_ddg$PatchedDuckDuckGoSearchAPIWrapper(
+    api_wrapper = asa_env$backend_api$PatchedDuckDuckGoSearchAPIWrapper(
       proxy = proxy,
       use_browser = isTRUE(use_browser),
       max_results = search_max_results,
@@ -669,7 +669,7 @@ initialize_agent <- function(backend = NULL,
                           om_config = NULL) {
   if (use_memory_folding) {
     # Use custom memory folding agent with unified API
-    agent <- asa_env$custom_ddg$create_memory_folding_agent(
+    agent <- asa_env$backend_api$create_memory_folding_agent(
       model = llm,
       tools = tools,
       checkpointer = asa_env$MemorySaver(),
@@ -682,7 +682,7 @@ initialize_agent <- function(backend = NULL,
     )
   } else {
     # Use standard ReAct agent with RemainingSteps guard
-    agent <- asa_env$custom_ddg$create_standard_agent(
+    agent <- asa_env$backend_api$create_standard_agent(
       model = llm,
       tools = tools,
       checkpointer = asa_env$MemorySaver(),

@@ -103,10 +103,10 @@ class _StubDDGS:
 test_that("Selenium tier can load and parse a local result fixture", {
   asa_test_skip_if_no_selenium()
 
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "asa_backend/agent_api.py")
   asa_test_skip_if_missing_python_modules(c("selenium", "bs4"))
 
-  ddg <- asa_test_import_from_path_or_skip("custom_ddg_production", python_path)
+  ddg <- asa_test_import_from_path_or_skip("asa_backend.agent_api", python_path)
 
   setTimeLimit(elapsed = 60, transient = TRUE)
   on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE), add = TRUE)
@@ -146,10 +146,10 @@ test_that("Selenium tier can load and parse a local result fixture", {
 test_that("Selenium tier raises a timeout on a local empty fixture", {
   asa_test_skip_if_no_selenium()
 
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "asa_backend/agent_api.py")
   asa_test_skip_if_missing_python_modules(c("selenium", "bs4"))
 
-  ddg <- asa_test_import_from_path_or_skip("custom_ddg_production", python_path)
+  ddg <- asa_test_import_from_path_or_skip("asa_backend.agent_api", python_path)
 
   setTimeLimit(elapsed = 60, transient = TRUE)
   on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE), add = TRUE)
@@ -187,10 +187,10 @@ test_that("Selenium tier raises a timeout on a local empty fixture", {
 test_that("PRIMP tier parses a local fixture without network access", {
   asa_test_skip_if_no_selenium()
 
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "asa_backend/agent_api.py")
   asa_test_skip_if_missing_python_modules(c("selenium", "bs4", "ddgs", "primp"))
 
-  ddg <- asa_test_import_from_path_or_skip("custom_ddg_production", python_path)
+  ddg <- asa_test_import_from_path_or_skip("asa_backend.agent_api", python_path)
   .configure_fast_search(ddg)
 
   fixture <- tempfile(fileext = ".html")
@@ -225,10 +225,10 @@ test_that("PRIMP tier parses a local fixture without network access", {
 test_that("DDGS tier returns stubbed results when PRIMP is empty", {
   asa_test_skip_if_no_selenium()
 
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "asa_backend/agent_api.py")
   asa_test_skip_if_missing_python_modules(c("selenium", "bs4", "ddgs", "primp"))
 
-  ddg <- asa_test_import_from_path_or_skip("custom_ddg_production", python_path)
+  ddg <- asa_test_import_from_path_or_skip("asa_backend.agent_api", python_path)
   .configure_fast_search(ddg)
 
   fixture <- tempfile(fileext = ".html")

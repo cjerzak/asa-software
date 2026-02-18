@@ -29,6 +29,22 @@ options(asa.default_conda_env = "asa_env")
 
 .asa_test_bind_conda_once("asa_env")
 
+.asa_test_resolve_backend_module <- function(module_name, required_files = character()) {
+  files <- required_files %||% character(0)
+  files <- as.character(files)
+  files <- files[nzchar(files)]
+
+  if (identical(module_name, "custom_ddg_production")) {
+    module_name <- "asa_backend.agent_api"
+    files[files == "custom_ddg_production.py"] <- "asa_backend/agent_api.py"
+    if (length(files) == 0L) {
+      files <- "asa_backend/agent_api.py"
+    }
+  }
+
+  list(module_name = module_name, required_files = files)
+}
+
 # ---------------------------------------------------------------------------
 # Shared Python / prompt helpers (avoid duplication across test files)
 # ---------------------------------------------------------------------------
@@ -173,10 +189,11 @@ asa_test_import_from_path_or_skip <- function(module_name, python_path) {
     testthat::skip("reticulate not installed")
   }
 
+  resolved <- .asa_test_resolve_backend_module(module_name, required_files = character(0))
   tryCatch(
-    reticulate::import_from_path(module_name, path = python_path),
+    reticulate::import_from_path(resolved$module_name, path = python_path),
     error = function(e) {
-      testthat::skip(paste0("Failed to import ", module_name, ": ", conditionMessage(e)))
+      testthat::skip(paste0("Failed to import ", resolved$module_name, ": ", conditionMessage(e)))
     }
   )
 }
@@ -185,13 +202,15 @@ asa_test_import_module <- function(module_name,
                                    required_file = paste0(module_name, ".py"),
                                    required_modules = NULL,
                                    initialize = FALSE) {
+  resolved <- .asa_test_resolve_backend_module(module_name, required_files = required_file)
   python_path <- asa_test_skip_if_no_python(
-    required_files = required_file, initialize = initialize
+    required_files = resolved$required_files,
+    initialize = initialize
   )
   if (!is.null(required_modules)) {
     asa_test_skip_if_missing_python_modules(required_modules)
   }
-  reticulate::import_from_path(module_name, path = python_path)
+  reticulate::import_from_path(resolved$module_name, path = python_path)
 }
 
 ASA_TEST_DATE_EXTRACTOR_MODULES <- c("bs4", "requests")

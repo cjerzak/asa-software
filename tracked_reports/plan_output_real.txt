@@ -6,7 +6,7 @@
       "description": "Analyze task requirements and produce the requested output",
       "completion_criteria": "Final output satisfies the requested format and cites supporting evidence when applicable.",
       "status": "completed",
-      "findings": "Starting research on Ramona Moye Camaconi."
+      "findings": "Starting search for Ramona Moye Camaconi."
     }
   ],
   "version": 2,

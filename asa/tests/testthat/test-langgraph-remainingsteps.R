@@ -1605,22 +1605,21 @@ test_that("finalize strips residual tool calls and returns terminal JSON (standa
 
 test_that("finalize stays non-empty when first schema repair attempt fails (standard)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
-  py <- reticulate::py
-  py$prod_module_for_test <- prod
 
   reticulate::py_run_string(paste0(
+    "import asa_backend.agent_graph as _agent_graph_for_test\n",
     "_asa_repair_calls = {'n': 0}\n",
-    "_asa_orig_repair = prod_module_for_test.repair_json_output_to_schema\n",
+    "_asa_orig_repair = _agent_graph_for_test.repair_json_output_to_schema\n",
     "def _asa_flaky_repair(text, schema, fallback_on_failure=False):\n",
     "    _asa_repair_calls['n'] += 1\n",
     "    if _asa_repair_calls['n'] == 1:\n",
     "        return None\n",
     "    return _asa_orig_repair(text, schema, fallback_on_failure=fallback_on_failure)\n",
-    "prod_module_for_test.repair_json_output_to_schema = _asa_flaky_repair\n"
+    "_agent_graph_for_test.repair_json_output_to_schema = _asa_flaky_repair\n"
   ))
   on.exit(
     reticulate::py_run_string(
-      "prod_module_for_test.repair_json_output_to_schema = _asa_orig_repair"
+      "import asa_backend.agent_graph as _agent_graph_for_test\n_agent_graph_for_test.repair_json_output_to_schema = _asa_orig_repair"
     ),
     add = TRUE
   )

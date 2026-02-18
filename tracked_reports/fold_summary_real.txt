@@ -1,21 +1,63 @@
 {
   "version": 1,
-  "facts": [],
+  "facts": ["Ramona Moye Camaconi is a Bolivian indigenous politician and member of the Movimiento Al Socialismo (MAS) party from the Isiboro Sécure National Park and Indigenous Territory (TIPNIS) in Beni. (Sources 1, 5, 7)", "In May 2015, Moye rejected the use of indigenous community justice for a theft case in the TIPNIS, advocating for the state judicial system instead. (Source 3)", "In May 2019, she publicly acknowledged the cultivation of coca in the TIPNIS territory for traditional consumption. (Source 6)"],
   "decisions": [],
-  "open_questions": [],
+  "open_questions": ["What is the exact birth year of Ramona Moye Camaconi (Bolivian deputy)?", "What is the level and field of her formal education?", "Does the 'suplente' record in official government files refer to the same individual or a different legislative term/person?"],
   "sources": [
     {
+      "tool": "Search",
+      "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
+      "title": "MAS gana en el TIPNIS con 75% y obtiene la diputación especial indígena de Beni",
+      "note": "Early discovery: confirms 2014 election win in Beni."
+    },
+    {
       "tool": "OpenWebpage",
-      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
-      "title": "Radio Patujú 95.2 FM: BANCADAS DE UD Y DEL MAS EN EL BENI",
+      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
+      "title": "Ramona Moye Camaconi | Ramona Moye Camaconi, diputada titular… | Flickr",
+      "note": "Confirms full name and status as Titular Deputy."
+    },
+    {
+      "tool": "Search",
+      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "title": "Diputada indígena del MAS rechaza justicia comunitaria",
+      "note": "Details on 2015 judicial preference controversy."
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "title": "Perfil Parlamentario",
+      "note": "Official record mentioning a 'suplente' role for Circunscripción 6 Beni."
+    },
+    {
+      "tool": "Search",
+      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "title": "Diputada oficialista amenaza a indígenas que se oponen a carretera por el Tipnis",
+      "note": "Confirms status as Tipnis inhabitant and indigenous deputy."
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html",
+      "title": "Diputada del MAS admite que en el TIPNIS se produce coca",
+      "note": "2019 report on coca production admissions."
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio",
+      "title": "Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE",
+      "note": "Confirms background as Tipnis indigenous leader."
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/",
+      "title": "Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE",
       "note": null
     },
     {
       "tool": "OpenWebpage",
-      "url": "https://ftierra.org/index.php/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza",
-      "title": "Indígenas del TIPNIS se refugian en su territorio en busca de fortaleza",
+      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
+      "title": "Ramona Moye Camaconi | Ramona Moye Camaconi, diputada titula… | Flickr",
       "note": null
     }
   ],
-  "warnings": []
+  "warnings": ["Official government sources contain potential role discrepancies (Titular Special Constituency vs Suplente Circunscripción 6) that require clarification.", "UNGROUNDED: FIELD_EXTRACT: birth_place = TIPNIS, Beni, Bolivia (Sources 5, 7)", "UNGROUNDED: FIELD_EXTRACT: class_background = Working class (Sources 5, 7)", "UNGROUNDED: FIELD_EXTRACT: prior_occupation = Indigenous community member/leader (Sources 5, 7)", "UNGROUNDED: She was elected as a Titular Deputy for the Special Indigenous Constituency of Beni, winning the TIPNIS region with 75% of the vote in the 2014 period. (Sources 1, 2, 3)", "UNGROUNDED: She was the subject of a formal complaint by legislator Costa regarding the alleged presentation of falsified medical leave requests. (Source 9)", "UNGROUNDED: Official parliamentary records list an entry for a 'suplente' (substitute) deputy for Circunscripción 6 in Beni, which conflicts with other sources identifying her as the 'titular' (principal) deputy for the Special Indigenous Constituency. (Sources 1, 4, 10)"]
 }

@@ -6,6 +6,16 @@ asa_test_import_langgraph_module <- function(module_name,
                                              required_files = paste0(module_name, ".py"),
                                              required_modules = ASA_TEST_LANGGRAPH_MODULES,
                                              initialize = TRUE) {
+  if (identical(module_name, "custom_ddg_production")) {
+    module_name <- "asa_backend.agent_api"
+    required_files <- required_files %||% character(0)
+    required_files <- as.character(required_files)
+    required_files[required_files == "custom_ddg_production.py"] <- "asa_backend/agent_api.py"
+    if (length(required_files) == 0L) {
+      required_files <- "asa_backend/agent_api.py"
+    }
+  }
+
   # Return cached module if available (same module + same required_modules set)
   cache_key <- paste0(module_name, "|",
     paste(sort(unique(as.character(required_modules %||% ""))), collapse = ","))

@@ -642,6 +642,24 @@ safe_json_parse <- function(x) {
   invisible(asa_env[[env_name]])
 }
 
+#' Import ASA Backend API Module
+#'
+#' Imports and caches the stable backend API module used by runtime/config
+#' entrypoints. This intentionally targets the new package module path
+#' instead of the legacy top-level compatibility import.
+#'
+#' @param required If TRUE, error on failure; if FALSE, return NULL
+#'
+#' @return Imported Python module (invisibly), or NULL when not required
+#' @keywords internal
+.import_backend_api <- function(required = TRUE) {
+  .import_python_module(
+    module_name = "asa_backend.agent_api",
+    env_name = "backend_api",
+    required = required
+  )
+}
+
 
 #' Format Time Duration
 #'
@@ -934,7 +952,7 @@ configure_tor_registry <- function(registry_path = NULL,
   reticulate::use_condaenv(conda_env, required = TRUE)
 
   tryCatch({
-    ddg_module <- reticulate::import("custom_ddg_production")
+    ddg_module <- .import_backend_api(required = TRUE)
     cfg <- ddg_module$configure_tor_registry(
       registry_path = registry_path,
       enable = normalized$enable,
@@ -1013,9 +1031,9 @@ configure_search_logging <- function(level = "WARNING",
   # Use specified conda environment
   reticulate::use_condaenv(conda_env, required = TRUE)
 
-  # Import the custom_ddg_production module and configure logging
+  # Import the backend API module and configure logging.
   tryCatch({
-    ddg_module <- reticulate::import("custom_ddg_production")
+    ddg_module <- .import_backend_api(required = TRUE)
     ddg_module$configure_logging(level)
     message("Search logging level set to: ", level)
   }, error = function(e) {
@@ -2143,9 +2161,9 @@ configure_search <- function(max_results = NULL,
   # Use specified conda environment
   reticulate::use_condaenv(conda_env, required = TRUE)
 
-  # Import the custom_ddg_production module and configure
+  # Import the backend API module and configure.
   tryCatch({
-    ddg_module <- reticulate::import("custom_ddg_production")
+    ddg_module <- .import_backend_api(required = TRUE)
     config <- ddg_module$configure_search(
       max_results = max_results,
       timeout = timeout,

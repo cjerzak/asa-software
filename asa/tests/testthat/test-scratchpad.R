@@ -1,7 +1,7 @@
 # Tests for scratchpad persistence and prompt injection via save_finding tool.
 
 test_that("save_finding tool_calls append to scratchpad and are injected into subsequent system prompts", {
-  python_path <- asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
+  asa_test_skip_if_no_python(required_files = "asa_backend/agent_api.py")
   asa_test_skip_if_missing_python_modules(c(
     "langchain_core",
     "langgraph",
@@ -9,7 +9,7 @@ test_that("save_finding tool_calls append to scratchpad and are injected into su
     "pydantic"
   ), method = "import")
 
-  custom_ddg <- reticulate::import_from_path("custom_ddg_production", path = python_path)
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
 
   # Stub LLM:
@@ -78,4 +78,3 @@ test_that("save_finding tool_calls append to scratchpad and are injected into su
   expect_true(grepl("[insight] FINDING_A", sys_prompts[[2]], fixed = TRUE))
   expect_true(grepl("[fact] FINDING_B", sys_prompts[[2]], fixed = TRUE))
 })
-
