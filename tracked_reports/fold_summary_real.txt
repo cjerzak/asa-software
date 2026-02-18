@@ -6,14 +6,14 @@
   "sources": [
     {
       "tool": "OpenWebpage",
-      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
-      "title": "Ramona Moye Camaconi | Ramona Moye Camaconi, diputada titula… | Flickr",
+      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "title": "Radio Patujú 95.2 FM: BANCADAS DE UD Y DEL MAS EN EL BENI",
       "note": null
     },
     {
       "tool": "OpenWebpage",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3",
-      "title": "Vicepresidencia del Estado",
+      "url": "https://ftierra.org/index.php/derechos-indigenas-y-campesinos/783-indigenas-del-tipnis-se-refugian-en-su-territorio-en-busca-de-fortaleza",
+      "title": "Indígenas del TIPNIS se refugian en su territorio en busca de fortaleza",
       "note": null
     }
   ],

@@ -4589,19 +4589,26 @@ def _sync_scratchpad_to_field_status(scratchpad, field_status):
                     and not _is_unknown_marker(_value)
                 ):
                     continue
+                _requires_source = (
+                    str(_fn).endswith("_source")
+                    or f"{_fn}_source" in field_status
+                )
+                _normalized_fs = _normalize_url_match(_fs)
+                if _requires_source and not _normalized_fs:
+                    # Do not promote unsourced scratchpad findings into canonical state.
+                    continue
                 if str(_fn).endswith("_source"):
-                    normalized_source = _normalize_url_match(_fv) or _normalize_url_match(_fs)
+                    normalized_source = _normalize_url_match(_fv) or _normalized_fs
                     if not normalized_source:
                         continue
                     _entry["value"] = normalized_source
                     _entry["source_url"] = normalized_source
                 else:
                     _entry["value"] = _fv
-                    if _fs:
-                        normalized_source = _normalize_url_match(_fs)
-                        if normalized_source:
-                            _entry["source_url"] = normalized_source
+                    if _normalized_fs:
+                        _entry["source_url"] = _normalized_fs
                 _entry["status"] = _FIELD_STATUS_FOUND
+                _entry["evidence"] = "scratchpad_source_backed"
                 field_status[_fn] = _entry
     return field_status
 
@@ -4618,6 +4625,12 @@ def _sync_summary_facts_to_field_status(summary, field_status):
         summary_facts = (_coerce_memory_summary(summary).get("facts") or [])
 
     for fact in summary_facts:
+        fact_text = str(fact or "").strip()
+        if not fact_text:
+            continue
+        # Never promote facts explicitly flagged as ungrounded.
+        if fact_text.upper().startswith("UNGROUNDED:"):
+            continue
         parsed = _parse_field_extract_entry(fact)
         if not parsed:
             continue
@@ -4625,6 +4638,10 @@ def _sync_summary_facts_to_field_status(summary, field_status):
         if not _is_informative_field_extract(field_name, field_value, source_url):
             continue
         if field_name not in field_status:
+            continue
+        normalized_source = _normalize_url_match(source_url)
+        # Folded summary facts are advisory only unless they retain explicit provenance.
+        if not normalized_source:
             continue
         entry = field_status.get(field_name) or {}
         existing_status = str(entry.get("status") or "").lower()
@@ -4637,18 +4654,18 @@ def _sync_summary_facts_to_field_status(summary, field_status):
             continue
 
         if str(field_name).endswith("_source"):
-            normalized_source = _normalize_url_match(field_value) or _normalize_url_match(source_url)
+            normalized_source = _normalize_url_match(field_value) or normalized_source
             if not normalized_source:
                 continue
             entry["value"] = normalized_source
             entry["source_url"] = normalized_source
         else:
             entry["value"] = field_value
-            normalized_source = _normalize_url_match(source_url)
             if normalized_source:
                 entry["source_url"] = normalized_source
 
         entry["status"] = _FIELD_STATUS_FOUND
+        entry["evidence"] = "summary_fact_source_backed"
         field_status[field_name] = entry
     return field_status
 
@@ -4659,13 +4676,6 @@ _FIELD_STATUS_VALID = {
 }
 _DEFAULT_TOOL_CALL_BUDGET = 20
 _DEFAULT_UNKNOWN_AFTER_SEARCHES = 6
-_BIRTH_PLACE_CONTEXT_MARKERS_FALLBACK = (
-    "birth",
-    "born",
-    "birth place",
-    "birthplace",
-    "place of birth",
-)
 
 
 def _coerce_positive_int(*values: Any, default: int) -> int:
@@ -4679,6 +4689,16 @@ def _coerce_positive_int(*values: Any, default: int) -> int:
         except Exception:
             continue
     return int(default)
+
+
+_LOW_SIGNAL_STREAK_REWRITE_THRESHOLD = max(
+    1,
+    int(_coerce_positive_int(os.getenv("ASA_LOW_SIGNAL_STREAK_REWRITE_THRESHOLD"), default=2)),
+)
+_LOW_SIGNAL_STREAK_STOP_THRESHOLD = max(
+    _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD + 1,
+    int(_coerce_positive_int(os.getenv("ASA_LOW_SIGNAL_STREAK_STOP_THRESHOLD"), default=4)),
+)
 
 
 def _schema_leaf_paths(schema: Any, prefix: str = "") -> list:
@@ -4814,7 +4834,7 @@ _AUTO_OPENWEBPAGE_PRIMARY_SOURCE = _env_flag(
     default=True,
 )
 _AUTO_OPENWEBPAGE_SELECTOR_MODE = (
-    str(os.getenv("ASA_AUTO_OPENWEBPAGE_SELECTOR_MODE", "hybrid") or "hybrid")
+    str(os.getenv("ASA_AUTO_OPENWEBPAGE_SELECTOR_MODE", "heuristic") or "heuristic")
     .strip()
     .lower()
 )
@@ -5354,8 +5374,117 @@ def _source_supports_value(value: Any, source_text: Any) -> bool:
 
 
 def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
-    """No-op placeholder kept for backwards compatibility."""
-    return field_status
+    """Apply generic consistency and normalization rules to canonical field_status."""
+    if not isinstance(field_status, dict):
+        return {}
+
+    normalized_out: Dict[str, Dict[str, Any]] = {}
+    for raw_key, raw_entry in field_status.items():
+        key = str(raw_key or "")
+        if not key:
+            continue
+        entry = dict(raw_entry or {})
+        status = str(entry.get("status") or _FIELD_STATUS_PENDING).lower()
+        if status not in _FIELD_STATUS_VALID:
+            status = _FIELD_STATUS_PENDING
+        descriptor = entry.get("descriptor")
+        value = entry.get("value")
+        source_url = _normalize_url_match(entry.get("source_url"))
+
+        if key.endswith("_source"):
+            normalized_value = _normalize_url_match(value)
+            explicit_unknown = isinstance(value, str) and _is_unknown_marker(value)
+            if status == _FIELD_STATUS_FOUND:
+                if not normalized_value:
+                    status = _FIELD_STATUS_PENDING
+                    value = None
+                    source_url = None
+                else:
+                    value = normalized_value
+                    source_url = normalized_value
+            else:
+                if explicit_unknown:
+                    status = _FIELD_STATUS_UNKNOWN
+                    value = _unknown_value_for_descriptor(descriptor)
+                    source_url = None
+                elif _is_empty_like(value):
+                    value = None
+                    source_url = None
+                elif normalized_value:
+                    # Keep URL-shaped values normalized even when unresolved.
+                    value = normalized_value
+                    source_url = normalized_value
+                else:
+                    value = None
+                    source_url = None
+        else:
+            explicit_unknown = isinstance(value, str) and _is_unknown_marker(value)
+            if status == _FIELD_STATUS_FOUND:
+                coerced = _coerce_found_value_for_descriptor(value, descriptor)
+                if _is_empty_like(coerced):
+                    status = _FIELD_STATUS_PENDING
+                    value = None
+                elif _is_unknown_marker(coerced):
+                    status = _FIELD_STATUS_UNKNOWN
+                    value = _unknown_value_for_descriptor(descriptor)
+                    source_url = None
+                else:
+                    value = coerced
+            elif explicit_unknown:
+                status = _FIELD_STATUS_UNKNOWN
+                value = _unknown_value_for_descriptor(descriptor)
+                source_url = None
+            elif _is_empty_like(value):
+                value = None
+
+        entry["status"] = status
+        entry["value"] = value
+        entry["source_url"] = source_url
+        normalized_out[key] = entry
+
+    # Enforce value/source coupling for sibling "<field>" and "<field>_source".
+    for key, source_entry in list(normalized_out.items()):
+        if not key.endswith("_source"):
+            continue
+        base_key = key[:-7]
+        base_entry = normalized_out.get(base_key)
+        if not isinstance(base_entry, dict):
+            continue
+
+        base_status = str(base_entry.get("status") or _FIELD_STATUS_PENDING).lower()
+        base_value = base_entry.get("value")
+        base_is_resolved = (
+            base_status == _FIELD_STATUS_FOUND
+            and not _is_empty_like(base_value)
+            and not _is_unknown_marker(base_value)
+        )
+
+        source_status = str(source_entry.get("status") or _FIELD_STATUS_PENDING).lower()
+        source_value = _normalize_url_match(source_entry.get("value"))
+        if base_is_resolved:
+            if source_status == _FIELD_STATUS_FOUND and source_value:
+                source_entry["value"] = source_value
+                source_entry["source_url"] = source_value
+            elif source_value and source_status != _FIELD_STATUS_UNKNOWN:
+                source_entry["status"] = _FIELD_STATUS_PENDING
+                source_entry["value"] = source_value
+                source_entry["source_url"] = source_value
+        else:
+            source_entry["status"] = (
+                _FIELD_STATUS_UNKNOWN
+                if base_status == _FIELD_STATUS_UNKNOWN
+                else _FIELD_STATUS_PENDING
+            )
+            source_entry["value"] = (
+                _unknown_value_for_descriptor(source_entry.get("descriptor"))
+                if source_entry["status"] == _FIELD_STATUS_UNKNOWN
+                else None
+            )
+            source_entry["source_url"] = None
+            source_entry["evidence"] = "source_consistency_demotion"
+        normalized_out[key] = source_entry
+
+    return normalized_out
 
 
 def _extract_field_status_updates(
@@ -6058,8 +6187,12 @@ def _promote_terminal_payload_into_field_status(
         normalized_source = _normalize_url_match(source_url)
         if key.endswith("_source"):
             if normalized_source is None:
+                entry["evidence"] = "grounding_blocked_missing_source_url"
+                normalized[key] = entry
                 continue
             if allowed and normalized_source not in allowed:
+                entry["evidence"] = "grounding_blocked_untrusted_source_url"
+                normalized[key] = entry
                 continue
             base_key = key[:-7]
             base_entry = normalized.get(base_key)
@@ -6070,6 +6203,8 @@ def _promote_terminal_payload_into_field_status(
                 and not _is_unknown_marker(base_entry.get("value"))
             )
             if not base_found:
+                entry["evidence"] = "grounding_blocked_unresolved_base_field"
+                normalized[key] = entry
                 continue
         else:
             requires_source = f"{path}_source" in schema_leaf_set
@@ -6077,35 +6212,41 @@ def _promote_terminal_payload_into_field_status(
                 # Enforce provenance only for fields that have an explicit
                 # sibling *_source field in the schema.
                 if normalized_source is None:
+                    entry["evidence"] = "grounding_blocked_missing_source_url"
+                    normalized[key] = entry
                     continue
                 if allowed and normalized_source not in allowed:
+                    entry["evidence"] = "grounding_blocked_untrusted_source_url"
+                    normalized[key] = entry
                     continue
                 source_text = None
                 if isinstance(source_text_index, dict):
                     source_text = source_text_index.get(normalized_source)
                 if not isinstance(source_text, str) or not source_text.strip():
+                    entry["evidence"] = "grounding_blocked_missing_source_text"
+                    normalized[key] = entry
                     continue
                 source_token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(source_text)))
                 if source_token_count >= 8 and not _source_supports_value(value, source_text):
-                    continue
-            if key == "birth_place":
-                source_norm = _normalize_match_text(source_text)
-                has_birth_context = any(
-                    _normalize_match_text(marker) in source_norm
-                    for marker in _BIRTH_PLACE_CONTEXT_MARKERS_FALLBACK
-                )
-                if not has_birth_context:
+                    entry["evidence"] = "grounding_blocked_source_value_mismatch"
+                    normalized[key] = entry
                     continue
             elif normalized_source is not None and allowed and normalized_source not in allowed:
                 # If a field doesn't require provenance but the model supplied one,
                 # keep the value while dropping untrusted source URLs.
                 normalized_source = None
 
+        descriptor = entry.get("descriptor")
+        coerced_value = _coerce_found_value_for_descriptor(value, descriptor)
+        if _is_empty_like(coerced_value) or _is_unknown_marker(coerced_value):
+            entry["evidence"] = "grounding_blocked_unusable_value"
+            normalized[key] = entry
+            continue
         entry["status"] = _FIELD_STATUS_FOUND
         if key.endswith("_source") and normalized_source:
             entry["value"] = normalized_source
         else:
-            entry["value"] = value
+            entry["value"] = coerced_value
         if normalized_source:
             entry["source_url"] = normalized_source
         entry["evidence"] = "terminal_payload_source_backed"
@@ -6159,13 +6300,18 @@ def _sync_field_status_from_terminal_payload(
         if not isinstance(entry, dict):
             continue
 
+        requires_source = f"{path}_source" in schema_leaf_set
         if (
             str(entry.get("status") or "").lower() == _FIELD_STATUS_FOUND
             and not _is_empty_like(entry.get("value"))
             and not _is_unknown_marker(entry.get("value"))
         ):
-            # Keep authoritative, source-validated terminal values.
-            continue
+            # Keep only authoritative terminal values. If schema requires a
+            # sibling source field, protect found values only when source_url
+            # is present and normalized.
+            normalized_source = _normalize_url_match(entry.get("source_url"))
+            if (not requires_source) or bool(normalized_source):
+                continue
 
         present, value = _lookup_path_with_presence(parsed, path)
         if not present:
@@ -6216,7 +6362,6 @@ def _sync_field_status_from_terminal_payload(
 
         # Never promote concrete terminal JSON values for fields that require an
         # explicit *_source sibling unless provenance already passed validation.
-        requires_source = f"{path}_source" in schema_leaf_set
         if requires_source:
             continue
 
@@ -6355,6 +6500,131 @@ def _normalize_budget_state(
         "unknown_after_searches": unknown_after,
         "budget_exhausted": bool(limit > 0 and used >= limit),
     }
+
+
+def _append_limited_unique(items: Any, value: Any, *, max_items: int = 64) -> List[Any]:
+    out = list(items or [])
+    if value is None:
+        return out[: max(1, int(max_items))]
+    if value not in out:
+        out.append(value)
+    if len(out) > max(1, int(max_items)):
+        out = out[-int(max_items):]
+    return out
+
+
+def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
+    existing = diagnostics if isinstance(diagnostics, dict) else {}
+    counters = (
+        "grounding_blocks_count",
+        "source_consistency_fixes_count",
+        "off_target_tool_results_count",
+        "empty_tool_results_count",
+        "retry_or_replan_events",
+    )
+    out: Dict[str, Any] = {}
+    for key in counters:
+        try:
+            out[key] = max(0, int(existing.get(key, 0)))
+        except Exception:
+            out[key] = 0
+    out["grounding_blocked_fields"] = list(existing.get("grounding_blocked_fields") or [])[:64]
+    out["source_consistency_fixes"] = list(existing.get("source_consistency_fixes") or [])[:64]
+    out["retrieval_interventions"] = list(existing.get("retrieval_interventions") or [])[:64]
+    return out
+
+
+def _classify_tool_message_quality(msg: Any) -> Dict[str, bool]:
+    """Classify tool outputs as empty or low-signal/off-target."""
+    if not _message_is_tool(msg):
+        return {"is_empty": False, "is_off_target": False}
+
+    tool_name = _normalize_match_text(_tool_message_name(msg))
+    content = _message_content_from_message(msg)
+    text = _message_content_to_text(content).strip()
+    text_lower = text.lower()
+
+    if not text:
+        return {"is_empty": True, "is_off_target": False}
+
+    if "no good duckduckgo search result was found" in text_lower:
+        return {"is_empty": True, "is_off_target": True}
+
+    if tool_name != "search":
+        return {"is_empty": False, "is_off_target": False}
+
+    blocks = _parse_source_blocks(text, max_blocks=64)
+    if not blocks:
+        # Search returned no parseable result blocks.
+        return {"is_empty": True, "is_off_target": False}
+
+    urls = []
+    for block in blocks:
+        normalized_url = _normalize_url_match(block.get("url"))
+        if normalized_url:
+            urls.append(normalized_url)
+    if not urls:
+        return {"is_empty": False, "is_off_target": True}
+
+    low_signal_only = True
+    for url in urls:
+        try:
+            host = str(urlparse(url).hostname or "").lower()
+        except Exception:
+            host = ""
+        host_low_signal = any(fragment in host for fragment in _LOW_SIGNAL_HOST_FRAGMENTS)
+        primary_score = _score_primary_source_url(url)
+        if not host_low_signal and primary_score >= 0:
+            low_signal_only = False
+            break
+
+    return {"is_empty": False, "is_off_target": bool(low_signal_only)}
+
+
+def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    blocked_fields: List[str] = []
+    consistency_fixes: List[str] = []
+    for key, entry in (normalized or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        evidence = str(entry.get("evidence") or "").strip().lower()
+        if evidence.startswith("grounding_blocked"):
+            blocked_fields.append(str(key))
+        if "source_consistency" in evidence:
+            consistency_fixes.append(str(key))
+    return {
+        "grounding_blocks_count": len(blocked_fields),
+        "grounding_blocked_fields": blocked_fields[:64],
+        "source_consistency_fixes_count": len(consistency_fixes),
+        "source_consistency_fixes": consistency_fixes[:64],
+    }
+
+
+def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict[str, Any]:
+    out = _normalize_diagnostics(diagnostics)
+    field_diag = _collect_field_status_diagnostics(field_status)
+    out["grounding_blocks_count"] = int(max(
+        out.get("grounding_blocks_count", 0),
+        field_diag.get("grounding_blocks_count", 0),
+    ))
+    out["source_consistency_fixes_count"] = int(max(
+        out.get("source_consistency_fixes_count", 0),
+        field_diag.get("source_consistency_fixes_count", 0),
+    ))
+    for blocked_field in field_diag.get("grounding_blocked_fields", []):
+        out["grounding_blocked_fields"] = _append_limited_unique(
+            out.get("grounding_blocked_fields"),
+            blocked_field,
+            max_items=64,
+        )
+    for fix_field in field_diag.get("source_consistency_fixes", []):
+        out["source_consistency_fixes"] = _append_limited_unique(
+            out.get("source_consistency_fixes"),
+            fix_field,
+            max_items=64,
+        )
+    return out
 
 
 def _format_field_status_for_prompt(field_status: Any, max_entries: int = 80) -> str:
@@ -6540,6 +6810,20 @@ def _derive_confidence_from_field_status(normalized_field_status: Dict[str, Dict
     return "Low"
 
 
+def _normalize_confidence_label(value: Any) -> Optional[str]:
+    """Canonicalize confidence values into Low/Medium/High when possible."""
+    if value is None:
+        return None
+    text = str(value).strip().lower()
+    if text in {"low", "l"}:
+        return "Low"
+    if text in {"medium", "med", "m"}:
+        return "Medium"
+    if text in {"high", "h"}:
+        return "High"
+    return None
+
+
 def _derive_justification_from_field_status(normalized_field_status: Dict[str, Dict[str, Any]]) -> str:
     found_fields = []
     unknown_fields = []
@@ -6571,8 +6855,10 @@ def _apply_canonical_payload_derivations(
 
     if "confidence" in payload:
         confidence = payload.get("confidence")
-        confidence_valid = str(confidence).strip() in {"Low", "Medium", "High"}
-        if _is_empty_like(confidence) or _is_unknown_marker(confidence) or not confidence_valid:
+        normalized_confidence = _normalize_confidence_label(confidence)
+        if normalized_confidence is not None:
+            payload["confidence"] = normalized_confidence
+        else:
             payload["confidence"] = _derive_confidence_from_field_status(normalized_field_status)
 
     if "justification" in payload:
@@ -6687,15 +6973,21 @@ def _canonical_payload_from_field_status(expected_schema: Any, field_status: Any
                 if isinstance(base_source, str) and base_source.startswith("http"):
                     source_url = base_source
 
-            if source_url:
-                payload_node[key] = source_url
-                continue
-
             base_found = (
                 isinstance(base_entry, dict)
                 and str(base_entry.get("status") or "").lower() == _FIELD_STATUS_FOUND
                 and not _is_empty_like(base_entry.get("value"))
+                and not _is_unknown_marker(base_entry.get("value"))
             )
+
+            if source_url:
+                if base_found:
+                    payload_node[key] = source_url
+                    continue
+                # Never emit source URLs for unresolved/unknown paired values.
+                payload_node[key] = _unknown_value_for_descriptor(source_descriptor)
+                continue
+
             payload_node[key] = _unknown_value_for_descriptor(source_descriptor)
             if base_found:
                 payload_node[base_key] = _unknown_value_for_descriptor(schema_node.get(base_key))
@@ -6931,11 +7223,11 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
     """Parse LLM plan response into a structured plan dict."""
     import json as _json
     fallback = {
-        "goal": "Complete the research task",
+        "goal": "Complete the task",
         "steps": [{
             "id": 1,
-            "description": "Research and answer the query",
-            "completion_criteria": "Final answer cites concrete evidence from tool output.",
+            "description": "Analyze task requirements and produce the requested output",
+            "completion_criteria": "Final output satisfies the requested format and cites supporting evidence when applicable.",
             "status": "pending",
             "findings": "",
         }],
@@ -7006,35 +7298,35 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
             })
     if not normalized_steps:
         return fallback
-    # Auto-expand a single-step plan into a 4-step research template
-    if len(normalized_steps) == 1:
-        single_desc = normalized_steps[0]["description"]
+    # Ensure the plan is always actionable and multi-stage (task-agnostic template).
+    if len(normalized_steps) < 4:
+        starter_desc = normalized_steps[0]["description"] if normalized_steps else "Clarify task objective"
         normalized_steps = [
             {
                 "id": 1,
-                "description": f"Initial search: {single_desc}",
-                "completion_criteria": "At least 2 search queries executed and key facts identified.",
+                "description": f"Clarify scope and constraints: {starter_desc}",
+                "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
                 "status": "pending",
                 "findings": "",
             },
             {
                 "id": 2,
-                "description": "Deep-dive into most promising sources for missing fields",
-                "completion_criteria": "Opened and read at least 1 detailed source page.",
+                "description": "Collect high-signal evidence from relevant tools/sources",
+                "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
                 "status": "pending",
                 "findings": "",
             },
             {
                 "id": 3,
-                "description": "Cross-reference and verify facts across multiple sources",
-                "completion_criteria": "Key facts confirmed or flagged as uncertain.",
+                "description": "Validate consistency and resolve conflicts/gaps",
+                "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
                 "status": "pending",
                 "findings": "",
             },
             {
                 "id": 4,
-                "description": "Compile final answer with all fields and source URLs",
-                "completion_criteria": "All schema fields populated with values or 'Unknown', sources cited.",
+                "description": "Produce final structured output with traceable justification",
+                "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
                 "status": "pending",
                 "findings": "",
             },
@@ -7081,7 +7373,7 @@ def _maybe_generate_plan(state: dict, model: Any) -> dict:
         )
 
     plan_sys = SystemMessage(content=(
-        "You are a planning assistant. Given the user's research task, "
+        "You are a planning assistant. Given the user's task, "
         "create a structured execution checklist with 4-8 concrete steps.\n\n"
         "Output ONLY valid JSON. NO markdown fences, NO prose, NO explanation — "
         "just the raw JSON object.\n"
@@ -7972,6 +8264,7 @@ class MemoryFoldingAgentState(TypedDict):
     scratchpad: Annotated[list, add_to_list]
     field_status: Annotated[dict, merge_dicts]
     budget_state: Annotated[dict, merge_dicts]
+    diagnostics: Annotated[dict, merge_dicts]
     search_budget_limit: Optional[int]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
@@ -8495,11 +8788,10 @@ def _is_critical_recursion_step(state: Any, remaining: Optional[int]) -> bool:
     )
     if signal_budget >= 30:
         return True
-    message_count = len(state.get("messages") or [])
     if remaining is None:
         return False
     cutoff = _finalization_cutoff(state)
-    return remaining <= max(1, cutoff)
+    return remaining <= max(1, cutoff - 1)
 
 
 def _can_end_on_recursion_stop(state: Any, messages: list, remaining: Optional[int]) -> bool:
@@ -8584,7 +8876,7 @@ def _collect_premature_nudge_fields(state: Any) -> List[str]:
     if state.get("finalize_on_all_fields_resolved"):
         return []
     remaining = remaining_steps_value(state)
-    if remaining is not None and remaining <= 0:
+    if remaining is not None and remaining <= 1:
         return []
 
     field_status = _state_field_status(state)
@@ -8660,6 +8952,7 @@ def _create_tool_node_with_scratchpad(
         expected_schema = _state_expected_schema(state)
         field_status = _state_field_status(state)
         prior_budget = _state_budget(state)
+        diagnostics = _normalize_diagnostics(state.get("diagnostics"))
         unknown_after = prior_budget.get("unknown_after_searches", _DEFAULT_UNKNOWN_AFTER_SEARCHES)
 
         try:
@@ -8732,13 +9025,50 @@ def _create_tool_node_with_scratchpad(
         budget_state["budget_exhausted"] = bool(
             int(budget_state["tool_calls_used"]) >= int(budget_state["tool_calls_limit"])
         )
+
+        quality_flags = [_classify_tool_message_quality(m) for m in tool_messages if _message_is_tool(m)]
+        empty_hits = sum(1 for q in quality_flags if q.get("is_empty"))
+        off_target_hits = sum(1 for q in quality_flags if q.get("is_off_target"))
+        diagnostics["empty_tool_results_count"] = int(diagnostics.get("empty_tool_results_count", 0)) + int(empty_hits)
+        diagnostics["off_target_tool_results_count"] = int(diagnostics.get("off_target_tool_results_count", 0)) + int(off_target_hits)
+
+        prior_streak = int(prior_budget.get("no_signal_streak", 0) or 0)
+        no_signal_delta = int(empty_hits) + int(off_target_hits)
+        if int(search_calls_delta) > 0:
+            streak = prior_streak + 1 if no_signal_delta > 0 else 0
+        else:
+            streak = prior_streak
+        budget_state["no_signal_streak"] = max(0, int(streak))
+        budget_state["replan_requested"] = bool(streak >= _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD)
+        if streak >= _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD and prior_streak < _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD:
+            diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0)) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                f"low_signal_streak_rewrite:{streak}",
+                max_items=64,
+            )
+        if streak >= _LOW_SIGNAL_STREAK_STOP_THRESHOLD and prior_streak < _LOW_SIGNAL_STREAK_STOP_THRESHOLD:
+            diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0)) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                f"low_signal_streak_stop:{streak}",
+                max_items=64,
+            )
+        if streak >= _LOW_SIGNAL_STREAK_STOP_THRESHOLD:
+            # Generic guard against repeatedly unproductive retrieval loops.
+            budget_state["budget_exhausted"] = True
+            budget_state["tool_calls_remaining"] = 0
+
         progress = _field_status_progress(field_status)
         budget_state.update(progress)
+
+        diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         if scratchpad_entries:
             result["scratchpad"] = scratchpad_entries
         result["field_status"] = field_status
         result["budget_state"] = budget_state
+        result["diagnostics"] = diagnostics
         result["completion_gate"] = _schema_outcome_gate_report(
             state,
             expected_schema=expected_schema,
@@ -9092,6 +9422,7 @@ def create_memory_folding_agent(
             unknown_after_searches=state.get("unknown_after_searches"),
         )
         budget_state.update(_field_status_progress(field_status))
+        diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
 
         # Detect if a memory fold just occurred so we can nudge the agent to continue.
         _fold_stats = state.get("fold_stats") or {}
@@ -9150,6 +9481,19 @@ def create_memory_folding_agent(
                 plan=plan,
             ))
             full_messages = _build_full_messages(system_msg, messages, summary, archive)
+            if bool(budget_state.get("replan_requested")):
+                unresolved_fields = _collect_resolvable_unknown_fields(field_status)
+                field_hint = ", ".join(unresolved_fields[:5]) if unresolved_fields else "remaining fields"
+                full_messages.append(
+                    HumanMessage(
+                        content=(
+                            "Retrieval quality has been low for multiple rounds. "
+                            "Reformulate search strategy now: tighten query terms, reduce ambiguity, "
+                            "and prioritize high-signal primary sources. "
+                            f"Focus first on: {field_hint}."
+                        )
+                    )
+                )
             required_tool_plan = _extract_required_tool_plan(messages)
             required_tool_calls = int(required_tool_plan.get("required_calls", 0) or 0)
             completed_tool_calls = _count_completed_user_tool_calls(
@@ -9190,7 +9534,7 @@ def create_memory_folding_agent(
                 expected_schema,
                 field_status=field_status,
                 schema_source=expected_schema_source,
-                context="agent",
+                context="finalize",
                 messages=messages,
                 debug=debug,
             )
@@ -9224,6 +9568,7 @@ def create_memory_folding_agent(
                 debug=debug,
             )
             budget_state.update(_field_status_progress(field_status))
+            diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
         completion_gate = _schema_outcome_gate_report(
@@ -9238,6 +9583,7 @@ def create_memory_folding_agent(
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
+            "diagnostics": diagnostics,
             "completion_gate": completion_gate,
             "om_config": state.get("om_config"),
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
@@ -9296,6 +9642,7 @@ def create_memory_folding_agent(
             unknown_after_searches=state.get("unknown_after_searches"),
         )
         budget_state.update(_field_status_progress(field_status))
+        diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
 
         response = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
         if response is None:
@@ -9372,6 +9719,7 @@ def create_memory_folding_agent(
             debug=debug,
         )
         budget_state.update(_field_status_progress(field_status))
+        diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
         completion_gate = _schema_outcome_gate_report(
@@ -9385,6 +9733,7 @@ def create_memory_folding_agent(
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
+            "diagnostics": diagnostics,
             "completion_gate": completion_gate,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
@@ -9489,7 +9838,7 @@ def create_memory_folding_agent(
         if (
             summarize_recursion_marker is None
             and remaining_before_fold is not None
-            and remaining_before_fold <= 1
+            and remaining_before_fold <= FINALIZE_WHEN_REMAINING_STEPS_LTE
         ):
             summarize_recursion_marker = "recursion_limit"
 
@@ -9954,7 +10303,7 @@ def create_memory_folding_agent(
                 constraints_text = constraints_text[:max_chars].rstrip() + "\n...[truncated]"
 
             return (
-                "\n\nTASK CONTEXT FROM INITIAL USER REQUEST:\n"
+                "\n\nTASK CONSTRAINTS FROM INITIAL USER REQUEST:\n"
                 + constraints_text
                 + "\nUse this context to preserve scope while merging memory facts.\n"
             )
@@ -10333,8 +10682,10 @@ def create_memory_folding_agent(
         if base_result == "summarize" and _state_om_enabled(state):
             return "observe"
         if base_result == "end":
+            if _can_end_on_recursion_stop(state, state.get("messages", []), remaining_steps_value(state)):
+                return "end"
             unresolved_fields = _collect_premature_nudge_fields(state)
-            if unresolved_fields:
+            if bool(tools) and unresolved_fields:
                 if debug:
                     logger.info(
                         "Nudging agent: %s unresolved fields, nudge %s/%s",
@@ -10343,6 +10694,11 @@ def create_memory_folding_agent(
                         _MAX_PREMATURE_END_NUDGES,
                     )
                 return "nudge"
+            if (
+                _state_expected_schema(state) is not None
+                and _has_resolvable_unknown_fields(_state_field_status(state))
+            ):
+                return "finalize"
         return base_result
 
     def nudge_node(state: MemoryFoldingAgentState) -> dict:
@@ -10536,6 +10892,7 @@ class StandardAgentState(TypedDict):
     scratchpad: Annotated[list, add_to_list]
     field_status: Annotated[dict, merge_dicts]
     budget_state: Annotated[dict, merge_dicts]
+    diagnostics: Annotated[dict, merge_dicts]
     search_budget_limit: Optional[int]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
@@ -10605,6 +10962,7 @@ def create_standard_agent(
             unknown_after_searches=state.get("unknown_after_searches"),
         )
         budget_state.update(_field_status_progress(field_status))
+        diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
 
         if debug:
             logger.info(
@@ -10644,6 +11002,19 @@ def create_standard_agent(
                 plan=plan,
             ))
             full_messages = [system_msg] + list(messages)
+            if bool(budget_state.get("replan_requested")):
+                unresolved_fields = _collect_resolvable_unknown_fields(field_status)
+                field_hint = ", ".join(unresolved_fields[:5]) if unresolved_fields else "remaining fields"
+                full_messages.append(
+                    HumanMessage(
+                        content=(
+                            "Retrieval quality has been low for multiple rounds. "
+                            "Reformulate search strategy now: tighten query terms, reduce ambiguity, "
+                            "and prioritize high-signal primary sources. "
+                            f"Focus first on: {field_hint}."
+                        )
+                    )
+                )
             response, invoke_event = _invoke_model_with_fallback(
                 lambda: model_with_tools.invoke(full_messages),
                 expected_schema=expected_schema,
@@ -10663,7 +11034,7 @@ def create_standard_agent(
                 expected_schema,
                 field_status=field_status,
                 schema_source=expected_schema_source,
-                context="agent",
+                context="finalize",
                 messages=messages,
                 debug=debug,
             )
@@ -10695,6 +11066,7 @@ def create_standard_agent(
                 debug=debug,
             )
             budget_state.update(_field_status_progress(field_status))
+            diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
         completion_gate = _schema_outcome_gate_report(
@@ -10709,6 +11081,7 @@ def create_standard_agent(
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
+            "diagnostics": diagnostics,
             "completion_gate": completion_gate,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
@@ -10760,6 +11133,7 @@ def create_standard_agent(
             unknown_after_searches=state.get("unknown_after_searches"),
         )
         budget_state.update(_field_status_progress(field_status))
+        diagnostics = _normalize_diagnostics(state.get("diagnostics"))
         response = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
         if response is None:
             # Build tool output digest for context when re-invoking
@@ -10830,6 +11204,7 @@ def create_standard_agent(
             debug=debug,
         )
         budget_state.update(_field_status_progress(field_status))
+        diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
         _usage = _token_usage_dict_from_message(response)
         completion_gate = _schema_outcome_gate_report(
             state,
@@ -10842,6 +11217,7 @@ def create_standard_agent(
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
+            "diagnostics": diagnostics,
             "completion_gate": completion_gate,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
@@ -10872,8 +11248,10 @@ def create_standard_agent(
     def should_continue(state: StandardAgentState) -> str:
         base_result = _route_after_agent_step(state)
         if base_result == "end":
+            if _can_end_on_recursion_stop(state, state.get("messages", []), remaining_steps_value(state)):
+                return "end"
             unresolved_fields = _collect_premature_nudge_fields(state)
-            if unresolved_fields:
+            if bool(tools) and unresolved_fields:
                 if debug:
                     logger.info(
                         "Nudging agent: %s unresolved fields, nudge %s/%s",
@@ -10882,6 +11260,11 @@ def create_standard_agent(
                         _MAX_PREMATURE_END_NUDGES,
                     )
                 return "nudge"
+            if (
+                _state_expected_schema(state) is not None
+                and _has_resolvable_unknown_fields(_state_field_status(state))
+            ):
+                return "finalize"
         return base_result
 
     def nudge_node(state: StandardAgentState) -> dict:

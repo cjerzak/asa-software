@@ -10,11 +10,11 @@
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
-  "birth_year": "Unknown",
-  "birth_year_source": null,
+  "birth_year": 1982,
+  "birth_year_source": "https://vicepresidencia.gob.bo/spip.php?id_gestion=1&id_pestana=2&page=parlamentarios",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": "Source-backed searches resolved 1 fields (including confidence), while 17 fields remain unknown due to limited verifiable evidence."
+  "justification": "While birth year was confirmed through an official government parliamentary profile, information regarding her specific educational background and occupation prior to entering the Assembly is not documented in available official or journalistic sources. She is identified as an indigenous leader from the TIPNIS region."
 }

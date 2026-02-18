@@ -792,6 +792,7 @@ summary.asa_agent <- function(object, ...) {
 #' @param stop_reason Terminal stop reason from agent state (when available).
 #' @param budget_state Tool-call budget state snapshot from agent state.
 #' @param field_status Per-field extraction status map from agent state.
+#' @param diagnostics Runtime diagnostics counters and intervention notes.
 #' @param json_repair JSON repair/fallback events emitted during execution.
 #' @param completion_gate Deterministic outcome-verification report from agent state.
 #' @param tokens_used Total token count for this invocation (integer, or NA).
@@ -807,6 +808,7 @@ asa_response <- function(message, status_code, raw_response, trace,
                          trace_json = "", fold_stats = list(),
                          thread_id = NULL, stop_reason = NULL,
                          budget_state = list(), field_status = list(),
+                         diagnostics = list(),
                          json_repair = list(),
                          completion_gate = list(),
                          tokens_used = NA_integer_,
@@ -827,6 +829,7 @@ asa_response <- function(message, status_code, raw_response, trace,
       stop_reason = stop_reason,
       budget_state = budget_state,
       field_status = field_status,
+      diagnostics = diagnostics,
       json_repair = json_repair,
       completion_gate = completion_gate,
       tokens_used = tokens_used,

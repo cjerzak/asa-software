@@ -280,3 +280,103 @@ test_that("canonical terminal payload demotions are reflected in field_status", 
   expect_equal(as.character(synced_r$birth_place$value), "Unknown")
   expect_false(identical(as.character(synced_r$birth_place_source$status), "found"))
 })
+
+test_that("scratchpad promotions require provenance when schema has sibling source field", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  field_status <- list(
+    prior_occupation = list(
+      status = "pending",
+      value = NULL,
+      source_url = NULL,
+      descriptor = "string|Unknown"
+    ),
+    prior_occupation_source = list(
+      status = "pending",
+      value = NULL,
+      source_url = NULL,
+      descriptor = "string|null"
+    )
+  )
+
+  sync_fn <- reticulate::py_get_attr(prod, "_sync_scratchpad_to_field_status")
+
+  # Unsourced finding must not be promoted.
+  unsourced <- sync_fn(
+    scratchpad = list(list(finding = "prior_occupation = teacher", category = "fact")),
+    field_status = field_status
+  )
+  unsourced_r <- reticulate::py_to_r(unsourced)
+  expect_equal(as.character(unsourced_r$prior_occupation$status), "pending")
+
+  # Source-backed finding should promote.
+  sourced <- sync_fn(
+    scratchpad = list(list(
+      finding = "prior_occupation = teacher (source: https://example.com/profile)",
+      category = "fact"
+    )),
+    field_status = field_status
+  )
+  sourced_r <- reticulate::py_to_r(sourced)
+  expect_equal(as.character(sourced_r$prior_occupation$status), "found")
+  expect_equal(as.character(sourced_r$prior_occupation$value), "teacher")
+  expect_equal(as.character(sourced_r$prior_occupation$source_url), "https://example.com/profile")
+})
+
+test_that("summary fact promotions ignore ungrounded entries and require source URLs", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  field_status <- list(
+    birth_year = list(
+      status = "pending",
+      value = NULL,
+      source_url = NULL,
+      descriptor = "integer|null|Unknown"
+    )
+  )
+
+  sync_fn <- reticulate::py_get_attr(prod, "_sync_summary_facts_to_field_status")
+
+  blocked <- sync_fn(
+    summary = list(facts = list(
+      "UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://example.com)",
+      "FIELD_EXTRACT: birth_year = 1982"
+    )),
+    field_status = field_status
+  )
+  blocked_r <- reticulate::py_to_r(blocked)
+  expect_equal(as.character(blocked_r$birth_year$status), "pending")
+
+  promoted <- sync_fn(
+    summary = list(facts = list(
+      "FIELD_EXTRACT: birth_year = 1982 (source: https://example.com/profile)"
+    )),
+    field_status = field_status
+  )
+  promoted_r <- reticulate::py_to_r(promoted)
+  expect_equal(as.character(promoted_r$birth_year$status), "found")
+  expect_equal(as.character(promoted_r$birth_year$value), "1982")
+  expect_equal(as.character(promoted_r$birth_year$source_url), "https://example.com/profile")
+})
+
+test_that("canonical payload derivations normalize confidence casing", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  deriv_fn <- reticulate::py_get_attr(prod, "_apply_canonical_payload_derivations")
+  payload <- list(confidence = "low", justification = "ok")
+  normalized <- deriv_fn(payload, list())
+  normalized_r <- reticulate::py_to_r(normalized)
+  expect_equal(as.character(normalized_r$confidence), "Low")
+})

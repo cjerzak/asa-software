@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 4.8943,
+  "elapsed_time": 6.4339,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,15 +22,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|Unknown"
     },
     "education_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|null"
     },
     "prior_occupation": {
@@ -38,7 +38,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|Unknown"
     },
     "class_background": {
@@ -46,15 +46,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
       "status": "unknown",
       "value": null,
       "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "evidence": "source_consistency_demotion",
+      "attempts": 9,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,15 +62,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|null"
     },
     "birth_place": {
@@ -78,31 +78,31 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
       "status": "unknown",
       "value": null,
       "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "evidence": "source_consistency_demotion",
+      "attempts": 9,
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "status": "found",
+      "value": 1982,
+      "source_url": "https://vicepresidencia.gob.bo/spip.php?id_gestion=1&id_pestana=2&page=parlamentarios",
+      "evidence": "scratchpad_source_backed",
+      "attempts": 7,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "unknown",
-      "value": null,
-      "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "status": "found",
+      "value": "https://vicepresidencia.gob.bo/spip.php?id_gestion=1&id_pestana=2&page=parlamentarios",
+      "source_url": "https://vicepresidencia.gob.bo/spip.php?id_gestion=1&id_pestana=2&page=parlamentarios",
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 9,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,15 +118,15 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "string|null"
     },
     "confidence": {
@@ -134,15 +134,15 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 3,
+      "attempts": 9,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
-      "status": "pending",
-      "value": null,
+      "status": "found",
+      "value": "While birth year was confirmed through an official government parliamentary profile, information regarding her specific educational background and occupation prior to entering the Assembly is not documented in available official or journalistic sources. She is identified as an indigenous leader from the TIPNIS region.",
       "source_url": null,
-      "evidence": null,
-      "attempts": 3,
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 9,
       "descriptor": "string"
     }
   }

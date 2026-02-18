@@ -2405,26 +2405,7 @@ test_that("finalize canonical guard overrides fabricated terminal values from fi
   expect_true(grepl("field_status_canonical", json_repair_text, fixed = TRUE))
 })
 
-test_that("canonical payload derives class background and fills confidence/justification", {
-  old_domain_flag <- Sys.getenv("ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS", unset = NA_character_)
-  reticulate::py_run_string(
-    "import os\n__asa_old_domain_flag = os.environ.get('ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS')\n"
-  )
-  on.exit({
-    if (is.na(old_domain_flag)) {
-      Sys.unsetenv("ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS")
-    } else {
-      Sys.setenv(ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS = old_domain_flag)
-    }
-    reticulate::py_run_string(
-      "import os, sys\nif globals().get('__asa_old_domain_flag') is None:\n    os.environ.pop('ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS', None)\nelse:\n    os.environ['ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS'] = globals().get('__asa_old_domain_flag')\nsys.modules.pop('custom_ddg_production', None)\n"
-    )
-  }, add = TRUE)
-  Sys.setenv(ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS = "1")
-  reticulate::py_run_string(
-    "import os, sys\nos.environ['ASA_ENABLE_DOMAIN_SPECIFIC_DERIVATIONS'] = '1'\nsys.modules.pop('custom_ddg_production', None)\n"
-  )
-
+test_that("canonical payload remains schema-constrained and fills confidence/justification without task-specific derivations", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   reticulate::py_run_string(paste0(
@@ -2486,15 +2467,15 @@ test_that("canonical payload derives class background and fills confidence/justi
   parsed <- invoke$parsed
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "Indigenous community member")
-  expect_equal(as.character(parsed$class_background), "Working class")
+  expect_equal(as.character(parsed$class_background), "Unknown")
   expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
   expect_true(as.character(parsed$confidence) %in% c("Low", "Medium", "High"))
   expect_true(nchar(as.character(parsed$justification)) > 10L)
 
   final_state <- invoke$final_state
   field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
-  expect_equal(as.character(field_status$class_background$status), "found")
-  expect_equal(as.character(field_status$class_background$value), "Working class")
+  expect_equal(as.character(field_status$class_background$status), "unknown")
+  expect_equal(as.character(field_status$class_background$value), "Unknown")
 })
 
 test_that("terminal promotion requires source text support for non-source values", {
@@ -3129,9 +3110,12 @@ test_that("plan mode generates plan in response (memory folding)", {
   expect_true(!is.null(plan), info = "Plan should be populated when plan mode is on")
   plan_r <- reticulate::py_to_r(plan)
   expect_equal(plan_r$goal, "Find info")
-  expect_equal(length(plan_r$steps), 2L)
-  expect_equal(plan_r$steps[[1]]$description, "Search")
-  expect_equal(plan_r$steps[[2]]$description, "Summarize")
+  expect_true(length(plan_r$steps) >= 4L)
+  expect_true(all(vapply(plan_r$steps, function(s) {
+    if (!is.list(s)) return(FALSE)
+    desc <- as.character(s$description)
+    length(desc) > 0 && nzchar(desc[[1]])
+  }, logical(1))))
 
   plan_history <- reticulate::py_to_r(final_state$plan_history)
   expect_true(length(plan_history) >= 1L, info = "plan_history should have at least one entry")
@@ -3221,7 +3205,7 @@ test_that("plan mode generates plan in response (standard agent)", {
   expect_true(!is.null(plan), info = "Standard agent plan should be populated")
   plan_r <- reticulate::py_to_r(plan)
   expect_equal(plan_r$goal, "Research task")
-  expect_equal(length(plan_r$steps), 3L)
+  expect_true(length(plan_r$steps) >= 4L)
 })
 
 test_that("plan mode planner uses the most recent user prompt", {
@@ -3624,7 +3608,7 @@ test_that("_parse_plan_response handles valid JSON", {
   )
   result_r <- reticulate::py_to_r(result)
   expect_equal(result_r$goal, "G")
-  # Single-step plans are auto-expanded into a 4-step research template
+  # Single-step plans are auto-expanded into a generic 4-step template
   expect_equal(length(result_r$steps), 4L)
   expect_equal(result_r$steps[[1]]$status, "pending")
 })

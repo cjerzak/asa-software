@@ -144,6 +144,7 @@
       stop_reason = NA_character_,
       budget_state = list(),
       field_status = list(),
+      diagnostics = list(),
       json_repair = list(),
       completion_gate = list(),
       tokens_used = NA_integer_,
@@ -166,6 +167,7 @@
   stop_reason <- .extract_stop_reason(raw_response)
   budget_state_out <- .coerce_py_list(raw_response$budget_state)
   field_status_out <- .coerce_py_list(raw_response$field_status)
+  diagnostics_out <- .coerce_py_list(raw_response$diagnostics)
   json_repair <- .coerce_py_list(raw_response$json_repair)
   completion_gate <- .coerce_py_list(raw_response$completion_gate)
 
@@ -217,6 +219,7 @@
     stop_reason = stop_reason,
     budget_state = budget_state_out,
     field_status = field_status_out,
+    diagnostics = diagnostics_out,
     json_repair = json_repair,
     completion_gate = completion_gate,
     tokens_used = tokens_used,

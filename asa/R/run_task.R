@@ -79,6 +79,7 @@
 #'     \item parsing_status: Validation result (if expected_fields provided)
 #'     \item execution: Operational metadata (thread_id, stop_reason, status_code,
 #'       tool budget counters, fold_count, completion_gate, verification_status)
+#'       plus diagnostics counters from runtime quality guards.
 #'     \item action_ascii: High-level ASCII action map derived from the trace
 #'       (also available at \code{execution$action_ascii})
 #'     \item action_steps: Parsed high-level action steps (also available at
@@ -453,6 +454,7 @@ run_task <- function(prompt,
     fold_stats = response$fold_stats %||% list(),
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
+    diagnostics = response$diagnostics %||% list(),
     json_repair = response$json_repair %||% list(),
     completion_gate = completion_gate,
     verification_status = verification_status,
@@ -521,6 +523,7 @@ run_task <- function(prompt,
     completion_gate = list(),
     verification_status = NA_character_,
     token_stats = list(),
+    diagnostics = list(),
     plan = list(),
     plan_history = list(),
     om_stats = list(),
