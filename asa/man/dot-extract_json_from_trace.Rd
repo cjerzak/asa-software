@@ -2,19 +2,22 @@
 % Please edit documentation in R/process_outputs.R
 \name{.extract_json_from_trace}
 \alias{.extract_json_from_trace}
-\title{Extract JSON from Agent Traces}
+\title{Extract JSON from trace, with optional heuristic trace mining}
 \usage{
-.extract_json_from_trace(text)
+.extract_json_from_trace(text, allow_trace_mining = NULL)
 }
 \arguments{
 \item{text}{Raw trace text}
+
+\item{allow_trace_mining}{Optional logical override. When NULL, uses
+`getOption("asa.enable_trace_field_mining", FALSE)` (or corresponding env).}
 }
 \value{
 Parsed JSON data as a list, or NULL if no JSON found
 }
 \description{
-Extracts JSON data from raw agent traces. First tries the standard approach
-(last AIMessage JSON), then if the result has >60% Unknown fields, enhances
-it by mining ToolMessage contents for biographical data.
+By default this returns canonical terminal JSON extracted from the trace.
+Heuristic mining of tool messages is opt-in via option/env var or explicit
+`allow_trace_mining = TRUE`.
 }
 \keyword{internal}

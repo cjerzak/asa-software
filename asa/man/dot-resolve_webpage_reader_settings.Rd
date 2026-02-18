@@ -22,6 +22,16 @@
   webpage_cache_enabled = NULL,
   webpage_cache_max_entries = NULL,
   webpage_cache_max_text_chars = NULL,
+  webpage_blocked_cache_ttl_sec = NULL,
+  webpage_blocked_cache_max_entries = NULL,
+  webpage_blocked_probe_bytes = NULL,
+  webpage_blocked_detect_on_200 = NULL,
+  webpage_blocked_body_scan_bytes = NULL,
+  webpage_pdf_enabled = NULL,
+  webpage_pdf_timeout = NULL,
+  webpage_pdf_max_bytes = NULL,
+  webpage_pdf_max_pages = NULL,
+  webpage_pdf_max_text_chars = NULL,
   webpage_user_agent = NULL
 )
 }
@@ -69,6 +79,28 @@ default.}
 
 \item{webpage_cache_max_text_chars}{Max extracted text chars to cache per page,
 or NULL.}
+
+\item{webpage_blocked_cache_ttl_sec}{TTL in seconds for blocked URL cache.}
+
+\item{webpage_blocked_cache_max_entries}{Max blocked cache entries.}
+
+\item{webpage_blocked_probe_bytes}{Max bytes inspected for blocked-marker detection.}
+
+\item{webpage_blocked_detect_on_200}{Detect anti-bot interstitial pages served
+with HTTP 200 and classify them as blocked.}
+
+\item{webpage_blocked_body_scan_bytes}{Max bytes scanned for blocked markers on
+HTTP 200 pages.}
+
+\item{webpage_pdf_enabled}{Enable PDF extraction via pdftotext.}
+
+\item{webpage_pdf_timeout}{Timeout in seconds for pdftotext.}
+
+\item{webpage_pdf_max_bytes}{Max bytes to download per PDF.}
+
+\item{webpage_pdf_max_pages}{Max pages to extract from PDF.}
+
+\item{webpage_pdf_max_text_chars}{Max PDF text chars retained before ranking.}
 
 \item{webpage_user_agent}{User-Agent string for webpage fetches, or NULL.}
 }

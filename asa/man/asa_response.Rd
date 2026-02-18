@@ -17,7 +17,9 @@ asa_response(
   stop_reason = NULL,
   budget_state = list(),
   field_status = list(),
+  diagnostics = list(),
   json_repair = list(),
+  completion_gate = list(),
   tokens_used = NA_integer_,
   input_tokens = NA_integer_,
   output_tokens = NA_integer_,
@@ -57,7 +59,11 @@ summary growth chars), \code{fold_summary_total_chars},
 
 \item{field_status}{Per-field extraction status map from agent state.}
 
+\item{diagnostics}{Runtime diagnostics counters and intervention notes.}
+
 \item{json_repair}{JSON repair/fallback events emitted during execution.}
+
+\item{completion_gate}{Deterministic outcome-verification report from agent state.}
 
 \item{tokens_used}{Total token count for this invocation (integer, or NA).}
 

@@ -122,7 +122,8 @@ An \code{asa_result} object with:
     \item search_tier: Which search tier was used ("primp", "selenium", etc.)
     \item parsing_status: Validation result (if expected_fields provided)
     \item execution: Operational metadata (thread_id, stop_reason, status_code,
-      tool budget counters, fold_count)
+      tool budget counters, fold_count, completion_gate, verification_status)
+      plus diagnostics counters from runtime quality guards.
     \item action_ascii: High-level ASCII action map derived from the trace
       (also available at \code{execution$action_ascii})
     \item action_steps: Parsed high-level action steps (also available at

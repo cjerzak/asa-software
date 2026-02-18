@@ -24,6 +24,16 @@
   webpage_cache_enabled = NULL,
   webpage_cache_max_entries = NULL,
   webpage_cache_max_text_chars = NULL,
+  webpage_blocked_cache_ttl_sec = NULL,
+  webpage_blocked_cache_max_entries = NULL,
+  webpage_blocked_probe_bytes = NULL,
+  webpage_blocked_detect_on_200 = NULL,
+  webpage_blocked_body_scan_bytes = NULL,
+  webpage_pdf_enabled = NULL,
+  webpage_pdf_timeout = NULL,
+  webpage_pdf_max_bytes = NULL,
+  webpage_pdf_max_pages = NULL,
+  webpage_pdf_max_text_chars = NULL,
   webpage_user_agent = NULL
 )
 }

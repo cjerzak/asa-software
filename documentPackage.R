@@ -11,7 +11,8 @@ opts <- list(
   install = FALSE
 )
 
-install.packages( "~/Documents/asa-software/asa",repos = NULL, type = "source",force = F);
+install.packages( "~/Documents/asa-software/asa",
+                  repos = NULL, type = "source",force = F);
 
 for (arg in args) {
   if (grepl("^--package=", arg)) {

@@ -11,6 +11,7 @@
   memory_threshold,
   memory_keep_recent,
   fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET,
+  min_fold_batch = ASA_DEFAULT_MIN_FOLD_BATCH,
   om_config = NULL
 )
 }

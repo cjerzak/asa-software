@@ -27,6 +27,16 @@ search_options(
   webpage_cache_enabled = NULL,
   webpage_cache_max_entries = NULL,
   webpage_cache_max_text_chars = NULL,
+  webpage_blocked_cache_ttl_sec = NULL,
+  webpage_blocked_cache_max_entries = NULL,
+  webpage_blocked_probe_bytes = NULL,
+  webpage_blocked_detect_on_200 = NULL,
+  webpage_blocked_body_scan_bytes = NULL,
+  webpage_pdf_enabled = NULL,
+  webpage_pdf_timeout = NULL,
+  webpage_pdf_max_bytes = NULL,
+  webpage_pdf_max_pages = NULL,
+  webpage_pdf_max_text_chars = NULL,
   webpage_user_agent = NULL,
   wiki_top_k_results = NULL,
   wiki_doc_content_chars_max = NULL,
@@ -95,6 +105,32 @@ more diverse excerpts.}
 \item{webpage_cache_max_text_chars}{Max characters of extracted page text to
 store per cached page (separate from \code{webpage_max_chars}, which caps
 tool output).}
+
+\item{webpage_blocked_cache_ttl_sec}{TTL in seconds for cached blocked URL
+responses (HTTP 403/429 and anti-bot pages).}
+
+\item{webpage_blocked_cache_max_entries}{Max blocked-URL cache entries per run.}
+
+\item{webpage_blocked_probe_bytes}{Max bytes to inspect when classifying a
+response as blocked.}
+
+\item{webpage_blocked_detect_on_200}{If TRUE, classify anti-bot interstitials
+served with HTTP 200 as blocked responses.}
+
+\item{webpage_blocked_body_scan_bytes}{Max response bytes scanned on HTTP 200
+pages for anti-bot marker detection.}
+
+\item{webpage_pdf_enabled}{If TRUE, OpenWebpage attempts PDF extraction via
+\code{pdftotext}.}
+
+\item{webpage_pdf_timeout}{Timeout in seconds for \code{pdftotext}.}
+
+\item{webpage_pdf_max_bytes}{Max PDF bytes to download before extraction.}
+
+\item{webpage_pdf_max_pages}{Max pages passed to \code{pdftotext}.}
+
+\item{webpage_pdf_max_text_chars}{Max extracted PDF characters kept before
+relevance selection/output truncation.}
 
 \item{webpage_user_agent}{User-Agent string used for webpage fetches.}
 

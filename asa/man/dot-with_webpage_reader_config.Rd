@@ -21,6 +21,16 @@
   cache_enabled = NULL,
   cache_max_entries = NULL,
   cache_max_text_chars = NULL,
+  blocked_cache_ttl_sec = NULL,
+  blocked_cache_max_entries = NULL,
+  blocked_probe_bytes = NULL,
+  blocked_detect_on_200 = NULL,
+  blocked_body_scan_bytes = NULL,
+  pdf_enabled = NULL,
+  pdf_timeout = NULL,
+  pdf_max_bytes = NULL,
+  pdf_max_pages = NULL,
+  pdf_max_text_chars = NULL,
   user_agent = NULL,
   conda_env = NULL,
   fn
@@ -61,6 +71,26 @@ otherwise falls back to lexical overlap.}
 \item{cache_max_entries}{Max cached entries per run.}
 
 \item{cache_max_text_chars}{Max extracted text chars to cache per page.}
+
+\item{blocked_cache_ttl_sec}{TTL in seconds for blocked URL cache entries.}
+
+\item{blocked_cache_max_entries}{Max blocked URL cache entries.}
+
+\item{blocked_probe_bytes}{Max bytes read for blocked detection on HTTP errors.}
+
+\item{blocked_detect_on_200}{Detect anti-bot interstitials served with HTTP 200.}
+
+\item{blocked_body_scan_bytes}{Max bytes scanned for blocked markers on HTTP 200 pages.}
+
+\item{pdf_enabled}{Enable PDF extraction via pdftotext.}
+
+\item{pdf_timeout}{Timeout in seconds for pdftotext.}
+
+\item{pdf_max_bytes}{Max PDF bytes downloaded before extraction.}
+
+\item{pdf_max_pages}{Max pages extracted per PDF.}
+
+\item{pdf_max_text_chars}{Max text chars retained from extracted PDF content.}
 
 \item{user_agent}{User-Agent string for webpage fetches.}
 

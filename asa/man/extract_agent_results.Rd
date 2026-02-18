@@ -17,7 +17,10 @@ A list with components:
   \item search_snippets: Character vector of search result content
   \item search_urls: Character vector of URLs from search results
   \item wikipedia_snippets: Character vector of Wikipedia content
-  \item json_data: Extracted JSON data as a list (if present)
+  \item json_data: Extracted JSON data (canonical by default; see option
+    \code{asa.enable_trace_field_mining})
+  \item json_data_canonical: Canonical terminal JSON extracted from trace
+  \item json_data_inferred: Optional inferred JSON with trace-mining enabled
   \item search_tiers: Character vector of unique search tiers used
     (e.g., "primp", "selenium", "ddgs", "requests")
 }
