@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 5.827,
+  "elapsed_time": 4.8943,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,39 +22,39 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "education_source": {
+      "status": "pending",
+      "value": null,
+      "source_url": null,
+      "evidence": null,
+      "attempts": 3,
+      "descriptor": "string|null"
+    },
+    "prior_occupation": {
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
+      "evidence": null,
+      "attempts": 3,
+      "descriptor": "string|Unknown"
+    },
+    "class_background": {
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
+      "evidence": null,
+      "attempts": 3,
+      "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
+    },
+    "prior_occupation_source": {
       "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
-      "descriptor": "string|null"
-    },
-    "prior_occupation": {
-      "status": "found",
-      "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
-      "attempts": 7,
-      "descriptor": "string|Unknown"
-    },
-    "class_background": {
-      "status": "found",
-      "value": "Working class",
-      "source_url": null,
-      "evidence": "terminal_payload_source_backed",
-      "attempts": 7,
-      "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
-    },
-    "prior_occupation_source": {
-      "status": "found",
-      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,15 +62,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
-      "status": "unknown",
+      "status": "pending",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "birth_place": {
@@ -78,7 +78,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
@@ -86,23 +86,23 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "found",
-      "value": "1982",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 3,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "found",
-      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "status": "unknown",
+      "value": null,
+      "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,31 +118,31 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
-      "status": "unknown",
+      "status": "pending",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "confidence": {
       "status": "found",
-      "value": "Medium",
+      "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 7,
+      "attempts": 3,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
-      "status": "found",
-      "value": "Ramona Moye Camaconi is an indigenous leader and politician from the TIPNIS territory in the Beni department of Bolivia. She was elected as a titular deputy for the Special Indigenous Constituency of Beni in 2014, representing the Movimiento Al Socialismo (MAS). Her official parliamentary profile lists her primary pre-legislative activity as the President of the Women's Organization of the Subcentral Sécure. This grassroots leadership role within an indigenous territory centered on traditional agriculture and subsistence identifies her with a working-class background. While government records confirm her birth year as 1982, no specific information regarding her formal educational attainment, precise place of birth, disability status, or sexual orientation is publicly available in official biographies or credible media reports.",
+      "status": "pending",
+      "value": null,
       "source_url": null,
-      "evidence": "terminal_payload_source_backed",
-      "attempts": 7,
+      "evidence": null,
+      "attempts": 3,
       "descriptor": "string"
     }
   }

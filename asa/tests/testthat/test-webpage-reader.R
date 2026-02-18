@@ -21,7 +21,17 @@
       prefilter_k = cfg_prev$prefilter_k,
       use_mmr = cfg_prev$use_mmr,
       mmr_lambda = cfg_prev$mmr_lambda,
-      cache_enabled = cfg_prev$cache_enabled
+      cache_enabled = cfg_prev$cache_enabled,
+      blocked_cache_ttl_sec = cfg_prev$blocked_cache_ttl_sec,
+      blocked_cache_max_entries = cfg_prev$blocked_cache_max_entries,
+      blocked_probe_bytes = cfg_prev$blocked_probe_bytes,
+      blocked_detect_on_200 = cfg_prev$blocked_detect_on_200,
+      blocked_body_scan_bytes = cfg_prev$blocked_body_scan_bytes,
+      pdf_enabled = cfg_prev$pdf_enabled,
+      pdf_timeout = cfg_prev$pdf_timeout,
+      pdf_max_bytes = cfg_prev$pdf_max_bytes,
+      pdf_max_pages = cfg_prev$pdf_max_pages,
+      pdf_max_text_chars = cfg_prev$pdf_max_text_chars
     ), silent = TRUE)
     try(webpage_tool$clear_webpage_reader_cache(), silent = TRUE)
   }, add = TRUE)
@@ -110,6 +120,238 @@ test_that(".with_webpage_reader_config toggles Python allow_read_webpages", {
   expect_equal(cfg_after$max_chars, cfg_prev$max_chars)
   expect_equal(cfg_after$max_chunks, cfg_prev$max_chunks)
   expect_equal(cfg_after$chunk_chars, cfg_prev$chunk_chars)
+})
+
+test_that("OpenWebpage caches blocked responses (403/429/bot marker)", {
+  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  asa_test_skip_if_missing_python_modules(
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
+  )
+
+  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  .with_restored_webpage_reader(webpage_tool, {
+    webpage_tool$configure_webpage_reader(
+      allow_read_webpages = TRUE,
+      relevance_mode = "lexical",
+      cache_enabled = TRUE,
+      blocked_cache_ttl_sec = 600L,
+      blocked_cache_max_entries = 16L
+    )
+    tool <- webpage_tool$create_webpage_reader_tool()
+
+    reticulate::py_run_string(paste0(
+      "import webpage_tool\n",
+      "_asa_old_fetch_html = webpage_tool._fetch_html\n",
+      "_asa_fetch_calls = 0\n",
+      "def _asa_fake_fetch(url, proxy=None, cfg=None):\n",
+      "    global _asa_fetch_calls\n",
+      "    _asa_fetch_calls += 1\n",
+      "    return {\n",
+      "        'ok': False,\n",
+      "        'error': 'http_error',\n",
+      "        'status_code': 403,\n",
+      "        'content_type': 'text/html',\n",
+      "        'final_url': url,\n",
+      "        'is_blocked': True,\n",
+      "        'blocked_reason': 'http_403_bot_marker',\n",
+      "    }\n",
+      "webpage_tool._fetch_html = _asa_fake_fetch\n"
+    ))
+    on.exit(
+      try(reticulate::py_run_string(
+        "import webpage_tool\nif '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html"
+      ), silent = TRUE),
+      add = TRUE
+    )
+
+    out1 <- tool$`_run`(url = "https://example.com/blocked", query = "test")
+    out2 <- tool$`_run`(url = "https://example.com/blocked", query = "test")
+
+    expect_match(out1, "Blocked fetch detected.", fixed = TRUE)
+    expect_match(out1, "Cache: MISS", fixed = TRUE)
+    expect_match(out2, "Cache: HIT_BLOCKED", fixed = TRUE)
+    expect_equal(as.integer(reticulate::py$`_asa_fetch_calls`), 1L)
+  })
+})
+
+test_that("OpenWebpage treats HTTP 200 challenge interstitials as blocked and caches", {
+  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  asa_test_skip_if_missing_python_modules(
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
+  )
+
+  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  .with_restored_webpage_reader(webpage_tool, {
+    webpage_tool$configure_webpage_reader(
+      allow_read_webpages = TRUE,
+      relevance_mode = "lexical",
+      cache_enabled = TRUE,
+      blocked_cache_ttl_sec = 600L,
+      blocked_cache_max_entries = 16L,
+      blocked_detect_on_200 = TRUE,
+      blocked_body_scan_bytes = 8192L
+    )
+    tool <- webpage_tool$create_webpage_reader_tool()
+
+    reticulate::py_run_string(paste0(
+      "import webpage_tool\n",
+      "_asa_old_requests_get = webpage_tool.requests.get\n",
+      "_asa_fetch_calls = 0\n",
+      "class _ASAResp:\n",
+      "    def __init__(self, url):\n",
+      "        self.status_code = 200\n",
+      "        self.headers = {'Content-Type': 'text/html; charset=utf-8'}\n",
+      "        self.url = url\n",
+      "        self.encoding = 'utf-8'\n",
+      "        self._body = (\n",
+      "            '<html><head><title>One moment, please...</title></head>'\n",
+      "            '<body>Please wait while your request is being verified.</body></html>'\n",
+      "        ).encode('utf-8')\n",
+      "    def iter_content(self, chunk_size=16384):\n",
+      "        body = self._body\n",
+      "        for i in range(0, len(body), chunk_size):\n",
+      "            yield body[i:i+chunk_size]\n",
+      "    def close(self):\n",
+      "        return None\n",
+      "def _asa_fake_requests_get(target_url, headers=None, timeout=None, proxies=None, stream=True, allow_redirects=True):\n",
+      "    global _asa_fetch_calls\n",
+      "    _asa_fetch_calls += 1\n",
+      "    return _ASAResp(target_url)\n",
+      "webpage_tool.requests.get = _asa_fake_requests_get\n"
+    ))
+    on.exit(
+      try(reticulate::py_run_string(
+        "import webpage_tool\nif '_asa_old_requests_get' in globals(): webpage_tool.requests.get = _asa_old_requests_get"
+      ), silent = TRUE),
+      add = TRUE
+    )
+
+    out1 <- tool$`_run`(url = "https://example.com/interstitial", query = "bio")
+    out2 <- tool$`_run`(url = "https://example.com/interstitial", query = "bio")
+
+    expect_match(out1, "Blocked fetch detected.", fixed = TRUE)
+    expect_match(out1, "Reason: http_200_challenge_title", fixed = TRUE)
+    expect_match(out2, "Cache: HIT_BLOCKED", fixed = TRUE)
+    expect_equal(as.integer(reticulate::py$`_asa_fetch_calls`), 1L)
+  })
+})
+
+test_that("200 blocked detection avoids single generic marker false positives", {
+  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  asa_test_skip_if_missing_python_modules(
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
+  )
+
+  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  .with_restored_webpage_reader(webpage_tool, {
+    reticulate::py_run_string(paste0(
+      "import webpage_tool\n",
+      "_asa_detect = webpage_tool._detect_blocked_response(\n",
+      "    200,\n",
+      "    'This article studies blocked matrix methods in economics.',\n",
+      "    title_text='Applied Methods'\n",
+      ")\n"
+    ))
+    detect <- reticulate::py$`_asa_detect`
+    expect_false(as.logical(detect[[1]]))
+    expect_true(is.null(detect[[2]]))
+  })
+})
+
+test_that("OpenWebpage does not blocked-cache generic HTTP errors", {
+  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  asa_test_skip_if_missing_python_modules(
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
+  )
+
+  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  .with_restored_webpage_reader(webpage_tool, {
+    webpage_tool$configure_webpage_reader(
+      allow_read_webpages = TRUE,
+      relevance_mode = "lexical",
+      cache_enabled = TRUE,
+      blocked_cache_ttl_sec = 600L,
+      blocked_cache_max_entries = 16L
+    )
+    tool <- webpage_tool$create_webpage_reader_tool()
+
+    reticulate::py_run_string(paste0(
+      "import webpage_tool\n",
+      "_asa_old_fetch_html = webpage_tool._fetch_html\n",
+      "_asa_fetch_calls = 0\n",
+      "def _asa_fake_fetch(url, proxy=None, cfg=None):\n",
+      "    global _asa_fetch_calls\n",
+      "    _asa_fetch_calls += 1\n",
+      "    return {\n",
+      "        'ok': False,\n",
+      "        'error': 'http_error',\n",
+      "        'status_code': 500,\n",
+      "        'content_type': 'text/html',\n",
+      "        'final_url': url,\n",
+      "        'is_blocked': False,\n",
+      "    }\n",
+      "webpage_tool._fetch_html = _asa_fake_fetch\n"
+    ))
+    on.exit(
+      try(reticulate::py_run_string(
+        "import webpage_tool\nif '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html"
+      ), silent = TRUE),
+      add = TRUE
+    )
+
+    out1 <- tool$`_run`(url = "https://example.com/http500", query = "test")
+    out2 <- tool$`_run`(url = "https://example.com/http500", query = "test")
+
+    expect_match(out1, "Error: http_error", fixed = TRUE)
+    expect_match(out2, "Error: http_error", fixed = TRUE)
+    expect_false(grepl("HIT_BLOCKED", out2, fixed = TRUE))
+    expect_equal(as.integer(reticulate::py$`_asa_fetch_calls`), 2L)
+  })
+})
+
+test_that("PDF extraction helper enforces char budget via pdftotext output", {
+  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  asa_test_skip_if_missing_python_modules(
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
+  )
+
+  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  .with_restored_webpage_reader(webpage_tool, {
+    reticulate::py_run_string(paste0(
+      "import webpage_tool\n",
+      "_asa_old_run = webpage_tool.subprocess.run\n",
+      "_asa_old_which = webpage_tool.shutil.which\n",
+      "_asa_pdf_cmd = None\n",
+      "def _asa_fake_run(cmd, stdout=None, stderr=None, timeout=None, check=False):\n",
+      "    global _asa_pdf_cmd\n",
+      "    _asa_pdf_cmd = cmd\n",
+      "    out_path = cmd[-1]\n",
+      "    with open(out_path, 'w', encoding='utf-8') as f:\n",
+      "        f.write('A' * 50000)\n",
+      "    class _Proc:\n",
+      "        returncode = 0\n",
+      "        stderr = b''\n",
+      "    return _Proc()\n",
+      "webpage_tool.shutil.which = lambda name: '/usr/bin/pdftotext'\n",
+      "webpage_tool.subprocess.run = _asa_fake_run\n",
+      "_asa_cfg = webpage_tool.configure_webpage_reader(pdf_max_text_chars=1234, pdf_max_pages=2)\n",
+      "_asa_pdf_result = webpage_tool._extract_pdf_text_from_bytes(b'not_a_real_pdf', cfg=_asa_cfg)\n"
+    ))
+    on.exit(
+      try(reticulate::py_run_string(paste0(
+        "import webpage_tool\n",
+        "if '_asa_old_run' in globals(): webpage_tool.subprocess.run = _asa_old_run\n",
+        "if '_asa_old_which' in globals(): webpage_tool.shutil.which = _asa_old_which\n"
+      )), silent = TRUE),
+      add = TRUE
+    )
+
+    expect_true(isTRUE(reticulate::py$`_asa_pdf_result`$ok))
+    expect_equal(nchar(as.character(reticulate::py$`_asa_pdf_result`$text)), 1234L)
+    cmd <- as.character(unlist(reticulate::py$`_asa_pdf_cmd`))
+    expect_true(any(cmd == "-l"))
+    expect_true(any(cmd == "2"))
+  })
 })
 
 test_that("OpenWebpage can read collaborators page (live network)", {

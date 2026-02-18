@@ -145,6 +145,7 @@
       budget_state = list(),
       field_status = list(),
       json_repair = list(),
+      completion_gate = list(),
       tokens_used = NA_integer_,
       input_tokens = NA_integer_,
       output_tokens = NA_integer_,
@@ -166,6 +167,7 @@
   budget_state_out <- .coerce_py_list(raw_response$budget_state)
   field_status_out <- .coerce_py_list(raw_response$field_status)
   json_repair <- .coerce_py_list(raw_response$json_repair)
+  completion_gate <- .coerce_py_list(raw_response$completion_gate)
 
   # Extract memory folding stats (fold_count lives inside fold_stats)
   fold_stats <- list()
@@ -216,6 +218,7 @@
     budget_state = budget_state_out,
     field_status = field_status_out,
     json_repair = json_repair,
+    completion_gate = completion_gate,
     tokens_used = tokens_used,
     input_tokens = input_tokens,
     output_tokens = output_tokens,

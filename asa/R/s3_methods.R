@@ -437,6 +437,22 @@ print.asa_temporal <- function(x, ...) {
 #' @param webpage_cache_max_text_chars Max characters of extracted page text to
 #'   store per cached page (separate from \code{webpage_max_chars}, which caps
 #'   tool output).
+#' @param webpage_blocked_cache_ttl_sec TTL in seconds for cached blocked URL
+#'   responses (HTTP 403/429 and anti-bot pages).
+#' @param webpage_blocked_cache_max_entries Max blocked-URL cache entries per run.
+#' @param webpage_blocked_probe_bytes Max bytes to inspect when classifying a
+#'   response as blocked.
+#' @param webpage_blocked_detect_on_200 If TRUE, classify anti-bot interstitials
+#'   served with HTTP 200 as blocked responses.
+#' @param webpage_blocked_body_scan_bytes Max response bytes scanned on HTTP 200
+#'   pages for anti-bot marker detection.
+#' @param webpage_pdf_enabled If TRUE, OpenWebpage attempts PDF extraction via
+#'   \code{pdftotext}.
+#' @param webpage_pdf_timeout Timeout in seconds for \code{pdftotext}.
+#' @param webpage_pdf_max_bytes Max PDF bytes to download before extraction.
+#' @param webpage_pdf_max_pages Max pages passed to \code{pdftotext}.
+#' @param webpage_pdf_max_text_chars Max extracted PDF characters kept before
+#'   relevance selection/output truncation.
 #' @param webpage_user_agent User-Agent string used for webpage fetches.
 #'
 #' @return An object of class \code{asa_search}
@@ -504,6 +520,16 @@ search_options <- function(max_results = NULL,
                            webpage_cache_enabled = NULL,
                            webpage_cache_max_entries = NULL,
                            webpage_cache_max_text_chars = NULL,
+                           webpage_blocked_cache_ttl_sec = NULL,
+                           webpage_blocked_cache_max_entries = NULL,
+                           webpage_blocked_probe_bytes = NULL,
+                           webpage_blocked_detect_on_200 = NULL,
+                           webpage_blocked_body_scan_bytes = NULL,
+                           webpage_pdf_enabled = NULL,
+                           webpage_pdf_timeout = NULL,
+                           webpage_pdf_max_bytes = NULL,
+                           webpage_pdf_max_pages = NULL,
+                           webpage_pdf_max_text_chars = NULL,
                            webpage_user_agent = NULL,
                            wiki_top_k_results = NULL,
                            wiki_doc_content_chars_max = NULL,
@@ -537,6 +563,16 @@ search_options <- function(max_results = NULL,
       webpage_cache_enabled = webpage_cache_enabled,
       webpage_cache_max_entries = webpage_cache_max_entries,
       webpage_cache_max_text_chars = webpage_cache_max_text_chars,
+      webpage_blocked_cache_ttl_sec = webpage_blocked_cache_ttl_sec,
+      webpage_blocked_cache_max_entries = webpage_blocked_cache_max_entries,
+      webpage_blocked_probe_bytes = webpage_blocked_probe_bytes,
+      webpage_blocked_detect_on_200 = webpage_blocked_detect_on_200,
+      webpage_blocked_body_scan_bytes = webpage_blocked_body_scan_bytes,
+      webpage_pdf_enabled = webpage_pdf_enabled,
+      webpage_pdf_timeout = webpage_pdf_timeout,
+      webpage_pdf_max_bytes = webpage_pdf_max_bytes,
+      webpage_pdf_max_pages = webpage_pdf_max_pages,
+      webpage_pdf_max_text_chars = webpage_pdf_max_text_chars,
       webpage_user_agent = webpage_user_agent
     ),
     class = "asa_search"
@@ -757,6 +793,7 @@ summary.asa_agent <- function(object, ...) {
 #' @param budget_state Tool-call budget state snapshot from agent state.
 #' @param field_status Per-field extraction status map from agent state.
 #' @param json_repair JSON repair/fallback events emitted during execution.
+#' @param completion_gate Deterministic outcome-verification report from agent state.
 #' @param tokens_used Total token count for this invocation (integer, or NA).
 #' @param input_tokens Input (prompt) token count (integer, or NA).
 #' @param output_tokens Output (completion) token count (integer, or NA).
@@ -771,6 +808,7 @@ asa_response <- function(message, status_code, raw_response, trace,
                          thread_id = NULL, stop_reason = NULL,
                          budget_state = list(), field_status = list(),
                          json_repair = list(),
+                         completion_gate = list(),
                          tokens_used = NA_integer_,
                          input_tokens = NA_integer_,
                          output_tokens = NA_integer_,
@@ -790,6 +828,7 @@ asa_response <- function(message, status_code, raw_response, trace,
       budget_state = budget_state,
       field_status = field_status,
       json_repair = json_repair,
+      completion_gate = completion_gate,
       tokens_used = tokens_used,
       input_tokens = input_tokens,
       output_tokens = output_tokens,

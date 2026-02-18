@@ -3208,6 +3208,7 @@ from state_utils import (
     remaining_steps_value,
     repair_json_output_to_schema,
 )
+from outcome_gate import evaluate_schema_outcome
 
 _MEMORY_SCHEMA_VERSION = 1
 _MEMORY_KEYS = ("facts", "decisions", "open_questions", "sources", "warnings")
@@ -7963,6 +7964,7 @@ class MemoryFoldingAgentState(TypedDict):
     archive: Annotated[list, add_to_list]
     fold_stats: Annotated[dict, merge_dicts]
     stop_reason: Optional[str]
+    completion_gate: Annotated[dict, merge_dicts]
     remaining_steps: RemainingSteps
     expected_schema: Optional[Any]
     expected_schema_source: Optional[str]
@@ -8293,6 +8295,36 @@ def _state_field_status(state: Any) -> Dict[str, Dict[str, Any]]:
         state.get("field_status"),
         _state_expected_schema(state),
     )
+
+
+def _schema_outcome_gate_report(
+    state: Any,
+    *,
+    expected_schema: Any = None,
+    field_status: Any = None,
+    budget_state: Any = None,
+) -> Dict[str, Any]:
+    if expected_schema is None:
+        expected_schema = _state_expected_schema(state)
+    if field_status is None:
+        field_status = _normalize_field_status_map(state.get("field_status"), expected_schema)
+    if budget_state is None:
+        budget_state = _normalize_budget_state(
+            state.get("budget_state"),
+            search_budget_limit=state.get("search_budget_limit"),
+            unknown_after_searches=state.get("unknown_after_searches"),
+        )
+    report = evaluate_schema_outcome(
+        expected_schema=expected_schema,
+        field_status=field_status,
+        budget_state=budget_state,
+    )
+    if not isinstance(report, dict):
+        report = {}
+    report["finalize_on_all_fields_resolved"] = bool(
+        state.get("finalize_on_all_fields_resolved", False)
+    )
+    return report
 
 
 def _finalization_cutoff(state: Any) -> int:
@@ -8707,6 +8739,12 @@ def _create_tool_node_with_scratchpad(
             result["scratchpad"] = scratchpad_entries
         result["field_status"] = field_status
         result["budget_state"] = budget_state
+        result["completion_gate"] = _schema_outcome_gate_report(
+            state,
+            expected_schema=expected_schema,
+            field_status=field_status,
+            budget_state=budget_state,
+        )
 
         # Apply plan updates if plan mode is enabled and the agent called update_plan.
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
@@ -9188,12 +9226,19 @@ def create_memory_folding_agent(
             budget_state.update(_field_status_progress(field_status))
 
         _usage = _token_usage_dict_from_message(response)
+        completion_gate = _schema_outcome_gate_report(
+            state,
+            expected_schema=expected_schema,
+            field_status=field_status,
+            budget_state=budget_state,
+        )
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
+            "completion_gate": completion_gate,
             "om_config": state.get("om_config"),
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
@@ -9329,11 +9374,18 @@ def create_memory_folding_agent(
         budget_state.update(_field_status_progress(field_status))
 
         _usage = _token_usage_dict_from_message(response)
+        completion_gate = _schema_outcome_gate_report(
+            state,
+            expected_schema=expected_schema,
+            field_status=field_status,
+            budget_state=budget_state,
+        )
         out = {
             "messages": [response],
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
+            "completion_gate": completion_gate,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
@@ -10476,6 +10528,7 @@ class StandardAgentState(TypedDict):
     """State schema for standard ReAct-style agent."""
     messages: Annotated[list, _add_messages]
     stop_reason: Optional[str]
+    completion_gate: Annotated[dict, merge_dicts]
     remaining_steps: RemainingSteps
     expected_schema: Optional[Any]
     expected_schema_source: Optional[str]
@@ -10644,12 +10697,19 @@ def create_standard_agent(
             budget_state.update(_field_status_progress(field_status))
 
         _usage = _token_usage_dict_from_message(response)
+        completion_gate = _schema_outcome_gate_report(
+            state,
+            expected_schema=expected_schema,
+            field_status=field_status,
+            budget_state=budget_state,
+        )
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
             "expected_schema_source": expected_schema_source,
             "field_status": field_status,
             "budget_state": budget_state,
+            "completion_gate": completion_gate,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
@@ -10771,11 +10831,18 @@ def create_standard_agent(
         )
         budget_state.update(_field_status_progress(field_status))
         _usage = _token_usage_dict_from_message(response)
+        completion_gate = _schema_outcome_gate_report(
+            state,
+            expected_schema=expected_schema,
+            field_status=field_status,
+            budget_state=budget_state,
+        )
         out = {
             "messages": [response],
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
+            "completion_gate": completion_gate,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],

@@ -384,11 +384,30 @@ asa_enumerate <- function(query,
   }
 
   # Build result object
+  verification_status <- .try_or(as.character(result$verification_status), character(0))
+  verification_status <- if (length(verification_status) > 0 && nzchar(verification_status[[1]])) {
+    verification_status[[1]]
+  } else {
+    NA_character_
+  }
+  status_out <- result$status %||% "unknown"
+  if (!is.na(verification_status) && !verification_status %in% c("searching", "in_progress")) {
+    status_out <- verification_status
+  }
+  completion_gate <- result$completion_gate %||% list()
+
   research_result <- asa_enumerate_result(
     data = processed$data,
-    status = result$status %||% "unknown",
+    status = status_out,
     stop_reason = result$stop_reason,
-    metrics = c(result$metrics, elapsed_total = elapsed),
+    metrics = c(
+      result$metrics,
+      list(
+        elapsed_total = elapsed,
+        verification_status = verification_status,
+        completion_gate = completion_gate
+      )
+    ),
     provenance = if (include_provenance) processed$provenance else NULL,
     plan = result$plan,
     checkpoint_file = checkpoint_file,

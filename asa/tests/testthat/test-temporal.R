@@ -641,6 +641,7 @@ test_that("stopper honors target_items", {
   result <- stopper(state)
   expect_equal(result$status, "complete")
   expect_equal(result$stop_reason, "target_reached")
+  expect_equal(result$completion_gate$completion_status, "complete")
 })
 
 test_that("stopper stops on novelty plateau", {
@@ -656,6 +657,7 @@ test_that("stopper stops on novelty plateau", {
   result <- stopper(state)
   expect_equal(result$status, "complete")
   expect_equal(result$stop_reason, "novelty_plateau")
+  expect_equal(result$completion_gate$completion_status, "partial")
 })
 
 test_that("stopper continues when novelty remains above threshold", {
@@ -670,6 +672,7 @@ test_that("stopper continues when novelty remains above threshold", {
 
   result <- stopper(state)
   expect_equal(result$status, "searching")
+  expect_equal(result$completion_gate$completion_status, "searching")
 })
 
 # ============================================================================

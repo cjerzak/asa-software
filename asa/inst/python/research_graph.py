@@ -33,6 +33,7 @@ from state_utils import (
     parse_llm_json,
     should_stop_for_recursion,
 )
+from outcome_gate import evaluate_research_outcome
 from wikidata_tool import get_entity_template, get_known_entity_types, query_known_entity
 
 # Optional strict temporal verification (local module)
@@ -117,6 +118,7 @@ class ResearchState(TypedDict):
     start_time: float
     status: str  # "planning", "searching", "complete", "failed"
     stop_reason: Optional[str]
+    completion_gate: Annotated[Dict[str, Any], merge_dicts]
     errors: Annotated[List[Dict], add_to_list]
     remaining_steps: RemainingSteps
 
@@ -359,8 +361,28 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         # can run before graceful completion.
         stop_buffer = _effective_recursion_stop_buffer(state)
         if should_stop_for_recursion(state, buffer=stop_buffer):
+            gate = evaluate_research_outcome(
+                round_number=int(state.get("round_number", 0) or 0),
+                queries_used=int(state.get("queries_used", 0) or 0),
+                tokens_used=int(state.get("tokens_used", 0) or 0),
+                elapsed_sec=max(0.0, time.time() - float(state.get("start_time", 0.0) or 0.0)),
+                items_found=int(len(state.get("seen_hashes", {}) or {})),
+                novelty_history=state.get("novelty_history", []) if isinstance(state.get("novelty_history", []), list) else [],
+                max_rounds=(research_config.max_rounds if research_config else None),
+                budget_queries=(research_config.budget_queries if research_config else None),
+                budget_tokens=(research_config.budget_tokens if research_config else None),
+                budget_time_sec=(research_config.budget_time_sec if research_config else None),
+                target_items=(research_config.target_items if research_config else None),
+                plateau_rounds=(research_config.plateau_rounds if research_config else None),
+                novelty_min=(research_config.novelty_min if research_config else None),
+                recursion_stop=True,
+            )
             return _with_node_timing(
-                {"status": "complete", "stop_reason": "recursion_limit"},
+                {
+                    "status": "complete",
+                    "stop_reason": "recursion_limit",
+                    "completion_gate": gate,
+                },
                 node="searcher",
                 started_at=node_started_at,
             )
@@ -767,8 +789,19 @@ def create_deduper_node():
             "new_results": []
         }
         if force_stop:
+            gate = evaluate_research_outcome(
+                round_number=int(state.get("round_number", 0) or 0),
+                queries_used=int(state.get("queries_used", 0) or 0),
+                tokens_used=int(state.get("tokens_used", 0) or 0),
+                elapsed_sec=max(0.0, time.time() - float(state.get("start_time", 0.0) or 0.0)),
+                items_found=int(len(seen_hashes) + len(new_hashes)),
+                novelty_history=state.get("novelty_history", []) if isinstance(state.get("novelty_history", []), list) else [],
+                target_items=(state.get("config", {}) or {}).get("target_items"),
+                recursion_stop=True,
+            )
             out["status"] = "complete"
             out["stop_reason"] = "recursion_limit"
+            out["completion_gate"] = gate
         return _with_node_timing(out, node="deduper", started_at=node_started_at)
 
     return deduper_node
@@ -790,64 +823,40 @@ def create_stopper_node(config: ResearchConfig):
         elapsed = time.time() - float(start_time) if start_time else 0.0
         seen_hashes = state.get("seen_hashes", {})
         total_unique = len(seen_hashes)
-
-        # Check limits
-        if config.budget_time_sec and elapsed >= config.budget_time_sec:
-            return _with_node_timing(
-                {"status": "complete", "stop_reason": "budget_time"},
-                node="stopper",
-                started_at=node_started_at,
-            )
-
-        if queries >= config.budget_queries:
-            return _with_node_timing(
-                {"status": "complete", "stop_reason": "budget_queries"},
-                node="stopper",
-                started_at=node_started_at,
-            )
-
-        if config.budget_tokens and tokens >= config.budget_tokens:
-            return _with_node_timing(
-                {"status": "complete", "stop_reason": "budget_tokens"},
-                node="stopper",
-                started_at=node_started_at,
-            )
-
-        if round_num >= config.max_rounds:
-            return _with_node_timing(
-                {"status": "complete", "stop_reason": "max_rounds"},
-                node="stopper",
-                started_at=node_started_at,
-            )
-
-        if config.target_items and total_unique >= config.target_items:
-            return _with_node_timing(
-                {"status": "complete", "stop_reason": "target_reached"},
-                node="stopper",
-                started_at=node_started_at,
-            )
-
         novelty_history = state.get("novelty_history", [])
-        if config.plateau_rounds and config.novelty_min is not None:
-            if len(novelty_history) >= config.plateau_rounds:
-                recent = novelty_history[-config.plateau_rounds:]
-                if all(rate < config.novelty_min for rate in recent):
-                    return _with_node_timing(
-                        {"status": "complete", "stop_reason": "novelty_plateau"},
-                        node="stopper",
-                        started_at=node_started_at,
-                    )
+        gate = evaluate_research_outcome(
+            round_number=int(round_num),
+            queries_used=int(queries),
+            tokens_used=int(tokens),
+            elapsed_sec=float(elapsed),
+            items_found=int(total_unique),
+            novelty_history=novelty_history if isinstance(novelty_history, list) else [],
+            max_rounds=config.max_rounds,
+            budget_queries=config.budget_queries,
+            budget_tokens=config.budget_tokens,
+            budget_time_sec=config.budget_time_sec,
+            target_items=config.target_items,
+            plateau_rounds=config.plateau_rounds,
+            novelty_min=config.novelty_min,
+            recursion_stop=should_stop_for_recursion(
+                state,
+                buffer=_effective_recursion_stop_buffer(state),
+            ),
+        )
 
-        # Stop before LangGraph raises GraphRecursionError.
-        if should_stop_for_recursion(state, buffer=_effective_recursion_stop_buffer(state)):
+        if gate.get("should_stop"):
             return _with_node_timing(
-                {"status": "complete", "stop_reason": "recursion_limit"},
+                {
+                    "status": "complete",
+                    "stop_reason": gate.get("stop_reason"),
+                    "completion_gate": gate,
+                },
                 node="stopper",
                 started_at=node_started_at,
             )
 
         return _with_node_timing(
-            {"status": "searching"},
+            {"status": "searching", "completion_gate": gate},
             node="stopper",
             started_at=node_started_at,
         )
@@ -958,6 +967,7 @@ def _build_initial_state(
         "start_time": time.time(),
         "status": "planning",
         "stop_reason": None,
+        "completion_gate": {},
         "errors": []
     }
 
@@ -1049,6 +1059,11 @@ def _build_research_result(
             "worker_id": row.get("worker_id") or "unknown",
             "extraction_timestamp": row.get("extraction_timestamp"),
         })
+    completion_gate = state.get("completion_gate")
+    if not isinstance(completion_gate, dict):
+        completion_gate = {}
+    verification_status = completion_gate.get("completion_status")
+
     return {
         "results": results,
         "provenance": provenance,
@@ -1063,7 +1078,9 @@ def _build_research_result(
             "items_found": len(results)
         },
         "status": state.get("status", status_fallback),
+        "verification_status": verification_status,
         "stop_reason": state.get("stop_reason"),
+        "completion_gate": completion_gate,
         "errors": state.get("errors", []),
         "plan": state.get("plan", {})
     }
@@ -1088,12 +1105,18 @@ def _build_research_error_result(
             "worker_id": row.get("worker_id") or "unknown",
             "extraction_timestamp": row.get("extraction_timestamp"),
         })
+    completion_gate = state.get("completion_gate")
+    if not isinstance(completion_gate, dict):
+        completion_gate = {}
+
     return {
         "results": results,
         "provenance": provenance,
         "metrics": {"time_elapsed": elapsed},
         "status": "failed",
+        "verification_status": completion_gate.get("completion_status"),
         "stop_reason": f"execution_error: {str(error)}",
+        "completion_gate": completion_gate,
         "errors": [{"stage": "execution", "error": str(error)}],
         "plan": state.get("plan", {})
     }
@@ -1148,7 +1171,7 @@ def stream_research(
     # Keys that use list-append reducers in ResearchState (Annotated[..., add_to_list])
     _LIST_REDUCER_KEYS = {"results", "novelty_history", "errors"}
     # Keys that use dict-merge reducers in ResearchState (Annotated[..., merge_dicts])
-    _DICT_REDUCER_KEYS = {"seen_hashes"}
+    _DICT_REDUCER_KEYS = {"seen_hashes", "completion_gate"}
 
     try:
         for event in graph.stream(initial_state, config, stream_mode="updates"):

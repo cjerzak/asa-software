@@ -78,7 +78,7 @@
 #'     \item search_tier: Which search tier was used ("primp", "selenium", etc.)
 #'     \item parsing_status: Validation result (if expected_fields provided)
 #'     \item execution: Operational metadata (thread_id, stop_reason, status_code,
-#'       tool budget counters, fold_count)
+#'       tool budget counters, fold_count, completion_gate, verification_status)
 #'     \item action_ascii: High-level ASCII action map derived from the trace
 #'       (also available at \code{execution$action_ascii})
 #'     \item action_steps: Parsed high-level action steps (also available at
@@ -340,6 +340,13 @@ run_task <- function(prompt,
   } else {
     NA_character_
   }
+  completion_gate <- response$completion_gate %||% list()
+  verification_status <- .try_or(as.character(completion_gate$completion_status), character(0))
+  verification_status <- if (length(verification_status) > 0 && nzchar(verification_status[[1]])) {
+    verification_status[[1]]
+  } else {
+    NA_character_
+  }
   tokens_used <- .as_scalar_int(response$tokens_used)
   token_stats <- .build_token_stats(
     tokens_used = tokens_used,
@@ -447,6 +454,8 @@ run_task <- function(prompt,
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
     json_repair = response$json_repair %||% list(),
+    completion_gate = completion_gate,
+    verification_status = verification_status,
     token_stats = token_stats,
     om_stats = response$om_stats %||% list(),
     observations = response$observations %||% list(),
@@ -509,6 +518,8 @@ run_task <- function(prompt,
   alias_defaults <- list(
     fold_stats = list(),
     status_code = NA_integer_,
+    completion_gate = list(),
+    verification_status = NA_character_,
     token_stats = list(),
     plan = list(),
     plan_history = list(),

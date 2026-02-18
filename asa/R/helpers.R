@@ -1172,6 +1172,16 @@ configure_temporal <- function(time_filter = NULL) {
                                                 webpage_cache_enabled = NULL,
                                                 webpage_cache_max_entries = NULL,
                                                 webpage_cache_max_text_chars = NULL,
+                                                webpage_blocked_cache_ttl_sec = NULL,
+                                                webpage_blocked_cache_max_entries = NULL,
+                                                webpage_blocked_probe_bytes = NULL,
+                                                webpage_blocked_detect_on_200 = NULL,
+                                                webpage_blocked_body_scan_bytes = NULL,
+                                                webpage_pdf_enabled = NULL,
+                                                webpage_pdf_timeout = NULL,
+                                                webpage_pdf_max_bytes = NULL,
+                                                webpage_pdf_max_pages = NULL,
+                                                webpage_pdf_max_text_chars = NULL,
                                                 webpage_user_agent = NULL) {
   temporal <- .resolve_temporal_input(temporal, config)
   webpage_settings <- .resolve_webpage_reader_settings(
@@ -1192,6 +1202,16 @@ configure_temporal <- function(time_filter = NULL) {
     webpage_cache_enabled,
     webpage_cache_max_entries,
     webpage_cache_max_text_chars,
+    webpage_blocked_cache_ttl_sec,
+    webpage_blocked_cache_max_entries,
+    webpage_blocked_probe_bytes,
+    webpage_blocked_detect_on_200,
+    webpage_blocked_body_scan_bytes,
+    webpage_pdf_enabled,
+    webpage_pdf_timeout,
+    webpage_pdf_max_bytes,
+    webpage_pdf_max_pages,
+    webpage_pdf_max_text_chars,
     webpage_user_agent
   )
 
@@ -1213,6 +1233,16 @@ configure_temporal <- function(time_filter = NULL) {
     cache_enabled = webpage_settings$cache_enabled,
     cache_max_entries = webpage_settings$cache_max_entries,
     cache_max_text_chars = webpage_settings$cache_max_text_chars,
+    blocked_cache_ttl_sec = webpage_settings$blocked_cache_ttl_sec,
+    blocked_cache_max_entries = webpage_settings$blocked_cache_max_entries,
+    blocked_probe_bytes = webpage_settings$blocked_probe_bytes,
+    blocked_detect_on_200 = webpage_settings$blocked_detect_on_200,
+    blocked_body_scan_bytes = webpage_settings$blocked_body_scan_bytes,
+    pdf_enabled = webpage_settings$pdf_enabled,
+    pdf_timeout = webpage_settings$pdf_timeout,
+    pdf_max_bytes = webpage_settings$pdf_max_bytes,
+    pdf_max_pages = webpage_settings$pdf_max_pages,
+    pdf_max_text_chars = webpage_settings$pdf_max_text_chars,
     user_agent = webpage_settings$user_agent
   )
 }
@@ -1309,6 +1339,16 @@ configure_temporal <- function(time_filter = NULL) {
       cache_enabled = runtime$cache_enabled,
       cache_max_entries = runtime$cache_max_entries,
       cache_max_text_chars = runtime$cache_max_text_chars,
+      blocked_cache_ttl_sec = runtime$blocked_cache_ttl_sec,
+      blocked_cache_max_entries = runtime$blocked_cache_max_entries,
+      blocked_probe_bytes = runtime$blocked_probe_bytes,
+      blocked_detect_on_200 = runtime$blocked_detect_on_200,
+      blocked_body_scan_bytes = runtime$blocked_body_scan_bytes,
+      pdf_enabled = runtime$pdf_enabled,
+      pdf_timeout = runtime$pdf_timeout,
+      pdf_max_bytes = runtime$pdf_max_bytes,
+      pdf_max_pages = runtime$pdf_max_pages,
+      pdf_max_text_chars = runtime$pdf_max_text_chars,
       user_agent = runtime$user_agent,
       conda_env = conda_env,
       fn = function() {
@@ -1631,6 +1671,18 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param webpage_cache_max_entries Max cached entries per run, or NULL.
 #' @param webpage_cache_max_text_chars Max extracted text chars to cache per page,
 #'   or NULL.
+#' @param webpage_blocked_cache_ttl_sec TTL in seconds for blocked URL cache.
+#' @param webpage_blocked_cache_max_entries Max blocked cache entries.
+#' @param webpage_blocked_probe_bytes Max bytes inspected for blocked-marker detection.
+#' @param webpage_blocked_detect_on_200 Detect anti-bot interstitial pages served
+#'   with HTTP 200 and classify them as blocked.
+#' @param webpage_blocked_body_scan_bytes Max bytes scanned for blocked markers on
+#'   HTTP 200 pages.
+#' @param webpage_pdf_enabled Enable PDF extraction via pdftotext.
+#' @param webpage_pdf_timeout Timeout in seconds for pdftotext.
+#' @param webpage_pdf_max_bytes Max bytes to download per PDF.
+#' @param webpage_pdf_max_pages Max pages to extract from PDF.
+#' @param webpage_pdf_max_text_chars Max PDF text chars retained before ranking.
 #' @param webpage_user_agent User-Agent string for webpage fetches, or NULL.
 #' @return List with resolved settings
 #' @keywords internal
@@ -1651,6 +1703,16 @@ configure_temporal <- function(time_filter = NULL) {
                                              webpage_cache_enabled = NULL,
                                              webpage_cache_max_entries = NULL,
                                              webpage_cache_max_text_chars = NULL,
+                                             webpage_blocked_cache_ttl_sec = NULL,
+                                             webpage_blocked_cache_max_entries = NULL,
+                                             webpage_blocked_probe_bytes = NULL,
+                                             webpage_blocked_detect_on_200 = NULL,
+                                             webpage_blocked_body_scan_bytes = NULL,
+                                             webpage_pdf_enabled = NULL,
+                                             webpage_pdf_timeout = NULL,
+                                             webpage_pdf_max_bytes = NULL,
+                                             webpage_pdf_max_pages = NULL,
+                                             webpage_pdf_max_text_chars = NULL,
                                              webpage_user_agent = NULL) {
   # Map from result-list key -> (explicit value, config_search key)
   fields <- list(
@@ -1670,6 +1732,16 @@ configure_temporal <- function(time_filter = NULL) {
     cache_enabled        = webpage_cache_enabled,
     cache_max_entries    = webpage_cache_max_entries,
     cache_max_text_chars = webpage_cache_max_text_chars,
+    blocked_cache_ttl_sec = webpage_blocked_cache_ttl_sec,
+    blocked_cache_max_entries = webpage_blocked_cache_max_entries,
+    blocked_probe_bytes = webpage_blocked_probe_bytes,
+    blocked_detect_on_200 = webpage_blocked_detect_on_200,
+    blocked_body_scan_bytes = webpage_blocked_body_scan_bytes,
+    pdf_enabled = webpage_pdf_enabled,
+    pdf_timeout = webpage_pdf_timeout,
+    pdf_max_bytes = webpage_pdf_max_bytes,
+    pdf_max_pages = webpage_pdf_max_pages,
+    pdf_max_text_chars = webpage_pdf_max_text_chars,
     user_agent           = webpage_user_agent
   )
 
@@ -1691,6 +1763,16 @@ configure_temporal <- function(time_filter = NULL) {
     cache_enabled        = "webpage_cache_enabled",
     cache_max_entries    = "webpage_cache_max_entries",
     cache_max_text_chars = "webpage_cache_max_text_chars",
+    blocked_cache_ttl_sec = "webpage_blocked_cache_ttl_sec",
+    blocked_cache_max_entries = "webpage_blocked_cache_max_entries",
+    blocked_probe_bytes = "webpage_blocked_probe_bytes",
+    blocked_detect_on_200 = "webpage_blocked_detect_on_200",
+    blocked_body_scan_bytes = "webpage_blocked_body_scan_bytes",
+    pdf_enabled = "webpage_pdf_enabled",
+    pdf_timeout = "webpage_pdf_timeout",
+    pdf_max_bytes = "webpage_pdf_max_bytes",
+    pdf_max_pages = "webpage_pdf_max_pages",
+    pdf_max_text_chars = "webpage_pdf_max_text_chars",
     user_agent           = "webpage_user_agent"
   )
 
@@ -1726,6 +1808,16 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param cache_enabled Enable per-run caching.
 #' @param cache_max_entries Max cached entries per run.
 #' @param cache_max_text_chars Max extracted text chars to cache per page.
+#' @param blocked_cache_ttl_sec TTL in seconds for blocked URL cache entries.
+#' @param blocked_cache_max_entries Max blocked URL cache entries.
+#' @param blocked_probe_bytes Max bytes read for blocked detection on HTTP errors.
+#' @param blocked_detect_on_200 Detect anti-bot interstitials served with HTTP 200.
+#' @param blocked_body_scan_bytes Max bytes scanned for blocked markers on HTTP 200 pages.
+#' @param pdf_enabled Enable PDF extraction via pdftotext.
+#' @param pdf_timeout Timeout in seconds for pdftotext.
+#' @param pdf_max_bytes Max PDF bytes downloaded before extraction.
+#' @param pdf_max_pages Max pages extracted per PDF.
+#' @param pdf_max_text_chars Max text chars retained from extracted PDF content.
 #' @param user_agent User-Agent string for webpage fetches.
 #' @param conda_env Conda env used by Python tools
 #' @param fn Function to run with webpage reader config applied
@@ -1747,6 +1839,16 @@ configure_temporal <- function(time_filter = NULL) {
                                        cache_enabled = NULL,
                                        cache_max_entries = NULL,
                                        cache_max_text_chars = NULL,
+                                       blocked_cache_ttl_sec = NULL,
+                                       blocked_cache_max_entries = NULL,
+                                       blocked_probe_bytes = NULL,
+                                       blocked_detect_on_200 = NULL,
+                                       blocked_body_scan_bytes = NULL,
+                                       pdf_enabled = NULL,
+                                       pdf_timeout = NULL,
+                                       pdf_max_bytes = NULL,
+                                       pdf_max_pages = NULL,
+                                       pdf_max_text_chars = NULL,
                                        user_agent = NULL,
                                        conda_env = NULL,
                                        fn) {
@@ -1768,6 +1870,16 @@ configure_temporal <- function(time_filter = NULL) {
       is.null(cache_enabled) &&
       is.null(cache_max_entries) &&
       is.null(cache_max_text_chars) &&
+      is.null(blocked_cache_ttl_sec) &&
+      is.null(blocked_cache_max_entries) &&
+      is.null(blocked_probe_bytes) &&
+      is.null(blocked_detect_on_200) &&
+      is.null(blocked_body_scan_bytes) &&
+      is.null(pdf_enabled) &&
+      is.null(pdf_timeout) &&
+      is.null(pdf_max_bytes) &&
+      is.null(pdf_max_pages) &&
+      is.null(pdf_max_text_chars) &&
       is.null(user_agent)) {
     return(fn())
   }
@@ -1822,6 +1934,16 @@ configure_temporal <- function(time_filter = NULL) {
       cache_enabled = previous_cfg$cache_enabled,
       cache_max_entries = previous_cfg$cache_max_entries,
       cache_max_text_chars = previous_cfg$cache_max_text_chars,
+      blocked_cache_ttl_sec = previous_cfg$blocked_cache_ttl_sec,
+      blocked_cache_max_entries = previous_cfg$blocked_cache_max_entries,
+      blocked_probe_bytes = previous_cfg$blocked_probe_bytes,
+      blocked_detect_on_200 = previous_cfg$blocked_detect_on_200,
+      blocked_body_scan_bytes = previous_cfg$blocked_body_scan_bytes,
+      pdf_enabled = previous_cfg$pdf_enabled,
+      pdf_timeout = previous_cfg$pdf_timeout,
+      pdf_max_bytes = previous_cfg$pdf_max_bytes,
+      pdf_max_pages = previous_cfg$pdf_max_pages,
+      pdf_max_text_chars = previous_cfg$pdf_max_text_chars,
       user_agent = previous_cfg$user_agent
     )
   } else {
@@ -1845,6 +1967,16 @@ configure_temporal <- function(time_filter = NULL) {
     cache_enabled = cache_enabled,
     cache_max_entries = cache_max_entries,
     cache_max_text_chars = cache_max_text_chars,
+    blocked_cache_ttl_sec = blocked_cache_ttl_sec,
+    blocked_cache_max_entries = blocked_cache_max_entries,
+    blocked_probe_bytes = blocked_probe_bytes,
+    blocked_detect_on_200 = blocked_detect_on_200,
+    blocked_body_scan_bytes = blocked_body_scan_bytes,
+    pdf_enabled = pdf_enabled,
+    pdf_timeout = pdf_timeout,
+    pdf_max_bytes = pdf_max_bytes,
+    pdf_max_pages = pdf_max_pages,
+    pdf_max_text_chars = pdf_max_text_chars,
     user_agent = user_agent
   )
 
@@ -1888,6 +2020,16 @@ configure_temporal <- function(time_filter = NULL) {
               cache_enabled = previous$cache_enabled,
               cache_max_entries = previous$cache_max_entries,
               cache_max_text_chars = previous$cache_max_text_chars,
+              blocked_cache_ttl_sec = previous$blocked_cache_ttl_sec,
+              blocked_cache_max_entries = previous$blocked_cache_max_entries,
+              blocked_probe_bytes = previous$blocked_probe_bytes,
+              blocked_detect_on_200 = previous$blocked_detect_on_200,
+              blocked_body_scan_bytes = previous$blocked_body_scan_bytes,
+              pdf_enabled = previous$pdf_enabled,
+              pdf_timeout = previous$pdf_timeout,
+              pdf_max_bytes = previous$pdf_max_bytes,
+              pdf_max_pages = previous$pdf_max_pages,
+              pdf_max_text_chars = previous$pdf_max_text_chars,
               user_agent = previous$user_agent
             )
           },
@@ -1913,6 +2055,16 @@ configure_temporal <- function(time_filter = NULL) {
                 cache_enabled = cache_enabled,
                 cache_max_entries = cache_max_entries,
                 cache_max_text_chars = cache_max_text_chars,
+                blocked_cache_ttl_sec = blocked_cache_ttl_sec,
+                blocked_cache_max_entries = blocked_cache_max_entries,
+                blocked_probe_bytes = blocked_probe_bytes,
+                blocked_detect_on_200 = blocked_detect_on_200,
+                blocked_body_scan_bytes = blocked_body_scan_bytes,
+                pdf_enabled = pdf_enabled,
+                pdf_timeout = pdf_timeout,
+                pdf_max_bytes = pdf_max_bytes,
+                pdf_max_pages = pdf_max_pages,
+                pdf_max_text_chars = pdf_max_text_chars,
                 user_agent = user_agent
               ),
               error = function(e) NULL

@@ -71,6 +71,16 @@
     cache_enabled = TRUE,
     cache_max_entries = 64L,
     cache_max_text_chars = 50000L,
+    blocked_cache_ttl_sec = 600L,
+    blocked_cache_max_entries = 256L,
+    blocked_probe_bytes = 65536L,
+    blocked_detect_on_200 = TRUE,
+    blocked_body_scan_bytes = 32768L,
+    pdf_enabled = TRUE,
+    pdf_timeout = 20,
+    pdf_max_bytes = 8000000L,
+    pdf_max_pages = 8L,
+    pdf_max_text_chars = 40000L,
     user_agent = "asa-test"
   )
 }
@@ -98,6 +108,16 @@
                                         cache_enabled = NULL,
                                         cache_max_entries = NULL,
                                         cache_max_text_chars = NULL,
+                                        blocked_cache_ttl_sec = NULL,
+                                        blocked_cache_max_entries = NULL,
+                                        blocked_probe_bytes = NULL,
+                                        blocked_detect_on_200 = NULL,
+                                        blocked_body_scan_bytes = NULL,
+                                        pdf_enabled = NULL,
+                                        pdf_timeout = NULL,
+                                        pdf_max_bytes = NULL,
+                                        pdf_max_pages = NULL,
+                                        pdf_max_text_chars = NULL,
                                         user_agent = NULL) {
       updates <- list(
         allow_read_webpages = allow_read_webpages,
@@ -116,6 +136,16 @@
         cache_enabled = cache_enabled,
         cache_max_entries = cache_max_entries,
         cache_max_text_chars = cache_max_text_chars,
+        blocked_cache_ttl_sec = blocked_cache_ttl_sec,
+        blocked_cache_max_entries = blocked_cache_max_entries,
+        blocked_probe_bytes = blocked_probe_bytes,
+        blocked_detect_on_200 = blocked_detect_on_200,
+        blocked_body_scan_bytes = blocked_body_scan_bytes,
+        pdf_enabled = pdf_enabled,
+        pdf_timeout = pdf_timeout,
+        pdf_max_bytes = pdf_max_bytes,
+        pdf_max_pages = pdf_max_pages,
+        pdf_max_text_chars = pdf_max_text_chars,
         user_agent = user_agent
       )
       state$configure_calls[[length(state$configure_calls) + 1L]] <- updates
@@ -267,6 +297,8 @@ test_that(".with_webpage_reader_config applies and restores when requested setti
     cache_enabled = TRUE,
     cache_max_entries = 64L,
     cache_max_text_chars = 50000L,
+    blocked_detect_on_200 = FALSE,
+    blocked_body_scan_bytes = 12345L,
     user_agent = "asa-test",
     conda_env = "asa_env",
     fn = function() {
@@ -278,6 +310,8 @@ test_that(".with_webpage_reader_config applies and restores when requested setti
   expect_identical(out, "ok")
   expect_true(isTRUE(inside$allow_read_webpages))
   expect_equal(inside$max_chars, 12345L)
+  expect_false(isTRUE(inside$blocked_detect_on_200))
+  expect_equal(inside$blocked_body_scan_bytes, 12345L)
   expect_length(mock$state$configure_calls, 3L)
   expect_equal(mock$state$clear_calls, 2L)
   expect_equal(mock$state$current, fixture)

@@ -15,8 +15,11 @@ import logging
 import math
 import os
 import re
+import shutil
 import socket
+import subprocess
 import threading
+import tempfile
 import time
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -58,6 +61,16 @@ class WebpageReaderConfig:
     cache_enabled: bool = True
     cache_max_entries: int = 64
     cache_max_text_chars: int = 200_000
+    blocked_cache_ttl_sec: int = 600
+    blocked_cache_max_entries: int = 256
+    blocked_probe_bytes: int = 65_536
+    blocked_detect_on_200: bool = True
+    blocked_body_scan_bytes: int = 32_768
+    pdf_enabled: bool = True
+    pdf_timeout: float = 20.0
+    pdf_max_bytes: int = 8_000_000
+    pdf_max_pages: int = 8
+    pdf_max_text_chars: int = 40_000
     user_agent: str = "ASA-Research-Agent/1.0"
 
 
@@ -67,6 +80,9 @@ _default_config = WebpageReaderConfig()
 _cache_lock = threading.Lock()
 _page_cache: "OrderedDict[str, Dict[str, Any]]" = OrderedDict()
 _url_aliases: Dict[str, str] = {}
+_blocked_cache_lock = threading.Lock()
+_blocked_cache: "OrderedDict[str, Dict[str, Any]]" = OrderedDict()
+_blocked_aliases: Dict[str, str] = {}
 
 
 def clear_webpage_reader_cache() -> None:
@@ -74,6 +90,9 @@ def clear_webpage_reader_cache() -> None:
     with _cache_lock:
         _page_cache.clear()
         _url_aliases.clear()
+    with _blocked_cache_lock:
+        _blocked_cache.clear()
+        _blocked_aliases.clear()
 
 
 def _normalize_url_for_cache(url: str) -> str:
@@ -123,6 +142,50 @@ def _cache_alias(from_key: str, to_key: str) -> None:
         _url_aliases[from_key] = to_key
 
 
+def _drop_blocked_aliases_for_key(cache_key: str) -> None:
+    for alias_key, alias_value in list(_blocked_aliases.items()):
+        if alias_key == cache_key or alias_value == cache_key:
+            del _blocked_aliases[alias_key]
+
+
+def _blocked_cache_get(key: str) -> Optional[Dict[str, Any]]:
+    now = time.time()
+    with _blocked_cache_lock:
+        resolved = _blocked_aliases.get(key, key)
+        entry = _blocked_cache.get(resolved)
+        if entry is None:
+            return None
+        expires_at = float(entry.get("expires_at") or 0.0)
+        if expires_at > 0 and expires_at <= now:
+            _blocked_cache.pop(resolved, None)
+            _drop_blocked_aliases_for_key(resolved)
+            return None
+        _blocked_cache.move_to_end(resolved, last=True)
+        return entry
+
+
+def _blocked_cache_set(key: str, entry: Dict[str, Any], *, cfg: WebpageReaderConfig) -> None:
+    if not cfg.cache_enabled:
+        return
+    ttl = int(cfg.blocked_cache_ttl_sec or 0)
+    if ttl <= 0:
+        return
+    with _blocked_cache_lock:
+        payload = dict(entry)
+        payload["expires_at"] = time.time() + float(ttl)
+        _blocked_cache[key] = payload
+        _blocked_cache.move_to_end(key, last=True)
+        max_entries = max(1, int(cfg.blocked_cache_max_entries or 256))
+        while len(_blocked_cache) > max_entries:
+            old_key, _old_val = _blocked_cache.popitem(last=False)
+            _drop_blocked_aliases_for_key(old_key)
+
+
+def _blocked_cache_alias(from_key: str, to_key: str) -> None:
+    with _blocked_cache_lock:
+        _blocked_aliases[from_key] = to_key
+
+
 def configure_webpage_reader(
     allow_read_webpages: bool = None,
     timeout: float = None,
@@ -140,6 +203,16 @@ def configure_webpage_reader(
     cache_enabled: bool = None,
     cache_max_entries: int = None,
     cache_max_text_chars: int = None,
+    blocked_cache_ttl_sec: int = None,
+    blocked_cache_max_entries: int = None,
+    blocked_probe_bytes: int = None,
+    blocked_detect_on_200: bool = None,
+    blocked_body_scan_bytes: int = None,
+    pdf_enabled: bool = None,
+    pdf_timeout: float = None,
+    pdf_max_bytes: int = None,
+    pdf_max_pages: int = None,
+    pdf_max_text_chars: int = None,
     user_agent: str = None,
 ) -> WebpageReaderConfig:
     """Configure global defaults for webpage reading. Call from R via reticulate.
@@ -181,6 +254,26 @@ def configure_webpage_reader(
             _default_config.cache_max_entries = int(cache_max_entries)
         if cache_max_text_chars is not None:
             _default_config.cache_max_text_chars = int(cache_max_text_chars)
+        if blocked_cache_ttl_sec is not None:
+            _default_config.blocked_cache_ttl_sec = int(blocked_cache_ttl_sec)
+        if blocked_cache_max_entries is not None:
+            _default_config.blocked_cache_max_entries = int(blocked_cache_max_entries)
+        if blocked_probe_bytes is not None:
+            _default_config.blocked_probe_bytes = int(blocked_probe_bytes)
+        if blocked_detect_on_200 is not None:
+            _default_config.blocked_detect_on_200 = bool(blocked_detect_on_200)
+        if blocked_body_scan_bytes is not None:
+            _default_config.blocked_body_scan_bytes = int(blocked_body_scan_bytes)
+        if pdf_enabled is not None:
+            _default_config.pdf_enabled = bool(pdf_enabled)
+        if pdf_timeout is not None:
+            _default_config.pdf_timeout = float(pdf_timeout)
+        if pdf_max_bytes is not None:
+            _default_config.pdf_max_bytes = int(pdf_max_bytes)
+        if pdf_max_pages is not None:
+            _default_config.pdf_max_pages = int(pdf_max_pages)
+        if pdf_max_text_chars is not None:
+            _default_config.pdf_max_text_chars = int(pdf_max_text_chars)
         if user_agent is not None:
             _default_config.user_agent = str(user_agent)
         return _default_config
@@ -740,6 +833,163 @@ def _as_http_fallback_url(url: str) -> str:
     return urlunparse(("http", parsed.netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
 
 
+_BLOCKED_TEXT_MARKERS_HIGH_CONFIDENCE = (
+    "one moment, please",
+    "please wait while your request is being verified",
+    "checking your browser before accessing",
+    "enable javascript and cookies",
+    "verify you are human",
+    "attention required",
+    "ddos protection",
+)
+
+_BLOCKED_TEXT_MARKERS_LOW_CONFIDENCE = (
+    "access denied",
+    "forbidden",
+    "captcha",
+    "cloudflare",
+    "unusual traffic",
+    "temporarily blocked",
+    "blocked",
+    "rate limit",
+    "too many requests",
+    "bot detection",
+    "security check",
+)
+
+_BLOCKED_TITLE_MARKERS = (
+    "one moment, please",
+    "attention required",
+    "security check",
+    "just a moment",
+)
+
+
+def _decode_bytes_for_probe(raw_bytes: bytes) -> str:
+    if not raw_bytes:
+        return ""
+    return raw_bytes.decode("utf-8", errors="replace").replace("\x00", "")
+
+
+def _extract_title_text(html_text: str) -> str:
+    if not html_text:
+        return ""
+    m = re.search(r"<title[^>]*>(.*?)</title>", html_text, flags=re.IGNORECASE | re.DOTALL)
+    if not m:
+        return ""
+    title = re.sub(r"\s+", " ", m.group(1) or "")
+    return title.strip()
+
+
+def _marker_hits(text: str, markers: Tuple[str, ...]) -> List[str]:
+    if not text:
+        return []
+    hits = []
+    for marker in markers:
+        if marker and marker in text:
+            hits.append(marker)
+    return hits
+
+
+def _detect_blocked_response(
+    status_code: Optional[int],
+    body_text: str,
+    *,
+    title_text: str = "",
+) -> Tuple[bool, Optional[str], List[str]]:
+    status = int(status_code or 0)
+    text_norm = (body_text or "").lower()
+    title_norm = (title_text or "").lower()
+
+    high_hits = _marker_hits(text_norm, _BLOCKED_TEXT_MARKERS_HIGH_CONFIDENCE)
+    low_hits = _marker_hits(text_norm, _BLOCKED_TEXT_MARKERS_LOW_CONFIDENCE)
+    title_hits = _marker_hits(title_norm, _BLOCKED_TITLE_MARKERS)
+    marker_hits = list(dict.fromkeys(high_hits + low_hits + [f"title:{m}" for m in title_hits]))
+
+    has_marker = bool(marker_hits)
+    if status in {403, 429} and has_marker:
+        return True, f"http_{status}_bot_marker", marker_hits
+    if status in {403, 429}:
+        return True, f"http_{status}", marker_hits
+    if status == 200:
+        if title_hits:
+            return True, "http_200_challenge_title", marker_hits
+        if high_hits:
+            return True, "http_200_bot_marker", marker_hits
+        if len(set(low_hits)) >= 2:
+            return True, "http_200_bot_marker", marker_hits
+        return False, None, marker_hits
+    return False, None, marker_hits
+
+
+def _extract_pdf_text_from_bytes(pdf_bytes: bytes, *, cfg: WebpageReaderConfig) -> Dict[str, Any]:
+    if not pdf_bytes:
+        return {"ok": False, "error": "pdf_unsupported_or_empty"}
+
+    pdftotext_bin = shutil.which("pdftotext")
+    if not pdftotext_bin:
+        return {"ok": False, "error": "pdftotext_missing"}
+
+    max_pages = max(1, int(cfg.pdf_max_pages or 8))
+    max_text_chars = max(500, int(cfg.pdf_max_text_chars or 40_000))
+    timeout = max(1.0, float(cfg.pdf_timeout or 20.0))
+
+    with tempfile.TemporaryDirectory(prefix="asa_pdf_") as tmp_dir:
+        pdf_path = os.path.join(tmp_dir, "input.pdf")
+        txt_path = os.path.join(tmp_dir, "output.txt")
+        with open(pdf_path, "wb") as file_handle:
+            file_handle.write(pdf_bytes)
+
+        cmd = [
+            pdftotext_bin,
+            "-q",
+            "-enc",
+            "UTF-8",
+            "-f",
+            "1",
+            "-l",
+            str(max_pages),
+            pdf_path,
+            txt_path,
+        ]
+
+        try:
+            proc = subprocess.run(
+                cmd,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                timeout=timeout,
+                check=False,
+            )
+        except subprocess.TimeoutExpired:
+            return {"ok": False, "error": "pdf_timeout"}
+        except Exception as exc:
+            return {"ok": False, "error": "pdf_parse_failed", "error_detail": str(exc)}
+
+        if int(proc.returncode or 0) != 0:
+            stderr_text = _decode_bytes_for_probe(proc.stderr or b"").strip()
+            return {
+                "ok": False,
+                "error": "pdf_parse_failed",
+                "error_detail": stderr_text or f"returncode={proc.returncode}",
+            }
+
+        try:
+            with open(txt_path, "r", encoding="utf-8", errors="replace") as file_handle:
+                text = file_handle.read().replace("\x00", "")
+        except Exception as exc:
+            return {"ok": False, "error": "pdf_parse_failed", "error_detail": str(exc)}
+
+        text = re.sub(r"\s+\n", "\n", text or "")
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        text = text.strip()
+        if not text:
+            return {"ok": False, "error": "pdf_unsupported_or_empty"}
+        if len(text) > max_text_chars:
+            text = text[:max_text_chars]
+        return {"ok": True, "text": text}
+
+
 def _allow_http_fallback(url: str, exc: Exception) -> bool:
     if not _is_tls_fetch_error(exc):
         return False
@@ -771,9 +1021,76 @@ def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> 
                 stream=True,
                 allow_redirects=True,
             )
-            r.raise_for_status()
-
+            status_code = int(getattr(r, "status_code", 0) or 0)
             content_type = (r.headers.get("Content-Type") or "").lower()
+            final_url = str(getattr(r, "url", target_url))
+
+            if status_code >= 400:
+                probe_cap = max(1024, int(cfg.blocked_probe_bytes or 65_536))
+                probe = bytearray()
+                for chunk in r.iter_content(chunk_size=8 * 1024):
+                    if not chunk:
+                        continue
+                    probe.extend(chunk)
+                    if len(probe) >= probe_cap:
+                        break
+                probe_text = _decode_bytes_for_probe(bytes(probe))
+                probe_title = _extract_title_text(probe_text)
+                is_blocked, blocked_reason, marker_hits = _detect_blocked_response(
+                    status_code,
+                    probe_text,
+                    title_text=probe_title,
+                )
+                return {
+                    "ok": False,
+                    "error": "http_error",
+                    "status_code": status_code,
+                    "content_type": content_type,
+                    "final_url": final_url,
+                    "is_blocked": bool(is_blocked),
+                    "blocked_reason": blocked_reason,
+                    "bytes_probed": int(len(probe)),
+                    "marker_hits": marker_hits,
+                }
+
+            allow_pdf = bool(cfg.pdf_enabled)
+            is_pdf = ("application/pdf" in content_type) or final_url.lower().endswith(".pdf")
+            if is_pdf and not allow_pdf:
+                return {
+                    "ok": False,
+                    "error": "unsupported_content_type",
+                    "content_type": content_type or "application/pdf",
+                    "final_url": final_url,
+                }
+
+            if is_pdf and allow_pdf:
+                pdf_max_bytes = max(16 * 1024, int(cfg.pdf_max_bytes or 8_000_000))
+                data = bytearray()
+                for chunk in r.iter_content(chunk_size=16 * 1024):
+                    if not chunk:
+                        continue
+                    data.extend(chunk)
+                    if len(data) >= pdf_max_bytes:
+                        break
+                parsed_pdf = _extract_pdf_text_from_bytes(bytes(data), cfg=cfg)
+                if not parsed_pdf.get("ok"):
+                    return {
+                        "ok": False,
+                        "error": parsed_pdf.get("error", "pdf_parse_failed"),
+                        "content_type": content_type or "application/pdf",
+                        "final_url": final_url,
+                        "error_detail": parsed_pdf.get("error_detail"),
+                    }
+                return {
+                    "ok": True,
+                    "source_type": "pdf",
+                    "title": "",
+                    "text": parsed_pdf.get("text", ""),
+                    "content_type": content_type or "application/pdf",
+                    "final_url": final_url,
+                    "bytes_read": int(len(data)),
+                }
+
             if not (
                 "text/html" in content_type
                 or "application/xhtml+xml" in content_type
@@ -784,7 +1101,7 @@ def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> 
                     "ok": False,
                     "error": "unsupported_content_type",
                     "content_type": content_type,
-                    "final_url": str(getattr(r, "url", target_url)),
+                    "final_url": final_url,
                 }
 
             data = bytearray()
@@ -795,14 +1112,38 @@ def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> 
                 if len(data) >= cfg.max_bytes:
                     break
 
+            if bool(cfg.blocked_detect_on_200):
+                body_scan_cap = max(1024, int(cfg.blocked_body_scan_bytes or 32_768))
+                probe_bytes = bytes(data[:body_scan_cap])
+                probe_text = _decode_bytes_for_probe(probe_bytes)
+                probe_title = _extract_title_text(probe_text)
+                is_blocked, blocked_reason, marker_hits = _detect_blocked_response(
+                    200,
+                    probe_text,
+                    title_text=probe_title,
+                )
+                if is_blocked:
+                    return {
+                        "ok": False,
+                        "error": "http_error",
+                        "status_code": status_code,
+                        "content_type": content_type,
+                        "final_url": final_url,
+                        "is_blocked": True,
+                        "blocked_reason": blocked_reason,
+                        "bytes_probed": int(len(probe_bytes)),
+                        "marker_hits": marker_hits,
+                    }
+
             # Best-effort decode
             encoding = r.encoding or "utf-8"
             html = data.decode(encoding, errors="replace").replace("\x00", "")
             return {
                 "ok": True,
+                "source_type": "html",
                 "html": html,
                 "content_type": content_type,
-                "final_url": str(getattr(r, "url", target_url)),
+                "final_url": final_url,
                 "bytes_read": int(len(data)),
             }
         finally:
@@ -893,17 +1234,106 @@ class OpenWebpageTool(BaseTool):
                 if cache_entry is not None:
                     cache_hit = True
 
+            blocked_entry = None
+            if cache_entry is None and cfg.cache_enabled:
+                blocked_entry = _blocked_cache_get(cache_key)
+            if blocked_entry is not None:
+                final_url = blocked_entry.get("final_url") or norm
+                status_code = blocked_entry.get("status_code")
+                blocked_reason = blocked_entry.get("blocked_reason") or "blocked"
+                marker_hits = blocked_entry.get("marker_hits") or []
+                return (
+                    f"URL: {norm}\n"
+                    f"Final URL: {final_url}\n"
+                    "Title: (unavailable)\n"
+                    "Bytes read: 0\n"
+                    "Cache: HIT_BLOCKED\n\n"
+                    f"Blocked fetch cached for this URL.\n"
+                    f"Reason: {blocked_reason}"
+                    + (f" (status={status_code})" if status_code is not None else "")
+                    + (
+                        f"\nMarkers: {', '.join(str(x) for x in marker_hits[:4])}"
+                        if marker_hits
+                        else ""
+                    )
+                )
+
             if cache_entry is None:
                 fetched = _fetch_html(norm, proxy=self._proxy, cfg=cfg)
                 if not fetched.get("ok"):
+                    if bool(fetched.get("is_blocked")):
+                        final_url = fetched.get("final_url") or norm
+                        final_key = _normalize_url_for_cache(final_url)
+                        block_entry = {
+                            "url": norm,
+                            "final_url": final_url,
+                            "status_code": fetched.get("status_code"),
+                            "blocked_reason": fetched.get("blocked_reason") or "blocked",
+                            "marker_hits": list(fetched.get("marker_hits") or []),
+                            "fetched_at": time.time(),
+                        }
+                        _blocked_cache_set(final_key, block_entry, cfg=cfg)
+                        if final_key != cache_key:
+                            _blocked_cache_alias(cache_key, final_key)
+                        return (
+                            f"URL: {norm}\n"
+                            f"Final URL: {final_url}\n"
+                            "Title: (unavailable)\n"
+                            "Bytes read: 0\n"
+                            "Cache: MISS\n\n"
+                            "Blocked fetch detected.\n"
+                            f"Reason: {block_entry['blocked_reason']}"
+                            + (
+                                f" (status={block_entry.get('status_code')})"
+                                if block_entry.get("status_code") is not None
+                                else ""
+                            )
+                            + (
+                                f"\nMarkers: {', '.join(str(x) for x in block_entry.get('marker_hits', [])[:4])}"
+                                if block_entry.get("marker_hits")
+                                else ""
+                            )
+                        )
                     return (
                         f"Failed to open URL: {norm}\n"
                         f"Error: {fetched.get('error')}\n"
-                        f"Content-Type: {fetched.get('content_type')}\n"
-                        f"Final URL: {fetched.get('final_url')}"
+                        + (
+                            f"Status: {fetched.get('status_code')}\n"
+                            if fetched.get("status_code") is not None
+                            else ""
+                        )
+                        + (
+                            f"Content-Type: {fetched.get('content_type')}\n"
+                            if fetched.get("content_type") is not None
+                            else ""
+                        )
+                        + f"Final URL: {fetched.get('final_url')}"
+                        + (
+                            f"\nDetail: {fetched.get('error_detail')}"
+                            if fetched.get("error_detail")
+                            else ""
+                        )
+                        + (
+                            f"\nProbe bytes: {fetched.get('bytes_probed')}"
+                            if fetched.get("bytes_probed") is not None
+                            else ""
+                        )
+                        + (
+                            f"\nMarkers: {', '.join(str(x) for x in (fetched.get('marker_hits') or [])[:4])}"
+                            if fetched.get("marker_hits")
+                            else ""
+                        )
                     )
 
-                title, text = _extract_main_text(fetched.get("html", ""), page_url=fetched.get("final_url") or norm)
+                source_type = str(fetched.get("source_type") or "html")
+                if source_type == "pdf":
+                    title = fetched.get("title") or ""
+                    text = str(fetched.get("text") or "")
+                else:
+                    title, text = _extract_main_text(
+                        fetched.get("html", ""),
+                        page_url=fetched.get("final_url") or norm,
+                    )
                 # Avoid caching huge pages unbounded.
                 max_text = int(cfg.cache_max_text_chars or 200_000)
                 if max_text > 0 and len(text) > max_text:
@@ -918,6 +1348,7 @@ class OpenWebpageTool(BaseTool):
                     "text": text,
                     "bytes_read": fetched.get("bytes_read"),
                     "content_type": fetched.get("content_type"),
+                    "source_type": source_type,
                     "fetched_at": time.time(),
                 }
                 if cfg.cache_enabled:
@@ -945,6 +1376,9 @@ class OpenWebpageTool(BaseTool):
                 f"Bytes read: {cache_entry.get('bytes_read')}",
                 f"Cache: {'HIT' if cache_hit else 'MISS'}",
             ]
+            source_type = str(cache_entry.get("source_type") or "")
+            if source_type == "pdf":
+                header.append("Source-Type: pdf")
             fallback_note = cache_entry.get("fallback_note")
             if isinstance(fallback_note, str) and fallback_note.strip():
                 header.append(f"Fetch fallback: {fallback_note}")
