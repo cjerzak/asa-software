@@ -1167,6 +1167,7 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param config_search Optional config$search (asa_search or list)
 #' @param allow_read_webpages Passed through to .resolve_webpage_reader_settings()
 #' @param webpage_relevance_mode Passed through to .resolve_webpage_reader_settings()
+#' @param webpage_heuristic_profile Passed through to .resolve_webpage_reader_settings()
 #' @param webpage_embedding_provider Passed through to .resolve_webpage_reader_settings()
 #' @param webpage_embedding_model Passed through to .resolve_webpage_reader_settings()
 #' @return List with temporal + resolved webpage reader settings
@@ -1176,6 +1177,7 @@ configure_temporal <- function(time_filter = NULL) {
                                                 config_search = NULL,
                                                 allow_read_webpages = NULL,
                                                 webpage_relevance_mode = NULL,
+                                                webpage_heuristic_profile = NULL,
                                                 webpage_embedding_provider = NULL,
                                                 webpage_embedding_model = NULL,
                                                 webpage_timeout = NULL,
@@ -1206,6 +1208,7 @@ configure_temporal <- function(time_filter = NULL) {
     config_search,
     allow_read_webpages,
     webpage_relevance_mode,
+    webpage_heuristic_profile,
     webpage_embedding_provider,
     webpage_embedding_model,
     webpage_timeout,
@@ -1237,6 +1240,7 @@ configure_temporal <- function(time_filter = NULL) {
     temporal = temporal,
     allow_read_webpages = webpage_settings$allow_read_webpages,
     relevance_mode = webpage_settings$relevance_mode,
+    heuristic_profile = webpage_settings$heuristic_profile,
     embedding_provider = webpage_settings$embedding_provider,
     embedding_model = webpage_settings$embedding_model,
     timeout = webpage_settings$timeout,
@@ -1288,6 +1292,7 @@ configure_temporal <- function(time_filter = NULL) {
                                      temporal = NULL,
                                      allow_read_webpages = NULL,
                                      webpage_relevance_mode = NULL,
+                                     webpage_heuristic_profile = NULL,
                                      webpage_embedding_provider = NULL,
                                      webpage_embedding_model = NULL) {
   config_search <- .resolve_agent_config_value(config = config, agent = agent, key = "search")
@@ -1299,6 +1304,7 @@ configure_temporal <- function(time_filter = NULL) {
     config_search = config_search,
     allow_read_webpages = allow_read_webpages,
     webpage_relevance_mode = webpage_relevance_mode,
+    webpage_heuristic_profile = webpage_heuristic_profile,
     webpage_embedding_provider = webpage_embedding_provider,
     webpage_embedding_model = webpage_embedding_model
   )
@@ -1317,6 +1323,7 @@ configure_temporal <- function(time_filter = NULL) {
                                    temporal = NULL,
                                    allow_read_webpages = NULL,
                                    webpage_relevance_mode = NULL,
+                                   webpage_heuristic_profile = NULL,
                                    webpage_embedding_provider = NULL,
                                    webpage_embedding_model = NULL) {
   runtime <- .resolve_runtime_settings(
@@ -1325,6 +1332,7 @@ configure_temporal <- function(time_filter = NULL) {
     temporal = temporal,
     allow_read_webpages = allow_read_webpages,
     webpage_relevance_mode = webpage_relevance_mode,
+    webpage_heuristic_profile = webpage_heuristic_profile,
     webpage_embedding_provider = webpage_embedding_provider,
     webpage_embedding_model = webpage_embedding_model
   )
@@ -1343,6 +1351,7 @@ configure_temporal <- function(time_filter = NULL) {
     .with_webpage_reader_config(
       runtime$allow_read_webpages,
       relevance_mode = runtime$relevance_mode,
+      heuristic_profile = runtime$heuristic_profile,
       embedding_provider = runtime$embedding_provider,
       embedding_model = runtime$embedding_model,
       timeout = runtime$timeout,
@@ -1665,6 +1674,7 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param config_search asa_search object or list of search settings
 #' @param allow_read_webpages TRUE/FALSE/NULL
 #' @param webpage_relevance_mode "auto", "lexical", "embeddings", or NULL
+#' @param webpage_heuristic_profile "generic", "legacy", or NULL
 #' @param webpage_embedding_provider "auto", "openai", "sentence_transformers", or NULL
 #' @param webpage_embedding_model Embedding model identifier or NULL
 #' @param webpage_timeout OpenWebpage timeout in seconds, or NULL to use the
@@ -1707,6 +1717,7 @@ configure_temporal <- function(time_filter = NULL) {
 .resolve_webpage_reader_settings <- function(config_search = NULL,
                                              allow_read_webpages = NULL,
                                              webpage_relevance_mode = NULL,
+                                             webpage_heuristic_profile = NULL,
                                              webpage_embedding_provider = NULL,
                                              webpage_embedding_model = NULL,
                                              webpage_timeout = NULL,
@@ -1736,6 +1747,7 @@ configure_temporal <- function(time_filter = NULL) {
   fields <- list(
     allow_read_webpages  = allow_read_webpages,
     relevance_mode       = webpage_relevance_mode,
+    heuristic_profile    = webpage_heuristic_profile,
     embedding_provider   = webpage_embedding_provider,
     embedding_model      = webpage_embedding_model,
     timeout              = webpage_timeout,
@@ -1767,6 +1779,7 @@ configure_temporal <- function(time_filter = NULL) {
   config_keys <- c(
     allow_read_webpages  = "allow_read_webpages",
     relevance_mode       = "webpage_relevance_mode",
+    heuristic_profile    = "webpage_heuristic_profile",
     embedding_provider   = "webpage_embedding_provider",
     embedding_model      = "webpage_embedding_model",
     timeout              = "webpage_timeout",
@@ -1811,6 +1824,8 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param relevance_mode Relevance selection for opened webpages:
 #'   "auto", "lexical", or "embeddings". "auto" uses embeddings when available,
 #'   otherwise falls back to lexical overlap.
+#' @param heuristic_profile Heuristic profile for hyperlink annotation:
+#'   "generic" (task-agnostic default) or "legacy".
 #' @param embedding_provider Embedding provider for relevance ("auto",
 #'   "openai", or "sentence_transformers").
 #' @param embedding_model Embedding model identifier for relevance.
@@ -1843,6 +1858,7 @@ configure_temporal <- function(time_filter = NULL) {
 #' @keywords internal
 .with_webpage_reader_config <- function(allow_read_webpages,
                                        relevance_mode = NULL,
+                                       heuristic_profile = NULL,
                                        embedding_provider = NULL,
                                        embedding_model = NULL,
                                        timeout = NULL,
@@ -1874,6 +1890,7 @@ configure_temporal <- function(time_filter = NULL) {
   # If nothing was specified, don't touch Python config.
   if (is.null(allow_read_webpages) &&
       is.null(relevance_mode) &&
+      is.null(heuristic_profile) &&
       is.null(embedding_provider) &&
       is.null(embedding_model) &&
       is.null(timeout) &&
@@ -1938,6 +1955,7 @@ configure_temporal <- function(time_filter = NULL) {
     list(
       allow_read_webpages = previous_cfg$allow_read_webpages,
       relevance_mode = previous_cfg$relevance_mode,
+      heuristic_profile = previous_cfg$heuristic_profile,
       embedding_provider = previous_cfg$embedding_provider,
       embedding_model = previous_cfg$embedding_model,
       timeout = previous_cfg$timeout,
@@ -1971,6 +1989,7 @@ configure_temporal <- function(time_filter = NULL) {
   requested <- list(
     allow_read_webpages = allow_arg,
     relevance_mode = relevance_mode,
+    heuristic_profile = heuristic_profile,
     embedding_provider = embedding_provider,
     embedding_model = embedding_model,
     timeout = timeout,
@@ -2024,6 +2043,7 @@ configure_temporal <- function(time_filter = NULL) {
             asa_env$webpage_tool$configure_webpage_reader(
               allow_read_webpages = previous$allow_read_webpages,
               relevance_mode = previous$relevance_mode,
+              heuristic_profile = previous$heuristic_profile,
               embedding_provider = previous$embedding_provider,
               embedding_model = previous$embedding_model,
               timeout = previous$timeout,
@@ -2059,6 +2079,7 @@ configure_temporal <- function(time_filter = NULL) {
               asa_env$webpage_tool$configure_webpage_reader(
                 allow_read_webpages = allow_arg,
                 relevance_mode = relevance_mode,
+                heuristic_profile = heuristic_profile,
                 embedding_provider = embedding_provider,
                 embedding_model = embedding_model,
                 timeout = timeout,

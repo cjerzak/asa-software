@@ -267,6 +267,28 @@ def _within_date_range(date_str: Optional[str], date_after: Optional[str], date_
     return True
 
 
+def _schema_extraction_example(schema_keys: List[str]) -> str:
+    """Build a neutral schema-driven JSON example for extraction prompts."""
+    if not schema_keys:
+        return '[{"field_1": "value", "field_2": null, "source_url": "https://example.com/source"}]'
+
+    row_a: Dict[str, Any] = {}
+    row_b: Dict[str, Any] = {}
+    for idx, key in enumerate(schema_keys):
+        if idx == 0:
+            row_a[key] = "Example Value A"
+            row_b[key] = "Example Value B"
+        elif idx == 1:
+            row_a[key] = "Example Attribute"
+            row_b[key] = None
+        else:
+            row_a[key] = None
+            row_b[key] = None
+    row_a["source_url"] = "https://example.com/source-a"
+    row_b["source_url"] = "https://example.com/source-b"
+    return json.dumps([row_a, row_b], ensure_ascii=False, indent=2)
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Planner Node
 # ────────────────────────────────────────────────────────────────────────
@@ -440,11 +462,18 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         needs_more = target_items is not None and total_unique < target_items
 
         # Try Wikidata first if we have a matching type
-        if wikidata_type and wikidata_tool and config.get("use_wikidata", True):
-            logger.info(f"Querying Wikidata for: {wikidata_type}")
+        wikidata_type_norm = str(wikidata_type or "").strip()
+        known_wikidata_types = set(get_known_entity_types())
+        can_query_wikidata = (
+            bool(wikidata_type_norm)
+            and wikidata_type_norm.lower() not in {"null", "none"}
+            and wikidata_type_norm in known_wikidata_types
+        )
+        if can_query_wikidata and wikidata_tool and config.get("use_wikidata", True):
+            logger.info(f"Querying Wikidata for: {wikidata_type_norm}")
             try:
                 wd_rows = query_known_entity(
-                    wikidata_type,
+                    wikidata_type_norm,
                     config=wikidata_tool.config,
                     date_after=date_after,
                     date_before=date_before,
@@ -477,6 +506,11 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
 
             except Exception as e:
                 logger.error(f"Wikidata error: {e}")
+        elif wikidata_type and wikidata_tool and config.get("use_wikidata", True):
+            logger.info(
+                "Skipping Wikidata query for unsupported type: %s",
+                wikidata_type,
+            )
 
         # If no Wikidata results (or we still need more), try web search
         if config.get("use_web", True) and (len(results) == 0 or needs_more):
@@ -582,6 +616,7 @@ Use the Search tool to find information."""
                 # Extract structured entities from tool output
                 if tool_outputs and schema:
                     schema_keys = list(schema.keys())
+                    schema_example = _schema_extraction_example(schema_keys)
                     extraction_prompt = (
                         "You are extracting ALL structured entities from search results and opened webpages.\n\n"
                         "CRITICAL INSTRUCTIONS:\n"
@@ -596,9 +631,8 @@ Use the Search tool to find information."""
                         f"Required fields: {schema_keys}\n"
                         "Return ONLY a JSON array. Each item MUST have these fields (use null for unknown).\n"
                         "You MAY also include an optional 'source_url' field.\n\n"
-                        "Example (for schema [name, state, party]):\n"
-                        '[{"name": "Jane Smith", "state": "California", "party": "Democrat", "source_url": "https://..."},\n'
-                        ' {"name": "Bob Jones", "state": null, "party": "Republican"}]\n\n'
+                        "Example:\n"
+                        f"{schema_example}\n\n"
                         "Tool outputs:\n"
                         + "\n\n".join(tool_outputs)
                     )

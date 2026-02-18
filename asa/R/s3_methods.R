@@ -413,6 +413,9 @@ print.asa_temporal <- function(x, ...) {
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
 #'   One of: "auto", "lexical", "embeddings".
+#' @param webpage_heuristic_profile Heuristic profile used when annotating links
+#'   from opened webpages. One of: "generic" (task-agnostic default) or
+#'   "legacy" (compatibility mode with older domain-biased cues).
 #' @param webpage_embedding_provider Embedding provider for relevance. One of:
 #'   "auto", "openai", "sentence_transformers".
 #' @param webpage_embedding_model Embedding model identifier for relevance.
@@ -454,6 +457,9 @@ print.asa_temporal <- function(x, ...) {
 #' @param webpage_pdf_max_text_chars Max extracted PDF characters kept before
 #'   relevance selection/output truncation.
 #' @param webpage_user_agent User-Agent string used for webpage fetches.
+#' @param wikidata_template_path Optional path to a Wikidata template JSON file.
+#'   When provided, Wikidata known-entity catalogs are loaded from this file.
+#'   If NULL (default), no task-specific template catalog is auto-loaded.
 #'
 #' @return An object of class \code{asa_search}
 #'
@@ -506,6 +512,7 @@ search_options <- function(max_results = NULL,
                            inter_search_delay = NULL,
                            allow_read_webpages = NULL,
                            webpage_relevance_mode = NULL,
+                           webpage_heuristic_profile = NULL,
                            webpage_embedding_provider = NULL,
                            webpage_embedding_model = NULL,
                            webpage_timeout = NULL,
@@ -531,6 +538,7 @@ search_options <- function(max_results = NULL,
                            webpage_pdf_max_pages = NULL,
                            webpage_pdf_max_text_chars = NULL,
                            webpage_user_agent = NULL,
+                           wikidata_template_path = NULL,
                            wiki_top_k_results = NULL,
                            wiki_doc_content_chars_max = NULL,
                            search_doc_content_chars_max = NULL) {
@@ -548,6 +556,7 @@ search_options <- function(max_results = NULL,
       search_doc_content_chars_max = search_doc_content_chars_max %||% 500L,
       allow_read_webpages = allow_read_webpages %||% FALSE,
       webpage_relevance_mode = webpage_relevance_mode %||% "auto",
+      webpage_heuristic_profile = webpage_heuristic_profile %||% "generic",
       webpage_embedding_provider = webpage_embedding_provider %||% "auto",
       webpage_embedding_model = webpage_embedding_model %||% "text-embedding-3-small",
       # OpenWebpage tool tuning (optional; defaults to Python-side config)
@@ -573,7 +582,8 @@ search_options <- function(max_results = NULL,
       webpage_pdf_max_bytes = webpage_pdf_max_bytes,
       webpage_pdf_max_pages = webpage_pdf_max_pages,
       webpage_pdf_max_text_chars = webpage_pdf_max_text_chars,
-      webpage_user_agent = webpage_user_agent
+      webpage_user_agent = webpage_user_agent,
+      wikidata_template_path = wikidata_template_path
     ),
     class = "asa_search"
   )
@@ -604,6 +614,13 @@ print.asa_search <- function(x, ...) {
   }
   if (!is.null(x$webpage_chunk_chars)) {
     cat(", webpage_chunk_chars=", x$webpage_chunk_chars, sep = "")
+  }
+  if (!is.null(x$webpage_heuristic_profile) &&
+      !identical(x$webpage_heuristic_profile, "generic")) {
+    cat(", webpage_heuristic_profile=", x$webpage_heuristic_profile, sep = "")
+  }
+  if (!is.null(x$wikidata_template_path) && nzchar(as.character(x$wikidata_template_path))) {
+    cat(", wikidata_template_path=", x$wikidata_template_path, sep = "")
   }
   cat("\n")
   invisible(x)

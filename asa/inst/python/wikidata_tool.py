@@ -135,16 +135,35 @@ def _inject_temporal_filter(query: str, date_after: Optional[str], date_before: 
     return modified
 
 
-def _load_entity_templates() -> Dict[str, Dict[str, Any]]:
-    """Load entity templates from external JSON config."""
+def _load_entity_templates(template_path: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
+    """Load entity templates from explicit or environment-provided JSON config.
+
+    Shared runtime defaults remain task-agnostic: bundled templates are *not*
+    loaded unless explicitly requested via `template_path` or
+    `ASA_WIKIDATA_TEMPLATES`.
+    """
     candidates: List[pathlib.Path] = []
+
+    explicit = str(template_path or "").strip()
+    if explicit:
+        candidates.append(pathlib.Path(explicit).expanduser())
+
     env_path = os.environ.get(WIKIDATA_TEMPLATE_ENV, "").strip()
     if env_path:
-        candidates.append(pathlib.Path(env_path).expanduser())
-    candidates.append(DEFAULT_TEMPLATE_PATH)
+        env_candidate = pathlib.Path(env_path).expanduser()
+        if all(env_candidate != c for c in candidates):
+            candidates.append(env_candidate)
+
+    if not candidates:
+        logger.info(
+            "No Wikidata templates configured. Set %s or pass template_path explicitly.",
+            WIKIDATA_TEMPLATE_ENV,
+        )
+        return {}
 
     for path in candidates:
         if not path.exists():
+            logger.warning("Wikidata template path does not exist: %s", path)
             continue
         try:
             raw = json.loads(path.read_text(encoding="utf-8"))
@@ -165,7 +184,7 @@ def _load_entity_templates() -> Dict[str, Dict[str, Any]]:
         if normalized:
             logger.info("Loaded %d Wikidata templates from %s", len(normalized), path)
             return normalized
-    logger.warning("No Wikidata templates loaded (checked env + default path)")
+        logger.warning("No valid Wikidata templates found in %s", path)
     return {}
 
 
@@ -183,6 +202,22 @@ def _template_keywords(template: Dict[str, Any]) -> List[str]:
 
 
 ENTITY_TEMPLATES = _load_entity_templates()
+
+
+def configure_entity_templates(template_path: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
+    """Reload template catalog from explicit path or environment variable.
+
+    Passing `None` reloads from `ASA_WIKIDATA_TEMPLATES` only.
+    Passing an empty string clears configured templates.
+    """
+    global ENTITY_TEMPLATES
+
+    if template_path == "":
+        ENTITY_TEMPLATES = {}
+        return ENTITY_TEMPLATES
+
+    ENTITY_TEMPLATES = _load_entity_templates(template_path=template_path)
+    return ENTITY_TEMPLATES
 
 
 def _extract_wikidata_id(uri: str) -> str:
@@ -305,7 +340,10 @@ def query_known_entity(
     if not template:
         raise ValueError(
             f"Unknown entity type: {entity_type}. "
-            f"Known types: {', '.join(ENTITY_TEMPLATES.keys())}"
+            f"Known types: {', '.join(ENTITY_TEMPLATES.keys())}. "
+            f"Configure templates via `{WIKIDATA_TEMPLATE_ENV}` or "
+            f"create_wikidata_tool(template_path=...). "
+            f"Bundled example template: {DEFAULT_TEMPLATE_PATH}"
         )
 
     # Use config temporal params if not explicitly provided
@@ -352,8 +390,8 @@ def infer_entity_type(query: str) -> Optional[str]:
 class WikidataSearchTool(BaseTool):
     """LangChain tool for querying Wikidata SPARQL endpoint.
 
-    This tool provides authoritative enumeration of entities like
-    US Senators, countries, Fortune 500 companies, etc.
+    This tool provides authoritative enumeration of entities when configured
+    with template catalogs, and also supports explicit raw SPARQL queries.
     """
 
     name: str = "wikidata_search"
@@ -457,19 +495,29 @@ class WikidataSearchTool(BaseTool):
 
         lines = [f"Found {len(results)} results:"]
 
-        for i, item in enumerate(results[:50], 1):  # Limit display to first 50
-            # Build display line with key fields
-            parts = []
-            if "name" in item:
-                parts.append(item["name"])
-            if "state" in item:
-                parts.append(f"({item['state']})")
-            if "party" in item:
-                parts.append(f"[{item['party']}]")
-            if "wikidata_id" in item:
-                parts.append(f"[{item['wikidata_id']}]")
+        display_fields: List[str] = []
+        if isinstance(schema, list):
+            for field_name in schema:
+                text = str(field_name or "").strip()
+                if text and text not in display_fields:
+                    display_fields.append(text)
+        if "name" not in display_fields:
+            display_fields.insert(0, "name")
+        if "wikidata_id" not in display_fields:
+            display_fields.append("wikidata_id")
 
-            lines.append(f"{i}. {' '.join(parts)}")
+        for i, item in enumerate(results[:50], 1):  # Limit display to first 50
+            parts = []
+            for field_name in display_fields[:6]:
+                if field_name not in item:
+                    continue
+                value = item.get(field_name)
+                if value in (None, ""):
+                    continue
+                parts.append(f"{field_name}={value}")
+            if not parts:
+                parts.append(json.dumps(item, ensure_ascii=False)[:180])
+            lines.append(f"{i}. {' | '.join(parts)}")
 
         if len(results) > 50:
             lines.append(f"... and {len(results) - 50} more results.")
@@ -484,7 +532,8 @@ class WikidataSearchTool(BaseTool):
 def create_wikidata_tool(
     config: Optional[WikidataConfig] = None,
     date_after: Optional[str] = None,
-    date_before: Optional[str] = None
+    date_before: Optional[str] = None,
+    template_path: Optional[str] = None,
 ) -> WikidataSearchTool:
     """Factory function to create a WikidataSearchTool instance.
 
@@ -492,10 +541,14 @@ def create_wikidata_tool(
         config: Optional WikidataConfig for customization
         date_after: Default temporal filter - only include entities valid after this date
         date_before: Default temporal filter - only include entities valid before this date
+        template_path: Optional explicit JSON template path. When provided,
+            template catalogs are loaded from this file for the current process.
 
     Returns:
         Configured WikidataSearchTool instance
     """
+    if template_path is not None:
+        configure_entity_templates(template_path=template_path)
     tool = WikidataSearchTool(config=config or WikidataConfig())
     if date_after:
         tool.date_after = date_after

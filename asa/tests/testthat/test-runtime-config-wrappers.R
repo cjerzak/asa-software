@@ -57,6 +57,7 @@
   list(
     allow_read_webpages = allow_read_webpages,
     relevance_mode = "lexical",
+    heuristic_profile = "generic",
     embedding_provider = "auto",
     embedding_model = "text-embedding-3-small",
     timeout = 30,
@@ -94,6 +95,7 @@
   tool <- list(
     configure_webpage_reader = function(allow_read_webpages = NULL,
                                         relevance_mode = NULL,
+                                        heuristic_profile = NULL,
                                         embedding_provider = NULL,
                                         embedding_model = NULL,
                                         timeout = NULL,
@@ -122,6 +124,7 @@
       updates <- list(
         allow_read_webpages = allow_read_webpages,
         relevance_mode = relevance_mode,
+        heuristic_profile = heuristic_profile,
         embedding_provider = embedding_provider,
         embedding_model = embedding_model,
         timeout = timeout,

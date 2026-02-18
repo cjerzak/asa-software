@@ -3348,11 +3348,15 @@ def _maybe_generate_plan(state: dict, model: Any) -> dict:
         schema_fields = [k for k in raw_schema.keys() if not k.endswith("_source")]
     schema_hint = ""
     if schema_fields:
+        sample_fields = schema_fields[:2]
+        if len(sample_fields) < 2:
+            sample_fields = [schema_fields[0], "another_field"]
+        sample_phrase = " and ".join(sample_fields[:2])
         schema_hint = (
             "\n\nThe task requires populating these fields: "
             + ", ".join(schema_fields)
             + ".\nCreate steps that target specific fields (e.g., "
-            "'Search for birth_year and birth_place') rather than generic "
+            + f"'Search for {sample_phrase}') rather than generic "
             "'Research the topic' steps."
         )
 
@@ -3411,7 +3415,8 @@ def _base_system_prompt(
         "MANDATORY — save_finding after every discovery: Every time you discover a value for a schema field, "
         "you MUST IMMEDIATELY call save_finding(finding='field_name = value (source: URL)', category='fact') "
         "BEFORE doing anything else. This is non-negotiable — findings not saved WILL be lost.\n"
-        "Example: After finding birth_year=1982 on a webpage, call save_finding(finding='birth_year = 1982 (source: https://example.com/bio)', category='fact')\n\n"
+        "Example: After finding a concrete value on a webpage, call "
+        "save_finding(finding='field_name = value (source: https://example.com/source)', category='fact')\n\n"
         "Canonical extraction rule: when a FIELD STATUS ledger is present, treat it as authoritative. "
         "Use scratchpad as optional working notes only.\n\n"
         f"Tool-call budget: {budget['tool_calls_used']}/{budget['tool_calls_limit']} used. "
@@ -4618,30 +4623,14 @@ def _is_within_finalization_cutoff(state: Any, remaining: Optional[int]) -> bool
 
 
 def _query_context_label(state: Any) -> str:
-    """Extract a generic person/entity context from the seed prompt."""
-    messages = state.get("messages") or []
-    if not messages:
+    """Extract a short, task-agnostic context label from the latest user prompt."""
+    prompt = _extract_last_user_prompt(list(state.get("messages") or []))
+    if not prompt:
         return ""
-
-    target_candidates = []
-    for msg in messages[:5]:
-        content = _message_content_to_text(getattr(msg, "content", ""))
-        if not content:
-            continue
-        # Prefer explicit "Name:" lines from task prompts.
-        for line in str(content).splitlines():
-            if "name:" in line.lower():
-                candidate = line.split(":", 1)[1].strip()
-                if candidate and " " in candidate:
-                    target_candidates.append(candidate)
-                if len(target_candidates) >= 3:
-                    break
-        if target_candidates:
-            break
-
-    if target_candidates:
-        return target_candidates[0].replace('"', "").strip()
-    return ""
+    cleaned = re.sub(r"\s+", " ", str(prompt)).strip().strip("\"'")
+    if not cleaned:
+        return ""
+    return cleaned[:96]
 
 
 def _build_nudge_payload(

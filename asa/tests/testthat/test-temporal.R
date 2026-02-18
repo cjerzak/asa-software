@@ -502,6 +502,35 @@ test_that("create_wikidata_tool handles NULL temporal parameters", {
   expect_true(is.null(tool$date_before) || tool$date_before == "")
 })
 
+test_that("Wikidata templates are opt-in and can be loaded explicitly", {
+  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+
+  python_path <- asa_test_python_path(required_files = c("wikidata_tool.py", "wikidata_templates.json"))
+  template_path <- file.path(python_path, "wikidata_templates.json")
+  if (!file.exists(template_path)) {
+    skip("wikidata_templates.json not found in python path")
+  }
+
+  old_env <- Sys.getenv("ASA_WIKIDATA_TEMPLATES", unset = NA_character_)
+  on.exit({
+    if (is.na(old_env)) {
+      Sys.unsetenv("ASA_WIKIDATA_TEMPLATES")
+    } else {
+      Sys.setenv(ASA_WIKIDATA_TEMPLATES = old_env)
+    }
+    try(wikidata$configure_entity_templates(template_path = ""), silent = TRUE)
+  }, add = TRUE)
+
+  Sys.unsetenv("ASA_WIKIDATA_TEMPLATES")
+  wikidata$configure_entity_templates(template_path = "")
+  expect_length(wikidata$get_known_entity_types(), 0L)
+
+  tool <- wikidata$create_wikidata_tool(template_path = template_path)
+  expect_false(is.null(tool))
+  known_types <- wikidata$get_known_entity_types()
+  expect_true("us_senators" %in% known_types)
+})
+
 test_that("WikidataConfig has correct defaults", {
   wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 

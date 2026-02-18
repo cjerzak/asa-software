@@ -26,6 +26,15 @@ if (python_path == "" || !file.exists(file.path(python_path, "wikidata_tool.py")
 cat(sprintf("   Python path: %s\n", python_path))
 wikidata <- import_from_path("wikidata_tool", path = python_path)
 
+# Explicitly load optional template catalog for this manual test.
+template_path <- file.path(python_path, "wikidata_templates.json")
+if (file.exists(template_path)) {
+  wikidata$configure_entity_templates(template_path = template_path)
+  cat(sprintf("   Template path: %s\n", template_path))
+} else {
+  stop("wikidata_templates.json not found; pass template path explicitly for manual Wikidata tests")
+}
+
 # Test 1: List known entity types
 cat("\n3. Known entity types:\n")
 entity_types <- wikidata$get_known_entity_types()

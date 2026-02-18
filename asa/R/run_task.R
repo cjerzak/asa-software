@@ -191,13 +191,13 @@ run_task <- function(prompt,
   .validate_asa_config(config)
 
   runtime_inputs <- .resolve_runtime_inputs(
-    config,
-    agent,
-    temporal,
-    allow_read_webpages,
-    webpage_relevance_mode,
-    webpage_embedding_provider,
-    webpage_embedding_model
+    config = config,
+    agent = agent,
+    temporal = temporal,
+    allow_read_webpages = allow_read_webpages,
+    webpage_relevance_mode = webpage_relevance_mode,
+    webpage_embedding_provider = webpage_embedding_provider,
+    webpage_embedding_model = webpage_embedding_model
   )
   runtime <- runtime_inputs$runtime
   temporal <- runtime_inputs$temporal

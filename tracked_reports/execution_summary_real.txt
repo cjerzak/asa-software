@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 13.784,
+  "elapsed_time": 6.0028,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,31 +22,31 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|Unknown"
     },
     "education_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|null"
     },
     "prior_occupation": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": null,
-      "attempts": 5,
+      "status": "found",
+      "value": "Indigenous community leader and inhabitant",
+      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "evidence": "summary_fact_source_backed",
+      "attempts": 8,
       "descriptor": "string|Unknown"
     },
     "class_background": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": null,
-      "attempts": 5,
+      "status": "found",
+      "value": "Working class",
+      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "evidence": "summary_fact_source_backed",
+      "attempts": 8,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
@@ -54,7 +54,7 @@
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,23 +62,23 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": null,
-      "attempts": 5,
+      "status": "found",
+      "value": "TIPNIS (Nueva Lacea community), Beni, Bolivia",
+      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "evidence": "summary_fact_source_backed",
+      "attempts": 8,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
@@ -86,14 +86,14 @@
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": null,
+      "status": "found",
+      "value": 1982,
+      "source_url": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+      "evidence": "scratchpad_source_backed",
       "attempts": 5,
       "descriptor": "integer|null|Unknown"
     },
@@ -102,7 +102,7 @@
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,15 +118,15 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string|null"
     },
     "confidence": {
@@ -134,15 +134,15 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
-      "status": "pending",
-      "value": null,
+      "status": "unknown",
+      "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 5,
+      "attempts": 8,
       "descriptor": "string"
     }
   }

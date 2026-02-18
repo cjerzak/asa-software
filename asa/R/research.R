@@ -198,13 +198,13 @@ asa_enumerate <- function(query,
   .validate_asa_config(config)
 
   runtime_inputs <- .resolve_runtime_inputs(
-    config,
-    agent,
-    temporal,
-    allow_read_webpages,
-    webpage_relevance_mode,
-    webpage_embedding_provider,
-    webpage_embedding_model
+    config = config,
+    agent = agent,
+    temporal = temporal,
+    allow_read_webpages = allow_read_webpages,
+    webpage_relevance_mode = webpage_relevance_mode,
+    webpage_embedding_provider = webpage_embedding_provider,
+    webpage_embedding_model = webpage_embedding_model
   )
   runtime <- runtime_inputs$runtime
   temporal <- runtime_inputs$temporal
@@ -262,7 +262,8 @@ asa_enumerate <- function(query,
     stop_policy = stop_policy,
     sources = sources,
     allow_read_webpages = if (identical(allow_rw, "auto")) "auto" else isTRUE(allow_rw),
-    temporal = temporal
+    temporal = temporal,
+    wikidata_template_path = if (is.list(runtime$config_search)) runtime$config_search$wikidata_template_path else NULL
   )
 
   # Ensure the runtime graph invoke/stream config carries recursion_limit so
@@ -525,7 +526,8 @@ asa_enumerate <- function(query,
 .create_research_config <- function(workers, max_rounds, budget, stop_policy, sources,
                                     allow_read_webpages = FALSE,
                                     max_tool_calls_per_round = NULL,
-                                    temporal = NULL) {
+                                    temporal = NULL,
+                                    wikidata_template_path = NULL) {
   config <- list(
     max_workers = as.integer(workers),  # Python side still expects max_workers
     max_rounds = as.integer(max_rounds),
@@ -540,7 +542,8 @@ asa_enumerate <- function(query,
     use_web = isTRUE(sources$web),
     use_wikipedia = isTRUE(sources$wikipedia),
     allow_read_webpages = if (identical(allow_read_webpages, "auto")) "auto" else isTRUE(allow_read_webpages),
-    max_tool_calls_per_round = if (!is.null(max_tool_calls_per_round)) as.integer(max_tool_calls_per_round) else NULL
+    max_tool_calls_per_round = if (!is.null(max_tool_calls_per_round)) as.integer(max_tool_calls_per_round) else NULL,
+    wikidata_template_path = if (!is.null(wikidata_template_path)) as.character(wikidata_template_path) else NULL
   )
 
   # Add temporal filtering parameters if provided
@@ -592,7 +595,8 @@ asa_enumerate <- function(query,
   if (config_dict$use_wikidata) {
     wikidata_tool <- asa_env$wikidata_tool$create_wikidata_tool(
       date_after = config_dict$date_after,
-      date_before = config_dict$date_before
+      date_before = config_dict$date_before,
+      template_path = config_dict$wikidata_template_path
     )
   }
 

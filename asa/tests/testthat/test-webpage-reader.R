@@ -16,6 +16,7 @@
     try(webpage_tool$configure_webpage_reader(
       allow_read_webpages = cfg_prev$allow_read_webpages,
       relevance_mode = cfg_prev$relevance_mode,
+      heuristic_profile = cfg_prev$heuristic_profile,
       embedding_provider = cfg_prev$embedding_provider,
       embedding_model = cfg_prev$embedding_model,
       prefilter_k = cfg_prev$prefilter_k,

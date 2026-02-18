@@ -50,6 +50,8 @@ class WebpageReaderConfig:
     chunk_chars: int = 1_200
     # Relevance selection: "auto" (default), "lexical", "embeddings"
     relevance_mode: str = "auto"
+    # Link annotation heuristics profile: "generic" (default) or "legacy"
+    heuristic_profile: str = "generic"
     # Embedding selection: "auto" (default), "openai", "sentence_transformers"
     embedding_provider: str = "auto"
     embedding_model: str = "text-embedding-3-small"
@@ -194,6 +196,7 @@ def configure_webpage_reader(
     max_chunks: int = None,
     chunk_chars: int = None,
     relevance_mode: str = None,
+    heuristic_profile: str = None,
     embedding_provider: str = None,
     embedding_model: str = None,
     embedding_api_base: str = None,
@@ -236,6 +239,8 @@ def configure_webpage_reader(
             _default_config.chunk_chars = int(chunk_chars)
         if relevance_mode is not None:
             _default_config.relevance_mode = str(relevance_mode)
+        if heuristic_profile is not None:
+            _default_config.heuristic_profile = _normalize_heuristic_profile(heuristic_profile)
         if embedding_provider is not None:
             _default_config.embedding_provider = str(embedding_provider)
         if embedding_model is not None:
@@ -277,6 +282,13 @@ def configure_webpage_reader(
         if user_agent is not None:
             _default_config.user_agent = str(user_agent)
         return _default_config
+
+
+def _normalize_heuristic_profile(profile: Optional[str]) -> str:
+    text = str(profile or "").strip().lower()
+    if text in {"generic", "legacy"}:
+        return text
+    return "generic"
 
 
 def _is_disallowed_host(hostname: str) -> Tuple[bool, str]:
@@ -357,11 +369,15 @@ def _validate_url(url: str) -> Tuple[bool, str, str]:
     return True, "ok", u
 
 
-def _extract_main_text(html: str, page_url: str = "") -> Tuple[str, str]:
+def _extract_main_text(
+    html: str,
+    page_url: str = "",
+    cfg: Optional[WebpageReaderConfig] = None,
+) -> Tuple[str, str]:
     """Extract readable text from HTML. Returns (title, text).
 
     Preserves hyperlinks inline so that the agent can discover linked URLs
-    (e.g., profile pages referenced from index/listing pages).
+    (e.g., detail pages referenced from index/listing pages).
     """
     soup = BeautifulSoup(html or "", "html.parser")
 
@@ -404,6 +420,10 @@ def _extract_main_text(html: str, page_url: str = "") -> Tuple[str, str]:
     elif page_url:
         base_url = page_url
 
+    heuristic_profile = _normalize_heuristic_profile(
+        getattr(cfg, "heuristic_profile", "generic")
+    )
+
     def _should_annotate_link(href: str, link_text: str) -> bool:
         """Decide if a hyperlink is worth inlining in extracted text."""
         if not href:
@@ -413,39 +433,56 @@ def _extract_main_text(html: str, page_url: str = "") -> Tuple[str, str]:
         # Skip fragment-only links, javascript, mailto, tel
         if href_lower.startswith(("#", "javascript:", "mailto:", "tel:")):
             return False
-        # Always annotate links with parliamentary/government patterns
-        gov_patterns = [
-            "parliament",
-            "senate",
-            "congress",
-            "assembly",
-            "legislature",
-            ".gov",
-            ".gob",
-            "government",
-            "official",
-        ]
-        for pat in gov_patterns:
-            if pat in href_lower or pat in text_lower:
-                return True
-        # Annotate links whose text looks like a person name
-        # (2+ capitalized words, at least 5 chars total)
-        if len(text_lower) >= 5:
-            words = link_text.strip().split()
-            if len(words) >= 2 and all(
-                w[0].isupper() for w in words if len(w) > 1
-            ):
-                return True
-        # Annotate "ver el" or "ver perfil" style links
-        if any(kw in text_lower for kw in ["ver el", "ver perfil", "ver la", "profile", "perfil"]):
+        if not text_lower:
+            return False
+
+        # Generic boilerplate navigation labels are rarely evidence-bearing.
+        nav_tokens = {
+            "home", "inicio", "menu", "buscar", "search", "rss", "xml",
+            "login", "log in", "sign in", "register", "registr", "contact",
+            "about", "privacy", "terms", "cookie", "cookies", "help",
+            "next", "previous", "prev", "back",
+        }
+        if text_lower in nav_tokens:
+            return False
+
+        words = [w for w in link_text.strip().split() if w]
+        has_descriptive_anchor = len(text_lower) >= 8 and len(words) >= 2
+        is_absolute = href_lower.startswith(("http://", "https://"))
+        has_structured_path = bool(re.search(r"[0-9]{2,}|[-_/]", href_lower))
+
+        # Generic default: annotate links with meaningful anchor text or
+        # URL/path structure likely tied to specific records/documents.
+        if has_descriptive_anchor:
             return True
-        # Annotate relative links (likely internal navigation) with non-trivial text
-        if not href_lower.startswith(("http://", "https://")):
-            if len(text_lower) >= 3 and text_lower not in (
-                "home", "inicio", "menu", "buscar", "search",
-                "rss", "xml", "login", "registr",
-            ):
+        if has_structured_path and len(text_lower) >= 4:
+            return True
+        if not is_absolute and len(text_lower) >= 3:
+            return True
+
+        if heuristic_profile == "legacy":
+            # Optional compatibility profile: restores older domain-biased cues.
+            legacy_keywords = [
+                "parliament",
+                "senate",
+                "congress",
+                "assembly",
+                "legislature",
+                ".gov",
+                ".gob",
+                "government",
+                "official",
+                "ver el",
+                "ver perfil",
+                "ver la",
+                "profile",
+                "perfil",
+            ]
+            if any(kw in href_lower or kw in text_lower for kw in legacy_keywords):
                 return True
+            if len(text_lower) >= 5 and len(words) >= 2:
+                if all(w[0].isupper() for w in words if len(w) > 1):
+                    return True
         return False
 
     def _resolve_href(href: str) -> str:
@@ -1333,6 +1370,7 @@ class OpenWebpageTool(BaseTool):
                     title, text = _extract_main_text(
                         fetched.get("html", ""),
                         page_url=fetched.get("final_url") or norm,
+                        cfg=cfg,
                     )
                 # Avoid caching huge pages unbounded.
                 max_text = int(cfg.cache_max_text_chars or 200_000)
