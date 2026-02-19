@@ -142,6 +142,28 @@ Political elites switch parties, offices, and coalitions. If coding for year \(t
 This is a close analogue of conditioning on post-treatment variables in causal inference \citep{montgomery2018conditioning}: a label intended to reflect the pre-period state may be contaminated by later events, inducing bias in estimated relationships.
 Temporal governance therefore belongs \emph{inside} the measurement protocol, not in ad hoc post-hoc cleaning.
 
+\paragraph{Contributions.}
+We contribute a verifiable search-agent methodology for dataset construction that (i) treats retrieval as a \emph{measurement protocol} with explicit ``as-of'' constraints to reduce temporal leakage and post-treatment contamination \citep{montgomery2018conditioning,kaufman2012leakage}, (ii) enforces expert-supplied \emph{closed codebooks} to preserve cross-national comparability, (iii) produces evidence-first, citation-backed labels while \emph{abstaining} under weak or conflicting evidence, and (iv) archives complete traces (queries, snippets, URLs, timestamps) to enable auditing and replication consistent with calls for reproducible computational research \citep{peng2011reproducible,stodden2013toward}.
+
+\begin{table}[htb]
+\centering
+\caption{Common hazards in search-enabled coding and ASA design responses.}
+\label{tab:hazard-mitigation}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\RaggedRight\arraybackslash}p{0.30\linewidth}X@{}}
+\toprule
+\textbf{Hazard} & \textbf{ASA response} \\
+\midrule
+Non-verifiability (answers without durable evidence trails) &
+Evidence-first outputs with explicit citations; full trace capture (queries, snippets, URLs, timestamps) for audit and re-analysis. \\
+Non-comparability (label drift across countries/time) &
+Closed-world decisions constrained to expert codebooks, plus conservative post-processing that normalizes benign surface variation without introducing new classes. \\
+Temporal leakage (post-period information used for pre-period labels) &
+Explicit ``as-of'' rules with date verification where feasible; warnings and abstention rather than silently relying on potentially post-period sources. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{Methodology: a verifiable search agent}
 
 We present a protocol---implemented as the \texttt{asa} software stack---that makes agent-based retrieval \emph{verifiable by construction}. The design has four core commitments:
@@ -233,6 +255,8 @@ The agent treats time as part of the measurement protocol. Each run is parameter
 When feasible, the system extracts publication dates from retrieved pages and enforces the constraint strictly; otherwise it falls back to best-effort warnings and abstention rather than silently using potentially post-period material.
 This guards against a common dataset-construction failure mode: coding pre-period attributes with post-period knowledge.
 
+Temporal controls are crucial because many online sources are retrospective and continuously updated: Wikipedia leads, later biographies, and obituaries often summarize whole careers, including events after \(t_i\). If such post-\(t_i\) material is used to code a pre-period attribute, the measurement can incorporate information that is itself downstream of later outcomes (e.g., a party switch or coalition realignment that occurs after \(t_i\)), creating look-ahead/data leakage and a close analogue of post-treatment conditioning. This can both inflate apparent coding accuracy (by using information unavailable at the time) and bias downstream relationships by contaminating ``baseline'' covariates with post-period events \citep{montgomery2018conditioning,kaufman2012leakage}.
+
 \subsection{Provenance preservation and storage}
 
 All tool interactions and intermediate artifacts are persisted (including URLs and timestamps) to enable:
@@ -261,6 +285,20 @@ Low-confidence outputs are withheld by design, trading recall for precision; the
 
 \input{./Figures/SamplePredictionsCompact_pol_party.tex}
 
+\begin{figure}[htb]
+\centering
+\fbox{\begin{minipage}{0.95\linewidth}
+\small
+\textbf{Worked example: why ``as-of'' governance matters.}
+Consider a record with observation year \(t_i\) and a label intended to reflect the pre-period state (e.g., party affiliation at \(t_i\)).
+A naive workflow that reads a current biography or Wikipedia lead may inadvertently use retrospective summaries that incorporate events after \(t_i\), creating look-ahead/data leakage \citep{kaufman2012leakage} and a close analogue of post-treatment conditioning \citep{montgomery2018conditioning}.
+ASA instead treats time as part of the measurement protocol: it constrains retrieval to sources published before a cut date (or within a target window), and it abstains when the available evidence cannot be shown to be pre-period.
+Table~\ref{tab:sample_compact} illustrates the resulting trace style: multiple sources are retrieved and recorded alongside URLs, allowing a reader to verify what evidence the label relied on under the declared temporal rule.
+\end{minipage}}
+\caption{A compact intuition for temporal governance and trace-based verification.}
+\label{fig:worked-example}
+\end{figure}
+
 \section{Discussion: design tradeoffs and practical guidance}
 
 \paragraph{Cost and scaling.}
@@ -271,6 +309,8 @@ Using smaller instruction-tuned models for orchestration, caching retrieval outp
 Provenance capture makes the \emph{evidence} for each label inspectable, but it does not magically eliminate ambiguity in the world.
 The point of abstention is to keep ambiguity from silently becoming noise.
 Similarly, temporal governance reduces leakage risk, but cannot fully recover historical truth when the web record is sparse.
+In practice, auditability means a downstream user can inspect a label by following its recorded citations and can re-apply alternative inclusion rules (e.g., require government sources only) using the archived trace, consistent with calls for reproducible computational work \citep{peng2011reproducible,stodden2013toward}.
+Key failure modes include (i) sources without reliable publication dates, (ii) sparse historical web records for earlier years, and (iii) entities with name ambiguity across languages; ASA responds by warning, tightening evidence requirements, and abstaining rather than imputing.
 
 \paragraph{When to use ASA.}
 ASA is best suited to \emph{verifiable attributes} with authoritative sources (party membership, office holding, election outcomes) and stable codebooks.
