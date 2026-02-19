@@ -10,6 +10,7 @@
   config_search = NULL,
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,
+  webpage_heuristic_profile = NULL,
   webpage_embedding_provider = NULL,
   webpage_embedding_model = NULL,
   webpage_timeout = NULL,
@@ -47,6 +48,8 @@
 \item{allow_read_webpages}{Passed through to .resolve_webpage_reader_settings()}
 
 \item{webpage_relevance_mode}{Passed through to .resolve_webpage_reader_settings()}
+
+\item{webpage_heuristic_profile}{Passed through to .resolve_webpage_reader_settings()}
 
 \item{webpage_embedding_provider}{Passed through to .resolve_webpage_reader_settings()}
 

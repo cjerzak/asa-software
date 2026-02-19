@@ -7,6 +7,7 @@
 .with_webpage_reader_config(
   allow_read_webpages,
   relevance_mode = NULL,
+  heuristic_profile = NULL,
   embedding_provider = NULL,
   embedding_model = NULL,
   timeout = NULL,
@@ -42,6 +43,9 @@
 \item{relevance_mode}{Relevance selection for opened webpages:
 "auto", "lexical", or "embeddings". "auto" uses embeddings when available,
 otherwise falls back to lexical overlap.}
+
+\item{heuristic_profile}{Heuristic profile for hyperlink annotation:
+"generic" (task-agnostic default) or "legacy".}
 
 \item{embedding_provider}{Embedding provider for relevance ("auto",
 "openai", or "sentence_transformers").}

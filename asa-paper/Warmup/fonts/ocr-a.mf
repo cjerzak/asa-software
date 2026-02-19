@@ -1,0 +1,1009 @@
+% OCR-A Optical Character Recognition Font
+%
+% Coded in METAFONT84 by Tor Lillqvist, VTT/ATK (Technical Research Centre
+%  of Finland, Computing Services)
+%  (tml@fingate.BITNET, tml@santra.UUCP, mcvax!santra!tml)
+%
+% Based on ISO Recommendation R1073, 1st ed., May 1969 (probably
+%  obsolete by now).
+%
+% Labels are in French :-)
+%
+  
+mode_setup;
+  
+letter_fit# := 1.25T#;
+  
+define_whole_pixels(W,H,L,T,letter_fit);
+  
+def adjust_fit =
+ l:=-letter_fit;
+ interim xoffset:=-l;
+ charwd:=charwd+2letter_fit#;
+ r:=l+hround(charwd*hppp);
+ w:=r-letter_fit;
+enddef;
+ 
+pickup pencircle scaled T;
+OCRpen := savepen;
+  
+extra_beginchar := extra_beginchar & "adjust_fit;";
+  
+extra_endchar := extra_endchar & "penlabels(range 1 thru 20);";
+  
+% The join macro performs the joining of two strokes so that the
+% pen centre curvature radius is join_radius.
+  
+tertiarydef p join q =
+  begingroup
+    pair ipq_; ipq_ := p intersectionpoint q;
+  
+    pair dirv[];
+    dirv0 = dir angle direction (length p) of p;
+    dirv1 = dir angle direction 0 of q;
+    if length (dirv1 - dirv0) < 1/10:
+      p .. q
+    else:
+      path par[];
+      k_ := if ypart (dirv1 rotated -angle dirv0) > 0: 90 else: -90 fi;
+      forsuffixes $=0,1:
+	par$ := ((ipq_ - (20join_radius*dirv$))--
+	  (ipq_ + (20join_radius*dirv$)))
+	  shifted ((join_radius*dirv$) rotated k_);
+      endfor;
+      numeric pt_,qt_;
+      (pt_,qt_) = par0 intersectiontimes par1;
+      if pt_ < 0: errmessage "No intersection curvature center found"; fi
+  
+      pair icc_; icc_ = point pt_ of par0;
+      numeric cp_,cpp_,cq_,cqp_;
+      (cp_, cpp_) = p intersectiontimes
+	(icc_--icc_+(2join_radius*dirv0 rotated -k_));
+      (cq_, cqp_) = q intersectiontimes
+	(icc_--icc_+(2join_radius*dirv1 rotated -k_));
+  
+      subpath (0,cp_) of p ..
+	(icc_ + join_radius*unitvector(dirv0-dirv1)) ..
+	subpath (cq_, length q) of q
+    fi
+  endgroup
+enddef;
+  
+def fill_corners(text t) =
+  begingroup
+    forsuffixes $=t:
+      fill unitsquare shifted (-.5,-.5) scaled T shifted z$;
+    endfor
+  endgroup
+enddef;
+  
+% The angle_fill_corner fills the corners like in the characters M and N
+  
+def angle_fill_corner(suffix a,b,c) =
+  begingroup
+    save p; path p.q,p.w,p.e,p.r;
+    p.q = (z.a--z.b+(z.b-z.a)) shifted (T/2*unitvector (z.b-z.a) rotated 90);
+    p.w = (z.a--z.b+(z.b-z.a)) shifted (T/2*unitvector (z.b-z.a) rotated -90);
+    p.e = (z.b-(z.c-z.b)--z.c) shifted (T/2*unitvector (z.c-z.b) rotated 90);
+    p.r = (z.b-(z.c-z.b)--z.c) shifted (T/2*unitvector (z.c-z.b) rotated -90);
+  
+    save q; pair q.u,q.l;
+    q.u = p.q intersectionpoint p.e;
+    q.l = p.w intersectionpoint p.r;
+  
+    fill point 0 of p.q -- q.u -- point 1 of p.e -- point 1 of p.r --
+      q.l -- point 0 of p.w -- cycle;
+  endgroup
+enddef;
+  
+% The curvature radiuses used in some characters
+  
+r1# = H#/16 * ((7H#)/(6W#) + sqrt(((7H#)/(6W#))**2 + 1));
+r2# = W#/8  * ((6W#)/(7H#) + sqrt(((6W#)/(7H#))**2 + 1));
+r3# = W#/8  * (1 - H#/(2W#) + sqrt((H#/(2W#))**2 + 1));
+r4# = H#/16 * (1 - (4W#)/(3H#) + sqrt(((4W#)/(3H#))**2 + 1));
+r5# = H#/16 * (1 - (5H#)/(6W#) + sqrt(((5H#)/(6W#))**2 + 1));
+r6# = W#/8  * (1 - (6W#)/(5H#) + sqrt(((6W#)/(5H#))**2 + 1));
+  
+define_pixels(r1,r2,r3,r4,r5,r6);
+ 
+def OCRchar(expr code, wd, ht) =
+  beginchar(code, wd, ht, 0);
+    pickup OCRpen;
+enddef;
+  
+OCRchar("1", W#, H#); "Chiffre UN";
+  x1 = 0;	y1 = 0;
+  x2 = W;	y2 = 0;
+  x3 = W;	y3 = 3/8H;
+  x4 = W/2;	y4 = H;
+  x5 = 0;	y5 = H;
+  
+  draw z1--z2--z3; draw .5[z1,z2]--z4--z5;
+  fill_corners(4);
+endchar;
+  
+OCRchar("2", W#, H#); "Chiffre DEUX";
+  x1 = 0;	y1 = H;
+  x2 = W;	y2 = H;
+  x3 = W;	y3 = H/2;
+  x4 = 0;	y4 = H/2;
+  x5 = 0;	y5 = 0;
+  x6 = W;	y6 = 0;
+  
+  join_radius := T/2;
+  draw (z1--z2) join ((z2--z3) join
+    ((z3--z4) join (z4--z5--z6)));
+  fill_corners(5);
+endchar;
+  
+OCRchar("3", W#, H#); "Chiffre TROIS";
+  x1 = 0;	y1 = H;
+  x2 = W;	y2 = y1;
+  x3 = x2;	y3 = H/2;
+  x4 = W/4;	y4 = y3;
+  x5 = x2;	y5 = 0;
+  x6 = x1;	y6 = y5;
+  
+  join_radius := T/2;
+  draw (z1--z2) join (z2--.6[z2,z3]);
+  join_radius := T;
+  draw (.4[z2,z3]--z3) join (z3--z4);
+  draw (z4--z3) join (z3--.6[z3,z5]);
+  join_radius := T/2;
+  draw (.4[z3,z5]--z5) join (z5--z6);
+endchar;
+  
+OCRchar("4", 7/8W#, H#); "Chiffre QUATRE";
+  x1 = 0;	y1 = H;
+  x2 = x1;	y2 = 3/8H;
+  x3 = 7/8W;	y3 = y2;
+  x4 = 3/4W;	y4 = 0;
+  x5 = x4;	y5 = 7/8H;
+  
+  draw z1--z2--z3; draw z4--z5;
+endchar;
+  
+OCRchar("5", W#, H#); "Chiffre CINQ";
+  x1 = 0;	y1 = 1/16H;
+  x2 = 1/4W;	y2 = 0;
+  x3 = W;	y3 = y2;
+  x4 = x3;	y4 = 1/2H;
+  x5 = x2;	y5 = y4;
+  x6 = x2;	y6 = H;
+  x7 = x3;	y7 = y6;
+  
+  join_radius := T;
+  draw (z1--z2) join (z2--.6[z2,z3]);
+  join_radius := T/2;
+  draw (.4[z2,z3]--z3) join (z3--.6[z3,z4]);
+  draw (.4[z3,z4]--z4) join (z4--z5--z6--z7);
+  fill_corners(5,6);
+endchar;
+  
+OCRchar("6", W#, H#); "Chiffre SIX";
+  x1 = 1/8W;	y1 = H;
+  x2 = 0;	y2 = y1;
+  x3 = x2;	y3 = 0;
+  x4 = W;	y4 = y3;
+  x5 = x4;	y5 = 3/8H;
+  x6 = x2;	y6 = y5;
+  
+  draw z1--z2--z3--z4--z5--z6;
+endchar;
+  
+OCRchar("7", W#, H#); "Chiffre SEPT";
+  x1 = 0;	y1 = 15/16H;
+  x2 = x1;	y2 = H;
+  x3 = W;	y3 = y2;
+  x4 = x3;	y4 = 5/8H;
+  x5 = 1/2W;	y5 = 3/8H;
+  x6 = x5;	y6 = 0;
+ 
+  draw z1--z2--z3--z4--z5--z6;
+  fill_corners(3);
+endchar;
+  
+OCRchar("8", W#, H#); "Chiffre HUIT";
+  x1 = 0;	y1 = 0;
+  x2 = W;	y2 = y1;
+  x3 = x2;	y3 = 1/2H;
+  x4 = x1;	y4 = y3;
+  x5 = 1/4W;	y5 = y3;
+  x6 = 3/4W;	y6 = y5;
+  x7 = x6;	y7 = H;
+  x8 = x5;	y8 = y7;
+  
+  join_radius := T/2;
+  draw (.4[z1,z2]--z2) join (z2--.6[z2,z3]);
+  draw (.4[z2,z3]--z3) join (z3--.6[z3,z4]);
+  draw (.4[z3,z4]--z4) join (z4--.6[z4,z1]);
+  draw (.4[z4,z1]--z1) join (z1--.6[z1,z2]);
+  draw z6--z7--z8--z5;
+endchar;
+  
+OCRchar("9", W#, H#); "Chiffre NEUF";
+  x1 = 7/8W;	y1 = 0;
+  x2 = W;	y2 = y1;
+  x3 = x2;	y3 = H;
+  x4 = 0;	y4 = y3;
+  x5 = x4;	y5 = 5/8H;
+  x6 = x2;	y6 = y5;
+  
+  draw z1--z2--z3--z4--z5--z6;
+endchar;
+  
+OCRchar("0", W#, H#); "Chiffre ZERO";
+  x1 = 0;	y1 = 0;
+  x2 = W;	y2 = y1;
+  x3 = x2;	y3 = H;
+  x4 = x1;	y4 = y3;
+  
+  join_radius := T/2;
+  draw (.4[z1,z2]--z2) join (z2--.6[z2,z3]);
+  draw (.4[z2,z3]--z3) join (z3--.6[z3,z4]);
+  draw (.4[z3,z4]--z4) join (z4--.6[z4,z1]);
+  draw (.4[z4,z1]--z1) join (z1--.6[z1,z2]);
+endchar;
+  
+OCRchar(0, W#, H#); "Symbole CROCHET";
+  x1 = 0;	y1 = 3/8H;
+  x2 = x1;	y2 = 0;
+  x3 = 1/2W;	y3 = y2;
+  x4 = x3;	y4 = H;
+  x5 = W;	y5 = y4;
+  x6 = x5;	y6 = 5/8H;
+  
+  draw z1--z2--z3--z4--z5--z6;
+  fill_corners(2,3,4,5);
+endchar;
+  
+OCRchar(1, W#, H#); "Symbole FOURCHETTE";
+  x1 = 0;	y1 = H;
+  x2 = x1;	y2 = 1/2H;
+  x3 = W;	y3 = y2;
+  x4 = x3;	y4 = y1;
+  x5 = 1/2W;	y5 = y2;
+  x6 = x5;	y6 = 0;
+  
+  draw z1--z2--z3--z4;
+  fill_corners(2,3);
+  draw z5--z6;
+endchar;
+  
+OCRchar(2, W#, H#); "Symbole CHAISE";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = 1/2H;
+  x3 = W;	y3 = y2;
+  x4 = x3;	y4 = y1;
+  x5 = x3;	y5 = H;
+  
+  draw z1--z2--z3;
+  fill_corners(2);
+  draw z4--z5;
+endchar;
+  
+beginchar("|", 0, (H#+L#)/2, (L#-H#)/2); "Trait vertical";
+  pickup OCRpen;
+  x1 = 0;	y1 = (H-L)/2;
+  x2 = x1;	y2 = (H+L)/2;
+  
+  cutdraw z1--z2;
+endchar;
+  
+OCRchar("A", W#, H#); "Lettre A";
+  x1 = 0;	y1 = 0;
+  x2 = 1/2W;	y2 = H;
+  x3 = W;	y3 = y1;
+  z4 = 1/4[z1,z2];
+  z5 = 1/4[z3,z2];
+  
+  draw z1--z2--z3; draw z4--z5;
+endchar;
+  
+OCRchar("B", W#, H#); "Lettre B";
+  x1 = 0;	y1 = 0;
+  x2 = W;	y2 = y1;
+  x3 = x2;	y3 = 1/2H;
+  x4 = x1;	y4 = y3;
+  x5 = x2;	y5 = H;
+  x6 = x1;	y6 = y5;
+  
+  join_radius := 3/2T;
+  draw (z1--z2) join (z2--.5[z2,z3]);
+  draw (.5[z2,z3]--z3) join (z3--z4);
+  draw (z4--z3) join (z3--.5[z3,z5]);
+  draw (.5[z3,z5]--z5) join (z5--z6);
+  draw z1--z6;
+  fill_corners(1,6);
+endchar;
+  
+OCRchar("C", W#, H#); "Lettre C";
+  x1 = W;	y1 = H;
+  x2 = 3/8W;	y2 = y1;
+  x3 = 0;	y3 = y4 + 1/8H;
+  x4 = x3;	y4 = 7/16H;
+  x5 = x2;	y5 = 0;
+  x6 = x1;	y6 = y5;
+  z7 = (z2--z3+(z3-z2)) intersectionpoint (z5--z4+(z4-z5));
+  
+  join_radius := T;
+  draw (z1--z2) join (z2--.6[z2,z3]);
+  draw (z6--z5) join (z5--.6[z5,z4]);
+  join_radius := r1;
+  draw (.4[z2,z3]--z7) join (z7--.6[z4,z5]);
+endchar;
+  
+OCRchar("D", W#, H#); "Lettre D";
+  x1 = 0;	y1 = 0;
+  x2 = 1/4W;	y2 = y1;
+  x3 = 5/8W;	y3 = y1;
+  x4 = W;	y4 = 7/16H;
+  x5 = x4;	y5 = y4 + 1/8H;
+  x6 = x3;	y6 = H;
+  x7 = x2;	y7 = y6;
+  x8 = x1;	y8 = y6;
+  z9 = (z3--z4+(z4-z3)) intersectionpoint (z6--z5+(z5-z6));
+  
+  join_radius := T;
+  draw (z1--z3) join (z3--.6[z3,z4]);
+  draw (z8--z6) join (z6--.6[z6,z5]);
+  join_radius := r1;
+  draw (.4[z3,z4]--z9) join (z9--.6[z5,z6]);
+  draw z2--z7;
+endchar;
+  
+OCRchar("E", W#, H#); "Lettre E";
+  x1 = W;	y1 = 0;
+  x2 = 0;	y2 = y1;
+  x3 = x2;	y3 = 1/2H;
+  x4 = 1/2W;	y4 = y3;
+  x5 = x2;	y5 = H;
+  x6 = x1;	y6 = y5;
+  
+  draw z1--z2--z3--z4; draw z3--z5--z6;
+  fill_corners(2,5);
+endchar;
+  
+OCRchar("F", W#, H#); "Lettre F";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = 5/8H;
+  x3 = 3/4W;	y3 = y2;
+  x4 = x1;	y4 = H;
+  x5 = W;	y5 = y4;
+  
+  draw z1--z2--z3; draw z2--z4--z5;
+  fill_corners(4);
+endchar;
+  
+OCRchar("G", W#, H#); "Lettre G";
+  x1 = 5/8W;	y1 = 3/8H;
+  x2 = W;	y2 = y1;
+  x3 = x2;	y3 = 0;
+  x4 = 0;	y4 = y3;
+  x5 = x4;	y5 = 5/8H;
+  x6 = 1/2W;	y6 = H;
+  x7 = x2;	y7 = y6;
+  
+  join_radius := T;
+  draw (z1--z2--z3) join (z3--.6[z3,z4]);
+  draw (.4[z3,z4]--z4) join (z4--.6[z4,z5]);
+  join_radius := 3/2T;
+  draw (.4[z4,z5]--z5) join (z5--.6[z5,z6]);
+  join_radius := T;
+  draw (.4[z5,z6]--z6) join (z6--z7);
+  fill_corners(2);
+endchar;
+  
+OCRchar("H", W#, H#); "Lettre H";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = H;
+  x3 = W;	y3 = y1;
+  x4 = x3;	y4 = y2;
+  
+  draw z1--z2; draw z3--z4; draw .5[z1,z2]--.5[z3,z4];
+endchar;
+  
+OCRchar("I", W#, H#); "Lettre I";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = H;
+  x3 = W;	y3 = y1;
+  x4 = x3;	y4 = y2;
+  
+  draw z1--z3; draw z2--z4; draw .5[z1,z3]--.5[z2,z4];
+endchar;
+  
+OCRchar("J", 3/4W#, H#); "Lettre J";
+  x1 = 0;	y1 = 3/8H;
+  x2 = x1;	y2 = 0;
+  x3 = 3/4W;	y3 = y2;
+  x4 = x3;	y4 = H;
+  
+  join_radius := T;
+  draw (z1--z2) join ((z2--z3) join (z3--z4));
+endchar;
+  
+OCRchar("K", W#, H#); "Lettre K";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = H;
+  x3 = W;	y3 = y1;
+  x4 = x3;	y4 = y2;
+  
+  draw z1--z2; draw .5[z1,z2]--z3; draw .5[z1,z2]--z4;
+endchar;
+  
+OCRchar("L", W#, H#); "Lettre L";
+  x1 = 0;	y1 = H;
+  x2 = x1;	y2 = 0;
+  x3 = W;	y3 = y2;
+ 
+  draw z1--z2--z3;
+  fill_corners(2);
+endchar;
+ 
+OCRchar("M", W#, H#); "Lettre M";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = H;
+  x3 = 1/8W;	y3 = y2;
+  x4 = 1/2W;	y4 = y5+1/16H;
+  x5 = x4;	y5 = 5/8H;
+  x6 = W-1/8W;	y6 = y2;
+  x7 = W;	y7 = y2;
+  x8 = x7;	y8 = y1;
+  
+  draw z1--z2--z3--z4--z5--z4--z6--z7--z8;
+  fill_corners(2,7);
+  angle_fill_corner(2,3,4);
+  angle_fill_corner(4,6,7);
+endchar;
+  
+OCRchar("N", W#, H#); "Lettre N";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = H;
+  x3 = 1/8W;	y3 = y2;
+  x4 = W-1/8W;	y4 = y1;
+  x5 = W;	y5 = y1;
+  x6 = x5;	y6 = y2;
+  
+  draw z1--z2--z3--z4--z5--z6;
+  fill_corners(2,5);
+  angle_fill_corner(2,3,4);
+  angle_fill_corner(3,4,5);
+endchar;
+  
+OCRchar("O", W#, H#); "Lettre O";
+  x1 = 0;	y1 = 7/16H;
+  x2 = 3/8W;	y2 = 0;
+  x3 = x2+1/4W; y3 = y2;
+  x4 = W;	y4 = y1;
+  x5 = x4;	y5 = y4+1/8H;
+  x6 = x3;	y6 = H;
+  x7 = x2;	y7 = y6;
+  x8 = x1;	y8 = y5;
+  z10 = (z1--z2+(z2-z1)) intersectionpoint (z3+(z3-z4)--z4);
+  z11 = (z3--z4+(z4-z3)) intersectionpoint (z5+(z5-z6)--z6);
+  z12 = (z5--z6+(z6-z5)) intersectionpoint (z7+(z7-z8)--z8);
+  z13 = (z7--z8+(z8-z7)) intersectionpoint (z1+(z1-z2)--z2);
+  
+  join_radius := r2;
+  draw (.4[z13,z10]--z10) join (z10--.6[z10,z11]);
+  draw (.4[z11,z12]--z12) join (z12--.6[z12,z13]);
+  join_radius := r1;
+  draw (.4[z10,z11]--z11) join (z11--.6[z11,z12]);
+  draw (.4[z12,z13]--z13) join (z13--.6[z13,z10]);
+  picture O_char; O_char := currentpicture;
+endchar;
+  
+OCRchar("P", W#, H#); "Lettre P";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = 7/16H;
+  x3 = x1;	y3 = H;
+  x4 = W;	y4 = y3;
+  x5 = x4;	y5 = y2;
+  
+  join_radius := T;
+  draw (z1--z3--z4) join (z4--.6[z4,z5]);
+  draw (.4[z4,z5]--z5) join (z5--z2);
+  fill_corners(3);
+endchar;
+  
+OCRchar("Q", W#, H#); "Lettre Q";
+  x1 = 0;	y1 = 0;
+  x2 = 1/4W;	y2 = y1;
+  x3 = W;	y3 = 3/8H;
+  x4 = x3;	y4 = H;
+  x5 = W-1/4W;	y5 = y4;
+  x6 = x1;	y6 = 5/8H;
+  x7 = 1/2W;	y7 = y3;
+  x8 = x5;	y8 = y1;
+  x9 = x3;	y9 = y1;
+  z10 = (z6--z1+(z1-z6)) intersectionpoint (z2-(z3-z2)--z3);
+  z11 = (z3--z4+(z4-z3)) intersectionpoint (z5-(z6-z5)--z6);
+  
+  join_radius := r3;
+  draw (.4[z6,z10]--z10) join (z10--.6[z10,z3]);
+  draw (.4[z3,z11]--z11) join (z11--.6[z11,z6]);
+  join_radius := T;
+  draw (.4[z2,z3]--z3) join (z3--.6[z3,z4]);
+  draw (.4[z5,z6]--z6) join (z6--.6[z6,z1]);
+  draw z7--z8--z9;
+  angle_fill_corner(7,8,9);
+endchar;
+ 
+OCRchar("R", W#, H#); "Lettre R";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = 5/8H;
+  x3 = x1;	y3 = H;
+  x4 = W;	y4 = y3;
+  x5 = x4;	y5 = y2;
+  x6 = W-5/8W;	y6 = y2;
+  x7 = x4;	y7 = y1;
+  
+  join_radius := T;
+  draw (z1--z3--z4) join (z4--.6[z4,z5]);
+  draw (.4[z4,z5]--z5) join (z5--z2);
+  draw z6--z7;
+  fill_corners(3);
+endchar;
+  
+OCRchar("S", W#, H#); "Lettre S";
+  x1 = 0;	y1 = 1/8H;
+  x2 = x1;	y2 = 0;
+  x3 = W;	y3 = y2;
+  x4 = x3;	y4 = y1;
+  x5 = x1;	y5 = H-1/8H;
+  x6 = x1;	y6 = H;
+  x7 = x3;	y7 = y6;
+  x8 = x3;	y8 = y5;
+  
+  path p; p = z4-(z5-z4)--z5+(z5-z4);
+  z10 = (z2--z3+(z3-z2)) intersectionpoint p;
+  z11 = (z6-(z7-z6)--z7) intersectionpoint p;
+  
+  join_radius := 1/8H;
+  draw (z1--z2) join (z2--.6[z2,z3]);
+  draw (.4[z6,z7]--z7) join (z7--z8);
+  join_radius := r4;
+  draw (.4[z2,z3]--z10) join (z10--.6[z10,z11]);
+  draw (.4[z10,z11]--z11) join (z11--.6[z6,z7]);
+endchar;
+  
+OCRchar("T", W#, H#); "Lettre T";
+  x1 = 1/2W;	y1 = 0;
+  x2 = x1;	y2 = H;
+  x3 = 0;	y3 = H-1/8H;
+  x4 = x3;	y4 = y2;
+  x5 = W;	y5 = y4;
+  x6 = x5;	y6 = y3;
+  
+  draw z1--z2;
+  draw z3--z4--z5--z6;
+  fill_corners(4,5);
+endchar;
+  
+OCRchar("U", W#, H#); "Lettre U";
+  x1 = 0;	y1 = H;
+  x2 = x1;	y2 = 0;
+  x3 = W;	y3 = y2;
+  x4 = x3;	y4 = y1;
+  
+  join_radius := T;
+  draw ((z1--z2) join (z2--z3)) join (z3--z4);
+endchar;
+  
+OCRchar("V", W#, H#); "Lettre V";
+  x1 = 0;	y1 = H;
+  x2 = x1;	y2 = 3/4H;
+  x3 = 1/2W;	y3 = 0;
+  x4 = W;	y4 = y2;
+  x5 = x4;	y5 = y1;
+  
+  draw z1--z2--z3--z4--z5;
+  angle_fill_corner(1,2,3); angle_fill_corner(3,4,5);
+endchar;
+  
+OCRchar("W", W#, H#); "Lettre W";
+  x1 = 0;	y1 = H;
+  x2 = x1;	y2 = 1/8H;
+  x3 = 1/8W;	y3 = 0;
+  x4 = 3/8W;	y4 = y3;
+  x5 = 1/2W;	y5 = y2;
+  x6 = x5;	y6 = 5/8H;
+  x7 = W-x4;	y7 = y4;
+  x8 = W-x3;	y8 = y3;
+  x9 = W;	y9 = y2;
+  x10 = x9;	y10 = y1;
+  
+  draw z1--z2--z3--z4--z5--z6; draw z5--z7--z8--z9--z10;
+  angle_fill_corner(1,2,3); angle_fill_corner(8,9,10);
+endchar;
+  
+OCRchar("X", W#, H#); "Lettre X";
+  x1 = 0;	y1 = H;
+  x2 = W;	y2 = 0;
+  x3 = x1;	y3 = y2;
+  x4 = x2;	y4 = y1;
+  
+  draw z1--z2; draw z3--z4;
+endchar;
+  
+OCRchar("Y", W#, H#); "Lettre Y";
+  x1 = 0;	y1 = H;
+  x2 = x1;	y2 = H-1/8H;
+  x3 = 1/2W;	y3 = 1/2H;
+  x4 = x3;	y4 = 0;
+  x5 = W;	y5 = y2;
+  x6 = x5;	y6 = y1;
+  
+  draw z1--z2--z3--z4; draw z3--z5--z6;
+  angle_fill_corner(1,2,3); angle_fill_corner(3,5,6);
+endchar;
+  
+OCRchar("Z", W#, H#); "Lettre Z";
+  x1 = 0;	y1 = H;
+  x2 = W;	y2 = y1;
+  x3 = x1;	y3 = 0;
+  x4 = x2;	y4 = y3;
+  
+  draw z1--z2--z3--z4;
+  fill_corners(2,3);
+  unfill unitsquare shifted (-1.5,-.5) scaled T
+    rotated (angle (z2-z3) - 90) shifted z3;
+  unfill unitsquare shifted (.5,-.5) scaled T
+    rotated (angle (z2-z3) - 90) shifted z2;
+endchar;
+  
+OCRchar(3, W#, H#); "Lettre \AA";
+  x1 = 0;	y1 = 0;
+  x2 = 1/2W;	y2 = H;
+  z3 = 1/4[z1,z2];
+  z4 = 3/4[z1,z2];
+  x5 = W;	y5 = y1;
+  z6 = 1/4[z5,z2];
+  z7 = 3/4[z5,z2];
+  x8 = 1/8W;	y8 = y4;
+  x9 = x8;	y9 = y2;
+  x10 = 7/8W;	y10 = y9;
+  x11 = x10;	y11 = y8;
+ 
+  draw z1--z4; draw z5--z7; draw z3--z6;
+  join_radius := T/2;
+  draw (.4[z8,z9]--z9) join (z9--.6[z9,z10]);
+  draw (.4[z9,z10]--z10) join (z10--.6[z10,z11]);
+  draw (.4[z10,z11]--z11) join (z11--.6[z11,z8]);
+  draw (.4[z11,z8]--z8) join (z8--.6[z8,z9]);
+endchar;
+  
+OCRchar(4, W#, H#); "Lettre \"&ditto&"A";
+  x1 = 0;	y1 = 0;
+  x2 = 1/2W;	y2 = 3/4H;
+  x3 = W;	y3 = y1;
+  z4 = 3/16[z1,z2];
+  z5 = 3/16[z3,z2];
+  x6 = x1;	y6 = H;
+  x7 = x6;	y7 = H-1/8H;
+  x8 = x3;	y8 = y6;
+  x9 = x8;	y9 = y7;
+  
+  draw z1--z2--z3; draw z4--z5; draw z6--z7; draw z8--z9;
+endchar;
+ 
+OCRchar(29, W#, H#); "Lettre \AE";
+  x1 = 0;	y1 = 0;
+  x2 = 1/2W;	y2 = H;
+  x3 = 5/8W;	y3 = y2;
+  x4 = x3;	y4 = y1;
+  z5 = 1/4[z1,z2];
+  z6 = 1/4[z4,z3];
+  x7 = W;	y7 = y2;
+  z8 = 1/2[z4,z3];
+  x9 = x7;	y9 = y8;
+  x10 = x7;	y10 = y1;
+  
+  draw z1--z2--z3--z4--z10; draw z5--z6;
+  draw z3--z7; draw z8--z9;
+endchar;
+  
+OCRchar(5, W#, H#); "Lettre \~N";
+  x1 = 0;	y1 = 0;
+  x2 = x1;	y2 = 5/8H;
+  x3 = W;	y3 = y1;
+  x4 = x3;	y4 = y2;
+  x5 = x1;	y5 = H-1/16H;
+  x6 = x5;	y6 = H;
+  x7 = x3;	y7 = y5;
+  x8 = x7;	y8 = y6;
+  
+  draw z1--z2--z3--z4;
+  draw z5--z6--z7--z8;
+endchar;
+  
+OCRchar(31, W#, H#); "Lettre \O";
+  currentpicture := O_char;
+  x1 = 0;	y1 = 0;
+  x2 = W;	y2 = H;
+  
+  draw z1--z2;
+endchar;
+  
+OCRchar(6, W#, H#); "Lettre \"&ditto&"O";
+  x1 = 0;	y1 = 5/16H;
+  x2 = 3/8W;	y2 = 0;
+  x3 = x2+1/4W; y3 = y2;
+  x4 = W;	y4 = y1;
+  x5 = x4;	y5 = y4+1/8H;
+  x6 = x3;	y6 = 3/4H;
+  x7 = x2;	y7 = y6;
+  x8 = x1;	y8 = y5;
+  z10 = (z1--z2+(z2-z1)) intersectionpoint (z3+(z3-z4)--z4);
+  z11 = (z3--z4+(z4-z3)) intersectionpoint (z5+(z5-z6)--z6);
+  z12 = (z5--z6+(z6-z5)) intersectionpoint (z7+(z7-z8)--z8);
+  z13 = (z7--z8+(z8-z7)) intersectionpoint (z1+(z1-z2)--z2);
+  x14 = x1;	y14 = H-1/8H;
+  x15 = x14;	y15 = H;
+  x16 = x4;	y16 = y14;
+  x17 = x16;	y17 = y15;
+  
+  join_radius := r6;
+  draw (.4[z13,z10]--z10) join (z10--.6[z10,z11]);
+  draw (.4[z11,z12]--z12) join (z12--.6[z12,z13]);
+  join_radius := r5;
+  draw (.4[z10,z11]--z11) join (z11--.6[z11,z12]);
+  draw (.4[z12,z13]--z13) join (z13--.6[z13,z10]);
+  draw z14--z15; draw z16--z17;
+endchar;
+ 
+OCRchar(7, W#, H#); "Lettre \"&ditto&"U";
+  x1 = 0;	y1 = 3/4H;
+  x2 = x1;	y2 = 0;
+  x3 = W;	y3 = y2;
+  x4 = x3;	y4 = y1;
+  x5 = 1/4W;	y5 = H-1/8H;
+  x6 = x5;	y6 = H;
+  x7 = x5+1/2W; y7 = y5;
+  x8 = x7;	y8 = y6;
+  
+  join_radius := T;
+  draw (z1--z2) join (z2--.6[z2,z3]);
+  draw (.4[z2,z3]--z3) join (z3--z4);
+  draw z5--z6; draw z7--z8;
+endchar;
+  
+OCRchar(".", 1/4W#, 3/16H#+1/8H#); "Point";
+  x1 = 0;	y1 = 3/16H;
+  x2 = 1/4W;	y2 = y1;
+  x3 = x2;	y3 = y1+1/8H;
+  x4 = x1;	y4 = y3;
+  
+  draw z1--z2--z3--z4--cycle;
+endchar;
+ 
+OCRchar(",", 1/2W#, 3/8H#); "Virgule";
+  x1 = 0;	y1 = 3/8H;
+  x2 = 1/2W;	y2 = y1;
+  x3 = x2;	y3 = 0;
+  
+  draw z1--z2--z3;
+endchar;
+  
+OCRchar(":", 1/4W#, 3/16H#+1/8H#+3/8H#+1/8H#); "Deux points";
+  x1 = 0;	y1 = 3/16H;
+  x2 = 1/4W;	y2 = y1;
+  x3 = x2;	y3 = y2+1/8H;
+  x4 = x1;	y4 = y3;
+  x5 = x1;	y5 = y4+3/8H;
+  x6 = x2;	y6 = y5;
+  x7 = x6;	y7 = y6+1/8H;
+  x8 = x5;	y8 = y7;
+  
+  draw z1--z2--z3--z4--cycle;
+  draw z5--z6--z7--z8--cycle;
+endchar;
+  
+OCRchar(";", 1/2W#, 7/8H#); "Point virgule";
+  x1 = 0;	y1 = 3/8H;
+  x2 = 1/2W;	y2 = y1;
+  x3 = x2;	y3 = 0;
+  x4 = x1;	y4 = 3/4H;
+  x5 = 1/4W;	y5 = y4;
+  x6 = x5;	y6 = 7/8H;
+  x7 = x4;	y7 = y6;
+  
+  draw z1--z2--z3;
+  draw z4--z5--z6--z7--cycle;
+endchar;
+ 
+OCRchar("=", W#, 3/8H#+5/16H#); "Egale";
+  x1 = 0;	y1 = 3/8H;
+  x2 = W;	y2 = y1;
+  x3 = x1;	y3 = y1+5/16H;
+  x4 = x2;	y4 = y3;
+  
+  draw z1--z2; draw z3--z4;
+endchar;
+  
+OCRchar("+", W#, 1/2H#-1/2W#+W#); "Plus";
+  x1 = 0;	y1 = 1/2H;
+  x2 = W;	y2 = y1;
+  x3 = 1/2W;	y3 = 1/2H-1/2W;
+  x4 = x3;	y4 = y3+W;
+  
+  draw z1--z2; draw z3--z4;
+endchar;
+  
+OCRchar("/", W#, H#); "Barre oblique";
+  x1 = 0;	y1 = 0;
+  x2 = W;	y2 = H;
+  
+  draw z1--z2;
+endchar;
+  
+OCRchar("*", W#, 1/8H#+3/4H#); "Ast\'erisque";
+  x1 = 0;	y1 = 1/4H;
+  x2 = 1/2W;	y2 = 1/8H;
+  x3 = W;	y3 = y1;
+  x4 = x3;	y4 = 3/4H;
+  x5 = x2;	y5 = y2+3/4H;
+  x6 = x1;	y6 = y4;
+  
+  draw z1--z4; draw z2--z5; draw z3--z6;
+endchar;
+  
+OCRchar(ditto, W#, H#); "Guillemet";
+  x1 = 0;	y1 = H;
+  x2 = 1/8W;	y2 = 5/8H;
+  x3 = 1/4W;	y3 = y1;
+  x4 = 3/4W;	y4 = y1;
+  x5 = x4+1/8W; y5 = y2;
+  x6 = W;	y6 = y1;
+  
+  draw z3--z1--z2--z3--z4--z5--z6--z4;
+  fill_corners(1,6);
+  unfill unitsquare shifted (-1.5,-.5) rotated (angle (z1-z2) - 90)
+    scaled T shifted z1;
+  unfill unitsquare shifted (1.5,-.5) rotated (90 - angle (z6-z5))
+    scaled T shifted z6;
+endchar;
+  
+OCRchar("{", W#, H#); "Parenth\`ese gauche";
+  x1 = 0;	y1 = 1/2H;
+  x2 = 1/2W;	y2 = y1;
+  x3 = x2;	y3 = 0;
+  x4 = W;	y4 = y3;
+  x5 = x2;	y5 = H;
+  x6 = x4;	y6 = y5;
+  
+  join_radius := T;
+  draw (z1--z2) join (z2--.6[z2,z3]);
+  draw (z1--z2) join (z2--.6[z2,z5]);
+  join_radius := 1/2T;
+  draw (.4[z2,z3]--z3) join (z3--z4);
+  draw (.4[z2,z5]--z5) join (z5--z6);
+endchar;
+  
+OCRchar("}", W#, H#); "Parenth\`ese droite";
+  x1 = W;	y1 = 1/2H;
+  x2 = 1/2W;	y2 = y1;
+  x3 = x2;	y3 = 0;
+  x4 = 0;	y4 = y3;
+  x5 = x2;	y5 = H;
+  x6 = x4;	y6 = y5;
+  
+  join_radius := T;
+  draw (z1--z2) join (z2--.6[z2,z3]);
+  draw (z1--z2) join (z2--.6[z2,z5]);
+  join_radius := 1/2T;
+  draw (.4[z2,z3]--z3) join (z3--z4);
+  draw (.4[z2,z5]--z5) join (z5--z6);
+endchar;
+ 
+OCRchar("%", W#, H#); "Pour cent";
+  x1 = 0;	y1 = 1/8H;
+  x2 = W;	y2 = y1+3/4H;
+  x3 = x1;	y3 = y2;
+  x4 = x3+1/4W; y4 = y3;
+  x5 = x4;	y5 = H;
+  x6 = x3;	y6 = y5;
+  x7 = x2-1/4W; y7 = 0;
+  x8 = x2;	y8 = y7;
+  x9 = x8;	y9 = y1;
+  x10 = x7;	y10 = y9;
+  
+  draw z1--z2;
+  draw z3--z4--z5--z6--cycle;
+  draw z7--z8--z9--z10--cycle;
+endchar;
+  
+OCRchar("?", W#, H#); "Point d' interrogation";
+  x1 = 0;	y1 = H-3/8H;
+  x2 = W-1/4W;	y2 = H;
+  x3 = W;	y3 = H-1/8H;
+  x4 = x3;	y4 = 3/4H;
+  x5 = 1/4W;	y5 = y6+1/8H;
+  x6 = x5;	y6 = 1/4H;
+  x7 = x5;	y7 = 0;
+  
+  draw z1--z2--z3--z4--z5--z6; drawdot z7;
+endchar;
+ 
+OCRchar("&", W#, 7/8H#); "Perlu\`ete";
+  x1 = W;	y1 = 0;
+  x2 = 0;	y2 = y6+3/8H;
+  x3 = x2;	y3 = 7/8H;
+  x4 = 3/4W;	y4 = y3;
+  x5 = x4;	y5 = y2;
+  x6 = x2;	y6 = 1/4H;
+  x7 = x2;	y7 = y1;
+  x8 = 1/2W;	y8 = y1;
+  x9 = x1;	y9 = y6;
+  
+  join_radius := T;
+  draw (z1--z2--z3) join (z3--.6[z3,z4]);
+  draw (.4[z3,z4]--z4) join (z4--z5);
+  draw (z5--z6--z7) join (z7--z8--z9);
+endchar;
+  
+OCRchar("'", 1/4W#, H#); "Apostrophe";
+  x1 = 0;	y1 = H;
+  x2 = 1/8W;	y2 = 5/8H;
+  x3 = 1/4W;	y3 = y1;
+  
+  draw z1--z2--z3--cycle;
+endchar;
+  
+OCRchar("-", W#, 1/2H#); "Moins, trait d'union";
+  x1 = 0;	y1 = 1/2H;
+  x2 = W;	y2 = y1;
+  
+  draw z1--z2;
+endchar;
+  
+OCRchar("$", W#, H#); "Symbole dollar";
+  x1 = 0;	y1 = 1/4H;
+  x2 = W;	y2 = y1;
+  x3 = x2;	y3 = 1/2H;
+  x4 = x1;	y4 = y3;
+  x5 = x1;	y5 = y4+1/4H;
+  x6 = x2;	y6 = y5;
+  x7 = 1/2W;	y7 = 0;
+  x8 = x7;	y8 = y1;
+  x9 = x7;	y9 = y5;
+  x10 = x7;	y10 = H;
+ 
+  draw z1--z2--z3--z4--z5--z6; draw z7--z8; draw z9--z10;
+endchar;
+  
+OCRchar(8, W#, H#); "Symbole livre";
+  x1 = 0;	y1 = 0;
+  x2 = W;	y2 = y1;
+  x3 = 1/4W;	y3 = y1;
+  x4 = x2-1/4W; y4 = H;
+  x5 = x2;	y5 = y4;
+  x6 = x1;	y6 = 1/2H;
+  x7 = x2;	y7 = y6;
+  
+  join_radius := T;
+  draw z1--z2; draw (z3--z4) join (z4--z5); draw z6--z7;
+endchar;
+  
+OCRchar(9, W#, H#); "Symbole yen";
+  x1 = 0;	y1 = H;
+  x2 = 1/2W;	y2 = 1/2H;
+  x3 = W;	y3 = y1;
+  x4 = x2;	y4 = 0;
+  x5 = x1;	y5 = 3/8H;
+  x6 = x3;	y6 = y5;
+  
+  draw z1--z2--z3; draw z2--z4; draw z5--z6;
+endchar;
+ 
+designsize := L#;
+  
+font_slant := 0;
+font_quad := 2W#;
+font_normal_space := W#;
+font_normal_stretch := .5W#;
+font_normal_shrink := .4W#;
+font_xheight := H#;
+  
+end.

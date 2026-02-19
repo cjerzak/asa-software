@@ -1,0 +1,25 @@
+% Requires: \usepackage{booktabs,longtable,array,xcolor,colortbl}
+\begingroup\fontsize{9}{11}\selectfont
+
+\begin{longtable}[t]{rllrrrrcrr}
+\caption{Top 5 most different country pairs (closest inputs by FracGroups & FracParties; ranked by |Δ Cleavage|).\label{tab:Top5MostDifferentCountryPairs}}\\
+\toprule
+\textbf{Rank} & \textbf{CountryA} & \textbf{CountryB} & \textbf{FracGroups (A/B)} & \textbf{FracParties (A/B)} & \textbf{Cleavage (A/B)} & \textbf{ENP (A/B)} & \textbf{N\_elec (A/B)} & \textbf{|Δ Cleavage|} & \textbf{Input dist.}\\
+\midrule
+\endfirsthead
+\caption[]{Top 5 most different country pairs (closest inputs by FracGroups & FracParties; ranked by |Δ Cleavage|). \textit{(continued)}}\\
+\toprule
+\textbf{Rank} & \textbf{CountryA} & \textbf{CountryB} & \textbf{FracGroups (A/B)} & \textbf{FracParties (A/B)} & \textbf{Cleavage (A/B)} & \textbf{ENP (A/B)} & \textbf{N\_elec (A/B)} & \textbf{|Δ Cleavage|} & \textbf{Input dist.}\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!10}{1} & \cellcolor{gray!10}{Burkina Faso} & \cellcolor{gray!10}{Guinea} & \cellcolor{gray!10}{0.722 / 0.719} & \cellcolor{gray!10}{0.697 / 0.719} & \cellcolor{gray!10}{0.301 / 0.150} & \cellcolor{gray!10}{4.529 / 3.561} & \cellcolor{gray!10}{2 / 1} & \cellcolor{gray!10}{0.152} & \cellcolor{gray!10}{0.023}\\
+2 & Botswana & South Africa & 0.423 / 0.426 & 0.454 / 0.460 & 0.093 / 0.232 & 1.831 / 1.853 & 1 / 1 & 0.139 & 0.007\\
+\cellcolor{gray!10}{3} & \cellcolor{gray!10}{Dominican Republic} & \cellcolor{gray!10}{Trinidad and Tobago} & \cellcolor{gray!10}{0.632 / 0.641} & \cellcolor{gray!10}{0.571 / 0.583} & \cellcolor{gray!10}{0.082 / 0.219} & \cellcolor{gray!10}{2.333 / 2.401} & \cellcolor{gray!10}{2 / 1} & \cellcolor{gray!10}{0.137} & \cellcolor{gray!10}{0.015}\\
+4 & Burkina Faso & Central African Republic & 0.722 / 0.721 & 0.697 / 0.670 & 0.301 / 0.195 & 4.529 / 3.026 & 2 / 1 & 0.106 & 0.027\\
+\cellcolor{gray!10}{5} & \cellcolor{gray!10}{Estonia} & \cellcolor{gray!10}{Romania} & \cellcolor{gray!10}{0.152 / 0.177} & \cellcolor{gray!10}{0.727 / 0.727} & \cellcolor{gray!10}{0.054 / 0.155} & \cellcolor{gray!10}{3.666 / 3.661} & \cellcolor{gray!10}{1 / 1} & \cellcolor{gray!10}{0.101} & \cellcolor{gray!10}{0.025}\\*
+\end{longtable}
+\endgroup{}

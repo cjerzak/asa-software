@@ -1,6 +1,6 @@
 """Tor registry, circuit rotation, and blocklist helpers."""
 
-from .search_transport import (
+from .search._legacy_transport import (
     _cleanup_expired_blocks,
     _cleanup_expired_proxy_blocks_db,
     _get_blocklist_status,

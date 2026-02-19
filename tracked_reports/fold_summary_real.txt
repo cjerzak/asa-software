@@ -1,15 +1,51 @@
 {
   "version": 1,
-  "facts": [],
+  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure), Beni (source: https://sisin.oep.org.bo/medios_digitales/34363/detalle)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi was elected as the titular 'Diputada Especial Indígena' for the Beni department (Circunscripción Especial Indígena) representing the Movimiento Al Socialismo (MAS) party in the 2014 elections.", "Her substitute (suplente) in the legislature was Eloy Cartagena Yuhamona."],
   "decisions": [],
-  "open_questions": [],
+  "open_questions": "Does specific information exist regarding her educational attainment levels (e.g., degree, secondary school) beyond her leadership roles?",
   "sources": [
     {
+      "tool": "Search",
+      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "title": "BANCADAS DE UD Y DEL MAS EN EL BENI",
+      "note": "Election results and role confirmation"
+    },
+    {
+      "tool": "Search",
+      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados",
+      "title": "Diputada Moye del MAS es denunciada...",
+      "note": "Details on falsified medical leave allegation"
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia del Estado Profile (Inferred)",
+      "note": "Source for birth date and prior occupation from scratchpad"
+    },
+    {
+      "tool": "Search",
+      "url": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
+      "title": "OEP Media Detail",
+      "note": "Source for birth place from scratchpad"
+    },
+    {
+      "tool": "Search",
+      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
+      "title": "Diputada indígena del MAS rechaza justicia comunitaria",
+      "note": "Controversy regarding community justice"
+    },
+    {
       "tool": "OpenWebpage",
-      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/",
-      "title": "Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE",
+      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "title": "Radio Patujú 95.2 FM: BANCADAS DE UD Y DEL MAS EN EL BENI",
+      "note": null
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "title": "Vicepresidencia del Estado",
       "note": null
     }
   ],
-  "warnings": "Summarizer parse failed; using deterministic fallback memory update."
+  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (Born January 7, 1982) (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: She secured the seat with approximately 83% of the votes in the TIPNIS region, defeating the UD candidate.", "UNGROUNDED: She faced legal controversy when denounced by Deputy Costa for allegedly presenting falsified medical leave requests (bajas médicas) to obtain licenses in the Chamber of Deputies.", "UNGROUNDED: Moye threatened indigenous groups opposing the TIPNIS road construction and rejected community justice in a case involving the theft of an outboard motor, opting for ordinary justice instead.", "UNGROUNDED: Disambiguation: She is distinct from 'Comandanta Ramona' of the EZLN (Mexico)."]
 }

@@ -8,6 +8,7 @@
   config_search = NULL,
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,
+  webpage_heuristic_profile = NULL,
   webpage_embedding_provider = NULL,
   webpage_embedding_model = NULL,
   webpage_timeout = NULL,
@@ -41,6 +42,8 @@
 \item{allow_read_webpages}{TRUE/FALSE/NULL}
 
 \item{webpage_relevance_mode}{"auto", "lexical", "embeddings", or NULL}
+
+\item{webpage_heuristic_profile}{"generic", "legacy", or NULL}
 
 \item{webpage_embedding_provider}{"auto", "openai", "sentence_transformers", or NULL}
 

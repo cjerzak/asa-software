@@ -13,6 +13,7 @@ search_options(
   inter_search_delay = NULL,
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,
+  webpage_heuristic_profile = NULL,
   webpage_embedding_provider = NULL,
   webpage_embedding_model = NULL,
   webpage_timeout = NULL,
@@ -38,6 +39,7 @@ search_options(
   webpage_pdf_max_pages = NULL,
   webpage_pdf_max_text_chars = NULL,
   webpage_user_agent = NULL,
+  wikidata_template_path = NULL,
   wiki_top_k_results = NULL,
   wiki_doc_content_chars_max = NULL,
   search_doc_content_chars_max = NULL
@@ -67,6 +69,10 @@ webpages (HTML/text) via the OpenWebpage tool. Disabled by default.}
 
 \item{webpage_relevance_mode}{Relevance selection for opened webpages.
 One of: "auto", "lexical", "embeddings".}
+
+\item{webpage_heuristic_profile}{Heuristic profile used when annotating links
+from opened webpages. One of: "generic" (task-agnostic default) or
+"legacy" (compatibility mode with older domain-biased cues).}
 
 \item{webpage_embedding_provider}{Embedding provider for relevance. One of:
 "auto", "openai", "sentence_transformers".}
@@ -133,6 +139,10 @@ pages for anti-bot marker detection.}
 relevance selection/output truncation.}
 
 \item{webpage_user_agent}{User-Agent string used for webpage fetches.}
+
+\item{wikidata_template_path}{Optional path to a Wikidata template JSON file.
+When provided, Wikidata known-entity catalogs are loaded from this file.
+If NULL (default), no task-specific template catalog is auto-loaded.}
 
 \item{wiki_top_k_results}{Number of Wikipedia search results to fetch per
 query (default: 5). Higher values may provide more coverage at the cost of

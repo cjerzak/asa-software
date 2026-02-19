@@ -1,0 +1,225 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{lewis2020retrieval}{inproceedings}{}
+      \name{author}{12}{}{%
+        {{un=0,uniquepart=base,hash=ecbe786a5668bf643d74bb24fe1c3cfe}{%
+           family={Lewis},
+           familyi={L\bibinitperiod},
+           given={Patrick},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=79978685fd7b37606022b06c0f6419a1}{%
+           family={Perez},
+           familyi={P\bibinitperiod},
+           given={Ethan},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=d205faec67355b6e0ec49f82a492324c}{%
+           family={Piktus},
+           familyi={P\bibinitperiod},
+           given={Aleksandra},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e1c32989a78998fe3c03c981d0da2dc7}{%
+           family={Petroni},
+           familyi={P\bibinitperiod},
+           given={Fabio},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=b24392ebfb2c0a35979fc689c389c649}{%
+           family={Karpukhin},
+           familyi={K\bibinitperiod},
+           given={Vladimir},
+           giveni={V\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=78a420900f50a8470ad085fb05231bf6}{%
+           family={Goyal},
+           familyi={G\bibinitperiod},
+           given={Naman},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4eadcf26f55e11fe4be834b52d9b7fdf}{%
+           family={Küttler},
+           familyi={K\bibinitperiod},
+           given={Heinrich},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c97f53fdeeb04c28de19e3324cb4bc0a}{%
+           family={Lewis},
+           familyi={L\bibinitperiod},
+           given={Mike},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=d4d56d3d370b3afd4ad2ebf985fbd3f8}{%
+           family={Yih},
+           familyi={Y\bibinitperiod},
+           given={Wen-tau},
+           giveni={W\bibinithyphendelim t\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=b3ff4029884ead9928954ea33714192c}{%
+           family={Rocktäschel},
+           familyi={R\bibinitperiod},
+           given={Tim},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=6cd024b217f3f2f8126e253b8c84d24d}{%
+           family={Riedel},
+           familyi={R\bibinitperiod},
+           given={Sebastian},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ca01c762f4a52dd8a8548508f8d727c9}{%
+           family={Kiela},
+           familyi={K\bibinitperiod},
+           given={Douwe},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{f238c3bfc4b30650dd17e65c4aadfc66}
+      \strng{fullhash}{22489b764620b23a8cc8547a492f0763}
+      \strng{bibnamehash}{f238c3bfc4b30650dd17e65c4aadfc66}
+      \strng{authorbibnamehash}{f238c3bfc4b30650dd17e65c4aadfc66}
+      \strng{authornamehash}{f238c3bfc4b30650dd17e65c4aadfc66}
+      \strng{authorfullhash}{22489b764620b23a8cc8547a492f0763}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Advances in Neural Information Processing Systems}
+      \field{title}{Retrieval-Augmented Generation for Knowledge-Intensive {NLP} Tasks}
+      \field{year}{2020}
+    \endentry
+    \entry{montgomery2018conditioning}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=edf532b1fbaf7297f9d1ff9ff2e0135b}{%
+           family={Montgomery},
+           familyi={M\bibinitperiod},
+           given={Jacob\bibnamedelima M},
+           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=8ef5bca6f403168706ad93d11351ed60}{%
+           family={Nyhan},
+           familyi={N\bibinitperiod},
+           given={Brendan},
+           giveni={B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=75deb8640419e1728a691840c36e0ea2}{%
+           family={Torres},
+           familyi={T\bibinitperiod},
+           given={Michelle},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Wiley Online Library}%
+      }
+      \strng{namehash}{88c747ceaaf208b90569a4488624e38e}
+      \strng{fullhash}{88c747ceaaf208b90569a4488624e38e}
+      \strng{bibnamehash}{88c747ceaaf208b90569a4488624e38e}
+      \strng{authorbibnamehash}{88c747ceaaf208b90569a4488624e38e}
+      \strng{authornamehash}{88c747ceaaf208b90569a4488624e38e}
+      \strng{authorfullhash}{88c747ceaaf208b90569a4488624e38e}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{American Journal of Political Science}
+      \field{number}{3}
+      \field{title}{How conditioning on posttreatment variables can ruin your experiment and what to do about it}
+      \field{volume}{62}
+      \field{year}{2018}
+      \field{pages}{760\bibrangedash 775}
+      \range{pages}{16}
+    \endentry
+    \entry{yao2022react}{misc}{}
+      \name{author}{7}{}{%
+        {{un=0,uniquepart=base,hash=5c1b62cbd4e181d818b927549813cf73}{%
+           family={Yao},
+           familyi={Y\bibinitperiod},
+           given={Shunyu},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4fc64f0dbaf7cb8f21c7c85d580cdb15}{%
+           family={Zhao},
+           familyi={Z\bibinitperiod},
+           given={Jeffrey},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2cb7d2d6e42d109fa2c5086d6c8f6a63}{%
+           family={Yu},
+           familyi={Y\bibinitperiod},
+           given={Dian},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a926c34a0eebdaaa30da36b46bd2192c}{%
+           family={Du},
+           familyi={D\bibinitperiod},
+           given={Nan},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=20b3779bbd037bbfdd1ffd3967624997}{%
+           family={Shafran},
+           familyi={S\bibinitperiod},
+           given={Izhak},
+           giveni={I\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=997c3143c2e5d593e816d2ff704fbf98}{%
+           family={Narasimhan},
+           familyi={N\bibinitperiod},
+           given={Karthik},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2923de2da7f9b32b957552e414b6bc16}{%
+           family={Cao},
+           familyi={C\bibinitperiod},
+           given={Yuan},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4ae4be538df04cfc1571685175562cad}
+      \strng{fullhash}{6f22c9f891fbcfb7465b1c3157b57023}
+      \strng{bibnamehash}{4ae4be538df04cfc1571685175562cad}
+      \strng{authorbibnamehash}{4ae4be538df04cfc1571685175562cad}
+      \strng{authornamehash}{4ae4be538df04cfc1571685175562cad}
+      \strng{authorfullhash}{6f22c9f891fbcfb7465b1c3157b57023}
+      \field{sortinit}{Y}
+      \field{sortinithash}{fd67ad5a9ef0f7456bdd9aab10fe1495}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{cs.CL}
+      \field{eprinttype}{arXiv}
+      \field{title}{ReAct: Synergizing Reasoning and Acting in Language Models}
+      \field{year}{2022}
+      \verb{eprint}
+      \verb 2210.03629
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

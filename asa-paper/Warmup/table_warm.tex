@@ -1,0 +1,40 @@
+\begin{table}[h]
+\caption{Caption here.}
+\centering\footnotesize 
+\begin{tabular}{l|ccc|ccc|ccc|ccc|ccc|ccc}
+\hline\hline 
+\multirow{2}{}{\it Legislature} & \multicolumn{3}{c|}{I, {\sc Non-E} } & \multicolumn{3}{c|}{II, {\sc CE} } & \multicolumn{3}{c|}{III, {\sc E} } & \multicolumn{3}{c|}{IV} & \multicolumn{3}{c|}{V} & \multicolumn{3}{c}{VI} \\
+\cline{2-19}
+ & \multicolumn{3}{c|}{12} & \multicolumn{3}{c|}{12} & \multicolumn{3}{c|}{12} & \multicolumn{3}{c|}{12} & \multicolumn{3}{c|}{12} & \multicolumn{3}{c}{20} \\
+\hline 
+{\it Body} &  &  &  & &  &  & & & &  &  & &  & & & & &  \\
+%
+ Seg. (EV) & \multicolumn{3}{c|}{\SegNonEthnicEV{}} & \multicolumn{3}{c|}{\SegCrossEthnicEV{}} & \multicolumn{3}{c|}{\SegEthnicEV{}} & \multicolumn{3}{c|}{\SegIVEV{}} & \multicolumn{3}{c|}{\SegVEV{}} & \multicolumn{3}{c}{\SegVIEV{}} \\
+%
+ Seg. (Transport) & \multicolumn{3}{c|}{\SegNonEthnicTP{}} & \multicolumn{3}{c|}{\SegCrossEthnicTP{}} & \multicolumn{3}{c|}{\SegEthnicTP{}} & \multicolumn{3}{c|}{\SegIVTP{}} & \multicolumn{3}{c|}{\SegVTP{}} & \multicolumn{3}{c}{\SegVITP{}} \\
+%
+Seg. (Log prob.) & \multicolumn{3}{c|}{\SegNonEthnicLP{}} & \multicolumn{3}{c|}{\SegCrossEthnicLP{}} & \multicolumn{3}{c|}{\SegEthnicLP{}} & \multicolumn{3}{c|}{\SegIVLP{}} & \multicolumn{3}{c|}{\SegVLP{}} & \multicolumn{3}{c}{\SegVILP{}} \\
+\hline
+{\it Party} & {\bf 1} & {\bf 2} & {\bf 3} & {\bf 1} & {\bf 2} & {\bf 3} & {\bf 1} & {\bf 2} & {\bf 3} & {\bf 1} & {\bf 2} & {\bf 3} & {\bf 1} & {\bf 2} & {\bf 3} & {\bf 1} & {\bf 2} & {\bf 3} \\
+%
+$N$ members & 4 & 4 & 4 & 4 & 4 & 4 & 4 & 4 & 4 & 6 & 4 & 2 & 2 & 2 & 8 & 8 & 8 & 4 \\
+%
+Party Seg. & \SegNonEthnicP1{} & \SegNonEthnicP2{} & \SegNonEthnicP3{} & \SegCrossEthnicP1{} & \SegCrossEthnicP2{} & \SegCrossEthnicP3{} & \SegEthnicP1{} & \SegEthnicP2{} & \SegEthnicP3{} & \SegIVP1{} & \SegIVP2{} & \SegIVP3{} & \SegVP1{} & \SegVP2{} & \SegVP3{} & \SegVIP1{} & \SegVIP2{} & \SegVIP3{} \\
+\hline
+\multirow{8}{}{Party members} & {\it a} & {\it a} & {\it a} & {\it a} & {\it a} & {\it a} & {\it a} & {\it b} & {\it c} & {\it a} & {\it a} & {\it b} & {\it a} & {\it a} & {\it b} & {\it a} & {\it a} & {\it b} \\
+ & {\it a} & {\it a} & {\it a} & {\it b} & {\it b} & {\it b} & {\it a} & {\it b} & {\it c} & {\it a} & {\it a} & {\it b} & {\it a} & {\it a} & {\it b} & {\it a} & {\it a} & {\it b} \\
+ & {\it a} & {\it a} & {\it a} & {\it c} & {\it c} & {\it c} & {\it a} & {\it b} & {\it c} & {\it a} & {\it a} &   &   &   & {\it b} & {\it a} & {\it a} & {\it c} \\
+ & {\it a} & {\it a} & {\it a} & {\it d} & {\it d} & {\it d} & {\it a} & {\it b} & {\it c} & {\it a} & {\it a} &   &   &   & {\it b} & {\it a} & {\it a} & {\it c} \\
+ &   &   &   &   &   &   &   &   &   & {\it b} &   &   &   &   & {\it c} & {\it a} & {\it a} &   \\
+ &   &   &   &   &   &   &   &   &   & {\it b} &   &   &   &   & {\it c} & {\it a} & {\it a} &   \\
+ &   &   &   &   &   &   &   &   &   &   &   &   &   &   & {\it c} & {\it a} & {\it a} &   \\
+ &   &   &   &   &   &   &   &   &   &   &   &   &   &   & {\it c} & {\it a} & {\it a} &   \\
+\hline
+{\it Ethnicity} & \multicolumn{3}{c|}{{\bf A}} & {\bf A} & {\bf B} & {\bf C} & {\bf A} & {\bf B} & {\bf C} & {\bf A} & {\bf B} &   & {\bf A} & {\bf B} & {\bf C} & {\bf A} & {\bf B} & {\bf C} \\
+%
+$N$ members & \multicolumn{3}{c|}{12} & 4 & 4 & 4 & 4 & 4 & 4 & 8 & 4 &   & 4 & 4 & 4 & 16 & 2 & 2 \\
+%
+Group seg. & \multicolumn{3}{c|}{0} & 0 & 0 & 0 & $\sim$1 & $\sim$1 & $\sim$1 & \multicolumn{3}{c|}{} & \multicolumn{3}{c|}{} & \multicolumn{3}{c}{} \\
+\hline
+\end{tabular}
+\end{table}

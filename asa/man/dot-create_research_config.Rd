@@ -12,7 +12,8 @@
   sources,
   allow_read_webpages = FALSE,
   max_tool_calls_per_round = NULL,
-  temporal = NULL
+  temporal = NULL,
+  wikidata_template_path = NULL
 )
 }
 \description{

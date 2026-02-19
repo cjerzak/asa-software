@@ -1,0 +1,1154 @@
+\documentclass[12pt,letterpaper]{article}
+
+% latest word count: 8358
+
+%https://drive.google.com/drive/folders/10DAu0tYZe6pxx_augrVwapDvSwySPr7e
+
+% Plan going forward: (a) drop log prob, unless it can be rescued in a plausible fashion, (b) alter scenario IV in Table 1 so that Party 1 contains only type a members, (c) experiment with a ChatGPT query focused on how prominent ethnicity is in politics across countries (as a way of validiting our chosen index), (d) look at measures of ethnic conflict e.g., from Minorities at Risk dataset, (e) consider chosen measure of ethnic segregation as an outcome to be explained, (f) think about Hefindahl index as a reference point, since it is the most widely used index in connection with ethnicity.
+
+% ADD IN THE NUMBER OF PARTIES TO THE DATASET SENT TO JOHN!
+
+% wordcount: 9199 without title page and appendices
+
+% https://www.aeaweb.org/journals/word-count
+
+% https://drive.google.com/drive/folders/10DAu0tYZe6pxx_augrVwapDvSwySPr7e
+ 
+% data spreadsheet 
+% https://docs.google.com/spreadsheets/d/1Vky2y-_sCzACvXiTXOFMevnJBJYnNkMsEAJ6NaFkz-M/edit?gid=0#gid=0
+
+% Current limits at towp journals:
+% APSR: 12,000
+% AJPS: 10,000
+% JOP: no longer than 35 pages (double-space), including all text, footnotes/endnotes, references, and tables/figures. The title page and abstract do not count against the 35-page limit. This rule should be seen as general guidance and will only be strictly enforced upon acceptance of an article for publication in The Journal of Politics.
+
+%% === margins ===
+\addtolength{\hoffset}{-0.8in} \addtolength{\voffset}{-0.8in}
+\addtolength{\textwidth}{1.6in} \addtolength{\textheight}{1.6in}
+%\usepackage{geometry}
+
+%% JASA format with 12pt, spacingset = 1.83
+%\addtolength{\hoffset}{-0.3in} \addtolength{\voffset}{-1.2in}
+%\addtolength{\textwidth}{.6in} \addtolength{\textheight}{2.1in}
+\pdfminorversion=4
+
+% orcidlink 
+\usepackage{orcidlink}
+
+%% === basic packages ===
+\usepackage{graphicx,subfigure,float}
+\usepackage{lmodern}% http://ctan.org/pkg/lm
+\usepackage{latexsym,multirow}
+\usepackage{amssymb,amsmath,bm}
+\usepackage{bigints}
+\usepackage{longtable}
+\usepackage{bbm} % for a indicator function
+\usepackage[color,all,import,arrow]{xy}
+\usepackage{enumerate}
+\usepackage{verbatim}
+\usepackage{lscape}
+\usepackage{mathtools}
+\usepackage{changepage}
+\usepackage{booktabs}
+\usepackage[utf8]{inputenc}
+\usepackage{etoolbox} % for \ifboolexpr or simple \newif
+\usepackage{array,collcell} % collcell lets us "collect" and throw away cell content
+\newcommand\HideCell[1]{}   % throws away the collected cell content
+% H = zero-width, zero-padding, content discarded
+\newcolumntype{H}{@{}>{\collectcell\HideCell}c<{\endcollectcell}@{}}
+%\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+
+%\usepackage{fontspec}
+
+% captions in italics 
+\usepackage[format=plain,
+            labelfont={bf,it},
+            textfont=it]{caption}
+
+% multi page table 
+\usepackage{longtable}
+
+% cell formatting for table
+\usepackage{makecell}
+\renewcommand\theadalign{bc}
+\renewcommand\theadfont{\bfseries}
+\renewcommand\theadgape{\Gape[4pt]}
+\renewcommand\cellgape{\Gape[4pt]}
+
+%% === graphical packages ===
+\usepackage{placeins}
+
+%% === bibliography packages ===
+%\usepackage{natbib}
+\usepackage[natbib=true,minnames=1,maxnames=3,backend=biber,style=authoryear-luh-ipw]{biblatex}
+\addbibresource{mybib.bib}
+% \bibliographystyle{pa}
+
+% New packages for trace table
+\usepackage{ragged2e}
+\usepackage{tabularx}
+\usepackage[table]{xcolor}
+\usepackage{threeparttable}
+\definecolor{RowShade}{gray}{0.96}
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\Centering\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+
+%% === hyperref options ===
+% \usepackage{color}
+\usepackage[pdftex, bookmarksopen=true, bookmarksnumbered=true,
+pdfstartview=FitH, breaklinks=true,
+urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
+\usepackage{colortbl}
+\usepackage{subfigure}
+
+%% ==clean up hanging first page==
+\usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
+\AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
+
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+
+% === figure path ===
+\graphicspath{{./FiguresParties/}}
+
+% === caption ===
+\usepackage{caption}
+
+% == tikzpicture ==
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{qtree}
+\usepackage{comment}
+\usetikzlibrary{arrows.meta,calc,positioning}
+\usetikzlibrary{matrix}
+\usetikzlibrary{bayesnet}
+\usetikzlibrary{decorations.pathreplacing,calligraphy}
+
+% == Algorithm
+\usepackage[ruled,vlined]{algorithm2e}
+
+% === theorem package ===
+\usepackage{theorem}
+\theoremstyle{plain}
+\theoremheaderfont{\scshape}
+\newtheorem{assumption}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{property}{Property}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{defi}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newcommand\SimAppendix{I}
+
+% === allows for temporary adjustment of side margins
+\usepackage{chngpage}
+
+% define main / supplementary result tags 
+\newcommand{\FigsTagMainBody}{ExpertsAndAgentVVV0PT5} % threshold of 0.5
+%\newcommand{\FigsTagMainBody}{ExpertsAndAgentVVV0PT75} % threshold of 0.75
+%\newcommand{\FigsTagMainBody}{ExpertsAndAgentVVV0PT9} % threshold of 0.9
+
+%% macros 
+\input{./FiguresParties/InitialInputStatsParties.tex}
+\input{./FiguresParties/LLM_pol_party_Statistics.tex}
+\input{./FiguresParties/CrossNatStatistics_\FigsTagMainBody.tex}
+
+% === some special symbols
+\newcommand{\iid}{\stackrel{\rm i.i.d.}{\sim}}
+\newcommand{\indep}{\stackrel{\rm indep.}{\sim}}
+\newcommand{\qed}{\hfill \ensuremath{\Box}}
+\newcommand{\ind}{\mbox{$\perp\!\!\!\perp$}}
+\newcommand{\nind}{\mbox{$\not\perp\!\!\!\perp$}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\diag}{diag}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+
+% ==== rotating package ===
+\usepackage{rotating}
+
+% ==== dotted lines in tables ===
+\usepackage{arydshln}
+
+% == spacing between sections and subsections
+\usepackage[compact]{titlesec}
+%\usepackage{times}
+
+% == control space within footnote
+\usepackage{setspace}
+\usepackage[bottom]{footmisc}
+\renewcommand{\footnotelayout}{\setstretch{1.1}}% Footnotes are \setstretch{1.5}
+\setlength{\footnotemargin}{1mm}
+
+\allowdisplaybreaks
+
+\newcommand\spacingset[1]{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% === submission
+\newcommand{\blind}{0}
+
+\def\letas{\mathrel{\mathop{=}\limits^{\triangle}}}
+\newcommand*{\QEDB}{\hfill\ensuremath{\square}}
+\newcommand{\red}{\color{red}}
+\newcommand{\blue}{\color{blue}}
+\newcommand{\Beta}{\textsf{Beta}}
+\newcommand{\Binomial}{\text{Binomial}}
+\newcommand{\Bern}{\textsf{Bernoulli}}
+\newcommand{\Expo}{\textsf{Expo}}
+\newcommand{\Pois}{\textsf{Pois}}
+\newcommand{\Unif}{\textsf{Uniform}}
+\newcommand{\Normal}{\mathcal{N}}
+\newcommand{\Gammad}{\textsf{Gamma}}
+\newcommand{\logit}{\text{logit}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\mexpit}{\text{mexpit}}
+\newcommand{\Dir}{\textsf{Dirichlet}}
+\newcommand{\Multi}{\textsf{Multi}}
+\newcommand{\Cat}{\textsf{Categorical}}
+
+\newcommand{\pr}{\text{pr}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\sumN}{\sum_{i=1}^N}
+\newcommand{\wt}{\widetilde}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bp}{\mathbf{p}}
+\newcommand{\bQ}{\mathbf{Q}}
+\newcommand{\bV}{\mathbf{V}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\ATE}{\textsf{ATE}}
+\newcommand{\bepsilon}{\bm{\epsilon}}
+\newcommand{\boldeta}{\bm{\eta}}
+
+\newcommand{\bpi}{\boldsymbol{\pi}}
+\newcommand{\bPi}{\boldsymbol{\Pi}}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bTheta}{\boldsymbol{\Theta}}
+\newcommand{\bgamma}{\boldsymbol{\gamma}}
+\newcommand{\ob}{^\textrm{Obs}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bC}{\mathbf{C}}
+\newcommand{\bz}{\mathbf{z}}
+\newcommand{\bZ}{\mathbf{Z}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\dd}{\textrm{d}}
+\newcommand{\bT}{\mathbf{T}}
+
+\newcommand{\bA}{\bm{A}}
+\newcommand{\ba}{\bm{a}}
+\newcommand{\bh}{\bm{h}}
+\newcommand{\bD}{\bm{D}}
+\newcommand{\bd}{\bm{d}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\cZ}{\mathcal{Z}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\oD}{\overline{D}}
+\newcommand{\oY}{\overline{Y}}
+\newcommand{\bone}{\mathbf{1}}
+
+% if not blinding cites 
+\newcommand{\GLP}{GLP}
+\newcommand{\GLPFull}{Global Leadership}
+\newcommand{\GLPcitet}{\citet{gerring2019rules}}
+\newcommand{\GLPcitep}{\citep{gerring2019rules}}
+
+
+% if blinding cites 
+%\newcommand{\GLP}{\if0\blind {GLP} \fi \if1\blind {[\emph{Name Omitted to Maintain Anonymity}]} \fi }
+%\newcommand{\GLPFull}{\if0\blind {Global Leadership} \fi \if1\blind {[\emph{Name Omitted to Maintain Anonymity}]} \fi }
+%\newcommand{\GLPcitet}{\if0\blind {\citet{gerring2019rules},} \fi \if1\blind {Authors (2019),} \fi }
+%\newcommand{\GLPcitep}{\if0\blind {\citep{gerring2019rules}} \fi \if1\blind {(Authors, 2019)} \fi }
+
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bphi}{\boldsymbol{\phi}}
+\newcommand{\bpsi}{\boldsymbol{\psi}}
+
+% ==Cross Referencing Different Docs
+\usepackage{xr}
+\externaldocument{parties_appendix}
+
+\begin{document} 
+
+\newcommand{\tit}{ 
+%Elite Cleavages: Concept and Measurement
+%Elite Cleavages: Optimal-Transport Measures \\ for Global Party Systems
+When Elites Divide: 
+
+Ethnic Party Segmentation Across the World}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% abstract spacing 
+\spacingset{1.25}
+
+\if0\blind
+
+{\title{\bf\tit\thanks{
+Authors are listed in alphabetical order. Preliminary and incomplete. For more information about dataset access, see \href{https://https://globalleadershipproject.net}{\texttt{GlobalLeadershipProject.net/cleavage}}.
+%For helpful comments, we are grateful to XYZ.
+} 
+%
+  \author{John Gerring
+\thanks{Professor, Department of Government, 
+    University of Texas at Austin.
+ Email:
+      \href{mailto:jgerring@austin.utexas.edu}{\texttt{jgerring@austin.utexas.edu}} URL:  \href{https://liberalarts.utexas.edu/government/faculty/jg29775}{\texttt{liberalarts.utexas.edu/government/faculty/jg29775}}}
+   \and 
+   Connor T. Jerzak\thanks{Assistant Professor, Department of Government, University of Texas at Austin. Email: \href{mailto:connor.jerzak@austin.utexas.edu}{\texttt{connor.jerzak@austin.utexas.edu}} URL:
+      \href{https://connorjerzak.com}{\texttt{ConnorJerzak.com}}
+      }
+    \and
+    Erzen Öncel \thanks{Assistant Professor, Department of International Relations, Özyeğin University. Email:
+      \href{mailto:erzen.oncel@ozyegin.edu.tr}{\texttt{erzen.oncel@ozyegin.edu.tr}} URL:
+      \href{https://www.ozyegin.edu.tr/en/faculty/erzenoncel}{\texttt{ozyegin.edu.tr/en/faculty/erzenoncel}}
+    }
+  \date{
+  %  {\sc Version Date: \today}
+  }
+}
+}
+
+\fi
+
+\if1\blind
+\title{\bf \tit}
+\fi
+
+\maketitle
+
+\pdfbookmark[1]{Title Page}{Title Page}
+
+\thispagestyle{empty}
+\setcounter{page}{0}
+\vspace{-0.99cm}
+\begin{abstract}
+\noindent Scholars agree that the nature of ethnic cleavages hinges not on diversity per se but on the degree to which political elites reproduce social boundaries. Yet, we still lack a replicable, continuous, and cross-national metric of elite ethnic segregation of the party system. This paper proposes a new measure that treats the distribution of ethnic groups across legislative party delegations as an optimal-transport problem. By comparing the observed joint distribution of groups and parties with a counterfactual of perfect integration, we derive a segregation index bounded in $[0,1]$ that is both decomposable and comparable across time, chambers, and countries. We implement the index on an original dataset covering \CleavageNumObservations{} parliamentary delegations (\CleavageMinYear{}–\CleavageMaxYear{}), assembled from the Global Leadership Project and supplemented by a provenance-preserving coding AI search protocol that harvests and cites public-source evidence to infer missing party labels (expanding coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} leader cases). Validation against existing binary and survey-based measures shows that our cleavage metrics capture known cases while revealing substantial within-country and within-party variation that is missed by existing approaches. Substantively, we find patterns consistent with a simple demand-and-supply model of ethnic representation. The index invites new tests of classic theories of ethnic politics, affords fine-grained diagnostics for institutional engineering, and is readily extensible to other ascriptive cleavages. We make the 770{,}000 distinct records on political elites open source.
+
+%v1
+%\noindent Scholars agree that the nature of ethnic cleavages hinges not on diversity per se but on the degree to which political elites reproduce social boundaries. Yet, we still lack a replicable, continuous, and cross‑national metric of elite ethnic segregation of the party system. This paper proposes a new measure that treats the distribution of ethnic groups across legislative party delegations as an optimal‑transport problem. By comparing the observed joint distribution of \textit{groups × parties} with a counterfactual of perfect integration, we derive a segregation index bounded in $[0,1]$ that is comparable across time, chambers, and countries with different party and ethnic configurations. We implement the index on an original dataset covering \CleavageNumObservations{} parliamentary delegations  (\CleavageMinYear{}–\CleavageMaxYear{}), assembled from the Global Leadership Project and augmented by an AI search agent that, under country-specific closed codebooks, harvests and cites public‑source evidence to infer missing party and ethnicity labels, abstains when evidence is weak or conflicting, and routes disagreements to human coders---thereby expanding coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} leader cases) while preserving auditability and cross‑national comparability. Validation against existing binary and survey-based measures shows that our cleavage metrics capture known cases while revealing substantial within-country and within-party variation that is missed by existing approaches. Substantively, we find patterns consistent with a simple demand‑and‑supply model of ethnic representation. The search-agent augmented index invites new tests of classic theories of ethnic politics, affords fine‑grained diagnostics for institutional engineering, and is readily extensible to other ascriptive cleavages. We make the 770,000 distinct records on political elites, obtained by agent, open source.
+\vspace{.00cm}
+\noindent {\bf Keywords: } Descriptive representation; Political parties; Social groups
+%\\ \noindent {\bf Word count: } 
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+% document spacing 
+\spacingset{1}
+%\singlespacing 
+
+\newpage 
+\section*{Introduction}
+
+An enormous literature wrestles with challenges to governance and development posed by ethnic diversity \citep{easterly1997africa,alesina2005ethnic}. Although the concern is well-founded, one must also appreciate that ethnic differences by themselves are neither unusual nor inherently problematic for governance. Every society is diverse in some respects, and in most instances this diversity does not prevent cooperation; it may even promote better solutions \citep{page2008difference}. Diversity becomes consequential when latent differences are politicized \citep{posner2004measuring,fraenkel2025does}. This is why it is important to distinguish ethnic differences (as measured, e.g., by ethnic fractionalization indices) from ethnic \textit{cleavages}, our subject in this study.
+
+Of particular concern to political scientists is the prospect that cleavages of an ethnic nature might undermine stability and democracy. The first generation of studies offers a pessimistic view, according to which ethnic politics is an invitation to civil conflict \citep{geertz1963integrative,horowitz1985ethnic,rabushka1972politics,rae1970cleavages,rustow1970transitions}. Some more recent studies confirm this pessimistic view \citep{houle2018does}. 
+
+Others are more optimistic, pointing out that the existence of ethnic cleavages does not necessarily convert elections into an ethnic census \citep{elischer2013political,fraenkel2025does}. Moreover, the potentially damaging effects of ethnic cleavages may be mitigated by political institutions such as federalism, electoral rules, or power-sharing agreements \citep{chandra2005ethnic,lijphart1977democracy,reilly2001democracy} or by alliances with the private sector \citep{arriola2012multi}. Indeed, the theory of consociationalism suggests that partisan cleavages based on ethnicity can be successfully mediated by appropriate institutions \citep{lijphart1969consociational}. Evidently, the existence of ethnic parties does not doom prospects for democracy \citep{birnir2006ethnicity,chandra2007ethnic,ishiyama2009ethnic}. 
+
+Even so, where voters choose leaders on the basis of who they are rather than what they stand for, this may undermine mechanisms of accountability essential for good governance. Accordingly, ethnic politics, associated with clientelistic policymaking and particularistic goods, is commonly counterposed to class politics, associated with programmatic policymaking and the provision of public goods \citep{kitschelt2007patrons,chandra2007ethnic,dixit1996determinants,lemarchand1972political}. 
+
+The role of ethnic identities in governance remains a point of contention. Issues are difficult to resolve because there is no generally recognized metric of ethnic cleavages. What makes one polity more ethnically divided than another, one party more ethnically defined than another, or one ethnic group more politicized than another? 
+
+In this study, we offer a new approach to the measurement of ethnic cleavages. %This approach has four distinctive characteristics that, collectively, set it apart from extant work. First, it treats ethnicity as a political feature rather than a demographic fact. Second, it is centered on elites rather than voters. Third, it approaches cleavages as matters of degree rather than of kind. And finally, it is applicable to any setting where the ethnic identity of parliamentarians can be ascertained. 
+The key empirical indicator is the ethnic composition of party delegations. We describe delegations as \textit{integrated} if there are few ethnic differences across parties and \textit{segmented} if each party represents a different ethnic group and these groups are similar in size. To provide a precise measure of this fuzzy concept, we adopt an algorithm derived from optimal transport theory \citep{lott2009ricci}. Applied to party delegations in a legislature, this decomposable approach generates an \textit{legislative segmentation index}. A low score on this index indicates a party system where ethnicity plays little role: either there are no sizeable ethnic groups (MPs are ethnically homogeneous) or parties have balanced delegations. A high score indicates a party system defined by ethnicity. Adaptations of optimal transport theory apply the same principles to political parties and ethnic groups. A \textit{party segmentation index} measures the degree to which individual parties are defined by ethnicity. An \textit{ethnic segmentation index} measures the degree to which individual ethnic groups are represented by the same party.
+
+After introducing these measures, we turn to the task of data collection. Evidently, mathematically elegant indices are useful only if they can be successfully applied to topics of theoretical interest. To meet this challenge, we propose an approach to coding the ethnicity of legislators around the world that leverages hand-coding along with a new set of LLM-based workflows. 
+
+This protocol allows for a global dataset measuring ethnic cleavages across legislatures in [] countries in the contemporary era. In the third section of the paper we introduce the data and compare it with other measures of ethnic voting and ethnic parties.
+
+In the fourth section of the paper we take up the task of explanation. Why are ethnic cleavages more marked in some polities than in others? We argue that this is largely a product of the composition of ethnic groups and of political parties. Greater fractionalization generally translates into stronger cleavages.
+
+The final section of the paper explores the potential importance of our measure of ethnic cleavages. We show that our legislative segmentation index is more closely related to outcomes such as democracy, corruption, and conflict than other measures of ethnic politics. This suggests that elite-level cleavages may be more consequential than mass-level cleavages. 
+
+\section{Measuring Cleavages with Optimal Transport\label{sec:measurement}}
+
+Cleavage structures have been a preoccupation of political science and sociology for the better part of a century. Originally centered on social class \citep{converse1958shifting, alford1962suggested}, researchers soon broadened their purview to include other aspects of status and identity such as language, religion, and region
+\citep{lipset1967party}.\footnote{For a recent effort, see \citet{marks2023social}.
+} Contemporary studies of ethnic politics follow in this venerable tradition, with ethnicity as the umbrella term encompassing related factors such as religion, language, and region. 
+
+Two principal approaches may be identified from the literature, centered respectively on ethnic groups and political parties \citep{huber2012measuring}. One focuses on the degree to which each ethnic group consolidates behind a single party; the other focuses on the degree to which each party represents a unique ethnic group. To grasp the distinction, consider a setting with four ethnic groups (\textit{A}, \textit{B}, \textit{C}, \textit{D}) and two parties (\textit{P1}, \textit{P2}). If all voters from groups \textit{A} and \textit{B} support \textit{P1}, and all voters from groups \textit{C} and \textit{D} support \textit{P2}, \textit{ethnic voting} is maximal and \textit{ethnic parties} is minimal.
+
+Beyond this conceptual disagreement lie empirical differences. When attempting to ascertain ethnic voting, some researchers focus on vote shares across constituencies. This sort of data is usually plentiful but raises problems of ecological inference since the characteristics of individual voters must be inferred from the characteristics of constituencies (obtained from census data). Other researchers rely on public opinion surveys. This provides individual-level data but is limited to contexts where national surveying is common and reliable, and where questionnaires include vote-choice (or party membership) and ethnic identity. Both data sources must contend with the specificity of census and survey data and the highly contextual dynamics of ethnicity, which may impair comparability across settings and even across surveys or censuses in the same setting (if the coding of ethnicity varies).\footnote{For discussion of these and other difficulties encountered by survey-based research see \citet[15-18]{fraenkel2025does}.}
+
+In light of these obstacles, it is not surprising that most work on ethnic politics is limited to individual countries or regions. Recent studies center on Latin America \citep{madrid2012rise}, Southeast Asia \citep{liu2022ethnicity,reilly2021cross}, the OECD \citep{hamza2025}, and Africa, where the topic is ubiquitous \citep{huber2012measuring,ishiyama2012explaining}. A few studies are more extensive, notably \citet{houle2019structure}, which covers sixty-five countries with data from the World Values Survey, and \citet{fraenkel2025does}, which covers 132 countries with a wide variety of surveys.
+
+A rather different approach categorizes individual parties as ``ethnic'' or ``nonethnic'' based on a variety of characteristics such as party name, rhetoric, policies, leadership, constituency, and expert judgments \citep{chandra2011ethnic}. This corresponds to the party-centered approach to ethnic politics introduced above. Although most studies in this vein are limited to a single country or region, a few are more wide-ranging. \citet{ishiyama2009ethnic} codes ethnic parties in the developing world during the 1990s. \citet[p.~463]{strijbis2015measuring} code ethnic parties at various points over the past two decades in a handful of European countries, along with Canada and Australia. \citet{van2007movements} codes indigenous parties in South America. \citet[App II]{lublin2014minority} codes ethnoregional parties (considered jointly) in 80+ countries, observed at some point between 1990 and 2012.
+
+While these studies offer broader coverage than the typical study of ethnic voting, it is important to appreciate the considerable loss of information that arises when parties are reduced to a single binary code --- ethnic or nonethnic. This simplification complicates inferences one might draw about other parties (relegated to a large residual category) and the party system as a whole. Moreover, the complexity of the coding criteria means that raters must juggle a variety of dimensions that do not always point in the same direction. Since different studies of ethnic parties invoke different coding criteria, results differ somewhat across studies and are not easy to replicate. 
+
+Against this backdrop, our approach has five distinguishing features. First, it centers on elites (representatives) rather than masses (voters).\footnote{As such, we sidestep complicated questions about voter motivation that are central to the literature on ethnic voting \citep{adida2017overcoming}.} Second, it treats cleavages as matters of degree rather than of kind. Third, it assigns scores to individual parties (mirroring the party-centered approach) and ethnic groups (mirroring the group-centered approach) as well as polities (the overall cleavage). Fourth, it is applicable to any setting---local, regional, or national---where the party and ethnic identity of MPs can be ascertained, raising the possibility of a truly comprehensive analysis on a global scale. 
+
+\subsection{Ethnic Cleavages: Concept \& Intuition}
+
+In modern contexts, ethnic cleavages of any political significance are usually manifested in political parties. Where a cleavage is politically salient, parties will presumably be differentiated by ethnicity. Since the legislature is the preeminent representative body, it is natural to look to legislatures if we wish to understand the character of a party at elite levels. Helpfully, legislative parties are sizeable enough to offer a basis for judgment.\footnote{By contrast, top leadership positions---presidents, prime ministers, party leaders---are encapsulated in a single office, which by construction can be occupied only by a single individual and thus allows no basis for distinguishing an ethnic party from a multi-ethnic one.}
+
+Our guiding assumption is that a party’s ethnic orientation is reflected in the descriptive characteristics of its leadership. If the party's mission is to represent the interests of a particular ethnic group, that group is likely to dominate its parliamentary delegation. If its mission is to represent a variety of different ethnic groups, this will be reflected in a multi-ethnic delegation.\footnote{It is of course possible for parties to dissemble. Leaders may nominate members of social groups they have no intention of representing (substantively), and for a while, they may be successful in this ruse. However, it is unlikely they will be successful for very long.} 
+
+This does not mean that parties with an ethnic base must trumpet their ethnic character. In Africa, most parties are formally non-ethnic; yet, it is an open secret that many are vehicles for particular ethnic groups \citep{berman2004ethnicity}. The same was true of the U.S. Republican Party through most of its history. Temperance, education, Sabbatarianism, anti-bossism, and other ``reform'' issues were calculated to please Protestant constituencies despite the displeasure they caused Catholics. Although the party did not proclaim itself Protestant, it was responding to a constituency with roots in Protestant communities outside the South, a feature reflected in its electoral base and in its staunchly Protestant leadership \citep{silbey1978history,layman2001great,gould2007grand}. Accordingly, we consider the ethnic identity of a party's legislative delegation to be strong evidence of its ethnic (or non-ethnic) orientation. 
+
+To operationalize the concept of an ethnic cleavage, we focus on the degree of alignment between ethnicity and party delegations. Where cleavages are extreme, each party represents one and only one ethnic group, a setting we describe as ethnic \textit{segmentation}. In a fully \textit{integrated} system, ethnic groups are distributed across parties in the same proportion as across the legislature at-large, or there are no discernible ethnic distinctions among MPs at all. Here, ethnicity appears to play no role in party cleavages. Our approach thus melds group- and party-centered approaches to the measurement of cleavages.\footnote{In this respect, we follow \citet{hamza2025}, though the latter is focused on ethnic voting rather than elites.}
+
+To make these intuitions more concrete, several stylized scenarios are illustrated in Table \ref{tab:Illustrative}. In each scenario, a legislature is divided between three parties of varying sizes and composition. In Legislature I, only one ethnic group (\textit{A}) gains entrance into the legislature.\footnote{This is a complicated feature to digest since all parties are ethnically homogeneous (exemplifying ethnic parties) but there is no differentiation across them (exemplifying a non-ethnic regime). Tellingly, \citet{horowitz1985ethnic} does not provide a definition for a non-ethnic party, a point noted by \citet{elischer2013political}.} In Legislature II, three ethnic groups ($A$-$C$) are equally represented across three parties (\textit{P1-P3}). In both of these scenarios, there is perfect integration. In Legislature VI, each ethnic group is represented by a different political party. This exemplifies the extreme case of segmentation, where all parties are ethnic parties and all ethnic groups are affiliated with a single party.  
+
+Note that Legislatures II and VI provide exactly the same parliamentary representation for the three ethnic groups. With respect to descriptive representation at the parliamentary level, one might conclude that these scenarios are equivalent. However, the principle of representation is radically different---cross-party (integrated) in Legislature II and pillarized (segmented) in Legislature VI. We suspect this has important ramifications.
+
+\input{./FiguresParties/PartyGroupExamples.tex}
+
+\input{./FiguresParties/TransportViz.tex}
+
+\subsection{A Legislative Segmentation Index}
+
+The extreme scenarios laid out in Legislatures I, II, and VI mark two ends of a continuum. In between lie an infinite variety of intermediate scenarios, a few of which are illustrated by Legislatures III-V.
+
+To provide a sensitive metric that expresses all possible points on this continuum of integration and segmentation, we focus on the magnitude of the transformations required for a legislature to reach perfect integration. This scale ranges from 0 (where no changes are required) to a value that approaches 1 asymptotically (where nearly everything needs to change in order to achieve integration, as the number of groups gets large). We refer to this as a \textit{legislative segmentation index}.
+
+To put this notion into motion, we begin with the observed distribution of parties by ethnic group in a legislature. We then measure the distance between this observed arrangement and a hypothetical arrangement under perfect integration. In this ideal scenario, the marginal distribution of groups and parties is preserved. Within that constraint, there is a uniform allocation of members across groups.
+
+To quantify distance from perfect integration, we employ techniques from optimal transport theory \citep{lott2009ricci}. This mathematical framework provides a useful method for measuring the distance between two probability distributions. It also melds the party- and ethnic-centered approaches to ethnic cleavages introduced at the outset.
+
+In this index, we pose a simple question: What is the smallest fraction of legislative seats that would need to be reassigned across parties—while keeping each MP’s ethnicity fixed—to ensure that every party’s delegation mirrors the chamber’s overall ethnic makeup? We cast this as a discrete optimal‑transport problem \citep{lott2009ricci}. Each cell in the groups,$\times$, parties table is a ``location.'' Leaving an MP in the same cell costs 0; moving an MP to any other cell costs 1. Because the ``perfect-integration'' target preserves each group’s total number of MPs (row sums), any optimal reassignment can be implemented \emph{within} ethnic groups only; conceptually, changing an MP’s ethnicity carries an infinite penalty and is therefore ruled out. With this 0–1 cost structure, the transport objective equals the \emph{total variation distance} (half the $\ell_1$ difference) between the observed joint distribution and the integration target.  The resulting score lies in $[0,1]$ and has a direct interpretation: it is the minimal \emph{share of seats} that must be reallocated across parties (within groups) to achieve perfect integration. 
+%The 0–1 ground metric makes the optimal‑transport value coincide with $0.5,\lVert p_{\text{obs}}-p_{\text{int}}\rVert_1$, so no additional normalization is needed. Standard references include \citet{villani2008optimal} and \citet{peyre2019computational}. On the social‑science side, the party‑ and group‑level components below correspond to familiar dissimilarity indices in the segmentation literature \citep{duncan1955method,massey1988dimensions}; see also \citet{kauba2024topological}.}
+
+To get a feel for this way of measuring cleavages, let us return to the examples sketched in Table \ref{tab:Illustrative}. Scenarios I and II exemplify perfect integration, so these legislatures receive a perfect score of 0 (no segmentation) in the bottom row. 
+
+Scenario VI exemplifies perfect segmentation. Nearly everything---but not quite everything---must change in order to achieve perfect integration across parties. Specifically, one would have to reassign all but one MP per party in order to achieve integration. This is why it is an asymptotic value. In cases of purely ethnic parties, the value of the segmentation index approaches 1 as the number of groups becomes larger. 
+
+Importantly, as the number of parties shrinks the expected segmentation of the legislature also shrinks, approaching zero in the case of a single-party system. Where \textit{N}(parties) = 1, segmentation = 0. Likewise, as the number of ethnic groups shrinks, so does the expected segmentation score  (see Appendix XXX). Where \textit{N}(ethnic groups) = 1, segmentation = 0. These compositional effects play a crucial role in our explanatory framework, outlined in Section \ref{sec:explanations}.
+
+\subsection{A Party Segmentation Index}
+
+The same logic may be extended to scoring for individual parties. Indeed, the score for a legislature is simply the weighted average of the segmentation scores of all the parties in the legislature.
+
+Consider the example illustrated in Table \ref{tab:ThreePartyTable}. Here, we see a legislature with sixteen MPs, three parties, and two ethnic groups. The majority group, \textit{A}, comprises 3/4 of the legislature while the minority group, \textit{B}, comprises 1/4.
+
+\input{./FiguresParties/ThreePartyTable.tex}
+
+Perfect integration for a party means that the distribution of ethnicities in its delegation mirrors the distribution of ethnicities in the legislature as a whole. This is the case for Party 1, which receives a score of 0, indicating perfect integration. 
+
+Where a party deviates, one must calculate the degree of deviation, which may be understood loosely as the magnitude of changes required to achieve perfect integration.
+
+Although Party 2 is composed exclusively of one ethnic group, \textit{A} happens to be the largest group in the legislature (by far). Accordingly, it requires only a small change in composition for Party 2 to mirror the legislature, rendering a modest ethnic party score. This exemplifies the situation of ''ethno-nationalist'' parties such as Fidesz in Hungary, United Russia in Russia, or the BJP in India \citep{rydgren2007sociology}.
+
+Party 3 is also composed of a single ethnic group. However, this group comprises a small minority of the legislature. As such, its membership must be thoroughly transformed in order to mirror the ethnic characteristics of the legislature. This exemplifies the situation of ''ethnic parties,'' introduced at the outset.
+
+%Now, let us consider a legislature incorporating three equal-sized ethnic groups distributed across three political parties, as shown in Table \ref{tab:ThreePartyTable2}. This setting exemplifies an enduring debate about how to measure ethnic cleavages, as previously discussed. If cleavages are determined by the ethnic purity of each party, Parties 1 and 2 should receive the highest score. If, on the other hand, cleavages are determined on the basis of ethnic voting, one might grant the highest score to groups \textit{B} and \textit{C}, whose devotion to Party 3 is complete.
+
+%Our approach melds these two perspectives into a single score. For each party, we compute an ethnicization score that compares the party's internal mix of groups to the chamber’s overall mix; it is interpreted as the smallest share of that party's seats that would need to be reassigned across parties---again holding identities fixed---for the party to mirror the legislature. In this case, Parties 1 and 2 receive higher segmentation scores than Party 3 because a greater transformation of these parties is required in order to achieve perfect integration. 
+
+%However, in another scenario --- where group \textit{A} is much larger than groups \textit{B} and \textit{C} --- Parties 1 and 2 would lie closer to integration than Party 3, which would require a more thoroughgoing transformation to reach perfect integration. The general point is that the ethnic cleavage of a party can be evaluated only in terms of the distribution of ethnicities across the entire legislature. Where the latter changes, the former is bound to change.
+
+\subsection{A Group Segmentation Index}
+
+The third elaboration of social cleavages focuses on the distr
+concerns the extent to which members of an ethnic group are concentrated in a single party or dispersed across multiple parties. To fix ideas, Table \ref{tab:PartiesTable} explores three ethnic groups, each with three MPs. Group \textit{A} is concentrated on one party. Group \textit{B} is spread across two parties. And Group \textit{C} is dispersed across all three parties.
+
+To provide a precise measure of cohesion, we again leverage optimal transport, now from the group perspective. We compute a cohesion distance that compares how that group’s MPs are spread across parties to the chamber's overall distribution of seats by party; it is interpreted as the smallest share of that group's MPs who would need to change parties—-while keeping ethnic identities fixed—-for the group to be proportionally represented in every party.
+
+Namely, perfect integration for a group means that the distribution of parties in its delegation mirrors the distribution of parties in the legislature as a whole. This is the case for Group A, which receives a score of \EthSegIndexA, indicating perfect integration---its members are spread evenly across parties \textbf{P1}, \textbf{P2}, and \textbf{P3}, matching the legislature's overall composition. In contrast, Groups B, C, and D are each concentrated entirely within a single party: Group B in \textbf{P1}, Group C in \textbf{P2}, and Group D in \textbf{P3}. Since each of these groups' party distributions deviates maximally from the legislature's mix (where each party holds one-third of seats), they each receive the highest group score of \EthSegIndexB.
+
+\input{./FiguresParties/EthnicGpSegmentation.tex}
+
+\section{Data Collection and Coding\label{sec:data}}
+
+Having laid out our approach to measuring ethnic cleavages across legislatures, parties, and groups, we turn to the empirical study of these matters. Data collection and coding are much more than an afterthought, as they involve solving difficult challenges of conceptualization and measurement.
+
+We begin with ethnicity, about which so much has been written \citep{AbdelalHerreraJohnstoneds,marquardt2015ethnicity}. For present purposes, this concept encompasses any ascriptive identity, i.e., any set of group characteristics understood as inherited, including customs, language, religion, race, region, and various combinations of the foregoing. We reserve the word ''ethnic'' for the most salient of these dimensions (or combination thereof) as understood in a particular society at a particular point in time. This recognizes the constructed nature of ethnicity as well as its capacity for change. 
+
+Since our intention is to assess how ethnic groups are represented, not whether they are represented (at all), our purview is limited to groups that gain some political representation at national levels. Very small ethnic groups or groups that face intense discrimination or are denied citizenship are likely to be excluded. This is in keeping with common understandings of the concept of a political \textit{cleavage}, which refers to a relationship between political parties and constituencies that are allowed to participate and to attain public office. A racial political cleavage in the American South appears only when blacks were enfranchised, for example.
+
+Likewise, we do not consider whether the representation of groups is proportional to their population. This is, of course, an important issue \citep{gerring2024composition}, but it is orthogonal to the concept of cleavage structures. A party whose leaders are drawn exclusively from a single ethnic group is no more or less ethnic if that group is over- or under-represented. 
+
+%Readers should be aware that in most countries, and for most groups, there is considerable overlap between ethnicity and region. Identity and place are intimately conjoined \citep{enos2017space,peng2020place}. Most ethnic groups have a homeland or at least a region where they are disproportionately concentrated \citep{alesina2016ethnic}. Indeed, \citet{lipset1967party} recognize region as an aspect of identity and hence an important aspect of cleavage structures in Europe. Accordingly, we do not attempt to disentangle the impact of ethnicity and region. When we speak about ethnic cleavages, readers may assume that groups are often associated with a particular location, their homeland (if they have a long history in that country) or their place of arrival (if they are more recently immigrated).
+
+%Of course, one might also choose to examine the various dimensions of identity (region, religion, language, and so forth) separately. The problem is that this generates a set of comparisons that are equivalent in principle but not in practice. For example, language is an important marker in many Asian and African societies, but less so in the New World. Accordingly, any measurement instrument based solely on language generates a highly partial account of the larger concept of ascriptive identity that, we assume, is of primary theoretical interest.
+
+\subsection{Expert Coding}
+
+To code the ethnicity of MPs, we rely primarily on country experts enlisted for the Global Leadership Project \citep{gerring2024composition}. Their judgments rest on cues about each MP drawn from names, birthplaces, and photos---often contained in parliamentary websites. Bear in mind that we are interested in how MPs represent themselves to their constituents. For present purposes, the ethnicity of Representative \textit{X} is whatever \textit{X} says or implies it to be---their public presentation of self \citep{goffman1959presentation}. We do not concern ourselves with whether \textit{X} is really (authentically) Christian or Muslim, Croat or Serb.
+
+Despite this caveat, we acknowledge that different judgments about how to define ethnic groups in a given country might lead to different conclusions. The same is true for extant codings of ethnic voting and ethnic parties (reviewed above), which depend upon prior judgments about what an ethnic group is and how it should be operationalized in a given context---often, a fraught exercise subject to ongoing revision \citep{csata2021head}. We see no way around this conundrum. Readers may survey the decisions reached by our coders, listed in Appendix ??, and decide for themselves. %[Can we conduct robustness tests with different aggregation units? Another approach is to adopt whatever dimension of identity most closely aligns with party delegations. This gives the proposition of ethnic parties maximal chance of succeeding.]
+
+Expert coding is supplemented with a subset of high-confidence parties from an LLM-based search agent that analyzes Wikipedia and search engine results, and bases its prediction of the relevant missing value on the search content found. Median accuracy across countries is above 0.90. For more details, see Appendix XXX.
+
+\section{Ethnic Cleavages Across the World\label{sec:survey}}
+
+Having outlined our protocol for data collection, we turn to a survey of ethnic cleavages across the world. Table \ref{tab:CleavageIndexFull} offers a list of all countries in our dataset ($N$=\CleavageNumCountries{}), ordered by the score on the legislative segmentation index. Since most countries are observed at several points in time (usually separated by an election) these observations are averaged to obtain a single estimate for each country. 
+
+In the upper tier of Table \ref{tab:CleavageIndexFull} are countries where party competition closely tracks ascriptive communities---often settings with institutionalized communal representation, pillarized party histories, and regionally concentrated electorates, e.g., Lebanon, Bosnia and Herzegovina, Malaysia, Belgium, India.
+
+A broad middle comprises varied systems in which explicitly ethnic parties coexist with cross-ethnic, programmatic, or catch-all organizations; this stratum includes several multilingual democracies and diverse federations where regional or linguistic cleavages are politically salient but not uniformly determinative, e.g., Spain, Canada, New Zealand, and parts of sub-Saharan Africa. 
+
+At the lower end cluster three sorts of cases: (i) non-competitive or hegemonic-party regimes that prevent the expression of ethnic cleavages (e.g., North Korea, Venezuela); (ii) relatively homogeneous polities where ethnic differences are muted (e.g., Japan, Norway) and (iii) systems whose principal conflicts are ideological rather than ascriptive (e.g., much of Western Europe). 
+
+\clearpage\newpage
+
+\input{./FiguresParties/CleavageIndexFullThreeColLong_\FigsTagMainBody.tex}
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.95\linewidth]{FiguresParties/Trajectories_Country_\FigsTagMainBody.pdf}
+\caption{
+Over time variability in cleavage structures. 
+}
+\label{fig:Time}
+\end{figure}
+
+Figure \ref{fig:Time} shows variability over time in ethnic cleavages for a handful of countries for which we have more than two data points. (Typically, each observation observes the status of a legislature in between elections, so four data points might be separated by three elections.) We can see that ethnic cleavages have increased in New Zealand and Panama, decreased in the Russian Federation, and remained relatively flat in Thailand and Ukraine over the period of observation. Across the entire sample, the mean absolute change in the legislative segmentation index from one period (election) to the next is \CleavageMeanAbsChange, signaling considerable stability.
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.95\linewidth]{FiguresParties/Boxplot_Region_CleavageIndex_\FigsTagMainBody.pdf}
+\caption{
+Distribution of the segmentation index by region.
+}
+\label{fig:Place}
+\end{figure}
+
+Box plots in Figure \ref{fig:Place} focus on different regions of the world. Here, we find minimal differences across medians. However, Asia and especially Africa have considerably higher variability, conforming to standard views in the literature (cited above).
+
+Coverage map outlined in Appendix A (Table \ref{tab:CoverageMissing_\FigsTagMainBody}).
+
+\subsection{Party and Group Segmentation}
+
+Recall that our approach to measurement renders a measure of ethnic segmentation for legislatures (presented above), parties, and groups.
+
+Figure~\ref{fig:UnitOfAnalysisDensity} illustrates the distributions of the segmentation index across three units of analysis, revealing a stark contrast: legislative indices are tightly concentrated near zero, indicating minimal ethnic cleavages in most countries, while group- and party-level indices show greater dispersion. This pattern underscores the mechanical interdependence of the indices---where the legislative score is a seat-share-weighted average of party scores---and highlights substantial within-legislature heterogeneity in ethnic alignment. For more details on interdependence between indices, see Appendix XXX.
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.95\linewidth]{FiguresParties/Density_Cleavage_ByLevel_\FigsTagMainBody.pdf}
+\caption{
+Density of segmentation index by unit of analysis.
+}
+\label{fig:UnitOfAnalysisDensity}
+\end{figure}
+
+\paragraph{How much of the dispersion is within countries?}
+Because $S^{\text{legislature}}$ aggregates $S^{\text{party}}_j$ and $S^{\text{group}}_i$ with country-specific weights (party and group seat shares), variation in the party- and group-level indices reflects two sources: between-country differences in marginals (how fractionalized societies and party systems are) and within-country allocation patterns (how groups and parties line up inside a given legislature). We quantify their relative importance with a weighted variance decomposition. For parties, let $s_{cjt}=S^{\text{party}}_j$ for party $j$ in country $c$ and period $t$, weight each observation by its seat share $w_{cjt}=o_{+j,ct}/n_{ct}$, and compute the weighted grand mean $\bar s=\sum w_{cjt}s_{cjt}$ and country means $\bar s_c=\sum_{j,t\in c} w_{cjt}s_{cjt}\big/\sum_{j,t\in c}w_{cjt}$. The within-country share of variance is
+\[
+\mathrm{WithinShare}_{\text{party}}
+\;=\;
+\frac{\sum_{c}\sum_{j,t\in c} w_{cjt}\,(s_{cjt}-\bar s_c)^2}{\sum_{c}\sum_{j,t\in c} w_{cjt}\,(s_{cjt}-\bar s)^2}
+\;=\; 1-\eta^2_{\text{between,country}},
+\]
+with the analogous expression for groups using weights $w_{cit}=o_{i+,ct}/n_{ct}$. Reporting these as country-weighted $\eta^2$ (between) and $1-\eta^2$ (within) makes the link to the body index transparent, because the weights coincide with those that aggregate components into $S^{\text{body}}$. Substantively, we find that a large share of the action is inside polities: the within‑country share of the seat‑share‑weighted variance is \CleavageWithinShareParty{} for party segmentation (between‑country: \CleavageBetweenShareParty{}) and \CleavageWithinShareGroup{} for group segmentation (between‑country: \CleavageBetweenShareGroup{}). Even where legislative segmentation is low, some parties and groups may be segmented. Likewise, where legislative segmentation is high, some parties and groups may be integrated. These nuances are obscured by the overall legislative segmentation scores.
+
+\clearpage 
+
+\subsection{Convergent Validity: Validation Against Existing Measures}
+
+In this section, we compare our indices with extant scholarly work. As discussed, most studies judge the ethnic character of politics primarily on the basis of mass political behavior, i.e., on patterns of ethnic voting. Since our measure rests on the ethnic identity of elites, we are comparing two approaches to the same general subject. We expect to find some degree of concordance, but not perfect concordance. Where correlations are weak, this suggests a disjuncture between politics at mass and elite levels (a potential avenue for future research).
+
+To make these comparisons, we draw on studies of ethnic voting and ethnic parties with the broadest coverage, e.g., \citet{houle2019structure}, \citet{fraenkel2025does}, \citet{lublin2014minority}. We may also enlist the V-Party dataset  \citet{dupont2022global}, where the orientation of individual parties is coded, allowing for a direct comparison with our Ethnic party index. (Lublin's dataset may also allow for this sort of party-centered comparison.)
+
+XXX Briefly explain each measure here. Explain CPDS (Comparative Political Data Set). https://datafinder.qog.gu.se/dataset/cpds XXX
+
+\input{FiguresParties/ConvergentValidity_\FigsTagMainBody.tex}
+
+%I have asked Kanchan Chandra and Ishiyama for their data on ethnic parties. No word back from either, so far. Not sure if the former is public or if it was ever completed. Erzen: I also checked they are not available. Hamza et Maeda is the only source for now.  
+
+\section{Explanations\label{sec:explanations}}
+
+Having described elite-level ethnic cleavages across the world, we turn from measurement to explanation. Our focus will be at the country level, and hence on the legislative segmentation index. 
+
+Recall that an ethnic cleavage is defined here as the degree of alignment between ethnic groups and party delegations. This means that there is a mechanical connection to the distribution of ethnic groups and political parties. At the lower limit, where there is only one ethnic group or one political party, there can be no ethnic cleavages. As ethnic groups and political parties multiply, the space available for ethnic cleavages expands. Following previous work, we refer to this as a ''compositional'' relationship since it depends upon the fit between sociological and institutional configurations \citep{gerring2024composition}.
+
+\subsection{Simulations}\label{s:Sims}
+
+To demonstrate the compositional elements of this puzzle, we explore the full range of counterfactual group and party fractionalization scenarios in Appendix B. Consider the mechanics of sorting: to achieve high segmentation, one needs both distinct items to sort (ethnic diversity) and distinct bins to sort them into (political parties). If either is missing, segmentation collapses.
+
+We formalize this intuition by simulating the legislative segmentation index $S^{\text{body}}$ across a grid of ``Demand'' (group fractionalization) and ``Supply'' (party fractionalization), using a data-generating process calibrated from observed legislature-year configurations in our cross-national sample (see Appendix~\ref{sec:simulation-design} for details). The resulting phase diagram (Figure~\ref{fig:SimResults}) reveals a stark compositional constraint: high segmentation is impossible in homogeneous societies (where there is no difference to organize) and equally impossible in concentrated party systems (where there is no mechanism for sorting). The zone of highest segmentation is thus structurally confined to the upper-right quadrant, requiring the simultaneous presence of high group fractionalization and a fragmented party system. Critically, this structural potential is moderated by the degree of affinity voting $\phi$---the probability that ethnic group members join their corresponding party. Under low affinity voting, segmentation remains muted even when structural conditions permit it; only when affinity voting is high does segmentation approach its structural ceiling. This decomposition clarifies that observed segmentation reflects both compositional opportunity and behavioral choice, and motivates our simulation-based inference of latent affinity voting from observed segmentation scores.
+
+
+
+%We formalize this intuition by simulating the maximum possible legislative segmentation index $S_{body}$ across a grid of ~Demand'' (group entropy) and ``Supply'' (effective number of parties). The resulting phase diagram (Figure \ref{fig:SimResults}) reveals a stark compositional constraint. High segmentation is impossible in homogeneous societies (where there is no difference to organize) and equally impossible in single-party systems (where there is no mechanism for sorting). Consequently, the zone of highest ethnic segmentation is structurally confined to the upper-right quadrant: it requires the simultaneous presence of high social entropy and a fragmented party system to capture it. This mechanism is moderated by affinity voting--- XXX
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.75\linewidth]{FiguresParties/SimFig_FracPhaseDiagram_ByEV.pdf}
+\caption{
+    \textbf{Structural and Behavioral Determinants of Segmentation.}
+    Simulated segmentation scores (color) across party fractionalization (x-axis) and group fractionalization (y-axis), shown separately for low, medium, and high affinity voting regimes. High segmentation emerges only when both structural conditions (many groups and many parties) and behavioral conditions (strong ethnic voting) are jointly satisfied. Simulations are calibrated from empirical legislature-year observations.
+  }
+\label{fig:SimResults}
+\end{figure}
+
+\subsection{Observational Evidence}
+
+To test these relationships with our data, we focus on the dispersion of groups and parties. Dispersion may be operationalized in a variety of ways, e.g., using a Herfindahl index, an entropy index, a largest-share index (the size of the largest group or party), and so forth. All are highly correlated and, unsurprisingly, all produce very similar results. We adopt the Herfindahl index because of its familiarity and ease of interpretation. 
+
+\input{./FiguresParties/tabEVTab_\FigsTagMainBody_SEanalytical.tex}
+
+In Model 1, Table \ref{tab:RegEVTab_\FigsTagMainBody_SEanalytical}, we test the relationship of the legislative segmentation index to the degree of ethnic and party fractionalization (measured with the Herfindahl index) in each election across the entire sample, clustering standard errors by country. In Model 2, we interact the two variables. Model 3 adds two-way fixed effects. 
+
+In Model 4, we add a variety of additional predictors, including the Polyarchy index of electoral democracy \citep{teorell2019measuring}, per capita GDP, PPP, log \citep{world2024world}, urbanization \citep{world2024world}, population, log \citep{world2024world}, state history \citep{borcan2018state}, and electoral system rules \citep{coppedge2025}. We also include V-Dem indicators measuring the distribution of resources --- power, services, state jobs, and business opportunities --- across social groups \citep{coppedge2025}, understood as a measure of social discrimination. 
+
+None of these background factors does a very good job of predicting ethnic cleavages, and the overall model fit is scarcely improved. Moreover, the estimate for the interaction term is stable relative to Model 2, thereby mitigating concerns about omitted-variable bias. This analysis is replicated in a LASSO regression (Figure \ref{fig:LassoSelection}), which yields the same general results: the interaction between group and party fractionalization is consistently selected as non-zero. 
+
+We conclude that most of the variability in legislative segmentation scores -- roughly three-quarters according to Models 2 and 3 -- is attributable to the intersection of demography and party systems, and is therefore compositional, as theorized. To be sure, ethnic and party fractionalization are not entirely independent of each other. The two are very weakly correlated (Pearson's $R$ = 0.17), so there is little risk of collinearity. However, extant work suggests that identities influence party affiliations \citep{ordeshook1994ethnic} and party politics influences identities \citep{eifert2010political}. If so, the interaction term may be viewed as an attempt to model that inter-relationship.
+
+%Naturally, there are questions about deeper causes, i.e., what lies prior to ethnic and party fractionalization. One might speculate about modernization, regime type, electoral rules, geography, and various other structural factors. However, initial tests show that these factors, collectively, explain only a very small portion of the variance, even when the two proximal factors (party and ethnic fractionalization) are removed ($R^2<$0.10).
+
+
+%Specifically, we consider countries whose party and group fractionalization scores are closely matched but whose legislative segmentation scores diverge, summarized in Table \ref{tab:Top5MostDifferentCountryPairs}.
+
+%Within our sample, two of the closely matched cases are  \MostDiffCountryOne{} and \MostDiffCountryTwo{}. They have similar group fractionalization scores (\MostDiffCountryOne{}=\MostDiffFracGroupsOne{}, \MostDiffCountryTwo{}=\MostDiffFracGroupsTwo{}) and  party fractionalization scores (\MostDiffCountryOne{}=\MostDiffFracPartiesOne{}, \MostDiffCountryTwo{}=\MostDiffFracPartiesTwo{}), but quite different legislative segmentation scores (\MostDiffCountryOne{}=\MostDiffSegOne{}, \MostDiffCountryTwo{}=\MostDiffSegTwo{}).
+
+%The Netherlands and Panama look nearly identical on group and party fractionalization (0.45 and 0.67, respectively), yet their cleavage scores diverge (0.44 vs. 0.11). In the Netherlands, legacies of pillarization—religious and ideological ``pillars'' with separate schools, media, unions, and associations—long provided organizational conduits that institutionalize social group divisions into party delegations \citep{schrover2010pillarization,sturm1998educational}; in Panama, a mestizaje nation‑building project and weak institutionalization of ethno‑racial categories offered few channels for translating social difference into segmented parties \citep{martinez2012social}.
+
+%\input{./FiguresParties/Top5_MostDifferentPairs_\FigsTagMainBody{}.tex} % broken - why? 
+%\input{./FiguresParties/Top5_MostDifferentPairs_CountryLevel_ExpertsAndAgentVVV0PT75}
+
+\section{Do Cleavages Matter?\label{sec:matter}}
+% In this section, we test the hypotheses and compare results to the simulations.
+
+Before concluding, let us return to a question raised briefly at the outset (where citations to the literature may be found). Do ethnic cleavages matter for the quality of governance? The conventional view is that diversity in ascriptive characteristics such as religion, language, and race -- bundled together here as \textit{ethnicity} -- are problematic for governance. Other studies cast doubt on this pessimistic thesis, leaving the question unresolved. We propose that disparate conclusions in this long-running debate may be reconciled by distinguishing the phenomenon of ethnicity at mass and elite levels. 
+
+Extant measures of ethnic politics focus mostly on the characteristics of citizens (as captured by measures of ethnic fractionalization) and voters (as captured by measures of ethnic voting and ethnic parties). Yet, neither of these factors offer a direct indication how politicized ethnic identities might be in a given context. Consider that large ethnic groups are usually geographically segregated. Within each ethnic homeland, candidates for public office -- regardless of party -- are likely to reflect the ethnic characteristics dominant in that region \citep{jerzak2025minorities}. This means that voters in a particular district face choices among candidates and parties but not among ethnicities. In this situation, one cannot interpret ethnic voting as an expression of highly politicized -- much less polarized -- ethnic identities.
+
+However, when latent ethnic cleavages are manifest at elite levels the situation is quite different. Specifically, when parties represented in a national legislature are segmented by ethnicity this is an indication that a demographic feature defines politics at the highest levels. Here, it seems reasonable to regard ethnicity as politicized, perhaps even polarized. Even rich countries with long democratic histories such as Belgium experience the strain of ethnically based political cleavages \citep{de2013belgium}.
+
+%Our elite-level measure of ethnic cleavage, resting on the character of party delegations in the national legislature, may represent the most politically relevant expression of ethnicity. Here, we might have strong reasons to suppose that heightened ethnic cleavages would be associated with worse governance performance.
+
+To probe the thesis that elite-level ethnic cleavages are more problematic than mass-level cleavages we run a series of correlational tests. These should not be mistaken for well-identified causal models, a goal that is beyond reach with the data at hand. Nonetheless, correlational tests offer important clues to causality. And if correlations are predictive rather than causal, this too is important, especially if elite ethnic segmentation offers an early warning of governance failure.
+
+The final point to note about these tests is that they are intended to assess the \textit{relative} importance of various ethnic cleavage measures. If identical tests reveal that one measure is more strongly correlated with governance outcomes than another, this is strong prima facie evidence that it is more relevant -- causally and/or predictively.
+
+Our empirical strategy begins with three governance outcomes. 
+Democracy is captured by the Polyarchy index \citep{teorell2019measuring}. Corruption control is captured by the V-Dem index \citep{coppedge2025}. Political stability is captured by the Political Stability and Absence of Violence/Terrorism index from World Governance Indicators \citep{kaufmann2024worldwide}. Higher scores indicate a more positive outcome -- more democracy, less corruption, more stability.
+
+For each outcome, we offer three tests. The first includes extant measures of ethnic politics, introduced in the previous section. The second includes our legislative segmentation index. The third includes all of these measures together. All specifications include two background features that may confound the relationships of interest: per capita GDP (log) and population (log). 
+
+\input{FiguresParties/tabGovOutcomes_\FigsTagMainBody_SEanalytical.tex} 
+
+\section{Conclusion\label{sec:conclusion}}
+
+Our analysis advances the study of ethnic politics on three fronts. Conceptually, we recast elite cleavages as a continuous alignment problem and show that an optimal‑transport formulation yields a single, bounded, and interpretable scale—the minimal share of seats that would have to be reassigned across parties (holding MPs’ identities fixed) to achieve perfect integration. The same logic provides party‑level and group‑level diagnostics, allowing researchers to see not only \emph{whether} a system is segmented but also \emph{where} segmentation resides. 
+
+Substantively, we find robust evidence for a simple demand–supply account: elite ethnic segregation rises with underlying social heterogeneity and is amplified—rather than created—by party fragmentation; institutional moderators behave in broadly intuitive ways but are less stable than the demand fundamentals. Taken together, these contributions furnish a replicable baseline for cross‑national and over‑time comparisons, enable targeted evaluation of electoral reforms and power-sharing arrangements, and open a path to cumulative tests linking elite segmentation to downstream outcomes—accountability, clientelism, public‑goods provision, and conflict.
+
+Limitations remain---most notably the definitional choices that any coding of ethnicity entails and our focus on represented groups---but the quantitative framework is flexible: transport costs in the cleavage measure can incorporate geography, multi‑membership identities can be accommodated, and the design extends naturally to other ascriptive cleavages (religion, language, region) and other arenas (cabinets, local councils). \hfill $\square$
+
+\clearpage
+%\singlespace
+\printbibliography
+% \printbibliography[title={References}, notcategory=appendix]
+
+\clearpage\newpage
+
+\section{Appendix A}
+
+\subsection{Additional Discussion} 
+
+\paragraph{Mechanical link between the three indices.}
+Let $O=[o_{ij}]$ be the groups$\times$parties seat matrix in a chamber with $n=\sum_{i,j}o_{ij}$ MPs, row totals $o_{i+}$ (groups) and column totals $o_{+j}$ (parties). The ``perfect-integration'' target preserves these marginals: $R=[r_{ij}]$ with $r_{ij}=o_{i+}o_{+j}/n$. The body-level segmentation index is the (normalized) total-variation distance under uniform 0-1 party switching costs:
+\[
+S^{\text{body}} \;=\; \frac{1}{2n}\sum_{i,j}\bigl|\,o_{ij}-r_{ij}\,\bigr|.
+\]
+Define a party's segmentation score and a group's segmentation score by the same distance, locally normalized:
+\[
+S^{\text{party}}_j \;=\; \frac{1}{2o_{+j}}\sum_{i}\bigl|\,o_{ij}-r_{ij}\,\bigr|,
+\qquad
+S^{\text{group}}_i \;=\; \frac{1}{2o_{i+}}\sum_{j}\bigl|\,o_{ij}-r_{ij}\,\bigr|.
+\]
+By construction,
+\[
+S^{\text{body}} \;=\; \sum_{j}\frac{o_{+j}}{n}\,S^{\text{party}}_j \;=\; \sum_{i}\frac{o_{i+}}{n}\,S^{\text{group}}_i.
+\]
+Hence, the chamber score is simultaneously a seat-share-weighted average of party scores and a group-share-weighted average of group scores. Two implications follow. First, $S^{\text{body}}$ is a convex combination of the components and therefore lies between their minimum and maximum; body-level dispersion is mechanically tighter than dispersion across parties or groups. Second, the same chamber score can arise from distinct micro-configurations---e.g., uniformly moderate party (or group) scores versus a mixture of very high and very low scores that average out---which is exactly the heterogeneity the party- and group-level indices reveal.
+
+\subsection{Additional Analyses}
+
+\input{./FiguresParties/CoverageMissingByCountry_\FigsTagMainBody.tex}
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.85\linewidth]{FiguresParties/Map_CoverageByCountry_\FigsTagMainBody.pdf}
+\caption{
+{\sc Left.} Coverage, by country.
+}
+\label{fig:MapCoverage}
+\end{figure}
+
+\subsection{Results, Expert Only}
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.45\linewidth]{FiguresParties/Histogram_CountryLevel_CleavageIndex_ExpertsOnly.pdf}
+\includegraphics[width=0.45\linewidth]{FiguresParties/Boxplot_Region_CleavageIndex_ExpertsOnly.pdf}
+\caption{
+{\sc Left.} Distribution of the segmentation index across country-elections in the sample. The index is bounded between 0 (perfect integration) and 1 (perfect segregation); the distribution is heavily skewed to the right, indicating that most national legislatures in the dataset exhibit low levels of ethnic segregation among their party delegations. {\sc Right.} Distribution by region.
+}
+\label{fig:CleavageHistExpertsOnly}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.85\linewidth]{FiguresParties/Trajectories_Country_ExpertsOnly.pdf}
+\caption{
+Over time variability in cleavage structures. 
+}
+\label{fig:OverTimeExpertsOnly}
+\end{figure}
+
+\input{./FiguresParties/tabEVTab_ExpertsOnly_SEanalytical.tex}
+
+\clearpage \newpage 
+
+\subsection{Appendix B: Simulations}
+
+% H1-3 are ``compositional” effects, and thus should be amenable to simulation.
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.65\linewidth]{./FiguresParties/hypothesis_test_heatmap_ev_comparison.png}
+\caption{Heatmap.}
+\label{fig:NPartiesEff_V_EthnicPartie}
+\end{figure}
+
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.65\linewidth]{FiguresParties/hypothesis_test_heatmap.png}
+\caption{
+Heat map: Group entropy and number of effective parties. USE SAME SCALE PARTY. 
+}
+\label{fig:HeatMap}
+\end{figure}
+
+While cleavage dynamics appear stable, compositional features of the country population seem to be more important drivers, as seen in Figure \ref{fig:HeatMap}. Here, we observe a pronounced upper-right gradient: the segmentation index increases monotonically with both normalized group entropy and the number of effective parties; high segregation appears almost exclusively where social diversity (demand) and party-system fragmentation (supply) are simultaneously large, in line with our demand–supply account.    
+
+\clearpage\newpage 
+\section{Appendix C}
+
+\input{./FiguresParties/GroupsPartiesList_\FigsTagMainBody.tex}
+
+\section{Simulation Design}\label{sec:simulation-design}
+
+We assess the properties of our segmentation measure through Monte Carlo simulation using a calibrated data-generating process (DGP). The simulation framework serves two purposes: validating that our optimal transport measure correctly recovers known degrees of ethnic-party alignment, and enabling inference of latent affinity voting parameters from observed segmentation scores in cross-national data.
+
+\subsubsection{Calibration from Empirical Data}
+
+Rather than employing an arbitrary synthetic parameter grid, we calibrate the simulation's structural parameters from our cross-national empirical dataset. This calibration samples with replacement from observed legislature-year units, extracting the number of ethnic groups ($n_G$, capped at 10 for computational tractability), the number of parties ($n_P$, similarly bounded), legislature size ($n$, capped at 200 seats), and the marginal distribution of ethnic group shares within each legislature. This calibration ensures that simulated legislatures reflect the realistic range of configurations observed in actual democratic systems.
+
+\subsubsection{Varied Strucutral Parameters}
+
+For each calibrated structural configuration, we independently vary three experimental parameters governing ethnic-party alignment. The affinity voting factor $\phi \in [0.5, 1]$ controls the probability that members of ethnic group $g$ join their corresponding party $p_g$ (where $p_g = g$ for $g \leq n_P$). When $\phi = 1$, each group deterministically aligns with its corresponding party, representing perfect ethnic voting; when $\phi = 0.5$, party choice is uniform across parties, representing no ethnic basis for affiliation. Formally, for groups with a corresponding party, $\Pr(\text{Party} = k \mid \text{Group} = g) = \phi$ if $k = g$ and $(1 - \phi)/(n_P - 1)$ otherwise. Groups without a corresponding party (when $n_G > n_P$) receive uniform party assignment. The alpha scaling parameter $\alpha \in [10^{-1.25}, 10^2]$ controls the concentration of the Dirichlet distribution used to generate individual-level group membership probabilities, with low values producing heterogeneous compositions and high values yielding compositions tightly concentrated around marginal group proportions.
+
+\subsubsection{Legislature Generation}
+
+For each parameter configuration, the simulation proceeds in four stages. First, marginal group proportions $\boldsymbol{\pi} = (\pi_1, \ldots, \pi_{n_G})$ are generated such that $\pi_1$ equals the sampled empirical value and remaining shares follow a symmetric Dirichlet distribution. Second, for each of $n$ seats, individual-level group probability vectors are drawn from $\text{Dirichlet}(\alpha \cdot \boldsymbol{\pi})$, producing a seat-by-group probability matrix. Third, for each seat, an ethnic group identity is sampled from the individual's group probability vector, followed by a party assignment from the conditional party distribution $\Pr(\text{Party} \mid \text{Group})$ governed by the affinity voting factor $\phi$. Fourth, the groups-by-parties matrix $O = [o_{ij}]$ is constructed by counting legislators by ethnic group and party affiliation.
+
+\subsubsection{Outcome Measures}
+
+For each simulated legislature, we compute the transport-based segmentation index $S^{\text{body}} = \frac{1}{2n}\sum_{i,j}|o_{ij} - r_{ij}|$, where $r_{ij} = o_{i+}o_{+j}/n$ represents the perfect-integration target preserving row and column marginals. This index corresponds to the minimal share of seats that must be reallocated across parties (within groups) to achieve perfect integration. We also compute group and population fractionalization using Herfindahl-based concentration indices, along with a representation index measuring correspondence between legislature and population group shares.
+
+\subsubsection{Monte Carlo Structure}
+
+Each parameter configuration is replicated 10 times (or more for production runs), with results averaged to reduce sampling variance. The full simulation generates approximately 10,000 unique configurations when using the calibrated DGP, producing a lookup table that maps observed ($S^{\text{body}}$, Party Fractionalization, and Group Fractionalization) triples to inferred affinity voting factors $\phi$ through local interpolation. This enables us to recover the latent degree of ethnic voting most consistent with observed segmentation patterns, conditional on the structural composition of groups and parties in each legislature.
+
+\clearpage\newpage 
+\section{Appendix D} 
+
+\subsection{AI Agent Details} 
+
+We deploy a retrieval-augmented AI search agent (ASA) to infer missing attributes, here, party affiliation for a political leader in a particular year, from publicly available digital sources. The agent operates under a country-specific, closed codebook provided by our experts and may either assign a single label from that set or abstain from doing so. 
+
+As visualized in Figure \ref{fig:ASAViz}, for each MP the agent queries parliamentary portals, official biographies, reputable news, and encyclopedic entries; extracts corroborating statements; and returns a structured prediction (label, one‑sentence rationale, and source citations). The agent is instructed to prioritize precision over recall and to abstain when evidence is weak or conflicting sources are present. All queries, snippets, and links are archived to ensure auditability and replication. This provenance-preserving design expands coverage while limiting measurement error and maintaining cross-national comparability. 
+
+\paragraph{Design goals.}
+The verifiable AI search agent (ASA) is engineered to expand coverage of missing labels while preserving cross‑national comparability and auditability. Three principles guide the design: (i) \emph{precision over recall} via conservative prediction and a confidence gate that withholds uncertain cases; (ii) \emph{closed‑world classification} against country‑specific codebooks supplied by experts; and (iii) \emph{provenance preservation}, archiving all queries, snippets, and Internet links for replication.
+
+\paragraph{System architecture.}
+The ASA is a retrieval‑augmented ReAct agent implemented with \texttt{langgraph}. A small instruction‑tuned LLM (GPT5-nano, \texttt{temperature} $=1$) orchestrates tool use and produces a one‑shot JSON output containing a label, a one‑sentence rationale with citations, and a confidence flag (High/Medium/Low). 
+
+The agent has access to two read‑only connectors: a Wikipedia retriever and a general web search tool (DuckDuckGo). All decisions are constrained to a \emph{closed codebook} (per country) delivered in‑prompt; the model is explicitly instructed to abstain from guessing and to prioritize verifiable sources over known or implicit heuristics.
+
+\paragraph{Data flow and reproducibility.}
+Input candidate records (GLP leaders) are materialized in \texttt{SQLite}. For each row, the agent executes a short search session and returns a structured prediction. Results--including raw tool traces---are appended to a \texttt{SQLite} store. Post‑hoc analysis, scoring, and figure generation are performed in \textsf{R}.
+
+\paragraph{Country‑closed matching and normalization.}
+To guard comparability across countries and reduce typographic drift, the pipeline applies a two‑stage, codebook‑guided normalization to the model’s raw label string:
+
+\begin{enumerate}
+\item \textbf{Strict closed‑set match (country scope).} If the predicted string exactly matches a member of the country’s codebook, it is accepted.
+\item \textbf{Conservative fuzzy match.} Otherwise, a relaxed mapper computes a similarity score $s$ combining (a) Jaro–Winkler similarity on a normalized label, (b) token overlap coverage, and (c) acronym equality. Let $m$ denote the runner‑up score. Accept as a match if if
+
+$$
+s \ge 0.92 \quad \text{or} \quad \bigl(s \ge 0.85 \ \&\  s-m \ge 0.08\bigr).
+$$
+
+%If no country‑level candidate passes, fall back to the global codebook under stricter criteria:
+%$$
+%s \ge 0.95 \quad \text{or} \quad \bigl(s \ge 0.90 \ \&\  s-m \ge 0.12\bigr).
+%$$
+\end{enumerate}
+This mapping process produces a normalized label used for evaluation and aggregation while preserving the original string for audit. It corrects innocuous variants (pluralization, punctuation, acronyms) without introducing new classes. The mapper’s conservatism is intentional: tightening thresholds reduces false positives at the cost of additional abstentions.
+
+\paragraph{Confidence gating and abstention policy.}
+The agent emits a categorical confidence estimate; records flagged \texttt{Low} or \texttt{Medium} are withheld from downstream analyses. This implements an \emph{abstention} layer that trades coverage for precision and is especially important where web evidence is sparse, parties are newly formed, or transliterations vary. As documented in the main text, low‑confidence rates vary by country and cohort and are higher for small/minority parties, earlier periods, and cases lacking standardized biographies.
+
+\paragraph{Task prompt.} For the party prediction task, see below for the prompt sent to the AI search agent: 
+
+\begin{itemize}
+\item[] 
+{ \tiny
+\begin{verbatim}
+TASK OVERVIEW:
+You are an advanced search-enabled Large Language Model (LLM) specializing in party affiliation inference.
+Your role is to determine the most likely political party of well-known political leaders or other notable individuals,
+strictly from a provided list of possible parties. Your answers are based on:
+
+1. Publicly available background data and official information (obtained via search tools),
+2. Contextual evidence such as party membership records, voting history, public statements, or credible news sources.
+
+ACCESS TO SEARCH:
+You are REQUIRED to first use query search tools to research the name in question.
+Search for any authoritative or credible sources referencing the individual's
+official party membership or widely recognized affiliation.
+If you find clear, credible information on the person's party, rely on it.
+If information is conflicting or indeterminate, then fall back on contextual inference
+grounded in legislative records, news coverage, or the individual's own statements.
+
+TARGET INDIVIDUAL:
+
+* Name: <PERSON-NAME>
+* Country: <COUNTRY>
+* Approximate year: <YEAR>
+* Potential Parties in this Country (PARTIES\_OF\_COUNTRY): {<PARTIES-OF-COUNTRY>}
+
+CONSTRAINTS FOR "pol\_party":
+
+1. You MUST choose exactly ONE party from the above list for "pol\_party".
+2. You must NOT introduce any party that is not in the list.
+3. You must preserve EXACT spelling, capitalization, and punctuation
+   for the chosen party as it appears in the list (INCLUDING ABBREVIATIONS).
+4. All explanations should be written in English.
+
+RESPONSE FORMAT:
+Your output must follow this precise JSON structure (and nothing else):
+{
+"justification": "A concise one-sentence justification citing either the external source findings or, 
+      if no consensus, contextual inference from legislative or news records.",
+"pol\_party": "A party from PARTIES\_OF\_COUNTRY with exact same spelling, capitalization/punctuation/abbreviation style.",
+"pol\_party\_relaxed": "One party, best prediction, no constraints.",
+"confidence": "Confidence in your answer (High, Medium or Low)."
+}
+
+IMPORTANT REQUIREMENTS:
+
+* Do NOT include additional text or commentary beyond the JSON object.
+* If you find verifiable sources confirming the individual's party, reference them EXPLICITLY
+  within your single-sentence justification.
+* If no definitive sources exist, clearly state that your choice is based on contextual inference.
+* If there are remaining ambiguities, select the MOST likely
+  based on searched content and public records.
+
+FINAL TASK STEPS:
+
+1. Use search tools to verify the individual's publicly acknowledged party membership.
+2. If confirmed, select that party from the PARTIES\_OF\_COUNTRY list.
+3. If conflicting or no direct sources, apply best-effort sources-first, context-second inference.
+4. Output the strict JSON block:
+   {
+   "justification": "...",
+   "pol\_party": "...",
+   "pol\_party\_relaxed": "...",
+   "confidence": "..."
+   }
+
+WARNINGS:
+
+* Under NO circumstances produce any output outside the JSON format.
+* Any deviation from this exact JSON structure risks rejection.
+* Justification must be ONE sentence only.
+* Party must match EXACTLY the spelling in the list.
+\end{verbatim}
+}
+\end{itemize}
+
+\paragraph{Hyperparameters and their consequences.}
+
+Key choices and expected effects are as follows:
+\begin{enumerate}
+\item \textbf{LLM decoding.} A near‑deterministic setting reduces variance in structured outputs and improves JSON validity, at the cost of slightly lower recall on ambiguous cases.
+\item \textbf{Fuzzy‑match thresholds.} Country thresholds $(0.92;, 0.85{+}0.08)$ and stricter global thresholds $(0.95;, 0.90{+}0.12)$ suppress false alignments across near‑synonyms, benefiting cross‑national comparability while increasing abstentions where parties have overlapping or evolving brands.
+\item \textbf{Confidence gate.} Withholding \texttt{Low} and \texttt{Medium} confidence predictions curbs label noise—especially for minority and emergent parties—but mechanically reduces coverage; this is the intended precision‑first behavior for a reference‑quality dataset.
+\end{enumerate}
+
+\paragraph{Languages and programs.}
+
+The agentic layer is implemented in \textbf{Python} with \texttt{langgraph} (ReAct) and OpenAI‑compatible chat bindings; retrieval uses Wikipedia and general web search connectors. Orchestration is done in \textsc{R}. Caching and data interchange use \textbf{SQLite} with \texttt{DBI}/\texttt{RSQLite}. 
+
+\paragraph{Applicability and limitations.}
+
+The design is most reliable for \emph{verifiable attributes} (e.g., party membership), where authoritative sources exist and closed codebooks are stable. Performance is predictably uneven for (i) very small or new parties, (ii) early cohorts with sparse web footprints, and (iii) languages/alphabets with heterogeneous transliteration conventions. The relaxed mapper mitigates harmless surface variation without altering class boundaries, and the abstention gate limits error propagation. While the same architecture extends to other attributes (e.g., ethnicity, religion), attributes lacking public self‑identification should be treated with additional caution and stricter confidence gating.
+
+\paragraph{Agent Performance.} 
+
+To gauge the performance of this protocol we focus on missing party affiliations rather than ethnicity because it is objectively verifiable through public records and exhibits substantially higher rates of missing data, providing a more robust test.
+
+Using the subset of records for which expert codes are available, this verifiable search agent attains high agreement on party labels.  Across $N=\LLMNumCountriespolparty$ countries and $\LLMNumInstancespolparty$ matched leader–records covering $\LLMNumClassespolparty$ distinct party labels, the overall high–confidence accuracy is \LLMOverallAccHighpolparty, with a mean per–country high–confidence accuracy of \LLMMeanAccByCountryHighpolparty{}  (Figure~\ref{fig:AgentPerformance}). Relative to a simple country–majority baseline of \LLMMeanBaselineByCountrypolparty, this yields an average uplift of \LLMMeanDeltaByCountrypolparty{} points on a 0–1 scale, ranging from \LLMMinDeltaByCountrypolparty{} in \LLMMinDeltaCountrypolparty{} to \LLMMaxDeltaByCountrypolparty{} in \LLMMaxDeltaCountrypolparty.  Point estimates improve in later election cohorts, consistent with expanding web coverage and corpus quality (Figure~\ref{fig:AgentsOverTime}).  If we ignore the confidence gate and score all predictions, overall accuracy is \LLMOverallAccAllpolparty.
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.95\linewidth]{FiguresParties/AgentHist.pdf}
+\caption{
+Agent performance in predicting party, across countries having at least 20 agent codes. Median country-level performance is above 90\%. The baseline refers to the accuracy of predicting that every politician in a given country takes on the dominant characteristic being considered. 
+}
+\label{fig:AgentPerformance}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.55\linewidth]{FiguresParties/AgentOverTime.pdf}
+\includegraphics[width=0.43\linewidth]{FiguresParties/AgentRegionBox.pdf}
+\caption{
+Agent performance over time; point size corresponds to the number of observations in each (approximate) year (\textsc{Left}) and space (\textsc{Right}). 
+}
+\label{fig:AgentsOverTime}
+\end{figure}
+
+Limitations, however, remain. On average across countries, a share of \LLMMeanLowConfpolparty\ of records is flagged ``Low'' and withheld from downstream analysis, yielding a conservative working sample. Performance is predictably uneven across label frequency: mean high–confidence accuracy for small/minority party labels is \LLMMeanAccSmallGroupspolparty, compared to \LLMMeanAccLargeGroupspolparty\ for plurality parties.  In practice, disagreements and abstentions concentrate in (i) very small or newly formed parties, (ii) earlier election years, and (iii) cases with sparse or non-standardized online biographies.
+
+Overall, this provenance-preserving search agent substantially expands usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} observations with previously missing party labels) at low marginal cost while maintaining high out‑of‑sample agreement with expert codings (Figure~\ref{fig:AgentPerformance}).  The approach is transparent in that every assigned label is backed by stored queries and citations---portable across countries because predictions are constrained by closed codebooks. Our downstream estimates will employ the high-confidence entries from the agent. For results using only expert coding, see Appendix A; for additional details about the agent architecture, see Appendix B. See Table \ref{tab:sample_compact} for a sample of the sources obtained by the agent. 
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.65\linewidth]{FiguresParties/AgentViz.pdf}
+\caption{
+AI Search Agent (ASA) visualization.
+}
+\label{fig:ASAViz}
+\end{figure}
+
+\paragraph{Summary.}
+
+In sum, the ASA combines a \emph{langgraph} ReAct controller, source‑first prompts, conservative similarity thresholds, and a confidence gate to deliver auditable, high‑precision labels at scale. The resulting pipeline is portable across countries (closed codebooks), reproducible (stored traces and caches), and well‑suited to augment expert codings with verifiable, citation‑backed inferences.
+
+\input{./FiguresParties/SamplePredictionsCompact_pol_party.tex}
+
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.55\linewidth]{FiguresParties/Lasso_SelectionFreq_Key_\FigsTagMainBody.pdf}
+\caption{
+LASSO selection.
+}
+\label{fig:LassoSelection}
+\end{figure}
+
+
+
+\end{document}
+
+
+% scratch
+% we could distinguish between exogenous elements: ethnicity (the number and size of ethnic groups in the population) the size of the legislature
+% and endogenous elements:
+%the number of parties that gains representation in the legislature the size of these parties (in seats) the distribution of ethnicities across the parties
+%i imagine this complicates the math, but in some ways it is a truer representation of reality - insofar as party systems respond to ethnic cleavages.
+%ideally, the index is interpretable for individual parties and for party systems...
+
+%any exercise of this nature must tackle the question of which ethnic groups should be included. for our purposes, i think it makes sense to limit the analysis to groups that gain seats in the lower/unicameral chamber of the national legislature. those who don't gain representation, either by virtue of discrimination, small size, geographic dispersion, lack of organization, or whatever, are ignored. 
+
+%let us say that this threshold excludes 5% of the population. the remaining population is our baseline. the population shares of each ethnic group are understood relative to this number.
+
+%a perfectly ``ethnic'' party system would be one where every ethnic group has its own party and where the number of seats controlled by that party is proportional to its population (calculated as above). the party system should reproduce the ethnic system. 
+
+%we could then evaluate the actual distribution of parties and seats relative to that baseline, calculating the number of party switches and/or party splits required in order to achieve it.
+
+%by the same token, the ``least ethnic'' (most multi-ethnic) outcome could be defined as one where two parties aggregate all seats (remember that we have stipulated that the concept of an ethnic party makes sense only in the context of multiparty competition; hence, there must at a minimum be two parties) and where ethnic groups are equally represented in both parties (or as equally as possible, given odd numbers).
+
+%i like this solution because it connects parties to their ethnic constituencies in society (a key element of the concept of an ethnic party) and because it allows for a scale that is determinate for each society. this also means that a country's score can be treated in a ``raw'' fashion or normed to its particular configuration of ethnic groups.
+
+% talk 
+% degree of ethnicization; cleavages reflected in party system, 0 (cross ethnic or no ethnicity) to 1 
+
+% minimum possible entropy 
+% does ethnicity predict 
+% cross ethnic or non-ethnic- > mixed case would be third, ethnic parties case would be on the right 
+
+% don't incorporate # of ethnic group? 
+
+% information theory measures of  gain
+
+% party unity / polarization -> correlate? 
+
+% define ethnicity from party overlap or lack of overlap, using religion, ethnicity, 
+
+% use voters as the legislature 
+
+% RELEVANT PAPERS FROM GENEVIE 
+% both papers are country-specific analyses (india + africa); focus on ethnic quotes 
+%
+% https://www.cambridge.org/core/journals/american-political-science-review/article/abs/political-salience-of-cultural-difference-why-chewas-and-tumbukas-are-allies-in-zambia-and-adversaries-in-malawi/039468BDC4AAB0FC0E9899F459EE2B7A
+
+% 
+% https://www.cambridge.org/core/journals/american-political-science-review/article/abs/ethnic-quotas-and-political-mobilization-caste-parties-and-distribution-in-indian-village-councils/2E0C026E2D390B6D4DBD75736E06C857
+
+% do robustness where we take "full sample" then reduce it "adversarially" to examine performance
+
+%  to quantify hard to complete, look at name embeddings? balance test? LLM annotation. check against hand coding. 
+
+% add percent change to pertubation (true zero;) 
+% change log prob to some invariant measure to n 
+% look at cases where there are disagreement (look at variability in insight)
+% real data - helpful? 
+
+
+% notes, jan 11, 2025
+% remove b in party 1
+% frame as two ends of extremes; from a larger family with some weighting factor that differs. 
+
+% ev doesn't care about the size of the party 
+% replace old with new version of scenario 4 
+
+% add scenario where each person is own ethnic group 
+
+% relationship between parties and ethnicities -> using some asymptotic (dig into the two measures as nBody, nGroups, nParties goes to infinity). 
+
+% compare with Herfindahl index; add to the table (do across group + party dimension); 
+
+% hierarchical organization to the data
+
+% characterize degree of "politics ethnicization" -> show that conventional wisdom lines up with us; use both direct and indirect measures; modernization theory 
+
+% look Africa (more indirect control) vs. south america (more direct control); colonial indirect control tends MORE segregation 
+
+%# every country - average transport score (with years) 
+
+% relation of mass to elite cleavage 
+
+% Case studies: Lebanon + Singapore 
+% << Malaysia // Singpoare >>
+% any explicit "policies" about ethnicity as it relates to parties or government (in Singapore there are definitely these)
+% 2-3 sentences about the history of two party systems (connect to the broader narrative); where information is posted, add CITES. 
+% Table of comparision? put key features into a table (column = country [singapore/malaysia]; rows = features)
+
+% use effective # of ethnicities 
+
+% remove Haiti 
+
+% pananama has full coverage 
+
+% ethnicitiy -> try agent pipeline in africa
+
+% MENTION SMOOTHED BAYESIAN INTERPRETATION
+
+% get columns; 
+% add 3 products to table
+% heatmap w 3 measures
+% only show if we have more than 2 points; cross election change
+% fractionalization scatterplots
+% csv - make sure it incorporates electoral system codings 
+% use log gdp per capita 
+% histogram for other scores 
+
+% Transport contribution instead of deviation? How to help them see it? Change in symbol? 
+
+% coverage; try ai search agent on new countries 
+
+% MODEL 1 - group frac/ party fract / region dummies
+% Model 2 - add elite segmentation index (look at r-squared)
+
+% add index to sub tables of party and groups
+
+Leg. Seg. Index.
+lSeg
+gSet
+'
+Segmentation Index: 
+--Legislature--
+--Group index--
+--Party index--
+"Segmentation index for [level]" 
+"[Level] segmentation index" 
+
+Add # of observations; remove row label
+
+% list source of alt measure, order these by strength -> for qod -> move forward the prior variables 
+
+% V Parties -> add / merge at party level if possible 
+
+% coverage 
+
+% Party Times Group -> "Parties x Group"
+
+% double check conflict outcome 
+
+% add ienquality? election violence? ethnic violence? minorities at risk? World governance indicator on instability - how long each gov't lasts (where relevant) zz102@wellesley.edu
+
+# why no - no south korea?  in data? 
+
+model 4 without party  fract, group fract, party times group 
+
+% use instability variable variable  in qog
+
+% look at over time variability for group and party and segmentation
+
+% add version of model 4 without our variables 
+
+% aggregate to country level 
+
+% add number of observations; add figure to appendix 
+
+% political stability index from the wrold governance indicators 
+
+swap the labels so it's clearer w
+
+add interaction of group and party in table 8
+
+% weighted least squares -> xlsx
+
+% syria - missing a lot 
+
+% make sure to make a table with parties / groups for each country ; name of entity, with index 
+
+% france? investigate why being dropped (parties dataset); check why number of quality ? why is france "Missing" but also present in the main text 
+
+Number of elections next to the country name? 
+(N elections, N People total across elections). 
+
+% add proportions? use number non-missing 
+
+# regarding figure 4 (density of segmentation index by unit of analysis); Remove the word "Level" 
+
+# non-merged countries  - check this 
+
+% correlation matrix; put alt measure in left column; our measures in right columns
+
+% recompute table 5 - party level unit of analysis (compare party index against party coding)
+
+% 36 countries in vparty should align
+
+(N) -> add to table 5

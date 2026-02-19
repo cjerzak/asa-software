@@ -1,0 +1,7 @@
+"Measure","N","Mean","SD","Min","Max"
+"EV_transport (Segmentation Index)",10000,0.231,0.174,0,0.819
+"EV (Traditional)",3264,0.771,0.18,0.106,1
+"Population Entropy",10000,0.885,0.645,0.013,2.912
+"Population Fractionalization",10000,0.329,0.233,0.003,0.852
+"Affinity Voting Factor",10000,0.754,0.143,0.5,1
+"Alpha Scaling",10000,13.416,22.234,0.056,99.988

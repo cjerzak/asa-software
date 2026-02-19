@@ -1,232 +1,190 @@
 {
-  "tokens_used": 140662,
-  "input_tokens": 127595,
-  "output_tokens": 13067,
-  "fold_tokens": 8267,
+  "tokens_used": 92252,
+  "input_tokens": 82041,
+  "output_tokens": 10211,
+  "fold_tokens": 7633,
   "token_trace": [
     {
       "node": "planner",
       "input_tokens": 661,
-      "output_tokens": 1112,
-      "total_tokens": 1773,
-      "elapsed_minutes": 0.1885
+      "output_tokens": 1395,
+      "total_tokens": 2056,
+      "elapsed_minutes": 0.372
     },
     {
       "node": "agent",
       "input_tokens": 1544,
-      "output_tokens": 163,
-      "total_tokens": 1707,
-      "elapsed_minutes": 0.2176
+      "output_tokens": 328,
+      "total_tokens": 1872,
+      "elapsed_minutes": 0.4805
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0654
+      "elapsed_minutes": 0.0733
     },
     {
       "node": "agent",
-      "input_tokens": 2467,
-      "output_tokens": 193,
-      "total_tokens": 2660,
-      "elapsed_minutes": 0.0347
+      "input_tokens": 2897,
+      "output_tokens": 556,
+      "total_tokens": 3453,
+      "elapsed_minutes": 2.969
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0483
+      "elapsed_minutes": 0.0837
     },
     {
       "node": "agent",
-      "input_tokens": 3813,
-      "output_tokens": 259,
-      "total_tokens": 4072,
-      "elapsed_minutes": 0.0436
+      "input_tokens": 5107,
+      "output_tokens": 443,
+      "total_tokens": 5550,
+      "elapsed_minutes": 1.3482
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0531
+      "elapsed_minutes": 0.0275
     },
     {
       "node": "agent",
-      "input_tokens": 4798,
-      "output_tokens": 158,
-      "total_tokens": 4956,
-      "elapsed_minutes": 0.0328
+      "input_tokens": 6095,
+      "output_tokens": 352,
+      "total_tokens": 6447,
+      "elapsed_minutes": 1.1077
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.5202
+      "elapsed_minutes": 0.0277
     },
     {
       "node": "agent",
-      "input_tokens": 6504,
-      "output_tokens": 320,
-      "total_tokens": 6824,
-      "elapsed_minutes": 0.0454
+      "input_tokens": 7099,
+      "output_tokens": 647,
+      "total_tokens": 7746,
+      "elapsed_minutes": 0.2884
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 1.1094
-    },
-    {
-      "node": "agent",
-      "input_tokens": 7189,
-      "output_tokens": 479,
-      "total_tokens": 7668,
-      "elapsed_minutes": 0.0564
-    },
-    {
-      "node": "tools",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0,
-      "elapsed_minutes": 0.0565
+      "elapsed_minutes": 0.1036
     },
     {
       "node": "summarize",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 1.1854e-06
+      "elapsed_minutes": 1.2771e-06
     },
     {
       "node": "agent",
-      "input_tokens": 8696,
-      "output_tokens": 337,
-      "total_tokens": 9033,
-      "elapsed_minutes": 0.0634
+      "input_tokens": 9155,
+      "output_tokens": 233,
+      "total_tokens": 9388,
+      "elapsed_minutes": 1.9666
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0001
+      "elapsed_minutes": 0.058
     },
     {
       "node": "summarize",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 1.1132e-06
+      "elapsed_minutes": 1.8702e-06
     },
     {
       "node": "agent",
-      "input_tokens": 9866,
-      "output_tokens": 92,
-      "total_tokens": 9958,
-      "elapsed_minutes": 0.0265
+      "input_tokens": 9629,
+      "output_tokens": 484,
+      "total_tokens": 10113,
+      "elapsed_minutes": 1.6652
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.102
+      "elapsed_minutes": 0.6527
     },
     {
       "node": "summarize",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 1.066e-06
+      "elapsed_minutes": 7.2848e-07
     },
     {
       "node": "agent",
-      "input_tokens": 14785,
-      "output_tokens": 388,
-      "total_tokens": 15173,
-      "elapsed_minutes": 0.0632
+      "input_tokens": 11250,
+      "output_tokens": 605,
+      "total_tokens": 11855,
+      "elapsed_minutes": 1.2587
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.985
-    },
-    {
-      "node": "summarize",
-      "input_tokens": 3271,
-      "output_tokens": 4996,
-      "total_tokens": 8267,
-      "elapsed_minutes": 0.4264
-    },
-    {
-      "node": "agent",
-      "input_tokens": 14389,
-      "output_tokens": 245,
-      "total_tokens": 14634,
-      "elapsed_minutes": 0.0504
-    },
-    {
-      "node": "tools",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0,
-      "elapsed_minutes": 0.0685
+      "elapsed_minutes": 0.2152
     },
     {
       "node": "summarize",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 1.2083e-06
+      "elapsed_minutes": 8.493e-07
     },
     {
       "node": "agent",
-      "input_tokens": 15517,
-      "output_tokens": 225,
-      "total_tokens": 15742,
-      "elapsed_minutes": 0.0435
+      "input_tokens": 12639,
+      "output_tokens": 409,
+      "total_tokens": 13048,
+      "elapsed_minutes": 0.2427
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.64
+      "elapsed_minutes": 0
+    },
+    {
+      "node": "summarize",
+      "input_tokens": 4684,
+      "output_tokens": 2949,
+      "total_tokens": 7633,
+      "elapsed_minutes": 1.1177
+    },
+    {
+      "node": "agent",
+      "input_tokens": 10620,
+      "output_tokens": 415,
+      "total_tokens": 11035,
+      "elapsed_minutes": 1.7203
     },
     {
       "node": "summarize",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 1.1653e-06
-    },
-    {
-      "node": "agent",
-      "input_tokens": 17273,
-      "output_tokens": 163,
-      "total_tokens": 17436,
-      "elapsed_minutes": 0.0382
-    },
-    {
-      "node": "tools",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0,
-      "elapsed_minutes": 0.0634
-    },
-    {
-      "node": "finalize",
-      "input_tokens": 16161,
-      "output_tokens": 2825,
-      "total_tokens": 18986,
-      "elapsed_minutes": 0.3153
+      "elapsed_minutes": 5.0472e-06
     }
   ]
 }

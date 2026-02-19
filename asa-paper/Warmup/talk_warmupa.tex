@@ -1,0 +1,313 @@
+\documentclass[aspectratio=169]{beamer}
+
+% --- Style guide only (no reused content) ---
+\usetheme{metropolis}   % Clean, modern theme
+\usecolortheme{crane}   % High-contrast palette
+
+% --- Packages ---
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{csquotes}
+\usepackage{etoolbox}
+\usepackage{adjustbox}
+
+% (Optional) biblatex if you want references on the last slide.
+% Will only activate if a bib file exists two levels up.
+\usepackage[backend=biber,style=authoryear,maxbibnames=99]{biblatex}
+\makeatletter
+\@ifundefined{IfFileExists}{\newcommand{\IfFileExists}[3]{#2}}{}
+\makeatother
+\IfFileExists{../../references.bib}{\addbibresource{../../references.bib}}{}
+\IfFileExists{../../main.bib}{\addbibresource{../../main.bib}}{}
+\IfFileExists{../../paper.bib}{\addbibresource{../../paper.bib}}{}
+
+% --- Paths to your paper's figures ---
+\graphicspath{{../../FiguresParties/}}
+
+% --- Metropolis tweaks ---
+\metroset{progressbar=frametitle, numbering=fraction}
+\setbeamertemplate{footline}{}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{section in toc}[sections numbered]
+
+% --- Convenience macros (kept minimal) ---
+\newcommand{\cleav}{\mathsf{Cleavage}~\mathsf{Index}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbf{R}}
+\newcommand{\Omat}{\mathbf{O}}
+
+% --- Title block ---
+\title{Elite Cleavages:\\ Concept, Measurement, and a Verifiable AI Search Agent}
+\author{\textbf{John Gerring} \and \textbf{Connor T. Jerzak} \and \textbf{Erzen Öncel}}
+\institute{University of Texas at Austin \quad\textbullet\quad Özyeğin University}
+\date{APSA 2025 \textbullet\ September 2025}
+
+% --- Section headers as mini-tour slides ---
+\AtBeginSection{
+  \begin{frame}[standout]
+    \Large \insertsection
+  \end{frame}
+}
+
+\begin{document}
+
+% --------------------------------------------------
+\maketitle
+% --------------------------------------------------
+
+\begin{frame}{Why this matters}{}
+\large
+\begin{itemize}
+  \item \textbf{Cleavages} aren’t about diversity per se — they’re about how \emph{elite party delegations} reproduce social boundaries.
+  \item We lack a \textbf{replicable, continuous, cross-national} metric at the elite level.
+  \item Our solution: a \textbf{single, bounded, interpretable} index from optimal transport — plus \textbf{party-} and \textbf{group-level} diagnostics.
+  \begin{itemize}
+      \item[] Data limitations overcome with globally scalable AI search agents yielding verifiable, auditable results
+      \item[] 
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Our contributions (at a glance)}
+\Large
+\begin{itemize}
+  \item \textbf{Measurement:} 
+  \item[] Elite cleavage as minimal reassignments to perfect integration.
+  \item \textbf{Scope:} 
+  \item[] Global coverage via expert coding + a \emph{verifiable} retrieval-augmented AI search agent.
+  \item \textbf{Findings:} Cleavages co-move with social heterogeneity \emph{amplifying} demand.
+  \item \textbf{Tooling:} Party- and group-level diagnostics; extensible to other ascriptive cleavages.
+\end{itemize}
+\end{frame}
+
+% --------------------------------------------------
+\section{Concept}
+% --------------------------------------------------
+
+\begin{frame}{From idea to index}
+\large
+\begin{itemize}
+  \item Think of the legislature as a table: \emph{groups} $\times$ \emph{parties}.
+  \item \textbf{Perfect integration:} every party mirrors the chamber’s overall group composition.
+  \item \textbf{Cleavage =} \underline{fewest seat reassignments} (within groups) needed to reach perfect integration.
+  \item Interpretable scale in $[0,1)$: higher $\Rightarrow$ more ethnicized elite alignment.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Beyond the system: party \& group diagnostics}
+\large
+\begin{itemize}
+  \item \textbf{Party-level “ethnic party” index:} how far a party is from mirroring the chamber.
+  \item \textbf{Group-level “cohesion” index:} concentration of a group within a party.
+  \item All derived from the same transport logic, mapping segmentation across scale.
+\end{itemize}
+\end{frame}
+
+% --------------------------------------------------
+\section{Data \& Coding}
+% --------------------------------------------------
+
+\begin{frame}{Data: global elite delegations}
+\large
+\begin{itemize}
+  \item Base: legislative delegations assembled from the \textbf{Global Leadership Project} (GLP).
+  \item \textbf{Expert coders} identify salient ascriptive groups (country-specific).
+  \item Focus on \textbf{represented} groups; aim is alignment among elites, not overall proportionality.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{A verifiable AI search agent (audit-first)}
+\begin{columns}[T,onlytextwidth]
+\column{0.58\textwidth}
+\large
+\begin{itemize}
+  \item \textbf{Closed codebooks} by country; agent predicts or \emph{abstains}, providing confidence scores also.
+  \item \textbf{Retrieval-augmented:} Agent searches parliamentary portals, official bios, reputable news, encyclopedia entries (can re-try search 20 times).
+  \item \textbf{Provenance preserved:} queries, snippets, links archived for audit and replication..
+\end{itemize}
+\column{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{AgentViz.pdf}
+\end{columns}
+\end{frame}
+
+% --------------------------------------------------
+\section{Patterns}
+% --------------------------------------------------
+
+\begin{frame}{Global distribution}
+\centering
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{Histogram_CountryLevel_CleavageIndex.pdf}
+\end{minipage}\hfill
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{Boxplot_Region_CleavageIndex.pdf}
+\end{minipage}
+
+\vspace{0.7em}
+\large
+\begin{itemize}
+  \item Right-skewed: most legislatures cluster near low cleavage; long tail of segmented systems.
+  \item Regional heterogeneity is substantial.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Stability over time}
+\centering
+\includegraphics[width=0.45\linewidth]{Trajectories_Country_Facets.pdf}
+
+\vspace{0.6em}
+\large
+\begin{itemize}
+  \item Within-country trajectories are typically \textbf{persistent}, with gradual drifts or mild oscillations.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Demand meets supply?}
+\centering
+\includegraphics[width=0.78\linewidth]{hypothesis_test_heatmap.png}
+
+\vspace{0.6em}
+\large
+\begin{itemize}
+  \item Cleavage rises with \textbf{social heterogeneity} and is \emph{amplified} when party systems are more fragmented.
+  \item High cleavage concentrates where both are large.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Party system fragmentation and cleavage}
+\centering
+\includegraphics[width=0.5\linewidth]{NPartiesEff_vs_EthnicParties.pdf}
+
+\vspace{0.6em}
+\large
+\begin{itemize}
+  \item Positive association overall; attenuation once \textbf{demand} is controlled.
+\end{itemize}
+\end{frame}
+
+% --------------------------------------------------
+\section{Interpretation}
+% --------------------------------------------------
+
+\begin{frame}{What the regressions say (in words)}
+\large
+\begin{itemize}
+  \item \textbf{Demand dominates:} cleavage increases with group fractionalization/entropy.
+  \item \textbf{Supply amplifies:} effective number of parties strengthens the pattern but seldom creates it.
+  \item Institutional moderators show intuitive but less stable associations than demand fundamentals.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Outcome: Predicting elite cleavage}{}
+\vspace{0.2cm}
+{\tiny
+\input{FiguresParties/tabEVTab_SEanalytical}
+%\input{./../../FiguresParty/tabEVTab_SEanalytical.tex}
+}
+\end{frame}
+
+\begin{frame}{Limitations \& implications}{}
+{\sc Limitations:}
+\begin{itemize}
+  \item \textbf{Ethnicity is contextual:} relies on country-specific codebooks.
+  \item We focus on \textbf{represented} groups; not a test of proportionality in society.
+  \item Agent prioritizes \textbf{precision} and may abstain.
+\end{itemize}
+{\sc Implications:}
+\begin{itemize}
+  \item A \textbf{replicable baseline} for cross-national/over-time comparisons of elite segmentation.
+  \item \textbf{Diagnostics} pinpoint where segmentation sits (parties vs.\ groups).
+  \item Enables targeted evaluation of \textbf{reforms} (electoral rules).
+  \item Extends naturally to \textbf{religion, language, region}, and other arenas (cabinets).
+\end{itemize}
+\vspace{-.2cm}
+\textbf{For more information:} \texttt{GlobalLeadershipProject.net}
+\end{frame}
+
+%\begin{frame}[standout]
+%\Large Takeaway: Elite ethnic cleavages\\ are measurable, comparable, and interpretable.
+%\end{frame}
+
+% --------------------------------------------------
+\section{Supplementary information}
+% --------------------------------------------------
+
+\begin{frame}{Formal details (index)}
+\small
+Observed matrix $\Omat=[o_{ij}]$ and target $\R=[r_{ij}]$ with $r_{ij}=(o_{i+}o_{+j})/n$ preserve margins. With a 0–1 party reassignment cost (same party $=0$, different party $=1$) and ethnicity fixed, the transport objective reduces to total variation:
+\[
+W(\Omat,\R) = \frac{1}{2}\sum_{i}\sum_{j}\left|o_{ij}-r_{ij}\right|,\qquad
+S=\frac{W(\Omat,\R)}{n}\in[0,1).
+\]
+\textit{Interpretation:} \(S\) is the minimal \emph{share of seats} that must move across parties (within groups) to achieve perfect integration.
+\end{frame}
+
+\begin{frame}{Party- and group-level indices}
+\small
+\begin{itemize}
+  \item \textbf{Party index:} difference between a party’s delegation and chamber composition.
+  \item \textbf{Group cohesion:} dispersion vs.\ concentration across parties (same transport logic).
+  \item \textbf{Aggregation:} chamber-level cleavage is a coherent summary of these components.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Agent prompts (distilled) — verifiable coding}
+\small
+\begin{itemize}
+  \item Country-specific \textbf{closed codebook} of allowable labels.
+  \item \textbf{Retrieve \& cite:} parliament portals, official bios, reputable media, encyclopedia.
+  \item \textbf{Return:} (label, one-sentence rationale, source links). \textbf{Abstain} if evidence weak/conflicting.
+  \item \textbf{Archive all} queries/snippets/links for audit and replication.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Related measures (for context)}
+\small
+\begin{itemize}
+  \item Binary “ethnic party” codings: broad coverage; \emph{loss of granularity}.
+  \item Survey-based ethnic voting distances: mass behavior focus; \emph{not} elite composition.
+  \item Our transport index: continuous, elite-focused, party/group diagnostics, \textbf{bounded \& interpretable}.
+\end{itemize}
+\end{frame}
+
+% Optional bibliography slide (only if a .bib was found above)
+\IfFileExists{../../references.bib}{%
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+}{}
+\IfFileExists{../../main.bib}{%
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+}{}
+\IfFileExists{../../paper.bib}{%
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+}{}
+
+\begin{frame}{Formalisms}
+\large
+Let $\Omat = [o_{ij}]$ be observed counts of group $i$ in party $j$, with totals $n$, row sums $o_{i+}$, and column sums $o_{+j}$. Define the \emph{integration target}
+\[
+  \R = [r_{ij}],\quad r_{ij} = \frac{o_{i+}\,o_{+j}}{n}.
+\]
+Costs: reassigning across parties costs $1$; changing ethnicity is forbidden (infinite cost). The cleavage distance is
+\[
+  W(\Omat,\R) ~=~ \frac{1}{2}\sum_{i}\sum_{j}\big|o_{ij}-r_{ij}\big|.
+\]
+\textbf{Index:} \(
+  S ~=~ \dfrac{W(\Omat,\R)}{n}
+\) \;\;=\;\; minimal \textit{share of seats} needing reassignment to achieve integration.
+\end{frame}
+
+\end{document}

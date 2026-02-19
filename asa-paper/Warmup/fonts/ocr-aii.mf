@@ -1,0 +1,8 @@
+% OCR-A Size II
+  
+H# = 2.84mm#;
+W# = 1.4mm#;
+T# = .35mm#;
+L# = 4.42mm#;
+  
+input OCR-A;

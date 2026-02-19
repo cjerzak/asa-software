@@ -1,0 +1,341 @@
+\documentclass[12pt,letterpaper]{article}
+
+% wordcount: xxx without title page and appendices
+
+% https://www.aeaweb.org/journals/word-count
+
+% Current limits at top journals:
+% APSR: 12,000
+% AJPS: 10,000
+% JOP: no longer than 35 pages (double-space), including all text, footnotes/endnotes, references, and tables/figures. The title page and abstract do not count against the 35-page limit. This rule should be seen as general guidance and will only be strictly enforced upon acceptance of an article for publication in The Journal of Politics.
+
+%% === margins ===
+\addtolength{\hoffset}{-0.8in} \addtolength{\voffset}{-0.8in}
+\addtolength{\textwidth}{1.6in} \addtolength{\textheight}{1.6in}
+%\usepackage{geometry}
+
+%% JASA format with 12pt, spacingset = 1.83
+%\addtolength{\hoffset}{-0.3in} \addtolength{\voffset}{-1.2in}
+%\addtolength{\textwidth}{.6in} \addtolength{\textheight}{2.1in}
+\pdfminorversion=4
+
+% orcidlink 
+\usepackage{orcidlink}
+
+%% === basic packages ===
+\usepackage{graphicx,subfigure,float}
+\usepackage{lmodern}% http://ctan.org/pkg/lm
+\usepackage{latexsym,multirow}
+\usepackage{amssymb,amsmath,bm}
+\usepackage{bigints}
+\usepackage{longtable}
+\usepackage{bbm} % for a indicator function
+\usepackage[color,all,import,arrow]{xy}
+\usepackage{enumerate}
+\usepackage{verbatim}
+\usepackage{lscape}
+\usepackage{mathtools}
+\usepackage{changepage}
+\usepackage[utf8]{inputenc}
+
+% captions in italics 
+\usepackage[format=plain,
+            labelfont={bf,it},
+            textfont=it]{caption}
+
+% multi page table 
+\usepackage{longtable}
+
+% cell formatting for table
+\usepackage{makecell}
+\renewcommand\theadalign{bc}
+\renewcommand\theadfont{\bfseries}
+\renewcommand\theadgape{\Gape[4pt]}
+\renewcommand\cellgape{\Gape[4pt]}
+
+%% === graphical packages ===
+\usepackage{placeins}
+
+%% === bibliography packages ===
+%\usepackage{natbib}
+\usepackage[natbib=true,minnames=1,maxnames=3,backend=biber,style=authoryear-luh-ipw]{biblatex}
+\addbibresource{mybib.bib}
+% \bibliographystyle{pa}
+
+%% === hyperref options ===
+% \usepackage{color}
+\usepackage[pdftex, bookmarksopen=true, bookmarksnumbered=true,
+pdfstartview=FitH, breaklinks=true,
+urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
+\usepackage{colortbl}
+\usepackage{subfigure}
+
+%% ==clean up hanging first page==
+\usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
+\AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
+
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+
+% === figure path ===
+\graphicspath{{./FiguresParties/}}
+
+% === caption ===
+\usepackage{caption}
+
+% == tikzpicture ==
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{qtree}
+\usepackage{comment}
+\usetikzlibrary{arrows}
+\usetikzlibrary{positioning}
+\usetikzlibrary{matrix}
+\usetikzlibrary{bayesnet}
+\usetikzlibrary{decorations.pathreplacing,calligraphy}
+
+% == Algorithm
+\usepackage[ruled,vlined]{algorithm2e}
+
+% === theorem package ===
+\usepackage{theorem}
+\theoremstyle{plain}
+\theoremheaderfont{\scshape}
+\newtheorem{assumption}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{property}{Property}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{defi}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{lemma}{Lemma}
+%\input{FiguresInst/InputStatistics.tex}
+\newcommand\SimAppendix{I}
+
+% === allows for temporary adjustment of side margins
+\usepackage{chngpage}
+
+% === some special symbols
+
+\newcommand{\iid}{\stackrel{\rm i.i.d.}{\sim}}
+\newcommand{\indep}{\stackrel{\rm indep.}{\sim}}
+\newcommand{\qed}{\hfill \ensuremath{\Box}}
+\newcommand{\ind}{\mbox{$\perp\!\!\!\perp$}}
+\newcommand{\nind}{\mbox{$\not\perp\!\!\!\perp$}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\diag}{diag}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+
+% ==== rotating package ===
+\usepackage{rotating}
+
+% ==== dotted lines in tables ===
+\usepackage{arydshln}
+
+% == spacing between sections and subsections
+\usepackage[compact]{titlesec}
+%\usepackage{times}
+
+% == control space within footnote
+\usepackage{setspace}
+\usepackage[bottom]{footmisc}
+\renewcommand{\footnotelayout}{\setstretch{1.1}}% Footnotes are \setstretch{1.5}
+\setlength{\footnotemargin}{1mm}
+
+
+\allowdisplaybreaks
+
+\newcommand\spacingset[1]{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% === submission
+\newcommand{\blind}{0}
+
+\def\letas{\mathrel{\mathop{=}\limits^{\triangle}}}
+
+\newcommand*{\QEDB}{\hfill\ensuremath{\square}}
+
+\newcommand{\red}{\color{red}}
+\newcommand{\blue}{\color{blue}}
+\newcommand{\Beta}{\textsf{Beta}}
+\newcommand{\Binomial}{\text{Binomial}}
+\newcommand{\Bern}{\textsf{Bernoulli}}
+\newcommand{\Expo}{\textsf{Expo}}
+\newcommand{\Pois}{\textsf{Pois}}
+\newcommand{\Unif}{\textsf{Uniform}}
+\newcommand{\Normal}{\mathcal{N}}
+\newcommand{\Gammad}{\textsf{Gamma}}
+\newcommand{\logit}{\text{logit}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\mexpit}{\text{mexpit}}
+\newcommand{\Dir}{\textsf{Dirichlet}}
+\newcommand{\Multi}{\textsf{Multi}}
+\newcommand{\Cat}{\textsf{Categorical}}
+
+\newcommand{\pr}{\text{pr}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\sumN}{\sum_{i=1}^N}
+\newcommand{\wt}{\widetilde}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bp}{\mathbf{p}}
+\newcommand{\bQ}{\mathbf{Q}}
+\newcommand{\bV}{\mathbf{V}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\ATE}{\textsf{ATE}}
+\newcommand{\bepsilon}{\bm{\epsilon}}
+\newcommand{\boldeta}{\bm{\eta}}
+
+\newcommand{\bpi}{\boldsymbol{\pi}}
+\newcommand{\bPi}{\boldsymbol{\Pi}}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bTheta}{\boldsymbol{\Theta}}
+\newcommand{\bgamma}{\boldsymbol{\gamma}}
+\newcommand{\ob}{^\textrm{Obs}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bC}{\mathbf{C}}
+\newcommand{\bz}{\mathbf{z}}
+\newcommand{\bZ}{\mathbf{Z}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\dd}{\textrm{d}}
+\newcommand{\bT}{\mathbf{T}}
+
+\newcommand{\bA}{\bm{A}}
+\newcommand{\ba}{\bm{a}}
+\newcommand{\bh}{\bm{h}}
+\newcommand{\bD}{\bm{D}}
+\newcommand{\bd}{\bm{d}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\cZ}{\mathcal{Z}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\oD}{\overline{D}}
+\newcommand{\oY}{\overline{Y}}
+\newcommand{\bone}{\mathbf{1}}
+
+% if not blinding cites 
+\newcommand{\GLP}{GLP}
+\newcommand{\GLPFull}{Global Leadership}
+\newcommand{\GLPcitet}{\citet{gerring2019rules}}
+\newcommand{\GLPcitep}{\citep{gerring2019rules}}
+
+
+% if blinding cites 
+%\newcommand{\GLP}{\if0\blind {GLP} \fi \if1\blind {[\emph{Name Omitted to Maintain Anonymity}]} \fi }
+%\newcommand{\GLPFull}{\if0\blind {Global Leadership} \fi \if1\blind {[\emph{Name Omitted to Maintain Anonymity}]} \fi }
+%\newcommand{\GLPcitet}{\if0\blind {\citet{gerring2019rules},} \fi \if1\blind {Authors (2019),} \fi }
+%\newcommand{\GLPcitep}{\if0\blind {\citep{gerring2019rules}} \fi \if1\blind {(Authors, 2019)} \fi }
+
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bphi}{\boldsymbol{\phi}}
+\newcommand{\bpsi}{\boldsymbol{\psi}}
+
+% ==Cross Referencing Different Docs
+\usepackage{xr}
+%\externaldocument{parties_appendix}
+
+\begin{document} 
+
+\newcommand{\tit}{On Group Representation: From Identity Formation to Political Mobilization}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% abstract spacing 
+\spacingset{1.25}
+
+\if0\blind
+
+{\title{\bf\tit\thanks{Authors are listed in alphabetical order. For helpful comments, we are grateful to XYZ.
+} 
+%
+  \author{John Gerring
+\thanks{Professor, Department of Government, 
+    University of Texas at Austin.\orcidlink{0000-0001-9858-2050} Email:
+      \href{mailto:jgerring@austin.utexas.edu}{jgerring@austin.utexas.edu} URL:  \href{https://liberalarts.utexas.edu/government/faculty/jg29775}{liberalarts.utexas.edu/government/faculty/jg29775}}
+   \and 
+   Connor T. Jerzak\thanks{Assistant Professor, Department of Government, University of Texas at Austin.\orcidlink{0000-0003-1914-8905}  Email: \href{mailto:connor.jerzak@austin.utexas.edu}{connor.jerzak@austin.utexas.edu} URL:
+      \href{https://connorjerzak.com}{ConnorJerzak.com}
+      }
+    \and
+    Erzen Öncel \thanks{Assistant Professor, Department of International Relations, Özyeğin University.\orcidlink{0000-0001-9372-1090} Email:
+      \href{mailto:erzen.oncel@ozyegin.edu.tr}{erzen.oncel@ozyegin.edu.tr} URL:
+      \href{https://www.ozyegin.edu.tr/en/faculty/erzenoncel}{ozyegin.edu.tr/en/faculty/erzenoncel}}
+    }
+  \date{
+  %  {\sc Version Date: \today}
+  }
+}
+}
+
+\fi
+
+\if1\blind
+\title{\bf \tit}
+\fi
+
+\maketitle
+
+\pdfbookmark[1]{Title Page}{Title Page}
+
+\thispagestyle{empty}
+\setcounter{page}{0}
+         
+\begin{abstract}
+  \noindent Abstract here.
+\vspace{.00cm}
+\\ \noindent {\bf Keywords: } Descriptive representation; XXX
+%\\ \noindent {\bf Word count: } 
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+% document spacing 
+\spacingset{1}
+%\singlespacing 
+
+\newpage 
+% \tableofcontents
+\section*{Introduction}
+Text
+
+\section{Conclusion}
+Text
+
+
+\clearpage
+%\singlespace
+\printbibliography
+%\printbibliography[title={References}, notcategory=appendix]
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+

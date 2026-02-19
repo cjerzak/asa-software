@@ -1,0 +1,40 @@
+% Requires: \usepackage{booktabs,array,multirow}
+\begin{table}[!h]
+\centering
+\caption{Covariate missingness summary across regression analyses. Total observations: 242.\label{tab:MissingnessSummary}}
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabular}[t]{llrrr}
+\toprule
+\textbf{Category} & \textbf{Variable} & \textbf{N Available} & \textbf{N Missing} & \textbf{\% Missing}\\
+\midrule
+ & log(Population) & 235 & 7 & 2.89\\
+
+ & Percent Urban & 235 & 7 & 2.89\\
+
+\multirow[t]{-3}{*}{\raggedright\arraybackslash Demographic} & log(GDP per capita, PPP) & 237 & 5 & 2.07\\
+\cmidrule{1-5}
+ & Country & 242 & 0 & 0.00\\
+
+\multirow[t]{-2}{*}{\raggedright\arraybackslash Fixed Effect} & Election Year & 242 & 0 & 0.00\\
+\cmidrule{1-5}
+ & Group Fractionalization & 242 & 0 & 0.00\\
+
+ & Party Fractionalization & 242 & 0 & 0.00\\
+
+\multirow[t]{-3}{*}{\raggedright\arraybackslash Fractionalization} & Party × Group Frac. & 242 & 0 & 0.00\\
+\cmidrule{1-5}
+ & Polyarchy Index (V-Dem) & 240 & 2 & 0.83\\
+
+ & Power by Social Group (V-Dem) & 240 & 2 & 0.83\\
+
+ & Public Services by Social Group (V-Dem) & 240 & 2 & 0.83\\
+
+ & State Jobs by Social Group (V-Dem) & 240 & 2 & 0.83\\
+
+\multirow[t]{-5}{*}{\raggedright\arraybackslash Institutional} & Business Opportunities by Social Group (V-Dem) & 240 & 2 & 0.83\\
+\cmidrule{1-5}
+Outcome & Segmentation Index & 242 & 0 & 0.00\\
+\bottomrule
+\end{tabular}
+\end{table}

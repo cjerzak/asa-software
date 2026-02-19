@@ -1126,7 +1126,7 @@ test_that("shared router prioritizes pending tool calls when budget allows", {
 
   expect_equal(as.character(route_ok), "tools")
   expect_equal(as.character(route_low), "finalize")
-  expect_equal(as.character(route_zero), "finalize")
+  expect_equal(as.character(route_zero), "end")
   expect_equal(as.character(route_long), "tools")
 })
 

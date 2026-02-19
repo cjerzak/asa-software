@@ -1,0 +1,10 @@
+% OCR-A Size I, magnified 20% (12-point)
+ 
+H# = 0.112in#;		% centerline height of characters
+W# = 0.066in#;		% centerline width of characters
+T# = 0.017in#;		% stroke width
+L# = 0.175in#;		% height of long vertical mark
+Y# = 0.025in#;		% depth of long vertical mark
+R# = 0.120in#;		% horizontal character spacing
+
+input ocr-a;

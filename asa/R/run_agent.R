@@ -432,7 +432,9 @@
     initial_state$om_prebuffer <- list()
   }
 
-  response <- python_agent$invoke(
+  ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
+  response <- ddg_module$invoke_graph_safely(
+    python_agent,
     initial_state,
     config = list(
       configurable = list(thread_id = resolved_thread_id),
@@ -482,7 +484,9 @@
   }
   initial_state$use_plan_mode <- isTRUE(use_plan_mode)
 
-  response <- python_agent$invoke(
+  ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
+  response <- ddg_module$invoke_graph_safely(
+    python_agent,
     initial_state,
     config = list(
       configurable = list(thread_id = resolved_thread_id),

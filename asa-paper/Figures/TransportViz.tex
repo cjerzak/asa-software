@@ -1,0 +1,139 @@
+\begin{figure}[htb]
+\centering
+\small
+\begin{tikzpicture}[x=1cm,y=1cm,>=Latex]
+% ---------- layout & styles ----------
+\def\cellw{1.25}   % cell width (cm)
+\def\cellh{0.90}   % cell height (cm)
+\def\xL{0.0}       % left matrix origin (center of O11)
+\def\panelsep{1.70}
+\def\yTop{2.40}
+\def\rowlabsep{0.28} % extra left padding for row labels (in cm)
+
+% computed panel origins
+\pgfmathsetmacro{\xM}{\xL+3*\cellw+\panelsep}
+\pgfmathsetmacro{\xR}{\xM+3*\cellw+\panelsep}
+\pgfmathsetmacro{\xRowLab}{\xL-0.5*\cellw-\rowlabsep} % safely left of first column
+\pgfmathsetmacro{\colheady}{\yTop+0.60}               % higher column headers for visibility
+
+\tikzset{
+  cell/.style={draw=black!45, very thin, rounded corners=1pt,
+               minimum width=\cellw cm, minimum height=\cellh cm, align=center},
+  head/.style={font=\scriptsize\bfseries},
+  lab/.style={font=\scriptsize},
+  sum/.style={font=\scriptsize\bfseries, text=black!70},
+  flow/.style={-Latex, line width=1.3pt, draw=black!70},
+  box/.style={draw=black!35, rounded corners=2pt, fill=black!02},
+  divider/.style={densely dashed, draw=black!40}
+}
+
+% (optional) toggle for flows; default: hidden
+\newif\ifshowflows
+\showflowsfalse
+
+% ---------- titles ----------
+\node[head] at (\xL+1.85, \yTop+1.30) {Observed $\mathbf{O}$};
+\node[head] at (\xM+1.85, \yTop+1.30) {Deviation $\Delta=\mathbf{O}-\mathbf{R}$};
+\node[head] at (\xR+1.95, \yTop+1.30) {Perfect integration $\mathbf{R}$};
+
+% ---------- party totals (shared by O and R) — now at the bottom ----------
+% extra vertical gap below the bottom cells (in cm); tweak if you want more/less space
+\def\colsumsep{0.35}
+% y-position for column sums: bottom edge of bottom row (yTop - 2.5*cellh) minus gap
+\pgfmathsetmacro{\colsumy}{\yTop - 2.5*\cellh - \colsumsep}
+
+\foreach \j/\tot in {0/30,1/20,2/10}{
+  \node[sum] at (\xL+\j*\cellw, \colsumy) {$\Sigma=\tot$};  % left panel (O)
+  \node[sum] at (\xR+\j*\cellw, \colsumy) {$\Sigma=\tot$};  % right panel (R)
+}
+
+% ---------- observed cells O with within-row % (fill intensity ~ share) ----------
+% G1: [24 (80%), 5 (17%), 1 (3%)]
+\node[cell, fill=blue!70] (O11) at (\xL+0*\cellw, \yTop-0*\cellh) {\bfseries 24\\\scriptsize 80\%};
+\node[cell, fill=blue!22] (O12) at (\xL+1*\cellw, \yTop-0*\cellh) {\bfseries 5\\\scriptsize 17\%};
+\node[cell, fill=blue!08] (O13) at (\xL+2*\cellw, \yTop-0*\cellh) {\bfseries 1\\\scriptsize 3\%};
+% G2: [5 (28%), 10 (56%), 3 (17%)]
+\node[cell, fill=blue!32] (O21) at (\xL+0*\cellw, \yTop-1*\cellh) {\bfseries 5\\\scriptsize 28\%};
+\node[cell, fill=blue!55] (O22) at (\xL+1*\cellw, \yTop-1*\cellh) {\bfseries 10\\\scriptsize 56\%};
+\node[cell, fill=blue!22] (O23) at (\xL+2*\cellw, \yTop-1*\cellh) {\bfseries 3\\\scriptsize 17\%};
+% G3: [1 (8%), 5 (42%), 6 (50%)]
+\node[cell, fill=blue!15] (O31) at (\xL+0*\cellw, \yTop-2*\cellh) {\bfseries 1\\\scriptsize 8\%};
+\node[cell, fill=blue!45] (O32) at (\xL+1*\cellw, \yTop-2*\cellh) {\bfseries 5\\\scriptsize 42\%};
+\node[cell, fill=blue!50] (O33) at (\xL+2*\cellw, \yTop-2*\cellh) {\bfseries 6\\\scriptsize 50\%};
+
+% ---------- target cells R (perfect integration; identical row shares 50/33/17) ----------
+% G1: [15,10,5]
+\node[cell, fill=blue!50] (R11) at (\xR+0*\cellw, \yTop-0*\cellh) {\bfseries 15\\\scriptsize 50\%};
+\node[cell, fill=blue!35] (R12) at (\xR+1*\cellw, \yTop-0*\cellh) {\bfseries 10\\\scriptsize 33\%};
+\node[cell, fill=blue!22] (R13) at (\xR+2*\cellw, \yTop-0*\cellh) {\bfseries 5\\\scriptsize 17\%};
+% G2: [9,6,3]
+\node[cell, fill=blue!50] (R21) at (\xR+0*\cellw, \yTop-1*\cellh) {\bfseries 9\\\scriptsize 50\%};
+\node[cell, fill=blue!35] (R22) at (\xR+1*\cellw, \yTop-1*\cellh) {\bfseries 6\\\scriptsize 33\%};
+\node[cell, fill=blue!22] (R23) at (\xR+2*\cellw, \yTop-1*\cellh) {\bfseries 3\\\scriptsize 17\%};
+% G3: [6,4,2]
+\node[cell, fill=blue!50] (R31) at (\xR+0*\cellw, \yTop-2*\cellh) {\bfseries 6\\\scriptsize 50\%};
+\node[cell, fill=blue!35] (R32) at (\xR+1*\cellw, \yTop-2*\cellh) {\bfseries 4\\\scriptsize 33\%};
+\node[cell, fill=blue!22] (R33) at (\xR+2*\cellw, \yTop-2*\cellh) {\bfseries 2\\\scriptsize 17\%};
+
+% ---------- deviation panel D = O - R (red=excess, blue=deficit) ----------
+% G1: [+9, -5, -4]
+\node[cell, fill=red!68] (D11) at (\xM+0*\cellw, \yTop-0*\cellh) {\bfseries $+9$};
+\node[cell, fill=blue!40] (D12) at (\xM+1*\cellw, \yTop-0*\cellh) {\bfseries $-5$};
+\node[cell, fill=blue!32] (D13) at (\xM+2*\cellw, \yTop-0*\cellh) {\bfseries $-4$};
+% G2: [-4, +4, 0]
+\node[cell, fill=blue!32] (D21) at (\xM+0*\cellw, \yTop-1*\cellh) {\bfseries $-4$};
+\node[cell, fill=red!32]  (D22) at (\xM+1*\cellw, \yTop-1*\cellh) {\bfseries $+4$};
+\node[cell, fill=white]   (D23) at (\xM+2*\cellw, \yTop-1*\cellh) {\bfseries $0$};
+% G3: [-5, +1, +4]
+\node[cell, fill=blue!40] (D31) at (\xM+0*\cellw, \yTop-2*\cellh) {\bfseries $-5$};
+\node[cell, fill=red!12]  (D32) at (\xM+1*\cellw, \yTop-2*\cellh) {\bfseries $+1$};
+\node[cell, fill=red!32]  (D33) at (\xM+2*\cellw, \yTop-2*\cellh) {\bfseries $+4$};
+
+% ---------- (removed) illustrative optimal within-group flows ----------
+\ifshowflows
+  % G1: 9 excess in P1 -> 5 to P2, 4 to P3
+  \draw[flow] (O11.east) to[bend left=10] node[lab, above] {5} (R12.west);
+  \draw[flow] (O11.east) to[bend left=22] node[lab, above] {4} (R13.west);
+  % G2: 4 excess in P2 -> 4 to P1
+  \draw[flow] (O22.east) to[bend left=10] node[lab, above] {4} (R21.west);
+  % G3: 4 excess in P3 -> 4 to P1, and 1 excess in P2 -> 1 to P1
+  \draw[flow] (O33.east) to[bend left=8]  node[lab, above] {4} (R31.west);
+  \draw[flow] (O32.east) to[bend left=16] node[lab, above] {1} (R31.west);
+\fi
+
+% ---------- vertical dividers between panels ----------
+\draw[divider] (\xL+3*\cellw+0.85, \yTop+1.05) -- (\xL+3*\cellw+0.85, \yTop-2*\cellh-1.05);
+\draw[divider] (\xM+3*\cellw+0.85, \yTop+1.05) -- (\xM+3*\cellw+0.85, \yTop-2*\cellh-1.05);
+
+% ---------- formula + interpretation (drawn before legend so legend sits on top) ----------
+\node[box, align=left, font=\scriptsize, anchor=west, inner sep=2pt, text width=11.6cm,xshift=-0.5cm,yshift=-0.5cm]
+      at (\xL-0.10, \yTop-3.60) {%
+      \textbf{Mechanics.}\; Under a 0--1 cost for switching across parties within groups, an optimal transport plan would reassign
+      \(5+4+4+4+1=18\) seats. Hence \(\displaystyle W=\tfrac12\sum_{i,j}|o_{ij}-r_{ij}|=18\), total seats \(n=60\), and the cleavage index
+      \(S=W/n=0.30\). Larger \(S\) means more reassignment is required to make each party mirror the chamber’s group composition.};
+
+% ---------- row headers + row totals (drawn after cells to stay on top, and far enough left) ----------
+\foreach \i/\g/\rtot in {0/Group 1/30,1/Group 2/18,2/Group 3/12}{
+  \node[head,anchor=east] at (\xRowLab, \yTop-\i*\cellh) {\g};
+  \node[sum,anchor=west,xshift=-20.4]  at (\xL+3*\cellw+0.20, \yTop-\i*\cellh) {$\Sigma=\rtot$};
+}
+
+\foreach \i/\rtot in {0/30,1/18,2/12}{
+  \node[sum,anchor=west,xshift=-20.4]  at (\xR+3*\cellw+0.20, \yTop-\i*\cellh) {$\Sigma=\rtot$};
+}
+
+% ---------- column headers (drawn last so they sit on top; also add for Δ panel) ----------
+\foreach \j/\name in {0/P1,1/P2,2/P3}{
+  \node[head, fill=white, inner sep=0.8pt] at (\xL+\j*\cellw, \colheady+0.1) {\name};
+  \node[head, fill=white, inner sep=0.8pt] at (\xM+\j*\cellw, \colheady+0.1) {\name};
+  \node[head, fill=white, inner sep=0.8pt] at (\xR+\j*\cellw, \colheady+0.1) {\name};
+}
+
+\end{tikzpicture}
+
+\caption{{\sc Left}: observed joint distribution of groups by party (\(\mathbf{O}\)) with within‑group percentages and margins.
+{\sc Center}: signed deviations \(\Delta=\mathbf{O}-\mathbf{R}\) (red=excess, blue=deficit); headers shown above the deviation panel for readability.
+{\sc Right}: \emph{perfect‑integration} target (\(\mathbf{R}\)) preserving row/column totals so each party mirrors the chamber’s group mix.
+An optimal reassignment plan (flows omitted here) moves \(W\) seats; normalizing \(W\) by \(n\) yields the cleavage index \(S\).}
+\label{fig:method_viz}
+\end{figure}

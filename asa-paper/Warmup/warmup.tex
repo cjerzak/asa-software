@@ -1,0 +1,249 @@
+\begin{table}
+\centering
+\caption{Three paths to ethnic representation. In all cases, each ethnic group, $A$-$E$, has the same overall level of representation.}
+\label{tab:PathsTable}
+\begin{tabular}{c|ccccc|ccccc|ccccc}
+& \multicolumn{5}{c|}{\it Ethnic parties} & \multicolumn{5}{c|}{\it Cross-ethnic parties} & \multicolumn{5}{c}{\it Intermediate} \\
+\hline
+{\it Parties} & 1 & 2 & 3 & 4 & 5 & 1 & 2 & 3 & 4 & 5 & 1 & 2 & 3 & 4 & 5 \\
+\hline
+& $A$ & $B$ & $C$ & $D$ & $E$ & $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $C$ & $D$ & $A$ \\
+{\it Seats} & $A$ & $B$ & $C$ & $D$ & $E$ & $B$ & $B$ & $B$ & $B$ & $B$ & $A$ & $B$ & $C$ & $D$ & $B$ \\
+{\it by} & $A$ & $B$ & $C$ & $D$ & $E$ & $C$ & $C$ & $C$ & $C$ & $C$ & $A$ & $C$ & $C$ & $E$ & $C$ \\
+{\it ethnicity} & $A$ & $B$ & $C$ & $D$ & $E$ & $D$ & $D$ & $D$ & $D$ & $D$ & $B$ & $D$ & $D$ & $E$ & $D$ \\
+& $A$ & $B$ & $C$ & $D$ & $E$ & $E$ & $E$ & $E$ & $E$ & $E$ & $E$ & $E$ & $E$ & $E$ & $E$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\\begin{itemize}
+\item Party 1: $B$, $B$, $A$, $A$, $A$, $A$, $A$, $A$
+\item Party 2: $A$, $A$, $A$, $A$, $A$, $A$
+\item Party 3: $B$, $B$
+\end{itemize}
+
+
+\begin{itemize}
+\item Party 1: $A$, $A$
+\item Party 2: $A$, $A$
+\item Party 3: $B$, $B$, $B$, $B$, $C$, $C$, $C$, $C$
+\end{itemize}
+
+\begin{table}
+\centering
+\caption{Ethnic representation across three parties. Groups $A$, $B$, and $C$ are represented in varying proportions.}
+\label{tab:ThreePartyTable2}
+\begin{tabular}{c|cc|cc|cccccccc}
+\hline \hline
+& \multicolumn{2}{c|}{\it Party 1} & \multicolumn{2}{c|}{\it Party 2} & \multicolumn{8}{c}{\it Party 3} \\
+\hline
+%{\it } & 1 & 2 & 1 & 2 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+{\it Seats} & $A$ & $A$ & $A$ & $A$ & $B$ & $B$ & $B$ & $B$ & $C$ & $C$ & $C$ & $C$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Ideal-type cleavage structures.}
+\label{tab:PathsTable}
+\begin{tabular}{c|ccccc|ccccc|ccccc}
+\hline \hline
+& \multicolumn{5}{c|}{\it Non-Ethnic} & \multicolumn{5}{c|}{\it Cross-ethnic} & \multicolumn{5}{c}{\it Ethnic} \\
+\hline
+{\it Parties} & 1 & 2 & 3 & 4 & 5 & 1 & 2 & 3 & 4 & 5 & 1 & 2 & 3 & 4 & 5 \\
+\hline
+& $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $A$ & $B$ & $C$ & $D$ & $E$ \\
+{\it } & $A$ & $A$ & $A$ & $A$ & $A$ & $B$ & $B$ & $B$ & $B$ & $B$ & $A$ & $B$ & $C$ & $D$ & $E$ \\
+{\it Seats} & $A$ & $A$ & $A$ & $A$ & $A$ & $C$ & $C$ & $C$ & $C$ & $C$ & $A$ & $B$ & $C$ & $D$ & $E$ \\
+{\it } & $A$ & $A$ & $A$ & $A$ & $A$ & $D$ & $D$ & $D$ & $D$ & $D$ & $A$ & $B$ & $C$ & $D$ & $E$ \\
+& $A$ & $A$ & $A$ & $A$ & $A$ & $E$ & $E$ & $E$ & $E$ & $E$ & $A$ & $B$ & $C$ & $D$ & $E$ \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+XXX1234
+In any case, we ought to be able to obtain measures of ethnic parties from \citet[App II]{lublin2014minority} and of ethnic voting from \citet{houle2019structure}. This ethnic voting measure is defined as: 
+\begin{align*}
+EV_i = \sqrt{\frac{1}{2}\sum_{j=1}^p (v_{j,i} - v_{j,-i})^2}
+\end{align*} 
+where $i$ is a given ethnic group, $j$ is a given political party, $p$ the total number of political parties, $v_{j,i}$ the proportion of members of ethnic group $i$ that votes (supports) political party $j$, and $v_{j,-i}$ the proportion of members of ethnic groups other than group $i$ that votes (supports) political party $j$. We can readily adapt the measure to use absolute values instead of squared values, ensuring all deviations of $v_{j,i}$ from $v_{j,-i}$ are weighted equally: 
+\begin{align*}
+EV_i = \frac{1}{2}\sum_{j=1}^p \big| v_{j,i} - v_{j,-i} \big|
+\end{align*} 
+
+% sum_Parties ||Party Dist - Body Dist||*(Party prop)
+
+% sum_Parties ||Pr(Groups | Party) - Pr(Groups in Legislature)||*(Party prop) % -> main thing 
+
+% || - || -> can be calculated using: 
+% sum of diffs in absolute values (total variation distance) 
+% transport 
+
+% sum_Parties ||Pr(Party | Groups) - Pr(Parties in Legislature)||*(Groups prop) % -> 
+
+XXX1234
+
+
+\\begin{table}[ht]
+\centering
+\begin{tabular}{p{0.25\textwidth} p{0.33\textwidth} p{0.33\textwidth}}
+\toprule
+\textbf{Property} & \textbf{EV} & \textbf{Transport } \\
+  \midrule
+  Range & $[0, 1]$ & $[0, 1]$ \\
+\hline
+Value at perfect integration & 0 & 0 \\
+%
+Value at perfect segregation (k equal groups/parties) & 1 & $1 - \frac{1}{k}$ (approaches 1 as $k \to \infty$) \\
+%
+%Symmetry (groups $\leftrightarrow$ parties) & No (body level over groups by default) & Yes (joint distribution symmetric) \\
+%
+Aggregation & Local (averages per-group deviations) & Global (overall dependence) \\
+%
+Sensitivity to \# groups & Depends on weighting & Higher \\
+%
+%Computation & Simple (O(rows $\times$ cols)) & Requires OT solver (more complex) \\
+%
+Interpretation & Average group deviation from others' party distributions & Minimal mass to move for independence (global misalignment) \\
+
+Underlying metric &
+$0.5\sum_{j}\bigl|v_{i j}-v_{-i, j}\bigr|$, with $v_{i} = m_{i\cdot}/\sum m_{i\cdot}$ and $v_{-i} =$ complement &
+Wasserstein distance 
+$$
+W(p_{\mathrm{obs}},p_{\mathrm{targ}})
+=\min_{T}\sum_{u,v}c_{uv}\,t_{uv}
+$$
+                                                                                                                  with $c_{uv}=0$ on–diagonal, $1$ off–diagonal \\
+  
+Marginals preserved? &
+No (compares each row to its complement) &
+                                           Yes (transport plan enforces $\sum t_{i\cdot}=a_i$, $\sum t_{\cdot j}=b_j$) \\
+  
+%Complexity &
+%$O(R\times C)$ for $R$ rows, $C$ columns &
+%$O(n^3\log n)$ (network‐flow solver on $n=RC$ cells) \\
+
+Interpretation &
+Average dissimilarity between one unit’s distribution and its complement &
+“Work” (mass$\times$cost) to reshape $p_{\mathrm{obs}}$ into $p_{\mathrm{targ}}$ \\
+
+Sensitivity &
+Local (unit vs.\ complement) &
+Global (full joint‐distribution) \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of the mathematical properties of the two segregation measures.}
+\label{tab:segmentation_comparison}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+\begin{comment}
+
+\clearpage \newpage 
+\subsection{Results, Agent Only}
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.45\linewidth]{FiguresParties/Histogram_CountryLevel_CleavageIndex_AgentOnly.pdf}
+\includegraphics[width=0.45\linewidth]{FiguresParties/Boxplot_Region_CleavageIndex_AgentOnly.pdf}
+\caption{
+{\sc Left.} Distribution of the segmentation index across country-elections in the sample. The index is bounded between 0 (perfect integration) and 1 (perfect segregation); the distribution is heavily skewed to the right, indicating that most national legislatures in the dataset exhibit low levels of ethnic segregation among their party delegations. {\sc Right.} Distribution by region.
+}
+\label{fig:CleavageHistAgentOnly}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.85\linewidth]{FiguresParties/Trajectories_Country_AgentOnly.pdf}
+\caption{
+Over time variability in cleavage structures. 
+}
+\label{fig:OverTimeAgentOnly}
+\end{figure}
+
+\input{./FiguresParties/tabEVTab_AgentOnly_SEanalytical.tex}
+
+
+\subsection{segmentation index, Details}
+
+More formally, to quantify the degree of ethnic segregation in a legislative party system, we conceptualize it as the minimal cost of transforming the observed distribution of ethnic groups across parties into a counterfactual distribution representing perfect integration, using optimal transport theory \citep{lott2009ricci, villani2008optimal}. This framework, drawn from mathematics, has been applied in social sciences to measure distances between distributions---for example, in economics for matching markets \citep{galichon2019optimal} and in sociology for residential segregation with geographic costs \citep{kauba2024topological}.
+
+Let \(G = \{g_1, \dots, g_N\}\) denote the set of ethnic groups and \(P = \{p_1, \dots, p_M\}\) the set of parties. Define the observed matrix \(\mathbf{O} = [o_{ij}]\), where \(o_{ij}\) is the number of legislators from group \(g_i\) in party \(p_j\). The reference matrix under perfect integration is \(\mathbf{R} = [r_{ij}]\), where \(r_{ij} = (o_{i+} \cdot o_{+j}) / n\), with row margins \(o_{i+} = \sum_{j=1}^M o_{ij}\), column margins \(o_{+j} = \sum_{i=1}^N o_{ij}\), and total legislators \(n = \sum_{i=1}^N \sum_{j=1}^M o_{ij}\). Intuitively, \(\mathbf{R}\) represents the expected counts if ethnic groups were distributed proportionally across all parties, mirroring the legislature's overall composition.
+
+In this transport context, costs are calculated by considering the reassignment of legislators from their observed parties to achieve \(\mathbf{R}\), without altering ethnic identities. Reassigning a legislator to a different party costs 1 (a unit cost per move), but changing ethnicity is impossible and thus is assigned an infinite cost. Staying in the same party costs 0. Formally, for each ethnic group \(i\), we solve an independent transport problem to redistribute the observed counts \([o_{i1}, \dots, o_{iM}]\) to the targets \([r_{i1}, \dots, r_{iM}]\), using a party-to-party cost matrix where \(c_{jj'} = 0\) if \(j = j'\) and 1 if \(j \neq j'\).
+
+The minimal cost for group \(i\) is \(W_i = \frac{1}{2} \sum_{j=1}^M |o_{ij} - r_{ij}|\), interpretable as the fewest reassignments needed for that group. The total Wasserstein distance is \(W(\mathbf{O}, \mathbf{R}) = \sum_{i=1}^N W_i = \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^M |o_{ij} - r_{ij}|\). Intuitively, \(W\) captures the total reassignments required across all groups to eliminate ethnic-party alignment.
+
+The segregation index is \(S = W(\mathbf{O}, \mathbf{R}) / n\), bounded in \([0, 1)\) and approaching 1 under perfect segregation as the number of ethnic groups and parties increases. This yields a continuous, cross-nationally comparable measure of the ``reassignment work'' needed for integration, preserving overall ethnic and party sizes.
+
+\subsection{Appendix B: Related Approaches}
+
+By way of comparison to our proposed segmentation index, it is important review two prominent measures that have been widely employed in the literature.  First, a binary coding of ``ethnic'' versus ``non-ethnic'' parties (e.g.\ \citet[App II]{lublin2014minority}) offers a clear-cut classification but collapses what is fundamentally a continuous spectrum of party cleavage into just two categories.  Second, the ethnic voting distance proposed by \citet{houle2019structure} calculates a group-level dissimilarity in vote shares. This ethnic voting measure is defined as: 
+\begin{align*}
+\textrm{EV}_i = \sqrt{\frac{1}{2}\sum_{j=1}^p (v_{j,i} - v_{j,-i})^2}
+\end{align*} 
+where $i$ is a given ethnic group, $j$ is a given political party, $p$ the total number of political parties, $v_{j,i}$ the proportion of members of ethnic group $i$ that votes (supports) political party $j$, and $v_{j,-i}$ the proportion of members of ethnic groups other than group $i$ that votes (supports) political party $j$. We can readily adapt the measure to use absolute values instead of squared values, ensuring all deviations of $v_{j,i}$ from $v_{j,-i}$ are weighted equally: 
+\begin{align*}
+\textrm{EV}_i = \frac{1}{2}\sum_{j=1}^p \big| v_{j,i} - v_{j,-i} \big|
+\end{align*} 
+This measure captures how sharply voters of different backgrounds diverge, yet it is rooted in mass behavior and says nothing about the descriptive composition of elite party delegations. While each provides useful insight, both lack the flexibility to (1) assess gradations of ethnic alignment at the party level, (2) incorporate the relative sizes of parties, and (3) yield a single, comparable scale across countries and over time.
+
+\clearpage \newpage 
+
+\subsection{Additional Empirical Results}
+
+Figure \ref{fig:EthMeasureComp} illustrates the application of our transport measure to three hypothetical party systems. The left panel yields a value of $\alpha$, the right panel $\beta$, and the middle panel $\gamma$. These results provide a sense of how the degree of ethnicization in a given party system can be quantified in a way that renders it comparable across time and place.
+
+It is instructive to compare our measure with the ethnic voting measure proposed by CITE. While both approaches aim to capture the extent of ethnic alignment in political systems, our transport-based measure offers several advantages. First, it provides a more fine-grained assessment of partial integration, capturing nuances that might be missed by binary classifications. Second, our measure is more robust to small perturbations in the data, making it less sensitive to minor measurement errors or short-term fluctuations.
+
+One might distinguish between ethnic unity (the share of members from a single ethnic group that belongs to
+
+Following \citet{cheeseman2007ethnicity}, who look at ethnic voting, one might differentiate between ethnic polarization (the extent to which support for a given party varies between a country’s ethnic groups) and ethnic diversity (the range of ethnic groups represented within any one party/party system). This approach builds on measures of party voting \citep{hout1995democratic}. 
+
+\begin{figure}[htb]
+    \centering
+\includegraphics[width=0.65\linewidth]{FiguresParties/NPartiesEff_vs_EthnicParties.pdf}
+\caption{
+Scatterplot showing the positive relationship between the effective number of parliamentary parties (on a log scale) and the segmentation index at the country level. The upward-sloping trendline suggests that party systems with a higher effective number of parties tend to exhibit greater ethnic segregation in their legislative delegations.
+}
+\label{fig:NPartiesEff_V_EthnicPartie}
+\end{figure}
+
+\end{comment}
+
+
+
+
+
+
+%\noindent\textbf{Quality of Government (QoG).} From the QoG cross-section, we take Comparative Political Data Set measures of ethnic parties’ vote and seat share; World Development Indicators for population, urbanization, and GDP per capita (PPP, constant‑prices); and a family of state‑history indicators.
+
+%We translate the demand–supply account into testable claims and evaluate them with multivariate models. The dependent variable is our segmentation index, measured at the country–year (or chamber–year) level. Key predictors operationalize (i) \emph{supply}—the effective number of parliamentary parties; (ii) \emph{demand}—ethnic diversity (entropy/fractionalization) and ethnic inequality; and (iii) institutional and economic moderators (e.g., PR/SMD, district magnitude, GDP per capita). We now state the hypotheses and, in the next section, report the regression estimates.
+
+%\textit{H4: Ethnic inequality}. Ethnic inequality \citep{alesina2016ethnic} is conducive to ethnic parties. Unit of analysis: countries. 
+
+% colonial controls/legacy/geography; hypothesis: countries where colonial gov'ts co-opted one or more ethnic groups to be primary administrators are more likely to experience ethnic segregation of the party system; socialist legacies
+
+
+%To the main GLP raster outlined above, we also include additional moderator variables in our analysis. 
+
+%\noindent\textbf{Varieties of Democracy (V‑Dem).} We merge country–year indicators from V‑Dem to capture institutional context and group access to power. Covariates include the Polyarchy index, distribution by social group measures---power, services, state jobs, and business opportunities; media/association freedoms; and, where available, lower‑chamber electoral system. 
+
+%\noindent\textbf{Quality of Government (QoG).} From the QoG cross-section, we take Comparative Political Data Set measures of ethnic parties’ vote and seat share; World Development Indicators for population, urbanization, and GDP per capita (PPP, constant‑prices); and a family of state‑history indicators.
+
+%In Table \ref{tab:RegEVTab_SEanalytical}, we take a first cut at the demand–supply account using our segmentation index as the outcome. Across Models 1--4, the \emph{demand} side stands markedly out: higher group fractionalization is consistently and substantively associated with greater elite ethnic segregation, and this relationship survives the addition of controls and country–year fixed effects. By contrast, raw counts of recognized categories (log unique ethnicities) do not track the index once fractionalization is considered, underscoring that what matters for cleavage formation is the \emph{distribution} of group sizes rather than the breadth of the taxonomy.
+
+%On the \emph{supply} side, conventional proxies for party‑system fragmentation (the effective number of parties and party fractionalization) point, mostly, in the expected direction in simpler specifications but lose precision and attenuate with fixed effects and the demand controls. This is consistent with the story that, on its own, party fragmentation on its own is insufficient to generate segmented elite alignments absent underlying ascriptive heterogeneity; supply amplifies demand rather than substituting for it.
+
+%Institutional quality (polyarchy) and broad indicators of group access to state power, services, jobs, or business opportunities show no stable, independent association with the segmentation index in these reduced-form models, and standard macro controls (population and income) are likewise muted. Model fit improves as we add the demand measure and fixed effects, and the core pattern remains: our transport‑based index co‑moves most strongly with social heterogeneity, in line with a simple demand–supply logic of ethnic representation that we probe more directly in the interaction and institutional analyses that follow.
