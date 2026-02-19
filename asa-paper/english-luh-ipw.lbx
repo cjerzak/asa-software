@@ -1,0 +1,29 @@
+% Local patched copy of TeX Live's `english-luh-ipw.lbx`.
+%
+% TeX Live 2024 ships `biblatex-luh-ipw/lbx/english-luh-ipw.lbx` with a stray
+% trailing comma after `\DeclareBibliographyStrings{...}`. Because biblatex
+% loads this localization file at `\begin{document}`, that comma gets typeset
+% as a literal "," on the first page; with `\maketitle` (which starts with a
+% `\newpage`), it also forces an extra blank page.
+%
+% Placing this file next to `ms.tex` shadows the upstream file via kpathsea.
+%
+% Upstream header (kept): Oliver Heins (oheins@sopos.org) 2012--2013
+\ProvidesFile{english-luh-ipw.lbx}[2013/11/18 v0.3 bibliography localization for use with biblatex 2.x (patched)]
+
+\InheritBibliographyExtras{english}
+
+\DeclareBibliographyExtras{%
+  \savecommand\mkbibvolume
+  \protected\def\mkbibvolume#1{\bibstring{jourvol}\adddot~#1}}
+
+\UndeclareBibliographyExtras{%
+  \restorecommand\mkbibvolume}
+
+\NewBibliographyString{issue}
+
+\DeclareBibliographyStrings{%
+  inherit          = {english},
+  issue            = {issue}{iss\adddot}}
+
+\endinput

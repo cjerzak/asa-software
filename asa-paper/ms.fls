@@ -355,9 +355,9 @@ INPUT ms.out
 INPUT ./ms.out
 INPUT ./ms.out
 OUTPUT ms.out
-INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/biblatex-luh-ipw/lbx/english-luh-ipw.lbx
-INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/biblatex-luh-ipw/lbx/english-luh-ipw.lbx
-INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/biblatex-luh-ipw/lbx/english-luh-ipw.lbx
+INPUT ./english-luh-ipw.lbx
+INPUT ./english-luh-ipw.lbx
+INPUT english-luh-ipw.lbx
 INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/biblatex/lbx/english.lbx
@@ -370,7 +370,6 @@ INPUT ./ms.bbl
 INPUT ./ms.bbl
 INPUT ./ms.bbl
 INPUT ms.bbl
-OUTPUT ms.xdv
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmex10.tfm
@@ -445,6 +444,7 @@ INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/latex-fonts/lasyb10.tf
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
+OUTPUT ms.xdv
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmex10.tfm

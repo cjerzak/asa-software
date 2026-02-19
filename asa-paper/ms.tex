@@ -80,33 +80,31 @@ The agent executes short, provenance-preserving search sessions; constrains deci
 In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} matched leader--records; \LLMNumClassespolparty{} party labels), the high-confidence accuracy is \LLMOverallAccHighpolparty{} while expanding usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} previously missing labels) with a conservative abstention layer.
 \end{abstract}
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
   \begin{tikzpicture}[
     font=\small,
-    node distance=10mm and 12mm,
-    box/.style={rounded corners, draw=black, thick, fill=gray!3, inner sep=6pt, align=left},
-    pill/.style={rounded corners=9pt, draw=black, thick, fill=white, inner sep=5pt, align=center},
+    node distance=9mm and 7mm,
+    box/.style={rounded corners, draw=black, thick, fill=gray!3, inner sep=4pt, align=left},
+    pill/.style={rounded corners=9pt, draw=black, thick, fill=white, inner sep=5pt, align=left},
     arr/.style={-{Stealth[length=3mm]}, thick},
   ]
-    \node[box, minimum width=0.30\linewidth] (input) {
+    \node[box, text width=0.23\linewidth] (input) {
       \textbf{Input (panel record)}\\[-1pt]
       \(\langle\) person, country, year \(\rangle\)\\
       + expert \textbf{closed codebook}\\
       + task schema
     };
 
-    \node[box, right=of input, minimum width=0.34\linewidth] (agent) {
+    \node[box, right=of input, text width=0.30\linewidth] (agent) {
       \textbf{Verifiable Search Agent (ASA)}\\[-1pt]
-      \begin{tabular}{@{}l@{}}
       \(\bullet\) retrieval-augmented, tool-using controller\\
       \(\bullet\) \textbf{temporal governance} (``as-of'' constraints)\\
       \(\bullet\) \textbf{provenance capture}: queries, snippets, URLs, timestamps\\
       \(\bullet\) \textbf{abstain / route-to-human} on weak evidence
-      \end{tabular}
     };
 
-    \node[box, right=of agent, minimum width=0.30\linewidth] (output) {
+    \node[box, right=of agent, text width=0.23\linewidth] (output) {
       \textbf{Output (verifiable)}\\[-1pt]
       label \(\in\) codebook\\
       + one-sentence rationale\\
@@ -117,11 +115,11 @@ In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countri
     \draw[arr] (input) -- (agent);
     \draw[arr] (agent) -- (output);
 
-    \node[pill, below=10mm of agent, minimum width=0.78\linewidth] (why) {
+    \node[pill, below=9mm of agent, text width=0.92\linewidth] (why) {
       \textbf{Why it matters for inference:} avoid temporally ``post-treatment'' information leaks when coding pre-period attributes \citep{montgomery2018conditioning}; enable replication via stored evidence trails.
     };
     \draw[arr] (agent.south) -- (why.north);
-  \end{tikzpicture}
+  \end{tikzpicture}%
   \caption{Visual abstract: the ASA treats web retrieval as a governed, auditable measurement process rather than an opaque chat interaction.}
   \label{fig:visual-abstract}
 \end{figure}
@@ -169,14 +167,14 @@ A conservative post-processor then normalizes the label against the codebook: ex
   \centering
   \begin{tikzpicture}[
     font=\small,
-    node distance=7mm and 11mm,
-    comp/.style={rounded corners, draw=black, thick, fill=gray!3, inner sep=6pt, align=left},
+    node distance=6mm and 8mm,
+    comp/.style={rounded corners, draw=black, thick, fill=gray!3, inner sep=4pt, align=left},
     tool/.style={rounded corners, draw=black, thick, fill=blue!4, inner sep=5pt, align=center},
     store/.style={cylinder, cylinder uses custom fill, cylinder body fill=green!6, cylinder end fill=green!12, draw=black, thick, aspect=0.25, minimum height=18mm, minimum width=16mm, align=center},
     arr/.style={-{Stealth[length=3mm]}, thick},
     loop/.style={-{Stealth[length=3mm]}, thick, dashed},
   ]
-    \node[comp, minimum width=0.36\linewidth] (spec) {
+    \node[comp, text width=0.25\linewidth] (spec) {
       \textbf{Task spec}\\[-1pt]
       \(\langle\)person, country, year\(\rangle\)\\
       codebook \(\mathcal{C}\)\\
@@ -184,27 +182,27 @@ A conservative post-processor then normalizes the label against the codebook: ex
       output schema
     };
 
-    \node[comp, right=of spec, minimum width=0.40\linewidth] (graph) {
+    \node[comp, right=of spec, text width=0.28\linewidth] (graph) {
       \textbf{Agent graph (controller)}\\[-1pt]
       plan \(\rightarrow\) search \(\rightarrow\) extract\\
       \(\rightarrow\) decide / abstain\\
       emits structured JSON
     };
 
-    \node[tool, above right=of graph, xshift=6mm] (wiki) {Wikipedia\\retriever};
-    \node[tool, below right=of graph, xshift=6mm] (web) {Web search\\(DDG)};
-    \node[tool, right=of graph, xshift=26mm] (time) {Temporal\\verifier};
+    \node[tool, above right=4mm and 8mm of graph] (wiki) {Wikipedia\\retriever};
+    \node[tool, below right=8mm and 8mm of graph] (web) {Web search\\(DDG)};
+    \node[tool, right=14mm of graph] (time) {Temporal\\verifier};
 
-    \node[comp, below=of graph, minimum width=0.40\linewidth] (post) {
+    \node[comp, below=of graph, text width=0.28\linewidth] (post) {
       \textbf{Post-processing}\\[-1pt]
       strict codebook match\\
       conservative fuzzy mapper\\
       confidence gate
     };
 
-    \node[store, right=20mm of post] (db) {Trace store\\(\texttt{SQLite})};
+    \node[store, below right=5mm and 12mm of post] (db) {Trace store\\(\texttt{SQLite})};
 
-    \node[comp, left=of post, minimum width=0.36\linewidth] (human) {
+    \node[comp, left=of post, text width=0.25\linewidth] (human) {
       \textbf{Human-in-the-loop}\\[-1pt]
       review low-confidence\\
       maintain codebooks\\
@@ -222,8 +220,9 @@ A conservative post-processor then normalizes the label against the codebook: ex
     \draw[arr] (time.west) -- ([xshift=0mm]graph.east);
 
     \draw[loop] (post.west) -- (human.east);
-    \draw[loop] (human.north) |- (spec.west);
-  \end{tikzpicture}
+    % Route this feedback loop outside the "Task spec" box (avoid striking through text).
+    \draw[loop] (human.north) -| ([xshift=-8mm]spec.west) -- (spec.west);
+  \end{tikzpicture}%
   \caption{Design visualization: a governed agent graph with temporal verification, conservative normalization, abstention, and an auditable trace store.}
   \label{fig:asa-design}
 \end{figure}

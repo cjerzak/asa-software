@@ -1,17 +1,17 @@
 # Fdb version 4
-["biber ms"] 1771512031.8273 "ms.bcf" "ms.bbl" "ms" 1771512037.78815 0
-  "ms.bcf" 1771512037.51741 108465 76b9cffac4af0badd353c4b861cc376a "xelatex"
+["biber ms"] 1771515578.50422 "ms.bcf" "ms.bbl" "ms" 1771515585.42751 0
+  "ms.bcf" 1771515584.99703 108465 76b9cffac4af0badd353c4b861cc376a "xelatex"
   "mybib.bib" 1771510685.64957 131418 84cc2838007f0c7527433705a7d44b35 ""
   (generated)
   "ms.bbl"
   "ms.blg"
   (rewritten before read)
-["xdvipdfmx"] 1771512037.58374 "ms.xdv" "ms.pdf" "ms" 1771512037.78965 0
-  "ms.xdv" 1771512037.5182 163016 b8f26f25f0e0eb0a91de69df54dd3660 "xelatex"
+["xdvipdfmx"] 1771515585.09673 "ms.xdv" "ms.pdf" "ms" 1771515585.42987 0
+  "ms.xdv" 1771515584.99821 162564 a8a451a0eec985e3ad8ca07f00401b65 "xelatex"
   (generated)
   "ms.pdf"
   (rewritten before read)
-["xelatex"] 1771512036.2526 "ms.tex" "ms.xdv" "ms" 1771512037.7882 0
+["xelatex"] 1771515583.04111 "ms.tex" "ms.xdv" "ms" 1771515585.42759 0
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1246382020 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -158,7 +158,6 @@
   "/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex-luh-ipw/bbx/standard-luh-ipw.bbx" 1384816329 3127 8ba598f35508ad378a6bd41433316eca ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex-luh-ipw/cbx/authoryear-luh-ipw.cbx" 1384816329 9997 447019c65902dd55290e68b45404324e ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex-luh-ipw/cbx/standard-luh-ipw.cbx" 1384816329 693 436a8c2d056c0f974360044347fbe09d ""
-  "/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex-luh-ipw/lbx/english-luh-ipw.lbx" 1384816329 539 8b97379b0556dc53487a882a55cb78e3 ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex/bbx/authoryear-icomp.bbx" 1342308459 99 fcf36cd9b62ad58dbc4d0ea3e0b467b7 ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex/bbx/authoryear.bbx" 1566680006 8024 f170876981d3e1db9ed0abd5abc62dbe ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex/bbx/standard.bbx" 1609451401 25680 409c3f3d570418bc545e8065bebd0688 ""
@@ -242,11 +241,12 @@
   "Figures/AgentRegionBox.pdf" 1771530404 11220 7353c7a2b2599d709c5bfcde2a5c3491 ""
   "Figures/LLM_pol_party_Statistics.tex" 1771530402 936 8c07830ac725be1d487bb5d178a2ea44 ""
   "Figures/SamplePredictionsCompact_pol_party.tex" 1771530402 6143 cece2097a411c16d9f0e212b4b6e109b ""
-  "ms.aux" 1771512037.51598 4984 d913b7213f2d2074fd6e30e2be009e7b "xelatex"
-  "ms.bbl" 1771512033.56771 8478 a13062d88b19380feb0398adcc2faec2 "biber ms"
-  "ms.out" 1771512037.51664 2260 b4a4db09d6df2601ad26c012ada4a82f "xelatex"
-  "ms.run.xml" 1771512037.51793 2610 6d53e4b571e193b43b18a1fbf26db5a9 "xelatex"
-  "ms.tex" 1771512023.38544 15929 332eacb7a79878728dfde1602389d693 ""
+  "english-luh-ipw.lbx" 1771515568.26089 1051 ce1ddd90ae7c7b14e3feb3b6cd6758f3 ""
+  "ms.aux" 1771515584.99498 4984 d271e6d6b663d961e6d5cddad7b4c731 "xelatex"
+  "ms.bbl" 1771515580.96941 8478 a13062d88b19380feb0398adcc2faec2 "biber ms"
+  "ms.out" 1771515584.99581 2260 b4a4db09d6df2601ad26c012ada4a82f "xelatex"
+  "ms.run.xml" 1771515584.99779 2610 6d53e4b571e193b43b18a1fbf26db5a9 "xelatex"
+  "ms.tex" 1771514074.04817 15976 72ef7788bce7965209daac2bb59ae00a ""
   (generated)
   "ms.aux"
   "ms.bcf"
