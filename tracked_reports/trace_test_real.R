@@ -225,7 +225,14 @@ cat("  fold_stats:", jsonlite::toJSON(attempt$fold_stats, auto_unbox = TRUE), "\
 
 # save final answer (extract from structured trace on disk)
 tmp <- readr::read_file("~/Documents/asa-software/tracked_reports/trace_real.txt")
-final_answer <- extract_agent_results(tmp)[["json_data"]]
+extracted <- extract_agent_results(tmp)
+final_answer <- extracted[["json_data_canonical"]] %||% extracted[["json_data"]]
+if (is.null(final_answer) && is.character(attempt$message) && length(attempt$message) == 1L && nzchar(attempt$message)) {
+  final_answer <- tryCatch(
+    jsonlite::fromJSON(attempt$message, simplifyVector = FALSE),
+    error = function(e) NULL
+  )
+}
 message("Trace test complete")
 
 jsonlite::write_json(

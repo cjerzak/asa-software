@@ -589,8 +589,7 @@ test_that("memory folding preserves initial HumanMessage for Gemini tool-call or
   expect_equal(as.integer(as.list(final_state$fold_stats)$fold_count), 1L)
 
   # Verify fold_stats diagnostics are populated
-  fs <- expect_valid_fold_stats(final_state$fold_stats, fold_count = 1L,
-                                expect_parse_success = FALSE)
+  fs <- expect_valid_fold_stats(final_state$fold_stats, fold_count = 1L)
   expect_equal(as.integer(fs$fold_messages_removed), as.integer(fs$fold_total_messages_removed))
 
   types <- vapply(
@@ -1104,6 +1103,11 @@ test_that("shared router prioritizes pending tool calls when budget allows", {
     "route_state_budget_zero = {\n",
     "    'messages': [AIMessage(content='calling tool', tool_calls=[{'name':'Search','args':{'query':'ada'},'id':'edge_call_1'}])],\n",
     "    'remaining_steps': 0,\n",
+    "}\n",
+    "route_state_long_history = {\n",
+    "    'messages': [AIMessage(content='old') for _ in range(35)] + [AIMessage(content='calling tool', tool_calls=[{'name':'Search','args':{'query':'ada'},'id':'edge_call_2'}])],\n",
+    "    'remaining_steps': 3,\n",
+    "    'token_trace': [{'node':'agent'} for _ in range(40)],\n",
     "}\n"
   ))
 
@@ -1116,10 +1120,57 @@ test_that("shared router prioritizes pending tool calls when budget allows", {
   route_zero <- prod$`_route_after_agent_step`(
     reticulate::py$route_state_budget_zero
   )
+  route_long <- prod$`_route_after_agent_step`(
+    reticulate::py$route_state_long_history
+  )
 
   expect_equal(as.character(route_ok), "tools")
   expect_equal(as.character(route_low), "finalize")
   expect_equal(as.character(route_zero), "finalize")
+  expect_equal(as.character(route_long), "tools")
+})
+
+test_that("post-tools routing reserves a terminal step near recursion edge", {
+  prod <- asa_test_import_langgraph_module("custom_ddg_production",
+    required_modules = c("langchain_core", "pydantic"))
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import ToolMessage\n",
+    "route_state_tool_tail_edge = {\n",
+    "    'messages': [ToolMessage(content='search result', tool_call_id='edge_call_1')],\n",
+    "    'remaining_steps': 2,\n",
+    "    'field_status': {\n",
+    "        'birth_year': {'status': 'pending', 'value': None, 'descriptor': 'integer|null|Unknown'}\n",
+    "    },\n",
+    "}\n",
+    "route_state_tool_tail_room = {\n",
+    "    'messages': [ToolMessage(content='search result', tool_call_id='edge_call_2')],\n",
+    "    'remaining_steps': 4,\n",
+    "    'field_status': {\n",
+    "        'birth_year': {'status': 'pending', 'value': None, 'descriptor': 'integer|null|Unknown'}\n",
+    "    },\n",
+    "}\n"
+  ))
+
+  reserve_edge <- prod$`_should_reserve_terminal_budget_after_tools`(
+    reticulate::py$route_state_tool_tail_edge,
+    as.integer(2)
+  )
+  reserve_room <- prod$`_should_reserve_terminal_budget_after_tools`(
+    reticulate::py$route_state_tool_tail_room,
+    as.integer(4)
+  )
+  route_edge <- prod$`_route_after_tools_step`(
+    reticulate::py$route_state_tool_tail_edge
+  )
+  route_room <- prod$`_route_after_tools_step`(
+    reticulate::py$route_state_tool_tail_room
+  )
+
+  expect_true(isTRUE(reserve_edge))
+  expect_false(isTRUE(reserve_room))
+  expect_equal(as.character(route_edge), "finalize")
+  expect_equal(as.character(route_room), "agent")
 })
 
 test_that("tool exceptions produce terminal fallback instead of hard error (standard)", {
@@ -2965,6 +3016,10 @@ test_that("degraded fold preserves FIELD_EXTRACT entries when summarizer fails",
   expect_equal(as.integer(fs$fold_count), 1L)
   # fold_degraded should be TRUE
   expect_true(isTRUE(fs$fold_degraded))
+  # fallback telemetry should explain degraded fold path
+  expect_true(isTRUE(fs$fold_fallback_applied))
+  expect_equal(as.character(fs$fold_fallback_reason), "summarizer_invoke_exception")
+  expect_equal(as.character(fs$fold_parse_error_type), "ConnectionError")
   # fold_parse_success should be FALSE
   expect_false(isTRUE(fs$fold_parse_success))
   # The summarizer was called (and failed)

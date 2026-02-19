@@ -1,41 +1,41 @@
 AGENT ACTION MAP
 ================
-Steps captured: 19
-LangGraph timed steps: 31
+Steps captured: 28
+LangGraph timed steps: 32
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 4 found, 6 unknown, 0 pending (10 core fields)
-      Source-backed found values: 4 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, disability...
+      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 18 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 8 tool-call turn(s), 1 answer turn(s)
-      Tool results: 9 total (Tool OpenWebpage=4, Tool Search=4, Tool save_finding=1)
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 17 total (Tool Search=8, Tool OpenWebpage=7, Tool save_finding=2)
       Structured terminal answer emitted
       Plan status: Plan steps: 4 total (status metadata not yet populated)
-      Anomalies: 5 flagged step(s) (OFF_TOPIC_RESULT=4, LOW_EVIDENCE_FINAL_ANSWER=1)
+      Anomalies: 7 flagged step(s) (OFF_TOPIC_RESULT=5, EMPTY..., LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
   +-- [PLAN] Plan steps: 4 total (status metadata not yet populated)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 4.2516m (tok=0, n=11)
-      summarize: 0.8584m (tok=18311, n=6)
-      agent: 0.7674m (tok=92029, n=12)
-      planner: 0.2156m (tok=2104, n=1)
-      finalize: 0.0962m (tok=13717, n=1)
+      tools: 3.7118m (tok=0, n=12)
+      agent: 0.7159m (tok=109863, n=12)
+      summarize: 0.4264m (tok=8267, n=6)
+      finalize: 0.3153m (tok=18986, n=1)
+      planner: 0.1885m (tok=1773, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #09 tools: 1.2102m (tok=0)
-      #11 tools: 0.7458m (tok=0)
-      #22 tools: 0.7156m (tok=0)
-      #16 tools: 0.6824m (tok=0)
-      #19 tools: 0.6026m (tok=0)
-  +-- [TIMING] wall=5.9745m nodes=6.1892m delta=-0.2146m (overlap likely)
+      #11 tools: 1.1094m (tok=0)
+      #22 tools: 0.9850m (tok=0)
+      #28 tools: 0.6400m (tok=0)
+      #09 tools: 0.5202m (tok=0)
+      #23 summarize: 0.4264m (tok=8267)
+  +-- [TIMING] wall=5.1704m nodes=5.3579m delta=-0.1875m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -43,97 +43,143 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=5587 out=167 total=5754
-      min: 0.0355m
-      detail: Search(query=site:vicepresidencia.gob.bo "RAMONA MOYE ...)
+      tok: in=3813 out=259 total=4072
+      min: 0.0436m
+      detail: Search(query=Ramona Moye Camaconi biografía PDF parlam...)
   +-- [03] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...ge </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Bolivia: nómina complet...019 </URL> __END_OF_SOURC...
   +-- [04] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://vicepresidencia.gob.bo/spip.php?debut_parl...ntificación: Quechua Supl...
-  +-- [05] Requested 1 tool call (save_finding)
+      detail: URL: https://www.biodiversidadla.org/Documentos/El-Tipn...s gobernado desde hace 13...
+  +-- [05] Requested 1 tool call (Search)
       by: AI
-      tok: in=6947 out=551 total=7498
-      min: 0.0720m
-      detail: save_finding(finding=birth_year = 1982 (source:...parlamentarios), category=fact)
+      tok: in=4798 out=158 total=4956
+      min: 0.0328m
+      detail: Search(query="Ramona Moye Camaconi" nació "estudió" bi...)
   +-- [06] Returned result
-      by: Tool save_finding
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...pestana=2&page=parlamenta...
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Comandanta Ramon...40 </URL> __END_OF_SOURCE...
   +-- [07] Requested 1 tool call (Search)
       by: AI
-      tok: in=7765 out=271 total=8036
-      min: 0.0554m
-      detail: Search(query=site:vicepresidencia.gob.bo "RAMONA MOYE ...)
+      tok: in=6504 out=320 total=6824
+      min: 0.0454m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
   +-- [08] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
       detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...pdf </URL> __END_OF_SOURC...
-  +-- [09] Requested 1 tool call (Search)
-      by: AI
-      tok: in=8334 out=242 total=8576
-      min: 0.0421m
-      detail: Search(query="Ramona Moye Camaconi" biografia PDF OR "...)
-  +-- [10] Returned result
-      by: Tool Search
+  +-- [09] Returned result
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Directorio del R...vo </URL> __END_OF_SOURCE...
-  +-- [11] Requested 1 tool call (Search)
+      detail: URL: https://vicepresidencia.gob.bo/spip.php?id_gestion...tido: MAS Departamento: P...
+  +-- [10] Requested 3 tool calls (save_finding, Search)
       by: AI
-      tok: in=9733 out=237 total=9970
-      min: 0.0453m
-      detail: Search(query="Ramona Moye Camaconi" nace OR nacida OR ...)
+      tok: in=7189 out=479 total=7668
+      min: 0.0564m
+      detail: save_finding(finding=birth_year = 1982 (source:...parla...maconi" biografía estudio...
+  +-- [11] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...pestana=2&page=parlamenta...
   +-- [12] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...via </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
   +-- [13] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t...arque Nacional Jeannette ...
+      detail: URL: https://www.noticiasfides.com/nacional/politica/di...fides.com/democracia] Soc...
   +-- [14] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=10694 out=97 total=10791
-      min: 0.0303m
-      detail: OpenWebpage(url=https://tierraderesistente...gena-de-bolivia)
+      tok: in=8696 out=337 total=9033
+      min: 0.0634m
+      detail: OpenWebpage(url=https://vicepresidencia.go...=parlamentarios)
   +-- [15] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t...arque Nacional Jeannette ...
+      detail: URL: https://vicepresidencia.gob.bo/spip.php?id_gestion...tido: MAS Departamento: P...
   +-- [16] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=11560 out=107 total=11667
-      min: 0.0519m
-      detail: OpenWebpage(query=Ramona Moye Camaconi, url=https://tie...eresistente...ena-de-boli...
+      tok: in=9866 out=92 total=9958
+      min: 0.0265m
+      detail: OpenWebpage(query=Ramona Moye Camaconi, url=https://vic...sidencia.go...=parlamenta...
   +-- [17] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t...ecución contra los [Trunc...
+      detail: URL: https://vicepresidencia.gob.bo/spip.php?id_gestion...amento: Santa Cruz [Trunc...
   +-- [18] Requested 1 tool call (Search)
       by: AI
-      tok: in=14819 out=502 total=15321
-      min: 0.0740m
-      detail: Search(query="Ramona Moye Camaconi" estudios realizado...)
-  +-- [19] Produced structured answer
+      tok: in=14785 out=388 total=15173
+      min: 0.0632m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+  +-- [20] Requested 1 tool call (Search)
       by: AI
-      tok: in=13021 out=696 total=13717
-      min: 0.0962m
+      tok: in=14389 out=245 total=14634
+      min: 0.0504m
+      detail: Search(query="Ramona Moye Camaconi" comunidad TIPNIS n...)
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Enla ciudad de La Paz, ...lle </URL> __END_OF_SOURC...
+  +-- [22] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://ftierra.org/index.php/tema/derechos-indige... campesinos 18 Septiembre...
+  +-- [23] Requested 1 tool call (Search)
+      by: AI
+      tok: in=15517 out=225 total=15742
+      min: 0.0435m
+      detail: Search(query="Ramona Moye Camaconi" profesión "estudio...)
+  +-- [24] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Arbol genealógic...df </URL> __END_OF_SOURCE...
+  +-- [25] Requested 1 tool call (Search)
+      by: AI
+      tok: in=17273 out=163 total=17436
+      min: 0.0382m
+      detail: Search(query="Ramona Moye Camaconi" Directorio Legisla...)
+  +-- [26] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...lle </URL> __END_OF_SOURC...
+  +-- [27] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://ftierra.org/index.php/derechos-indigenas-y... gestión 28 de agosto de ...
+  +-- [28] Produced structured answer
+      by: AI
+      tok: in=16161 out=2825 total=18986
+      min: 0.3153m
       flag: LOW_EVIDENCE_FINAL_ANSWER
       detail: {"education_level": "Unknown", "education_institution":...limited verifiable eviden...
 END

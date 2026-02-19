@@ -3278,6 +3278,9 @@ _QUERY_CONTEXT_NOISE_TOKENS = {
     "bio", "biography", "profile", "information", "details", "source", "sources",
     "official", "record", "records", "field", "fields", "query",
     "pdf", "cv", "resume", "curriculum",
+    # Instruction/formatting words should never drive entity matching.
+    "answer", "format", "json", "object", "only", "output", "respond",
+    "response", "return", "schema", "strict", "valid",
 }
 
 _LOW_SIGNAL_HOST_FRAGMENTS = (
@@ -3721,7 +3724,7 @@ _AUTO_OPENWEBPAGE_SELECTOR_MODE = (
 if _AUTO_OPENWEBPAGE_SELECTOR_MODE in {"model", "ai"}:
     _AUTO_OPENWEBPAGE_SELECTOR_MODE = "llm"
 if _AUTO_OPENWEBPAGE_SELECTOR_MODE not in {"llm", "heuristic", "hybrid"}:
-    _AUTO_OPENWEBPAGE_SELECTOR_MODE = "hybrid"
+    _AUTO_OPENWEBPAGE_SELECTOR_MODE = "heuristic"
 try:
     _AUTO_OPENWEBPAGE_SELECTOR_MAX_CANDIDATES = int(
         str(os.getenv("ASA_AUTO_OPENWEBPAGE_SELECTOR_MAX_CANDIDATES", "12") or "12")
@@ -3765,6 +3768,51 @@ _NON_HTML_SUFFIXES = (
     ".xlsx",
     ".zip",
 )
+_NON_SPECIFIC_PATH_SEGMENTS = {
+    "all",
+    "archive",
+    "archives",
+    "author",
+    "authors",
+    "blog",
+    "category",
+    "categories",
+    "directory",
+    "directories",
+    "index",
+    "listing",
+    "listings",
+    "news",
+    "people",
+    "results",
+    "search",
+    "tag",
+    "tags",
+    "topic",
+    "topics",
+}
+_NON_SPECIFIC_PATH_TERMINALS = {
+    "home",
+    "index",
+    "latest",
+    "main",
+    "news",
+    "posts",
+    "results",
+    "search",
+}
+_NON_SPECIFIC_QUERY_KEYS = {
+    "filter",
+    "order",
+    "page",
+    "q",
+    "query",
+    "s",
+    "search",
+    "sort",
+    "start",
+    "view",
+}
 
 
 def _is_public_institution_host(host: str) -> bool:
@@ -3782,6 +3830,85 @@ def _is_public_institution_host(host: str) -> bool:
         or "legislature" in host
         or "government" in host
     )
+
+
+def _url_path_segments(parsed: Any) -> List[str]:
+    try:
+        raw_segments = [seg for seg in str(parsed.path or "").split("/") if seg]
+    except Exception:
+        raw_segments = []
+    out: List[str] = []
+    for seg in raw_segments:
+        clean = _normalize_match_text(unquote(seg))
+        if clean:
+            out.append(clean)
+    return out
+
+
+def _looks_like_listing_query(parsed: Any) -> bool:
+    query = str(getattr(parsed, "query", "") or "")
+    if not query:
+        return False
+    try:
+        pairs = parse_qsl(query, keep_blank_values=False)
+    except Exception:
+        return False
+    if not pairs:
+        return False
+    query_keys = {_normalize_match_text(k) for k, _ in pairs if _normalize_match_text(k)}
+    if not query_keys:
+        return False
+    return query_keys.issubset(_NON_SPECIFIC_QUERY_KEYS)
+
+
+def _source_specificity_score(url: Any) -> float:
+    """Score URL specificity (higher is better) using generic path/query signals."""
+    normalized = _canonicalize_url(url)
+    if not normalized:
+        return float("-inf")
+    try:
+        parsed = urlparse(normalized)
+    except Exception:
+        return float("-inf")
+
+    score = 0.0
+    segments = _url_path_segments(parsed)
+    terminal = segments[-1] if segments else ""
+
+    if not segments and not parsed.query:
+        score -= 1.25
+    else:
+        score += min(1.5, 0.40 * len(segments))
+
+    if parsed.query:
+        score -= 0.25
+        if _looks_like_listing_query(parsed):
+            score -= 1.0
+
+    generic_hits = sum(1 for seg in segments if seg in _NON_SPECIFIC_PATH_SEGMENTS)
+    if generic_hits > 0 and len(segments) <= 2:
+        score -= 0.8
+    elif generic_hits > 1:
+        score -= 0.5
+
+    if terminal in _NON_SPECIFIC_PATH_TERMINALS:
+        score -= 0.7
+
+    slug_like_terminal = bool(re.search(r"[a-z0-9]+[-_][a-z0-9]+", terminal))
+    dated_path = bool(re.search(r"/\d{4}/\d{1,2}/\d{1,2}(?:/|$)", str(parsed.path or "")))
+    if slug_like_terminal or dated_path:
+        score += 0.5
+
+    return score
+
+
+def _is_source_specific_url(url: Any, *, min_score: float = 0.25) -> bool:
+    """Return True when URL looks specific enough to cite as provenance."""
+    try:
+        threshold = float(min_score)
+    except Exception:
+        threshold = 0.25
+    return _source_specificity_score(url) >= threshold
 
 
 def _score_primary_source_url(url: str) -> float:
@@ -3813,6 +3940,11 @@ def _score_primary_source_url(url: str) -> float:
         score -= 0.75
     if path in {"", "/"} and not parsed.query:
         score -= 0.25
+    specificity = _source_specificity_score(normalized)
+    if specificity != float("-inf"):
+        score += max(-1.5, min(1.5, specificity))
+    if not _is_source_specific_url(normalized):
+        score -= 0.75
 
     return score
 

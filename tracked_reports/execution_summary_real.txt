@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 6.0028,
+  "elapsed_time": 5.2042,
   "field_status": {
     "education_level": {
       "status": "unknown",
@@ -34,18 +34,18 @@
       "descriptor": "string|null"
     },
     "prior_occupation": {
-      "status": "found",
-      "value": "Indigenous community leader and inhabitant",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "evidence": "summary_fact_source_backed",
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
+      "evidence": null,
       "attempts": 8,
       "descriptor": "string|Unknown"
     },
     "class_background": {
-      "status": "found",
-      "value": "Working class",
-      "source_url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "evidence": "summary_fact_source_backed",
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
+      "evidence": null,
       "attempts": 8,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
@@ -74,10 +74,10 @@
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "found",
-      "value": "TIPNIS (Nueva Lacea community), Beni, Bolivia",
-      "source_url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
-      "evidence": "summary_fact_source_backed",
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
+      "evidence": null,
       "attempts": 8,
       "descriptor": "string|Unknown"
     },
@@ -92,17 +92,17 @@
     "birth_year": {
       "status": "found",
       "value": 1982,
-      "source_url": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+      "source_url": "https://vicepresidencia.gob.bo/spip.php?id_gestion=1&id_pestana=2&page=parlamentarios",
       "evidence": "scratchpad_source_backed",
-      "attempts": 5,
+      "attempts": 4,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "unknown",
-      "value": null,
-      "source_url": null,
-      "evidence": "source_consistency_demotion",
-      "attempts": 8,
+      "status": "found",
+      "value": "https://vicepresidencia.gob.bo/spip.php?id_gestion=1&id_pestana=2&page=parlamentarios",
+      "source_url": "https://vicepresidencia.gob.bo/spip.php?id_gestion=1&id_pestana=2&page=parlamentarios",
+      "evidence": "scratchpad_source_backed",
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -138,10 +138,10 @@
       "descriptor": "Low|Medium|High"
     },
     "justification": {
-      "status": "unknown",
-      "value": "Unknown",
+      "status": "found",
+      "value": "Source-backed searches resolved 3 fields (including birth_year, birth_year_source, confidence), while 15 fields remain unknown due to limited verifiable evidence.",
       "source_url": null,
-      "evidence": null,
+      "evidence": "terminal_payload_source_backed",
       "attempts": 8,
       "descriptor": "string"
     }

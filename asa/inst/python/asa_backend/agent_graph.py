@@ -42,6 +42,19 @@ from outcome_gate import evaluate_schema_outcome
 
 _MEMORY_SCHEMA_VERSION = 1
 _MEMORY_KEYS = ("facts", "decisions", "open_questions", "sources", "warnings")
+_MEMORY_REPAIR_SCHEMA = {
+    "version": "integer|null",
+    "facts": ["string"],
+    "decisions": ["string"],
+    "open_questions": ["string"],
+    "sources": [{
+        "tool": "string|null",
+        "url": "string|null",
+        "title": "string|null",
+        "note": "string|null",
+    }],
+    "warnings": ["string"],
+}
 _MEMORY_FACT_MAX_ITEMS = max(1, int(os.environ.get("ASA_MEMORY_FACT_MAX_ITEMS", "40")))
 _MEMORY_FACT_MAX_TOTAL_CHARS = max(1000, int(os.environ.get("ASA_MEMORY_FACT_MAX_TOTAL_CHARS", "6000")))
 _MEMORY_FACT_MAX_ITEM_CHARS = max(80, int(os.environ.get("ASA_MEMORY_FACT_MAX_ITEM_CHARS", "280")))
@@ -1002,6 +1015,11 @@ _FIELD_STATUS_VALID = {
     _FIELD_STATUS_UNKNOWN,
 }
 _DEFAULT_TOOL_CALL_BUDGET = 20
+try:
+    _DEFAULT_MODEL_CALL_BUDGET = int(str(os.getenv("ASA_MODEL_CALL_BUDGET_LIMIT", "40") or "40"))
+except Exception:
+    _DEFAULT_MODEL_CALL_BUDGET = 40
+_DEFAULT_MODEL_CALL_BUDGET = max(1, _DEFAULT_MODEL_CALL_BUDGET)
 _DEFAULT_UNKNOWN_AFTER_SEARCHES = 6
 
 
@@ -1026,6 +1044,48 @@ _LOW_SIGNAL_STREAK_STOP_THRESHOLD = max(
     _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD + 1,
     int(_coerce_positive_int(os.getenv("ASA_LOW_SIGNAL_STREAK_STOP_THRESHOLD"), default=4)),
 )
+_LOW_SIGNAL_EMPTY_HARD_CAP = max(
+    1,
+    int(_coerce_positive_int(os.getenv("ASA_LOW_SIGNAL_EMPTY_HARD_CAP"), default=8)),
+)
+_LOW_SIGNAL_OFF_TARGET_HARD_CAP = max(
+    1,
+    int(_coerce_positive_int(os.getenv("ASA_LOW_SIGNAL_OFF_TARGET_HARD_CAP"), default=8)),
+)
+_EVIDENCE_PIPELINE_ENABLED = _coerce_bool(
+    os.getenv("ASA_EVIDENCE_PIPELINE_ENABLED", "true"),
+    True,
+)
+_EVIDENCE_MODE = str(os.getenv("ASA_EVIDENCE_MODE", "balanced") or "balanced").strip().lower()
+if _EVIDENCE_MODE not in {"precision", "balanced", "recall"}:
+    _EVIDENCE_MODE = "balanced"
+_EVIDENCE_REQUIRE_SECOND_SOURCE = _coerce_bool(
+    os.getenv("ASA_EVIDENCE_REQUIRE_SECOND_SOURCE", "false"),
+    False,
+)
+_EVIDENCE_MAX_CANDIDATES_PER_FIELD = max(
+    1,
+    int(_coerce_positive_int(os.getenv("ASA_EVIDENCE_MAX_CANDIDATES_PER_FIELD"), default=5)),
+)
+_EVIDENCE_SNIPPET_MIN_TOKENS = max(
+    1,
+    int(_coerce_positive_int(os.getenv("ASA_EVIDENCE_SNIPPET_MIN_TOKENS"), default=8)),
+)
+_EVIDENCE_TELEMETRY_ENABLED = _coerce_bool(
+    os.getenv("ASA_EVIDENCE_TELEMETRY_ENABLED", "true"),
+    True,
+)
+try:
+    _EVIDENCE_VERIFY_RESERVE = int(str(os.getenv("ASA_EVIDENCE_VERIFY_RESERVE", "4") or "4"))
+except Exception:
+    _EVIDENCE_VERIFY_RESERVE = 4
+_EVIDENCE_VERIFY_RESERVE = max(0, _EVIDENCE_VERIFY_RESERVE)
+try:
+    _EVIDENCE_MIN_PROMOTE_SCORE = float(
+        str(os.getenv("ASA_EVIDENCE_MIN_PROMOTE_SCORE", "") or "").strip()
+    )
+except Exception:
+    _EVIDENCE_MIN_PROMOTE_SCORE = None
 
 
 def _schema_leaf_paths(schema: Any, prefix: str = "") -> list:
@@ -1413,6 +1473,10 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
                     value = _unknown_value_for_descriptor(descriptor)
                     source_url = None
                 else:
+                    if key == "confidence":
+                        normalized_confidence = _normalize_confidence_label(coerced)
+                        if normalized_confidence is not None:
+                            coerced = normalized_confidence
                     value = coerced
             elif explicit_unknown:
                 status = _FIELD_STATUS_UNKNOWN
@@ -1471,6 +1535,327 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
     return normalized_out
 
 
+def _normalize_evidence_mode(mode: Any) -> str:
+    normalized = str(mode or _EVIDENCE_MODE).strip().lower()
+    if normalized not in {"precision", "balanced", "recall"}:
+        return _EVIDENCE_MODE
+    return normalized
+
+
+def _evidence_mode_thresholds(mode: Any) -> Dict[str, float]:
+    normalized = _normalize_evidence_mode(mode)
+    if normalized == "precision":
+        out = {"min_promote_score": 0.74, "conflict_margin": 0.08}
+    elif normalized == "recall":
+        out = {"min_promote_score": 0.48, "conflict_margin": 0.12}
+    else:
+        out = {"min_promote_score": 0.60, "conflict_margin": 0.10}
+    if isinstance(_EVIDENCE_MIN_PROMOTE_SCORE, float):
+        out["min_promote_score"] = max(0.0, min(1.0, float(_EVIDENCE_MIN_PROMOTE_SCORE)))
+    return out
+
+
+def _clamp01(value: Any, default: float = 0.0) -> float:
+    try:
+        parsed = float(value)
+    except Exception:
+        parsed = float(default)
+    if parsed < 0.0:
+        return 0.0
+    if parsed > 1.0:
+        return 1.0
+    return parsed
+
+
+def _source_host(url: Any) -> str:
+    normalized = _normalize_url_match(url)
+    if not normalized:
+        return ""
+    try:
+        return str(urlparse(normalized).hostname or "").lower()
+    except Exception:
+        return ""
+
+
+def _candidate_value_key(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        try:
+            return str(float(value))
+        except Exception:
+            return str(value)
+    return _normalize_match_text(str(value))
+
+
+def _normalize_evidence_ledger(ledger: Any) -> Dict[str, List[Dict[str, Any]]]:
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    if not isinstance(ledger, dict):
+        return out
+    for raw_key, raw_items in ledger.items():
+        key = str(raw_key or "").strip()
+        if not key:
+            continue
+        if not isinstance(raw_items, list):
+            continue
+        items: List[Dict[str, Any]] = []
+        for raw in raw_items:
+            if not isinstance(raw, dict):
+                continue
+            item = {
+                "value": raw.get("value"),
+                "source_url": _normalize_url_match(raw.get("source_url")),
+                "source_host": str(raw.get("source_host") or _source_host(raw.get("source_url"))),
+                "source_quality": _clamp01(raw.get("source_quality"), default=0.0),
+                "source_specificity": _clamp01(raw.get("source_specificity"), default=0.0),
+                "value_support": _clamp01(raw.get("value_support"), default=0.0),
+                "entity_overlap": _clamp01(raw.get("entity_overlap"), default=0.0),
+                "corroboration": _clamp01(raw.get("corroboration"), default=0.0),
+                "score": _clamp01(raw.get("score"), default=0.0),
+                "confidence_hint": _normalize_confidence_label(raw.get("confidence_hint")) or "Low",
+                "evidence_excerpt": str(raw.get("evidence_excerpt") or "")[:240],
+                "rejection_reason": str(raw.get("rejection_reason") or "").strip() or None,
+            }
+            if _is_empty_like(item.get("value")):
+                continue
+            items.append(item)
+        if items:
+            out[key] = items[-max(1, int(_EVIDENCE_MAX_CANDIDATES_PER_FIELD)):]
+    return out
+
+
+def _normalize_evidence_stats(stats: Any) -> Dict[str, Any]:
+    existing = stats if isinstance(stats, dict) else {}
+    counters = {
+        "candidates_seen": 0,
+        "candidates_promoted": 0,
+        "candidates_rejected": 0,
+        "fields_with_candidates": 0,
+        "fields_promoted": 0,
+    }
+    out: Dict[str, Any] = {}
+    for key, default in counters.items():
+        try:
+            out[key] = max(0, int(existing.get(key, default)))
+        except Exception:
+            out[key] = int(default)
+    out["rejection_reasons"] = dict(existing.get("rejection_reasons") or {})
+    out["mode"] = _normalize_evidence_mode(existing.get("mode") or _EVIDENCE_MODE)
+    return out
+
+
+def _increment_rejection_reason(stats: Dict[str, Any], reason: str) -> None:
+    if not reason:
+        return
+    bucket = stats.get("rejection_reasons")
+    if not isinstance(bucket, dict):
+        bucket = {}
+    try:
+        bucket[reason] = max(0, int(bucket.get(reason, 0))) + 1
+    except Exception:
+        bucket[reason] = 1
+    stats["rejection_reasons"] = bucket
+
+
+def _candidate_confidence_hint(score: float, corroboration: float) -> str:
+    if score >= 0.80 and corroboration >= 0.50:
+        return "High"
+    if score >= 0.60:
+        return "Medium"
+    return "Low"
+
+
+def _build_evidence_candidate(
+    *,
+    value: Any,
+    source_url: Any,
+    source_text: Any,
+    entity_tokens: Optional[List[str]] = None,
+    allow_non_specific: bool = True,
+    source_field: bool = False,
+) -> Dict[str, Any]:
+    normalized_source = _normalize_url_match(source_url)
+    source_text_str = str(source_text or "")
+    source_tokens = len(re.findall(r"[a-z0-9]+", _normalize_match_text(source_text_str)))
+    value_support = 0.0
+    if source_text_str and _source_supports_value(value, source_text_str):
+        value_support = 1.0
+    elif source_field and normalized_source:
+        value_support = 0.65
+    elif source_tokens < int(_EVIDENCE_SNIPPET_MIN_TOKENS):
+        value_support = 0.35
+
+    entity_overlap = 0.50
+    if entity_tokens:
+        _, ratio = _entity_overlap_for_candidate(
+            entity_tokens,
+            candidate_url=normalized_source or "",
+            candidate_text=source_text_str,
+        )
+        entity_overlap = _clamp01(ratio, default=0.0)
+
+    source_quality = 0.0
+    source_specificity = 0.0
+    if normalized_source:
+        source_quality = _clamp01((float(_score_primary_source_url(normalized_source)) + 2.5) / 6.0, default=0.0)
+        source_specificity = _clamp01((float(_source_specificity_score(normalized_source)) + 1.5) / 3.0, default=0.0)
+
+    rejection_reason = None
+    if normalized_source and not allow_non_specific and not _is_source_specific_url(normalized_source):
+        rejection_reason = "source_specificity_demotion"
+
+    return {
+        "value": value,
+        "source_url": normalized_source,
+        "source_host": _source_host(normalized_source),
+        "source_quality": source_quality,
+        "source_specificity": source_specificity,
+        "value_support": value_support,
+        "entity_overlap": entity_overlap,
+        "corroboration": 0.0,
+        "score": 0.0,
+        "confidence_hint": "Low",
+        "evidence_excerpt": source_text_str[:240],
+        "rejection_reason": rejection_reason,
+    }
+
+
+def _merge_evidence_candidates(
+    existing: List[Dict[str, Any]],
+    incoming: List[Dict[str, Any]],
+    *,
+    max_items: int,
+) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    seen = set()
+    for raw in list(existing or []) + list(incoming or []):
+        if not isinstance(raw, dict):
+            continue
+        key = (
+            _candidate_value_key(raw.get("value")),
+            _normalize_url_match(raw.get("source_url")) or "",
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(raw)
+    return out[-max(1, int(max_items)):]
+
+
+def _score_evidence_candidates(
+    candidates: List[Dict[str, Any]],
+    *,
+    mode: str,
+) -> List[Dict[str, Any]]:
+    if not candidates:
+        return []
+    normalized_mode = _normalize_evidence_mode(mode)
+    if normalized_mode == "precision":
+        weights = {
+            "source_quality": 0.20,
+            "source_specificity": 0.20,
+            "value_support": 0.35,
+            "entity_overlap": 0.15,
+            "corroboration": 0.10,
+        }
+    elif normalized_mode == "recall":
+        weights = {
+            "source_quality": 0.20,
+            "source_specificity": 0.15,
+            "value_support": 0.30,
+            "entity_overlap": 0.20,
+            "corroboration": 0.15,
+        }
+    else:
+        weights = {
+            "source_quality": 0.24,
+            "source_specificity": 0.20,
+            "value_support": 0.30,
+            "entity_overlap": 0.16,
+            "corroboration": 0.10,
+        }
+
+    value_hosts: Dict[str, set] = {}
+    for candidate in candidates:
+        value_key = _candidate_value_key(candidate.get("value"))
+        if not value_key:
+            continue
+        host = str(candidate.get("source_host") or "")
+        if not host:
+            continue
+        bucket = value_hosts.get(value_key)
+        if bucket is None:
+            bucket = set()
+        bucket.add(host)
+        value_hosts[value_key] = bucket
+
+    out: List[Dict[str, Any]] = []
+    for candidate in candidates:
+        item = dict(candidate)
+        value_key = _candidate_value_key(item.get("value"))
+        hosts = value_hosts.get(value_key) or set()
+        corroboration = 0.0
+        if len(hosts) >= 2:
+            corroboration = 1.0
+        elif len(hosts) == 1:
+            corroboration = 0.35
+        item["corroboration"] = corroboration
+        score = (
+            float(item.get("source_quality", 0.0)) * weights["source_quality"]
+            + float(item.get("source_specificity", 0.0)) * weights["source_specificity"]
+            + float(item.get("value_support", 0.0)) * weights["value_support"]
+            + float(item.get("entity_overlap", 0.0)) * weights["entity_overlap"]
+            + float(item.get("corroboration", 0.0)) * weights["corroboration"]
+        )
+        item["score"] = _clamp01(score, default=0.0)
+        item["confidence_hint"] = _candidate_confidence_hint(
+            float(item["score"]),
+            float(item.get("corroboration", 0.0)),
+        )
+        out.append(item)
+    out.sort(key=lambda c: float(c.get("score", 0.0)), reverse=True)
+    return out
+
+
+def _select_promotable_candidate(
+    candidates: List[Dict[str, Any]],
+    *,
+    mode: str,
+    requires_source: bool,
+    require_second_source: bool,
+) -> tuple[Optional[Dict[str, Any]], Optional[str]]:
+    if not candidates:
+        return None, "no_candidates"
+    thresholds = _evidence_mode_thresholds(mode)
+    min_score = float(thresholds["min_promote_score"])
+    conflict_margin = float(thresholds["conflict_margin"])
+
+    viable = [c for c in candidates if not c.get("rejection_reason")]
+    if not viable:
+        return None, "all_candidates_rejected"
+
+    top = viable[0]
+    top_score = float(top.get("score", 0.0))
+    if top_score < min_score:
+        return None, "score_below_threshold"
+    if requires_source and not _normalize_url_match(top.get("source_url")):
+        return None, "missing_source_url"
+    if require_second_source and float(top.get("corroboration", 0.0)) < 1.0:
+        return None, "requires_second_source"
+
+    top_value_key = _candidate_value_key(top.get("value"))
+    for alt in viable[1:]:
+        alt_value_key = _candidate_value_key(alt.get("value"))
+        if not alt_value_key or alt_value_key == top_value_key:
+            continue
+        alt_score = float(alt.get("score", 0.0))
+        if alt_score >= min_score * 0.85 and abs(top_score - alt_score) <= conflict_margin:
+            return None, "conflict_unresolved"
+    return top, "promoted"
+
+
 def _extract_field_status_updates(
     *,
     existing_field_status: Any,
@@ -1478,11 +1863,27 @@ def _extract_field_status_updates(
     tool_messages: Any,
     tool_calls_delta: int,
     unknown_after_searches: int,
-) -> Dict[str, Dict[str, Any]]:
+    entity_name_tokens: Any = None,
+    evidence_ledger: Any = None,
+    evidence_stats: Any = None,
+    evidence_mode: Any = None,
+    evidence_enabled: Any = None,
+    evidence_require_second_source: Any = None,
+) -> tuple[Dict[str, Dict[str, Any]], Dict[str, List[Dict[str, Any]]], Dict[str, Any]]:
     """Update canonical field_status based on recent tool outputs."""
     field_status = _normalize_field_status_map(existing_field_status, expected_schema)
+    ledger = _normalize_evidence_ledger(evidence_ledger)
+    stats = _normalize_evidence_stats(evidence_stats)
+    mode = _normalize_evidence_mode(evidence_mode)
+    stats["mode"] = mode
+    pipeline_enabled = _EVIDENCE_PIPELINE_ENABLED if evidence_enabled is None else bool(evidence_enabled)
+    require_second_source = (
+        _EVIDENCE_REQUIRE_SECOND_SOURCE
+        if evidence_require_second_source is None
+        else bool(evidence_require_second_source)
+    )
     if not field_status:
-        return field_status
+        return field_status, ledger, stats
 
     payloads = _tool_message_payloads(tool_messages)
     # Count "search attempts" by round only when deterministic extraction
@@ -1492,6 +1893,15 @@ def _extract_field_status_updates(
         has_structured_payload = any(bool(item.get("has_structured_payload")) for item in payloads)
         if has_structured_payload:
             attempts_delta = 1
+    entity_tokens: List[str] = []
+    for tok in list(entity_name_tokens or []):
+        normalized_tok = _normalize_match_text(tok)
+        if not normalized_tok or len(normalized_tok) < 3:
+            continue
+        if normalized_tok in entity_tokens:
+            continue
+        entity_tokens.append(normalized_tok)
+    schema_leaf_set = {leaf_path for leaf_path, _ in _schema_leaf_paths(expected_schema)}
 
     for path, _ in _schema_leaf_paths(expected_schema):
         if "[]" in path:
@@ -1505,9 +1915,10 @@ def _extract_field_status_updates(
         if entry.get("status") == _FIELD_STATUS_FOUND and not _is_empty_like(entry.get("value")):
             continue
 
-        found_value = None
-        found_source = None
-        found_evidence = None
+        candidate_pool: List[Dict[str, Any]] = []
+        rejected_evidence = None
+        requires_source = bool(f"{path}_source" in schema_leaf_set and not key.endswith("_source"))
+        source_field = bool(key.endswith("_source"))
 
         for payload_item in payloads:
             text = payload_item.get("text", "")
@@ -1543,8 +1954,7 @@ def _extract_field_status_updates(
                 if _is_empty_like(value) or _is_unknown_marker(value):
                     continue
 
-                found_value = value
-                found_evidence = text[:240]
+                candidate_source = None
                 # Prefer explicit sibling "*_source" key when present.
                 if isinstance(candidate_payload, dict):
                     for alias in aliases:
@@ -1552,20 +1962,79 @@ def _extract_field_status_updates(
                         source_val = _lookup_key_recursive(candidate_payload, source_key)
                         source_norm = _normalize_url_match(source_val)
                         if source_norm:
-                            found_source = source_norm
+                            candidate_source = source_norm
                             break
-                if found_source is None and isinstance(found_value, str):
-                    source_norm = _normalize_url_match(found_value)
+                if candidate_source is None and isinstance(value, str):
+                    source_norm = _normalize_url_match(value)
                     if source_norm:
-                        found_source = source_norm
-                if found_source is None and urls:
-                    found_source = _normalize_url_match(urls[0])
-                break
+                        candidate_source = source_norm
+                if candidate_source is None and urls:
+                    candidate_source = _normalize_url_match(urls[0])
 
-            if not _is_empty_like(found_value):
-                break
+                allow_non_specific = True
+                if candidate_source and not _is_source_specific_url(candidate_source):
+                    allow_non_specific = _allow_non_specific_source_url(
+                        source_url=candidate_source,
+                        value=value,
+                        source_text=text,
+                        entity_tokens=entity_tokens,
+                        source_field=source_field,
+                    )
+                candidate = _build_evidence_candidate(
+                    value=value,
+                    source_url=candidate_source,
+                    source_text=text,
+                    entity_tokens=entity_tokens,
+                    allow_non_specific=allow_non_specific,
+                    source_field=source_field,
+                )
+                if requires_source and not candidate_source:
+                    candidate["rejection_reason"] = "grounding_blocked_missing_source_url"
 
-        if not _is_empty_like(found_value):
+                candidate_pool.append(candidate)
+
+        if candidate_pool:
+            stats["fields_with_candidates"] = int(stats.get("fields_with_candidates", 0)) + 1
+            stats["candidates_seen"] = int(stats.get("candidates_seen", 0)) + int(len(candidate_pool))
+            new_scored = _score_evidence_candidates(candidate_pool, mode=mode)
+            merged = _merge_evidence_candidates(
+                ledger.get(key, []),
+                new_scored,
+                max_items=_EVIDENCE_MAX_CANDIDATES_PER_FIELD,
+            )
+            ledger[key] = _score_evidence_candidates(merged, mode=mode)
+        else:
+            new_scored = []
+            ledger[key] = ledger.get(key, [])
+
+        for candidate in list(new_scored or []):
+            reason = str(candidate.get("rejection_reason") or "").strip()
+            if reason:
+                stats["candidates_rejected"] = int(stats.get("candidates_rejected", 0)) + 1
+                _increment_rejection_reason(stats, reason)
+
+        if pipeline_enabled:
+            selected, decision_reason = _select_promotable_candidate(
+                list(ledger.get(key) or []),
+                mode=mode,
+                requires_source=requires_source,
+                require_second_source=require_second_source,
+            )
+        else:
+            selected = next(
+                (
+                    candidate
+                    for candidate in list(ledger.get(key) or [])
+                    if not candidate.get("rejection_reason")
+                ),
+                None,
+            )
+            decision_reason = "legacy_selected" if selected is not None else "no_candidates"
+
+        if isinstance(selected, dict) and not _is_empty_like(selected.get("value")):
+            found_value = selected.get("value")
+            found_source = _normalize_url_match(selected.get("source_url"))
+            found_evidence = str(selected.get("evidence_excerpt") or "")
             if key.endswith("_source") and isinstance(found_value, str):
                 normalized_value = _normalize_url_match(found_value)
                 if normalized_value:
@@ -1580,6 +2049,9 @@ def _extract_field_status_updates(
                 entry["source_url"] = _normalize_url_match(found_source)
             if found_evidence:
                 entry["evidence"] = found_evidence
+            entry["evidence_reason"] = str(decision_reason or "promoted")
+            entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
+            entry["confidence_hint"] = str(selected.get("confidence_hint") or "Low")
             if (
                 found_source
                 and not key.endswith("_source")
@@ -1591,10 +2063,39 @@ def _extract_field_status_updates(
                 source_entry["status"] = _FIELD_STATUS_FOUND
                 source_entry["value"] = _normalize_url_match(found_source)
                 source_entry["source_url"] = _normalize_url_match(found_source)
-                source_entry["evidence"] = "derived_from_tool_text"
+                source_entry["evidence"] = "derived_from_evidence_candidate"
+                source_entry["evidence_reason"] = str(decision_reason or "promoted")
+                source_entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
                 field_status[source_key] = source_entry
             field_status[key] = entry
+            stats["candidates_promoted"] = int(stats.get("candidates_promoted", 0)) + 1
+            stats["fields_promoted"] = int(stats.get("fields_promoted", 0)) + 1
             continue
+
+        if decision_reason and decision_reason != "no_candidates":
+            rejected_evidence = str(decision_reason)
+        if not rejected_evidence:
+            rejected_evidence = next(
+                (
+                    str(candidate.get("rejection_reason") or "").strip()
+                    for candidate in list(ledger.get(key) or [])
+                    if str(candidate.get("rejection_reason") or "").strip()
+                ),
+                None,
+            )
+        if rejected_evidence:
+            entry["evidence"] = rejected_evidence
+            entry["evidence_reason"] = rejected_evidence
+            top_score = next(
+                (
+                    float(candidate.get("score", 0.0))
+                    for candidate in list(ledger.get(key) or [])
+                    if isinstance(candidate, dict)
+                ),
+                0.0,
+            )
+            entry["evidence_score"] = round(float(top_score), 4)
+            field_status[key] = entry
 
         if attempts_delta > 0:
             entry["attempts"] = int(entry.get("attempts", 0)) + attempts_delta
@@ -1605,7 +2106,7 @@ def _extract_field_status_updates(
             field_status[key] = entry
 
     field_status = _apply_field_status_derivations(field_status)
-    return field_status
+    return field_status, ledger, stats
 
 
 def _collect_tool_urls_from_messages(
@@ -1931,6 +2432,8 @@ def _select_round_openwebpage_candidate(
                 candidate_text=candidate_text,
             )
             url_score = _score_primary_source_url(normalized)
+            if entity_tokens and entity_hits <= 0 and entity_ratio <= 0:
+                continue
             if selector_mode == "heuristic":
                 if entity_tokens and (entity_hits < min_hits or entity_ratio < min_ratio):
                     continue
@@ -2097,6 +2600,84 @@ def _normalize_url_match(url: Any) -> Optional[str]:
     return normalized
 
 
+def _task_name_tokens_from_messages(
+    messages: Any,
+    *,
+    max_tokens: int = 8,
+) -> List[str]:
+    """Extract primary entity name tokens from the latest user prompt."""
+    prompt = _extract_last_user_prompt(list(messages or []))
+    if not prompt:
+        return []
+
+    hints = _extract_profile_hints(prompt)
+    tokens: List[str] = []
+    seen = set()
+
+    for token in list(hints.get("name_tokens") or []):
+        tok = _normalize_match_text(token)
+        if not tok or len(tok) < 3:
+            continue
+        if tok in seen:
+            continue
+        seen.add(tok)
+        tokens.append(tok)
+        if len(tokens) >= max(1, int(max_tokens)):
+            return tokens
+
+    if tokens:
+        return tokens
+
+    for token in _query_focus_tokens(prompt, max_tokens=max_tokens):
+        tok = _normalize_match_text(token)
+        if not tok or len(tok) < 3:
+            continue
+        if tok in seen:
+            continue
+        seen.add(tok)
+        tokens.append(tok)
+        if len(tokens) >= max(1, int(max_tokens)):
+            break
+    return tokens
+
+
+def _allow_non_specific_source_url(
+    *,
+    source_url: Any,
+    value: Any,
+    source_text: Any = None,
+    entity_tokens: Optional[List[str]] = None,
+    source_field: bool = False,
+) -> bool:
+    """Allow non-specific URLs only with strong generic support."""
+    normalized_source = _normalize_url_match(source_url)
+    if not normalized_source:
+        return False
+    if _is_source_specific_url(normalized_source):
+        return True
+
+    source_text_str = str(source_text or "")
+    entity_supported = True
+    if entity_tokens:
+        hits, ratio = _entity_overlap_for_candidate(
+            entity_tokens,
+            candidate_url=normalized_source,
+            candidate_text=source_text_str,
+        )
+        min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
+        min_hits = max(1, int(min_hits))
+        entity_supported = bool(int(hits) >= min_hits or float(ratio) >= float(min_ratio))
+
+    token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(source_text_str)))
+    if source_field:
+        if entity_tokens:
+            return bool(entity_supported)
+        return token_count >= 8
+
+    value_supported = bool(source_text_str) and _source_supports_value(value, source_text_str)
+    return bool(entity_supported and value_supported)
+
+
 def _promote_terminal_payload_into_field_status(
     *,
     response: Any,
@@ -2104,6 +2685,7 @@ def _promote_terminal_payload_into_field_status(
     expected_schema: Any,
     allowed_source_urls: Any = None,
     source_text_index: Any = None,
+    entity_name_tokens: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Promote source-backed terminal JSON values into canonical field_status."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -2124,6 +2706,14 @@ def _promote_terminal_payload_into_field_status(
         normalized_url = _normalize_url_match(raw)
         if normalized_url:
             allowed.add(normalized_url)
+    entity_tokens: List[str] = []
+    for tok in list(entity_name_tokens or []):
+        normalized_tok = _normalize_match_text(tok)
+        if not normalized_tok or len(normalized_tok) < 3:
+            continue
+        if normalized_tok in entity_tokens:
+            continue
+        entity_tokens.append(normalized_tok)
     schema_leaf_set = {path for path, _ in _schema_leaf_paths(expected_schema)}
 
     for path, _ in _schema_leaf_paths(expected_schema):
@@ -2178,6 +2768,19 @@ def _promote_terminal_payload_into_field_status(
                 entry["evidence"] = "grounding_blocked_untrusted_source_url"
                 normalized[key] = entry
                 continue
+            source_text = None
+            if isinstance(source_text_index, dict):
+                source_text = source_text_index.get(normalized_source)
+            if not _allow_non_specific_source_url(
+                source_url=normalized_source,
+                value=value,
+                source_text=source_text,
+                entity_tokens=entity_tokens,
+                source_field=True,
+            ):
+                entry["evidence"] = "source_specificity_demotion"
+                normalized[key] = entry
+                continue
             base_key = key[:-7]
             base_entry = normalized.get(base_key)
             base_found = (
@@ -2215,9 +2818,34 @@ def _promote_terminal_payload_into_field_status(
                     entry["evidence"] = "grounding_blocked_source_value_mismatch"
                     normalized[key] = entry
                     continue
+                if len(entity_tokens) >= 2 and source_token_count >= 8:
+                    hits, ratio = _entity_overlap_for_candidate(
+                        entity_tokens,
+                        candidate_url=normalized_source or "",
+                        candidate_text=source_text,
+                    )
+                    min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
+                    min_hits = max(1, int(min_hits))
+                    if int(hits) < min_hits and float(ratio) < float(min_ratio):
+                        entry["evidence"] = "grounding_blocked_entity_source_mismatch"
+                        normalized[key] = entry
+                        continue
+                if not _allow_non_specific_source_url(
+                    source_url=normalized_source,
+                    value=value,
+                    source_text=source_text,
+                    entity_tokens=entity_tokens,
+                    source_field=False,
+                ):
+                    entry["evidence"] = "source_specificity_demotion"
+                    normalized[key] = entry
+                    continue
             elif normalized_source is not None and allowed and normalized_source not in allowed:
                 # If a field doesn't require provenance but the model supplied one,
                 # keep the value while dropping untrusted source URLs.
+                normalized_source = None
+            elif normalized_source is not None and not _is_source_specific_url(normalized_source):
+                # Keep value but avoid citing low-specificity source URLs.
                 normalized_source = None
 
         descriptor = entry.get("descriptor")
@@ -2247,6 +2875,7 @@ def _sync_field_status_from_terminal_payload(
     expected_schema: Any,
     allowed_source_urls: Any = None,
     source_text_index: Any = None,
+    entity_name_tokens: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Synchronize field_status to the terminal JSON payload (supports demotions)."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -2262,6 +2891,7 @@ def _sync_field_status_from_terminal_payload(
         expected_schema=expected_schema,
         allowed_source_urls=allowed_source_urls,
         source_text_index=source_text_index,
+        entity_name_tokens=entity_name_tokens,
     )
 
     content = response.get("content") if isinstance(response, dict) else getattr(response, "content", None)
@@ -2371,6 +3001,7 @@ def _sync_terminal_response_with_field_status(
     debug: bool = False,
 ) -> tuple[Any, Dict[str, Dict[str, Any]], Optional[Dict[str, Any]]]:
     """Single entry-point for terminal sync plus optional canonical guard."""
+    entity_name_tokens = _task_name_tokens_from_messages(messages)
     allowed_source_urls = _collect_tool_urls_from_messages(
         messages,
         summary=summary,
@@ -2387,6 +3018,7 @@ def _sync_terminal_response_with_field_status(
         expected_schema=expected_schema,
         allowed_source_urls=allowed_source_urls,
         source_text_index=source_text_index,
+        entity_name_tokens=entity_name_tokens,
     )
 
     canonical_event = None
@@ -2398,6 +3030,16 @@ def _sync_terminal_response_with_field_status(
             schema_source=expected_schema_source,
             context=context,
             debug=debug,
+        )
+        # Re-sync after canonical rewrite so derived fields (e.g., confidence,
+        # justification) are reflected in field_status telemetry.
+        field_status = _sync_field_status_from_terminal_payload(
+            response=response,
+            field_status=field_status,
+            expected_schema=expected_schema,
+            allowed_source_urls=allowed_source_urls,
+            source_text_index=source_text_index,
+            entity_name_tokens=entity_name_tokens,
         )
 
     return response, field_status, canonical_event
@@ -2460,8 +3102,11 @@ def _normalize_budget_state(
     *,
     search_budget_limit: Any = None,
     unknown_after_searches: Any = None,
+    model_budget_limit: Any = None,
+    evidence_verify_reserve: Any = None,
 ) -> Dict[str, Any]:
     existing = budget_state if isinstance(budget_state, dict) else {}
+    out = dict(existing)
     used = 0
     try:
         used = max(0, int(existing.get("tool_calls_used", 0)))
@@ -2472,18 +3117,111 @@ def _normalize_budget_state(
         existing.get("tool_calls_limit"),
         default=_DEFAULT_TOOL_CALL_BUDGET,
     )
+    verify_reserve = existing.get("evidence_verify_reserve")
+    if verify_reserve is None:
+        verify_reserve = evidence_verify_reserve
+    if verify_reserve is None:
+        verify_reserve = _EVIDENCE_VERIFY_RESERVE
+    try:
+        verify_reserve = max(0, int(verify_reserve))
+    except Exception:
+        verify_reserve = int(_EVIDENCE_VERIFY_RESERVE)
+    effective_tool_limit = max(1, int(limit) + int(verify_reserve))
     unknown_after = _coerce_positive_int(
         unknown_after_searches,
         existing.get("unknown_after_searches"),
         default=_DEFAULT_UNKNOWN_AFTER_SEARCHES,
     )
-    return {
+    model_used = 0
+    try:
+        model_used = max(0, int(existing.get("model_calls_used", 0)))
+    except Exception:
+        model_used = 0
+    model_limit = _coerce_positive_int(
+        model_budget_limit,
+        existing.get("model_calls_limit"),
+        default=_DEFAULT_MODEL_CALL_BUDGET,
+    )
+    tool_budget_exhausted = bool(effective_tool_limit > 0 and used >= effective_tool_limit)
+    model_budget_exhausted = bool(model_limit > 0 and model_used >= model_limit)
+    low_signal_cap_exhausted = bool(existing.get("low_signal_cap_exhausted", False))
+    budget_exhausted = bool(
+        bool(existing.get("budget_exhausted", False))
+        or tool_budget_exhausted
+        or model_budget_exhausted
+        or low_signal_cap_exhausted
+    )
+    limit_trigger_reason = str(existing.get("limit_trigger_reason") or "").strip()
+    if not limit_trigger_reason:
+        if low_signal_cap_exhausted:
+            limit_trigger_reason = "low_signal_cap"
+        elif model_budget_exhausted:
+            limit_trigger_reason = "model_budget"
+        elif tool_budget_exhausted:
+            limit_trigger_reason = "tool_budget"
+    out.update({
         "tool_calls_used": used,
         "tool_calls_limit": limit,
-        "tool_calls_remaining": max(0, limit - used),
+        "tool_calls_limit_effective": effective_tool_limit,
+        "tool_calls_remaining_base": max(0, limit - used),
+        "tool_calls_remaining": max(0, effective_tool_limit - used),
+        "evidence_verify_reserve": verify_reserve,
+        "verification_reserve_remaining": max(0, effective_tool_limit - max(int(limit), int(used))),
+        "model_calls_used": model_used,
+        "model_calls_limit": model_limit,
+        "model_calls_remaining": max(0, model_limit - model_used),
         "unknown_after_searches": unknown_after,
-        "budget_exhausted": bool(limit > 0 and used >= limit),
-    }
+        "tool_budget_exhausted": tool_budget_exhausted,
+        "model_budget_exhausted": model_budget_exhausted,
+        "low_signal_cap_exhausted": low_signal_cap_exhausted,
+        "budget_exhausted": budget_exhausted,
+        "limit_trigger_reason": limit_trigger_reason or None,
+        "no_signal_streak": max(0, int(existing.get("no_signal_streak", 0) or 0)),
+        "replan_requested": bool(existing.get("replan_requested", False)),
+        "premature_end_nudge_count": max(0, int(existing.get("premature_end_nudge_count", 0) or 0)),
+    })
+    return out
+
+
+def _budget_exhaustion_reason(budget_state: Any) -> Optional[str]:
+    budget = budget_state if isinstance(budget_state, dict) else {}
+    reason = str(budget.get("limit_trigger_reason") or "").strip()
+    if reason:
+        return reason
+    if bool(budget.get("low_signal_cap_exhausted")):
+        return "low_signal_cap"
+    if bool(budget.get("model_budget_exhausted")):
+        return "model_budget"
+    if bool(budget.get("tool_budget_exhausted")):
+        return "tool_budget"
+    if bool(budget.get("budget_exhausted")):
+        return "budget_exhausted"
+    return None
+
+
+def _record_model_call_on_budget(budget_state: Any, *, call_delta: int = 1) -> Dict[str, Any]:
+    budget = _normalize_budget_state(budget_state)
+    try:
+        delta = max(0, int(call_delta))
+    except Exception:
+        delta = 0
+    if delta <= 0:
+        return budget
+
+    used = max(0, int(budget.get("model_calls_used", 0) or 0)) + delta
+    limit = max(1, int(budget.get("model_calls_limit", _DEFAULT_MODEL_CALL_BUDGET) or _DEFAULT_MODEL_CALL_BUDGET))
+    budget["model_calls_used"] = used
+    budget["model_calls_remaining"] = max(0, limit - used)
+    budget["model_budget_exhausted"] = bool(limit > 0 and used >= limit)
+    if budget["model_budget_exhausted"] and not budget.get("limit_trigger_reason"):
+        budget["limit_trigger_reason"] = "model_budget"
+    budget["budget_exhausted"] = bool(
+        budget.get("budget_exhausted")
+        or budget.get("tool_budget_exhausted")
+        or budget.get("model_budget_exhausted")
+        or budget.get("low_signal_cap_exhausted")
+    )
+    return budget
 
 
 def _append_limited_unique(items: Any, value: Any, *, max_items: int = 64) -> List[Any]:
@@ -2787,6 +3525,26 @@ def _derive_confidence_from_field_status(normalized_field_status: Dict[str, Dict
     resolved = int(progress.get("resolved_fields", 0) or 0)
     unknown = int(progress.get("unknown_fields", 0) or 0)
     found = max(0, resolved - unknown)
+    evidence_scores: List[float] = []
+    for entry in (normalized_field_status or {}).values():
+        if not isinstance(entry, dict):
+            continue
+        status = str(entry.get("status") or "").lower()
+        if status != _FIELD_STATUS_FOUND:
+            continue
+        try:
+            score = float(entry.get("evidence_score"))
+        except Exception:
+            continue
+        if 0.0 <= score <= 1.0:
+            evidence_scores.append(score)
+    if evidence_scores:
+        avg_score = sum(evidence_scores) / float(max(1, len(evidence_scores)))
+        if avg_score >= 0.78 and found >= 4 and unknown <= 3:
+            return "High"
+        if avg_score >= 0.58 and found >= 2:
+            return "Medium"
+        return "Low"
     if found >= 9 and unknown <= 3:
         return "High"
     if found >= 3:
@@ -2799,12 +3557,29 @@ def _normalize_confidence_label(value: Any) -> Optional[str]:
     if value is None:
         return None
     text = str(value).strip().lower()
-    if text in {"low", "l"}:
+    if text in {"low", "l", "1"}:
         return "Low"
-    if text in {"medium", "med", "m"}:
+    if text in {"medium", "med", "m", "2"}:
         return "Medium"
-    if text in {"high", "h"}:
+    if text in {"high", "h", "3"}:
         return "High"
+    try:
+        numeric = float(text)
+    except Exception:
+        numeric = None
+    if numeric is not None:
+        if 0.0 <= numeric <= 1.0:
+            if numeric < 0.34:
+                return "Low"
+            if numeric < 0.67:
+                return "Medium"
+            return "High"
+        if 1.0 <= numeric <= 3.0:
+            if numeric < 1.5:
+                return "Low"
+            if numeric < 2.5:
+                return "Medium"
+            return "High"
     return None
 
 
@@ -3420,6 +4195,7 @@ def _base_system_prompt(
         "Canonical extraction rule: when a FIELD STATUS ledger is present, treat it as authoritative. "
         "Use scratchpad as optional working notes only.\n\n"
         f"Tool-call budget: {budget['tool_calls_used']}/{budget['tool_calls_limit']} used. "
+        f"Model-call budget: {budget['model_calls_used']}/{budget['model_calls_limit']} used. "
         f"Stop searching when budget is exhausted. "
         "After EVERY search result, save any discovered field values using save_finding before continuing.\n\n"
         "When Search returns a likely primary-source URL for the target entity, call OpenWebpage on it "
@@ -3486,7 +4262,10 @@ def _final_system_prompt(
 
     remaining_str = "" if remaining is None else str(remaining)
     base_prompt = template.replace("{{remaining_steps}}", remaining_str)
-    budget_str = f"{budget['tool_calls_used']}/{budget['tool_calls_limit']} used"
+    budget_str = (
+        f"tools {budget['tool_calls_used']}/{budget['tool_calls_limit']} used; "
+        f"model {budget['model_calls_used']}/{budget['model_calls_limit']} used"
+    )
     base_prompt = base_prompt.replace("{{tool_budget}}", budget_str)
     memory_block = _format_memory_for_system_prompt(
         summary,
@@ -4253,10 +5032,18 @@ class MemoryFoldingAgentState(TypedDict):
     scratchpad: Annotated[list, add_to_list]
     field_status: Annotated[dict, merge_dicts]
     budget_state: Annotated[dict, merge_dicts]
+    evidence_ledger: Annotated[dict, merge_dicts]
+    evidence_stats: Annotated[dict, merge_dicts]
     diagnostics: Annotated[dict, merge_dicts]
     search_budget_limit: Optional[int]
+    model_budget_limit: Optional[int]
+    evidence_verify_reserve: Optional[int]
+    evidence_mode: Optional[str]
+    evidence_pipeline_enabled: Optional[bool]
+    evidence_require_second_source: Optional[bool]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
+    finalize_reason: Optional[str]
     tokens_used: int
     input_tokens: int
     output_tokens: int
@@ -4569,6 +5356,8 @@ def _state_budget(state: Any) -> Dict[str, Any]:
         state.get("budget_state"),
         search_budget_limit=state.get("search_budget_limit"),
         unknown_after_searches=state.get("unknown_after_searches"),
+        model_budget_limit=state.get("model_budget_limit"),
+        evidence_verify_reserve=state.get("evidence_verify_reserve"),
     )
 
 
@@ -4595,6 +5384,8 @@ def _schema_outcome_gate_report(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
             unknown_after_searches=state.get("unknown_after_searches"),
+            model_budget_limit=state.get("model_budget_limit"),
+            evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
     report = evaluate_schema_outcome(
         expected_schema=expected_schema,
@@ -4732,14 +5523,46 @@ def _budget_or_resolution_finalize(state: Any) -> bool:
     finalize_on_resolution = bool(state.get("finalize_on_all_fields_resolved", False))
     explicit_budget = (
         state.get("search_budget_limit") is not None
+        or state.get("model_budget_limit") is not None
         or (
             isinstance(state.get("budget_state"), dict)
-            and state.get("budget_state", {}).get("tool_calls_limit") is not None
+            and (
+                state.get("budget_state", {}).get("tool_calls_limit") is not None
+                or state.get("budget_state", {}).get("model_calls_limit") is not None
+            )
         )
     )
     if budget.get("budget_exhausted") and (has_field_targets or explicit_budget):
         return True
     return bool(finalize_on_resolution and progress.get("all_resolved"))
+
+
+def _finalize_reason_for_state(state: Any) -> Optional[str]:
+    budget = _state_budget(state)
+    progress = _field_status_progress(_state_field_status(state))
+    has_field_targets = int(progress.get("total_fields", 0)) > 0
+    finalize_on_resolution = bool(state.get("finalize_on_all_fields_resolved", False))
+    explicit_budget = (
+        state.get("search_budget_limit") is not None
+        or state.get("model_budget_limit") is not None
+        or (
+            isinstance(state.get("budget_state"), dict)
+            and (
+                state.get("budget_state", {}).get("tool_calls_limit") is not None
+                or state.get("budget_state", {}).get("model_calls_limit") is not None
+            )
+        )
+    )
+    if budget.get("budget_exhausted") and (has_field_targets or explicit_budget):
+        return _budget_exhaustion_reason(budget) or "budget_exhausted"
+    if bool(finalize_on_resolution and progress.get("all_resolved")):
+        return "all_fields_resolved"
+    remaining = remaining_steps_value(state)
+    if _is_critical_recursion_step(state, remaining):
+        return "recursion_edge"
+    if state.get("stop_reason") == "recursion_limit":
+        return "recursion_limit"
+    return None
 
 
 def _can_route_tools_safely(state: Any, remaining: Optional[int]) -> bool:
@@ -4754,13 +5577,7 @@ def _can_route_tools_safely(state: Any, remaining: Optional[int]) -> bool:
 
 
 def _is_critical_recursion_step(state: Any, remaining: Optional[int]) -> bool:
-    """Shared threshold for forcing termination near recursion edge."""
-    signal_budget = max(
-        len(state.get("messages") or []),
-        len(state.get("token_trace") or []),
-    )
-    if signal_budget >= 30:
-        return True
+    """Shared threshold for forcing termination only near recursion edge."""
     if remaining is None:
         return False
     cutoff = _finalization_cutoff(state)
@@ -4825,6 +5642,8 @@ def _route_after_agent_step(
 def _route_after_tools_step(state: Any) -> str:
     """Shared post-tools routing for standard + memory-folding graphs."""
     remaining = remaining_steps_value(state)
+    if _should_reserve_terminal_budget_after_tools(state, remaining):
+        return "finalize"
     if state.get("stop_reason") == "recursion_limit":
         return "finalize"
     if _is_critical_recursion_step(state, remaining):
@@ -4842,6 +5661,33 @@ def _route_after_tools_step(state: Any) -> str:
     if remaining is not None and remaining <= 0:
         return "end"
     return "agent"
+
+
+def _should_reserve_terminal_budget_after_tools(state: Any, remaining: Optional[int]) -> bool:
+    """Force finalize near recursion edge when last output is a tool result.
+
+    This reserves a synthesis step so runs do not terminate with a trailing
+    ToolMessage and no terminal assistant JSON.
+    """
+    if remaining is None:
+        return False
+    if remaining <= 0:
+        return False
+    if not _has_resolvable_unknown_fields(_state_field_status(state)):
+        return False
+
+    reserve_threshold = max(1, _finalization_cutoff(state) + 1)
+    if remaining > reserve_threshold:
+        return False
+
+    messages = list(state.get("messages") or [])
+    if not messages:
+        return False
+    if not _message_is_tool(messages[-1]):
+        return False
+    if _reusable_terminal_finalize_response(messages) is not None:
+        return False
+    return True
 
 
 def _collect_premature_nudge_fields(state: Any) -> List[str]:
@@ -4868,14 +5714,11 @@ def _build_premature_nudge_message(
     *,
     query_context: str = "",
 ) -> str:
-    qctx = query_context.strip()
-    if qctx:
-        qctx = f"{qctx} "
     return (
         f"CONTINUE SEARCHING — {len(pending_fields)} fields are still unresolved: "
         f"{', '.join(pending_fields[:10])}. "
         "Use focused search per field before concluding unknown. "
-        f"For each remaining field, run at least one query like: \"{qctx}{(pending_fields[0] if pending_fields else 'field')}_query\". "
+        "For each remaining field, run at least one focused query that includes the target entity and a field-specific keyword. "
         "Do NOT produce a final answer yet. "
         "For each value you discover, call save_finding(finding='field_name = value "
         "(source: URL)', category='fact')."
@@ -4926,6 +5769,8 @@ def _create_tool_node_with_scratchpad(
         field_status = _state_field_status(state)
         prior_budget = _state_budget(state)
         diagnostics = _normalize_diagnostics(state.get("diagnostics"))
+        prior_evidence_ledger = _normalize_evidence_ledger(state.get("evidence_ledger"))
+        prior_evidence_stats = _normalize_evidence_stats(state.get("evidence_stats"))
         unknown_after = prior_budget.get("unknown_after_searches", _DEFAULT_UNKNOWN_AFTER_SEARCHES)
 
         try:
@@ -4978,26 +5823,47 @@ def _create_tool_node_with_scratchpad(
             for m in tool_messages
             if _message_is_tool(m) and str(_tool_message_name(m) or "").lower() not in _INTERNAL_TOOL_NAMES
         )
-        field_status = _extract_field_status_updates(
+        field_status, evidence_ledger, evidence_stats = _extract_field_status_updates(
             existing_field_status=field_status,
             expected_schema=expected_schema,
             tool_messages=tool_messages,
             tool_calls_delta=search_calls_delta,
             unknown_after_searches=unknown_after,
+            entity_name_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
+            evidence_ledger=prior_evidence_ledger,
+            evidence_stats=prior_evidence_stats,
+            evidence_mode=state.get("evidence_mode") or _EVIDENCE_MODE,
+            evidence_enabled=state.get("evidence_pipeline_enabled"),
+            evidence_require_second_source=state.get("evidence_require_second_source"),
         )
         budget_state = _normalize_budget_state(
             prior_budget,
             search_budget_limit=state.get("search_budget_limit"),
             unknown_after_searches=unknown_after,
+            model_budget_limit=state.get("model_budget_limit"),
+            evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state["tool_calls_used"] = int(budget_state.get("tool_calls_used", 0)) + int(search_calls_delta)
         budget_state["tool_calls_remaining"] = max(
             0,
+            int(budget_state.get("tool_calls_limit_effective", budget_state["tool_calls_limit"]))
+            - int(budget_state["tool_calls_used"]),
+        )
+        budget_state["tool_calls_remaining_base"] = max(
+            0,
             int(budget_state["tool_calls_limit"]) - int(budget_state["tool_calls_used"]),
         )
-        budget_state["budget_exhausted"] = bool(
-            int(budget_state["tool_calls_used"]) >= int(budget_state["tool_calls_limit"])
+        budget_state["verification_reserve_remaining"] = max(
+            0,
+            int(budget_state.get("tool_calls_limit_effective", budget_state["tool_calls_limit"]))
+            - max(int(budget_state["tool_calls_limit"]), int(budget_state["tool_calls_used"])),
         )
+        budget_state["tool_budget_exhausted"] = bool(
+            int(budget_state["tool_calls_used"])
+            >= int(budget_state.get("tool_calls_limit_effective", budget_state["tool_calls_limit"]))
+        )
+        if budget_state["tool_budget_exhausted"] and not budget_state.get("limit_trigger_reason"):
+            budget_state["limit_trigger_reason"] = "tool_budget"
 
         quality_flags = [_classify_tool_message_quality(m) for m in tool_messages if _message_is_tool(m)]
         empty_hits = sum(1 for q in quality_flags if q.get("is_empty"))
@@ -5027,10 +5893,34 @@ def _create_tool_node_with_scratchpad(
                 f"low_signal_streak_stop:{streak}",
                 max_items=64,
             )
-        if streak >= _LOW_SIGNAL_STREAK_STOP_THRESHOLD:
-            # Generic guard against repeatedly unproductive retrieval loops.
-            budget_state["budget_exhausted"] = True
-            budget_state["tool_calls_remaining"] = 0
+        low_signal_cap_hit = (
+            int(diagnostics.get("empty_tool_results_count", 0)) >= int(_LOW_SIGNAL_EMPTY_HARD_CAP)
+            or int(diagnostics.get("off_target_tool_results_count", 0)) >= int(_LOW_SIGNAL_OFF_TARGET_HARD_CAP)
+        )
+        if low_signal_cap_hit:
+            budget_state["low_signal_cap_exhausted"] = True
+            if not budget_state.get("limit_trigger_reason"):
+                budget_state["limit_trigger_reason"] = "low_signal_cap"
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                (
+                    "low_signal_cap:"
+                    f"empty={int(diagnostics.get('empty_tool_results_count', 0))}/"
+                    f"{int(_LOW_SIGNAL_EMPTY_HARD_CAP)},"
+                    f"off_target={int(diagnostics.get('off_target_tool_results_count', 0))}/"
+                    f"{int(_LOW_SIGNAL_OFF_TARGET_HARD_CAP)}"
+                ),
+                max_items=64,
+            )
+
+        budget_state["budget_exhausted"] = bool(
+            budget_state.get("tool_budget_exhausted")
+            or budget_state.get("model_budget_exhausted")
+            or budget_state.get("low_signal_cap_exhausted")
+        )
+        limit_reason = _budget_exhaustion_reason(budget_state)
+        if limit_reason:
+            budget_state["finalize_reason"] = limit_reason
 
         progress = _field_status_progress(field_status)
         budget_state.update(progress)
@@ -5042,6 +5932,9 @@ def _create_tool_node_with_scratchpad(
         result["field_status"] = field_status
         result["budget_state"] = budget_state
         result["diagnostics"] = diagnostics
+        result["evidence_ledger"] = evidence_ledger
+        if _EVIDENCE_TELEMETRY_ENABLED:
+            result["evidence_stats"] = evidence_stats
         result["completion_gate"] = _schema_outcome_gate_report(
             state,
             expected_schema=expected_schema,
@@ -5393,6 +6286,8 @@ def create_memory_folding_agent(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
             unknown_after_searches=state.get("unknown_after_searches"),
+            model_budget_limit=state.get("model_budget_limit"),
+            evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
@@ -5497,6 +6392,7 @@ def create_memory_folding_agent(
                 messages=messages,
                 debug=debug,
             )
+        budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
 
         repair_events: List[Dict[str, Any]] = []
         if invoke_event:
@@ -5544,12 +6440,16 @@ def create_memory_folding_agent(
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
+        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
         completion_gate = _schema_outcome_gate_report(
-            state,
+            _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
         )
+        finalize_reason = _finalize_reason_for_state(_state_for_gate)
+        if finalize_reason:
+            budget_state["finalize_reason"] = finalize_reason
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
@@ -5564,6 +6464,8 @@ def create_memory_folding_agent(
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
             "token_trace": [build_node_trace_entry("agent", usage=_usage, started_at=node_started_at)],
         }
+        if finalize_reason:
+            out["finalize_reason"] = finalize_reason
         if repair_event:
             repair_events.append(repair_event)
         if canonical_event:
@@ -5613,6 +6515,8 @@ def create_memory_folding_agent(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
             unknown_after_searches=state.get("unknown_after_searches"),
+            model_budget_limit=state.get("model_budget_limit"),
+            evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
@@ -5655,6 +6559,7 @@ def create_memory_folding_agent(
                 messages=messages,
                 debug=debug,
             )
+            budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
         else:
             invoke_event = None
         repair_events: List[Dict[str, Any]] = []
@@ -5695,12 +6600,15 @@ def create_memory_folding_agent(
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
+        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
         completion_gate = _schema_outcome_gate_report(
-            state,
+            _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
         )
+        finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
+        budget_state["finalize_reason"] = finalize_reason
         out = {
             "messages": [response],
             "stop_reason": "recursion_limit",
@@ -5708,6 +6616,7 @@ def create_memory_folding_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "completion_gate": completion_gate,
+            "finalize_reason": finalize_reason,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
@@ -6317,6 +7226,9 @@ def create_memory_folding_agent(
 
         summarize_started = time.perf_counter()
         fold_degraded = False
+        fold_fallback_applied = False
+        fold_fallback_reason = None
+        fold_parse_error_type = None
         try:
             summary_response = _invoke_model_with_output_cap(
                 summarizer_model,
@@ -6328,11 +7240,26 @@ def create_memory_folding_agent(
             summary_text_str = _message_content_to_text(summary_text) or str(summary_text)
             parsed_memory = parse_llm_json(summary_text_str)
             fold_parse_success = isinstance(parsed_memory, dict) and bool(parsed_memory)
+            if not fold_parse_success:
+                repaired_json = repair_json_output_to_schema(
+                    summary_text_str,
+                    _MEMORY_REPAIR_SCHEMA,
+                    fallback_on_failure=False,
+                )
+                if isinstance(repaired_json, str) and repaired_json.strip():
+                    repaired_candidate = parse_llm_json(repaired_json)
+                    if isinstance(repaired_candidate, dict) and repaired_candidate:
+                        parsed_memory = repaired_candidate
+                        fold_parse_success = True
             if not isinstance(parsed_memory, dict):
                 parsed_memory = {}
             # Parse fallback: keep existing memory + recover FIELD_EXTRACT lines from
             # current fold input instead of storing malformed raw JSON text.
             if not parsed_memory:
+                fold_degraded = True
+                fold_fallback_applied = True
+                fold_fallback_reason = "summarizer_parse_empty_or_invalid"
+                fold_parse_error_type = "invalid_json"
                 recovered_facts = list(current_memory.get("facts") or [])
                 for _fe_match in re.finditer(
                     r"FIELD_EXTRACT:\s*(\S+)\s*=\s*(.+?)(?:\s*\(source:.*?\))?\s*$",
@@ -6344,6 +7271,11 @@ def create_memory_folding_agent(
                         recovered_facts.append(f"FIELD_EXTRACT: {_fe_name} = {_fe_val}")
                 parsed_memory = dict(current_memory)
                 parsed_memory["facts"] = recovered_facts
+                parsed_memory.setdefault("warnings", [])
+                parsed_memory["warnings"] = list(parsed_memory.get("warnings") or [])
+                parsed_memory["warnings"].append(
+                    "Summarizer parse failed; using deterministic fallback memory update."
+                )
             new_memory = _sanitize_memory_dict(parsed_memory)
         except Exception as fold_exc:
             # Degraded fold: summarizer failed (e.g. RemoteProtocolError).
@@ -6351,6 +7283,9 @@ def create_memory_folding_agent(
             fold_summarizer_latency_m = (time.perf_counter() - summarize_started) / 60.0
             fold_degraded = True
             fold_parse_success = False
+            fold_fallback_applied = True
+            fold_fallback_reason = "summarizer_invoke_exception"
+            fold_parse_error_type = type(fold_exc).__name__
             summary_response = None
             if debug:
                 logger.warning("Summarizer invoke failed, using degraded fold: %s", fold_exc)
@@ -6598,6 +7533,9 @@ def create_memory_folding_agent(
                 "fold_anchored_facts_preserved": fold_anchored_facts_preserved,
                 "fold_ungrounded_facts": fold_ungrounded_facts,
                 "fold_degraded": fold_degraded,
+                "fold_fallback_applied": fold_fallback_applied,
+                "fold_fallback_reason": fold_fallback_reason,
+                "fold_parse_error_type": fold_parse_error_type,
             },
             "om_stats": om_stats_update,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
@@ -6693,6 +7631,8 @@ def create_memory_folding_agent(
         - 'agent': Otherwise (let agent process tool results)
         """
         remaining = remaining_steps_value(state)
+        if _should_reserve_terminal_budget_after_tools(state, remaining):
+            return "finalize"
         if _should_force_finalize(state):
             if remaining is not None and remaining <= 0:
                 return "end"
@@ -6865,10 +7805,18 @@ class StandardAgentState(TypedDict):
     scratchpad: Annotated[list, add_to_list]
     field_status: Annotated[dict, merge_dicts]
     budget_state: Annotated[dict, merge_dicts]
+    evidence_ledger: Annotated[dict, merge_dicts]
+    evidence_stats: Annotated[dict, merge_dicts]
     diagnostics: Annotated[dict, merge_dicts]
     search_budget_limit: Optional[int]
+    model_budget_limit: Optional[int]
+    evidence_verify_reserve: Optional[int]
+    evidence_mode: Optional[str]
+    evidence_pipeline_enabled: Optional[bool]
+    evidence_require_second_source: Optional[bool]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
+    finalize_reason: Optional[str]
     tokens_used: int
     input_tokens: int
     output_tokens: int
@@ -6933,6 +7881,8 @@ def create_standard_agent(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
             unknown_after_searches=state.get("unknown_after_searches"),
+            model_budget_limit=state.get("model_budget_limit"),
+            evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
@@ -6997,6 +7947,7 @@ def create_standard_agent(
                 messages=messages,
                 debug=debug,
             )
+        budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
 
         repair_events: List[Dict[str, Any]] = []
         if invoke_event:
@@ -7042,12 +7993,16 @@ def create_standard_agent(
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
+        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
         completion_gate = _schema_outcome_gate_report(
-            state,
+            _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
         )
+        finalize_reason = _finalize_reason_for_state(_state_for_gate)
+        if finalize_reason:
+            budget_state["finalize_reason"] = finalize_reason
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
@@ -7061,6 +8016,8 @@ def create_standard_agent(
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
             "token_trace": [build_node_trace_entry("agent", usage=_usage, started_at=node_started_at)],
         }
+        if finalize_reason:
+            out["finalize_reason"] = finalize_reason
         if repair_event:
             repair_events.append(repair_event)
         if canonical_event:
@@ -7104,6 +8061,8 @@ def create_standard_agent(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
             unknown_after_searches=state.get("unknown_after_searches"),
+            model_budget_limit=state.get("model_budget_limit"),
+            evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _normalize_diagnostics(state.get("diagnostics"))
@@ -7142,6 +8101,7 @@ def create_standard_agent(
                 messages=messages,
                 debug=debug,
             )
+            budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
         else:
             invoke_event = None
         repair_events: List[Dict[str, Any]] = []
@@ -7179,12 +8139,15 @@ def create_standard_agent(
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
         _usage = _token_usage_dict_from_message(response)
+        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
         completion_gate = _schema_outcome_gate_report(
-            state,
+            _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
         )
+        finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
+        budget_state["finalize_reason"] = finalize_reason
         out = {
             "messages": [response],
             "stop_reason": "recursion_limit",
@@ -7192,6 +8155,7 @@ def create_standard_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "completion_gate": completion_gate,
+            "finalize_reason": finalize_reason,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],

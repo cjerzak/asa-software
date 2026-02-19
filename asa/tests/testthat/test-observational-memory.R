@@ -380,3 +380,133 @@ test_that("canonical payload derivations normalize confidence casing", {
   normalized_r <- reticulate::py_to_r(normalized)
   expect_equal(as.character(normalized_r$confidence), "Low")
 })
+
+test_that("terminal canonicalization re-syncs derived fields into field_status", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  expected_schema <- list(
+    prior_occupation = "string|Unknown",
+    confidence = "Low|Medium|High",
+    justification = "string"
+  )
+
+  field_status <- list(
+    prior_occupation = list(
+      status = "found",
+      value = "teacher",
+      source_url = NULL,
+      descriptor = "string|Unknown"
+    ),
+    confidence = list(
+      status = "pending",
+      value = NULL,
+      source_url = NULL,
+      descriptor = "Low|Medium|High"
+    ),
+    justification = list(
+      status = "pending",
+      value = NULL,
+      source_url = NULL,
+      descriptor = "string"
+    )
+  )
+
+  response <- reticulate::dict(
+    content = "{\"prior_occupation\":\"teacher\",\"confidence\":\"low\",\"justification\":\"\"}"
+  )
+
+  sync_terminal <- reticulate::py_get_attr(prod, "_sync_terminal_response_with_field_status")
+  synced <- sync_terminal(
+    response = response,
+    field_status = field_status,
+    expected_schema = expected_schema,
+    messages = list(list(role = "user", content = "Return JSON only.")),
+    force_canonical = TRUE
+  )
+
+  synced_r <- reticulate::py_to_r(synced)
+  synced_field_status <- synced_r[[2]]
+
+  expect_equal(as.character(synced_field_status$confidence$status), "found")
+  expect_equal(as.character(synced_field_status$confidence$value), "Low")
+  expect_equal(as.character(synced_field_status$justification$status), "found")
+  expect_true(nzchar(as.character(synced_field_status$justification$value)))
+})
+
+test_that("confidence normalization accepts numeric-like values", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  normalize_conf <- reticulate::py_get_attr(prod, "_normalize_confidence_label")
+
+  expect_equal(as.character(normalize_conf("1")), "Low")
+  expect_equal(as.character(normalize_conf("2")), "Medium")
+  expect_equal(as.character(normalize_conf("3")), "High")
+  expect_equal(as.character(normalize_conf("0.85")), "High")
+})
+
+test_that("source specificity helper prefers profile-like URLs over listing pages", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  is_specific <- reticulate::py_get_attr(prod, "_is_source_specific_url")
+  score_specificity <- reticulate::py_get_attr(prod, "_source_specificity_score")
+
+  expect_false(isTRUE(reticulate::py_to_r(is_specific("https://example.com/search?q=ramona+moye"))))
+  expect_true(isTRUE(reticulate::py_to_r(is_specific("https://example.com/people/ramona-moye-camaconi"))))
+  expect_true(
+    as.numeric(reticulate::py_to_r(score_specificity("https://example.com/people/ramona-moye-camaconi"))) >
+      as.numeric(reticulate::py_to_r(score_specificity("https://example.com/search?q=ramona+moye")))
+  )
+})
+
+test_that("budget normalization tracks model-call budgets", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  normalize_budget <- reticulate::py_get_attr(prod, "_normalize_budget_state")
+  budget <- normalize_budget(
+    list(model_calls_used = 3L, tool_calls_used = 2L),
+    search_budget_limit = 10L,
+    unknown_after_searches = 4L,
+    model_budget_limit = 5L
+  )
+  budget_r <- reticulate::py_to_r(budget)
+
+  expect_equal(as.integer(budget_r$model_calls_used), 3L)
+  expect_equal(as.integer(budget_r$model_calls_limit), 5L)
+  expect_equal(as.integer(budget_r$model_calls_remaining), 2L)
+  expect_false(isTRUE(as.logical(budget_r$model_budget_exhausted)))
+})
+
+test_that("model-call recorder sets exhaustion reason when budget is hit", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  record_model_call <- reticulate::py_get_attr(prod, "_record_model_call_on_budget")
+  budget <- record_model_call(
+    list(model_calls_used = 4L, model_calls_limit = 5L, tool_calls_limit = 10L, tool_calls_used = 0L),
+    call_delta = 1L
+  )
+  budget_r <- reticulate::py_to_r(budget)
+
+  expect_true(isTRUE(as.logical(budget_r$model_budget_exhausted)))
+  expect_true(isTRUE(as.logical(budget_r$budget_exhausted)))
+  expect_equal(as.character(budget_r$limit_trigger_reason), "model_budget")
+})

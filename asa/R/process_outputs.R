@@ -1985,6 +1985,27 @@ extract_search_tiers <- function(text) {
   NULL
 }
 
+#' Detect parsed tool-message envelope payloads that are not task answers
+#' @param x Parsed JSON candidate
+#' @return TRUE when the object matches a ToolMessage-like envelope
+#' @keywords internal
+.is_tool_message_envelope <- function(x) {
+  if (!is.list(x) || length(x) == 0L || is.null(names(x))) {
+    return(FALSE)
+  }
+  if (!("message_type" %in% names(x))) {
+    return(FALSE)
+  }
+  message_type <- tolower(as.character(x$message_type %||% ""))
+  if (!nzchar(message_type) || !(message_type %in% c("toolmessage", "tool", "function"))) {
+    return(FALSE)
+  }
+  has_content <- "content" %in% names(x)
+  has_tool_name <- "name" %in% names(x) || "tool_name" %in% names(x)
+  has_tool_calls <- "tool_calls" %in% names(x)
+  isTRUE(has_content && (has_tool_name || has_tool_calls))
+}
+
 #' Count the ratio of Unknown/empty fields in a parsed JSON list
 #' @param parsed A named list from JSON extraction
 #' @return Numeric ratio between 0 and 1
@@ -2115,11 +2136,14 @@ extract_search_tiers <- function(text) {
       # Prefer the most recent AI message
       for (i in rev(seq_along(ai_contents))) {
         parsed <- .try_or(.parse_json_response(ai_contents[i]))
-        if (is.list(parsed) && length(parsed) > 0) {
+        if (is.list(parsed) && length(parsed) > 0 && !isTRUE(.is_tool_message_envelope(parsed))) {
           return(parsed)
         }
       }
     }
+    # Structured traces are authoritative: if no AI terminal JSON is found,
+    # do not fall back to generic brace-matching over tool payloads.
+    return(NULL)
   }
 
   tryCatch({
@@ -2140,7 +2164,7 @@ extract_search_tiers <- function(text) {
           json_str <- gsub(pattern, "\\1", matches[i], perl = TRUE)
 
           data <- .parse_trace_json_candidate(json_str, max_decode_layers = 3L)
-          if (is.list(data) && length(data) > 0) {
+          if (is.list(data) && length(data) > 0 && !isTRUE(.is_tool_message_envelope(data))) {
             return(data)
           }
         }
