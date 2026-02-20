@@ -186,8 +186,13 @@
     ))
   }
 
-  # Extract response text
-  response_text <- .extract_response_text(raw_response, config$backend)
+  # Extract canonical payload metadata and response text
+  final_payload_info <- .extract_final_payload_details(raw_response)
+  response_payload <- .extract_response_text(raw_response, config$backend, with_meta = TRUE)
+  response_text <- response_payload$text %||% NA_character_
+  response_release_source <- response_payload$released_from %||%
+    if (isTRUE(final_payload_info$available)) "final_payload" else "message_text"
+  response_sanitized <- isTRUE(response_payload$sanitized)
   invoke_exception_fallback <- .has_invoke_exception_fallback(raw_response)
 
   # Build trace
@@ -202,6 +207,15 @@
   diagnostics_out <- .coerce_py_list(raw_response$diagnostics)
   json_repair <- .coerce_py_list(raw_response$json_repair)
   completion_gate <- .coerce_py_list(raw_response$completion_gate)
+  payload_integrity <- .build_payload_integrity(
+    released_text = response_text,
+    released_from = response_release_source,
+    final_payload_info = final_payload_info,
+    trace = trace,
+    trace_json = trace_json,
+    json_repair = json_repair,
+    message_sanitized = response_sanitized
+  )
 
   # Extract memory folding stats (fold_count lives inside fold_stats)
   fold_stats <- list()
@@ -253,6 +267,10 @@
     field_status = field_status_out,
     diagnostics = diagnostics_out,
     json_repair = json_repair,
+    final_payload = final_payload_info$payload,
+    terminal_valid = final_payload_info$terminal_valid,
+    terminal_payload_hash = final_payload_info$terminal_payload_hash,
+    payload_integrity = payload_integrity,
     completion_gate = completion_gate,
     tokens_used = tokens_used,
     input_tokens = input_tokens,
@@ -295,6 +313,135 @@
     return(converted)
   }
   list(value = converted)
+}
+
+#' Extract terminal final-payload metadata from raw Python response state
+#' @keywords internal
+.extract_final_payload_details <- function(raw_response) {
+  payload_raw <- .try_or(raw_response$final_payload, NULL)
+  payload <- .try_or(reticulate::py_to_r(payload_raw), payload_raw)
+
+  payload_json <- NA_character_
+  payload_available <- FALSE
+  if (!is.null(payload)) {
+    payload_json <- .try_or(
+      jsonlite::toJSON(payload, auto_unbox = TRUE, null = "null"),
+      NA_character_
+    )
+    if (is.character(payload_json) && length(payload_json) > 1L) {
+      payload_json <- paste0(payload_json, collapse = "")
+    }
+    payload_available <- (
+      is.character(payload_json) &&
+        length(payload_json) == 1L &&
+        !is.na(payload_json) &&
+        nzchar(payload_json)
+    )
+  }
+
+  terminal_valid_raw <- .try_or(raw_response$terminal_valid, NULL)
+  terminal_valid <- suppressWarnings(
+    as.logical(.try_or(reticulate::py_to_r(terminal_valid_raw), terminal_valid_raw))
+  )
+  terminal_valid <- if (length(terminal_valid) > 0L && !is.na(terminal_valid[[1]])) {
+    isTRUE(terminal_valid[[1]])
+  } else {
+    FALSE
+  }
+
+  payload_hash <- .try_or(as.character(raw_response$terminal_payload_hash), character(0))
+  payload_hash <- payload_hash[!is.na(payload_hash) & nzchar(payload_hash)]
+  payload_hash <- if (length(payload_hash) > 0L) payload_hash[[1]] else NA_character_
+  if ((is.na(payload_hash) || !nzchar(payload_hash)) && isTRUE(payload_available)) {
+    payload_hash <- digest::digest(enc2utf8(payload_json), algo = "sha256")
+  }
+
+  list(
+    payload = if (isTRUE(payload_available)) payload else NULL,
+    payload_json = if (isTRUE(payload_available)) payload_json else NA_character_,
+    available = isTRUE(payload_available),
+    terminal_valid = isTRUE(terminal_valid || payload_available),
+    terminal_payload_hash = payload_hash
+  )
+}
+
+#' Extract JSON repair reason labels from repair events
+#' @keywords internal
+.json_repair_reasons <- function(json_repair = list()) {
+  if (!is.list(json_repair) || length(json_repair) == 0L) {
+    return(character(0))
+  }
+  reasons <- vapply(json_repair, function(ev) {
+    if (!is.list(ev) || is.null(ev$repair_reason)) {
+      return(NA_character_)
+    }
+    as.character(ev$repair_reason)[1]
+  }, character(1))
+  unique(reasons[!is.na(reasons) & nzchar(reasons)])
+}
+
+#' Detect explicit truncation markers in release artifacts
+#' @keywords internal
+.detect_payload_truncation_signals <- function(released_text = "",
+                                               trace = "",
+                                               trace_json = "") {
+  signals <- character(0)
+  if (is.character(trace) && any(grepl("[Truncated]", trace, fixed = TRUE))) {
+    signals <- c(signals, "trace_truncated_marker")
+  }
+  if (is.character(trace_json) && any(grepl("[Truncated]", trace_json, fixed = TRUE))) {
+    signals <- c(signals, "trace_json_truncated_marker")
+  }
+  if (is.character(released_text) && any(grepl("[Truncated]", released_text, fixed = TRUE))) {
+    signals <- c(signals, "released_text_truncated_marker")
+  }
+  unique(signals)
+}
+
+#' Build payload release integrity summary for diagnostics
+#' @keywords internal
+.build_payload_integrity <- function(released_text,
+                                     released_from = "message_text",
+                                     final_payload_info = list(),
+                                     trace = "",
+                                     trace_json = "",
+                                     json_repair = list(),
+                                     message_sanitized = FALSE) {
+  canonical_available <- isTRUE(final_payload_info$available)
+  canonical_text <- final_payload_info$payload_json %||% NA_character_
+  canonical_matches <- FALSE
+  if (
+    canonical_available &&
+      is.character(released_text) &&
+      length(released_text) == 1L &&
+      !is.na(released_text) &&
+      is.character(canonical_text) &&
+      length(canonical_text) == 1L &&
+      !is.na(canonical_text)
+  ) {
+    canonical_matches <- identical(trimws(released_text), trimws(canonical_text))
+  }
+
+  source <- as.character(released_from %||% "message_text")
+  if (length(source) == 0L || is.na(source[[1]]) || !nzchar(source[[1]])) {
+    source <- "message_text"
+  } else {
+    source <- source[[1]]
+  }
+
+  list(
+    released_from = source,
+    canonical_available = canonical_available,
+    canonical_matches_message = canonical_matches,
+    message_sanitized = isTRUE(message_sanitized),
+    truncation_signals = .detect_payload_truncation_signals(
+      released_text = released_text,
+      trace = trace,
+      trace_json = trace_json
+    ),
+    json_repair_reasons = .json_repair_reasons(json_repair),
+    terminal_payload_hash = final_payload_info$terminal_payload_hash %||% NA_character_
+  )
 }
 
 #' Extract Stop Reason from Raw Response
@@ -598,7 +745,26 @@
 
 #' Extract Response Text from Raw Response
 #' @keywords internal
-.extract_response_text <- function(raw_response, backend) {
+.extract_response_text <- function(raw_response, backend, with_meta = FALSE) {
+  payload_info <- .extract_final_payload_details(raw_response)
+  if (
+    isTRUE(payload_info$available) &&
+      is.character(payload_info$payload_json) &&
+      length(payload_info$payload_json) == 1L &&
+      !is.na(payload_info$payload_json) &&
+      nzchar(payload_info$payload_json)
+  ) {
+    if (isTRUE(with_meta)) {
+      return(list(
+        text = payload_info$payload_json,
+        sanitized = FALSE,
+        released_from = "final_payload"
+      ))
+    }
+    return(payload_info$payload_json)
+  }
+
+  sanitized <- FALSE
   response_text <- tryCatch({
     messages <- raw_response$messages
     stop_reason <- .try_or(as.character(raw_response$stop_reason), character(0))
@@ -735,10 +901,9 @@
         text_parts <- extract_text_blocks(text)
       }
 
-      # Recursion-limited fallback: accept last message text only if it's
-      # terminal (not a tool call / tool output message).
+      # Recursion-limited fallback: prefer tool output when recursion cut off
+      # the final assistant turn.
       if (length(text_parts) == 0 && is_recursion_limit) {
-        # Prefer tool output when recursion cut off the final assistant turn.
         for (i in rev(seq_along(messages))) {
           msg <- messages[[i]]
           if (!is_tool_message(msg)) {
@@ -752,8 +917,7 @@
         }
       }
 
-      # Recursion-limited fallback: accept last message text only if it's
-      # terminal (not a tool call / tool output message).
+      # Recursion-limited fallback: accept last message text only if terminal.
       if (length(text_parts) == 0 && is_recursion_limit) {
         last_message <- messages[[length(messages)]]
         if (!has_tool_calls(last_message) && !is_tool_message(last_message)) {
@@ -762,7 +926,7 @@
         }
       }
 
-      # If still no content, return a meaningful message based on stop_reason
+      # If still no content, return a meaningful message based on stop_reason.
       if (length(text_parts) == 0) {
         if (is_recursion_limit) {
           return("[Agent reached step limit before completing task. Increase recursion_limit or simplify the task.]")
@@ -775,18 +939,23 @@
         return(NA_character_)
       }
 
-      # Strip embedded NUL bytes (cause "Embedded NUL in string" from reticulate)
-      text <- .strip_nul(text)
+      # Strip embedded NUL bytes (cause "Embedded NUL in string" from reticulate).
+      stripped <- .strip_nul(text)
+      if (!identical(stripped, text)) {
+        sanitized <- TRUE
+      }
+      text <- stripped
 
-      # Clean XML tags without stripping inner content
-      text <- gsub("</?[^>]+>", "", text)
-
-      # Handle exo backend format
+      # Handle exo backend format.
       if (!is.null(backend) && backend == "exo") {
-        text <- sub(
+        exo_text <- sub(
           "(?s).*<\\|python_tag\\|>(\\{.*?\\})<\\|eom_id\\|>.*",
           "\\1", text, perl = TRUE
         )
+        if (!identical(exo_text, text)) {
+          sanitized <- TRUE
+        }
+        text <- exo_text
       }
       text
     } else {
@@ -796,6 +965,13 @@
     NA_character_
   })
 
+  if (isTRUE(with_meta)) {
+    return(list(
+      text = response_text,
+      sanitized = isTRUE(sanitized),
+      released_from = "message_text"
+    ))
+  }
   response_text
 }
 

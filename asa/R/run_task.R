@@ -459,6 +459,13 @@ run_task <- function(prompt,
       )
     }
   )
+  payload_integrity <- response$payload_integrity %||% list()
+  terminal_payload_source <- .try_or(as.character(payload_integrity$released_from), character(0))
+  terminal_payload_source <- if (length(terminal_payload_source) > 0 && nzchar(terminal_payload_source[[1]])) {
+    terminal_payload_source[[1]]
+  } else {
+    NA_character_
+  }
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
@@ -472,6 +479,11 @@ run_task <- function(prompt,
     field_status = response$field_status %||% list(),
     diagnostics = response$diagnostics %||% list(),
     json_repair = response$json_repair %||% list(),
+    final_payload = response$final_payload %||% NULL,
+    terminal_valid = isTRUE(response$terminal_valid %||% FALSE),
+    terminal_payload_hash = response$terminal_payload_hash %||% NA_character_,
+    terminal_payload_source = terminal_payload_source,
+    payload_integrity = payload_integrity,
     completion_gate = completion_gate,
     verification_status = verification_status,
     token_stats = token_stats,
@@ -491,6 +503,13 @@ run_task <- function(prompt,
     action_overall = action_trace$overall_summary %||% character(0),
     langgraph_step_timings = action_trace$langgraph_step_timings %||% list()
   )
+  if (isTRUE(payload_integrity$canonical_available) &&
+      !isTRUE(payload_integrity$canonical_matches_message)) {
+    execution$action_investigator_summary <- unique(c(
+      execution$action_investigator_summary,
+      "Payload integrity warning: canonical payload differs from released message."
+    ))
+  }
   if (identical(output_format, "raw")) {
     execution$raw_response <- response$raw_response
   }
@@ -536,6 +555,11 @@ run_task <- function(prompt,
   alias_defaults <- list(
     fold_stats = list(),
     status_code = NA_integer_,
+    final_payload = NULL,
+    terminal_valid = FALSE,
+    terminal_payload_hash = NA_character_,
+    terminal_payload_source = NA_character_,
+    payload_integrity = list(),
     completion_gate = list(),
     verification_status = NA_character_,
     token_stats = list(),

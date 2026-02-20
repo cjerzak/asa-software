@@ -2683,6 +2683,42 @@ test_that(".extract_response_text returns tool output under recursion_limit when
   expect_equal(response_text, "tool output")
 })
 
+test_that(".extract_response_text prefers canonical final_payload when available", {
+  raw_response <- list(
+    messages = list(
+      list(
+        type = "ai",
+        content = "calling tool",
+        tool_calls = list(list(name = "Search", args = list(query = "vietnam"), id = "call_1"))
+      ),
+      list(type = "tool", content = "tool output")
+    ),
+    stop_reason = "recursion_limit",
+    final_payload = list(country = "Vietnam", count = 63L),
+    terminal_valid = TRUE
+  )
+
+  response_text <- asa:::.extract_response_text(raw_response, backend = "gemini")
+  parsed <- asa:::.parse_json_response(response_text)
+  expect_true(is.list(parsed))
+  expect_equal(parsed$country, "Vietnam")
+  expect_equal(as.integer(parsed$count), 63L)
+})
+
+test_that(".extract_response_text preserves JSON string content with angle brackets", {
+  raw_response <- list(
+    messages = list(
+      list(type = "ai", content = "{\"text\":\"a <b>tag</b> c\",\"ok\":1}")
+    )
+  )
+
+  response_text <- asa:::.extract_response_text(raw_response, backend = "gemini")
+  parsed <- asa:::.parse_json_response(response_text)
+  expect_true(is.list(parsed))
+  expect_equal(parsed$text, "a <b>tag</b> c")
+  expect_equal(as.integer(parsed$ok), 1L)
+})
+
 test_that(".extract_response_text prefers AI JSON over tool trace payload under recursion_limit", {
   asa_test_skip_if_no_python(required_files = "custom_ddg_production.py")
   asa_test_skip_if_missing_python_modules(c("langchain_core"), method = "import")

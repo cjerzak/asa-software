@@ -843,6 +843,12 @@ summary.asa_agent <- function(object, ...) {
 #' @param field_status Per-field extraction status map from agent state.
 #' @param diagnostics Runtime diagnostics counters and intervention notes.
 #' @param json_repair JSON repair/fallback events emitted during execution.
+#' @param final_payload Canonical terminal payload from agent state (when available).
+#' @param terminal_valid Logical flag indicating whether a schema-valid terminal
+#'   payload was emitted.
+#' @param terminal_payload_hash Canonical hash of terminal payload from agent state.
+#' @param payload_integrity Diagnostics about released payload provenance, repair,
+#'   and truncation markers.
 #' @param completion_gate Deterministic outcome-verification report from agent state.
 #' @param tokens_used Total token count for this invocation (integer, or NA).
 #' @param input_tokens Input (prompt) token count (integer, or NA).
@@ -859,6 +865,10 @@ asa_response <- function(message, status_code, raw_response, trace,
                          budget_state = list(), field_status = list(),
                          diagnostics = list(),
                          json_repair = list(),
+                         final_payload = NULL,
+                         terminal_valid = FALSE,
+                         terminal_payload_hash = NULL,
+                         payload_integrity = list(),
                          completion_gate = list(),
                          tokens_used = NA_integer_,
                          input_tokens = NA_integer_,
@@ -880,6 +890,10 @@ asa_response <- function(message, status_code, raw_response, trace,
       field_status = field_status,
       diagnostics = diagnostics,
       json_repair = json_repair,
+      final_payload = final_payload,
+      terminal_valid = terminal_valid,
+      terminal_payload_hash = terminal_payload_hash,
+      payload_integrity = payload_integrity,
       completion_gate = completion_gate,
       tokens_used = tokens_used,
       input_tokens = input_tokens,

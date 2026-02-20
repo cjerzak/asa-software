@@ -408,6 +408,15 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
     execution = list(
       fold_stats = list(fold_count = 2L),
       status_code = 200L,
+      final_payload = list(status = "ok"),
+      terminal_valid = TRUE,
+      terminal_payload_hash = "abc123",
+      terminal_payload_source = "final_payload",
+      payload_integrity = list(
+        released_from = "final_payload",
+        canonical_available = TRUE,
+        canonical_matches_message = TRUE
+      ),
       token_stats = list(tokens_used = 12L),
       plan = list(step = "x"),
       plan_history = list(),
@@ -425,6 +434,11 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
   aliased <- asa:::.attach_result_aliases(base, include_raw_response = FALSE)
   expect_equal(aliased$fold_stats$fold_count, 2L)
   expect_equal(aliased$status_code, 200L)
+  expect_true(is.list(aliased$final_payload))
+  expect_true(isTRUE(aliased$terminal_valid))
+  expect_equal(aliased$terminal_payload_hash, "abc123")
+  expect_equal(aliased$terminal_payload_source, "final_payload")
+  expect_true(is.list(aliased$payload_integrity))
   expect_equal(aliased$token_stats$tokens_used, 12L)
   expect_equal(aliased$action_ascii, "ascii")
   expect_false("raw_response" %in% names(aliased))

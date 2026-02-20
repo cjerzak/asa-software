@@ -88,3 +88,20 @@ To meet common journal expectations for a submission-ready measurement paper, th
 The ASA trace store is designed to make each measurement auditable.
 At minimum, it records (a) the record identifier and task configuration (including the codebook and temporal rule), (b) each retrieval action (query strings, tool responses, extracted snippets), and (c) the final structured output with confidence.
 This enables retrospective audits (follow the citations), re-filtering (apply stricter evidence rules), and reproducible aggregate statistics from a frozen trace store.
+
+\section{Downstream illustration: full results\label{sec:appendix-downstream}}
+
+This appendix provides the full regression output underlying the downstream illustration in Section~\ref{sec:downstream}.
+The key comparison is between models estimated on (i) an expert-only party-label construction and (ii) an expert plus ASA augmentation that retains an explicit abstention boundary.
+The primary purpose is to show that party-label measurement choices change sample composition (countries and legislature-years) and can therefore change applied inferences, even when headline coefficients point in similar directions.
+
+\input{./../Figures/tabGovOutcomes_ExpertsOnlyVVV0PT5_SEanalytical.tex}
+\input{./../Figures/tabGovOutcomes_ExpertsAndAgentVVV0PT5_SEanalytical.tex}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.48\linewidth]{Map_MissingnessByCountry_ExpertsOnlyVVV0PT5.pdf}
+  \includegraphics[width=0.48\linewidth]{Map_MissingnessByCountry_ExpertsAndAgentVVV0PT5.pdf}
+  \caption{Illustrative sample selection. The maps show the share of legislature-years failing a minimum party-coverage threshold under expert-only coding (left) versus expert plus ASA augmentation with abstention (right).}
+  \label{fig:appendix-missingness-maps}
+\end{figure}

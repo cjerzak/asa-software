@@ -11,6 +11,7 @@
 #./asa-software/tracked_reports/execution_summary_real.txt
 #./asa-software/tracked_reports/action_ascii_real.txt
 #./asa-software/tracked_reports/answer_pred_real.txt
+#./asa-software/tracked_reports/payload_release_audit_real.txt
 options(error=NULL)
 # install.packages( "~/Documents/asa-software/asa",repos = NULL, type = "source",force = F);
 # devtools::load_all('~/Documents/asa-software/asa')
@@ -248,5 +249,56 @@ jsonlite::write_json(
   auto_unbox = TRUE,
   pretty = TRUE,
   null = "null"
+)
+
+to_json_scalar <- function(x) {
+  txt <- tryCatch(
+    jsonlite::toJSON(x, auto_unbox = TRUE, null = "null"),
+    error = function(e) NA_character_
+  )
+  if (is.character(txt) && length(txt) > 1L) {
+    txt <- paste0(txt, collapse = "")
+  }
+  if (!is.character(txt) || length(txt) == 0L) {
+    return(NA_character_)
+  }
+  txt[[1]]
+}
+
+hash_scalar <- function(x) {
+  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
+    return(NA_character_)
+  }
+  digest::digest(enc2utf8(x), algo = "sha256")
+}
+
+payload_integrity <- attempt$execution$payload_integrity %||% list()
+canonical_text <- to_json_scalar(extracted[["json_data_canonical"]])
+released_text <- if (is.character(attempt$message) && length(attempt$message) == 1L) {
+  attempt$message
+} else {
+  to_json_scalar(attempt$message)
+}
+canonical_hash <- hash_scalar(canonical_text)
+released_hash <- hash_scalar(released_text)
+
+payload_release_audit <- list(
+  released_from = payload_integrity$released_from %||% NA_character_,
+  canonical_available = isTRUE(payload_integrity$canonical_available),
+  canonical_matches_message = isTRUE(payload_integrity$canonical_matches_message),
+  canonical_hash = canonical_hash,
+  released_hash = released_hash,
+  released_hash_matches_canonical = (
+    !is.na(canonical_hash) &&
+      !is.na(released_hash) &&
+      identical(canonical_hash, released_hash)
+  ),
+  truncation_signals = payload_integrity$truncation_signals %||% character(0),
+  json_repair_reasons = payload_integrity$json_repair_reasons %||% character(0)
+)
+
+readr::write_file(
+  jsonlite::toJSON(payload_release_audit, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  "~/Documents/asa-software/tracked_reports/payload_release_audit_real.txt"
 )
 cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "null"))
