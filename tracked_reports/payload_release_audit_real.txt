@@ -1,0 +1,10 @@
+{
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_hash": "6e74256c912789c0737e2bdcfd9367a4cf2d9ae22d0fd7d36d3c6c327f952bda",
+  "released_hash": "4280c9c6ba2ae1e6d06d373384560d89544878083a8d32f6fb0b260afe56dee2",
+  "released_hash_matches_canonical": false,
+  "truncation_signals": [],
+  "json_repair_reasons": ["residual_tool_calls_no_content", "field_status_canonical"]
+}

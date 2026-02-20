@@ -9,6 +9,7 @@
 #./asa-software/tracked_reports/fold_summary_real.txt
 #./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
+#./asa-software/tracked_reports/diagnostics_real.txt
 #./asa-software/tracked_reports/action_ascii_real.txt
 #./asa-software/tracked_reports/answer_pred_real.txt
 #./asa-software/tracked_reports/payload_release_audit_real.txt
@@ -193,11 +194,17 @@ readr::write_file(
   jsonlite::toJSON(
     list(
       elapsed_time = attempt$elapsed_time,
-      field_status = attempt$execution$field_status
+      field_status = attempt$execution$field_status,
+      diagnostics = attempt$execution$diagnostics
     ),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   ),
   "~/Documents/asa-software/tracked_reports/execution_summary_real.txt"
+)
+
+readr::write_file(
+  jsonlite::toJSON(attempt$execution$diagnostics, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  "~/Documents/asa-software/tracked_reports/diagnostics_real.txt"
 )
 
 # high-level action visualization (ASCII)

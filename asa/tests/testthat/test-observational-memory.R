@@ -281,6 +281,73 @@ test_that("canonical terminal payload demotions are reflected in field_status", 
   expect_false(identical(as.character(synced_r$birth_place_source$status), "found"))
 })
 
+test_that("field-status diagnostics include demotion counts and reason buckets", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  collect_diag <- reticulate::py_get_attr(prod, "_collect_field_status_diagnostics")
+  merge_diag <- reticulate::py_get_attr(prod, "_merge_field_status_diagnostics")
+
+  field_status <- list(
+    prior_occupation = list(
+      status = "unknown",
+      value = "Unknown",
+      source_url = NULL,
+      evidence = "finalization_policy_demotion_unverified",
+      descriptor = "string|Unknown"
+    ),
+    prior_occupation_source = list(
+      status = "unknown",
+      value = NULL,
+      source_url = NULL,
+      evidence = "finalization_policy_demotion_unverified",
+      descriptor = "string|null"
+    ),
+    education_source = list(
+      status = "unknown",
+      value = NULL,
+      source_url = NULL,
+      evidence = "source_consistency_demotion",
+      descriptor = "string|null"
+    )
+  )
+
+  collected <- reticulate::py_to_r(collect_diag(field_status = field_status))
+  expect_equal(as.integer(collected$field_demotions_count), 3L)
+  expect_true("prior_occupation" %in% as.character(collected$field_demotion_fields))
+  expect_equal(
+    as.integer(collected$field_demotion_reason_counts$finalization_policy_demotion_unverified),
+    2L
+  )
+  expect_equal(
+    as.integer(collected$field_demotion_reason_counts$source_consistency_demotion),
+    1L
+  )
+
+  merged <- reticulate::py_to_r(merge_diag(
+    diagnostics = list(
+      field_demotions_count = 1L,
+      field_demotion_reason_counts = list(finalization_policy_demotion_unverified = 1L),
+      field_demotion_fields = list("stale_field")
+    ),
+    field_status = field_status
+  ))
+  expect_equal(as.integer(merged$field_demotions_count), 3L)
+  expect_equal(
+    as.integer(merged$field_demotion_reason_counts$finalization_policy_demotion_unverified),
+    2L
+  )
+  expect_equal(
+    as.integer(merged$field_demotion_reason_counts$source_consistency_demotion),
+    1L
+  )
+  expect_true("stale_field" %in% as.character(merged$field_demotion_fields))
+  expect_true("prior_occupation_source" %in% as.character(merged$field_demotion_fields))
+})
+
 test_that("scratchpad promotions require provenance when schema has sibling source field", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",

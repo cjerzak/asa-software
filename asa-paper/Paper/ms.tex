@@ -83,50 +83,6 @@ In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countri
 \noindent\textbf{Keywords:} political elites; measurement; tool-using retrieval; replication; temporal leakage.
 \spacingset{2}
 
-\begin{figure}[htb]
-  \centering
-  \begin{tikzpicture}[
-    font=\small,
-    node distance=9mm and 7mm,
-    box/.style={rounded corners, draw=black, thick, fill=gray!3, inner sep=4pt, align=left},
-    pill/.style={rounded corners=9pt, draw=black, thick, fill=white, inner sep=5pt, align=left},
-    arr/.style={-{Stealth[length=3mm]}, thick},
-  ]
-    \node[box, text width=0.23\linewidth] (input) {
-      \textbf{Input (panel record)}\\[-1pt]
-      \(\langle\) person, country, year \(\rangle\)\\
-      + expert \textbf{closed codebook}\\
-      + task schema
-    };
-
-    \node[box, right=of input, text width=0.30\linewidth] (agent) {
-      \textbf{Auditable Search Agent (ASA)}\\[-1pt]
-      \(\bullet\) retrieval-augmented, tool-using controller\\
-      \(\bullet\) \textbf{temporal governance} (``as-of'' constraints)\\
-      \(\bullet\) \textbf{provenance capture}: queries, snippets, URLs, timestamps\\
-      \(\bullet\) \textbf{abstain / route-to-human} on weak evidence
-    };
-
-    \node[box, right=of agent, text width=0.23\linewidth] (output) {
-      \textbf{Output (verifiable)}\\[-1pt]
-      label \(\in\) codebook\\
-      + one-sentence rationale\\
-      + source citations\\
-      + full trace archived
-    };
-
-    \draw[arr] (input) -- (agent);
-    \draw[arr] (agent) -- (output);
-
-    \node[pill, below=9mm of agent, text width=0.92\linewidth] (why) {
-      \textbf{Why it matters for inference:} avoid temporally ``post-treatment'' information leaks when coding pre-period attributes \citep{montgomery2018conditioning}; enable replication via stored evidence trails.
-    };
-    \draw[arr] (agent.south) -- (why.north);
-  \end{tikzpicture}%
-  \caption{Visual abstract: the ASA treats web retrieval as a governed, auditable measurement process rather than an opaque chat interaction.}
-  \label{fig:visual-abstract}
-\end{figure}
-
 \section{Introduction}
 
 Large-\(N\) political-elite datasets underpin research on representation, accountability, and governance, but assembling them requires repeated, error-prone measurement of categorical attributes (e.g., party affiliation) across countries and time.
@@ -176,7 +132,7 @@ Temporal governance therefore belongs \emph{inside} the measurement protocol, no
 Let \(X_{it}\) denote the target attribute for unit \(i\) at time \(t\) (e.g., party affiliation in observation year \(t\)).
 Researchers often use \(X_{it}\) as a covariate when estimating relationships with outcomes realized after \(t\), \(Y_{i,t'>t}\).
 Web-based coding observes a set of sources \(S_{it}\) whose content and availability depend on time: some sources are available at or before \(t\) (\(S^{\le t}_{it}\)), while others are published or updated after \(t\) (\(S^{>t}_{it}\)).
-When a measurement procedure for \(X_{it}\) draws on \(S^{>t}_{it}\), it can implicitly incorporate information downstream of \(Y_{i,t'>t}\) (e.g., retrospective biographies updated after a party switch), creating look-ahead leakage and a close analogue of post-treatment conditioning.\footnote{Recent evaluation work in the LLM literature emphasizes that ``as-of'' constraints are non-optional for temporally valid measurement when sources evolve.}
+When a measurement procedure for \(X_{it}\) draws on \(S^{>t}_{it}\), it can implicitly incorporate information downstream of \(Y_{i,t'>t}\) (e.g., retrospective biographies updated after a party switch), creating look-ahead leakage and a close analogue of post-treatment conditioning.\footnote{See \citet{paleka2025pitfalls} for a broader discussion of temporal validity pitfalls when ``as-of'' constraints are not enforced in evaluation settings.}
 
 \begin{figure}[htb]
   \centering
@@ -530,7 +486,10 @@ For sensitive or non-verifiable attributes (e.g., ethnicity without self-identif
 \section{Transparency, reproducibility, and data availability\label{sec:transparency}}
 
 ASA produces two primary research artifacts: (i) a structured dataset of labels (including abstentions and confidence flags), and (ii) an auditable trace store that documents the evidence environment that produced each label.
-To support replication, a submission-ready package should (a) freeze the trace store used for reported results, (b) include scripts that reproduce all tables and figures from the frozen store, and (c) document the task specification (codebooks, temporal rules, output schema).
+To support replication, we distinguish two targets: (i) recomputing reported metrics from a \emph{frozen trace store} (fully reproducible), versus (ii) rerunning fresh retrieval on the contemporary web (not expected to match).
+Concretely, a submission-ready package should (a) snapshot the trace store used for reported results, (b) include scripts that reproduce all tables and figures from that snapshot, and (c) version the task specification (codebooks, temporal rules, output schema) that governed retrieval.
+Where legally feasible, key sources can be augmented with lightweight stability aids (e.g., content hashes or archived snapshots) so that trace-based audits remain possible even under link rot.
+More generally, recent work emphasizes that raw logs are necessary but not sufficient for claim-level auditability in agentic systems, motivating structured traces that make evidence explicit and machine-checkable \citep{rasheed2026fluent}.
 
 Because the underlying elite panel and full trace store may be subject to access constraints, we recommend a controlled-access transparency strategy: release the \texttt{asa} software, schema definitions, and de-identified example traces immediately; and provide reviewers (and later readers) with an access pathway for full traces and expert codebooks consistent with ethical and legal constraints.
 
@@ -551,7 +510,7 @@ Trace storage policies should minimize unnecessary retention of personal data wh
 \section{Conclusion}
 
 For political-elite research, the central question is not whether LLMs can answer factual questions, but whether they can be integrated into a \emph{measurement protocol} that is auditable, comparable, temporally well-defined, and cost-effective at scale.
-The verifiable search agent methodology operationalizes these requirements through closed codebooks, evidence-first outputs, strict trace preservation, and conservative abstention.
+The Auditable Search Agent protocol operationalizes these requirements through closed codebooks, evidence-first outputs, strict trace preservation, and conservative abstention.
 This design turns retrieval-augmented agents into replicable instruments for dataset construction rather than opaque assistants.
 
 %\section*{Acknowledgments}

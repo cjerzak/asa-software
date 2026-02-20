@@ -1,1 +1,51 @@
-[]
+{
+  "version": 1,
+  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "[ANCHORED] FIELD_EXTRACT: birth_place = Beni (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "[ANCHORED] FIELD_EXTRACT: political_party = Movimiento Al Socialismo - MAS (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "[ANCHORED] FIELD_EXTRACT: ethnicity = Moxeño Trinitario (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "Ramona Moye Camaconi is a titular deputy for the Beni department, representing the Movement for Socialism (MAS). (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "She represents the Moxeño Trinitario indigenous group. (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "Government records list her constituency as 'Circunscripción 09' (Uninominal) or 'Circunscripción Especial' depending on the specific list view. (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "She is an inhabitant of the Isiboro Sécure National Park and Indigenous Territory (TIPNIS). (source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "In May 2019, Moye admitted that coca is produced in the TIPNIS territory, stating it is for traditional consumption. (source: https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html)", "Moye was denounced for allegedly presenting falsified medical leave requests to the Chamber of Deputies. (source: https://sisin.oep.org.bo/medios_digitales/14455/detalle)", "She has been involved in legal conflicts accusing other indigenous people (e.g., Yuracaré ethnicity) regarding opposition to the TIPNIS road construction. (source: https://ftp.derechos.org/nizkor/bolivia/doc/tipnis718.html)"],
+  "decisions": [],
+  "open_questions": ["What is her specific educational attainment?", "What was her specific occupation prior to becoming a deputy (beyond being a TIPNIS inhabitant)?", "Does she have a publicly disclosed disability status?"],
+  "sources": [
+    {
+      "tool": "Search",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "title": "Vicepresidencia del Estado Plurinacional de Bolivia - Parlamentarios",
+      "note": "Primary bio source: confirms birth year (1982), place (Beni), ethnicity (Moxeño Trinitario), and party (MAS)."
+    },
+    {
+      "tool": "Search",
+      "url": "https://sisin.oep.org.bo/medios_digitales/14455/detalle",
+      "title": "Denuncia por bajas médicas falsificadas",
+      "note": "Details on legal denunciation regarding falsified medical leave."
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
+      "title": "Ramona Moye Camaconi Flickr Entry",
+      "note": "Confirmation of name and role."
+    },
+    {
+      "tool": "Search",
+      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "title": "Diputada oficialista amenaza a indígenas",
+      "note": "Details on TIPNIS origin and political stance."
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html",
+      "title": "Diputada del MAS admite coca en TIPNIS",
+      "note": "Coca production admission."
+    },
+    {
+      "tool": "Search",
+      "url": "https://ftp.derechos.org/nizkor/bolivia/doc/tipnis718.html",
+      "title": "Acusaciones contra indígenas Yuarakaré",
+      "note": "Conflict details."
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "title": "Vicepresidencia del Estado",
+      "note": null
+    }
+  ],
+  "warnings": []
+}

@@ -63,6 +63,46 @@ test_that(".extract_json_from_trace returns NULL for structured traces without t
   expect_null(parsed)
 })
 
+test_that(".extract_json_from_trace parses structured traces with terminal AI JSON", {
+  terminal <- list(
+    birth_year = 1982L,
+    birth_place = "Beni",
+    confidence = "Low"
+  )
+  trace_json <- jsonlite::toJSON(
+    list(
+      format = "asa_trace_v1",
+      messages = list(
+        list(message_type = "HumanMessage", content = "Find person", tool_calls = NULL),
+        list(
+          message_type = "AIMessage",
+          content = "",
+          tool_calls = list(list(name = "Search", args = list(query = "person"), id = "call_1"))
+        ),
+        list(message_type = "ToolMessage", name = "Search", content = "__START_OF_SOURCE 1__ ...", tool_calls = NULL),
+        list(
+          message_type = "AIMessage",
+          content = jsonlite::toJSON(terminal, auto_unbox = TRUE, null = "null"),
+          tool_calls = list()
+        )
+      )
+    ),
+    auto_unbox = TRUE,
+    pretty = FALSE,
+    null = "null"
+  )
+
+  parsed <- asa:::.extract_json_from_trace(trace_json)
+  expect_true(is.list(parsed) && length(parsed) > 0)
+  expect_equal(as.integer(parsed$birth_year), 1982L)
+  expect_equal(as.character(parsed$birth_place), "Beni")
+  expect_equal(as.character(parsed$confidence), "Low")
+
+  extracted <- extract_agent_results(trace_json)
+  expect_true(is.list(extracted$json_data_canonical))
+  expect_equal(as.integer(extracted$json_data_canonical$birth_year), 1982L)
+})
+
 test_that(".extract_json_from_trace ignores ToolMessage envelope payloads", {
   legacy_trace <- paste(
     "ToolMessage(content=",

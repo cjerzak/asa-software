@@ -3950,6 +3950,7 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     counters = (
         "grounding_blocks_count",
         "source_consistency_fixes_count",
+        "field_demotions_count",
         "off_target_tool_results_count",
         "empty_tool_results_count",
         "retry_or_replan_events",
@@ -3962,6 +3963,19 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
             out[key] = 0
     out["grounding_blocked_fields"] = list(existing.get("grounding_blocked_fields") or [])[:64]
     out["source_consistency_fixes"] = list(existing.get("source_consistency_fixes") or [])[:64]
+    out["field_demotion_fields"] = list(existing.get("field_demotion_fields") or [])[:64]
+    demotion_reason_counts_raw = existing.get("field_demotion_reason_counts") or {}
+    demotion_reason_counts: Dict[str, int] = {}
+    if isinstance(demotion_reason_counts_raw, dict):
+        for raw_reason, raw_count in demotion_reason_counts_raw.items():
+            reason = str(raw_reason or "").strip()
+            if not reason:
+                continue
+            try:
+                demotion_reason_counts[reason] = max(0, int(raw_count))
+            except Exception:
+                demotion_reason_counts[reason] = 0
+    out["field_demotion_reason_counts"] = demotion_reason_counts
     out["retrieval_interventions"] = list(existing.get("retrieval_interventions") or [])[:64]
     return out
 
@@ -4032,6 +4046,8 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     normalized = _normalize_field_status_map(field_status, expected_schema=None)
     blocked_fields: List[str] = []
     consistency_fixes: List[str] = []
+    demotion_fields: List[str] = []
+    demotion_reason_counts: Dict[str, int] = {}
     for key, entry in (normalized or {}).items():
         if not isinstance(entry, dict):
             continue
@@ -4040,11 +4056,17 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
             blocked_fields.append(str(key))
         if "source_consistency" in evidence:
             consistency_fixes.append(str(key))
+        if "demotion" in evidence:
+            demotion_fields.append(str(key))
+            demotion_reason_counts[evidence] = int(demotion_reason_counts.get(evidence, 0)) + 1
     return {
         "grounding_blocks_count": len(blocked_fields),
         "grounding_blocked_fields": blocked_fields[:64],
         "source_consistency_fixes_count": len(consistency_fixes),
         "source_consistency_fixes": consistency_fixes[:64],
+        "field_demotions_count": len(demotion_fields),
+        "field_demotion_fields": demotion_fields[:64],
+        "field_demotion_reason_counts": demotion_reason_counts,
     }
 
 
@@ -4059,6 +4081,10 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
         out.get("source_consistency_fixes_count", 0),
         field_diag.get("source_consistency_fixes_count", 0),
     ))
+    out["field_demotions_count"] = int(max(
+        out.get("field_demotions_count", 0),
+        field_diag.get("field_demotions_count", 0),
+    ))
     for blocked_field in field_diag.get("grounding_blocked_fields", []):
         out["grounding_blocked_fields"] = _append_limited_unique(
             out.get("grounding_blocked_fields"),
@@ -4071,6 +4097,25 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             fix_field,
             max_items=64,
         )
+    for demoted_field in field_diag.get("field_demotion_fields", []):
+        out["field_demotion_fields"] = _append_limited_unique(
+            out.get("field_demotion_fields"),
+            demoted_field,
+            max_items=64,
+        )
+    reason_counts = out.get("field_demotion_reason_counts") or {}
+    if not isinstance(reason_counts, dict):
+        reason_counts = {}
+    for raw_reason, raw_count in (field_diag.get("field_demotion_reason_counts") or {}).items():
+        reason = str(raw_reason or "").strip()
+        if not reason:
+            continue
+        try:
+            count = max(0, int(raw_count))
+        except Exception:
+            count = 0
+        reason_counts[reason] = max(int(reason_counts.get(reason, 0) or 0), count)
+    out["field_demotion_reason_counts"] = reason_counts
     return out
 
 

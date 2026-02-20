@@ -1,3 +1,25 @@
 {
-  "fold_count": 0
+  "fold_count": 2,
+  "fold_messages_removed": 6,
+  "fold_total_messages_removed": 12,
+  "fold_chars_input": 6925,
+  "fold_chars_input_raw": 6925,
+  "fold_input_truncated": false,
+  "fold_prompt_char_budget": 18000,
+  "fold_summary_chars": 543,
+  "fold_summary_total_chars": 3909,
+  "fold_summary_delta_chars": 543,
+  "fold_trigger_reason": "message_threshold",
+  "fold_safe_boundary_idx": 7,
+  "fold_compression_ratio": 12.7532,
+  "fold_parse_success": true,
+  "fold_summarizer_latency_m": 0.7719,
+  "fold_field_recovery_count": 0,
+  "fold_masked_tool_messages": 1,
+  "fold_anchored_facts_preserved": 0,
+  "fold_ungrounded_facts": 0,
+  "fold_degraded": false,
+  "fold_fallback_applied": false,
+  "fold_fallback_reason": null,
+  "fold_parse_error_type": null
 }
