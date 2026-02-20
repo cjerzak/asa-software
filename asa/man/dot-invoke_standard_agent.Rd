@@ -15,7 +15,13 @@
   search_budget_limit = NULL,
   unknown_after_searches = NULL,
   finalize_on_all_fields_resolved = NULL,
-  use_plan_mode = FALSE
+  field_rules = NULL,
+  source_policy = NULL,
+  retry_policy = NULL,
+  finalization_policy = NULL,
+  query_templates = NULL,
+  use_plan_mode = FALSE,
+  model_timeout_s = NULL
 )
 }
 \description{

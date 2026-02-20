@@ -1,38 +1,32 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] FIELD_EXTRACT: birth_place = TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure), Beni (source: https://sisin.oep.org.bo/medios_digitales/34363/detalle)", "[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi was elected as the titular 'Diputada Especial Indígena' for the Beni department (Circunscripción Especial Indígena) representing the Movimiento Al Socialismo (MAS) party in the 2014 elections.", "Her substitute (suplente) in the legislature was Eloy Cartagena Yuhamona."],
+  "facts": ["[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi was elected as the Diputada Especial Indígena (Special Indigenous Deputy) for Beni in the 2014 Bolivian general elections representing the MAS party (source: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html).", "She is an inhabitant of the TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure) (source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis).", "She supports the construction of the highway through the TIPNIS territory, a controversial project opposed by some indigenous groups (source: https://www.cejis.sinnersite.com/noticias/chavez-no-se-puede-jugar-con-el-estomago-de-los-indigenas).", "Her substitute (suplente) in the 2014-2020 term was Eloy Cartagena Yuhamona (source: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html).", "She won her constituency with approximately 83% of the vote (source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni).", "Identified spouse: Carlos Fabricano (source: https://www.idcrawl.com/ramona-moye).", "Constituency codes associated with her: Circunscripción Especial Indígena, also listed as Circunscripción 09 or 06 in various administrative lists (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)."],
   "decisions": [],
-  "open_questions": "Does specific information exist regarding her educational attainment levels (e.g., degree, secondary school) beyond her leadership roles?",
+  "open_questions": ["What is her specific educational attainment/level? (Only 'Diplomado' found for other MPs in list, no specific degree text confirmed for her).", "Confirm the specific community in TIPNIS (Nueva Lacea is mentioned in context of a theft she prosecuted, but needs verification as birth place)."],
   "sources": [
     {
       "tool": "Search",
-      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
-      "title": "BANCADAS DE UD Y DEL MAS EN EL BENI",
-      "note": "Election results and role confirmation"
-    },
-    {
-      "tool": "Search",
-      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados",
-      "title": "Diputada Moye del MAS es denunciada...",
-      "note": "Details on falsified medical leave allegation"
-    },
-    {
-      "tool": "Search",
       "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "title": "Vicepresidencia del Estado Profile (Inferred)",
-      "note": "Source for birth date and prior occupation from scratchpad"
+      "title": "Vicepresidencia del Estado - Ramona Moye Profile",
+      "note": "Official biography source containing birth date and prior occupation."
     },
     {
       "tool": "Search",
-      "url": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
-      "title": "OEP Media Detail",
-      "note": "Source for birth place from scratchpad"
+      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "title": "Bancadas de UD y del MAS en el Beni",
+      "note": "Election results and substitute details."
     },
     {
       "tool": "Search",
-      "url": "https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria",
-      "title": "Diputada indígena del MAS rechaza justicia comunitaria",
-      "note": "Controversy regarding community justice"
+      "url": "https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
+      "title": "El MAS gana en el Tipnis",
+      "note": "Election statistics."
+    },
+    {
+      "tool": "Search",
+      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "title": "Diputada oficialista amenaza a indígenas",
+      "note": "Details on political stance regarding TIPNIS highway."
     },
     {
       "tool": "OpenWebpage",
@@ -47,5 +41,5 @@
       "note": null
     }
   ],
-  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (Born January 7, 1982) (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: She secured the seat with approximately 83% of the votes in the TIPNIS region, defeating the UD candidate.", "UNGROUNDED: She faced legal controversy when denounced by Deputy Costa for allegedly presenting falsified medical leave requests (bajas médicas) to obtain licenses in the Chamber of Deputies.", "UNGROUNDED: Moye threatened indigenous groups opposing the TIPNIS road construction and rejected community justice in a case involving the theft of an outboard motor, opting for ordinary justice instead.", "UNGROUNDED: Disambiguation: She is distinct from 'Comandanta Ramona' of the EZLN (Mexico)."]
+  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: Birth date: January 7, 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)."]
 }

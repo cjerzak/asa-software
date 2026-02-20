@@ -3787,3 +3787,224 @@ test_that("fold summarizer prompt includes initial disambiguation constraints", 
   expect_true(grepl("Ramona Moye Camaconi", last_prompt, fixed = TRUE))
   expect_true(grepl("Country: Bolivia", last_prompt, fixed = TRUE))
 })
+
+test_that("standard graph does not append duplicate terminal JSON for sparse terminal payloads", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "class _SingleTerminalJSONLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools, tool_choice=None):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(content=",
+    deparse('{"field_a":"known_value","field_b":"Unknown","field_c":"Unknown","field_d":"Unknown"}'),
+    ")\n",
+    "single_terminal_json_llm = _SingleTerminalJSONLLM()\n"
+  ))
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$single_terminal_json_llm,
+    tools = list(),
+    checkpointer = NULL
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return strict JSON")),
+      expected_schema = list(
+        field_a = "string",
+        field_b = "string",
+        field_c = "string",
+        field_d = "string"
+      ),
+      expected_schema_source = "explicit"
+    ),
+    config = list(
+      recursion_limit = as.integer(12),
+      configurable = list(thread_id = "test_single_terminal_json_no_duplicate")
+    )
+  )
+
+  expect_equal(as.integer(reticulate::py$single_terminal_json_llm$calls), 1L)
+
+  terminal_json_count <- sum(vapply(final_state$messages, function(msg) {
+    msg_type <- tryCatch(as.character(msg$`__class__`$`__name__`), error = function(e) character(0))
+    if (!(length(msg_type) > 0 && identical(msg_type[[1]], "AIMessage"))) {
+      return(FALSE)
+    }
+    tool_calls <- tryCatch(msg$tool_calls, error = function(e) NULL)
+    if (!is.null(tool_calls) && length(tool_calls) > 0) {
+      return(FALSE)
+    }
+    content <- tryCatch(as.character(msg$content), error = function(e) "")
+    nzchar(content) && startsWith(trimws(content), "{")
+  }, logical(1)))
+  expect_equal(terminal_json_count, 1L)
+})
+
+test_that("memory graph does not append duplicate terminal JSON for sparse terminal payloads", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "class _SingleTerminalJSONMemoryLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools, tool_choice=None):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(content=",
+    deparse('{"field_a":"known_value","field_b":"Unknown","field_c":"Unknown","field_d":"Unknown"}'),
+    ")\n",
+    "single_terminal_json_memory_llm = _SingleTerminalJSONMemoryLLM()\n"
+  ))
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$single_terminal_json_memory_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(999),
+    keep_recent = as.integer(2),
+    fold_char_budget = as.integer(999999),
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "Return strict JSON")),
+      expected_schema = list(
+        field_a = "string",
+        field_b = "string",
+        field_c = "string",
+        field_d = "string"
+      ),
+      expected_schema_source = "explicit",
+      summary = "",
+      archive = list(),
+      fold_stats = reticulate::dict(fold_count = 0L)
+    ),
+    config = list(
+      recursion_limit = as.integer(12),
+      configurable = list(thread_id = "test_single_terminal_json_no_duplicate_memory")
+    )
+  )
+
+  expect_equal(as.integer(reticulate::py$single_terminal_json_memory_llm$calls), 1L)
+
+  terminal_json_count <- sum(vapply(final_state$messages, function(msg) {
+    msg_type <- tryCatch(as.character(msg$`__class__`$`__name__`), error = function(e) character(0))
+    if (!(length(msg_type) > 0 && identical(msg_type[[1]], "AIMessage"))) {
+      return(FALSE)
+    }
+    tool_calls <- tryCatch(msg$tool_calls, error = function(e) NULL)
+    if (!is.null(tool_calls) && length(tool_calls) > 0) {
+      return(FALSE)
+    }
+    content <- tryCatch(as.character(msg$content), error = function(e) "")
+    nzchar(content) && startsWith(trimws(content), "{")
+  }, logical(1)))
+  expect_equal(terminal_json_count, 1L)
+})
+
+test_that("finalization policy keeps allowlisted unsourced meta fields while demoting factual unsourced values", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  field_status <- list(
+    confidence = list(
+      status = "found",
+      value = "Low",
+      source_url = NULL,
+      descriptor = "Low|Medium|High",
+      evidence = "terminal_payload_source_backed"
+    ),
+    justification = list(
+      status = "found",
+      value = "Evidence is limited but consistent.",
+      source_url = NULL,
+      descriptor = "string",
+      evidence = "terminal_payload_source_backed"
+    ),
+    prior_occupation = list(
+      status = "found",
+      value = "teacher",
+      source_url = NULL,
+      descriptor = "string",
+      evidence = "terminal_payload_source_backed"
+    ),
+    prior_occupation_source = list(
+      status = "found",
+      value = "https://example.com/profile",
+      source_url = "https://example.com/profile",
+      descriptor = "string|null",
+      evidence = "terminal_payload_source_backed"
+    )
+  )
+
+  out <- prod$`_enforce_finalization_policy_on_field_status`(
+    field_status,
+    list(
+      require_verified_for_non_unknown = TRUE,
+      unsourced_allowlist_patterns = list("^confidence$", "^justification$")
+    )
+  )
+
+  expect_equal(tolower(as.character(out$confidence$status)), "found")
+  expect_equal(tolower(as.character(out$justification$status)), "found")
+  expect_equal(tolower(as.character(out$prior_occupation$status)), "unknown")
+  expect_equal(as.character(out$prior_occupation$value), "Unknown")
+  expect_equal(tolower(as.character(out$prior_occupation_source$status)), "unknown")
+})
+
+test_that("source policy scoring prefers authority detail pages over search/list pages", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  source_policy <- list(
+    authority_host_weights = list("official.example" = 1.0),
+    prefer_detail_pages = TRUE,
+    detail_page_url_penalties = list("/search", "tag=", "/list")
+  )
+
+  detail_score <- as.numeric(prod$`_source_policy_score_candidate`(
+    list(
+      value_support = 0.8,
+      source_quality = 0.7,
+      source_specificity = 0.6,
+      entity_overlap = 0.7,
+      source_url = "https://official.example/profiles/ramona-moye"
+    ),
+    source_policy
+  ))
+  search_score <- as.numeric(prod$`_source_policy_score_candidate`(
+    list(
+      value_support = 0.8,
+      source_quality = 0.7,
+      source_specificity = 0.6,
+      entity_overlap = 0.7,
+      source_url = "https://official.example/search?q=ramona+moye"
+    ),
+    source_policy
+  ))
+
+  expect_gt(detail_score, search_score)
+})

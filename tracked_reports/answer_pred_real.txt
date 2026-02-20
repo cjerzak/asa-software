@@ -8,13 +8,13 @@
   "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "disability_status": "Unknown",
   "disability_source": null,
-  "birth_place": "TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure), Beni",
-  "birth_place_source": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
-  "birth_year": 1982,
-  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "birth_place": "Unknown",
+  "birth_place_source": null,
+  "birth_year": "Unknown",
+  "birth_year_source": null,
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "Low",
-  "justification": "Source-backed searches resolved 8 fields (including prior_occupation, class_background, prior_occupation_source), while 10 fields remain unknown due to limited verifiable evidence."
+  "confidence": "High",
+  "justification": "Official biography from the Vicepresidencia confirms birth date and prior occupation as an indigenous community leader. Education and specific birth place are not detailed in official sources."
 }

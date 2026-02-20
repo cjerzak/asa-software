@@ -101,13 +101,14 @@ EXPECTED_SCHEMA <- list(
 )
 
 system("brew services start tor")
+message(sprintf("Starting run_task at %s", format(Sys.time(), "%Y-%m-%d %H:%M:%S")))
 attempt <- run_task(
     prompt = prompt,
     #output_format = "json",
     output_format = "raw",
     expected_fields = NULL,
     expected_schema = EXPECTED_SCHEMA,
-    verbose = FALSE,
+    verbose = TRUE,
     use_plan_mode = TRUE, 
     agent = initialize_agent(
       #backend = "gemini", model = "gemini-2.5-pro",

@@ -3,10 +3,13 @@
 import os
 import copy
 import json
+import hashlib
 import logging
+import queue
 import random
 import re
 import sys
+import threading
 import time
 import uuid
 from urllib.parse import urlparse
@@ -1109,6 +1112,459 @@ try:
 except Exception:
     _EVIDENCE_MIN_PROMOTE_SCORE = None
 
+_DEFAULT_SOURCE_POLICY: Dict[str, Any] = {
+    "deny_host_fragments": list(_LOW_SIGNAL_HOST_FRAGMENTS),
+    "allow_host_fragments": [],
+    "min_candidate_score": 0.55,
+    "min_source_quality": 0.20,
+    "min_source_specificity": 0.15,
+    "require_source_for_non_unknown": True,
+    "require_entity_anchor": False,
+    "authority_host_weights": {
+        ".gob.": 0.98,
+        ".gov": 0.96,
+        ".edu": 0.90,
+        "parliament": 0.88,
+        "assembly": 0.86,
+        "official": 0.84,
+    },
+    "prefer_detail_pages": True,
+    "detail_page_url_penalties": [
+        "/search",
+        "?search=",
+        "tag=",
+        "category",
+        "archive",
+        "debut_",
+        "slideshow",
+        "/list",
+        "/index",
+    ],
+    "max_candidates_per_field": int(_EVIDENCE_MAX_CANDIDATES_PER_FIELD),
+}
+
+_DEFAULT_RETRY_POLICY: Dict[str, Any] = {
+    "max_attempts_per_field": int(_DEFAULT_UNKNOWN_AFTER_SEARCHES),
+    "rewrite_after_streak": int(_LOW_SIGNAL_STREAK_REWRITE_THRESHOLD),
+    "stop_after_streak": int(_LOW_SIGNAL_STREAK_STOP_THRESHOLD),
+    "rewrite_strategies": [
+        "entity_plus_field_keyword",
+        "site_constrained",
+        "language_variant",
+    ],
+}
+
+_DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
+    "require_verified_for_non_unknown": True,
+    "allow_partial": True,
+    "idempotent_finalize": True,
+    "skip_finalize_if_terminal_valid": True,
+    "terminal_dedupe_mode": "hash",
+    "unsourced_allowlist_patterns": [
+        "^confidence$",
+        "^justification$",
+        "^notes?$",
+    ],
+}
+
+_DEFAULT_QUERY_TEMPLATES: Dict[str, str] = {
+    "focused_field_query": "{entity} {field}",
+    "source_constrained_query": "site:{domain} {entity} {field}",
+    "disambiguation_query": "{entity} {field} biography profile",
+}
+
+
+def _normalize_host_fragment_list(raw: Any, *, max_items: int = 64) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for item in list(raw or []):
+        token = str(item or "").strip().lower()
+        if not token or token in seen:
+            continue
+        seen.add(token)
+        out.append(token)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _normalize_url_fragment_list(raw: Any, *, max_items: int = 64) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for item in list(raw or []):
+        token = str(item or "").strip().lower()
+        if not token or token in seen:
+            continue
+        seen.add(token)
+        out.append(token)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _normalize_host_weight_map(raw: Any, *, max_items: int = 64) -> Dict[str, float]:
+    out: Dict[str, float] = {}
+    if not isinstance(raw, dict):
+        return out
+    for key, value in raw.items():
+        fragment = str(key or "").strip().lower()
+        if not fragment:
+            continue
+        try:
+            weight = float(value)
+        except Exception:
+            continue
+        out[fragment] = _clamp01(weight, default=0.0)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _normalize_regex_pattern_list(raw: Any, *, max_items: int = 64) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for item in list(raw or []):
+        pattern = str(item or "").strip()
+        if not pattern or pattern in seen:
+            continue
+        try:
+            re.compile(pattern)
+        except Exception:
+            continue
+        seen.add(pattern)
+        out.append(pattern)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
+    policy = dict(_DEFAULT_SOURCE_POLICY)
+    if isinstance(raw_policy, dict):
+        policy.update(raw_policy)
+    try:
+        min_candidate_score = float(policy.get("min_candidate_score", _DEFAULT_SOURCE_POLICY["min_candidate_score"]))
+    except Exception:
+        min_candidate_score = float(_DEFAULT_SOURCE_POLICY["min_candidate_score"])
+    try:
+        min_source_quality = float(policy.get("min_source_quality", _DEFAULT_SOURCE_POLICY["min_source_quality"]))
+    except Exception:
+        min_source_quality = float(_DEFAULT_SOURCE_POLICY["min_source_quality"])
+    try:
+        min_source_specificity = float(policy.get("min_source_specificity", _DEFAULT_SOURCE_POLICY["min_source_specificity"]))
+    except Exception:
+        min_source_specificity = float(_DEFAULT_SOURCE_POLICY["min_source_specificity"])
+    try:
+        max_candidates = int(policy.get("max_candidates_per_field", _EVIDENCE_MAX_CANDIDATES_PER_FIELD))
+    except Exception:
+        max_candidates = int(_EVIDENCE_MAX_CANDIDATES_PER_FIELD)
+    authority_weights = _normalize_host_weight_map(
+        policy.get("authority_host_weights", _DEFAULT_SOURCE_POLICY["authority_host_weights"])
+    )
+    if not authority_weights:
+        authority_weights = _normalize_host_weight_map(_DEFAULT_SOURCE_POLICY["authority_host_weights"])
+    return {
+        "deny_host_fragments": _normalize_host_fragment_list(
+            policy.get("deny_host_fragments", _DEFAULT_SOURCE_POLICY["deny_host_fragments"])
+        ),
+        "allow_host_fragments": _normalize_host_fragment_list(
+            policy.get("allow_host_fragments", _DEFAULT_SOURCE_POLICY["allow_host_fragments"])
+        ),
+        "min_candidate_score": _clamp01(min_candidate_score, default=_DEFAULT_SOURCE_POLICY["min_candidate_score"]),
+        "min_source_quality": _clamp01(min_source_quality, default=_DEFAULT_SOURCE_POLICY["min_source_quality"]),
+        "min_source_specificity": _clamp01(min_source_specificity, default=_DEFAULT_SOURCE_POLICY["min_source_specificity"]),
+        "require_source_for_non_unknown": bool(
+            policy.get("require_source_for_non_unknown", _DEFAULT_SOURCE_POLICY["require_source_for_non_unknown"])
+        ),
+        "require_entity_anchor": bool(
+            policy.get("require_entity_anchor", _DEFAULT_SOURCE_POLICY["require_entity_anchor"])
+        ),
+        "authority_host_weights": authority_weights,
+        "prefer_detail_pages": bool(
+            policy.get("prefer_detail_pages", _DEFAULT_SOURCE_POLICY["prefer_detail_pages"])
+        ),
+        "detail_page_url_penalties": _normalize_url_fragment_list(
+            policy.get("detail_page_url_penalties", _DEFAULT_SOURCE_POLICY["detail_page_url_penalties"])
+        ),
+        "max_candidates_per_field": max(1, int(max_candidates)),
+    }
+
+
+def _normalize_retry_policy(raw_policy: Any) -> Dict[str, Any]:
+    policy = dict(_DEFAULT_RETRY_POLICY)
+    if isinstance(raw_policy, dict):
+        policy.update(raw_policy)
+    try:
+        max_attempts = int(policy.get("max_attempts_per_field", _DEFAULT_RETRY_POLICY["max_attempts_per_field"]))
+    except Exception:
+        max_attempts = int(_DEFAULT_RETRY_POLICY["max_attempts_per_field"])
+    try:
+        rewrite_after = int(policy.get("rewrite_after_streak", _DEFAULT_RETRY_POLICY["rewrite_after_streak"]))
+    except Exception:
+        rewrite_after = int(_DEFAULT_RETRY_POLICY["rewrite_after_streak"])
+    try:
+        stop_after = int(policy.get("stop_after_streak", _DEFAULT_RETRY_POLICY["stop_after_streak"]))
+    except Exception:
+        stop_after = int(_DEFAULT_RETRY_POLICY["stop_after_streak"])
+    strategies = list(policy.get("rewrite_strategies") or _DEFAULT_RETRY_POLICY["rewrite_strategies"])
+    normalized_strategies: List[str] = []
+    for strategy in strategies:
+        token = str(strategy or "").strip().lower()
+        if token and token not in normalized_strategies:
+            normalized_strategies.append(token)
+    if not normalized_strategies:
+        normalized_strategies = list(_DEFAULT_RETRY_POLICY["rewrite_strategies"])
+    rewrite_after = max(1, rewrite_after)
+    stop_after = max(rewrite_after + 1, stop_after)
+    return {
+        "max_attempts_per_field": max(1, max_attempts),
+        "rewrite_after_streak": rewrite_after,
+        "stop_after_streak": stop_after,
+        "rewrite_strategies": normalized_strategies,
+    }
+
+
+def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
+    policy = dict(_DEFAULT_FINALIZATION_POLICY)
+    if isinstance(raw_policy, dict):
+        policy.update(raw_policy)
+    return {
+        "require_verified_for_non_unknown": bool(
+            policy.get(
+                "require_verified_for_non_unknown",
+                _DEFAULT_FINALIZATION_POLICY["require_verified_for_non_unknown"],
+            )
+        ),
+        "allow_partial": bool(
+            policy.get("allow_partial", _DEFAULT_FINALIZATION_POLICY["allow_partial"])
+        ),
+        "idempotent_finalize": bool(
+            policy.get("idempotent_finalize", _DEFAULT_FINALIZATION_POLICY["idempotent_finalize"])
+        ),
+        "skip_finalize_if_terminal_valid": bool(
+            policy.get(
+                "skip_finalize_if_terminal_valid",
+                _DEFAULT_FINALIZATION_POLICY["skip_finalize_if_terminal_valid"],
+            )
+        ),
+        "terminal_dedupe_mode": str(
+            policy.get("terminal_dedupe_mode", _DEFAULT_FINALIZATION_POLICY["terminal_dedupe_mode"])
+            or _DEFAULT_FINALIZATION_POLICY["terminal_dedupe_mode"]
+        ).strip().lower()
+        if str(policy.get("terminal_dedupe_mode", _DEFAULT_FINALIZATION_POLICY["terminal_dedupe_mode"]) or "").strip().lower() in {"hash", "semantic"}
+        else _DEFAULT_FINALIZATION_POLICY["terminal_dedupe_mode"],
+        "unsourced_allowlist_patterns": _normalize_regex_pattern_list(
+            policy.get("unsourced_allowlist_patterns", _DEFAULT_FINALIZATION_POLICY["unsourced_allowlist_patterns"])
+        ),
+    }
+
+
+def _normalize_field_rules(raw_rules: Any) -> Dict[str, Dict[str, Any]]:
+    out: Dict[str, Dict[str, Any]] = {}
+    if not isinstance(raw_rules, dict):
+        return out
+    for raw_field, raw_rule in raw_rules.items():
+        field_name = str(raw_field or "").strip()
+        if not field_name or not isinstance(raw_rule, dict):
+            continue
+        rule: Dict[str, Any] = {}
+        derive_from = str(raw_rule.get("derive_from") or "").strip()
+        if derive_from:
+            rule["derive_from"] = derive_from
+        derivation_mode = str(raw_rule.get("derivation_mode") or "").strip()
+        if derivation_mode:
+            rule["derivation_mode"] = derivation_mode
+        mappings = raw_rule.get("mappings")
+        if isinstance(mappings, list):
+            rule["mappings"] = [dict(item) for item in mappings if isinstance(item, dict)]
+        if rule:
+            out[field_name] = rule
+    return out
+
+
+def _normalize_query_templates(raw_templates: Any) -> Dict[str, str]:
+    templates = dict(_DEFAULT_QUERY_TEMPLATES)
+    if isinstance(raw_templates, dict):
+        for key, value in raw_templates.items():
+            key_str = str(key or "").strip()
+            if not key_str:
+                continue
+            value_str = str(value or "").strip()
+            if not value_str:
+                continue
+            templates[key_str] = value_str
+    return templates
+
+
+def _normalize_fact_records(records: Any, *, max_items: int = 600) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    seen = set()
+    for raw in list(records or []):
+        if not isinstance(raw, dict):
+            continue
+        field = str(raw.get("field") or "").strip()
+        if not field:
+            continue
+        value = raw.get("value")
+        if _is_empty_like(value):
+            continue
+        source_url = _normalize_url_match(raw.get("source_url"))
+        record = {
+            "field": field,
+            "value": value,
+            "source_url": source_url,
+            "source_host": str(raw.get("source_host") or _source_host(source_url)),
+            "score": _clamp01(raw.get("score"), default=0.0),
+            "confidence": _normalize_confidence_label(raw.get("confidence")) or "Low",
+            "verified": bool(raw.get("verified", False)),
+            "reason": str(raw.get("reason") or "").strip() or None,
+            "evidence": str(raw.get("evidence") or "").strip()[:240] or None,
+            "provenance": str(raw.get("provenance") or "").strip() or "graph",
+        }
+        dedupe_key = (
+            record["field"],
+            _candidate_value_key(record["value"]),
+            record["source_url"] or "",
+            "1" if record["verified"] else "0",
+        )
+        if dedupe_key in seen:
+            continue
+        seen.add(dedupe_key)
+        out.append(record)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _merge_fact_records(
+    existing: Any,
+    incoming: Any,
+    *,
+    max_items: int = 600,
+) -> List[Dict[str, Any]]:
+    return _normalize_fact_records(list(existing or []) + list(incoming or []), max_items=max_items)
+
+
+def _fact_records_from_evidence_ledger(ledger: Any) -> List[Dict[str, Any]]:
+    records: List[Dict[str, Any]] = []
+    normalized = _normalize_evidence_ledger(ledger)
+    for field_name, candidates in normalized.items():
+        for candidate in list(candidates or []):
+            if not isinstance(candidate, dict):
+                continue
+            records.append(
+                {
+                    "field": str(field_name),
+                    "value": candidate.get("value"),
+                    "source_url": candidate.get("source_url"),
+                    "source_host": candidate.get("source_host"),
+                    "score": candidate.get("score", 0.0),
+                    "confidence": candidate.get("confidence_hint"),
+                    "verified": False,
+                    "reason": candidate.get("rejection_reason"),
+                    "evidence": candidate.get("evidence_excerpt"),
+                    "provenance": "evidence_candidate",
+                }
+            )
+    return _normalize_fact_records(records)
+
+
+def _fact_records_from_field_status(field_status: Any) -> List[Dict[str, Any]]:
+    records: List[Dict[str, Any]] = []
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    for field_name, entry in (normalized or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        if str(entry.get("status") or "").lower() != _FIELD_STATUS_FOUND:
+            continue
+        value = entry.get("value")
+        if _is_empty_like(value) or _is_unknown_marker(value):
+            continue
+        evidence = str(entry.get("evidence") or "").strip().lower()
+        if evidence.startswith("grounding_blocked"):
+            continue
+        records.append(
+            {
+                "field": str(field_name),
+                "value": value,
+                "source_url": entry.get("source_url"),
+                "score": entry.get("evidence_score", 0.0),
+                "confidence": entry.get("confidence_hint") or "Low",
+                "verified": True,
+                "reason": entry.get("evidence_reason"),
+                "evidence": entry.get("evidence"),
+                "provenance": "field_status_verified",
+            }
+        )
+    return _normalize_fact_records(records)
+
+
+def _source_policy_host_gate(source_url: Any, source_policy: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+    normalized_source = _normalize_url_match(source_url)
+    if not normalized_source:
+        return False, "missing_source_url"
+    host = _source_host(normalized_source)
+    deny = list(source_policy.get("deny_host_fragments") or [])
+    allow = list(source_policy.get("allow_host_fragments") or [])
+    if host and any(fragment in host for fragment in deny):
+        return False, "source_policy_host_denylist"
+    if allow and host and not any(fragment in host for fragment in allow):
+        return False, "source_policy_host_not_allowlisted"
+    return True, None
+
+
+def _source_policy_authority_score(source_url: Any, source_policy: Dict[str, Any]) -> float:
+    host = _source_host(_normalize_url_match(source_url))
+    if not host:
+        return 0.0
+    authority_map = source_policy.get("authority_host_weights") or {}
+    if not isinstance(authority_map, dict):
+        authority_map = {}
+    score = 0.50
+    for fragment, weight in authority_map.items():
+        token = str(fragment or "").strip().lower()
+        if not token:
+            continue
+        if token in host:
+            score = max(score, _clamp01(weight, default=0.0))
+    return _clamp01(score, default=0.0)
+
+
+def _source_policy_detail_page_score(source_url: Any, source_policy: Dict[str, Any]) -> float:
+    normalized = _normalize_url_match(source_url)
+    if not normalized:
+        return 0.0
+    if not bool(source_policy.get("prefer_detail_pages", True)):
+        return 0.50
+    lowered = normalized.lower()
+    penalties = list(source_policy.get("detail_page_url_penalties") or [])
+    if any(str(fragment or "").strip().lower() in lowered for fragment in penalties):
+        return 0.15
+    parsed = urlparse(normalized)
+    path = str(parsed.path or "")
+    query = str(parsed.query or "")
+    has_detail_hint = bool(
+        re.search(r"/[a-z0-9_-]+/[a-z0-9_-]{3,}$", path.lower())
+        or re.search(r"(?:^|[?&])(id|item|slug|person|profile)=", query.lower())
+        or re.search(r"/[0-9]{3,}", path)
+    )
+    if has_detail_hint:
+        return 0.90
+    return 0.60
+
+
+def _source_policy_score_candidate(candidate: Dict[str, Any], source_policy: Dict[str, Any]) -> float:
+    base_score = (
+        0.36 * float(candidate.get("value_support", 0.0))
+        + 0.24 * float(candidate.get("source_quality", 0.0))
+        + 0.20 * float(candidate.get("source_specificity", 0.0))
+        + 0.20 * float(candidate.get("entity_overlap", 0.0))
+    )
+    authority_score = float(_source_policy_authority_score(candidate.get("source_url"), source_policy))
+    detail_score = float(_source_policy_detail_page_score(candidate.get("source_url"), source_policy))
+    score = (0.78 * base_score) + (0.14 * authority_score) + (0.08 * detail_score)
+    return _clamp01(score, default=0.0)
+
 
 def _schema_leaf_paths(schema: Any, prefix: str = "") -> list:
     """Return (path, descriptor) pairs for schema leaf fields."""
@@ -1192,6 +1648,51 @@ def _is_nonempty_payload(payload: Any) -> bool:
     if isinstance(payload, list):
         return len(payload) > 0
     return False
+
+
+def _terminal_leaf_type_compatible(value: Any, descriptor: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(descriptor, dict):
+        return isinstance(value, dict)
+    if isinstance(descriptor, list):
+        return isinstance(value, list)
+
+    desc = str(descriptor or "").strip().lower()
+    if not desc:
+        return not isinstance(value, (dict, list))
+
+    if "array" in desc:
+        return isinstance(value, list)
+    if "object" in desc or "dict" in desc:
+        return isinstance(value, dict)
+    if any(token in desc for token in ("string", "integer", "number", "float", "boolean", "bool", "unknown", "null")):
+        return not isinstance(value, (dict, list))
+    return True
+
+
+def _payload_schema_types_compatible(payload: Any, expected_schema: Any) -> bool:
+    if expected_schema is None:
+        return True
+    try:
+        leaf_paths = _schema_leaf_paths(expected_schema)
+    except Exception:
+        return True
+    for path, descriptor in leaf_paths:
+        if "[]" in path:
+            continue
+        present, value = _lookup_path_with_presence(payload, path)
+        if not present:
+            aliases = _field_key_aliases(path)
+            for alias in aliases:
+                present, value = _lookup_key_recursive_with_presence(payload, alias)
+                if present:
+                    break
+        if not present:
+            continue
+        if not _terminal_leaf_type_compatible(value, descriptor):
+            return False
+    return True
 
 
 def _parse_source_blocks(text: str, *, max_blocks: int = 64) -> list:
@@ -1557,6 +2058,144 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
     return normalized_out
 
 
+def _apply_configured_field_rules(
+    field_status: Dict[str, Dict[str, Any]],
+    field_rules: Any,
+) -> Dict[str, Dict[str, Any]]:
+    """Apply optional config-driven field derivation rules (task-agnostic)."""
+    normalized = _apply_field_status_derivations(field_status)
+    rules = _normalize_field_rules(field_rules)
+    if not normalized or not rules:
+        return normalized
+
+    for target_field, rule in rules.items():
+        if not isinstance(rule, dict):
+            continue
+        source_field = str(rule.get("derive_from") or "").strip()
+        if not source_field:
+            continue
+        source_entry = normalized.get(source_field)
+        target_entry = normalized.get(target_field)
+        if not isinstance(source_entry, dict) or not isinstance(target_entry, dict):
+            continue
+        if str(target_entry.get("status") or "").lower() == _FIELD_STATUS_FOUND:
+            continue
+        if str(source_entry.get("status") or "").lower() != _FIELD_STATUS_FOUND:
+            continue
+        source_value = str(source_entry.get("value") or "").strip()
+        if not source_value or _is_unknown_marker(source_value):
+            continue
+
+        derivation_mode = str(rule.get("derivation_mode") or "regex_map").strip().lower()
+        mapped_value = None
+        if derivation_mode == "regex_map":
+            for mapping in list(rule.get("mappings") or []):
+                if not isinstance(mapping, dict):
+                    continue
+                pattern = str(mapping.get("pattern") or "").strip()
+                value = mapping.get("value")
+                if not pattern or _is_empty_like(value):
+                    continue
+                try:
+                    if re.search(pattern, source_value, flags=re.IGNORECASE):
+                        mapped_value = value
+                        break
+                except Exception:
+                    continue
+        elif derivation_mode == "copy":
+            mapped_value = source_value
+
+        if _is_empty_like(mapped_value):
+            continue
+        coerced = _coerce_found_value_for_descriptor(mapped_value, target_entry.get("descriptor"))
+        if _is_empty_like(coerced) or _is_unknown_marker(coerced):
+            continue
+
+        target_entry["status"] = _FIELD_STATUS_FOUND
+        target_entry["value"] = coerced
+        target_entry["evidence"] = "derived_from_field_rule"
+        target_entry["evidence_reason"] = f"derived_from:{source_field}"
+        source_url = _normalize_url_match(source_entry.get("source_url"))
+        if source_url:
+            target_entry["source_url"] = source_url
+        normalized[target_field] = target_entry
+
+        source_key = f"{target_field}_source"
+        if source_key in normalized and source_url:
+            source_entry_target = dict(normalized.get(source_key) or {})
+            source_entry_target["status"] = _FIELD_STATUS_FOUND
+            source_entry_target["value"] = source_url
+            source_entry_target["source_url"] = source_url
+            source_entry_target["evidence"] = "derived_from_field_rule"
+            normalized[source_key] = source_entry_target
+
+    return _apply_field_status_derivations(normalized)
+
+
+def _field_matches_any_pattern(field_name: str, patterns: Any) -> bool:
+    name = str(field_name or "").strip()
+    if not name:
+        return False
+    for raw in list(patterns or []):
+        pattern = str(raw or "").strip()
+        if not pattern:
+            continue
+        try:
+            if re.fullmatch(pattern, name):
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def _enforce_finalization_policy_on_field_status(
+    field_status: Dict[str, Dict[str, Any]],
+    finalization_policy: Any,
+) -> Dict[str, Dict[str, Any]]:
+    """Apply finalization-time verification guardrails from policy."""
+    normalized = _apply_field_status_derivations(field_status)
+    policy = _normalize_finalization_policy(finalization_policy)
+    if not bool(policy.get("require_verified_for_non_unknown", True)):
+        return normalized
+
+    allowlist_patterns = list(policy.get("unsourced_allowlist_patterns") or [])
+    for key, entry in list((normalized or {}).items()):
+        if not isinstance(entry, dict):
+            continue
+        if key.endswith("_source"):
+            continue
+        if _field_matches_any_pattern(key, allowlist_patterns):
+            continue
+        status = str(entry.get("status") or "").lower()
+        value = entry.get("value")
+        if status != _FIELD_STATUS_FOUND:
+            continue
+        if _is_empty_like(value) or _is_unknown_marker(value):
+            continue
+        source_url = _normalize_url_match(entry.get("source_url"))
+        evidence = str(entry.get("evidence") or "").strip().lower()
+        verified = bool(source_url) and not evidence.startswith("grounding_blocked")
+        if verified:
+            continue
+
+        entry["status"] = _FIELD_STATUS_UNKNOWN
+        entry["value"] = _unknown_value_for_descriptor(entry.get("descriptor"))
+        entry["source_url"] = None
+        entry["evidence"] = "finalization_policy_demotion_unverified"
+        normalized[key] = entry
+
+        source_key = f"{key}_source"
+        if source_key in normalized:
+            source_entry = dict(normalized.get(source_key) or {})
+            source_entry["status"] = _FIELD_STATUS_UNKNOWN
+            source_entry["value"] = _unknown_value_for_descriptor(source_entry.get("descriptor"))
+            source_entry["source_url"] = None
+            source_entry["evidence"] = "finalization_policy_demotion_unverified"
+            normalized[source_key] = source_entry
+
+    return _apply_field_status_derivations(normalized)
+
+
 def _normalize_evidence_mode(mode: Any) -> str:
     normalized = str(mode or _EVIDENCE_MODE).strip().lower()
     if normalized not in {"precision", "balanced", "recall"}:
@@ -1891,6 +2530,7 @@ def _extract_field_status_updates(
     evidence_mode: Any = None,
     evidence_enabled: Any = None,
     evidence_require_second_source: Any = None,
+    source_policy: Any = None,
 ) -> tuple[Dict[str, Dict[str, Any]], Dict[str, List[Dict[str, Any]]], Dict[str, Any]]:
     """Update canonical field_status based on recent tool outputs."""
     field_status = _normalize_field_status_map(existing_field_status, expected_schema)
@@ -1904,6 +2544,7 @@ def _extract_field_status_updates(
         if evidence_require_second_source is None
         else bool(evidence_require_second_source)
     )
+    normalized_source_policy = _normalize_source_policy(source_policy)
     if not field_status:
         return field_status, ledger, stats
 
@@ -1941,6 +2582,8 @@ def _extract_field_status_updates(
         rejected_evidence = None
         requires_source = bool(f"{path}_source" in schema_leaf_set and not key.endswith("_source"))
         source_field = bool(key.endswith("_source"))
+        if bool(normalized_source_policy.get("require_source_for_non_unknown", True)) and not source_field:
+            requires_source = True
 
         for payload_item in payloads:
             text = payload_item.get("text", "")
@@ -2019,10 +2662,49 @@ def _extract_field_status_updates(
             stats["fields_with_candidates"] = int(stats.get("fields_with_candidates", 0)) + 1
             stats["candidates_seen"] = int(stats.get("candidates_seen", 0)) + int(len(candidate_pool))
             new_scored = _score_evidence_candidates(candidate_pool, mode=mode)
+            for candidate in new_scored:
+                if not isinstance(candidate, dict):
+                    continue
+                candidate["source_policy_score"] = _source_policy_score_candidate(
+                    candidate,
+                    normalized_source_policy,
+                )
+                candidate["score"] = _clamp01(
+                    (0.80 * float(candidate.get("score", 0.0)))
+                    + (0.20 * float(candidate.get("source_policy_score", 0.0))),
+                    default=0.0,
+                )
+                allowed, reason = _source_policy_host_gate(
+                    candidate.get("source_url"),
+                    normalized_source_policy,
+                )
+                if not allowed and not candidate.get("rejection_reason"):
+                    candidate["rejection_reason"] = reason
+                if (
+                    float(candidate.get("source_quality", 0.0))
+                    < float(normalized_source_policy.get("min_source_quality", 0.0))
+                    and not candidate.get("rejection_reason")
+                ):
+                    candidate["rejection_reason"] = "source_quality_below_policy_threshold"
+                if (
+                    float(candidate.get("source_specificity", 0.0))
+                    < float(normalized_source_policy.get("min_source_specificity", 0.0))
+                    and not candidate.get("rejection_reason")
+                ):
+                    candidate["rejection_reason"] = "source_specificity_below_policy_threshold"
+                if (
+                    bool(normalized_source_policy.get("require_entity_anchor", True))
+                    and len(entity_tokens) >= 2
+                    and not source_field
+                    and len(re.findall(r"[a-z0-9]+", _normalize_match_text(str(candidate.get("evidence_excerpt") or "")))) >= 8
+                    and float(candidate.get("entity_overlap", 0.0)) < 0.15
+                    and not candidate.get("rejection_reason")
+                ):
+                    candidate["rejection_reason"] = "entity_anchor_below_policy_threshold"
             merged = _merge_evidence_candidates(
                 ledger.get(key, []),
                 new_scored,
-                max_items=_EVIDENCE_MAX_CANDIDATES_PER_FIELD,
+                max_items=int(normalized_source_policy.get("max_candidates_per_field", _EVIDENCE_MAX_CANDIDATES_PER_FIELD)),
             )
             ledger[key] = _score_evidence_candidates(merged, mode=mode)
         else:
@@ -2053,6 +2735,11 @@ def _extract_field_status_updates(
             )
             decision_reason = "legacy_selected" if selected is not None else "no_candidates"
 
+        if isinstance(selected, dict) and not _is_empty_like(selected.get("value")):
+            min_candidate_score = float(normalized_source_policy.get("min_candidate_score", 0.0))
+            if float(selected.get("score", 0.0)) < min_candidate_score:
+                selected = None
+                decision_reason = "source_policy_min_candidate_score"
         if isinstance(selected, dict) and not _is_empty_like(selected.get("value")):
             found_value = selected.get("value")
             found_source = _normalize_url_match(selected.get("source_url"))
@@ -4435,6 +5122,39 @@ def _message_is_tool(msg: Any) -> bool:
     return False
 
 
+def _message_is_user(msg: Any) -> bool:
+    """Best-effort check whether a message is a user/human turn."""
+    try:
+        if isinstance(msg, dict):
+            role = str(msg.get("role") or msg.get("type") or "").lower()
+            return role in {"user", "human"}
+    except Exception:
+        pass
+
+    try:
+        if type(msg).__name__ == "HumanMessage":
+            return True
+        role = getattr(msg, "type", None)
+        if isinstance(role, str):
+            return role.lower() in {"user", "human"}
+    except Exception:
+        pass
+    return False
+
+
+def _should_reset_terminal_markers_for_new_user_turn(state: Any, messages: Any) -> bool:
+    """Reset stale terminal markers when a checkpointed thread starts a new user turn."""
+    if not bool(state.get("final_emitted", False)):
+        return False
+    if not messages:
+        return False
+    try:
+        last_message = list(messages)[-1]
+    except Exception:
+        return False
+    return _message_is_user(last_message)
+
+
 def _is_empty_like(value: Any) -> bool:
     """Return True for values that should not count as meaningful schema content."""
     if value is None:
@@ -4679,6 +5399,155 @@ def _message_is_assistant(msg: Any) -> bool:
     return False
 
 
+def _terminal_payload_from_message(msg: Any, expected_schema: Any = None) -> Optional[Any]:
+    """Return terminal JSON payload for assistant message when shape is acceptable."""
+    if not _message_is_assistant(msg):
+        return None
+    if _extract_response_tool_calls(msg):
+        return None
+    content = _message_content_from_message(msg)
+    text = _message_content_to_text(content).strip()
+    if not text:
+        return None
+    try:
+        parsed = parse_llm_json(text)
+    except Exception:
+        return None
+    if not isinstance(parsed, (dict, list)) or not _is_nonempty_payload(parsed):
+        return None
+    if expected_schema is not None:
+        try:
+            missing = list_missing_required_keys(parsed, expected_schema, max_items=50)
+        except Exception:
+            missing = []
+        if missing:
+            return None
+        if not _payload_schema_types_compatible(parsed, expected_schema):
+            return None
+    return parsed
+
+
+def _terminal_payload_hash(payload: Any, *, mode: str = "hash") -> Optional[str]:
+    if not isinstance(payload, (dict, list)) or not _is_nonempty_payload(payload):
+        return None
+    try:
+        canonical = json.dumps(_json_safe_value(payload), ensure_ascii=False, sort_keys=True)
+    except Exception:
+        canonical = str(payload)
+    normalized_mode = str(mode or "hash").strip().lower()
+    if normalized_mode == "semantic":
+        canonical = re.sub(r"\s+", " ", canonical).strip()
+    try:
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    except Exception:
+        return None
+
+
+def _is_terminal_json_message(msg: Any, expected_schema: Any = None) -> bool:
+    return _terminal_payload_from_message(msg, expected_schema=expected_schema) is not None
+
+
+def _last_terminal_payload_hash(
+    messages: Any,
+    *,
+    expected_schema: Any = None,
+    mode: str = "hash",
+) -> Optional[str]:
+    try:
+        msg_list = list(messages or [])
+    except Exception:
+        msg_list = []
+    if not msg_list:
+        return None
+    payload = _terminal_payload_from_message(msg_list[-1], expected_schema=expected_schema)
+    return _terminal_payload_hash(payload, mode=mode)
+
+
+def _terminal_message_text(message: Any) -> str:
+    if message is None:
+        return ""
+    if _extract_response_tool_calls(message):
+        return ""
+    return _message_content_to_text(_message_content_from_message(message)).strip()
+
+
+def _message_identifier(message: Any) -> Optional[str]:
+    if message is None:
+        return None
+    try:
+        if isinstance(message, dict):
+            raw = message.get("id")
+        else:
+            raw = getattr(message, "id", None)
+    except Exception:
+        raw = None
+    token = str(raw or "").strip()
+    return token or None
+
+
+def _terminal_message_update(
+    *,
+    previous_message: Any,
+    candidate_message: Any,
+    emit_candidate: bool,
+) -> List[Any]:
+    """Emit at most one terminal assistant message; replace prior terminal when possible."""
+    if not emit_candidate:
+        return []
+    if (
+        not _message_is_assistant(previous_message)
+        or _has_pending_tool_calls(previous_message)
+    ):
+        return [candidate_message]
+    prev_id = _message_identifier(previous_message)
+    if not prev_id:
+        return [candidate_message]
+    try:
+        from langchain_core.messages import RemoveMessage
+
+        return [RemoveMessage(id=prev_id), candidate_message]
+    except Exception:
+        return [candidate_message]
+
+
+def _should_emit_terminal_message(
+    *,
+    previous_message: Any,
+    candidate_message: Any,
+    previous_hash: Optional[str],
+    candidate_hash: Optional[str],
+    history_messages: Any = None,
+) -> bool:
+    if (
+        previous_hash is not None
+        and candidate_hash is not None
+        and str(previous_hash).strip()
+        and str(previous_hash).strip() == str(candidate_hash).strip()
+    ):
+        return False
+    previous_text = _terminal_message_text(previous_message)
+    candidate_text = _terminal_message_text(candidate_message)
+    if previous_text and candidate_text and previous_text == candidate_text:
+        return False
+    if history_messages is not None and candidate_text:
+        try:
+            history = list(history_messages or [])
+        except Exception:
+            history = []
+        for msg in reversed(history):
+            if not _message_is_assistant(msg):
+                continue
+            if _has_pending_tool_calls(msg):
+                continue
+            prior_text = _terminal_message_text(msg)
+            if not prior_text:
+                continue
+            if candidate_text == prior_text:
+                return False
+            break
+    return True
+
+
 def _message_content_from_message(msg: Any) -> Any:
     """Best-effort extraction of a message content payload."""
     return _shared_message_content_from_message(msg)
@@ -4713,10 +5582,9 @@ def _copy_message(msg: Any) -> Any:
 def _reusable_terminal_finalize_response(messages: list, expected_schema: Any = None) -> Optional[Any]:
     """Reuse a terminal assistant message during finalize when it is already valid text.
 
-    If *expected_schema* is provided, the candidate response is checked for
-    quality: when >80% of the schema leaf fields are Unknown/empty/null the
-    response is rejected (returns None) so the caller will re-invoke the model
-    with the full finalization prompt that includes field_status data.
+    Finalize can still canonicalize this reused response against field_status,
+    so we avoid unnecessary second model invokes that tend to duplicate
+    terminal JSON near recursion limits.
     """
     if not messages:
         return None
@@ -4730,37 +5598,6 @@ def _reusable_terminal_finalize_response(messages: list, expected_schema: Any = 
     content_text = _message_content_to_text(_message_content_from_message(last))
     if not content_text:
         return None
-
-    # --- Quality gate: reject all-Unknown reusable responses ---------------
-    if expected_schema is not None:
-        try:
-            parsed = parse_llm_json(content_text)
-            if isinstance(parsed, dict):
-                leaf_paths = _schema_leaf_paths(expected_schema)
-                if leaf_paths:
-                    unknown_count = 0
-                    total_count = 0
-                    for path, _descriptor in leaf_paths:
-                        # Walk into the parsed dict following the dotted path
-                        parts = path.replace("[]", "").split(".")
-                        val = parsed
-                        for p in parts:
-                            if isinstance(val, dict):
-                                val = val.get(p)
-                            else:
-                                val = None
-                                break
-                        total_count += 1
-                        if _is_unknown_marker(val) or _is_empty_like(val):
-                            unknown_count += 1
-                    if total_count > 0 and (unknown_count / total_count) > 0.50:
-                        logger.info(
-                            "Rejecting reusable terminal response: %d/%d fields unknown (%.0f%%)",
-                            unknown_count, total_count, 100.0 * unknown_count / total_count,
-                        )
-                        return None
-        except Exception:
-            pass  # If parsing fails, fall through to normal reuse logic
 
     # Reused finalize responses are appended as new turns; assign a fresh id
     # so reducers/downstream consumers don't see duplicate message IDs.
@@ -5080,6 +5917,20 @@ class MemoryFoldingAgentState(TypedDict):
     evidence_mode: Optional[str]
     evidence_pipeline_enabled: Optional[bool]
     evidence_require_second_source: Optional[bool]
+    source_policy: Optional[Dict[str, Any]]
+    retry_policy: Optional[Dict[str, Any]]
+    finalization_policy: Optional[Dict[str, Any]]
+    field_rules: Optional[Dict[str, Any]]
+    query_templates: Optional[Dict[str, Any]]
+    candidate_facts: Optional[List[Dict[str, Any]]]
+    verified_facts: Optional[List[Dict[str, Any]]]
+    derived_values: Optional[Dict[str, Any]]
+    final_payload: Optional[Any]
+    final_emitted: Optional[bool]
+    terminal_payload_hash: Optional[str]
+    terminal_valid: Optional[bool]
+    finalize_invocations: Optional[int]
+    finalize_trigger_reasons: Optional[List[str]]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
     finalize_reason: Optional[str]
@@ -5090,6 +5941,7 @@ class MemoryFoldingAgentState(TypedDict):
     plan: Optional[Dict[str, Any]]
     plan_history: Annotated[list, add_to_list]
     use_plan_mode: Optional[bool]
+    model_timeout_s: Optional[float]
     thread_id: Optional[str]
     om_config: Optional[Dict[str, Any]]
     observations: Optional[List[Dict[str, Any]]]
@@ -5188,8 +6040,78 @@ def _invoke_retry_config(retry_config: Optional[Dict[str, Any]] = None) -> Dict[
     }
 
 
+class _ModelInvokeHardTimeoutError(TimeoutError):
+    """Raised when a model invocation exceeds hard timeout watchdog."""
+
+
+def _resolve_model_invoke_timeout_s(
+    *,
+    invoke_timeout_s: Optional[float] = None,
+    state: Optional[Dict[str, Any]] = None,
+) -> float:
+    """Resolve hard timeout for model invokes (seconds).
+
+    Priority:
+      1) explicit invoke_timeout_s argument
+      2) graph state override (`model_timeout_s`)
+      3) environment variable `ASA_MODEL_INVOKE_TIMEOUT_S`
+      4) disabled (0)
+    """
+    candidate = invoke_timeout_s
+    if candidate is None and isinstance(state, dict):
+        try:
+            candidate = state.get("model_timeout_s")
+        except Exception:
+            candidate = None
+    if candidate is None:
+        candidate = os.environ.get("ASA_MODEL_INVOKE_TIMEOUT_S", 0)
+    try:
+        timeout_s = float(candidate or 0)
+    except Exception:
+        timeout_s = 0.0
+    if timeout_s <= 0:
+        return 0.0
+    return timeout_s
+
+
+def _invoke_callable_with_hard_timeout(invoke_fn: Callable[[], Any], timeout_s: float) -> Any:
+    """Execute callable with a hard watchdog timeout.
+
+    Uses a daemon thread so timed-out invokes do not block process shutdown.
+    """
+    timeout_s = max(0.0, float(timeout_s or 0.0))
+    if timeout_s <= 0.0:
+        return invoke_fn()
+
+    result_q: "queue.Queue[Tuple[bool, Any]]" = queue.Queue(maxsize=1)
+
+    def _runner() -> None:
+        try:
+            result_q.put((True, invoke_fn()))
+        except Exception as exc:
+            result_q.put((False, exc))
+
+    worker = threading.Thread(target=_runner, daemon=True)
+    worker.start()
+    worker.join(timeout=timeout_s)
+    if worker.is_alive():
+        raise _ModelInvokeHardTimeoutError(
+            f"Model invoke exceeded hard timeout ({timeout_s:.1f}s)."
+        )
+
+    try:
+        ok, payload = result_q.get_nowait()
+    except Exception as exc:
+        raise RuntimeError("Model invoke worker returned no result.") from exc
+    if ok:
+        return payload
+    raise payload
+
+
 def _is_retryable_invoke_exception(exc: Exception) -> bool:
     """Classify transient model invocation failures that merit retry."""
+    if isinstance(exc, _ModelInvokeHardTimeoutError):
+        return False
     msg = str(exc or "").lower()
     exc_name = type(exc).__name__.lower()
 
@@ -5257,6 +6179,7 @@ def _invoke_model_with_fallback(
     messages: Optional[list] = None,
     debug: bool = False,
     retry_config: Optional[Dict[str, Any]] = None,
+    invoke_timeout_s: Optional[float] = None,
 ) -> tuple[Any, Optional[Dict[str, Any]]]:
     """Invoke model callable with retry, then convert terminal failures."""
     policy = _invoke_retry_config(retry_config)
@@ -5264,6 +6187,9 @@ def _invoke_model_with_fallback(
     retry_delay = float(policy["retry_delay"])
     retry_backoff = float(policy["retry_backoff"])
     retry_jitter = float(policy["retry_jitter"])
+    hard_timeout_s = _resolve_model_invoke_timeout_s(
+        invoke_timeout_s=invoke_timeout_s,
+    )
     last_exc: Optional[Exception] = None
     last_retryable = False
     attempts_used = 0
@@ -5271,7 +6197,10 @@ def _invoke_model_with_fallback(
     for attempt in range(1, max_attempts + 1):
         attempts_used = attempt
         try:
-            return invoke_fn(), None
+            return _invoke_callable_with_hard_timeout(
+                invoke_fn,
+                hard_timeout_s,
+            ), None
         except Exception as exc:
             last_exc = exc
             last_retryable = _is_retryable_invoke_exception(exc)
@@ -5398,6 +6327,26 @@ def _state_budget(state: Any) -> Dict[str, Any]:
         model_budget_limit=state.get("model_budget_limit"),
         evidence_verify_reserve=state.get("evidence_verify_reserve"),
     )
+
+
+def _state_source_policy(state: Any) -> Dict[str, Any]:
+    return _normalize_source_policy(state.get("source_policy"))
+
+
+def _state_retry_policy(state: Any) -> Dict[str, Any]:
+    return _normalize_retry_policy(state.get("retry_policy"))
+
+
+def _state_finalization_policy(state: Any) -> Dict[str, Any]:
+    return _normalize_finalization_policy(state.get("finalization_policy"))
+
+
+def _state_field_rules(state: Any) -> Dict[str, Dict[str, Any]]:
+    return _normalize_field_rules(state.get("field_rules"))
+
+
+def _state_query_templates(state: Any) -> Dict[str, str]:
+    return _normalize_query_templates(state.get("query_templates"))
 
 
 def _state_field_status(state: Any) -> Dict[str, Dict[str, Any]]:
@@ -5635,6 +6584,72 @@ def _no_budget_for_next_node(remaining: Optional[int]) -> bool:
     return remaining is not None and remaining <= 0
 
 
+def _should_finalize_after_terminal(state: Any) -> bool:
+    """Return False when terminal response is valid and canonical sync would be a no-op."""
+    messages = list(state.get("messages") or [])
+    if not messages:
+        return True
+    last_message = messages[-1]
+    if _has_pending_tool_calls(last_message):
+        return True
+    policy = _state_finalization_policy(state)
+    if not bool(policy.get("skip_finalize_if_terminal_valid", True)):
+        return True
+    expected_schema = _state_expected_schema(state)
+    terminal_payload = _terminal_payload_from_message(last_message, expected_schema=expected_schema)
+    if terminal_payload is None:
+        return True
+    if expected_schema is None:
+        return False
+    canonical_payload = _canonical_payload_from_field_status(
+        expected_schema,
+        _state_field_status(state),
+    )
+    if not isinstance(canonical_payload, (dict, list)) or not _is_nonempty_payload(canonical_payload):
+        return False
+    dedupe_mode = str(policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
+    terminal_hash = _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
+    canonical_hash = _terminal_payload_hash(canonical_payload, mode=dedupe_mode)
+    if terminal_hash is None or canonical_hash is None:
+        return True
+    return canonical_hash != terminal_hash
+
+
+def _terminal_payload_hash_for_state(
+    state: Any,
+    *,
+    expected_schema: Any = None,
+    dedupe_mode: str = "hash",
+) -> Optional[str]:
+    existing_hash = str(state.get("terminal_payload_hash") or "").strip()
+    if existing_hash:
+        return existing_hash
+    if expected_schema is None:
+        expected_schema = _state_expected_schema(state)
+    return _last_terminal_payload_hash(
+        state.get("messages") or [],
+        expected_schema=expected_schema,
+        mode=dedupe_mode,
+    )
+
+
+def _next_finalize_trigger_reasons(state: Any, reason: Optional[str]) -> List[str]:
+    out: List[str] = []
+    for raw in list(state.get("finalize_trigger_reasons") or []):
+        token = str(raw or "").strip()
+        if not token:
+            continue
+        out.append(token)
+        if len(out) >= 15:
+            break
+    reason_token = str(reason or "").strip()
+    if reason_token:
+        out.append(reason_token[:120])
+    if len(out) > 16:
+        out = out[-16:]
+    return out
+
+
 def _route_after_agent_step(
     state: Any,
     *,
@@ -5645,6 +6660,13 @@ def _route_after_agent_step(
     messages = state.get("messages", [])
     if not messages:
         return "end"
+
+    # Idempotent finalization guard: once terminal payload is emitted for this run,
+    # do not route through finalize again unless the latest message requests tools.
+    if bool(state.get("final_emitted", False)):
+        last_message = messages[-1]
+        if not _has_pending_tool_calls(last_message):
+            return "end"
 
     remaining = remaining_steps_value(state)
     if _no_budget_for_next_node(remaining):
@@ -5775,6 +6797,33 @@ def _build_premature_nudge_message(
     )
 
 
+def _build_retry_rewrite_message(
+    state: Any,
+    pending_fields: List[str],
+    *,
+    query_context: str = "",
+) -> str:
+    """Build a policy-driven rewrite instruction for low-signal retrieval streaks."""
+    retry_policy = _state_retry_policy(state)
+    templates = _state_query_templates(state)
+    strategies = ", ".join(list(retry_policy.get("rewrite_strategies") or []))
+    field_hint = ", ".join(list(pending_fields or [])[:6]) if pending_fields else "remaining fields"
+    focused_template = str(templates.get("focused_field_query") or "{entity} {field}")
+    source_template = str(templates.get("source_constrained_query") or "site:{domain} {entity} {field}")
+    disambiguation_template = str(templates.get("disambiguation_query") or "{entity} {field} biography profile")
+    context_note = f" Context: {query_context}." if query_context else ""
+    return (
+        "Retrieval quality has been low for multiple rounds."
+        " Rewrite the next search queries with stricter focus and better source precision."
+        f"{context_note}"
+        f" Prioritize fields: {field_hint}."
+        f" Use one strategy per query ({strategies})."
+        " Follow these templates (fill placeholders, do not copy literally): "
+        f"focused='{focused_template}', source='{source_template}', disambiguation='{disambiguation_template}'."
+        " After each search result, immediately save any schema-backed finding with source URL."
+    )
+
+
 def _create_tool_node_with_scratchpad(
     base_tool_node,
     *,
@@ -5821,7 +6870,13 @@ def _create_tool_node_with_scratchpad(
         diagnostics = _normalize_diagnostics(state.get("diagnostics"))
         prior_evidence_ledger = _normalize_evidence_ledger(state.get("evidence_ledger"))
         prior_evidence_stats = _normalize_evidence_stats(state.get("evidence_stats"))
-        unknown_after = prior_budget.get("unknown_after_searches", _DEFAULT_UNKNOWN_AFTER_SEARCHES)
+        source_policy = _normalize_source_policy(state.get("source_policy"))
+        retry_policy = _normalize_retry_policy(state.get("retry_policy"))
+        finalization_policy = _normalize_finalization_policy(state.get("finalization_policy"))
+        unknown_after = prior_budget.get(
+            "unknown_after_searches",
+            retry_policy.get("max_attempts_per_field", _DEFAULT_UNKNOWN_AFTER_SEARCHES),
+        )
 
         try:
             result = base_tool_node.invoke(state)
@@ -5885,7 +6940,9 @@ def _create_tool_node_with_scratchpad(
             evidence_mode=state.get("evidence_mode") or _EVIDENCE_MODE,
             evidence_enabled=state.get("evidence_pipeline_enabled"),
             evidence_require_second_source=state.get("evidence_require_second_source"),
+            source_policy=source_policy,
         )
+        field_status = _apply_configured_field_rules(field_status, state.get("field_rules"))
         budget_state = _normalize_budget_state(
             prior_budget,
             search_budget_limit=state.get("search_budget_limit"),
@@ -5928,15 +6985,17 @@ def _create_tool_node_with_scratchpad(
         else:
             streak = prior_streak
         budget_state["no_signal_streak"] = max(0, int(streak))
-        budget_state["replan_requested"] = bool(streak >= _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD)
-        if streak >= _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD and prior_streak < _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD:
+        rewrite_threshold = int(retry_policy.get("rewrite_after_streak", _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD))
+        stop_threshold = int(retry_policy.get("stop_after_streak", _LOW_SIGNAL_STREAK_STOP_THRESHOLD))
+        budget_state["replan_requested"] = bool(streak >= rewrite_threshold)
+        if streak >= rewrite_threshold and prior_streak < rewrite_threshold:
             diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0)) + 1
             diagnostics["retrieval_interventions"] = _append_limited_unique(
                 diagnostics.get("retrieval_interventions"),
                 f"low_signal_streak_rewrite:{streak}",
                 max_items=64,
             )
-        if streak >= _LOW_SIGNAL_STREAK_STOP_THRESHOLD and prior_streak < _LOW_SIGNAL_STREAK_STOP_THRESHOLD:
+        if streak >= stop_threshold and prior_streak < stop_threshold:
             diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0)) + 1
             diagnostics["retrieval_interventions"] = _append_limited_unique(
                 diagnostics.get("retrieval_interventions"),
@@ -5976,6 +7035,16 @@ def _create_tool_node_with_scratchpad(
         budget_state.update(progress)
 
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
+        candidate_facts = _merge_fact_records(
+            state.get("candidate_facts"),
+            _fact_records_from_evidence_ledger(evidence_ledger),
+            max_items=1200,
+        )
+        verified_facts = _merge_fact_records(
+            state.get("verified_facts"),
+            _fact_records_from_field_status(field_status),
+            max_items=1200,
+        )
 
         if scratchpad_entries:
             result["scratchpad"] = scratchpad_entries
@@ -5983,6 +7052,11 @@ def _create_tool_node_with_scratchpad(
         result["budget_state"] = budget_state
         result["diagnostics"] = diagnostics
         result["evidence_ledger"] = evidence_ledger
+        result["candidate_facts"] = candidate_facts
+        result["verified_facts"] = verified_facts
+        result["source_policy"] = source_policy
+        result["retry_policy"] = retry_policy
+        result["finalization_policy"] = finalization_policy
         if _EVIDENCE_TELEMETRY_ENABLED:
             result["evidence_stats"] = evidence_stats
         result["completion_gate"] = _schema_outcome_gate_report(
@@ -6310,11 +7384,27 @@ def create_memory_folding_agent(
             state = {**state, "om_config": om_config}
 
         messages = state.get("messages", [])
+        if _should_reset_terminal_markers_for_new_user_turn(state, messages):
+            state = {
+                **state,
+                "final_emitted": False,
+                "final_payload": None,
+                "terminal_valid": False,
+                "terminal_payload_hash": None,
+                "finalize_invocations": 0,
+                "finalize_trigger_reasons": [],
+            }
+            messages = state.get("messages", [])
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
         observations = _state_observations(state)
         reflections = _state_reflections(state)
+        source_policy = _state_source_policy(state)
+        retry_policy = _state_retry_policy(state)
+        finalization_policy = _state_finalization_policy(state)
+        field_rules = _state_field_rules(state)
+        query_templates = _state_query_templates(state)
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
         plan = state.get("plan") if plan_mode_enabled else None
         expected_schema = state.get("expected_schema")
@@ -6331,11 +7421,16 @@ def create_memory_folding_agent(
         # authoritative even during normal (non-finalize) agent turns.
         _sync_summary_facts_to_field_status(summary, field_status)
         _sync_scratchpad_to_field_status(scratchpad, field_status)
+        field_status = _apply_configured_field_rules(field_status, field_rules)
+
+        unknown_after_searches = state.get("unknown_after_searches")
+        if unknown_after_searches is None:
+            unknown_after_searches = retry_policy.get("max_attempts_per_field")
 
         budget_state = _normalize_budget_state(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
-            unknown_after_searches=state.get("unknown_after_searches"),
+            unknown_after_searches=unknown_after_searches,
             model_budget_limit=state.get("model_budget_limit"),
             evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
@@ -6385,6 +7480,7 @@ def create_memory_folding_agent(
                 context="agent",
                 messages=messages,
                 debug=debug,
+                invoke_timeout_s=_resolve_model_invoke_timeout_s(state=state),
             )
         else:
             # Prepend system message with summary context
@@ -6401,15 +7497,13 @@ def create_memory_folding_agent(
             full_messages = _build_full_messages(system_msg, messages, summary, archive)
             if bool(budget_state.get("replan_requested")):
                 unresolved_fields = _collect_resolvable_unknown_fields(field_status)
-                field_hint = ", ".join(unresolved_fields[:5]) if unresolved_fields else "remaining fields"
                 full_messages.append(
                     HumanMessage(
-                        content=(
-                            "Retrieval quality has been low for multiple rounds. "
-                            "Reformulate search strategy now: tighten query terms, reduce ambiguity, "
-                            "and prioritize high-signal primary sources. "
-                            f"Focus first on: {field_hint}."
-                        )
+                        content=_build_retry_rewrite_message(
+                            state,
+                            unresolved_fields,
+                            query_context=_query_context_label(state),
+                        ),
                     )
                 )
             required_tool_plan = _extract_required_tool_plan(messages)
@@ -6441,6 +7535,7 @@ def create_memory_folding_agent(
                 context="agent",
                 messages=messages,
                 debug=debug,
+                invoke_timeout_s=_resolve_model_invoke_timeout_s(state=state),
             )
         budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
 
@@ -6486,6 +7581,12 @@ def create_memory_folding_agent(
                 force_canonical=force_fallback,
                 debug=debug,
             )
+            field_status = _apply_configured_field_rules(field_status, field_rules)
+            if _is_within_finalization_cutoff(state, remaining):
+                field_status = _enforce_finalization_policy_on_field_status(
+                    field_status,
+                    finalization_policy,
+                )
             budget_state.update(_field_status_progress(field_status))
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
@@ -6500,6 +7601,38 @@ def create_memory_folding_agent(
         finalize_reason = _finalize_reason_for_state(_state_for_gate)
         if finalize_reason:
             budget_state["finalize_reason"] = finalize_reason
+        derived_values: Dict[str, Any] = {}
+        for key, entry in (field_status or {}).items():
+            if not isinstance(entry, dict):
+                continue
+            if str(entry.get("status") or "").lower() != _FIELD_STATUS_FOUND:
+                continue
+            if str(entry.get("evidence") or "") != "derived_from_field_rule":
+                continue
+            derived_values[str(key)] = entry.get("value")
+
+        final_payload = state.get("final_payload")
+        final_emitted = bool(state.get("final_emitted", False))
+        dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
+        terminal_payload = _terminal_payload_from_message(response, expected_schema=expected_schema)
+        terminal_valid = terminal_payload is not None
+        terminal_payload_hash = (
+            _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
+            if terminal_valid
+            else str(state.get("terminal_payload_hash") or "").strip() or None
+        )
+        if terminal_valid:
+            should_mark_final = bool(
+                _is_within_finalization_cutoff(state, remaining)
+                or bool(completion_gate.get("done"))
+                or bool(finalize_reason)
+            )
+            if should_mark_final:
+                final_payload = terminal_payload
+                final_emitted = True
+        if final_payload is not None and terminal_payload_hash is None:
+            terminal_payload_hash = _terminal_payload_hash(final_payload, mode=dedupe_mode)
+
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
@@ -6508,6 +7641,20 @@ def create_memory_folding_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "completion_gate": completion_gate,
+            "source_policy": source_policy,
+            "retry_policy": retry_policy,
+            "finalization_policy": finalization_policy,
+            "field_rules": field_rules,
+            "query_templates": query_templates,
+            "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+            "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+            "derived_values": derived_values,
+            "final_payload": final_payload,
+            "final_emitted": bool(final_emitted),
+            "terminal_valid": bool(terminal_valid),
+            "terminal_payload_hash": terminal_payload_hash,
+            "finalize_invocations": int(state.get("finalize_invocations", 0) or 0),
+            "finalize_trigger_reasons": _next_finalize_trigger_reasons(state, None),
             "om_config": state.get("om_config"),
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
@@ -6550,6 +7697,11 @@ def create_memory_folding_agent(
         scratchpad = state.get("scratchpad", [])
         observations = _state_observations(state)
         reflections = _state_reflections(state)
+        source_policy = _state_source_policy(state)
+        retry_policy = _state_retry_policy(state)
+        finalization_policy = _state_finalization_policy(state)
+        field_rules = _state_field_rules(state)
+        query_templates = _state_query_templates(state)
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
         plan = state.get("plan") if plan_mode_enabled else None
         remaining = remaining_steps_value(state)
@@ -6560,16 +7712,142 @@ def create_memory_folding_agent(
         # Sync informative FIELD_EXTRACT entries into field_status.
         _sync_summary_facts_to_field_status(summary, field_status)
         _sync_scratchpad_to_field_status(scratchpad, field_status)
+        field_status = _apply_configured_field_rules(field_status, field_rules)
+        field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
+
+        unknown_after_searches = state.get("unknown_after_searches")
+        if unknown_after_searches is None:
+            unknown_after_searches = retry_policy.get("max_attempts_per_field")
 
         budget_state = _normalize_budget_state(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
-            unknown_after_searches=state.get("unknown_after_searches"),
+            unknown_after_searches=unknown_after_searches,
             model_budget_limit=state.get("model_budget_limit"),
             evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
+        dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
+        trigger_reason = _finalize_reason_for_state(state) or "finalize_node"
+        finalize_invocations = int(state.get("finalize_invocations", 0) or 0) + 1
+        finalize_trigger_reasons = _next_finalize_trigger_reasons(state, trigger_reason)
+
+        if not _should_finalize_after_terminal(state):
+            terminal_payload = _terminal_payload_from_message(
+                messages[-1],
+                expected_schema=expected_schema,
+            )
+            terminal_payload_hash = _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
+            completion_gate = _schema_outcome_gate_report(
+                state,
+                expected_schema=expected_schema,
+                field_status=field_status,
+                budget_state=budget_state,
+            )
+            finalize_reason = trigger_reason or "terminal_valid"
+            budget_state["finalize_reason"] = finalize_reason
+            out = {
+                "messages": [],
+                "field_status": field_status,
+                "budget_state": budget_state,
+                "diagnostics": diagnostics,
+                "completion_gate": completion_gate,
+                "finalize_reason": finalize_reason,
+                "source_policy": source_policy,
+                "retry_policy": retry_policy,
+                "finalization_policy": finalization_policy,
+                "field_rules": field_rules,
+                "query_templates": query_templates,
+                "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+                "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+                "derived_values": state.get("derived_values") or {},
+                "final_payload": terminal_payload if terminal_payload is not None else state.get("final_payload"),
+                "final_emitted": True,
+                "terminal_valid": bool(terminal_payload is not None),
+                "terminal_payload_hash": terminal_payload_hash,
+                "finalize_invocations": finalize_invocations,
+                "finalize_trigger_reasons": finalize_trigger_reasons,
+                "token_trace": [build_node_trace_entry("finalize", started_at=node_started_at)],
+            }
+            if _is_within_finalization_cutoff(state, remaining) or state.get("stop_reason") == "recursion_limit":
+                out["stop_reason"] = "recursion_limit"
+            if plan_mode_enabled and plan:
+                _auto_plan = plan if isinstance(plan, dict) else {}
+                _auto_steps = _auto_plan.get("steps", [])
+                if _auto_steps:
+                    for _s in _auto_steps:
+                        if isinstance(_s, dict):
+                            _st = _s.get("status", "")
+                            if _st == "in_progress":
+                                _s["status"] = "completed"
+                            elif _st == "pending":
+                                _s["status"] = "skipped"
+                    out["plan"] = _auto_plan
+            return out
+
+        if (
+            bool(finalization_policy.get("idempotent_finalize", True))
+            and bool(state.get("final_emitted", False))
+            and state.get("final_payload") is not None
+        ):
+            cached_payload = state.get("final_payload")
+            try:
+                cached_text = json.dumps(_json_safe_value(cached_payload), ensure_ascii=False)
+            except Exception:
+                cached_text = str(cached_payload)
+            try:
+                from langchain_core.messages import AIMessage
+                cached_response = AIMessage(content=cached_text)
+            except Exception:
+                cached_response = {"role": "assistant", "content": cached_text}
+            cached_payload_hash = _terminal_payload_hash(cached_payload, mode=dedupe_mode)
+            prior_terminal_hash = _terminal_payload_hash_for_state(
+                state,
+                expected_schema=expected_schema,
+                dedupe_mode=dedupe_mode,
+            )
+            emit_cached_message = _should_emit_terminal_message(
+                previous_message=messages[-1] if messages else None,
+                candidate_message=cached_response,
+                previous_hash=prior_terminal_hash,
+                candidate_hash=cached_payload_hash,
+                history_messages=messages,
+            )
+            cached_messages = _terminal_message_update(
+                previous_message=messages[-1] if messages else None,
+                candidate_message=cached_response,
+                emit_candidate=emit_cached_message,
+            )
+            return {
+                "messages": cached_messages,
+                "stop_reason": "recursion_limit",
+                "field_status": field_status,
+                "budget_state": budget_state,
+                "diagnostics": diagnostics,
+                "completion_gate": _schema_outcome_gate_report(
+                    state,
+                    expected_schema=expected_schema,
+                    field_status=field_status,
+                    budget_state=budget_state,
+                ),
+                "finalize_reason": _finalize_reason_for_state(state) or "recursion_limit",
+                "source_policy": source_policy,
+                "retry_policy": retry_policy,
+                "finalization_policy": finalization_policy,
+                "field_rules": field_rules,
+                "query_templates": query_templates,
+                "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+                "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+                "derived_values": state.get("derived_values") or {},
+                "final_payload": cached_payload,
+                "final_emitted": True,
+                "terminal_valid": True,
+                "terminal_payload_hash": cached_payload_hash,
+                "finalize_invocations": finalize_invocations,
+                "finalize_trigger_reasons": finalize_trigger_reasons,
+                "token_trace": [build_node_trace_entry("finalize", started_at=node_started_at)],
+            }
 
         response = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
         if response is None:
@@ -6608,6 +7886,7 @@ def create_memory_folding_agent(
                 context="finalize",
                 messages=messages,
                 debug=debug,
+                invoke_timeout_s=_resolve_model_invoke_timeout_s(state=state),
             )
             budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
         else:
@@ -6646,6 +7925,8 @@ def create_memory_folding_agent(
             force_canonical=True,
             debug=debug,
         )
+        field_status = _apply_configured_field_rules(field_status, field_rules)
+        field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
@@ -6659,14 +7940,60 @@ def create_memory_folding_agent(
         )
         finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
         budget_state["finalize_reason"] = finalize_reason
+        terminal_payload = _terminal_payload_from_message(response, expected_schema=expected_schema)
+        terminal_valid = terminal_payload is not None
+        final_payload = terminal_payload if terminal_valid else state.get("final_payload")
+        final_payload_hash = _terminal_payload_hash(final_payload, mode=dedupe_mode)
+        prior_terminal_hash = _terminal_payload_hash_for_state(
+            state,
+            expected_schema=expected_schema,
+            dedupe_mode=dedupe_mode,
+        )
+        emit_final_message = _should_emit_terminal_message(
+            previous_message=messages[-1] if messages else None,
+            candidate_message=response,
+            previous_hash=prior_terminal_hash,
+            candidate_hash=final_payload_hash,
+            history_messages=messages,
+        )
+
+        derived_values: Dict[str, Any] = {}
+        for key, entry in (field_status or {}).items():
+            if not isinstance(entry, dict):
+                continue
+            if str(entry.get("status") or "").lower() != _FIELD_STATUS_FOUND:
+                continue
+            if str(entry.get("evidence") or "") != "derived_from_field_rule":
+                continue
+            derived_values[str(key)] = entry.get("value")
+
+        out_messages = _terminal_message_update(
+            previous_message=messages[-1] if messages else None,
+            candidate_message=response,
+            emit_candidate=emit_final_message,
+        )
         out = {
-            "messages": [response],
+            "messages": out_messages,
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "completion_gate": completion_gate,
             "finalize_reason": finalize_reason,
+            "source_policy": source_policy,
+            "retry_policy": retry_policy,
+            "finalization_policy": finalization_policy,
+            "field_rules": field_rules,
+            "query_templates": query_templates,
+            "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+            "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+            "derived_values": derived_values,
+            "final_payload": final_payload,
+            "final_emitted": True,
+            "terminal_valid": bool(terminal_valid),
+            "terminal_payload_hash": final_payload_hash,
+            "finalize_invocations": finalize_invocations,
+            "finalize_trigger_reasons": finalize_trigger_reasons,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
@@ -7638,6 +8965,8 @@ def create_memory_folding_agent(
         remaining = remaining_steps_value(state)
         if _no_budget_for_next_node(remaining):
             return "end"
+        if bool(state.get("final_emitted", False)):
+            return "end"
         base_result = _route_after_agent_step(
             state,
             allow_summarize=True,
@@ -7646,6 +8975,8 @@ def create_memory_folding_agent(
         if base_result == "summarize" and _state_om_enabled(state):
             return "observe"
         if base_result == "end":
+            if not _should_finalize_after_terminal(state):
+                return "end"
             if _can_end_on_recursion_stop(state, state.get("messages", []), remaining_steps_value(state)):
                 return "end"
             unresolved_fields = _collect_premature_nudge_fields(state)
@@ -7867,6 +9198,20 @@ class StandardAgentState(TypedDict):
     evidence_mode: Optional[str]
     evidence_pipeline_enabled: Optional[bool]
     evidence_require_second_source: Optional[bool]
+    source_policy: Optional[Dict[str, Any]]
+    retry_policy: Optional[Dict[str, Any]]
+    finalization_policy: Optional[Dict[str, Any]]
+    field_rules: Optional[Dict[str, Any]]
+    query_templates: Optional[Dict[str, Any]]
+    candidate_facts: Optional[List[Dict[str, Any]]]
+    verified_facts: Optional[List[Dict[str, Any]]]
+    derived_values: Optional[Dict[str, Any]]
+    final_payload: Optional[Any]
+    final_emitted: Optional[bool]
+    terminal_payload_hash: Optional[str]
+    terminal_valid: Optional[bool]
+    finalize_invocations: Optional[int]
+    finalize_trigger_reasons: Optional[List[str]]
     unknown_after_searches: Optional[int]
     finalize_on_all_fields_resolved: Optional[bool]
     finalize_reason: Optional[str]
@@ -7877,6 +9222,7 @@ class StandardAgentState(TypedDict):
     plan: Optional[Dict[str, Any]]
     plan_history: Annotated[list, add_to_list]
     use_plan_mode: Optional[bool]
+    model_timeout_s: Optional[float]
 
 
 def create_standard_agent(
@@ -7914,7 +9260,23 @@ def create_standard_agent(
             state = {**state, **_plan_updates}
 
         messages = state.get("messages", [])
+        if _should_reset_terminal_markers_for_new_user_turn(state, messages):
+            state = {
+                **state,
+                "final_emitted": False,
+                "final_payload": None,
+                "terminal_valid": False,
+                "terminal_payload_hash": None,
+                "finalize_invocations": 0,
+                "finalize_trigger_reasons": [],
+            }
+            messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
+        source_policy = _state_source_policy(state)
+        retry_policy = _state_retry_policy(state)
+        finalization_policy = _state_finalization_policy(state)
+        field_rules = _state_field_rules(state)
+        query_templates = _state_query_templates(state)
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
         plan = state.get("plan") if plan_mode_enabled else None
         remaining = remaining_steps_value(state)
@@ -7930,10 +9292,14 @@ def create_standard_agent(
         # Sync scratchpad findings into field_status so the ledger is
         # authoritative even during normal (non-finalize) agent turns.
         _sync_scratchpad_to_field_status(scratchpad, field_status)
+        field_status = _apply_configured_field_rules(field_status, field_rules)
+        unknown_after_searches = state.get("unknown_after_searches")
+        if unknown_after_searches is None:
+            unknown_after_searches = retry_policy.get("max_attempts_per_field")
         budget_state = _normalize_budget_state(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
-            unknown_after_searches=state.get("unknown_after_searches"),
+            unknown_after_searches=unknown_after_searches,
             model_budget_limit=state.get("model_budget_limit"),
             evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
@@ -7969,6 +9335,7 @@ def create_standard_agent(
                 context="agent",
                 messages=messages,
                 debug=debug,
+                invoke_timeout_s=_resolve_model_invoke_timeout_s(state=state),
             )
         else:
             system_msg = SystemMessage(content=_base_system_prompt(
@@ -7980,14 +9347,12 @@ def create_standard_agent(
             full_messages = [system_msg] + list(messages)
             if bool(budget_state.get("replan_requested")):
                 unresolved_fields = _collect_resolvable_unknown_fields(field_status)
-                field_hint = ", ".join(unresolved_fields[:5]) if unresolved_fields else "remaining fields"
                 full_messages.append(
                     HumanMessage(
-                        content=(
-                            "Retrieval quality has been low for multiple rounds. "
-                            "Reformulate search strategy now: tighten query terms, reduce ambiguity, "
-                            "and prioritize high-signal primary sources. "
-                            f"Focus first on: {field_hint}."
+                        content=_build_retry_rewrite_message(
+                            state,
+                            unresolved_fields,
+                            query_context=_query_context_label(state),
                         )
                     )
                 )
@@ -7999,6 +9364,7 @@ def create_standard_agent(
                 context="agent",
                 messages=messages,
                 debug=debug,
+                invoke_timeout_s=_resolve_model_invoke_timeout_s(state=state),
             )
         budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
 
@@ -8042,6 +9408,12 @@ def create_standard_agent(
                 force_canonical=force_fallback,
                 debug=debug,
             )
+            field_status = _apply_configured_field_rules(field_status, field_rules)
+            if _is_within_finalization_cutoff(state, remaining):
+                field_status = _enforce_finalization_policy_on_field_status(
+                    field_status,
+                    finalization_policy,
+                )
             budget_state.update(_field_status_progress(field_status))
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
@@ -8056,6 +9428,37 @@ def create_standard_agent(
         finalize_reason = _finalize_reason_for_state(_state_for_gate)
         if finalize_reason:
             budget_state["finalize_reason"] = finalize_reason
+        derived_values: Dict[str, Any] = {}
+        for key, entry in (field_status or {}).items():
+            if not isinstance(entry, dict):
+                continue
+            if str(entry.get("status") or "").lower() != _FIELD_STATUS_FOUND:
+                continue
+            if str(entry.get("evidence") or "") != "derived_from_field_rule":
+                continue
+            derived_values[str(key)] = entry.get("value")
+
+        final_payload = state.get("final_payload")
+        final_emitted = bool(state.get("final_emitted", False))
+        dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
+        terminal_payload = _terminal_payload_from_message(response, expected_schema=expected_schema)
+        terminal_valid = terminal_payload is not None
+        terminal_payload_hash = (
+            _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
+            if terminal_valid
+            else str(state.get("terminal_payload_hash") or "").strip() or None
+        )
+        if terminal_valid:
+            should_mark_final = bool(
+                _is_within_finalization_cutoff(state, remaining)
+                or bool(completion_gate.get("done"))
+                or bool(finalize_reason)
+            )
+            if should_mark_final:
+                final_payload = terminal_payload
+                final_emitted = True
+        if final_payload is not None and terminal_payload_hash is None:
+            terminal_payload_hash = _terminal_payload_hash(final_payload, mode=dedupe_mode)
         out = {
             "messages": [response],
             "expected_schema": expected_schema,
@@ -8064,6 +9467,20 @@ def create_standard_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "completion_gate": completion_gate,
+            "source_policy": source_policy,
+            "retry_policy": retry_policy,
+            "finalization_policy": finalization_policy,
+            "field_rules": field_rules,
+            "query_templates": query_templates,
+            "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+            "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+            "derived_values": derived_values,
+            "final_payload": final_payload,
+            "final_emitted": bool(final_emitted),
+            "terminal_valid": bool(terminal_valid),
+            "terminal_payload_hash": terminal_payload_hash,
+            "finalize_invocations": int(state.get("finalize_invocations", 0) or 0),
+            "finalize_trigger_reasons": _next_finalize_trigger_reasons(state, None),
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
@@ -8100,6 +9517,11 @@ def create_standard_agent(
         node_started_at = time.perf_counter()
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
+        source_policy = _state_source_policy(state)
+        retry_policy = _state_retry_policy(state)
+        finalization_policy = _state_finalization_policy(state)
+        field_rules = _state_field_rules(state)
+        query_templates = _state_query_templates(state)
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
         plan = state.get("plan") if plan_mode_enabled else None
         remaining = remaining_steps_value(state)
@@ -8109,16 +9531,142 @@ def create_standard_agent(
 
         # Sync scratchpad findings into field_status.
         _sync_scratchpad_to_field_status(scratchpad, field_status)
+        field_status = _apply_configured_field_rules(field_status, field_rules)
+        field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
+
+        unknown_after_searches = state.get("unknown_after_searches")
+        if unknown_after_searches is None:
+            unknown_after_searches = retry_policy.get("max_attempts_per_field")
 
         budget_state = _normalize_budget_state(
             state.get("budget_state"),
             search_budget_limit=state.get("search_budget_limit"),
-            unknown_after_searches=state.get("unknown_after_searches"),
+            unknown_after_searches=unknown_after_searches,
             model_budget_limit=state.get("model_budget_limit"),
             evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _normalize_diagnostics(state.get("diagnostics"))
+        dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
+        trigger_reason = _finalize_reason_for_state(state) or "finalize_node"
+        finalize_invocations = int(state.get("finalize_invocations", 0) or 0) + 1
+        finalize_trigger_reasons = _next_finalize_trigger_reasons(state, trigger_reason)
+
+        if not _should_finalize_after_terminal(state):
+            terminal_payload = _terminal_payload_from_message(
+                messages[-1],
+                expected_schema=expected_schema,
+            )
+            terminal_payload_hash = _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
+            completion_gate = _schema_outcome_gate_report(
+                state,
+                expected_schema=expected_schema,
+                field_status=field_status,
+                budget_state=budget_state,
+            )
+            finalize_reason = trigger_reason or "terminal_valid"
+            budget_state["finalize_reason"] = finalize_reason
+            out = {
+                "messages": [],
+                "field_status": field_status,
+                "budget_state": budget_state,
+                "diagnostics": diagnostics,
+                "completion_gate": completion_gate,
+                "finalize_reason": finalize_reason,
+                "source_policy": source_policy,
+                "retry_policy": retry_policy,
+                "finalization_policy": finalization_policy,
+                "field_rules": field_rules,
+                "query_templates": query_templates,
+                "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+                "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+                "derived_values": state.get("derived_values") or {},
+                "final_payload": terminal_payload if terminal_payload is not None else state.get("final_payload"),
+                "final_emitted": True,
+                "terminal_valid": bool(terminal_payload is not None),
+                "terminal_payload_hash": terminal_payload_hash,
+                "finalize_invocations": finalize_invocations,
+                "finalize_trigger_reasons": finalize_trigger_reasons,
+                "token_trace": [build_node_trace_entry("finalize", started_at=node_started_at)],
+            }
+            if _is_within_finalization_cutoff(state, remaining) or state.get("stop_reason") == "recursion_limit":
+                out["stop_reason"] = "recursion_limit"
+            if plan_mode_enabled and plan:
+                _auto_plan = plan if isinstance(plan, dict) else {}
+                _auto_steps = _auto_plan.get("steps", [])
+                if _auto_steps:
+                    for _s in _auto_steps:
+                        if isinstance(_s, dict):
+                            _st = _s.get("status", "")
+                            if _st == "in_progress":
+                                _s["status"] = "completed"
+                            elif _st == "pending":
+                                _s["status"] = "skipped"
+                    out["plan"] = _auto_plan
+            return out
+
+        if (
+            bool(finalization_policy.get("idempotent_finalize", True))
+            and bool(state.get("final_emitted", False))
+            and state.get("final_payload") is not None
+        ):
+            cached_payload = state.get("final_payload")
+            try:
+                cached_text = json.dumps(_json_safe_value(cached_payload), ensure_ascii=False)
+            except Exception:
+                cached_text = str(cached_payload)
+            try:
+                from langchain_core.messages import AIMessage
+                cached_response = AIMessage(content=cached_text)
+            except Exception:
+                cached_response = {"role": "assistant", "content": cached_text}
+            cached_payload_hash = _terminal_payload_hash(cached_payload, mode=dedupe_mode)
+            prior_terminal_hash = _terminal_payload_hash_for_state(
+                state,
+                expected_schema=expected_schema,
+                dedupe_mode=dedupe_mode,
+            )
+            emit_cached_message = _should_emit_terminal_message(
+                previous_message=messages[-1] if messages else None,
+                candidate_message=cached_response,
+                previous_hash=prior_terminal_hash,
+                candidate_hash=cached_payload_hash,
+                history_messages=messages,
+            )
+            cached_messages = _terminal_message_update(
+                previous_message=messages[-1] if messages else None,
+                candidate_message=cached_response,
+                emit_candidate=emit_cached_message,
+            )
+            return {
+                "messages": cached_messages,
+                "stop_reason": "recursion_limit",
+                "field_status": field_status,
+                "budget_state": budget_state,
+                "diagnostics": diagnostics,
+                "completion_gate": _schema_outcome_gate_report(
+                    state,
+                    expected_schema=expected_schema,
+                    field_status=field_status,
+                    budget_state=budget_state,
+                ),
+                "finalize_reason": _finalize_reason_for_state(state) or "recursion_limit",
+                "source_policy": source_policy,
+                "retry_policy": retry_policy,
+                "finalization_policy": finalization_policy,
+                "field_rules": field_rules,
+                "query_templates": query_templates,
+                "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+                "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+                "derived_values": state.get("derived_values") or {},
+                "final_payload": cached_payload,
+                "final_emitted": True,
+                "terminal_valid": True,
+                "terminal_payload_hash": cached_payload_hash,
+                "finalize_invocations": finalize_invocations,
+                "finalize_trigger_reasons": finalize_trigger_reasons,
+                "token_trace": [build_node_trace_entry("finalize", started_at=node_started_at)],
+            }
         response = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
         if response is None:
             # Build tool output digest for context when re-invoking
@@ -8153,6 +9701,7 @@ def create_standard_agent(
                 context="finalize",
                 messages=messages,
                 debug=debug,
+                invoke_timeout_s=_resolve_model_invoke_timeout_s(state=state),
             )
             budget_state = _record_model_call_on_budget(budget_state, call_delta=1)
         else:
@@ -8189,6 +9738,8 @@ def create_standard_agent(
             force_canonical=True,
             debug=debug,
         )
+        field_status = _apply_configured_field_rules(field_status, field_rules)
+        field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
         _usage = _token_usage_dict_from_message(response)
@@ -8201,14 +9752,58 @@ def create_standard_agent(
         )
         finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
         budget_state["finalize_reason"] = finalize_reason
+        terminal_payload = _terminal_payload_from_message(response, expected_schema=expected_schema)
+        terminal_valid = terminal_payload is not None
+        final_payload = terminal_payload if terminal_valid else state.get("final_payload")
+        final_payload_hash = _terminal_payload_hash(final_payload, mode=dedupe_mode)
+        prior_terminal_hash = _terminal_payload_hash_for_state(
+            state,
+            expected_schema=expected_schema,
+            dedupe_mode=dedupe_mode,
+        )
+        emit_final_message = _should_emit_terminal_message(
+            previous_message=messages[-1] if messages else None,
+            candidate_message=response,
+            previous_hash=prior_terminal_hash,
+            candidate_hash=final_payload_hash,
+            history_messages=messages,
+        )
+        derived_values: Dict[str, Any] = {}
+        for key, entry in (field_status or {}).items():
+            if not isinstance(entry, dict):
+                continue
+            if str(entry.get("status") or "").lower() != _FIELD_STATUS_FOUND:
+                continue
+            if str(entry.get("evidence") or "") != "derived_from_field_rule":
+                continue
+            derived_values[str(key)] = entry.get("value")
+        out_messages = _terminal_message_update(
+            previous_message=messages[-1] if messages else None,
+            candidate_message=response,
+            emit_candidate=emit_final_message,
+        )
         out = {
-            "messages": [response],
+            "messages": out_messages,
             "stop_reason": "recursion_limit",
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "completion_gate": completion_gate,
             "finalize_reason": finalize_reason,
+            "source_policy": source_policy,
+            "retry_policy": retry_policy,
+            "finalization_policy": finalization_policy,
+            "field_rules": field_rules,
+            "query_templates": query_templates,
+            "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
+            "verified_facts": _normalize_fact_records(state.get("verified_facts")),
+            "derived_values": derived_values,
+            "final_payload": final_payload,
+            "final_emitted": True,
+            "terminal_valid": bool(terminal_valid),
+            "terminal_payload_hash": final_payload_hash,
+            "finalize_invocations": finalize_invocations,
+            "finalize_trigger_reasons": finalize_trigger_reasons,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
             "input_tokens": state.get("input_tokens", 0) + _usage["input_tokens"],
             "output_tokens": state.get("output_tokens", 0) + _usage["output_tokens"],
@@ -8239,8 +9834,12 @@ def create_standard_agent(
         remaining = remaining_steps_value(state)
         if _no_budget_for_next_node(remaining):
             return "end"
+        if bool(state.get("final_emitted", False)):
+            return "end"
         base_result = _route_after_agent_step(state)
         if base_result == "end":
+            if not _should_finalize_after_terminal(state):
+                return "end"
             if _can_end_on_recursion_stop(state, state.get("messages", []), remaining_steps_value(state)):
                 return "end"
             unresolved_fields = _collect_premature_nudge_fields(state)

@@ -4,7 +4,7 @@
 \alias{.create_llm}
 \title{Create LLM Instance}
 \usage{
-.create_llm(backend, model, clients, rate_limit)
+.create_llm(backend, model, clients, rate_limit, timeout = ASA_DEFAULT_TIMEOUT)
 }
 \arguments{
 \item{backend}{Backend name}
@@ -14,6 +14,8 @@
 \item{clients}{HTTP clients (for OpenAI)}
 
 \item{rate_limit}{Requests per second}
+
+\item{timeout}{Request timeout in seconds}
 }
 \description{
 Create LLM Instance

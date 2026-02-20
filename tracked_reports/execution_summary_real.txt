@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 15.4349,
+  "elapsed_time": 4.4147,
   "field_status": {
     "education_level": {
       "status": "unknown",
@@ -37,8 +37,8 @@
       "status": "found",
       "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "scratchpad_source_backed",
-      "attempts": 5,
+      "evidence": "summary_fact_source_backed",
+      "attempts": 7,
       "descriptor": "string|Unknown"
     },
     "class_background": {
@@ -74,34 +74,34 @@
       "descriptor": "string|null"
     },
     "birth_place": {
-      "status": "found",
-      "value": "TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure), Beni",
-      "source_url": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
-      "evidence": "scratchpad_source_backed",
-      "attempts": 6,
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
+      "evidence": null,
+      "attempts": 7,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
-      "status": "found",
-      "value": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
-      "source_url": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
-      "evidence": "terminal_payload_source_backed",
+      "status": "unknown",
+      "value": null,
+      "source_url": null,
+      "evidence": "source_consistency_demotion",
       "attempts": 7,
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "found",
-      "value": 1982,
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
+      "status": "unknown",
+      "value": "Unknown",
+      "source_url": null,
+      "evidence": "grounding_blocked_source_value_mismatch",
       "attempts": 7,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "found",
-      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
+      "status": "unknown",
+      "value": null,
+      "source_url": null,
+      "evidence": "source_consistency_demotion",
       "attempts": 7,
       "descriptor": "string|null"
     },
@@ -131,7 +131,7 @@
     },
     "confidence": {
       "status": "found",
-      "value": "Low",
+      "value": "High",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 7,
@@ -139,7 +139,7 @@
     },
     "justification": {
       "status": "found",
-      "value": "Source-backed searches resolved 8 fields (including prior_occupation, class_background, prior_occupation_source), while 10 fields remain unknown due to limited verifiable evidence.",
+      "value": "Official biography from the Vicepresidencia confirms birth date and prior occupation as an indigenous community leader. Education and specific birth place are not detailed in official sources.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 7,

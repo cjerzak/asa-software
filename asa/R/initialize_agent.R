@@ -323,7 +323,7 @@ initialize_agent <- function(backend = NULL,
 
   # Create LLM instance
   if (verbose) message("  Creating LLM (", backend, "/", model, ")...")
-  llm <- .create_llm(backend, model, clients, rate_limit)
+  llm <- .create_llm(backend, model, clients, rate_limit, timeout = timeout)
 
   # Create search tools
   if (verbose) message("  Creating search tools...")
@@ -474,8 +474,9 @@ initialize_agent <- function(backend = NULL,
 #' @param model Model identifier
 #' @param clients HTTP clients (for OpenAI)
 #' @param rate_limit Requests per second
+#' @param timeout Request timeout in seconds
 #' @keywords internal
-.create_llm <- function(backend, model, clients, rate_limit) {
+.create_llm <- function(backend, model, clients, rate_limit, timeout = ASA_DEFAULT_TIMEOUT) {
   # Create rate limiter
   rate_limiter <- asa_env$RateLimit$InMemoryRateLimiter(
     requests_per_second = rate_limit,
@@ -554,6 +555,7 @@ initialize_agent <- function(backend = NULL,
     args <- list(
       model = model,
       temperature = 1.0,
+      timeout = as.numeric(timeout),
       rate_limiter = rate_limiter
     )
     if (nzchar(api_key)) {

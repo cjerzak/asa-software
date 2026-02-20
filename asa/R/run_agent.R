@@ -21,6 +21,11 @@
                        search_budget_limit = NULL,
                        unknown_after_searches = NULL,
                        finalize_on_all_fields_resolved = NULL,
+                       field_rules = NULL,
+                       source_policy = NULL,
+                       retry_policy = NULL,
+                       finalization_policy = NULL,
+                       query_templates = NULL,
                        use_plan_mode = FALSE,
                        verbose = FALSE) {
 
@@ -35,6 +40,11 @@
     search_budget_limit = search_budget_limit,
     unknown_after_searches = unknown_after_searches,
     finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+    field_rules = field_rules,
+    source_policy = source_policy,
+    retry_policy = retry_policy,
+    finalization_policy = finalization_policy,
+    query_templates = query_templates,
     use_plan_mode = use_plan_mode,
     verbose = verbose,
     thread_id = thread_id
@@ -86,7 +96,13 @@
             search_budget_limit = search_budget_limit,
             unknown_after_searches = unknown_after_searches,
             finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+            field_rules = field_rules,
+            source_policy = source_policy,
+            retry_policy = retry_policy,
+            finalization_policy = finalization_policy,
+            query_templates = query_templates,
             use_plan_mode = use_plan_mode,
+            model_timeout_s = as.numeric(config$timeout %||% 0),
             om_config = config$om_config %||% list(
               enabled = isTRUE(config$use_observational_memory %||% FALSE),
               scope = if (isTRUE(config$om_cross_thread_memory %||% FALSE)) "resource" else "thread",
@@ -105,7 +121,13 @@
             search_budget_limit = search_budget_limit,
             unknown_after_searches = unknown_after_searches,
             finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
-            use_plan_mode = use_plan_mode
+            field_rules = field_rules,
+            source_policy = source_policy,
+            retry_policy = retry_policy,
+            finalization_policy = finalization_policy,
+            query_templates = query_templates,
+            use_plan_mode = use_plan_mode,
+            model_timeout_s = as.numeric(config$timeout %||% 0)
           )
         }
       },
@@ -378,8 +400,14 @@
                                          search_budget_limit = NULL,
                                          unknown_after_searches = NULL,
                                          finalize_on_all_fields_resolved = NULL,
+                                         field_rules = NULL,
+                                         source_policy = NULL,
+                                         retry_policy = NULL,
+                                         finalization_policy = NULL,
+                                         query_templates = NULL,
                                          use_plan_mode = FALSE,
-                                         om_config = NULL) {
+                                         om_config = NULL,
+                                         model_timeout_s = NULL) {
   # Import message type
   from_schema <- reticulate::import("langchain_core.messages")
   initial_message <- from_schema$HumanMessage(content = prompt)
@@ -390,6 +418,12 @@
   # Reset terminal markers for this invocation so checkpointed threads do not
   # inherit stale stop signals from prior runs.
   initial_state$stop_reason <- NULL
+  initial_state$final_emitted <- FALSE
+  initial_state$final_payload <- NULL
+  initial_state$terminal_valid <- FALSE
+  initial_state$terminal_payload_hash <- NULL
+  initial_state$finalize_invocations <- 0L
+  initial_state$finalize_trigger_reasons <- list()
 
   if (!is.null(expected_schema)) {
     initial_state$expected_schema <- expected_schema
@@ -410,6 +444,21 @@
   if (!is.null(finalize_on_all_fields_resolved)) {
     initial_state$finalize_on_all_fields_resolved <- isTRUE(finalize_on_all_fields_resolved)
   }
+  if (!is.null(field_rules)) {
+    initial_state$field_rules <- field_rules
+  }
+  if (!is.null(source_policy)) {
+    initial_state$source_policy <- source_policy
+  }
+  if (!is.null(retry_policy)) {
+    initial_state$retry_policy <- retry_policy
+  }
+  if (!is.null(finalization_policy)) {
+    initial_state$finalization_policy <- finalization_policy
+  }
+  if (!is.null(query_templates)) {
+    initial_state$query_templates <- query_templates
+  }
 
   initial_state$tokens_used <- 0L
   initial_state$input_tokens <- 0L
@@ -417,6 +466,9 @@
   initial_state$token_trace <- list()
 
   initial_state$use_plan_mode <- isTRUE(use_plan_mode)
+  if (!is.null(model_timeout_s) && is.finite(as.numeric(model_timeout_s))) {
+    initial_state$model_timeout_s <- as.numeric(model_timeout_s)
+  }
   if (!is.null(om_config)) {
     initial_state$om_config <- om_config
   }
@@ -452,12 +504,24 @@
                                    search_budget_limit = NULL,
                                    unknown_after_searches = NULL,
                                    finalize_on_all_fields_resolved = NULL,
-                                   use_plan_mode = FALSE) {
+                                   field_rules = NULL,
+                                   source_policy = NULL,
+                                   retry_policy = NULL,
+                                   finalization_policy = NULL,
+                                   query_templates = NULL,
+                                   use_plan_mode = FALSE,
+                                   model_timeout_s = NULL) {
   resolved_thread_id <- .resolve_thread_id(thread_id)
   initial_state <- list(
     messages = list(list(role = "user", content = prompt)),
     thread_id = resolved_thread_id,
     stop_reason = NULL,
+    final_emitted = FALSE,
+    final_payload = NULL,
+    terminal_valid = FALSE,
+    terminal_payload_hash = NULL,
+    finalize_invocations = 0L,
+    finalize_trigger_reasons = list(),
     tokens_used = 0L,
     input_tokens = 0L,
     output_tokens = 0L,
@@ -482,7 +546,25 @@
   if (!is.null(finalize_on_all_fields_resolved)) {
     initial_state$finalize_on_all_fields_resolved <- isTRUE(finalize_on_all_fields_resolved)
   }
+  if (!is.null(field_rules)) {
+    initial_state$field_rules <- field_rules
+  }
+  if (!is.null(source_policy)) {
+    initial_state$source_policy <- source_policy
+  }
+  if (!is.null(retry_policy)) {
+    initial_state$retry_policy <- retry_policy
+  }
+  if (!is.null(finalization_policy)) {
+    initial_state$finalization_policy <- finalization_policy
+  }
+  if (!is.null(query_templates)) {
+    initial_state$query_templates <- query_templates
+  }
   initial_state$use_plan_mode <- isTRUE(use_plan_mode)
+  if (!is.null(model_timeout_s) && is.finite(as.numeric(model_timeout_s))) {
+    initial_state$model_timeout_s <- as.numeric(model_timeout_s)
+  }
 
   ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
   response <- ddg_module$invoke_graph_safely(

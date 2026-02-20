@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{.resolve_webpage_reader_settings}
 \alias{.resolve_webpage_reader_settings}
-\title{Resolve Webpage Reader Settings}
+\title{Run Code with a Temporary Configuration Snapshot}
 \usage{
 .resolve_webpage_reader_settings(
   config_search = NULL,
@@ -106,12 +106,110 @@ HTTP 200 pages.}
 \item{webpage_pdf_max_text_chars}{Max PDF text chars retained before ranking.}
 
 \item{webpage_user_agent}{User-Agent string for webpage fetches, or NULL.}
+
+\item{snapshot_fn}{Function returning previous config snapshot.}
+
+\item{restore_fn}{Function restoring previous config.}
+
+\item{should_restore}{Optional predicate that decides whether restore should run.}
+
+\item{on_exit_fn}{Optional cleanup function executed on exit.}
+
+\item{lhs}{Left-hand value/list}
+
+\item{rhs}{Right-hand value/list}
+
+\item{search}{asa_search object or list of search settings}
+
+\item{conda_env}{Conda env used by search tools}
+
+\item{fn}{Function to run with search config applied}
+
+\item{value}{Explicit value (returned if non-NULL).}
+
+\item{config}{Configuration list to fall back to.}
+
+\item{key}{Key to look up in \code{config}.}
 }
 \value{
+Result of \code{fn()}.
+
+TRUE when equivalent, FALSE otherwise
+
+Result of fn()
+
+The resolved value.
+
 List with resolved settings
 }
 \description{
-Internal helper that merges per-call webpage reader options with defaults
-from config$search.
+Internal helper that snapshots a runtime config, executes code, then
+best-effort restores the original config on exit.
 }
+\keyword{(e.g.,}
+\keyword{Apply}
+\keyword{Compare}
+\keyword{Configuration}
+\keyword{Internal}
+\keyword{Operation}
+\keyword{Python).}
+\keyword{Reader}
+\keyword{Resolve}
+\keyword{Returns}
+\keyword{Runtime}
+\keyword{Search}
+\keyword{Settings}
+\keyword{Single}
+\keyword{Values}
+\keyword{Webpage}
+\keyword{\code{NULL}}
+\keyword{\code{config[[key]]}}
+\keyword{\code{value}}
+\keyword{a}
+\keyword{afterward.}
+\keyword{and}
+\keyword{applies}
+\keyword{attribute}
+\keyword{case}
+\keyword{compares}
+\keyword{config}
+\keyword{config$search.}
+\keyword{configuration}
+\keyword{defaults}
+\keyword{differences}
+\keyword{exists,}
+\keyword{for}
+\keyword{fragments}
+\keyword{from}
+\keyword{function,}
+\keyword{helper}
+\keyword{ignoring}
+\keyword{in}
+\keyword{integer}
 \keyword{internal}
+\keyword{is}
+\keyword{it}
+\keyword{merges}
+\keyword{numeric}
+\keyword{option}
+\keyword{options}
+\keyword{original}
+\keyword{per-call}
+\keyword{reader}
+\keyword{restores}
+\keyword{returned.}
+\keyword{runs}
+\keyword{scalars}
+\keyword{search}
+\keyword{settings,}
+\keyword{single}
+\keyword{that}
+\keyword{the}
+\keyword{two}
+\keyword{unless}
+\keyword{value}
+\keyword{vs}
+\keyword{webpage}
+\keyword{which}
+\keyword{while}
+\keyword{with}

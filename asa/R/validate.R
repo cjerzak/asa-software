@@ -533,6 +533,11 @@
                                search_budget_limit = NULL,
                                unknown_after_searches = NULL,
                                finalize_on_all_fields_resolved = NULL,
+                               field_rules = NULL,
+                               source_policy = NULL,
+                               retry_policy = NULL,
+                               finalization_policy = NULL,
+                               query_templates = NULL,
                                allow_read_webpages = NULL,
                                webpage_relevance_mode = NULL,
                                webpage_embedding_provider = NULL,
@@ -575,6 +580,41 @@
     allow_empty_list = TRUE,
     invalid_fix = "Pass a named list or Python dict for budget_state, or set budget_state = NULL",
     empty_fix = "Pass budget_state = NULL or include at least one budget key"
+  )
+  .validate_expected_schema(
+    field_rules,
+    param_name = "field_rules",
+    allow_empty_list = TRUE,
+    invalid_fix = "Pass a named list or Python dict for field_rules, or set field_rules = NULL",
+    empty_fix = "Pass field_rules = NULL or include at least one rule entry"
+  )
+  .validate_expected_schema(
+    source_policy,
+    param_name = "source_policy",
+    allow_empty_list = TRUE,
+    invalid_fix = "Pass a named list or Python dict for source_policy, or set source_policy = NULL",
+    empty_fix = "Pass source_policy = NULL or include at least one policy entry"
+  )
+  .validate_expected_schema(
+    retry_policy,
+    param_name = "retry_policy",
+    allow_empty_list = TRUE,
+    invalid_fix = "Pass a named list or Python dict for retry_policy, or set retry_policy = NULL",
+    empty_fix = "Pass retry_policy = NULL or include at least one policy entry"
+  )
+  .validate_expected_schema(
+    finalization_policy,
+    param_name = "finalization_policy",
+    allow_empty_list = TRUE,
+    invalid_fix = "Pass a named list or Python dict for finalization_policy, or set finalization_policy = NULL",
+    empty_fix = "Pass finalization_policy = NULL or include at least one policy entry"
+  )
+  .validate_expected_schema(
+    query_templates,
+    param_name = "query_templates",
+    allow_empty_list = TRUE,
+    invalid_fix = "Pass a named list or Python dict for query_templates, or set query_templates = NULL",
+    empty_fix = "Pass query_templates = NULL or include at least one template entry"
   )
 
   .validate_recursion_limit(recursion_limit, "recursion_limit")
@@ -666,6 +706,11 @@
                                 search_budget_limit = NULL,
                                 unknown_after_searches = NULL,
                                 finalize_on_all_fields_resolved = NULL,
+                                field_rules = NULL,
+                                source_policy = NULL,
+                                retry_policy = NULL,
+                                finalization_policy = NULL,
+                                query_templates = NULL,
                                 use_plan_mode = NULL) {
   .validate_string(prompt, "prompt")
 
@@ -678,6 +723,11 @@
   .validate_expected_schema(expected_schema)
   .validate_expected_schema(field_status, param_name = "field_status", allow_empty_list = TRUE)
   .validate_expected_schema(budget_state, param_name = "budget_state", allow_empty_list = TRUE)
+  .validate_expected_schema(field_rules, param_name = "field_rules", allow_empty_list = TRUE)
+  .validate_expected_schema(source_policy, param_name = "source_policy", allow_empty_list = TRUE)
+  .validate_expected_schema(retry_policy, param_name = "retry_policy", allow_empty_list = TRUE)
+  .validate_expected_schema(finalization_policy, param_name = "finalization_policy", allow_empty_list = TRUE)
+  .validate_expected_schema(query_templates, param_name = "query_templates", allow_empty_list = TRUE)
 
   if (!is.null(search_budget_limit)) {
     .validate_positive(search_budget_limit, "search_budget_limit", integer_only = TRUE)
