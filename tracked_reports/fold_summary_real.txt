@@ -1,43 +1,43 @@
 {
   "version": 1,
   "facts": [],
-  "decisions": [],
-  "open_questions": ["What is Ramona Moye Camaconi's educational background?", "What was her specific occupation prior to becoming a deputy (beyond indigenous representation)?", "What was the outcome of the Ethics Commission complaint regarding the falsified medical licenses?"],
+  "decisions": "Prioritize 'Special Indigenous Constituency' (Circunscripción 09) as her primary role over the conflicting 'Circunscripción 6 suplente' record, as multiple news sources confirm her titular status.",
+  "open_questions": ["What is her specific educational background or highest degree obtained?", "What was her specific occupation immediately prior to her 2014 election (beyond general indigenous leadership)?"],
   "sources": [
     {
+      "tool": "scratchpad",
+      "url": "https://www.idcrawl.com/ramona-moye",
+      "title": "IdCrawl Profile",
+      "note": "Source for birth date"
+    },
+    {
       "tool": "Search",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "title": "Vicepresidencia del Estado - Perfil Parlamentario",
-      "note": "Source for birth year (1982)"
+      "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
+      "title": "MAS gana en el Tipnis",
+      "note": "Election results confirmation"
     },
     {
       "tool": "Search",
       "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3",
-      "title": "Vicepresidencia del Estado - Bancadas",
-      "note": "Source for constituency (Circunscripción 09)"
+      "title": "Vicepresidencia Parlamentarios",
+      "note": "Official list of deputies"
     },
     {
       "tool": "Search",
-      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados/",
-      "title": "DIPUTADA MOYE DEL MAS ES DENUNCIADA POR PRESENTAR BAJAS MÉDICAS FALSIFICADAS",
-      "note": "Details on ethics complaint"
+      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados",
+      "title": "Denuncia bajas médicas",
+      "note": "Controversy details"
     },
     {
       "tool": "Search",
-      "url": "https://eju.tv/2019/08/conozca-a-los-diputados-mas-ausentes-diputada-oficialista-la-mas-faltona",
-      "title": "Conozca a los diputados más ausentes",
-      "note": "Details on absenteeism"
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html",
-      "title": "Diputada del MAS admite que en el TIPNIS se produce coca",
-      "note": "Comments on coca production"
+      "url": "https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967",
+      "title": "Diputada admite coca en TIPNIS",
+      "note": "Statement on coca production"
     },
     {
       "tool": "OpenWebpage",
-      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados/",
-      "title": "DIPUTADA MOYE DEL MAS ES DENUNCIADA POR PRESENTAR BAJAS MÉDICAS FALSIFICADAS PARA OBTENER LICENCIA EN LA CÁMARA DE DIPUTADOS – Radio Luis de Fuentes-Tarija",
+      "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
+      "title": "(unavailable)",
       "note": null
     },
     {
@@ -47,5 +47,5 @@
       "note": null
     }
   ],
-  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: Ramona Moye Camaconi served as a MAS Deputy (Uninominal) for Circunscripción 09 (Beni) during the 2015-2020 legislative period (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3).", "UNGROUNDED: Moye is an indigenous representative and has been involved in controversies regarding the TIPNIS territory (source: https://www.facebook.com/ErbolDigital/videos/diputada-del-mas-y-representante-indígena-ramona-moye-niega-presencia-del-narcot/329029707775320).", "UNGROUNDED: In 2019, Deputy Jimena Costa (UD) denounced Moye to the Ethics Commission for allegedly falsifying medical leave documents to obtain licenses from the Chamber of Deputies (source: https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados/).", "UNGROUNDED: Moye was identified in a study as one of the deputies with the highest absentee rates (source: https://eju.tv/2019/08/conozca-a-los-diputados-mas-ausentes-diputada-oficialista-la-mas-faltona).", "UNGROUNDED: Moye initially denied the presence of drug trafficking in TIPNIS but later admitted coca is produced there for traditional consumption (source: https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html)."]
+  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.idcrawl.com/ramona-moye)", "UNGROUNDED: FIELD_EXTRACT: birth_date = 1982-01-07 (source: https://www.idcrawl.com/ramona-moye)", "UNGROUNDED: Ramona Moye Camaconi was elected as the titular Deputy for the Special Indigenous Constituency (Circunscripción Especial Indígena) of Beni representing the Movement for Socialism (MAS) in the 2014 election cycle. (source: https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)", "UNGROUNDED: Official parliamentary lists classify her seat as 'Diputado uninominal - Circunscripción 09' for Beni. (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3)", "UNGROUNDED: There is a conflicting record labeled 'Diputado uninominal - Circunscripción 6 (suplente)' associated with her profile ID, though she is widely cited as the titular Special Indigenous Deputy. (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428)", "UNGROUNDED: She faced a denunciation by Senator Jimena Costa for allegedly presenting falsified medical certificates to obtain leave licenses from the Chamber of Deputies. (source: https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados)", "UNGROUNDED: In May 2017, Moye admitted to the existence of coca production in the TIPNIS territory, arguing it was for traditional autoconsumption. (source: https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967)", "UNGROUNDED: She promoted a bill to abrogate Law 180, which protected the intangibility of the TIPNIS national park. (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)", "UNGROUNDED: Moye is an indigenous leader from the TIPNIS region and has been involved in disputes regarding indigenous justice jurisdiction. (source: https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria)"]
 }

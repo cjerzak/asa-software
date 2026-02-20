@@ -55,6 +55,40 @@
 \end{frame}
 % --------------------------------------------------
 
+\begin{frame}{The Three-Legged Stool of Quantitative Social Science}
+\centering
+\begin{tikzpicture}[scale=1.1, every node/.style={font=\normalsize}]
+  \coordinate (T) at (0,2);
+  \coordinate (D) at (-2.4,-1.4);
+  \coordinate (A) at (2.4,-1.4);
+
+  \draw[thick] (T) -- (D) -- (A) -- cycle;
+  \fill (T) circle (2.2pt) node[above=0.25em] {\textbf{Theory}};
+  \fill (D) circle (2.2pt) node[below=0.15em, left=1.4em] {\textbf{Data}};
+  \fill (A) circle (2.2pt) node[below=0.15em, right=1.4em] {\textbf{Analysis}};
+
+  \node at (0,0.15) {\textbf{Reliable Results}};
+  \node[red] at (0,-2.25) {\large\textbf{Break one leg $\Rightarrow$ whole thing collapses}};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Data: The New Oil (and why it matters more now)}
+\large
+\begin{itemize}
+  \item Data is increasingly the \textbf{scarce, durable asset} in quantitative social science.
+  \item \textbf{Analysis friction is falling:} LLMs reduce the cost of coding, cleaning, summarizing, and prototyping.
+  \item As analysis gets cheaper, \textbf{unique data sources} become more valuable.
+  \item Comparative advantage shifts toward \textbf{proprietary / hard-to-collect} datasets.
+  \item Grounding examples (data companies with massive valuations/exits):
+  \begin{itemize}
+    \item[] \textbf{Scale AI} (training-data / labeling infrastructure)
+    \item[] \textbf{ZoomInfo} (B2B contact and firmographic data)
+    \item[] \textbf{CoStar} (commercial real-estate data)
+  \end{itemize}
+  \item \textit{Next, we’ll talk about how to operationalize this reality in practice—specifically, how we use AI search agents to discover, evaluate, and exploit high-value data sources.}
+\end{itemize}
+\end{frame}
+
 \begin{frame}[standout]
 Elite attribute labels are \textbf{measurements}.\\[0.4em]
 \normalsize

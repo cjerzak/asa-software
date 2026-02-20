@@ -60,6 +60,39 @@
 \maketitle
 % --------------------------------------------------
 
+\begin{frame}{The Three-Legged Stool of Quantitative Social Science}
+\centering
+\begin{tikzpicture}[scale=1.1, every node/.style={font=\normalsize}]
+  \coordinate (T) at (0,2);
+  \coordinate (D) at (-2.4,-1.4);
+  \coordinate (A) at (2.4,-1.4);
+
+  \draw[thick] (T) -- (D) -- (A) -- cycle;
+  \fill (T) circle (2.2pt) node[above=0.25em] {\textbf{Theory}};
+  \fill (D) circle (2.2pt) node[below=0.15em, left=1.4em] {\textbf{Data}};
+  \fill (A) circle (2.2pt) node[below=0.15em, right=1.4em] {\textbf{Analysis}};
+
+  \node at (0,0.15) {\textbf{Reliable Results}};
+  \node[red] at (0,-2.25) {\large\textbf{Break one leg $\Rightarrow$ whole thing collapses}};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Data: The New Oil (and why it matters more now)}
+\large
+\begin{itemize}
+  \item In quantitative social science, the scarcest resource is now \textbf{high-quality, defensible data}.
+  \item \textbf{Analysis friction is falling:} LLMs cut the cost of coding, cleaning, summarizing, and prototyping.
+  \item As analysis gets cheaper, the edge shifts toward teams with \textbf{unique, hard-to-collect datasets}.
+  \item Concrete examples:
+  \begin{itemize}
+    \item[] \textbf{Scale AI} (large-cap valuation from training-data/data services)
+    \item[] \textbf{Databricks} (data platform with a large market valuation)
+    \item[] \textbf{Snowflake} (high-value data infrastructure company)
+  \end{itemize}
+  \item \textit{Next, we’ll talk about how to operationalize this reality in practice—specifically, how we use AI search agents to discover, evaluate, and exploit high-value data sources.}
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Why this matters}{}
 \large
 \begin{itemize}

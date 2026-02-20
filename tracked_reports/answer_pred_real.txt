@@ -11,7 +11,7 @@
   "birth_place": "Unknown",
   "birth_place_source": null,
   "birth_year": 1982,
-  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "birth_year_source": "https://www.idcrawl.com/ramona-moye",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
