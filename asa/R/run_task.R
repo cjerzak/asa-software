@@ -492,6 +492,23 @@ run_task <- function(prompt,
   } else {
     NA_character_
   }
+  invoke_error <- list()
+  json_repair_events <- response$json_repair %||% list()
+  if (is.list(json_repair_events) && length(json_repair_events) > 0) {
+    for (ev in json_repair_events) {
+      if (!is.list(ev)) next
+      if (identical(ev$repair_reason %||% NA_character_, "invoke_exception_fallback")) {
+        invoke_error <- list(
+          error_type = ev$error_type %||% NA_character_,
+          error_message = ev$error_message %||% NA_character_,
+          retry_attempts = ev$retry_attempts %||% NA_integer_,
+          retry_max_attempts = ev$retry_max_attempts %||% NA_integer_,
+          retryable_error = ev$retryable_error %||% NA
+        )
+        break
+      }
+    }
+  }
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
@@ -512,6 +529,7 @@ run_task <- function(prompt,
     policy_version = response$policy_version %||% NA_character_,
     artifact_status = response$artifact_status %||% .build_result_artifact_status(response),
     json_repair = response$json_repair %||% list(),
+    invoke_error = invoke_error,
     final_payload = response$final_payload %||% NULL,
     terminal_valid = isTRUE(response$terminal_valid %||% FALSE),
     terminal_payload_hash = response$terminal_payload_hash %||% NA_character_,

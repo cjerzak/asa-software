@@ -10,6 +10,8 @@
 #./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
 #./asa-software/tracked_reports/diagnostics_real.txt
+#./asa-software/tracked_reports/json_repair_real.txt
+#./asa-software/tracked_reports/invoke_error_real.txt
 #./asa-software/tracked_reports/action_ascii_real.txt
 #./asa-software/tracked_reports/answer_pred_real.txt
 #./asa-software/tracked_reports/payload_release_audit_real.txt
@@ -120,9 +122,9 @@ attempt <- run_task(
     ),
     agent = initialize_agent(
       #backend = "gemini", model = "gemini-2.5-pro",
-      backend = "gemini", model = "gemini-3-pro-preview",
+      #backend = "gemini", model = "gemini-3-pro-preview",
       #backend = "gemini", model = "gemini-3-flash-preview",
-      #backend = "openai", model = "gpt-5-mini-2025-08-07",
+      backend = "openai", model = "gpt-5-mini-2025-08-07",
       #backend = "openai", model = "gpt-5-nano-2025-08-07",
       proxy = "socks5h://127.0.0.1:9050",
       use_browser = FALSE, 
@@ -206,6 +208,50 @@ readr::write_file(
   jsonlite::toJSON(attempt$execution$diagnostics, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   "~/Documents/asa-software/tracked_reports/diagnostics_real.txt"
 )
+
+# json repair events (includes invoke_exception_fallback error details when present)
+json_repair <- attempt$execution$json_repair %||% list()
+json_repair <- tryCatch(as.list(json_repair), error = function(e) list())
+readr::write_file(
+  jsonlite::toJSON(json_repair, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  "~/Documents/asa-software/tracked_reports/json_repair_real.txt"
+)
+
+invoke_error <- NULL
+if (is.list(json_repair) && length(json_repair) > 0) {
+  fallback_ev <- NULL
+  for (ev in json_repair) {
+    if (is.list(ev) && identical(ev$repair_reason %||% "", "invoke_exception_fallback")) {
+      fallback_ev <- ev
+      break
+    }
+  }
+  if (!is.null(fallback_ev)) {
+    invoke_error <- list(
+      error_type = fallback_ev$error_type %||% NA_character_,
+      error_message = fallback_ev$error_message %||% NA_character_,
+      retry_attempts = fallback_ev$retry_attempts %||% NA_integer_,
+      retry_max_attempts = fallback_ev$retry_max_attempts %||% NA_integer_,
+      retryable_error = fallback_ev$retryable_error %||% NA
+    )
+  }
+}
+if (is.null(invoke_error)) invoke_error <- list()
+
+readr::write_file(
+  jsonlite::toJSON(invoke_error, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  "~/Documents/asa-software/tracked_reports/invoke_error_real.txt"
+)
+
+if (length(invoke_error) > 0) {
+  message(
+    sprintf(
+      "Model invoke failed (%s): %s",
+      invoke_error$error_type %||% "UnknownError",
+      invoke_error$error_message %||% ""
+    )
+  )
+}
 
 # high-level action visualization (ASCII)
 action_ascii_text <- attempt$action_ascii %||% attempt$execution$action_ascii %||% ""

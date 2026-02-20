@@ -171,6 +171,13 @@
 }
 
 test_that(".with_search_config skips configure/restore when requested settings already match", {
+  asa_ns_env <- get("asa_env", envir = asNamespace("asa"))
+  old_tools <- asa_ns_env$tools
+  on.exit({
+    asa_ns_env$tools <- old_tools
+  }, add = TRUE)
+  asa_ns_env$tools <- NULL
+
   fixture <- .make_search_fixture()
   mock <- .mock_configure_search_factory(fixture)
 
@@ -201,6 +208,13 @@ test_that(".with_search_config skips configure/restore when requested settings a
 })
 
 test_that(".with_search_config applies and restores when requested settings differ", {
+  asa_ns_env <- get("asa_env", envir = asNamespace("asa"))
+  old_tools <- asa_ns_env$tools
+  on.exit({
+    asa_ns_env$tools <- old_tools
+  }, add = TRUE)
+  asa_ns_env$tools <- NULL
+
   fixture <- .make_search_fixture()
   mock <- .mock_configure_search_factory(fixture)
 

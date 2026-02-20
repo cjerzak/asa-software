@@ -18,10 +18,11 @@ from langchain_core.messages import (
     HumanMessage,
     SystemMessage,
 )
+from langgraph.errors import GraphRecursionError
 from langgraph.graph import END, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.managed import RemainingSteps
-from langgraph.prebuilt import ToolNode
+from langgraph.prebuilt import ToolNode, tools_condition
 
 from state_utils import (
     build_node_trace_entry,
@@ -205,6 +206,180 @@ def _with_node_timing(
     token_trace.append(build_node_trace_entry(node, usage=usage, started_at=started_at))
     out["token_trace"] = token_trace
     return out
+
+
+def _add_int(existing: Optional[int], new: Optional[int]) -> int:
+    """Reducer for summing integer counters (LangGraph state annotation)."""
+    try:
+        existing_val = int(existing or 0)
+    except Exception:
+        existing_val = 0
+    try:
+        new_val = int(new or 0)
+    except Exception:
+        new_val = 0
+    return existing_val + new_val
+
+
+class _ToolLoopState(TypedDict):
+    """Internal state schema for a minimal tool-calling loop."""
+    messages: Annotated[list, add_messages]
+    queries_used: Annotated[int, _add_int]
+    tokens_used: Annotated[int, _add_int]
+    input_tokens: Annotated[int, _add_int]
+    output_tokens: Annotated[int, _add_int]
+
+
+def _coerce_message_to_base(message: Any) -> BaseMessage:
+    """Coerce arbitrary LLM responses into a LangChain BaseMessage."""
+    if isinstance(message, BaseMessage):
+        return message
+
+    content = ""
+    try:
+        content = message.get("content", "") if isinstance(message, dict) else getattr(message, "content", "")
+    except Exception:
+        content = ""
+
+    tool_calls = None
+    try:
+        tool_calls = message.get("tool_calls") if isinstance(message, dict) else getattr(message, "tool_calls", None)
+    except Exception:
+        tool_calls = None
+
+    if tool_calls:
+        try:
+            return AIMessage(content=str(content), tool_calls=tool_calls)
+        except Exception:
+            return AIMessage(content=str(content))
+
+    return AIMessage(content=str(content))
+
+
+def _tool_outputs_from_messages(messages: Sequence[Any]) -> List[str]:
+    """Extract tool output text blocks from a message sequence."""
+    outputs: List[str] = []
+    for msg in messages or []:
+        try:
+            if type(msg).__name__ == "ToolMessage":
+                content = getattr(msg, "content", None)
+                if content is not None:
+                    outputs.append(str(content))
+                continue
+            if isinstance(msg, dict) and str(msg.get("role") or "").lower() == "tool":
+                content = msg.get("content")
+                if content is not None:
+                    outputs.append(str(content))
+        except Exception:
+            continue
+    return outputs
+
+
+def _run_tool_loop(
+    llm: Any,
+    tools: Sequence[Any],
+    *,
+    initial_messages: Sequence[Any],
+    max_tool_calls: int,
+    recursion_limit: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Run a minimal LangGraph tool loop for up to max_tool_calls model steps."""
+    try:
+        max_calls = int(max_tool_calls)
+    except Exception:
+        max_calls = 0
+
+    if max_calls <= 0:
+        return {
+            "messages": list(initial_messages or []),
+            "queries_used": 0,
+            "tokens_used": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+        }
+
+    try:
+        effective_recursion = int(recursion_limit) if recursion_limit is not None else max(4, 2 * max_calls + 2)
+    except Exception:
+        effective_recursion = max(4, 2 * max_calls + 2)
+
+    tools_list = list(tools or [])
+    model_with_tools = llm.bind_tools(tools_list)
+    tool_node = ToolNode(tools_list)
+
+    def agent_node(state: _ToolLoopState) -> Dict[str, Any]:
+        messages = state.get("messages") or []
+        raw = model_with_tools.invoke(messages)
+        usage = _token_usage_dict_from_message(raw)
+        response = _coerce_message_to_base(raw)
+        return {
+            "messages": [response],
+            "queries_used": 1,
+            "tokens_used": usage["total_tokens"],
+            "input_tokens": usage["input_tokens"],
+            "output_tokens": usage["output_tokens"],
+        }
+
+    def after_tools(state: _ToolLoopState) -> str:
+        try:
+            used = int(state.get("queries_used", 0) or 0)
+        except Exception:
+            used = 0
+        if used >= max_calls:
+            return "__end__"
+        return "agent"
+
+    workflow = StateGraph(_ToolLoopState)
+    workflow.add_node("agent", agent_node)
+    workflow.add_node("tools", tool_node)
+    workflow.set_entry_point("agent")
+    workflow.add_conditional_edges(
+        "agent",
+        tools_condition,
+        {
+            "tools": "tools",
+            "__end__": END,
+        },
+    )
+    workflow.add_conditional_edges(
+        "tools",
+        after_tools,
+        {
+            "agent": "agent",
+            "__end__": END,
+        },
+    )
+
+    compiled = workflow.compile()
+    initial_state: Dict[str, Any] = {
+        "messages": list(initial_messages or []),
+        "queries_used": 0,
+        "tokens_used": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+    }
+    config = {"recursion_limit": effective_recursion}
+
+    last_state: Optional[Dict[str, Any]] = None
+    try:
+        for chunk in compiled.stream(initial_state, config=config, stream_mode="values"):
+            if isinstance(chunk, dict):
+                last_state = chunk
+        if last_state is None:
+            invoked = compiled.invoke(initial_state, config=config)
+            if isinstance(invoked, dict):
+                last_state = invoked
+    except GraphRecursionError:
+        pass
+
+    state = last_state if isinstance(last_state, dict) else initial_state
+    return {
+        "messages": list(state.get("messages") or []),
+        "queries_used": int(state.get("queries_used", 0) or 0),
+        "tokens_used": int(state.get("tokens_used", 0) or 0),
+        "input_tokens": int(state.get("input_tokens", 0) or 0),
+        "output_tokens": int(state.get("output_tokens", 0) or 0),
+    }
 
 
 def _to_snake_case(name: str) -> str:
@@ -549,9 +724,6 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
                     search_tools.append(tool)
 
                 # Use LLM with tools
-                model_with_tools = llm.bind_tools(search_tools)
-                tool_node = ToolNode(search_tools)
-
                 webpage_hint = ""
                 if allow_read_webpages:
                     webpage_hint = (
@@ -588,30 +760,24 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
 Extract entities with these fields: {list(schema.keys())}
 Use the Search tool to find information."""
 
-                messages = [HumanMessage(content=search_prompt)]
-                tool_outputs = []
-
                 max_tool_calls = (
                     (research_config.max_tool_calls_per_round if research_config else None)
                     or (5 if allow_read_webpages else 3)
                 )
-                for _ in range(max_tool_calls):
-                    response = model_with_tools.invoke(messages)
-                    _usage = _token_usage_dict_from_message(response)
-                    tokens_used += _usage["total_tokens"]
-                    input_tokens += _usage["input_tokens"]
-                    output_tokens += _usage["output_tokens"]
-                    messages.append(response)
-                    queries_used += 1
+                messages = [HumanMessage(content=search_prompt)]
+                loop_out = _run_tool_loop(
+                    llm=llm,
+                    tools=search_tools,
+                    initial_messages=messages,
+                    max_tool_calls=max_tool_calls,
+                )
+                messages = loop_out.get("messages", messages)
+                queries_used += int(loop_out.get("queries_used", 0) or 0)
+                tokens_used += int(loop_out.get("tokens_used", 0) or 0)
+                input_tokens += int(loop_out.get("input_tokens", 0) or 0)
+                output_tokens += int(loop_out.get("output_tokens", 0) or 0)
 
-                    if hasattr(response, 'tool_calls') and response.tool_calls:
-                        tool_result = tool_node.invoke({"messages": messages})
-                        for msg in tool_result.get("messages", []):
-                            messages.append(msg)
-                            if hasattr(msg, "content"):
-                                tool_outputs.append(str(msg.content))
-                    else:
-                        break
+                tool_outputs = _tool_outputs_from_messages(messages)
 
                 # Extract structured entities from tool output
                 if tool_outputs and schema:

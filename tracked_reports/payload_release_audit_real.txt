@@ -1,10 +1,10 @@
 {
-  "released_from": "final_payload",
-  "canonical_available": true,
-  "canonical_matches_message": true,
-  "canonical_hash": "6b38b73af4f82a906ce2330f60074c6649dc2214ade51dd45ee11e5f9769d639",
-  "released_hash": "7b70059ed219747d0d245964c2952b8006c21c57312ac7446abc0fb5147899fb",
+  "released_from": "message_text",
+  "canonical_available": false,
+  "canonical_matches_message": false,
+  "canonical_hash": "4c37d098e7a7cf06654d3d9c96c4c84b7f2144056b1d4d5e68353c8924a8fa9b",
+  "released_hash": "24f50e5fd0d60a0767738ef72b2f9a747c5f2a21558de0cf1ccc6de6a83885e1",
   "released_hash_matches_canonical": false,
   "truncation_signals": [],
-  "json_repair_reasons": ["residual_tool_calls_no_content", "field_status_canonical"]
+  "json_repair_reasons": ["invoke_exception_fallback", "field_status_canonical"]
 }

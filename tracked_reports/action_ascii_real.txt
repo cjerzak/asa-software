@@ -1,13 +1,13 @@
 AGENT ACTION MAP
 ================
-Steps captured: 26
-LangGraph timed steps: 28
+Steps captured: 9
+LangGraph timed steps: 7
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
-      Source-backed found values: 2 (across 18 tracked fields)
+      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
+      Source-backed found values: 0 (across 18 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
@@ -15,153 +15,66 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 9 tool-call turn(s), 1 answer turn(s)
-      Tool results: 16 total (Tool Search=9, Tool OpenWebpage=5, Tool save_finding=2)
+      AI turns: 3 tool-call turn(s), 1 answer turn(s)
+      Tool results: 4 total (Tool OpenWebpage=1, Tool Search=...date_plan=1, Tool wikipedia=1)
       Structured terminal answer emitted
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 2.9977m (tok=0, n=11)
-      agent: 0.9215m (tok=85685, n=11)
-      summarize: 0.4624m (tok=7019, n=5)
-      finalize: 0.1358m (tok=10996, n=1)
+      tools: 0.5935m (tok=0, n=3)
+      agent: 0.2161m (tok=4729, n=4)
   +-- [LANGGRAPH] Slowest timed invocations
-      #10 tools: 1.2274m (tok=0)
-      #27 tools: 0.8072m (tok=0)
-      #18 tools: 0.5387m (tok=0)
-      #22 summarize: 0.4624m (tok=7019)
-      #28 finalize: 0.1358m (tok=10996)
-  +-- [TIMING] wall=4.5186m nodes=4.5174m delta=+0.0012m (overhead)
+      #06 tools: 0.5562m (tok=0)
+      #01 agent: 0.1355m (tok=1569)
+      #05 agent: 0.0483m (tok=1675)
+      #04 tools: 0.0372m (tok=0)
+      #03 agent: 0.0297m (tok=1485)
+  +-- [TIMING] wall=0.8100m nodes=0.8096m delta=+0.0004m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (Search)
+  +-- [02] Requested 1 tool call (update_plan)
       by: AI
-      tok: in=4309 out=326 total=4635
-      min: 0.0767m
-      detail: Search(query=Ramona Moye Camaconi fecha de nacimiento ...)
+      tok: in=1377 out=192 total=1569
+      min: 0.1355m
+      detail: update_plan(status=in_progress, step_id=1)
   +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Requested 1 tool call (wikipedia)
+      by: AI
+      tok: in=1456 out=29 total=1485
+      min: 0.0297m
+      detail: wikipedia(query=Ramona Moye Camaconi Bolivia MAS Beni 2014)
+  +-- [05] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: No good Wikipedia Search Result was found
+  +-- [06] Requested 1 tool call (Search)
+      by: AI
+      tok: in=1503 out=172 total=1675
+      min: 0.0483m
+      detail: Search(query=Ramona Moye Camaconi Beni MAS 2014 diputa...)
+  +-- [07] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...28 </URL> __END_OF_SOURCE...
-  +-- [04] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://www.idcrawl.com/ramona-moye Final URL: htt...status=403) Markers: forb...
-  +-- [05] Requested 1 tool call (Search)
-      by: AI
-      tok: in=5730 out=192 total=5922
-      min: 0.0569m
-      detail: Search(query=Ramona Moye Camaconi declaración jurada b...)
-  +-- [06] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> LaDeclaraciónJuradadeBi...v2 </URL> __END_OF_SOURCE...
-  +-- [07] Requested 1 tool call (Search)
-      by: AI
-      tok: in=7152 out=282 total=7434
-      min: 0.0794m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye")
+      detail: __START_OF_SOURCE 1__ <CONTENT> Especial: (Cir 6)Ramona...428 </URL> __END_OF_SOURC...
   +-- [08] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: HOJA DE VIDA - v...pdf </URL> __END_OF_SOURC...
-  +-- [09] Requested 1 tool call (Search)
-      by: AI
-      tok: in=8164 out=327 total=8491
-      min: 0.0789m
-      detail: Search(query="Ramona Moye Camaconi" fecha de nacimient...)
-  +-- [10] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
-  +-- [11] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.noticiasfides.com/nacional/politica/di...asfides.com/pueblos-indig...
-  +-- [12] Requested 3 tool calls (save_finding, Search)
+      detail: Refusing to open URL (resolve_error:[Errno 8] nodename ...-renovacion-de-la-mayoria...
+  +-- [09] Produced structured answer
       by: AI
-      tok: in=9097 out=597 total=9694
-      min: 0.1121m
-      detail: save_finding(finding=birth_year = 1982 (source:...om/ra...e Camaconi" "1982" nacimi...
-  +-- [13] Returned 2 results
-      by: Tool save_finding
       tok: in=0 out=0 total=0
-      min: n/a
-      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...//www.idcrawl.com/ramona-...
-  +-- [14] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> ramona moye camaconi- V...oye </URL> __END_OF_SOURC...
-  +-- [15] Requested 1 tool call (Search)
-      by: AI
-      tok: in=10072 out=336 total=10408
-      min: 0.0790m
-      detail: Search(query="Ramona Moye Camaconi" estudios profesión...)
-  +-- [16] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...lle </URL> __END_OF_SOURC...
-  +-- [17] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Request error opening URL: https://ftierra.org/index.ph...s.html first for more det...
-  +-- [18] Requested 1 tool call (Search)
-      by: AI
-      tok: in=11350 out=394 total=11744
-      min: 0.0908m
-      detail: Search(query="Ramona Moye Camaconi" grado académico fo...)
-  +-- [19] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...lle </URL> __END_OF_SOURC...
-  +-- [20] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Request error opening URL: https://sisin.oep.org.bo/med...s.html first for more det...
-  +-- [21] Requested 1 tool call (Search)
-      by: AI
-      tok: in=10598 out=243 total=10841
-      min: 0.0665m
-      detail: Search(query="Ramona Moye Camaconi" dirigente indígena...)
-  +-- [22] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...rio </URL> __END_OF_SOURC...
-  +-- [23] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t...y/reportajes/venezuela/] ...
-  +-- [24] Requested 1 tool call (Search)
-      by: AI
-      tok: in=11333 out=322 total=11655
-      min: 0.0786m
-      detail: Search(query="Ramona Moye Camaconi" cargo dirigente su...)
-  +-- [25] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Tierra y territo...pdf </URL> __END_OF_SOURC...
-  +-- [26] Produced structured answer
-      by: AI
-      tok: in=10426 out=570 total=10996
-      min: 0.1358m
+      min: 0.0027m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":...limited verifiable eviden...
+      detail: {"education_level": "Unknown", "education_institution": "Unknown", "education_field...
 END
