@@ -1,1 +1,89 @@
-[]
+[
+  {
+    "fold_count": 1,
+    "messages": [
+      {
+        "type": "AIMessage",
+        "content": "",
+        "content_raw": [],
+        "id": "lc_run--019c7913-bb62-7653-bb68-ad42c36ed86d-0",
+        "tool_calls": [
+          {
+            "name": "update_plan",
+            "args": {
+              "step_id": 1,
+              "status": "in_progress"
+            },
+            "id": "ab320346-de87-49cc-84aa-102a575c52ef",
+            "type": "tool_call"
+          },
+          {
+            "name": "Search",
+            "args": {
+              "query": "Ramona Moye Camaconi Bolivia MAS Beni biography"
+            },
+            "id": "69248c40-31fd-42b3-ae8a-b2e86e7ccb63",
+            "type": "tool_call"
+          }
+        ]
+      },
+      {
+        "type": "ToolMessage",
+        "content": "Plan step 1 updated to 'in_progress'",
+        "content_raw": "Plan step 1 updated to 'in_progress'",
+        "id": "4dc8cc1e6ed244e0ac389a44a37a107c",
+        "tool_call_id": "ab320346-de87-49cc-84aa-102a575c52ef",
+        "name": "update_plan"
+      },
+      {
+        "type": "ToolMessage",
+        "content": "__START_OF_SOURCE 1__ <CONTENT> En el caso de la diputación electoral, según datos preliminares, Fabricano informó que la candidata delMASpor la Circunscripción Especial Indígena deBeni,RamonaMoye, ganó en el TIPNIS ... <\/CONTENT> <URL> https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> RamonaMoyeCamaconi, diputada titular porBenicircunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> La diputada de la circunscripción especial indígena delBenipor el Movimiento Al Socialismo (MAS),RamonaMoye, rechazó este lunes que el supuesto robo de un motor fuera de borda, en la comunidad Nueva Lacea del TIPNIS, sea resuelto en la justicia indígena como pidieron los tres yurakarés acusados por la asambleísta oficialista ante la Fiscalía de Trinidad,Beni. <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni <\/CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoye, habitante del Tipnis y diputada indígena electa del gobiernistaMASporBeni. \"Pedimos que no se metan los que se oponen a carretera\" Diputada indígena del Tipnis: ERBOL ... <\/CONTENT> <URL> https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y Parque Nacional Isibro Sécure (TIPNIS) se produce coca aunque manifestó que el producto es para el consumo tradicional. <\/CONTENT> <URL> https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio <\/URL> __END_OF_SOURCE 7__",
+        "content_raw": "__START_OF_SOURCE 1__ <CONTENT> En el caso de la diputación electoral, según datos preliminares, Fabricano informó que la candidata delMASpor la Circunscripción Especial Indígena deBeni,RamonaMoye, ganó en el TIPNIS ... <\/CONTENT> <URL> https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> RamonaMoyeCamaconi, diputada titular porBenicircunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> La diputada de la circunscripción especial indígena delBenipor el Movimiento Al Socialismo (MAS),RamonaMoye, rechazó este lunes que el supuesto robo de un motor fuera de borda, en la comunidad Nueva Lacea del TIPNIS, sea resuelto en la justicia indígena como pidieron los tres yurakarés acusados por la asambleísta oficialista ante la Fiscalía de Trinidad,Beni. <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni <\/CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoye, habitante del Tipnis y diputada indígena electa del gobiernistaMASporBeni. \"Pedimos que no se metan los que se oponen a carretera\" Diputada indígena del Tipnis: ERBOL ... <\/CONTENT> <URL> https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y Parque Nacional Isibro Sécure (TIPNIS) se produce coca aunque manifestó que el producto es para el consumo tradicional. <\/CONTENT> <URL> https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio <\/URL> __END_OF_SOURCE 7__",
+        "id": "d8b456e8fb504d54bdb7b767121f3b33",
+        "tool_call_id": "69248c40-31fd-42b3-ae8a-b2e86e7ccb63",
+        "name": "Search"
+      },
+      {
+        "type": "ToolMessage",
+        "content": "URL: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio\nFinal URL: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/\nTitle: Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE\nBytes read: 263901\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nIr directamente al contenido\nARCHIVO DOCUMENTAL ISIBORO SÉCURE\n[link: https://tipnisboliviaorg.wordpress.com/]\nTODO SOBRE EL TIPNIS\nMenu and widgets\nINICIO\nAcerca de\n[link: https://tipnisboliviaorg.wordpress.com/presentacion/]\nArchivo Documental\n[link: https://tipnisboliviaorg.wordpress.com/archivo-documental/]\nTIPNIS\n[link: https://tipnisboliviaorg.wordpress.com/tipnis-3/]\nTemas\n[link: https://tipnisboliviaorg.wordpress.com/conflictos/]\nAcciones de Defensa\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/acciones-de-defensa/]\nActividades económicas\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/actividades-economicas/]\nCambio climático\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/cambio-climatico/]\nConsulta 2012\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/consulta-2012/]\nDerechos naturaleza\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/derechos-naturaleza/]\nEcología y medio ambiente\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/ecologia-y-medio-ambiente/]\nExtractivismo\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/extractivismo/]\nCarretera y caminos\n",
+        "content_raw": "URL: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio\nFinal URL: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/\nTitle: Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE\nBytes read: 263901\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nIr directamente al contenido\nARCHIVO DOCUMENTAL ISIBORO SÉCURE\n[link: https://tipnisboliviaorg.wordpress.com/]\nTODO SOBRE EL TIPNIS\nMenu and widgets\nINICIO\nAcerca de\n[link: https://tipnisboliviaorg.wordpress.com/presentacion/]\nArchivo Documental\n[link: https://tipnisboliviaorg.wordpress.com/archivo-documental/]\nTIPNIS\n[link: https://tipnisboliviaorg.wordpress.com/tipnis-3/]\nTemas\n[link: https://tipnisboliviaorg.wordpress.com/conflictos/]\nAcciones de Defensa\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/acciones-de-defensa/]\nActividades económicas\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/actividades-economicas/]\nCambio climático\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/cambio-climatico/]\nConsulta 2012\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/consulta-2012/]\nDerechos naturaleza\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/derechos-naturaleza/]\nEcología y medio ambiente\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/ecologia-y-medio-ambiente/]\nExtractivismo\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/extractivismo/]\nCarretera y caminos\n",
+        "id": "b2ac3e75d36b4f66a637564a1804b47a",
+        "tool_call_id": "auto_openwebpage_5513744833a0",
+        "name": "OpenWebpage"
+      },
+      {
+        "type": "AIMessage",
+        "content": "",
+        "content_raw": [],
+        "id": "lc_run--019c7913-e2ae-7d51-96ab-d050419f56bf-0",
+        "tool_calls": [
+          {
+            "name": "Search",
+            "args": {
+              "query": "Ramona Moye Camaconi ficha biográfica biografia \"hoja de vida\""
+            },
+            "id": "7526abad-247e-4ad0-b618-39bccdc1bb83",
+            "type": "tool_call"
+          }
+        ]
+      },
+      {
+        "type": "ToolMessage",
+        "content": "__START_OF_SOURCE 1__ <CONTENT> Descubre 10 formatos dehoja de vidaprofesionales para este 2025 y todos los pasos para hacerla atractiva. Crea tuhoja de vidacon nuestra guía. <\/CONTENT> <URL> https://resumelab.com/es/curriculum/hoja-de-vida <\/URL> __END_OF_SOURCE 1__",
+        "content_raw": "__START_OF_SOURCE 1__ <CONTENT> Descubre 10 formatos dehoja de vidaprofesionales para este 2025 y todos los pasos para hacerla atractiva. Crea tuhoja de vidacon nuestra guía. <\/CONTENT> <URL> https://resumelab.com/es/curriculum/hoja-de-vida <\/URL> __END_OF_SOURCE 1__",
+        "id": "cea4d1c3f46446498c16dd85c0a60e4d",
+        "tool_call_id": "7526abad-247e-4ad0-b618-39bccdc1bb83",
+        "name": "Search"
+      },
+      {
+        "type": "ToolMessage",
+        "content": "Request error opening URL: https://resumelab.com/es/curriculum/hoja-de-vida\nError: Failed to perform, curl: (28) Operation too slow. Less than 1 bytes/sec transferred the last 20 seconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+        "content_raw": "Request error opening URL: https://resumelab.com/es/curriculum/hoja-de-vida\nError: Failed to perform, curl: (28) Operation too slow. Less than 1 bytes/sec transferred the last 20 seconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+        "id": "6251728f2dcf4c95938523a2a431da4a",
+        "tool_call_id": "auto_openwebpage_4958b9268264",
+        "name": "OpenWebpage"
+      }
+    ],
+    "text": "[AIMessage] \n[ToolMessage] Plan step 1 updated to 'in_progress'\n[ToolMessage] __START_OF_SOURCE 1__ <CONTENT> En el caso de la diputación electoral, según datos preliminares, Fabricano informó que la candidata delMASpor la Circunscripción Especial Indígena deBeni,RamonaMoye, ganó en el TIPNIS ... <\/CONTENT> <URL> https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> RamonaMoyeCamaconi, diputada titular porBenicircunscripción especial (Movimiento al Socialismo) Done 13views 0 faves 0comments Uploaded on June 29, 2022 Taken on ... <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52180793916 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> La diputada de la circunscripción especial indígena delBenipor el Movimiento Al Socialismo (MAS),RamonaMoye, rechazó este lunes que el supuesto robo de un motor fuera de borda, en la comunidad Nueva Lacea del TIPNIS, sea resuelto en la justicia indígena como pidieron los tres yurakarés acusados por la asambleísta oficialista ante la Fiscalía de Trinidad,Beni. <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/noticia/indigenas/25052015/diputada_indigena_del_mas_rechaza_justicia_comunitaria <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Diputado uninominal - Circunscripción 6 (suplente) deMASpara el departamento deBeni <\/CONTENT> <URL> https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> RamonaMoye, habitante del Tipnis y diputada indígena electa del gobiernistaMASporBeni. \"Pedimos que no se metan los que se oponen a carretera\" Diputada indígena del Tipnis: ERBOL ... <\/CONTENT> <URL> https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La diputadaRamonaMoye(MAS) reconoció que en el Territorio Indígena y Parque Nacional Isibro Sécure (TIPNIS) se produce coca aunque manifestó que el producto es para el consumo tradicional. <\/CONTENT> <URL> https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> RamonaMoyeCamaconies diputada electa por el partido de Evo Morales. Es una indígena que proviene del Tipnis y desecha las posiciones que tienen sus detractores. Ella, como legisladora, dice que lucha por el progreso de su región y niega que los dirigentes sufran algún tipo de persecución por parte del Gobierno. <\/CONTENT> <URL> https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio <\/URL> __END_OF_SOURCE 7__\n[ToolMessage] URL: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio\nFinal URL: https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/\nTitle: Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE\nBytes read: 263901\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nIr directamente al contenido\nARCHIVO DOCUMENTAL ISIBORO SÉCURE\n[link: https://tipnisboliviaorg.wordpress.com/]\nTODO SOBRE EL TIPNIS\nMenu and widgets\nINICIO\nAcerca de\n[link: https://tipnisboliviaorg.wordpress.com/presentacion/]\nArchivo Documental\n[link: https://tipnisboliviaorg.wordpress.com/archivo-documental/]\nTIPNIS\n[link: https://tipnisboliviaorg.wordpress.com/tipnis-3/]\nTemas\n[link: https://tipnisboliviaorg.wordpress.com/conflictos/]\nAcciones de Defensa\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/acciones-de-defensa/]\nActividades económicas\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/actividades-economicas/]\nCambio climático\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/cambio-climatico/]\nConsulta 2012\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/consulta-2012/]\nDerechos naturaleza\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/derechos-naturaleza/]\nEcología y medio ambiente\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/ecologia-y-medio-ambiente/]\nExtractivismo\n[link: https://tipnisboliviaorg.wordpress.com/category/temas/extractivismo/]\nCarretera y caminos\n\n[AIMessage] \n[ToolMessage] __START_OF_SOURCE 1__ <CONTENT> Descubre 10 formatos dehoja de vidaprofesionales para este 2025 y todos los pasos para hacerla atractiva. Crea tuhoja de vidacon nuestra guía. <\/CONTENT> <URL> https://resumelab.com/es/curriculum/hoja-de-vida <\/URL> __END_OF_SOURCE 1__\n[ToolMessage] Request error opening URL: https://resumelab.com/es/curriculum/hoja-de-vida\nError: Failed to perform, curl: (28) Operation too slow. Less than 1 bytes/sec transferred the last 20 seconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+  }
+]

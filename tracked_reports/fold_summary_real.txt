@@ -1,1 +1,15 @@
-[]
+{
+  "version": 1,
+  "facts": [],
+  "decisions": [],
+  "open_questions": [],
+  "sources": [
+    {
+      "tool": "OpenWebpage",
+      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/",
+      "title": "Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE",
+      "note": null
+    }
+  ],
+  "warnings": []
+}

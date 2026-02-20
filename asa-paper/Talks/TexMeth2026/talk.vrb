@@ -1,0 +1,25 @@
+\frametitle{What ``verifiable'' looks like}\framesubtitle {Therefore: every label ships with inspectable evidence and a trace}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+  \column{0.55\textwidth}
+  \textbf{Structured output (example)}
+\begin{verbatim}
+{
+  "label": "Party X",
+  "confidence": "high",
+  "rationale": "… (with citations)",
+  "sources": [
+    {"url": "...", "date": "..."},
+    {"url": "...", "date": "..."}
+  ]
+}
+\end{verbatim}
+
+  \column{0.45\textwidth}
+  \textbf{Trace store enables}
+  \begin{itemize}
+    \item audit any label quickly
+    \item replicate and re-filter outputs
+    \item route uncertain cases to humans
+  \end{itemize}
+\end{columns}

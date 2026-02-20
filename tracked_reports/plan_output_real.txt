@@ -1,14 +1,1 @@
-{
-  "goal": "Complete the task",
-  "steps": [
-    {
-      "id": 1,
-      "description": "Analyze task requirements and produce the requested output",
-      "completion_criteria": "Final output satisfies the requested format and cites supporting evidence when applicable.",
-      "status": "in_progress",
-      "findings": "Starting research on Ramona Moye Camaconi."
-    }
-  ],
-  "version": 2,
-  "current_step": null
-}
+[]

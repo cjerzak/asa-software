@@ -60,10 +60,10 @@ urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
 \addbibresource{mybib.bib}
 
 %% === figure path ===
-\graphicspath{{./Figures/}}
+\graphicspath{{./../Figures/}}
 
 %% === stats macros (generated) ===
-\input{./Figures/LLM_pol_party_Statistics.tex}
+\input{./../Figures/LLM_pol_party_Statistics.tex}
 
 \title{A Verifiable Search Agent Methodology at Scale for Political Elite Research}
 \author{(Authors omitted for review)}
@@ -237,13 +237,13 @@ A conservative post-processor then normalizes the label against the codebook: ex
 
     \draw[arr] (graph.north east) -- (wiki.west);
     \draw[arr] (graph.south east) -- (web.west);
-    \draw[arr] (wiki.south) |- (time.north);
-    \draw[arr] (web.north) |- (time.south);
+    \draw[arr] (wiki.south) -- (time.north);
+    \draw[arr] (web.north) -- (time.south);
     \draw[arr] (time.west) -- ([xshift=0mm]graph.east);
 
     \draw[loop] (post.west) -- (human.east);
     % Route this feedback loop outside the "Task spec" box (avoid striking through text).
-    \draw[loop] (human.north) -| ([xshift=-8mm]spec.west) -- (spec.west);
+    \draw[loop] (human.west) -| ([xshift=-8mm]spec.west) -- (spec.west);
   \end{tikzpicture}%
   \caption{Design visualization: a governed agent graph with temporal verification, conservative normalization, abstention, and an auditable trace store.}
   \label{fig:asa-design}
