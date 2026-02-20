@@ -22,6 +22,7 @@ run_task(
   source_policy = NULL,
   retry_policy = NULL,
   finalization_policy = NULL,
+  orchestration_options = NULL,
   query_templates = NULL,
   verbose = FALSE,
   allow_read_webpages = NULL,
@@ -89,6 +90,10 @@ fields may be marked as unknown.}
 \item{finalize_on_all_fields_resolved}{Optional logical flag. When TRUE, the
 agent finalizes once all required fields are resolved.}
 
+\item{orchestration_options}{Optional named list/dict of generic orchestration
+controls (component enable/mode and thresholds). This is passed directly to
+the backend state and must remain task-agnostic.}
+
 \item{verbose}{Print progress messages (default: FALSE)}
 
 \item{allow_read_webpages}{If TRUE, allows the agent to open and read full
@@ -128,7 +133,9 @@ An \code{asa_result} object with:
     \item parsing_status: Validation result (if expected_fields provided)
     \item execution: Operational metadata (thread_id, stop_reason, status_code,
       tool budget counters, fold_count, completion_gate, verification_status)
-      plus diagnostics counters from runtime quality guards.
+      plus diagnostics counters from runtime quality guards, candidate and
+      retrieval telemetry, finalization status, artifact status, and
+      orchestration policy metadata.
     \item action_ascii: High-level ASCII action map derived from the trace
       (also available at \code{execution$action_ascii})
     \item action_steps: Parsed high-level action steps (also available at

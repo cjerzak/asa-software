@@ -1,14 +1,14 @@
 AGENT ACTION MAP
 ================
-Steps captured: 26
+Steps captured: 24
 LangGraph timed steps: 31
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
-      Source-backed found values: 4 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, class_back...
+      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 18 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
@@ -16,22 +16,22 @@ WHAT HAPPENED OVERALL
   +-- Summary
       Human prompts: 1
       AI turns: 9 tool-call turn(s), 1 answer turn(s)
-      Tool results: 15 total (Tool Search=7, Tool OpenWebpage=6, Tool save_finding=2)
+      Tool results: 13 total (Tool OpenWebpage=7, Tool Search=5, Tool save_finding=1)
       Structured terminal answer emitted
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      agent: 2.0451m (tok=100476, n=13)
-      tools: 1.4873m (tok=0, n=12)
-      summarize: 0.8053m (tok=6253, n=6)
+      agent: 3.0323m (tok=82240, n=13)
+      tools: 2.8608m (tok=0, n=12)
+      summarize: 0.4207m (tok=5029, n=6)
   +-- [LANGGRAPH] Slowest timed invocations
-      #24 summarize: 0.8053m (tok=6253)
-      #17 tools: 0.6117m (tok=0)
-      #14 tools: 0.3818m (tok=0)
-      #03 agent: 0.3618m (tok=2854)
-      #16 agent: 0.2698m (tok=9346)
-  +-- [TIMING] wall=4.3393m nodes=4.3377m delta=+0.0016m (overhead)
+      #23 tools: 0.8027m (tok=0)
+      #10 tools: 0.7735m (tok=0)
+      #01 agent: 0.7553m (tok=1695)
+      #26 tools: 0.6872m (tok=0)
+      #22 agent: 0.4267m (tok=9306)
+  +-- [TIMING] wall=6.3150m nodes=6.3138m delta=+0.0012m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -39,8 +39,8 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=4113 out=563 total=4676
-      min: 0.1698m
+      tok: in=3958 out=593 total=4551
+      min: 0.2195m
       detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
   +-- [03] Returned result
       by: Tool save_finding
@@ -49,118 +49,108 @@ START
       detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
   +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=4876 out=76 total=4952
-      min: 0.0723m
-      detail: Search(query=Ramona Moye Camaconi lugar de nacimiento ...)
+      tok: in=4751 out=255 total=5006
+      min: 0.2376m
+      detail: Search(query="Ramona Moye Camaconi" biografia lugar de...)
   +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...se </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: ACTA De cómputo ...116 </URL> __END_OF_SOURC...
   +-- [06] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://pub.eldiario.net/noticias/2018/2018_09/nt1.../i_deportes.php] INTERNAC...
-  +-- [07] Requested 1 tool call (Search)
+      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t...y/reportajes/venezuela/] ...
+  +-- [07] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=6198 out=287 total=6485
-      min: 0.0779m
-      detail: Search(query=Ramona Moye Camaconi hoja de vida perfil)
+      tok: in=5785 out=332 total=6117
+      min: 0.0824m
+      detail: OpenWebpage(url=https://es.mongabay.com/20...res-ambientales)
   +-- [08] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...ex </URL> __END_OF_SOURCE...
-  +-- [09] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.instagram.com/ramonamoyecamaconi Final...SS No readable text extra...
-  +-- [10] Requested 1 tool call (Search)
+      detail: URL: https://es.mongabay.com/2019/04/tipnis-madidi-boli...d cookies, title:just a m...
+  +-- [09] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=7340 out=188 total=7528
-      min: 0.0754m
-      detail: Search(query=Ramona Moye Camaconi TIPNIS dirigente ocu...)
-  +-- [11] Returned result
-      by: Tool Search
+      tok: in=6265 out=169 total=6434
+      min: 0.1251m
+      detail: OpenWebpage(url=https://tierraderesistente...gena-de-bolivia)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...28 </URL> __END_OF_SOURCE...
+      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t...y/reportajes/venezuela/] ...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=7020 out=133 total=7153
+      min: 0.1072m
+      detail: OpenWebpage(query=Ramona Moye Camaconi, url=https://tie...eresistente...gena-de-bol...
   +-- [12] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Request error opening URL: https://ftierra.org/index.ph...s.html first for more det...
+      detail: URL: https://tierraderesistentes.com/es/2019/04/23/el-t...NA FUE HOSTIGADA EN SU TR...
   +-- [13] Requested 1 tool call (Search)
       by: AI
-      tok: in=8824 out=522 total=9346
-      min: 0.2698m
-      detail: Search(query=Ramona Moye Camaconi fecha y lugar de nac...)
+      tok: in=7803 out=353 total=8156
+      min: 0.1886m
+      detail: Search(query="Ramona Moye Camaconi" comunidad nacimiento)
   +-- [14] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...28 </URL> __END_OF_SOURCE...
-  +-- [15] Requested 1 tool call (Search)
-      by: AI
-      tok: in=10362 out=307 total=10669
-      min: 0.1263m
-      detail: Search(query=Ramona Moye Camaconi comunidad origen)
-  +-- [16] Returned result
-      by: Tool Search
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...lle </URL> __END_OF_SOURC...
+  +-- [15] Returned result
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...za </URL> __END_OF_SOURCE...
+      detail: URL: https://ftierra.org/index.php/tema/derechos-indige...iticas-publicas] Quiénes ...
+  +-- [16] Requested 1 tool call (Search)
+      by: AI
+      tok: in=9019 out=287 total=9306
+      min: 0.4267m
+      detail: Search(query="Ramona Moye Camaconi" comunidad TIPNIS)
   +-- [17] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Request error opening URL: https://sisin.oep.org.bo/med...s.html first for more det...
-  +-- [18] Requested 1 tool call (Search)
-      by: AI
-      tok: in=11933 out=328 total=12261
-      min: 0.1891m
-      detail: Search(query=Ramona Moye Camaconi "Sub Central Sécure"...)
-  +-- [19] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Radio Pedro Ignacio Mui...616 </URL> __END_OF_SOURC...
-  +-- [20] Returned result
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconies ...via </URL> __END_OF_SOURC...
+  +-- [18] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://apcbolivia.org/2022/02/comunidad-oromomo-b..., captcha, cloudflare, bl...
+      detail: URL: https://www.biodiversidadla.org/Documentos/El-Tipn...lexander Vidal y Pablo Ca...
+  +-- [19] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7680 out=231 total=7911
+      min: 0.1565m
+      detail: Search(query="Ramona Moye Camaconi" educacion formacion)
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: SUBSECRETARÍA DE...po </URL> __END_OF_SOURCE...
   +-- [21] Requested 1 tool call (Search)
       by: AI
-      tok: in=11142 out=373 total=11515
-      min: 0.1044m
-      detail: Search(query="Ramona Moye Camaconi" nacida en)
+      tok: in=9221 out=259 total=9480
+      min: 0.0771m
+      detail: Search(query="Ramona Moye Camaconi" comunidad de origen)
   +-- [22] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...lle </URL> __END_OF_SOURC...
   +-- [23] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.noticiasfides.com/nacional/politica/di...asfides.com/pueblos-indig...
-  +-- [24] Requested 1 tool call (save_finding)
+      detail: Request error opening URL: https://sisin.oep.org.bo/med...s.html first for more det...
+  +-- [24] Produced structured answer
       by: AI
-      tok: in=12097 out=353 total=12450
-      min: 0.1250m
-      detail: save_finding(finding=prior_occupation = Preside...lamentario=609), category=fact)
-  +-- [25] Returned result
-      by: Tool save_finding
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Saved to scratchpad: prior_occupation = Presidenta de l...mentario&id_parlamentario...
-  +-- [26] Produced structured answer
-      by: AI
-      tok: in=11913 out=495 total=12408
-      min: 0.1581m
+      tok: in=9677 out=858 total=10535
+      min: 0.2376m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":... than a professional care...
+      detail: {"education_level": "Unknown", "education_institution":... rural territories (TIPNI...
 END

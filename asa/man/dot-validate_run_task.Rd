@@ -21,6 +21,7 @@
   source_policy = NULL,
   retry_policy = NULL,
   finalization_policy = NULL,
+  orchestration_options = NULL,
   query_templates = NULL,
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,

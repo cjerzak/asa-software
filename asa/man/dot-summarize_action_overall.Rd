@@ -8,6 +8,7 @@
   raw_steps,
   steps = list(),
   plan_summary = character(0),
+  diagnostics = list(),
   max_chars = 88L
 )
 }

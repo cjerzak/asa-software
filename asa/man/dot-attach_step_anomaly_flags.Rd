@@ -4,7 +4,12 @@
 \alias{.attach_step_anomaly_flags}
 \title{Attach anomaly flags to action steps}
 \usage{
-.attach_step_anomaly_flags(steps, field_status = list(), field_metrics = NULL)
+.attach_step_anomaly_flags(
+  steps,
+  field_status = list(),
+  field_metrics = NULL,
+  tool_quality_events = list()
+)
 }
 \description{
 Attach anomaly flags to action steps

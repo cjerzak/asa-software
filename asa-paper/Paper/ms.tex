@@ -1,11 +1,16 @@
+% -*- TeX-engine: default; TeX-PDF-mode: t; -*-
+\ifdefined\pdfoutput
+  \pdfoutput=1
+\fi
 \documentclass[12pt,letterpaper]{article}
 
 %% === margins / layout ===
-\usepackage[margin=1in]{geometry}
 \usepackage{iftex}
 \ifPDFTeX
   \pdfminorversion=4
+  \PassOptionsToPackage{pdftex}{hyperref}
 \fi
+\usepackage[margin=1in]{geometry}
 
 %% === basic packages ===
 \ifPDFTeX
@@ -57,13 +62,22 @@ urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
 
 %% === bibliography ===
 \usepackage[natbib=true,minnames=1,maxnames=3,backend=biber,style=authoryear-luh-ipw]{biblatex}
-\addbibresource{mybib.bib}
+\IfFileExists{mybib.bib}{
+  \addbibresource{mybib.bib}
+}{
+  \addbibresource{asa-paper/Paper/mybib.bib}
+}
 
 %% === figure path ===
-\graphicspath{{./../Figures/}}
+\graphicspath{{./../Figures/}{asa-paper/Paper/../Figures/}}
+\makeatletter
+\def\input@path{{./}{asa-paper/Paper/}}
+\makeatother
 
 %% === stats macros (generated) ===
-\input{./../Figures/LLM_pol_party_Statistics.tex}
+\InputIfFileExists{./../Figures/LLM_pol_party_Statistics.tex}{}{
+  \input{asa-paper/Paper/../Figures/LLM_pol_party_Statistics.tex}
+}
 
 \title{An Auditable Search Agent Methodology at Scale for Political Elite Research}
 \author{Connor T. Jerzak \& Team (Final author list TBD)}
@@ -77,11 +91,19 @@ urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
 \noindent Large-\(N\) political-elite datasets increasingly rely on digital traces, but scaling elite attribute coding with search-enabled LLMs can undermine auditability, cross-national comparability, and temporal validity.
 We propose an \emph{auditable search agent} (ASA) protocol that treats web retrieval as a governed measurement instrument.
 For each \(\langle\)person, country, year\(\rangle\) record, ASA runs a short search session, constrains outputs to expert closed codebooks, enforces an ``as-of'' evidence rule, abstains under weak or conflicting support, and archives complete provenance (queries, snippets, URLs, timestamps).
-In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} leader--records; \LLMNumClassespolparty{} labels), ASA attains \LLMOverallAccHighpolparty{} accuracy on high-evidence cases while increasing usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% through conservative augmentation.
+In a party-affiliation labeling task spanning
+\LLMNumCountriespolparty{} countries (\(N=\)
+\LLMNumInstancespolparty{} leader--records; \LLMNumClassespolparty{}
+labels), ASA attains \LLMOverallAccHighpolparty{} accuracy on
+high-evidence cases while increasing usable coverage by
+\LLMNumPredictionsGainedPercentpolparty{}\% through conservative
+augmentation. The agent design is general and, we hope, could have applicability in other data collection domains where web retrieval is informative. 
 \end{abstract}
 \vspace{0.4em}
 \noindent\textbf{Keywords:} political elites; measurement; tool-using
 retrieval; replication; temporal leakage.
+
+\vspace{0.5cm}
 
 \noindent Note! Extremely preliminary. 
 
@@ -95,23 +117,18 @@ Yet, interactive question answering is not a measurement protocol: without expli
 
 The stakes are substantive, not only technical. Party affiliation and related elite attributes are widely used to define key covariates (e.g., partisan control, coalition membership, and ideological composition) and to subset samples (e.g., focusing on elected officials with identifiable party ties). When labels are missing or miscoded, downstream analyses can suffer selection bias and reduced comparability across countries and years; when labels are coded using post-period biographies or retrospective summaries, they risk post-\(t\) contamination of baseline covariates.
 
-In political methodology terms, the problem is therefore \emph{measurement design}: how do we scale retrieval-augmented coding of elite attributes while preserving (i) auditability (a third party can verify why a label was produced), (ii) cross-national comparability (labels remain in a stable, closed set of classes), and (iii) temporal validity (evidence respects an ``as-of'' target).
+In political methodology terms, the problem is therefore \emph{measurement design}: how do we scale coding of elite attributes while preserving (i) auditability (a third party can verify why a label was produced), (ii) cross-national comparability (labels remain in a stable, closed set of classes), and (iii) temporal validity (evidence respects an ``as-of'' target).
 ASA is framed as a measurement protocol rather than as an accuracy-maximizing question-answering system.
 
-We argue that retrieval-augmented LLM agents can be useful for dataset construction only when embedded in an explicitly governed measurement protocol.
+We argue that search-augmented LLM agents can be most useful for dataset construction when embedded in an explicitly governed measurement protocol where source temporality can be controlled and provenance can be carefully studied.
 We introduce the \emph{Auditable Search Agent} (ASA), implemented in the \texttt{asa} software stack, which formalizes retrieval as measurement: for each record \(\langle\)person, country, year\(\rangle\) and an expert-supplied closed codebook, the agent runs a short, budgeted search session; prioritizes evidence over parametric recall; emits a structured output with citations; abstains under weak or conflicting evidence; and archives a complete trace (queries, snippets, URLs, timestamps) for later audit and re-analysis.
 
-\paragraph{Contributions.}
-First, we identify three hazards that make ``search-enabled coding'' non-standard as a research workflow: (i) non-verifiability, (ii) non-comparability, and (iii) temporal leakage (a close analogue of post-treatment conditioning in causal inference).
-Second, we translate these hazards into a concrete protocol with closed-world decisions, evidence-first outputs, temporal governance, and conservative abstention.
-Third, we validate the methodology on party-affiliation labeling, a verifiable elite attribute with an expert closed codebook.
+We aim to make three key contributions. First, we identify three hazards that threaten LLM-only inference in research workflows: (i) non-verifiability, (ii) non-comparability, and (iii) temporal leakage (a close analogue to post-treatment conditioning in causal inference). Second, to mitigate these hazards, we introduce a concrete protocol emphasizing closed-world decisions, evidence-first outputs, temporal governance, and conservative abstention. Third, we validate this methodology using party-affiliation labeling—a verifiable elite attribute governed by an expert, closed codebook.
 
-\paragraph{Preview of results.}
-In the party-affiliation task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} matched leader--records; \LLMNumClassespolparty{} party labels), ASA achieves high-confidence accuracy \LLMOverallAccHighpolparty{} while expanding usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} previously missing labels) and withholding \LLMMeanLowConfpolparty{} of cases on average via an abstention gate.
+Previewing results -- in the party-affiliation task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} matched leader--records; \LLMNumClassespolparty{} party labels), ASA achieves high-confidence accuracy \LLMOverallAccHighpolparty{} while expanding usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} previously missing labels) and withholding \LLMMeanLowConfpolparty{} of cases on average via an abstention gate.
 Relative to a simple country-majority baseline (\LLMMeanBaselineByCountrypolparty{}), the mean uplift in high-confidence accuracy is \LLMMeanDeltaByCountrypolparty{}.
 
-\paragraph{Roadmap.}
-Section~\ref{sec:hazards} motivates the design by formalizing three measurement hazards.
+Next, Section~\ref{sec:hazards} motivates the design by formalizing three measurement hazards.
 Section~\ref{sec:related} situates the contribution in political methodology, reproducible research, and recent retrieval-agent architectures.
 Sections~\ref{sec:method}--\ref{sec:validation} describe the ASA protocol and validate it on party affiliation.
 We conclude with guidance on transparency, limitations, and ethical considerations for web-based measurement.
@@ -120,7 +137,7 @@ Our replication target is recomputation from a frozen trace store and versioned 
 \section{Measurement hazards in search-enabled coding\label{sec:hazards}}
 
 Digital sources make it feasible to code political-elite attributes at scale, but research-grade datasets impose requirements that differ from interactive question answering.
-In practice, a default workflow---``ask a search-enabled model for the answer''---tends to fail on three dimensions central to quantitative political science.
+In practice, a default workflow---``ask a LLM model for the answer''---tends to fail on three dimensions central to quantitative political science.
 
 \paragraph{Auditability and replication.}
 Elite attribute labels are \emph{measurements}. When the underlying retrieval context is not archived (queries, results, snippets, URLs, timestamps), a label is difficult to verify and cannot be re-audited when coders disagree or sources change.
@@ -128,14 +145,20 @@ This is especially problematic for downstream users who need to understand measu
 
 \paragraph{Cross-national comparability.}
 Many elite variables are \emph{categorical} and country-specific (e.g., party labels). ``Open-world'' generation invites label drift (synonyms, translations, rebrandings), undermining comparability across countries and years.
-Closed codebooks supplied by domain experts are a natural remedy, but generic search-enabled chat systems do not typically enforce them.
+Closed codebooks supplied by domain experts are a natural remedy, but generic chat systems do not typically enforce them.
 
 \paragraph{Temporal leakage and post-treatment bias.}
-Political elites switch parties, offices, and coalitions. If coding for year \(t\) uses sources written after \(t\) (e.g., biographies updated in 2025), the measurement can incorporate information that is itself caused by post-\(t\) outcomes.
+Political elites switch parties, offices, and coalitions. If coding
+for year \(t\) uses sources written after \(t\) (e.g., biographies
+updated in 2025), the measurement can incorporate information that is
+itself caused by post-\(t\) outcomes.
+
 This is a close analogue of conditioning on post-treatment variables in causal inference \citep{montgomery2018conditioning}: a label intended to reflect the pre-period state may be contaminated by later events, inducing bias in estimated relationships.
 Temporal governance therefore belongs \emph{inside} the measurement protocol, not in ad hoc post-hoc cleaning.
 
 \subsection{Formalizing temporal leakage\label{sec:temporal-formal}}
+
+The third concern regarding post-treatment information is particularly acute in LLM-only coding, as the LLM weights have been trained extensively with post treatment information. We here briefly formalize the structural relationship between the target attribute, downstream outcomes, and the evolving data-generating process of web evidence. By explicitly mapping the timeline of information retrieval, we can establish a compliance rule that isolates the pre-period state from future events, ensuring the agent's measurements remain valid for downstream inference.
 
 Let \(X_{it}\) denote the target attribute for unit \(i\) at time \(t\) (e.g., party affiliation in observation year \(t\)).
 Researchers often use \(X_{it}\) as a covariate when estimating relationships with outcomes realized after \(t\), \(Y_{i,t'>t}\).
@@ -146,16 +169,22 @@ When a measurement procedure for \(X_{it}\) draws on \(S^{>t}_{it}\), it can imp
   \centering
   \begin{tikzpicture}[
     font=\small,
-    node distance=10mm and 16mm,
+    node distance=10mm and 12mm, % Adjusted horizontal distance slightly for a 3-column layout
     v/.style={draw, rounded corners, fill=gray!3, inner sep=4pt, align=center},
     arr/.style={-{Stealth[length=3mm]}, thick},
   ]
+    % Left side
     \node[v] (x) {\(X_{it}\)\\(true at \(t\))};
-    \node[v, right=of x] (y) {\(Y_{i,t'>t}\)\\(post-\(t\) outcomes)};
     \node[v, below=of x] (spre) {\(S^{\le t}_{it}\)\\(pre-period sources)};
-    \node[v, below=of y] (spost) {\(S^{>t}_{it}\)\\(post-period sources)};
-    \node[v, right=of spre, xshift=10mm] (xhat) {\(\tilde X_{it}\)\\(measured)};
 
+    % Middle (Collider)
+    \node[v, right=of spre] (xhat) {\(\tilde X_{it}\)\\(measured)};
+
+    % Right side
+    \node[v, right=of xhat] (spost) {\(S^{>t}_{it}\)\\(post-period sources)};
+    \node[v, above=of spost] (y) {\(Y_{i,t'>t}\)\\(post-\(t\) outcomes)};
+
+    % Arrows
     \draw[arr] (x) -- (y);
     \draw[arr] (x) -- (spre);
     \draw[arr] (y) -- (spost);
@@ -163,7 +192,7 @@ When a measurement procedure for \(X_{it}\) draws on \(S^{>t}_{it}\), it can imp
     \draw[arr] (spost) -- (xhat);
   \end{tikzpicture}
   \caption{Temporal leakage as post-period conditioning. If measurement \(\tilde X_{it}\) uses post-period sources \(S^{>t}_{it}\) that are themselves influenced by outcomes after \(t\), then \(\tilde X_{it}\) can become a function of \(Y_{i,t'>t}\), contaminating a baseline covariate.}
-  \label{fig:temporal-dag}
+  \label{fig:temporal-dag-alt}
 \end{figure}
 
 \paragraph{A compliance definition.}
@@ -187,9 +216,11 @@ Table~\ref{tab:hazard-mitigation} summarizes how ASA operationalizes these requi
 \textbf{Hazard} & \textbf{ASA response} \\
 \midrule
 Non-verifiability (answers without durable evidence trails) &
-Evidence-first outputs with explicit citations; full trace capture (queries, snippets, URLs, timestamps) for audit and re-analysis. \\
+                                                              Evidence-first outputs with explicit citations; full trace capture (queries, snippets, URLs, timestamps) for audit and re-analysis. \\
+ & & \\ 
 Non-comparability (label drift across countries/time) &
-Closed-world decisions constrained to expert codebooks, plus conservative post-processing that normalizes benign surface variation without introducing new classes. \\
+                                                        Closed-world decisions constrained to expert codebooks, plus conservative post-processing that normalizes benign surface variation without introducing new classes. \\
+   & & \\ 
 Temporal leakage (post-period information used for pre-period labels) &
 Explicit ``as-of'' rules with date verification where feasible; warnings and abstention rather than silently relying on potentially post-period sources. \\
 \bottomrule
@@ -604,7 +635,9 @@ Accuracy for large/plurality parties & \LLMMeanAccLargeGroupspolparty{} \\
   \label{fig:agent-heterogeneity}
 \end{figure}
 
-\input{./../Figures/SamplePredictionsCompact_pol_party.tex}
+\InputIfFileExists{./../Figures/SamplePredictionsCompact_pol_party.tex}{}{
+  \input{asa-paper/Paper/../Figures/SamplePredictionsCompact_pol_party.tex}
+}
 
 \subsection{Auditability and trace-based verification}
 
@@ -730,7 +763,9 @@ This design turns retrieval-augmented agents into replicable instruments for dat
 \section*{Author contributions}
 \noindent TBD.
 \appendix
-\input{ms_appendix.tex}
+\InputIfFileExists{ms_appendix.tex}{}{
+  \input{asa-paper/Paper/ms_appendix.tex}
+}
 
 \printbibliography
 

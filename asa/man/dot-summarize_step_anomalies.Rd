@@ -4,7 +4,7 @@
 \alias{.summarize_step_anomalies}
 \title{Summarize anomaly flags across action steps}
 \usage{
-.summarize_step_anomalies(steps, max_chars = 88L)
+.summarize_step_anomalies(steps, diagnostics = list(), max_chars = 88L)
 }
 \description{
 Summarize anomaly flags across action steps

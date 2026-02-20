@@ -19,6 +19,10 @@ asa_response(
   field_status = list(),
   diagnostics = list(),
   json_repair = list(),
+  final_payload = NULL,
+  terminal_valid = FALSE,
+  terminal_payload_hash = NULL,
+  payload_integrity = list(),
   completion_gate = list(),
   tokens_used = NA_integer_,
   input_tokens = NA_integer_,
@@ -62,6 +66,16 @@ summary growth chars), \code{fold_summary_total_chars},
 \item{diagnostics}{Runtime diagnostics counters and intervention notes.}
 
 \item{json_repair}{JSON repair/fallback events emitted during execution.}
+
+\item{final_payload}{Canonical terminal payload from agent state (when available).}
+
+\item{terminal_valid}{Logical flag indicating whether a schema-valid terminal
+payload was emitted.}
+
+\item{terminal_payload_hash}{Canonical hash of terminal payload from agent state.}
+
+\item{payload_integrity}{Diagnostics about released payload provenance, repair,
+and truncation markers.}
 
 \item{completion_gate}{Deterministic outcome-verification report from agent state.}
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi is a politician affiliated with the Movimiento Al Socialismo (MAS) party in Bolivia.", "Her substitute (suplente) is Eloy Cartagena Yoamona. (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)"],
+  "facts": ["[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609).", "Ramona Moye Camaconi is a MAS deputy for Circunscripción 6, Beni (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)."],
   "decisions": [],
   "open_questions": [],
   "sources": [
@@ -12,27 +12,9 @@
     },
     {
       "tool": "Search",
-      "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "MAS gana en el Tipnis con 75% y obtiene la diputación especial indígena de Beni",
-      "note": "Election results details"
-    },
-    {
-      "tool": "Search",
-      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados",
-      "title": "Diputada Moye del MAS es denunciada por presentar bajas médicas falsificadas",
-      "note": "Controversy regarding medical licenses"
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967",
-      "title": "Diputada del MAS admite que en el TIPNIS se produce coca",
-      "note": "Statements on coca production"
-    },
-    {
-      "tool": "OpenWebpage",
-      "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "(unavailable)",
-      "note": null
+      "url": "https://eju.tv/2018/09/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas",
+      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
+      "note": "News report on ethics complaint"
     },
     {
       "tool": "OpenWebpage",
@@ -47,5 +29,5 @@
       "note": null
     }
   ],
-  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: She serves as a Deputy (Diputada) representing the Special Indigenous Constituency (Circunscripción Especial Indígena) of Beni, also identified as Circunscripción 6. (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: She was born on January 7, 1982. (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: Prior to her parliamentary role, she served as President of the Organization of Women - Sub Central Sécure. (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: She won the election in the TIPNIS region with 75% of the vote for the indigenous seat. (Source: https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)", "UNGROUNDED: She was denounced for allegedly presenting falsified medical leave requests to obtain licenses in the Chamber of Deputies. (Source: https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados)", "UNGROUNDED: She admitted that coca is produced in the TIPNIS territory, stating it is for traditional consumption. (Source: https://www.noticiasfides.com/nacional/politica/diputada-del-mas-admite-que-en-el-tipnis-se-produce-coca-y-dice-que-es-para-autoconsumo-397967)"]
+  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609). Full date of birth: January 7, 1982.", "UNGROUNDED: In 2018, Moye was denounced by deputy Jimena Costa for allegedly presenting falsified medical leave documents (source: https://eju.tv/2018/09/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas)."]
 }

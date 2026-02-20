@@ -4,7 +4,7 @@
 \alias{.extract_response_text}
 \title{Extract Response Text from Raw Response}
 \usage{
-.extract_response_text(raw_response, backend)
+.extract_response_text(raw_response, backend, with_meta = FALSE)
 }
 \description{
 Extract Response Text from Raw Response

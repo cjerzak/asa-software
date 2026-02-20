@@ -20,6 +20,7 @@
   source_policy = NULL,
   retry_policy = NULL,
   finalization_policy = NULL,
+  orchestration_options = NULL,
   query_templates = NULL,
   use_plan_mode = FALSE,
   om_config = NULL,

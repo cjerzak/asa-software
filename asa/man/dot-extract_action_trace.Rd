@@ -10,6 +10,8 @@
   plan_history = list(),
   plan = list(),
   field_status = list(),
+  tool_quality_events = list(),
+  diagnostics = list(),
   max_preview_chars = 88L,
   max_steps = 200L,
   token_trace = list(),
