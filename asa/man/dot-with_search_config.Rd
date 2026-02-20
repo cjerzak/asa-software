@@ -4,12 +4,14 @@
 \alias{.with_search_config}
 \title{Apply Search Configuration for a Single Operation}
 \usage{
-.with_search_config(search, conda_env = NULL, fn)
+.with_search_config(search, conda_env = NULL, agent = NULL, fn)
 }
 \arguments{
 \item{search}{asa_search object or list of search settings}
 
 \item{conda_env}{Conda env used by search tools}
+
+\item{agent}{Optional asa_agent used to apply per-wrapper search config}
 
 \item{fn}{Function to run with search config applied}
 }

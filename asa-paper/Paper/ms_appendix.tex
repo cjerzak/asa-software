@@ -1,0 +1,90 @@
+\section{Task specification for party affiliation\label{sec:appendix-task}}
+
+This appendix documents the task-level specification used in the party-affiliation validation: the required output schema, the country-closed normalization rules, the confidence gate (abstention policy), and a representative prompt template.
+
+\subsection{Structured output schema}
+
+For each record \(\langle\)person, country, year\(\rangle\) the agent returns a single JSON object.
+In the party-affiliation task, we require (at minimum) the following fields:
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+\item \texttt{pol\_party}: a single party label chosen from the country-year codebook (exact string match).
+\item \texttt{justification}: one sentence that cites the evidence supporting the label.
+\item \texttt{confidence}: a categorical confidence flag (High, Medium, Low).
+\end{itemize}
+The trace store separately records the evidence environment (queries, snippets, URLs, timestamps) used to generate the output.
+
+\subsection{Country-closed matching and normalization}
+
+To guard cross-national comparability and reduce typographic drift, we apply a two-stage, codebook-guided normalization to the model's raw label string:
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item \textbf{Strict closed-set match (country scope).} If the predicted string exactly matches a member of the country-year codebook, it is accepted.
+\item \textbf{Conservative fuzzy match.} Otherwise, a relaxed mapper computes a similarity score \(s\) combining (a) Jaro--Winkler similarity on a normalized label, (b) token overlap coverage, and (c) acronym equality.
+Let \(m\) denote the runner-up score.
+Accept as a match if
+\[
+s \ge 0.92 \quad \text{or} \quad \bigl(s \ge 0.85 \ \&\  s-m \ge 0.08\bigr).
+\]
+\end{enumerate}
+This mapping process produces a normalized label used for evaluation and aggregation while preserving the original string for audit.
+It corrects innocuous variants (pluralization, punctuation, acronyms) without introducing new classes.
+In the party-affiliation case study, the relaxed mapper changes \LLMRelaxedChangedPctpolparty{}\% of accepted labels.
+
+\subsection{Confidence gate and abstention policy}
+
+The agent emits a categorical confidence estimate.
+Records flagged \texttt{Low} (and, in conservative downstream analyses, \texttt{Medium}) are withheld from automated use, implementing an abstention layer that trades coverage for precision.
+Abstention is most common where web evidence is sparse, parties are newly formed, transliterations vary, or publication dates cannot be verified under the ``as-of'' rule.
+
+\subsection{Representative prompt template}
+
+\begingroup
+\footnotesize
+\begin{verbatim}
+TASK OVERVIEW:
+You are a search-enabled language model performing
+party affiliation inference.
+Your goal is to identify the political party of a
+specified individual in a specified country and year,
+using retrieved evidence. If evidence is weak or
+conflicting, you must abstain by returning
+confidence = "Low".
+
+TARGET RECORD:
+- Name: <PERSON_NAME>
+- Country: <COUNTRY>
+- Observation year: <YEAR>
+- Parties (closed codebook): [<PARTY_1>, <PARTY_2>, ...]
+
+CONSTRAINTS:
+1. You MUST choose exactly ONE party from the closed
+   codebook for pol_party when confidence is High or
+   Medium.
+2. You MUST NOT invent a party not in the codebook.
+3. The selected party string must exactly match the codebook entry.
+4. Write all explanations in English and cite sources.
+
+RESPONSE FORMAT (JSON ONLY):
+{
+  "justification": "One sentence with citations to retrieved sources.",
+  "pol_party": "Exact party label from the codebook",
+  "confidence": "High|Medium|Low"
+}
+\end{verbatim}
+\endgroup
+
+\section{Recommended additional validation for submission\label{sec:appendix-robustness}}
+
+To meet common journal expectations for a submission-ready measurement paper, the validation section should include:
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+\item \textbf{Open-world baseline:} a ``search-enabled chat'' workflow without closed codebooks and without trace enforcement.
+\item \textbf{No temporal governance ablation:} remove the ``as-of'' constraint and show the effect on accuracy/coverage (and leakage risk).
+\item \textbf{No abstention ablation:} force a label on all records and report the precision--coverage tradeoff.
+\item \textbf{Strict-match-only ablation:} remove the relaxed mapper to quantify the role of normalization.
+\item \textbf{Uncertainty summaries:} country-clustered or country-resampled intervals for headline metrics.
+\end{itemize}
+
+\section{Trace store fields\label{sec:appendix-trace}}
+
+The ASA trace store is designed to make each measurement auditable.
+At minimum, it records (a) the record identifier and task configuration (including the codebook and temporal rule), (b) each retrieval action (query strings, tool responses, extracted snippets), and (c) the final structured output with confidence.
+This enables retrospective audits (follow the citations), re-filtering (apply stricter evidence rules), and reproducible aggregate statistics from a frozen trace store.

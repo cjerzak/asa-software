@@ -2,14 +2,50 @@
   "version": 1,
   "facts": [],
   "decisions": [],
-  "open_questions": [],
+  "open_questions": ["What is Ramona Moye Camaconi's specific educational background?", "What was her specific occupation prior to 2014, beyond being an inhabitant of TIPNIS?"],
   "sources": [
     {
+      "tool": "Search",
+      "url": "https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
+      "title": "El MAS gana en el TIPNIS con 83% y obtiene la diputación especial indígena de Beni",
+      "note": "Election results 2014"
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "title": "Vicepresidencia del Estado - Parlamentarios",
+      "note": "Official list of deputies"
+    },
+    {
+      "tool": "Search",
+      "url": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+      "title": "Vicepresidencia del Estado - Parlamentarios (Detailed)",
+      "note": "Source for birth year and place"
+    },
+    {
+      "tool": "Search",
+      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
+      "title": "Diputada oficialista amenaza a indígenas que se oponen a carretera por el Tipnis",
+      "note": "Political stance and origin"
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
+      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
+      "note": "Controversy details"
+    },
+    {
       "tool": "OpenWebpage",
-      "url": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio/",
-      "title": "Tierra y territorio – ARCHIVO DOCUMENTAL ISIBORO SÉCURE",
+      "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
+      "title": "(unavailable)",
+      "note": null
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "title": "Vicepresidencia del Estado",
       "note": null
     }
   ],
-  "warnings": []
+  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios)", "UNGROUNDED: FIELD_EXTRACT: birth_place = Beni (source: https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios)", "UNGROUNDED: Ramona Moye Camaconi was elected as a titular deputy for the Movement for Socialism (MAS) in the 2014 Bolivian general elections, representing the Special Indigenous Constituency of Beni (TIPNIS) with 83% of the vote. (Source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)", "UNGROUNDED: Official Vicepresidencia records list her constituency as 'Circunscripción 09' (Uninominal). (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "UNGROUNDED: She is an inhabitant of the TIPNIS territory and publicly supported the construction of a road through the park, stating that opponents should not interfere. (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "UNGROUNDED: She was denounced by opposition deputy Jimena Costa for allegedly presenting falsified medical leave requests. (Source: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956)"]
 }

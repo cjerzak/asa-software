@@ -79,6 +79,8 @@ We present a \emph{verifiable search agent} methodology that treats web retrieva
 The agent executes short, provenance-preserving search sessions; constrains decisions to expert-supplied closed codebooks; produces structured, citation-backed outputs; abstains under weak or conflicting evidence; and stores complete traces for audit and re-analysis.
 In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} matched leader--records; \LLMNumClassespolparty{} party labels), the high-confidence accuracy is \LLMOverallAccHighpolparty{} while expanding usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} previously missing labels) with a conservative abstention layer.
 \end{abstract}
+\vspace{0.4em}
+\noindent\textbf{Keywords:} political elites; measurement; tool-using retrieval; replication; temporal leakage.
 
 \begin{figure}[htb]
   \centering
@@ -124,11 +126,31 @@ In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countri
   \label{fig:visual-abstract}
 \end{figure}
 
-\section{Motivation: why ``just use an LLM'' is not enough}
+\section{Introduction}
 
-While large language models possess extensive parametric knowledge, relying solely on their internal weights to code elite political attributes introduces unacceptable risks for scientific research. Standalone LLMs lack inherent temporal awareness, meaning they cannot reliably distinguish between a politician's affiliation in 2010 versus 2024 without risking anachronistic errors.
+Large-\(N\) political-elite datasets underpin research on representation, accountability, and governance, but assembling them requires repeated, error-prone measurement of categorical attributes (e.g., party affiliation) across countries and time.
+As digital traces proliferate, it is tempting to scale attribute coding by asking search-enabled large language models (LLMs) for answers.
+Yet, interactive question answering is not a measurement protocol: without explicit governance, such workflows tend to be difficult to audit, hard to replicate, and vulnerable to temporally invalid evidence.
 
-Furthermore, their tendency to confidently hallucinate niche factual details—especially for less prominent regional figures—and their fundamental inability to provide verifiable, reproducible primary citations make their raw outputs unsuitable for rigorous quantitative analysis.  Consequently, treating an LLM as a static oracle rather than a dynamic reasoning engine inevitably exposes researchers to three fundamental methodological hazards that compromise dataset integrity.
+We argue that retrieval-augmented LLM agents can be useful for dataset construction only when they are treated as \emph{governed instruments}.
+We present a \emph{verifiable search agent} methodology, implemented in the \texttt{asa} software stack, that formalizes retrieval as measurement: for each record \(\langle\)person, country, year\(\rangle\) and an expert-supplied closed codebook, the agent runs a short, budgeted search session; prioritizes evidence over parametric recall; emits a structured output with citations; abstains under weak or conflicting evidence; and archives a complete trace (queries, snippets, URLs, timestamps) for later audit and re-analysis.
+
+\paragraph{Contributions.}
+First, we identify three hazards that make ``search-enabled coding'' non-standard as a research workflow: (i) non-verifiability, (ii) non-comparability, and (iii) temporal leakage (a close analogue of post-treatment conditioning in causal inference).
+Second, we translate these hazards into a concrete protocol with closed-world decisions, evidence-first outputs, temporal governance, and conservative abstention.
+Third, we validate the methodology on party-affiliation labeling, a verifiable elite attribute with an expert closed codebook.
+
+\paragraph{Preview of results.}
+In the party-affiliation task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} matched leader--records; \LLMNumClassespolparty{} party labels), ASA achieves high-confidence accuracy \LLMOverallAccHighpolparty{} while expanding usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} previously missing labels) and withholding \LLMMeanLowConfpolparty{} of cases on average via an abstention gate.
+Relative to a simple country-majority baseline (\LLMMeanBaselineByCountrypolparty{}), the mean uplift in high-confidence accuracy is \LLMMeanDeltaByCountrypolparty{}.
+
+\paragraph{Roadmap.}
+Section~\ref{sec:hazards} motivates the design by formalizing three measurement hazards.
+Section~\ref{sec:related} situates the contribution in political methodology, reproducible research, and recent retrieval-agent architectures.
+Sections~\ref{sec:method}--\ref{sec:validation} describe the ASA protocol and validate it on party affiliation.
+We conclude with guidance on transparency, limitations, and ethical considerations for web-based measurement.
+
+\section{Measurement hazards in search-enabled coding\label{sec:hazards}}
 
 Digital sources make it feasible to code political-elite attributes at scale, but research-grade datasets impose requirements that differ from interactive question answering.
 In practice, a default workflow---``ask a search-enabled model for the answer''---tends to fail on three dimensions central to quantitative political science.
@@ -146,8 +168,9 @@ Political elites switch parties, offices, and coalitions. If coding for year \(t
 This is a close analogue of conditioning on post-treatment variables in causal inference \citep{montgomery2018conditioning}: a label intended to reflect the pre-period state may be contaminated by later events, inducing bias in estimated relationships.
 Temporal governance therefore belongs \emph{inside} the measurement protocol, not in ad hoc post-hoc cleaning.
 
-\paragraph{Contributions.}
-We contribute a verifiable search-agent methodology for dataset construction that (i) treats retrieval as a \emph{measurement protocol} with explicit ``as-of'' constraints to reduce temporal leakage and post-treatment contamination \citep{montgomery2018conditioning,kaufman2012leakage}, (ii) enforces expert-supplied \emph{closed codebooks} to preserve cross-national comparability, (iii) produces evidence-first, citation-backed labels while \emph{abstaining} under weak or conflicting evidence, and (iv) archives complete traces (queries, snippets, URLs, timestamps) to enable auditing and replication consistent with calls for reproducible computational research \citep{peng2011reproducible,stodden2013toward}.
+\paragraph{Design implications.}
+These hazards motivate treating retrieval as a governed measurement instrument: decisions must be constrained (closed codebooks), evidence must be preserved (citations and traces), time must be part of the protocol (``as-of'' rules), and weak evidence should trigger abstention rather than guessing.
+Table~\ref{tab:hazard-mitigation} summarizes how ASA operationalizes these requirements.
 
 \begin{table}[htb]
 \centering
@@ -168,9 +191,28 @@ Explicit ``as-of'' rules with date verification where feasible; warnings and abs
 \end{tabularx}
 \end{table}
 
-\section{Methodology: a verifiable search agent}
+\section{Related work\label{sec:related}}
 
-We present a protocol---implemented as the \texttt{asa} software stack---that makes agent-based retrieval \emph{verifiable by construction}. The design has four core commitments:
+Our contribution sits at the intersection of political methodology and recent advances in retrieval-augmented language models.
+Large cross-national datasets often rely on expert coding and bespoke compilation efforts; a central challenge is preserving comparability and documenting measurement decisions at scale.
+ASA complements such efforts by treating web retrieval as a first-class part of the measurement protocol and by archiving evidence trails that allow downstream users to audit labels and re-apply inclusion rules.
+The validation task we study is motivated by the same large-\(N\) political-elite measurement agenda that underlies recent work on global leadership and expert-coded cross-national datasets \citep{gerring2019rules,pemstein2020v}.
+
+ASA is also aligned with calls for reproducible computational research: replication requires not only code, but durable documentation of the information environment that produced a label \citep{peng2011reproducible,stodden2013toward}.
+In web-based measurement, the information environment is inherently dynamic; capturing queries, snippets, URLs, and timestamps makes it possible to re-audit outputs when sources change.
+Our emphasis on temporal governance connects directly to concerns about look-ahead and leakage when post-period information is used to measure pre-period covariates \citep{kaufman2012leakage,montgomery2018conditioning}.
+
+On the NLP side, retrieval-augmented generation and tool-using agents provide building blocks for ASA's implementation \citep{lewis2020retrieval,yao2022react}.
+However, the core contribution here is not a new prompting trick or a larger model; it is a measurement-oriented design that prioritizes comparability, auditability, and temporal validity over unconstrained answer generation.
+
+\section{Methodology: a verifiable search agent\label{sec:method}}
+
+We present a protocol---implemented as the \texttt{asa} software stack---that makes agent-based retrieval \emph{verifiable by construction}.
+The methodology separates (i) a task-level specification that defines what constitutes admissible evidence and outputs, from (ii) an implementation that executes the specification and persists traces.
+
+\subsection{Protocol commitments}
+
+The protocol has four core commitments:
 \begin{enumerate}[leftmargin=*, itemsep=2pt]
 \item \textbf{Closed-world decisions.} All predictions must lie in an expert-supplied codebook (e.g., the parties observed in a country-year panel).
 \item \textbf{Evidence-first outputs.} Each label is paired with a terse rationale anchored to explicit source citations.
@@ -183,11 +225,14 @@ We present a protocol---implemented as the \texttt{asa} software stack---that ma
 For each target record \(i\), the inputs are: a person name, a target country, an observation year \(t_i\), and a closed codebook \(\mathcal{C}_i\) supplied by expert coders.
 The agent must return either (a) a label \(c \in \mathcal{C}_i\) with citations, or (b) an abstention.
 
-\subsection{System design}
+\subsection{Implementation: ASA software stack}
 
 Operationally, the agent runs a short search session with read-only retrieval tools (e.g., Wikipedia and general web search), compiles candidate evidence, and emits a structured JSON result (label, one-sentence justification with citations, and a confidence category).
 This design follows retrieval-augmented, tool-using agent patterns in the recent NLP literature \citep{yao2022react,lewis2020retrieval}.
-A conservative post-processor then normalizes the label against the codebook: exact-match acceptance first, followed by a guarded fuzzy match for benign surface variation (punctuation, plurals, acronyms) using high similarity thresholds. This reduces typographic drift without introducing new classes.
+The implementation is designed to be \emph{task-configurable}: domain experts supply the closed codebook and task schema, while the shared execution layer enforces the protocol commitments (trace capture, abstention, and evidence-first outputs).
+
+A conservative post-processor then normalizes the label against the codebook: exact-match acceptance first, followed by a guarded fuzzy match for benign surface variation (punctuation, plurals, acronyms) using high similarity thresholds.
+This reduces typographic drift without introducing new classes; in the party-affiliation case study, the relaxed mapper changes \LLMRelaxedChangedPctpolparty{}\% of accepted labels.
 
 \begin{figure}[htb]
   \centering
@@ -267,10 +312,77 @@ All tool interactions and intermediate artifacts are persisted (including URLs a
 (i) verification of any individual label by following its citations, (ii) replication of aggregate statistics given the same trace store, and (iii) retrospective audits when codebooks change or new sources appear.
 The storage design also supports alternative downstream rules (e.g., only keep labels supported by government sources).
 
-\section{Case study: party affiliation inference at scale}
+\section{Data and gold standard\label{sec:data}}
 
-We evaluate ASA on a verifiable elite attribute: party affiliation. Using the subset of leader--records with expert codings, the agent attains an overall high-confidence accuracy of \LLMOverallAccHighpolparty{} across \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{}), while expanding coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} records) through conservative augmentation.
+We validate ASA on party affiliation, a verifiable elite attribute that is frequently missing in large political-elite panels yet can often be corroborated from public records (party rosters, parliamentary biographies), reputable encyclopedic sources, and contemporaneous news coverage.
+The unit of analysis is a leader--record indexed by \(\langle\)person, country, year\(\rangle\).
+
+\subsection{Elite records and country-year codebooks}
+
+For each country-year, domain experts provide a \emph{closed codebook} of admissible party labels.
+The codebook enforces cross-national comparability by preventing open-ended label generation, while allowing country-specific party systems to be represented without forcing artificial cross-country harmonization.
+When party naming conventions evolve (coalitions, mergers, rebrands), codebooks can be updated and prior labels can be re-audited using the archived traces.
+
+\subsection{Expert labels and evaluation set}
+
+The evaluation set is the subset of leader--records with expert-provided party labels.
+We score ASA predictions against expert labels \emph{only} when the agent emits a high-confidence label that can be mapped to the country-year codebook.
+Low-confidence outputs are withheld by design (abstention), trading coverage for precision.
+
+\subsection{Outcome definition and temporal target}
+
+The target label is the leader's party affiliation for observation year \(t_i\).
+Because elites may switch parties within a year and sources are often retrospective, ASA applies an explicit ``as-of'' rule for admissible evidence.
+The precise temporal cut and adjudication rules for within-year switches should be stated alongside the task configuration (Appendix~\ref{sec:appendix-task}).
+
+\section{Validation: party affiliation labeling\label{sec:validation}}
+
+\subsection{Experimental design}
+
+Each record triggers a short, budgeted retrieval episode. The agent is instructed to prioritize verifiable sources, provide citations in its one-sentence justification, and abstain (low confidence) when evidence is weak or conflicting.
+Temporal governance is applied as described in Section~\ref{sec:method}: where publication dates can be recovered, post-period sources are excluded; otherwise the agent warns and abstains rather than silently relying on potentially post-period material.
+
+\subsection{Baselines and ablations}
+
+We report performance against a simple baseline that predicts, within each country, the modal party label in the expert-coded evaluation subset.
+This captures how much performance comes from exploiting skewed label distributions.
+In addition, a standard submission-ready validation should include: (i) an open-world ``search-enabled chat'' baseline without closed codebooks, (ii) a no-temporal-governance ablation, (iii) a no-abstention ablation (forced prediction), and (iv) a strict-match-only ablation (no relaxed mapper).
+We provide protocol details for these comparisons in Appendix~\ref{sec:appendix-robustness}.
+
+\subsection{Metrics}
+
+We report (i) accuracy conditional on non-abstention (high confidence), (ii) coverage (the share of records receiving a high-confidence label), and (iii) coverage gain relative to expert-only availability.
+Because the unit of analysis is nested within countries, uncertainty should be summarized with country-clustered or country-resampled intervals in a submission-ready version of the paper.
+
+\subsection{Results}
+
+Using the subset of leader--records with expert codings, ASA attains an overall high-confidence accuracy of \LLMOverallAccHighpolparty{} across \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{}), while expanding coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} records) through conservative augmentation.
 Low-confidence outputs are withheld by design, trading recall for precision; the mean share withheld is \LLMMeanLowConfpolparty{}.
+Table~\ref{tab:validation-summary} summarizes the key quantities.
+
+\begin{table}[htb]
+\centering
+\caption{Validation summary for party-affiliation labeling (high-confidence predictions scored against expert labels).}
+\label{tab:validation-summary}
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Countries & \LLMNumCountriespolparty{} \\
+Matched leader--records (expert overlap) & \LLMNumInstancespolparty{} \\
+Distinct party labels (closed codebooks) & \LLMNumClassespolparty{} \\
+High-confidence accuracy (non-abstained) & \LLMOverallAccHighpolparty{} \\
+Overall accuracy (all predictions) & \LLMOverallAccAllpolparty{} \\
+Mean share withheld (low confidence) & \LLMMeanLowConfpolparty{} \\
+Mean country-majority baseline accuracy & \LLMMeanBaselineByCountrypolparty{} \\
+Mean uplift over baseline (high confidence) & \LLMMeanDeltaByCountrypolparty{} \\
+Coverage gained (new labels) & \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} records) \\
+Accuracy for small/minority parties & \LLMMeanAccSmallGroupspolparty{} \\
+Accuracy for large/plurality parties & \LLMMeanAccLargeGroupspolparty{} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \begin{figure}[htb]
   \centering
@@ -288,6 +400,12 @@ Low-confidence outputs are withheld by design, trading recall for precision; the
 \end{figure}
 
 \input{./../Figures/SamplePredictionsCompact_pol_party.tex}
+
+\subsection{Auditability and trace-based verification}
+
+The core advantage of ASA over unconstrained chat workflows is that each accepted label can be audited by inspecting its citations and full trace.
+The trace store preserves the queries, retrieved snippets, URLs, and timestamps used during coding, enabling replication and retrospective re-analysis when sources change or when users adopt stricter inclusion rules (e.g., accept only government sources).
+Table~\ref{tab:sample_compact} illustrates the resulting evidence-first trace style: multiple sources are retrieved and recorded alongside links, allowing a reader to verify what evidence the label relied on under the declared temporal rule.
 
 \begin{figure}[htb]
 \centering
@@ -320,11 +438,47 @@ Key failure modes include (i) sources without reliable publication dates, (ii) s
 ASA is best suited to \emph{verifiable attributes} with authoritative sources (party membership, office holding, election outcomes) and stable codebooks.
 For sensitive or non-verifiable attributes (e.g., ethnicity without self-identification), we recommend stricter abstention and explicit ethical review.
 
+\section{Transparency, reproducibility, and data availability\label{sec:transparency}}
+
+ASA produces two primary research artifacts: (i) a structured dataset of labels (including abstentions and confidence flags), and (ii) an auditable trace store that documents the evidence environment that produced each label.
+To support replication, a submission-ready package should (a) freeze the trace store used for reported results, (b) include scripts that reproduce all tables and figures from the frozen store, and (c) document the task specification (codebooks, temporal rules, output schema).
+
+Because the underlying elite panel and full trace store may be subject to access constraints, we recommend a controlled-access transparency strategy: release the \texttt{asa} software, schema definitions, and de-identified example traces immediately; and provide reviewers (and later readers) with an access pathway for full traces and expert codebooks consistent with ethical and legal constraints.
+
+\section{Limitations and ethical/legal considerations\label{sec:limitations}}
+
+\paragraph{Dynamic sources and dating.}
+Web sources evolve (link rot, edits, retroactive updates), and many pages lack reliable publication dates.
+Temporal governance reduces leakage risk but cannot guarantee that all evidence is contemporaneous; abstention is therefore a feature, not a bug.
+
+\paragraph{Coverage and representation bias.}
+Evidence quality varies systematically by language, region, and historical period, and across types of elites.
+These differences can create uneven missingness and error that must be documented and, where possible, modeled downstream.
+
+\paragraph{Terms of service and privacy.}
+Web retrieval should respect site terms, robots policies, and privacy considerations.
+Trace storage policies should minimize unnecessary retention of personal data while preserving enough evidence for audit (e.g., store URLs and short snippets rather than bulk page content when feasible).
+
 \section{Conclusion}
 
 For political-elite research, the central question is not whether LLMs can answer factual questions, but whether they can be integrated into a \emph{measurement protocol} that is auditable, comparable, temporally well-defined, and cost-effective at scale.
 The verifiable search agent methodology operationalizes these requirements through closed codebooks, evidence-first outputs, strict trace preservation, and conservative abstention.
 This design turns retrieval-augmented agents into replicable instruments for dataset construction rather than opaque assistants.
+
+\section*{Acknowledgments}
+\noindent \textit{[To be completed prior to submission.]}
+
+\section*{Funding}
+\noindent \textit{[To be completed prior to submission.]}
+
+\section*{Competing interests}
+\noindent \textit{[To be completed prior to submission.]}
+
+\section*{Author contributions}
+\noindent \textit{[To be completed prior to submission.]}
+
+\appendix
+\input{ms_appendix.tex}
 
 \printbibliography
 

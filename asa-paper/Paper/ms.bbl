@@ -19,6 +19,56 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global}
+    \entry{gerring2019rules}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=a6a0cbfe9daf777684dbb8947a681e73}{%
+           family={Gerring},
+           familyi={G\bibinitperiod},
+           given={John},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f9c9d088ec28e132399bd465abe77d2f}{%
+           family={Oncel},
+           familyi={O\bibinitperiod},
+           given={Erzen},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=59e3ead672991936a23b937621a1222d}{%
+           family={Morrison},
+           familyi={M\bibinitperiod},
+           given={Kevin},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5467088017ca3ef134c8cff485ce6b7a}{%
+           family={Pemstein},
+           familyi={P\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{15a310f03479be93408f97580a9748e9}
+      \strng{fullhash}{c34e7c8c9b346311b0d103f223bbbf55}
+      \strng{bibnamehash}{15a310f03479be93408f97580a9748e9}
+      \strng{authorbibnamehash}{15a310f03479be93408f97580a9748e9}
+      \strng{authornamehash}{15a310f03479be93408f97580a9748e9}
+      \strng{authorfullhash}{c34e7c8c9b346311b0d103f223bbbf55}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Perspectives on politics}
+      \field{number}{4}
+      \field{title}{Who rules the world? A portrait of the global leadership class}
+      \field{volume}{17}
+      \field{year}{2019}
+      \field{pages}{1079\bibrangedash 1097}
+      \range{pages}{19}
+    \endentry
     \entry{kaufman2012leakage}{article}{}
       \name{author}{3}{}{%
         {{un=0,uniquepart=base,hash=a63501185d4f0efbf451c58b68955177}{%
@@ -200,6 +250,78 @@
       \field{year}{2018}
       \field{pages}{760\bibrangedash 775}
       \range{pages}{16}
+    \endentry
+    \entry{pemstein2020v}{misc}{}
+      \name{author}{8}{}{%
+        {{un=0,uniquepart=base,hash=5467088017ca3ef134c8cff485ce6b7a}{%
+           family={Pemstein},
+           familyi={P\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=8003404151c327628bd80203d3f21f90}{%
+           family={Marquardt},
+           familyi={M\bibinitperiod},
+           given={Kyle\bibnamedelima L},
+           giveni={K\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ba77429c31b7a0409607a45ef9f3e33f}{%
+           family={Tzelgov},
+           familyi={T\bibinitperiod},
+           given={Eitan},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=82660e1f36556772b02ef864e385dc1e}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Yi-ting},
+           giveni={Y\bibinithyphendelim t\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4df7df35ab799dc8598534b36b65094b}{%
+           family={Medzihorsky},
+           familyi={M\bibinitperiod},
+           given={Juraj},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2be83b90721689ab55cdd466140babdf}{%
+           family={Krusell},
+           familyi={K\bibinitperiod},
+           given={Joshua},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=64a7576f44780eb5f01fe5f6cfab59d4}{%
+           family={Miri},
+           familyi={M\bibinitperiod},
+           given={Farhad},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=82df7b75822fc77f70f90e37572f7555}{%
+           family={Römer},
+           familyi={R\bibinitperiod},
+           given={Johannes},
+           giveni={J\bibinitperiod},
+           givenun=0,
+           prefix={von},
+           prefixi={v\bibinitperiod},
+           prefixun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Gothenburg: Varieties of Democracy Institute, University of Gothenburg}%
+      }
+      \strng{namehash}{fddaeec51693ab9783143ca576b53b9c}
+      \strng{fullhash}{81948a5c7f87b1fccc99a081ae31e03e}
+      \strng{bibnamehash}{fddaeec51693ab9783143ca576b53b9c}
+      \strng{authorbibnamehash}{fddaeec51693ab9783143ca576b53b9c}
+      \strng{authornamehash}{fddaeec51693ab9783143ca576b53b9c}
+      \strng{authorfullhash}{81948a5c7f87b1fccc99a081ae31e03e}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{The V-Dem Measurement Model: Latent Variable Analysis for Cross-National and Cross-Temporal Expert-Coded Data (V-Dem Working Paper No. 21)}
+      \field{year}{2020}
     \endentry
     \entry{peng2011reproducible}{article}{}
       \name{author}{1}{}{%

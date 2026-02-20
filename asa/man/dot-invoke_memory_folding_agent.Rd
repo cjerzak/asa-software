@@ -15,6 +15,7 @@
   search_budget_limit = NULL,
   unknown_after_searches = NULL,
   finalize_on_all_fields_resolved = NULL,
+  auto_openwebpage_policy = NULL,
   field_rules = NULL,
   source_policy = NULL,
   retry_policy = NULL,

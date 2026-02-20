@@ -4,7 +4,14 @@
 \alias{.create_llm}
 \title{Create LLM Instance}
 \usage{
-.create_llm(backend, model, clients, rate_limit, timeout = ASA_DEFAULT_TIMEOUT)
+.create_llm(
+  backend,
+  model,
+  clients,
+  rate_limit,
+  timeout = ASA_DEFAULT_TIMEOUT,
+  stability_profile = "stealth_first"
+)
 }
 \arguments{
 \item{backend}{Backend name}
