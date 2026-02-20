@@ -109,7 +109,13 @@ attempt <- run_task(
     expected_fields = NULL,
     expected_schema = EXPECTED_SCHEMA,
     verbose = TRUE,
-    use_plan_mode = TRUE, 
+    use_plan_mode = FALSE,
+    search_budget_limit = 14L,
+    unknown_after_searches = 5L,
+    retry_policy = list(
+      rewrite_after_streak = 2L,
+      stop_after_streak = 3L
+    ),
     agent = initialize_agent(
       #backend = "gemini", model = "gemini-2.5-pro",
       backend = "gemini", model = "gemini-3-pro-preview",
@@ -130,16 +136,16 @@ attempt <- run_task(
       search = search_options(
         # Wikipedia tool output
         wiki_top_k_results = 3L,
-        wiki_doc_content_chars_max = (5L) * 500L,
+        wiki_doc_content_chars_max = 1200L,
         
         # DuckDuckGo Search tool output (snippet chars returned to the LLM)
-        search_doc_content_chars_max = (5L) * 1000L, # (chars per word)*words
+        search_doc_content_chars_max = 1200L, # (chars per word)*words
         
         # Full webpage reader (OpenWebpage tool output)
         allow_read_webpages = TRUE,
-        webpage_max_chars = (5L) * 8000L,
-        webpage_max_chunks = 20,
-        webpage_chunk_chars = (5L) * 600L
+        webpage_max_chars = 12000L,
+        webpage_max_chunks = 8L,
+        webpage_chunk_chars = 1200L
       )
     )
 )

@@ -3984,32 +3984,47 @@ def _classify_tool_message_quality(msg: Any) -> Dict[str, bool]:
     if tool_name != "search":
         return {"is_empty": False, "is_off_target": False}
 
-    blocks = _parse_source_blocks(text, max_blocks=64)
-    if not blocks:
-        # Search returned no parseable result blocks.
-        return {"is_empty": True, "is_off_target": False}
+    def _urls_low_signal(urls: list) -> bool:
+        low_signal_only = True
+        for url in urls:
+            try:
+                host = str(urlparse(url).hostname or "").lower()
+            except Exception:
+                host = ""
+            host_low_signal = any(fragment in host for fragment in _LOW_SIGNAL_HOST_FRAGMENTS)
+            primary_score = _score_primary_source_url(url)
+            if not host_low_signal and primary_score >= 0:
+                low_signal_only = False
+                break
+        return bool(low_signal_only)
 
+    blocks = _parse_source_blocks(text, max_blocks=64)
     urls = []
     for block in blocks:
         normalized_url = _normalize_url_match(block.get("url"))
         if normalized_url:
             urls.append(normalized_url)
     if not urls:
-        return {"is_empty": False, "is_off_target": True}
+        # Fallback for deterministic/custom Search tools: structured JSON output
+        # without Search transport source wrappers is still a valid signal.
+        parsed_payload = parse_llm_json(text)
+        if isinstance(parsed_payload, (dict, list)) and _is_nonempty_payload(parsed_payload):
+            payload_urls = _extract_url_candidates(
+                json.dumps(parsed_payload, ensure_ascii=False),
+                max_urls=16,
+            )
+            if payload_urls:
+                return {"is_empty": False, "is_off_target": _urls_low_signal(payload_urls)}
+            return {"is_empty": False, "is_off_target": False}
 
-    low_signal_only = True
-    for url in urls:
-        try:
-            host = str(urlparse(url).hostname or "").lower()
-        except Exception:
-            host = ""
-        host_low_signal = any(fragment in host for fragment in _LOW_SIGNAL_HOST_FRAGMENTS)
-        primary_score = _score_primary_source_url(url)
-        if not host_low_signal and primary_score >= 0:
-            low_signal_only = False
-            break
+        # Wrapped Search output with no URL grounding remains low-signal.
+        if blocks:
+            return {"is_empty": False, "is_off_target": True}
 
-    return {"is_empty": False, "is_off_target": bool(low_signal_only)}
+        # Search returned no parseable/structured result.
+        return {"is_empty": True, "is_off_target": False}
+
+    return {"is_empty": False, "is_off_target": _urls_low_signal(urls)}
 
 
 def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:

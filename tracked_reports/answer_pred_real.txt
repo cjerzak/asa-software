@@ -4,17 +4,17 @@
   "education_field": "Unknown",
   "education_source": null,
   "prior_occupation": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
-  "class_background": "Working class",
+  "class_background": "Unknown",
   "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "disability_status": "Unknown",
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
-  "birth_year": "Unknown",
-  "birth_year_source": null,
+  "birth_year": 1982,
+  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "High",
-  "justification": "Official biography from the Vicepresidencia confirms birth date and prior occupation as an indigenous community leader. Education and specific birth place are not detailed in official sources."
+  "confidence": "Low",
+  "justification": "Source-backed searches resolved 3 fields (including prior_occupation, birth_year, confidence), while 15 fields remain unknown due to limited verifiable evidence."
 }

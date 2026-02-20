@@ -412,7 +412,7 @@ def infer_required_json_schema(text: str) -> Optional[Any]:
 
     # Prefer explicit anchors; avoid generic "schema" which is too noisy.
     anchor_re = re.compile(
-        r"(this exact schema|exact schema|json schema|schema\\s*:)",
+        r"(this exact schema|exact schema|json schema|schema\s*:)",
         re.IGNORECASE,
     )
     matches = list(anchor_re.finditer(text))
