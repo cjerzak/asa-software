@@ -51,6 +51,9 @@
 #'   fields may be marked as unknown.
 #' @param finalize_on_all_fields_resolved Optional logical flag. When TRUE, the
 #'   agent finalizes once all required fields are resolved.
+#' @param orchestration_options Optional named list/dict of generic orchestration
+#'   controls (component enable/mode and thresholds). This is passed directly to
+#'   the backend state and must remain task-agnostic.
 #' @param verbose Print progress messages (default: FALSE)
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
@@ -79,7 +82,9 @@
 #'     \item parsing_status: Validation result (if expected_fields provided)
 #'     \item execution: Operational metadata (thread_id, stop_reason, status_code,
 #'       tool budget counters, fold_count, completion_gate, verification_status)
-#'       plus diagnostics counters from runtime quality guards.
+#'       plus diagnostics counters from runtime quality guards, candidate and
+#'       retrieval telemetry, finalization status, artifact status, and
+#'       orchestration policy metadata.
 #'     \item action_ascii: High-level ASCII action map derived from the trace
 #'       (also available at \code{execution$action_ascii})
 #'     \item action_steps: Parsed high-level action steps (also available at
@@ -183,6 +188,7 @@ run_task <- function(prompt,
                      source_policy = NULL,
                      retry_policy = NULL,
                      finalization_policy = NULL,
+                     orchestration_options = NULL,
                      query_templates = NULL,
                      verbose = FALSE,
                      allow_read_webpages = NULL,
@@ -225,6 +231,7 @@ run_task <- function(prompt,
     source_policy = source_policy,
     retry_policy = retry_policy,
     finalization_policy = finalization_policy,
+    orchestration_options = orchestration_options,
     query_templates = query_templates,
     allow_read_webpages = allow_read_webpages,
     webpage_relevance_mode = webpage_relevance_mode,
@@ -307,6 +314,7 @@ run_task <- function(prompt,
       source_policy = source_policy,
       retry_policy = retry_policy,
       finalization_policy = finalization_policy,
+      orchestration_options = orchestration_options,
       query_templates = query_templates,
       use_plan_mode = use_plan_mode,
       verbose = verbose
@@ -478,6 +486,12 @@ run_task <- function(prompt,
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
     diagnostics = response$diagnostics %||% list(),
+    retrieval_metrics = response$retrieval_metrics %||% list(),
+    candidate_resolution = response$candidate_resolution %||% list(),
+    finalization_status = response$finalization_status %||% list(),
+    orchestration_options = response$orchestration_options %||% list(),
+    policy_version = response$policy_version %||% NA_character_,
+    artifact_status = response$artifact_status %||% .build_result_artifact_status(response),
     json_repair = response$json_repair %||% list(),
     final_payload = response$final_payload %||% NULL,
     terminal_valid = isTRUE(response$terminal_valid %||% FALSE),
@@ -564,6 +578,12 @@ run_task <- function(prompt,
     verification_status = NA_character_,
     token_stats = list(),
     diagnostics = list(),
+    retrieval_metrics = list(),
+    candidate_resolution = list(),
+    finalization_status = list(),
+    orchestration_options = list(),
+    policy_version = NA_character_,
+    artifact_status = list(),
     plan = list(),
     plan_history = list(),
     om_stats = list(),
@@ -585,6 +605,51 @@ run_task <- function(prompt,
   }
 
   result
+}
+
+#' Build best-effort artifact status metadata from an asa_response
+#' @keywords internal
+.build_result_artifact_status <- function(response) {
+  hash_text <- function(x) {
+    x_chr <- .try_or(as.character(x), character(0))
+    x_chr <- x_chr[!is.na(x_chr)]
+    if (length(x_chr) == 0L || !nzchar(x_chr[[1]])) {
+      return(NA_character_)
+    }
+    digest::digest(enc2utf8(x_chr[[1]]), algo = "sha256")
+  }
+  text_entry <- function(x) {
+    x_chr <- .try_or(as.character(x), character(0))
+    x_chr <- x_chr[!is.na(x_chr)]
+    if (length(x_chr) == 0L || !nzchar(x_chr[[1]])) {
+      return(list(status = "empty", message = "", byte_hash = NA_character_))
+    }
+    list(status = "written", message = "", byte_hash = hash_text(x_chr[[1]]))
+  }
+  payload_entry <- function(payload) {
+    if (is.null(payload)) {
+      return(list(status = "empty", message = "", byte_hash = NA_character_))
+    }
+    payload_json <- .try_or(
+      jsonlite::toJSON(payload, auto_unbox = TRUE, null = "null"),
+      NA_character_
+    )
+    if (!is.character(payload_json) || length(payload_json) == 0L || is.na(payload_json[[1]])) {
+      return(list(status = "error", message = "serialization_failed", byte_hash = NA_character_))
+    }
+    payload_text <- paste(payload_json, collapse = "")
+    if (!nzchar(payload_text)) {
+      return(list(status = "empty", message = "", byte_hash = NA_character_))
+    }
+    list(status = "written", message = "", byte_hash = hash_text(payload_text))
+  }
+
+  list(
+    message = text_entry(response$message),
+    trace = text_entry(response$trace),
+    trace_json = text_entry(response$trace_json),
+    final_payload = payload_entry(response$final_payload)
+  )
 }
 
 #' Build a Task Prompt from Template
@@ -791,6 +856,8 @@ build_prompt <- function(template, ...) {
 #' @param finalize_on_all_fields_resolved Optional logical; if TRUE, finalize
 #'   immediately when all schema fields are resolved. Passed through to
 #'   \code{\link{run_task}}.
+#' @param orchestration_options Optional named list/dict of generic orchestration
+#'   options passed through to \code{\link{run_task}}.
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
@@ -849,6 +916,7 @@ run_task_batch <- function(prompts,
                            search_budget_limit = NULL,
                            unknown_after_searches = NULL,
                            finalize_on_all_fields_resolved = NULL,
+                           orchestration_options = NULL,
                            allow_read_webpages = NULL,
                            webpage_relevance_mode = NULL,
                            webpage_embedding_provider = NULL,
@@ -963,6 +1031,7 @@ run_task_batch <- function(prompts,
       search_budget_limit = search_budget_limit,
       unknown_after_searches = unknown_after_searches,
       finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+      orchestration_options = orchestration_options,
       allow_read_webpages = allow_read_webpages,
       webpage_relevance_mode = webpage_relevance_mode,
       webpage_embedding_provider = webpage_embedding_provider,

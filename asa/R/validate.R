@@ -537,6 +537,7 @@
                                source_policy = NULL,
                                retry_policy = NULL,
                                finalization_policy = NULL,
+                               orchestration_options = NULL,
                                query_templates = NULL,
                                allow_read_webpages = NULL,
                                webpage_relevance_mode = NULL,
@@ -608,6 +609,13 @@
     allow_empty_list = TRUE,
     invalid_fix = "Pass a named list or Python dict for finalization_policy, or set finalization_policy = NULL",
     empty_fix = "Pass finalization_policy = NULL or include at least one policy entry"
+  )
+  .validate_expected_schema(
+    orchestration_options,
+    param_name = "orchestration_options",
+    allow_empty_list = TRUE,
+    invalid_fix = "Pass a named list or Python dict for orchestration_options, or set orchestration_options = NULL",
+    empty_fix = "Pass orchestration_options = NULL or include at least one option"
   )
   .validate_expected_schema(
     query_templates,
@@ -710,6 +718,7 @@
                                 source_policy = NULL,
                                 retry_policy = NULL,
                                 finalization_policy = NULL,
+                                orchestration_options = NULL,
                                 query_templates = NULL,
                                 use_plan_mode = NULL) {
   .validate_string(prompt, "prompt")
@@ -727,6 +736,7 @@
   .validate_expected_schema(source_policy, param_name = "source_policy", allow_empty_list = TRUE)
   .validate_expected_schema(retry_policy, param_name = "retry_policy", allow_empty_list = TRUE)
   .validate_expected_schema(finalization_policy, param_name = "finalization_policy", allow_empty_list = TRUE)
+  .validate_expected_schema(orchestration_options, param_name = "orchestration_options", allow_empty_list = TRUE)
   .validate_expected_schema(query_templates, param_name = "query_templates", allow_empty_list = TRUE)
 
   if (!is.null(search_budget_limit)) {

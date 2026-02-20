@@ -259,6 +259,31 @@ test_that("run_task validation accepts budget and field-status controls", {
   )
 })
 
+test_that("run_task validation accepts orchestration_options", {
+  expect_silent(
+    asa:::.validate_run_task(
+      "prompt",
+      "json",
+      NULL,
+      FALSE,
+      orchestration_options = list(
+        policy_version = "2026-02-20",
+        retrieval_controller = list(enabled = TRUE, mode = "observe")
+      )
+    )
+  )
+  expect_error(
+    asa:::.validate_run_task(
+      "prompt",
+      "json",
+      NULL,
+      FALSE,
+      orchestration_options = "invalid"
+    ),
+    "orchestration_options"
+  )
+})
+
 test_that("run_task rejects non-asa_config config", {
   expect_error(
     run_task("test prompt", config = list(foo = "bar")),
@@ -417,6 +442,12 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
         canonical_available = TRUE,
         canonical_matches_message = TRUE
       ),
+      retrieval_metrics = list(dedupe_hits = 2L),
+      candidate_resolution = list(selected_candidate = "alpha"),
+      finalization_status = list(schema_valid = TRUE),
+      orchestration_options = list(retrieval_controller = list(mode = "observe")),
+      policy_version = "2026-02-20",
+      artifact_status = list(trace = list(status = "written")),
       token_stats = list(tokens_used = 12L),
       plan = list(step = "x"),
       plan_history = list(),
@@ -439,6 +470,12 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
   expect_equal(aliased$terminal_payload_hash, "abc123")
   expect_equal(aliased$terminal_payload_source, "final_payload")
   expect_true(is.list(aliased$payload_integrity))
+  expect_equal(aliased$policy_version, "2026-02-20")
+  expect_true(is.list(aliased$retrieval_metrics))
+  expect_true(is.list(aliased$candidate_resolution))
+  expect_true(is.list(aliased$finalization_status))
+  expect_true(is.list(aliased$orchestration_options))
+  expect_true(is.list(aliased$artifact_status))
   expect_equal(aliased$token_stats$tokens_used, 12L)
   expect_equal(aliased$action_ascii, "ascii")
   expect_false("raw_response" %in% names(aliased))
@@ -452,6 +489,45 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
   expect_true("raw_response" %in% names(aliased_raw))
   expect_true(is.list(aliased_raw$raw_response))
   expect_true(isTRUE(aliased_raw$raw_response$ok))
+})
+
+test_that(".build_result_artifact_status returns deterministic status map", {
+  response <- list(
+    message = "{\"ok\":true}",
+    trace = "trace text",
+    trace_json = "{\"trace\":1}",
+    final_payload = list(ok = TRUE)
+  )
+  status <- asa:::.build_result_artifact_status(response)
+  expect_true(is.list(status))
+  expect_equal(status$message$status, "written")
+  expect_equal(status$trace$status, "written")
+  expect_equal(status$trace_json$status, "written")
+  expect_equal(status$final_payload$status, "written")
+  expect_true(is.character(status$final_payload$byte_hash))
+  expect_equal(nchar(status$final_payload$byte_hash), 64L)
+})
+
+test_that(".build_payload_integrity reports byte-vs-semantic mismatch classes", {
+  integrity <- asa:::.build_payload_integrity(
+    released_text = "{\"b\":2,\"a\":1}",
+    released_from = "message_text",
+    final_payload_info = list(
+      available = TRUE,
+      payload_json = "{\"a\":1,\"b\":2}",
+      terminal_payload_hash = "x"
+    ),
+    trace = "",
+    trace_json = "",
+    json_repair = list(),
+    message_sanitized = FALSE
+  )
+
+  expect_true(is.list(integrity))
+  expect_false(isTRUE(integrity$canonical_matches_message))
+  expect_false(isTRUE(integrity$byte_hash_matches))
+  expect_true(isTRUE(integrity$semantic_hash_matches))
+  expect_equal(integrity$hash_mismatch_type, "byte_only")
 })
 
 test_that("run_task_batch data frame output preserves metadata and unions parsed fields", {

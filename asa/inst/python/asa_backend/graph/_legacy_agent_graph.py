@@ -1174,6 +1174,147 @@ _DEFAULT_QUERY_TEMPLATES: Dict[str, str] = {
     "disambiguation_query": "{entity} {field} biography profile",
 }
 
+_DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
+    "policy_version": "2026-02-20",
+    "candidate_resolver": {
+        "enabled": True,
+        "mode": "observe",
+        "candidate_autoselect_min_conf": 0.75,
+        "candidate_min_margin": 0.10,
+        "id_match_min": 0.20,
+        "top_k": 5,
+    },
+    "retrieval_controller": {
+        "enabled": True,
+        "mode": "observe",
+        "dedupe_queries": True,
+        "dedupe_urls": True,
+        "early_stop_min_gain": 0.10,
+        "early_stop_patience_steps": 2,
+        "max_repeat_offtopic": 8,
+    },
+    "field_resolver": {
+        "enabled": True,
+        "mode": "observe",
+    },
+    "finalizer": {
+        "enabled": True,
+        "mode": "observe",
+        "strict_schema_finalize": True,
+    },
+    "artifacts": {
+        "enabled": True,
+        "mode": "observe",
+        "always_emit_artifacts": True,
+    },
+    "source_tier_provider": {
+        "strategy": "heuristic",
+        "domain_tiers": {},
+    },
+}
+
+
+def _normalize_component_mode(raw_mode: Any) -> str:
+    token = str(raw_mode or "").strip().lower()
+    if token in {"observe", "enforce"}:
+        return token
+    return "observe"
+
+
+def _normalize_source_tier_provider(raw_provider: Any) -> Dict[str, Any]:
+    provider = dict(_DEFAULT_ORCHESTRATION_OPTIONS["source_tier_provider"])
+    if isinstance(raw_provider, dict):
+        provider.update(raw_provider)
+    strategy = str(provider.get("strategy") or "heuristic").strip().lower()
+    if strategy not in {"heuristic", "mapping"}:
+        strategy = "heuristic"
+    domain_tiers: Dict[str, str] = {}
+    raw_domain_tiers = provider.get("domain_tiers")
+    if isinstance(raw_domain_tiers, dict):
+        for raw_key, raw_value in raw_domain_tiers.items():
+            key = str(raw_key or "").strip().lower()
+            value = str(raw_value or "").strip().lower()
+            if not key:
+                continue
+            if value not in {"primary", "secondary", "tertiary", "unknown"}:
+                continue
+            domain_tiers[key] = value
+    provider["strategy"] = strategy
+    provider["domain_tiers"] = domain_tiers
+    return provider
+
+
+def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
+    options = copy.deepcopy(_DEFAULT_ORCHESTRATION_OPTIONS)
+    if isinstance(raw_options, dict):
+        for key in (
+            "candidate_resolver",
+            "retrieval_controller",
+            "field_resolver",
+            "finalizer",
+            "artifacts",
+        ):
+            if isinstance(raw_options.get(key), dict):
+                options[key].update(raw_options[key])
+        if "policy_version" in raw_options:
+            options["policy_version"] = str(raw_options.get("policy_version") or "").strip() or options["policy_version"]
+        options["source_tier_provider"] = _normalize_source_tier_provider(raw_options.get("source_tier_provider"))
+    else:
+        options["source_tier_provider"] = _normalize_source_tier_provider(options.get("source_tier_provider"))
+
+    for key in ("candidate_resolver", "retrieval_controller", "field_resolver", "finalizer", "artifacts"):
+        component = options.get(key)
+        if not isinstance(component, dict):
+            component = {}
+        component["enabled"] = bool(component.get("enabled", True))
+        component["mode"] = _normalize_component_mode(component.get("mode"))
+        options[key] = component
+
+    cr = options["candidate_resolver"]
+    cr["candidate_autoselect_min_conf"] = _clamp01(cr.get("candidate_autoselect_min_conf"), default=0.75)
+    cr["candidate_min_margin"] = _clamp01(cr.get("candidate_min_margin"), default=0.10)
+    cr["id_match_min"] = _clamp01(cr.get("id_match_min"), default=0.20)
+    try:
+        cr["top_k"] = max(1, int(cr.get("top_k", 5)))
+    except Exception:
+        cr["top_k"] = 5
+
+    rc = options["retrieval_controller"]
+    rc["dedupe_queries"] = bool(rc.get("dedupe_queries", True))
+    rc["dedupe_urls"] = bool(rc.get("dedupe_urls", True))
+    rc["early_stop_min_gain"] = _clamp01(rc.get("early_stop_min_gain"), default=0.10)
+    try:
+        rc["early_stop_patience_steps"] = max(1, int(rc.get("early_stop_patience_steps", 2)))
+    except Exception:
+        rc["early_stop_patience_steps"] = 2
+    try:
+        rc["max_repeat_offtopic"] = max(1, int(rc.get("max_repeat_offtopic", 8)))
+    except Exception:
+        rc["max_repeat_offtopic"] = 8
+
+    options["source_tier_provider"] = _normalize_source_tier_provider(options.get("source_tier_provider"))
+    return options
+
+
+def _state_orchestration_options(state: Any) -> Dict[str, Any]:
+    return _normalize_orchestration_options(state.get("orchestration_options"))
+
+
+def _orchestration_component_enabled(state: Any, component_name: str) -> bool:
+    options = _state_orchestration_options(state)
+    component = options.get(component_name) if isinstance(options, dict) else None
+    if not isinstance(component, dict):
+        return True
+    return bool(component.get("enabled", True))
+
+
+def _orchestration_component_mode(state: Any, component_name: str) -> str:
+    options = _state_orchestration_options(state)
+    component = options.get(component_name) if isinstance(options, dict) else None
+    if not isinstance(component, dict):
+        return "observe"
+    return _normalize_component_mode(component.get("mode"))
+
 
 def _normalize_host_fragment_list(raw: Any, *, max_items: int = 64) -> List[str]:
     out: List[str] = []
@@ -1563,7 +1704,11 @@ def _source_policy_score_candidate(candidate: Dict[str, Any], source_policy: Dic
     )
     authority_score = float(_source_policy_authority_score(candidate.get("source_url"), source_policy))
     detail_score = float(_source_policy_detail_page_score(candidate.get("source_url"), source_policy))
-    score = (0.78 * base_score) + (0.14 * authority_score) + (0.08 * detail_score)
+    tier_rank = _source_tier_rank(
+        candidate.get("source_tier") or _get_source_tier(candidate.get("source_url"))
+    )
+    tier_score = float(tier_rank) / 3.0
+    score = (0.74 * base_score) + (0.14 * authority_score) + (0.08 * detail_score) + (0.04 * tier_score)
     return _clamp01(score, default=0.0)
 
 
@@ -2239,6 +2384,48 @@ def _source_host(url: Any) -> str:
         return ""
 
 
+def _source_tier_rank(tier_label: Any) -> int:
+    tier = str(tier_label or "").strip().lower()
+    if tier == "primary":
+        return 3
+    if tier == "secondary":
+        return 2
+    if tier == "tertiary":
+        return 1
+    return 0
+
+
+def _get_source_tier(
+    source_url: Any,
+    source_metadata: Any = None,
+    provider: Any = None,
+) -> str:
+    """Resolve source reliability tier via generic provider settings."""
+    host = _source_host(source_url)
+    if not host:
+        return "unknown"
+
+    normalized_provider = _normalize_source_tier_provider(provider)
+    domain_tiers = normalized_provider.get("domain_tiers") or {}
+    if isinstance(domain_tiers, dict):
+        # Exact + suffix mapping.
+        if host in domain_tiers:
+            return str(domain_tiers[host])
+        for domain_fragment, tier_label in domain_tiers.items():
+            key = str(domain_fragment or "").strip().lower()
+            if key and key in host:
+                return str(tier_label)
+
+    # Generic heuristic fallback (task-agnostic).
+    if any(fragment in host for fragment in (".gov", ".gob", ".edu", "parliament", "assembly", "senate", "official")):
+        return "primary"
+    if any(fragment in host for fragment in ("wiki", ".org", "news", "press", "journal")):
+        return "secondary"
+    if "." in host:
+        return "tertiary"
+    return "unknown"
+
+
 def _candidate_value_key(value: Any) -> str:
     if value is None:
         return ""
@@ -2270,6 +2457,7 @@ def _normalize_evidence_ledger(ledger: Any) -> Dict[str, List[Dict[str, Any]]]:
                 "value": raw.get("value"),
                 "source_url": _normalize_url_match(raw.get("source_url")),
                 "source_host": str(raw.get("source_host") or _source_host(raw.get("source_url"))),
+                "source_tier": str(raw.get("source_tier") or _get_source_tier(raw.get("source_url"))),
                 "source_quality": _clamp01(raw.get("source_quality"), default=0.0),
                 "source_specificity": _clamp01(raw.get("source_specificity"), default=0.0),
                 "value_support": _clamp01(raw.get("value_support"), default=0.0),
@@ -2372,6 +2560,7 @@ def _build_evidence_candidate(
         "value": value,
         "source_url": normalized_source,
         "source_host": _source_host(normalized_source),
+        "source_tier": _get_source_tier(normalized_source),
         "source_quality": source_quality,
         "source_specificity": source_specificity,
         "value_support": value_support,
@@ -2532,6 +2721,7 @@ def _extract_field_status_updates(
     evidence_enabled: Any = None,
     evidence_require_second_source: Any = None,
     source_policy: Any = None,
+    source_tier_provider: Any = None,
 ) -> tuple[Dict[str, Dict[str, Any]], Dict[str, List[Dict[str, Any]]], Dict[str, Any]]:
     """Update canonical field_status based on recent tool outputs."""
     field_status = _normalize_field_status_map(existing_field_status, expected_schema)
@@ -2666,6 +2856,11 @@ def _extract_field_status_updates(
             for candidate in new_scored:
                 if not isinstance(candidate, dict):
                     continue
+                candidate["source_tier"] = _get_source_tier(
+                    candidate.get("source_url"),
+                    source_metadata=candidate,
+                    provider=source_tier_provider,
+                )
                 candidate["source_policy_score"] = _source_policy_score_candidate(
                     candidate,
                     normalized_source_policy,
@@ -4117,6 +4312,439 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
         reason_counts[reason] = max(int(reason_counts.get(reason, 0) or 0), count)
     out["field_demotion_reason_counts"] = reason_counts
     return out
+
+
+def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
+    existing = metrics if isinstance(metrics, dict) else {}
+    out: Dict[str, Any] = {}
+    int_keys = (
+        "tool_rounds",
+        "search_calls",
+        "query_dedupe_hits",
+        "url_dedupe_hits",
+        "new_sources",
+        "new_required_fields",
+        "low_novelty_streak",
+        "offtopic_counter",
+    )
+    for key in int_keys:
+        try:
+            out[key] = max(0, int(existing.get(key, 0)))
+        except Exception:
+            out[key] = 0
+    float_keys = ("global_novelty", "early_stop_min_gain")
+    for key in float_keys:
+        try:
+            out[key] = _clamp01(existing.get(key, 0.0), default=0.0)
+        except Exception:
+            out[key] = 0.0
+    out["controller_enabled"] = bool(existing.get("controller_enabled", True))
+    out["mode"] = _normalize_component_mode(existing.get("mode"))
+    out["early_stop_patience_steps"] = max(1, int(existing.get("early_stop_patience_steps", 2) or 2))
+    out["early_stop_eligible"] = bool(existing.get("early_stop_eligible", False))
+    out["early_stop_reason"] = str(existing.get("early_stop_reason") or "").strip() or None
+    out["seen_queries"] = [str(v) for v in list(existing.get("seen_queries") or [])[:512]]
+    out["seen_urls"] = [str(v) for v in list(existing.get("seen_urls") or [])[:512]]
+    per_field = existing.get("per_required_field_novelty") or {}
+    out["per_required_field_novelty"] = {}
+    if isinstance(per_field, dict):
+        for raw_key, raw_value in per_field.items():
+            key = str(raw_key or "").strip()
+            if not key:
+                continue
+            try:
+                out["per_required_field_novelty"][key] = max(0, int(raw_value))
+            except Exception:
+                out["per_required_field_novelty"][key] = 0
+    return out
+
+
+def _normalize_candidate_resolution(value: Any) -> Dict[str, Any]:
+    existing = value if isinstance(value, dict) else {}
+    out: Dict[str, Any] = {}
+    out["enabled"] = bool(existing.get("enabled", True))
+    out["mode"] = _normalize_component_mode(existing.get("mode"))
+    out["confidence"] = _clamp01(existing.get("confidence", 0.0), default=0.0)
+    out["margin_to_next"] = _clamp01(existing.get("margin_to_next", 0.0), default=0.0)
+    out["id_match_score"] = _clamp01(existing.get("id_match_score", 0.0), default=0.0)
+    out["selected_candidate"] = existing.get("selected_candidate")
+    out["unresolved_reason"] = str(existing.get("unresolved_reason") or "").strip() or None
+    ranked: List[Dict[str, Any]] = []
+    for raw in list(existing.get("ranked_candidates") or [])[:12]:
+        if not isinstance(raw, dict):
+            continue
+        row = {
+            "candidate_id": str(raw.get("candidate_id") or "").strip() or None,
+            "url": _normalize_url_match(raw.get("url")),
+            "source_host": str(raw.get("source_host") or ""),
+            "score": _clamp01(raw.get("score"), default=0.0),
+            "field_coverage": _clamp01(raw.get("field_coverage"), default=0.0),
+            "entity_match": _clamp01(raw.get("entity_match"), default=0.0),
+            "source_tier": str(raw.get("source_tier") or "unknown"),
+        }
+        ranked.append(row)
+    out["ranked_candidates"] = ranked
+    return out
+
+
+def _query_dedupe_key(query: Any) -> str:
+    normalized = _normalize_match_text(query)
+    if not normalized:
+        return ""
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def _ledger_source_urls(ledger: Any) -> set:
+    out = set()
+    normalized = _normalize_evidence_ledger(ledger)
+    for _, candidates in normalized.items():
+        for candidate in list(candidates or []):
+            if not isinstance(candidate, dict):
+                continue
+            url = _normalize_url_match(candidate.get("source_url"))
+            if url:
+                out.add(url)
+    return out
+
+
+def _required_field_keys(expected_schema: Any, field_status: Any) -> List[str]:
+    keys: List[str] = []
+    if expected_schema is not None:
+        for path, _ in _schema_leaf_paths(expected_schema):
+            if "[]" in path:
+                continue
+            key = str(path or "").replace("[]", "").strip()
+            if not key:
+                continue
+            if key not in keys:
+                keys.append(key)
+    if not keys and isinstance(field_status, dict):
+        for raw_key in field_status.keys():
+            key = str(raw_key or "").strip()
+            if key and key not in keys:
+                keys.append(key)
+    return keys
+
+
+def _found_field_keys(field_status: Any) -> set:
+    out = set()
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    for raw_key, entry in normalized.items():
+        if not isinstance(entry, dict):
+            continue
+        if str(entry.get("status") or "").lower() != _FIELD_STATUS_FOUND:
+            continue
+        value = entry.get("value")
+        if _is_empty_like(value) or _is_unknown_marker(value):
+            continue
+        out.add(str(raw_key))
+    return out
+
+
+def _round_tool_urls(tool_messages: Any) -> List[str]:
+    urls: List[str] = []
+    for payload_item in _tool_message_payloads(tool_messages):
+        for raw_url in payload_item.get("urls") or []:
+            normalized = _normalize_url_match(raw_url)
+            if not normalized or normalized in urls:
+                continue
+            urls.append(normalized)
+    return urls
+
+
+def _build_retrieval_metrics(
+    *,
+    state: Any,
+    search_queries: List[str],
+    tool_messages: Any,
+    prior_field_status: Any,
+    field_status: Any,
+    prior_evidence_ledger: Any,
+    evidence_ledger: Any,
+    diagnostics: Any,
+) -> Dict[str, Any]:
+    prior = _normalize_retrieval_metrics(state.get("retrieval_metrics"))
+    options = _state_orchestration_options(state)
+    controller = options.get("retrieval_controller", {})
+    mode = _normalize_component_mode(controller.get("mode"))
+    enabled = bool(controller.get("enabled", True))
+
+    out = dict(prior)
+    out["controller_enabled"] = enabled
+    out["mode"] = mode
+    out["tool_rounds"] = int(out.get("tool_rounds", 0)) + 1
+    out["search_calls"] = int(out.get("search_calls", 0)) + int(len(search_queries or []))
+    out["early_stop_min_gain"] = _clamp01(controller.get("early_stop_min_gain"), default=0.10)
+    out["early_stop_patience_steps"] = max(1, int(controller.get("early_stop_patience_steps", 2) or 2))
+
+    dedupe_queries = bool(controller.get("dedupe_queries", True))
+    dedupe_urls = bool(controller.get("dedupe_urls", True))
+
+    seen_queries = list(out.get("seen_queries") or [])
+    seen_query_set = set(seen_queries)
+    query_dedupe_hits = int(out.get("query_dedupe_hits", 0))
+    for query in list(search_queries or []):
+        key = _query_dedupe_key(query)
+        if not key:
+            continue
+        if dedupe_queries and key in seen_query_set:
+            query_dedupe_hits += 1
+            continue
+        if key not in seen_query_set:
+            seen_query_set.add(key)
+            seen_queries.append(key)
+    out["query_dedupe_hits"] = query_dedupe_hits
+    out["seen_queries"] = seen_queries[-512:]
+
+    seen_urls = list(out.get("seen_urls") or [])
+    seen_url_set = set(seen_urls)
+    url_dedupe_hits = int(out.get("url_dedupe_hits", 0))
+    round_urls = _round_tool_urls(tool_messages)
+    for url in round_urls:
+        if dedupe_urls and url in seen_url_set:
+            url_dedupe_hits += 1
+            continue
+        if url not in seen_url_set:
+            seen_url_set.add(url)
+            seen_urls.append(url)
+    out["url_dedupe_hits"] = url_dedupe_hits
+    out["seen_urls"] = seen_urls[-512:]
+
+    before_sources = _ledger_source_urls(prior_evidence_ledger)
+    after_sources = _ledger_source_urls(evidence_ledger)
+    new_sources_count = len(after_sources - before_sources)
+    out["new_sources"] = int(new_sources_count)
+
+    before_found = _found_field_keys(prior_field_status)
+    after_found = _found_field_keys(field_status)
+    new_found_fields = sorted(list(after_found - before_found))
+    out["new_required_fields"] = int(len(new_found_fields))
+
+    required_fields = _required_field_keys(_state_expected_schema(state), field_status)
+    unresolved_fields = [field for field in required_fields if field not in after_found]
+    per_field = dict(out.get("per_required_field_novelty") or {})
+    for field in new_found_fields:
+        per_field[field] = int(per_field.get(field, 0)) + 1
+    out["per_required_field_novelty"] = per_field
+
+    field_progress_ratio = 0.0
+    if required_fields:
+        field_progress_ratio = min(1.0, float(len(after_found)) / float(len(required_fields)))
+    source_novelty = min(1.0, float(new_sources_count) / 3.0)
+    found_novelty = min(1.0, float(len(new_found_fields)) / max(1.0, float(len(required_fields) or 3)))
+    global_novelty = _clamp01((0.55 * found_novelty) + (0.45 * source_novelty), default=0.0)
+    out["global_novelty"] = global_novelty
+
+    if global_novelty < float(out.get("early_stop_min_gain", 0.10)):
+        out["low_novelty_streak"] = int(out.get("low_novelty_streak", 0)) + 1
+    else:
+        out["low_novelty_streak"] = 0
+
+    off_target_counter = int((diagnostics or {}).get("off_target_tool_results_count", 0) or 0)
+    out["offtopic_counter"] = off_target_counter
+
+    candidate_resolution = _normalize_candidate_resolution(state.get("candidate_resolution"))
+    candidate_unresolved = bool(candidate_resolution.get("selected_candidate") is None)
+    unknown_allowed = True
+    if unresolved_fields:
+        normalized_fs = _normalize_field_status_map(field_status, expected_schema=None)
+        unknown_allowed = all(
+            str((normalized_fs.get(field) or {}).get("status") or "").lower() == _FIELD_STATUS_UNKNOWN
+            for field in unresolved_fields
+        )
+    all_required_resolved = bool(required_fields) and not unresolved_fields
+
+    patience = int(out.get("early_stop_patience_steps", 2))
+    early_stop_eligible = (
+        int(out.get("low_novelty_streak", 0)) >= patience
+        and (all_required_resolved or unknown_allowed)
+    )
+    early_stop_reason = None
+    if early_stop_eligible:
+        early_stop_reason = "low_novelty_patience"
+    if mode == "enforce" and candidate_unresolved and not bool((state.get("budget_state") or {}).get("budget_exhausted")):
+        early_stop_eligible = False
+        early_stop_reason = "candidate_unresolved"
+    max_offtopic = max(1, int(controller.get("max_repeat_offtopic", 8) or 8))
+    if mode == "enforce" and off_target_counter >= max_offtopic:
+        early_stop_eligible = True
+        early_stop_reason = "offtopic_threshold"
+
+    out["early_stop_eligible"] = bool(early_stop_eligible)
+    out["early_stop_reason"] = early_stop_reason
+    out["required_field_progress"] = round(field_progress_ratio, 4)
+    out["candidate_unresolved"] = bool(candidate_unresolved)
+    return out
+
+
+def _candidate_resolution_from_ledger(
+    *,
+    state: Any,
+    evidence_ledger: Any,
+    field_status: Any,
+) -> Dict[str, Any]:
+    options = _state_orchestration_options(state)
+    resolver = options.get("candidate_resolver", {})
+    mode = _normalize_component_mode(resolver.get("mode"))
+    enabled = bool(resolver.get("enabled", True))
+    top_k = max(1, int(resolver.get("top_k", 5) or 5))
+    source_tier_provider = options.get("source_tier_provider")
+    entity_tokens = _task_name_tokens_from_messages(state.get("messages") or [])
+    required_fields = [
+        key for key in _required_field_keys(_state_expected_schema(state), field_status)
+        if not str(key).endswith("_source")
+    ]
+    required_field_count = max(1, len(required_fields))
+
+    groups: Dict[str, Dict[str, Any]] = {}
+    normalized = _normalize_evidence_ledger(evidence_ledger)
+    for field_name, candidates in normalized.items():
+        for candidate in list(candidates or []):
+            if not isinstance(candidate, dict):
+                continue
+            source_url = _normalize_url_match(candidate.get("source_url"))
+            if not source_url:
+                continue
+            candidate_id = hashlib.sha256(source_url.encode("utf-8")).hexdigest()[:16]
+            row = groups.get(candidate_id)
+            if row is None:
+                row = {
+                    "candidate_id": candidate_id,
+                    "url": source_url,
+                    "source_host": _source_host(source_url),
+                    "fields": set(),
+                    "score_sum": 0.0,
+                    "score_count": 0,
+                    "entity_match": 0.0,
+                    "source_tier": "unknown",
+                }
+            row["fields"].add(str(field_name))
+            row["score_sum"] += float(candidate.get("score", 0.0) or 0.0)
+            row["score_count"] += 1
+            row["entity_match"] = max(row["entity_match"], _clamp01(candidate.get("entity_overlap"), default=0.0))
+            row["source_tier"] = _get_source_tier(
+                source_url,
+                source_metadata=candidate,
+                provider=source_tier_provider,
+            )
+            groups[candidate_id] = row
+
+    ranked_candidates: List[Dict[str, Any]] = []
+    for _, row in groups.items():
+        mean_score = 0.0
+        if int(row.get("score_count", 0)) > 0:
+            mean_score = float(row.get("score_sum", 0.0)) / float(row.get("score_count", 1))
+        field_coverage = min(1.0, float(len(row.get("fields") or [])) / float(required_field_count))
+        entity_match = float(row.get("entity_match", 0.0))
+        tier_rank = _source_tier_rank(row.get("source_tier"))
+        tier_score = float(tier_rank) / 3.0
+        score = _clamp01(
+            (0.45 * mean_score) + (0.25 * field_coverage) + (0.20 * entity_match) + (0.10 * tier_score),
+            default=0.0,
+        )
+        ranked_candidates.append(
+            {
+                "candidate_id": row.get("candidate_id"),
+                "url": row.get("url"),
+                "source_host": row.get("source_host"),
+                "score": round(score, 4),
+                "field_coverage": round(field_coverage, 4),
+                "entity_match": round(entity_match, 4),
+                "source_tier": row.get("source_tier", "unknown"),
+            }
+        )
+
+    ranked_candidates.sort(key=lambda c: (-float(c.get("score", 0.0)), str(c.get("candidate_id") or "")))
+    ranked_candidates = ranked_candidates[: max(1, top_k)]
+
+    top = ranked_candidates[0] if ranked_candidates else None
+    second = ranked_candidates[1] if len(ranked_candidates) > 1 else None
+    confidence = float(top.get("score", 0.0)) if isinstance(top, dict) else 0.0
+    margin = 0.0
+    if isinstance(top, dict) and isinstance(second, dict):
+        margin = float(top.get("score", 0.0)) - float(second.get("score", 0.0))
+    id_match_score = float(top.get("entity_match", 0.0)) if isinstance(top, dict) else 0.0
+    if not entity_tokens and top is not None:
+        id_match_score = 1.0
+
+    unresolved_reason = None
+    selected_candidate = None
+    if not ranked_candidates:
+        unresolved_reason = "low_signal"
+    else:
+        min_conf = _clamp01(resolver.get("candidate_autoselect_min_conf"), default=0.75)
+        min_margin = _clamp01(resolver.get("candidate_min_margin"), default=0.10)
+        id_match_min = _clamp01(resolver.get("id_match_min"), default=0.20)
+        if confidence < min_conf:
+            unresolved_reason = "low_signal"
+        elif len(ranked_candidates) > 1 and margin < min_margin:
+            unresolved_reason = "near_tie"
+        elif id_match_score < id_match_min:
+            unresolved_reason = "id_mismatch"
+        else:
+            selected_candidate = top
+
+    return {
+        "enabled": enabled,
+        "mode": mode,
+        "confidence": round(confidence, 4),
+        "margin_to_next": round(max(0.0, margin), 4),
+        "id_match_score": round(max(0.0, id_match_score), 4),
+        "selected_candidate": selected_candidate,
+        "unresolved_reason": unresolved_reason,
+        "ranked_candidates": ranked_candidates,
+    }
+
+
+def _build_finalization_status(
+    *,
+    state: Any,
+    expected_schema: Any,
+    terminal_payload: Any,
+    repair_events: Optional[List[Dict[str, Any]]] = None,
+    context: str = "agent",
+    canonicalization_version: str = "v2",
+) -> Dict[str, Any]:
+    options = _state_orchestration_options(state)
+    finalizer = options.get("finalizer", {})
+    mode = _normalize_component_mode(finalizer.get("mode"))
+    strict_schema = bool(finalizer.get("strict_schema_finalize", True))
+    repair_reasons: List[str] = []
+    for event in list(repair_events or []):
+        if not isinstance(event, dict):
+            continue
+        reason = str(event.get("repair_reason") or "").strip()
+        if reason and reason not in repair_reasons:
+            repair_reasons.append(reason)
+    if isinstance(terminal_payload, (dict, list)) and _is_nonempty_payload(terminal_payload):
+        payload_present = True
+    else:
+        payload_present = False
+    missing_keys = []
+    schema_valid = bool(payload_present)
+    type_compatible = True
+    if payload_present and expected_schema is not None:
+        try:
+            missing_keys = list_missing_required_keys(terminal_payload, expected_schema, max_items=50)
+        except Exception:
+            missing_keys = []
+        type_compatible = _payload_schema_types_compatible(terminal_payload, expected_schema)
+        schema_valid = bool((not missing_keys) and type_compatible)
+    return {
+        "enabled": bool(finalizer.get("enabled", True)),
+        "mode": mode,
+        "strict_schema_finalize": strict_schema,
+        "context": str(context or "agent"),
+        "payload_present": bool(payload_present),
+        "schema_valid": bool(schema_valid),
+        "missing_keys_count": int(len(missing_keys)),
+        "missing_keys_sample": [str(k) for k in list(missing_keys or [])[:10]],
+        "type_compatible": bool(type_compatible),
+        "repair_applied": bool(len(repair_reasons) > 0),
+        "repair_reasons": repair_reasons,
+        "canonicalization_version": str(canonicalization_version),
+        "policy_version": str(options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]),
+    }
 
 
 def _format_field_status_for_prompt(field_status: Any, max_entries: int = 80) -> str:
@@ -6046,6 +6674,9 @@ class MemoryFoldingAgentState(TypedDict):
     evidence_ledger: Annotated[dict, merge_dicts]
     evidence_stats: Annotated[dict, merge_dicts]
     diagnostics: Annotated[dict, merge_dicts]
+    retrieval_metrics: Annotated[dict, merge_dicts]
+    candidate_resolution: Annotated[dict, merge_dicts]
+    finalization_status: Annotated[dict, merge_dicts]
     search_budget_limit: Optional[int]
     model_budget_limit: Optional[int]
     evidence_verify_reserve: Optional[int]
@@ -6058,6 +6689,8 @@ class MemoryFoldingAgentState(TypedDict):
     auto_openwebpage_policy: Optional[str]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
+    orchestration_options: Optional[Dict[str, Any]]
+    policy_version: Optional[str]
     candidate_facts: Optional[List[Dict[str, Any]]]
     verified_facts: Optional[List[Dict[str, Any]]]
     derived_values: Optional[Dict[str, Any]]
@@ -7061,6 +7694,8 @@ def _create_tool_node_with_scratchpad(
         diagnostics = _normalize_diagnostics(state.get("diagnostics"))
         prior_evidence_ledger = _normalize_evidence_ledger(state.get("evidence_ledger"))
         prior_evidence_stats = _normalize_evidence_stats(state.get("evidence_stats"))
+        orchestration_options = _state_orchestration_options(state)
+        source_tier_provider = orchestration_options.get("source_tier_provider")
         source_policy = _normalize_source_policy(state.get("source_policy"))
         retry_policy = _normalize_retry_policy(state.get("retry_policy"))
         finalization_policy = _normalize_finalization_policy(state.get("finalization_policy"))
@@ -7132,6 +7767,7 @@ def _create_tool_node_with_scratchpad(
             evidence_enabled=state.get("evidence_pipeline_enabled"),
             evidence_require_second_source=state.get("evidence_require_second_source"),
             source_policy=source_policy,
+            source_tier_provider=source_tier_provider,
         )
         field_status = _apply_configured_field_rules(field_status, state.get("field_rules"))
         budget_state = _normalize_budget_state(
@@ -7168,6 +7804,17 @@ def _create_tool_node_with_scratchpad(
         off_target_hits = sum(1 for q in quality_flags if q.get("is_off_target"))
         diagnostics["empty_tool_results_count"] = int(diagnostics.get("empty_tool_results_count", 0)) + int(empty_hits)
         diagnostics["off_target_tool_results_count"] = int(diagnostics.get("off_target_tool_results_count", 0)) + int(off_target_hits)
+
+        retrieval_metrics = _build_retrieval_metrics(
+            state=state,
+            search_queries=search_queries,
+            tool_messages=tool_messages,
+            prior_field_status=_state_field_status(state),
+            field_status=field_status,
+            prior_evidence_ledger=prior_evidence_ledger,
+            evidence_ledger=evidence_ledger,
+            diagnostics=diagnostics,
+        )
 
         prior_streak = int(prior_budget.get("no_signal_streak", 0) or 0)
         no_signal_delta = int(empty_hits) + int(off_target_hits)
@@ -7218,6 +7865,16 @@ def _create_tool_node_with_scratchpad(
             or budget_state.get("model_budget_exhausted")
             or budget_state.get("low_signal_cap_exhausted")
         )
+        if (
+            _orchestration_component_enabled(state, "retrieval_controller")
+            and _orchestration_component_mode(state, "retrieval_controller") == "enforce"
+            and bool(retrieval_metrics.get("early_stop_eligible", False))
+        ):
+            budget_state["budget_exhausted"] = True
+            if not budget_state.get("limit_trigger_reason"):
+                budget_state["limit_trigger_reason"] = str(
+                    retrieval_metrics.get("early_stop_reason") or "retrieval_controller_early_stop"
+                )
         limit_reason = _budget_exhaustion_reason(budget_state)
         if limit_reason:
             budget_state["finalize_reason"] = limit_reason
@@ -7236,18 +7893,29 @@ def _create_tool_node_with_scratchpad(
             _fact_records_from_field_status(field_status),
             max_items=1200,
         )
+        candidate_resolution = _candidate_resolution_from_ledger(
+            state={**state, "orchestration_options": orchestration_options},
+            evidence_ledger=evidence_ledger,
+            field_status=field_status,
+        )
 
         if scratchpad_entries:
             result["scratchpad"] = scratchpad_entries
         result["field_status"] = field_status
         result["budget_state"] = budget_state
         result["diagnostics"] = diagnostics
+        result["retrieval_metrics"] = retrieval_metrics
+        result["candidate_resolution"] = candidate_resolution
         result["evidence_ledger"] = evidence_ledger
         result["candidate_facts"] = candidate_facts
         result["verified_facts"] = verified_facts
         result["source_policy"] = source_policy
         result["retry_policy"] = retry_policy
         result["finalization_policy"] = finalization_policy
+        result["orchestration_options"] = orchestration_options
+        result["policy_version"] = str(
+            orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+        )
         if _EVIDENCE_TELEMETRY_ENABLED:
             result["evidence_stats"] = evidence_stats
         result["completion_gate"] = _schema_outcome_gate_report(
@@ -7683,6 +8351,7 @@ def create_memory_folding_agent(
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
+        orchestration_options = _state_orchestration_options(state)
         observations = _state_observations(state)
         reflections = _state_reflections(state)
         source_policy = _state_source_policy(state)
@@ -7883,6 +8552,13 @@ def create_memory_folding_agent(
             field_status=field_status,
             budget_state=budget_state,
         )
+        finalization_status = _build_finalization_status(
+            state={**state, "orchestration_options": orchestration_options},
+            expected_schema=expected_schema,
+            terminal_payload=_terminal_payload_from_message(response, expected_schema=expected_schema),
+            repair_events=repair_events,
+            context="agent",
+        )
         finalize_reason = _finalize_reason_for_state(_state_for_gate)
         if finalize_reason:
             budget_state["finalize_reason"] = finalize_reason
@@ -7925,12 +8601,19 @@ def create_memory_folding_agent(
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
+            "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+            "finalization_status": finalization_status,
             "completion_gate": completion_gate,
             "source_policy": source_policy,
             "retry_policy": retry_policy,
             "finalization_policy": finalization_policy,
             "field_rules": field_rules,
             "query_templates": query_templates,
+            "orchestration_options": orchestration_options,
+            "policy_version": str(
+                orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+            ),
             "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
             "verified_facts": _normalize_fact_records(state.get("verified_facts")),
             "derived_values": derived_values,
@@ -7980,6 +8663,7 @@ def create_memory_folding_agent(
         summary = state.get("summary", "")
         archive = state.get("archive", [])
         scratchpad = state.get("scratchpad", [])
+        orchestration_options = _state_orchestration_options(state)
         observations = _state_observations(state)
         reflections = _state_reflections(state)
         source_policy = _state_source_policy(state)
@@ -8030,6 +8714,13 @@ def create_memory_folding_agent(
                 field_status=field_status,
                 budget_state=budget_state,
             )
+            finalization_status = _build_finalization_status(
+                state={**state, "orchestration_options": orchestration_options},
+                expected_schema=expected_schema,
+                terminal_payload=terminal_payload,
+                repair_events=None,
+                context="finalize",
+            )
             finalize_reason = trigger_reason or "terminal_valid"
             budget_state["finalize_reason"] = finalize_reason
             out = {
@@ -8037,6 +8728,9 @@ def create_memory_folding_agent(
                 "field_status": field_status,
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
+                "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+                "finalization_status": finalization_status,
                 "completion_gate": completion_gate,
                 "finalize_reason": finalize_reason,
                 "source_policy": source_policy,
@@ -8044,6 +8738,10 @@ def create_memory_folding_agent(
                 "finalization_policy": finalization_policy,
                 "field_rules": field_rules,
                 "query_templates": query_templates,
+                "orchestration_options": orchestration_options,
+                "policy_version": str(
+                    orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+                ),
                 "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
                 "verified_facts": _normalize_fact_records(state.get("verified_facts")),
                 "derived_values": state.get("derived_values") or {},
@@ -8110,6 +8808,15 @@ def create_memory_folding_agent(
                 "field_status": field_status,
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
+                "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+                "finalization_status": _build_finalization_status(
+                    state={**state, "orchestration_options": orchestration_options},
+                    expected_schema=expected_schema,
+                    terminal_payload=cached_payload,
+                    repair_events=None,
+                    context="finalize",
+                ),
                 "completion_gate": _schema_outcome_gate_report(
                     state,
                     expected_schema=expected_schema,
@@ -8122,6 +8829,10 @@ def create_memory_folding_agent(
                 "finalization_policy": finalization_policy,
                 "field_rules": field_rules,
                 "query_templates": query_templates,
+                "orchestration_options": orchestration_options,
+                "policy_version": str(
+                    orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+                ),
                 "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
                 "verified_facts": _normalize_fact_records(state.get("verified_facts")),
                 "derived_values": state.get("derived_values") or {},
@@ -8263,6 +8974,15 @@ def create_memory_folding_agent(
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
+            "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+            "finalization_status": _build_finalization_status(
+                state={**state, "orchestration_options": orchestration_options},
+                expected_schema=expected_schema,
+                terminal_payload=final_payload,
+                repair_events=repair_events,
+                context="finalize",
+            ),
             "completion_gate": completion_gate,
             "finalize_reason": finalize_reason,
             "source_policy": source_policy,
@@ -8270,6 +8990,10 @@ def create_memory_folding_agent(
             "finalization_policy": finalization_policy,
             "field_rules": field_rules,
             "query_templates": query_templates,
+            "orchestration_options": orchestration_options,
+            "policy_version": str(
+                orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+            ),
             "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
             "verified_facts": _normalize_fact_records(state.get("verified_facts")),
             "derived_values": derived_values,
@@ -9501,6 +10225,9 @@ class StandardAgentState(TypedDict):
     evidence_ledger: Annotated[dict, merge_dicts]
     evidence_stats: Annotated[dict, merge_dicts]
     diagnostics: Annotated[dict, merge_dicts]
+    retrieval_metrics: Annotated[dict, merge_dicts]
+    candidate_resolution: Annotated[dict, merge_dicts]
+    finalization_status: Annotated[dict, merge_dicts]
     search_budget_limit: Optional[int]
     model_budget_limit: Optional[int]
     evidence_verify_reserve: Optional[int]
@@ -9513,6 +10240,8 @@ class StandardAgentState(TypedDict):
     auto_openwebpage_policy: Optional[str]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
+    orchestration_options: Optional[Dict[str, Any]]
+    policy_version: Optional[str]
     candidate_facts: Optional[List[Dict[str, Any]]]
     verified_facts: Optional[List[Dict[str, Any]]]
     derived_values: Optional[Dict[str, Any]]
@@ -9588,6 +10317,7 @@ def create_standard_agent(
             }
             messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
+        orchestration_options = _state_orchestration_options(state)
         source_policy = _state_source_policy(state)
         retry_policy = _state_retry_policy(state)
         finalization_policy = _state_finalization_policy(state)
@@ -9741,6 +10471,13 @@ def create_standard_agent(
             field_status=field_status,
             budget_state=budget_state,
         )
+        finalization_status = _build_finalization_status(
+            state={**state, "orchestration_options": orchestration_options},
+            expected_schema=expected_schema,
+            terminal_payload=_terminal_payload_from_message(response, expected_schema=expected_schema),
+            repair_events=repair_events,
+            context="agent",
+        )
         finalize_reason = _finalize_reason_for_state(_state_for_gate)
         if finalize_reason:
             budget_state["finalize_reason"] = finalize_reason
@@ -9782,12 +10519,19 @@ def create_standard_agent(
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
+            "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+            "finalization_status": finalization_status,
             "completion_gate": completion_gate,
             "source_policy": source_policy,
             "retry_policy": retry_policy,
             "finalization_policy": finalization_policy,
             "field_rules": field_rules,
             "query_templates": query_templates,
+            "orchestration_options": orchestration_options,
+            "policy_version": str(
+                orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+            ),
             "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
             "verified_facts": _normalize_fact_records(state.get("verified_facts")),
             "derived_values": derived_values,
@@ -9833,6 +10577,7 @@ def create_standard_agent(
         node_started_at = time.perf_counter()
         messages = state.get("messages", [])
         scratchpad = state.get("scratchpad", [])
+        orchestration_options = _state_orchestration_options(state)
         source_policy = _state_source_policy(state)
         retry_policy = _state_retry_policy(state)
         finalization_policy = _state_finalization_policy(state)
@@ -9880,6 +10625,13 @@ def create_standard_agent(
                 field_status=field_status,
                 budget_state=budget_state,
             )
+            finalization_status = _build_finalization_status(
+                state={**state, "orchestration_options": orchestration_options},
+                expected_schema=expected_schema,
+                terminal_payload=terminal_payload,
+                repair_events=None,
+                context="finalize",
+            )
             finalize_reason = trigger_reason or "terminal_valid"
             budget_state["finalize_reason"] = finalize_reason
             out = {
@@ -9887,6 +10639,9 @@ def create_standard_agent(
                 "field_status": field_status,
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
+                "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+                "finalization_status": finalization_status,
                 "completion_gate": completion_gate,
                 "finalize_reason": finalize_reason,
                 "source_policy": source_policy,
@@ -9894,6 +10649,10 @@ def create_standard_agent(
                 "finalization_policy": finalization_policy,
                 "field_rules": field_rules,
                 "query_templates": query_templates,
+                "orchestration_options": orchestration_options,
+                "policy_version": str(
+                    orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+                ),
                 "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
                 "verified_facts": _normalize_fact_records(state.get("verified_facts")),
                 "derived_values": state.get("derived_values") or {},
@@ -9960,6 +10719,15 @@ def create_standard_agent(
                 "field_status": field_status,
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
+                "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+                "finalization_status": _build_finalization_status(
+                    state={**state, "orchestration_options": orchestration_options},
+                    expected_schema=expected_schema,
+                    terminal_payload=cached_payload,
+                    repair_events=None,
+                    context="finalize",
+                ),
                 "completion_gate": _schema_outcome_gate_report(
                     state,
                     expected_schema=expected_schema,
@@ -9972,6 +10740,10 @@ def create_standard_agent(
                 "finalization_policy": finalization_policy,
                 "field_rules": field_rules,
                 "query_templates": query_templates,
+                "orchestration_options": orchestration_options,
+                "policy_version": str(
+                    orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+                ),
                 "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
                 "verified_facts": _normalize_fact_records(state.get("verified_facts")),
                 "derived_values": state.get("derived_values") or {},
@@ -10104,6 +10876,15 @@ def create_standard_agent(
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
+            "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
+            "finalization_status": _build_finalization_status(
+                state={**state, "orchestration_options": orchestration_options},
+                expected_schema=expected_schema,
+                terminal_payload=final_payload,
+                repair_events=repair_events,
+                context="finalize",
+            ),
             "completion_gate": completion_gate,
             "finalize_reason": finalize_reason,
             "source_policy": source_policy,
@@ -10111,6 +10892,10 @@ def create_standard_agent(
             "finalization_policy": finalization_policy,
             "field_rules": field_rules,
             "query_templates": query_templates,
+            "orchestration_options": orchestration_options,
+            "policy_version": str(
+                orchestration_options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]
+            ),
             "candidate_facts": _normalize_fact_records(state.get("candidate_facts")),
             "verified_facts": _normalize_fact_records(state.get("verified_facts")),
             "derived_values": derived_values,

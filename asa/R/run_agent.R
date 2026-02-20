@@ -26,6 +26,7 @@
                        source_policy = NULL,
                        retry_policy = NULL,
                        finalization_policy = NULL,
+                       orchestration_options = NULL,
                        query_templates = NULL,
                        use_plan_mode = FALSE,
                        verbose = FALSE) {
@@ -45,6 +46,7 @@
     source_policy = source_policy,
     retry_policy = retry_policy,
     finalization_policy = finalization_policy,
+    orchestration_options = orchestration_options,
     query_templates = query_templates,
     use_plan_mode = use_plan_mode,
     verbose = verbose,
@@ -109,6 +111,7 @@
             source_policy = source_policy,
             retry_policy = retry_policy,
             finalization_policy = finalization_policy,
+            orchestration_options = orchestration_options,
             query_templates = query_templates,
             use_plan_mode = use_plan_mode,
             model_timeout_s = as.numeric(config$timeout %||% 0),
@@ -135,6 +138,7 @@
             source_policy = source_policy,
             retry_policy = retry_policy,
             finalization_policy = finalization_policy,
+            orchestration_options = orchestration_options,
             query_templates = query_templates,
             use_plan_mode = use_plan_mode,
             model_timeout_s = as.numeric(config$timeout %||% 0)
@@ -164,7 +168,7 @@
     error_fold_stats$fold_count <- paste0(
       "Error before fold count could be determined: ", raw_response$error
     )
-    return(asa_response(
+    err_resp <- asa_response(
       message = NA_character_,
       status_code = ASA_STATUS_ERROR,
       raw_response = raw_response,
@@ -183,7 +187,14 @@
       input_tokens = NA_integer_,
       output_tokens = NA_integer_,
       token_trace = list()
-    ))
+    )
+    err_resp$retrieval_metrics <- list()
+    err_resp$candidate_resolution <- list()
+    err_resp$finalization_status <- list()
+    err_resp$orchestration_options <- list()
+    err_resp$artifact_status <- list()
+    err_resp$policy_version <- NA_character_
+    return(err_resp)
   }
 
   # Extract canonical payload metadata and response text
@@ -207,6 +218,14 @@
   diagnostics_out <- .coerce_py_list(raw_response$diagnostics)
   json_repair <- .coerce_py_list(raw_response$json_repair)
   completion_gate <- .coerce_py_list(raw_response$completion_gate)
+  retrieval_metrics_out <- .coerce_py_list(raw_response$retrieval_metrics)
+  candidate_resolution_out <- .coerce_py_list(raw_response$candidate_resolution)
+  finalization_status_out <- .coerce_py_list(raw_response$finalization_status)
+  orchestration_options_out <- .coerce_py_list(raw_response$orchestration_options)
+  artifact_status_out <- .coerce_py_list(raw_response$artifact_status)
+  policy_version <- .try_or(as.character(raw_response$policy_version), character(0))
+  policy_version <- policy_version[!is.na(policy_version) & nzchar(policy_version)]
+  policy_version <- if (length(policy_version) > 0L) policy_version[[1]] else NA_character_
   payload_integrity <- .build_payload_integrity(
     released_text = response_text,
     released_from = response_release_source,
@@ -282,6 +301,12 @@
   resp$om_stats <- om_stats
   resp$observations <- observations
   resp$reflections <- reflections
+  resp$retrieval_metrics <- retrieval_metrics_out
+  resp$candidate_resolution <- candidate_resolution_out
+  resp$finalization_status <- finalization_status_out
+  resp$orchestration_options <- orchestration_options_out
+  resp$artifact_status <- artifact_status_out
+  resp$policy_version <- policy_version
   resp
 }
 
@@ -398,6 +423,57 @@
   unique(signals)
 }
 
+#' Compute SHA256 hash for a single text blob
+#' @keywords internal
+.text_sha256 <- function(text) {
+  text_chr <- .try_or(as.character(text), character(0))
+  text_chr <- text_chr[!is.na(text_chr)]
+  if (length(text_chr) == 0L || !nzchar(text_chr[[1]])) {
+    return(NA_character_)
+  }
+  digest::digest(enc2utf8(text_chr[[1]]), algo = "sha256")
+}
+
+#' Recursively normalize JSON-like R objects for stable semantic hashing
+#' @keywords internal
+.normalize_json_semantics <- function(value) {
+  if (is.list(value)) {
+    if (is.null(names(value))) {
+      return(lapply(value, .normalize_json_semantics))
+    }
+    key_names <- names(value)
+    ord <- order(key_names)
+    normalized <- lapply(value[ord], .normalize_json_semantics)
+    names(normalized) <- key_names[ord]
+    return(normalized)
+  }
+  value
+}
+
+#' Compute semantic JSON hash (key-order insensitive for objects)
+#' @keywords internal
+.semantic_json_sha256 <- function(text) {
+  text_chr <- .try_or(as.character(text), character(0))
+  text_chr <- text_chr[!is.na(text_chr)]
+  if (length(text_chr) == 0L || !nzchar(text_chr[[1]])) {
+    return(NA_character_)
+  }
+
+  parsed <- .try_or(jsonlite::fromJSON(text_chr[[1]], simplifyVector = FALSE), NULL)
+  if (is.null(parsed)) {
+    return(NA_character_)
+  }
+  normalized <- .normalize_json_semantics(parsed)
+  normalized_json <- .try_or(
+    jsonlite::toJSON(normalized, auto_unbox = TRUE, null = "null"),
+    NA_character_
+  )
+  if (!is.character(normalized_json) || length(normalized_json) == 0L || any(is.na(normalized_json))) {
+    return(NA_character_)
+  }
+  digest::digest(enc2utf8(paste(normalized_json, collapse = "")), algo = "sha256")
+}
+
 #' Build payload release integrity summary for diagnostics
 #' @keywords internal
 .build_payload_integrity <- function(released_text,
@@ -429,10 +505,59 @@
     source <- source[[1]]
   }
 
+  released_byte_hash <- .text_sha256(released_text)
+  canonical_byte_hash <- if (canonical_available) .text_sha256(canonical_text) else NA_character_
+  byte_hash_matches <- (
+    is.character(released_byte_hash) &&
+      length(released_byte_hash) == 1L &&
+      !is.na(released_byte_hash) &&
+      is.character(canonical_byte_hash) &&
+      length(canonical_byte_hash) == 1L &&
+      !is.na(canonical_byte_hash) &&
+      identical(released_byte_hash, canonical_byte_hash)
+  )
+
+  released_semantic_hash <- .semantic_json_sha256(released_text)
+  canonical_semantic_hash <- if (canonical_available) .semantic_json_sha256(canonical_text) else NA_character_
+  semantic_hash_matches <- (
+    is.character(released_semantic_hash) &&
+      length(released_semantic_hash) == 1L &&
+      !is.na(released_semantic_hash) &&
+      is.character(canonical_semantic_hash) &&
+      length(canonical_semantic_hash) == 1L &&
+      !is.na(canonical_semantic_hash) &&
+      identical(released_semantic_hash, canonical_semantic_hash)
+  )
+  hash_mismatch_type <- NA_character_
+  if (
+    canonical_available &&
+      !is.na(released_byte_hash) &&
+      !is.na(canonical_byte_hash) &&
+      !is.na(released_semantic_hash) &&
+      !is.na(canonical_semantic_hash)
+  ) {
+    if (!byte_hash_matches && semantic_hash_matches) {
+      hash_mismatch_type <- "byte_only"
+    } else if (!byte_hash_matches && !semantic_hash_matches) {
+      hash_mismatch_type <- "byte_and_semantic"
+    } else if (byte_hash_matches && !semantic_hash_matches) {
+      hash_mismatch_type <- "semantic_only"
+    } else {
+      hash_mismatch_type <- "none"
+    }
+  }
+
   list(
     released_from = source,
     canonical_available = canonical_available,
     canonical_matches_message = canonical_matches,
+    canonical_byte_hash = canonical_byte_hash,
+    released_byte_hash = released_byte_hash,
+    byte_hash_matches = isTRUE(byte_hash_matches),
+    canonical_semantic_hash = canonical_semantic_hash,
+    released_semantic_hash = released_semantic_hash,
+    semantic_hash_matches = isTRUE(semantic_hash_matches),
+    hash_mismatch_type = hash_mismatch_type,
     message_sanitized = isTRUE(message_sanitized),
     truncation_signals = .detect_payload_truncation_signals(
       released_text = released_text,
@@ -562,6 +687,7 @@
                                          source_policy = NULL,
                                          retry_policy = NULL,
                                          finalization_policy = NULL,
+                                         orchestration_options = NULL,
                                          query_templates = NULL,
                                          use_plan_mode = FALSE,
                                          om_config = NULL,
@@ -617,6 +743,9 @@
   if (!is.null(finalization_policy)) {
     initial_state$finalization_policy <- finalization_policy
   }
+  if (!is.null(orchestration_options)) {
+    initial_state$orchestration_options <- orchestration_options
+  }
   if (!is.null(query_templates)) {
     initial_state$query_templates <- query_templates
   }
@@ -670,6 +799,7 @@
                                    source_policy = NULL,
                                    retry_policy = NULL,
                                    finalization_policy = NULL,
+                                   orchestration_options = NULL,
                                    query_templates = NULL,
                                    use_plan_mode = FALSE,
                                    model_timeout_s = NULL) {
@@ -722,6 +852,9 @@
   }
   if (!is.null(finalization_policy)) {
     initial_state$finalization_policy <- finalization_policy
+  }
+  if (!is.null(orchestration_options)) {
+    initial_state$orchestration_options <- orchestration_options
   }
   if (!is.null(query_templates)) {
     initial_state$query_templates <- query_templates

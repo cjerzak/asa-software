@@ -310,6 +310,30 @@ test_that(".validate_run_task rejects empty prompts", {
   expect_error(.validate_run_task("\t", "text", NULL, FALSE), "not be empty")
 })
 
+test_that(".validate_run_task validates orchestration_options", {
+  expect_silent(
+    .validate_run_task(
+      "prompt",
+      "json",
+      NULL,
+      FALSE,
+      orchestration_options = list(
+        retrieval_controller = list(enabled = TRUE, mode = "observe")
+      )
+    )
+  )
+  expect_error(
+    .validate_run_task(
+      "prompt",
+      "json",
+      NULL,
+      FALSE,
+      orchestration_options = "invalid"
+    ),
+    "orchestration_options"
+  )
+})
+
 test_that(".validate_run_task_batch validates prompts vector", {
   expect_silent(.validate_run_task_batch(c("a", "b"), "text", NULL, FALSE, 4L, TRUE))
   expect_error(.validate_run_task_batch(c(), "text", NULL, FALSE, 4L, TRUE), "at least 1")
@@ -342,6 +366,30 @@ test_that(".validate_run_agent validates recursion_limit", {
   expect_error(.validate_run_agent("prompt", NULL, 3L, FALSE), ">= 4")
   expect_error(.validate_run_agent("prompt", NULL, 600L, FALSE), "be <= 500")
   expect_error(.validate_run_agent("prompt", NULL, -5L, FALSE), "be positive")
+})
+
+test_that(".validate_run_agent validates orchestration_options", {
+  expect_silent(
+    .validate_run_agent(
+      "prompt",
+      NULL,
+      10L,
+      FALSE,
+      orchestration_options = list(
+        candidate_resolver = list(enabled = TRUE, mode = "observe")
+      )
+    )
+  )
+  expect_error(
+    .validate_run_agent(
+      "prompt",
+      NULL,
+      10L,
+      FALSE,
+      orchestration_options = "invalid"
+    ),
+    "orchestration_options"
+  )
 })
 
 test_that(".validate_build_backend validates python_version format", {
