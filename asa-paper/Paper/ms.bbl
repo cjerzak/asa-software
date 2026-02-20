@@ -251,6 +251,58 @@
       \field{pages}{760\bibrangedash 775}
       \range{pages}{16}
     \endentry
+    \entry{paleka2025pitfalls}{misc}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=36c87c3f5de58a8a02e7d19fde28792d}{%
+           family={Paleka},
+           familyi={P\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=3203d6ccb91bc8a172e859e8d243cb76}{%
+           family={Goel},
+           familyi={G\bibinitperiod},
+           given={Shashwat},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e2a6fb7ce325e06d63c45f7a73a65438}{%
+           family={Geiping},
+           familyi={G\bibinitperiod},
+           given={Jonas},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ab482c2931db00ecd5b1e89bbe011cb5}{%
+           family={Tramèr},
+           familyi={T\bibinitperiod},
+           given={Florian},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{c3830969be2a89c430109eebf1a19257}
+      \strng{fullhash}{34bccaa1e74282b47786ff98dfcbed18}
+      \strng{bibnamehash}{c3830969be2a89c430109eebf1a19257}
+      \strng{authorbibnamehash}{c3830969be2a89c430109eebf1a19257}
+      \strng{authornamehash}{c3830969be2a89c430109eebf1a19257}
+      \strng{authorfullhash}{34bccaa1e74282b47786ff98dfcbed18}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprinttype}{arXiv}
+      \field{title}{{Pitfalls in Evaluating Language Model Forecasters}}
+      \field{year}{2025}
+      \verb{eprint}
+      \verb 2506.00723
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2506.00723
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2506.00723
+      \endverb
+    \endentry
     \entry{pemstein2020v}{misc}{}
       \name{author}{8}{}{%
         {{un=0,uniquepart=base,hash=5467088017ca3ef134c8cff485ce6b7a}{%
@@ -353,6 +405,58 @@
       \range{pages}{2}
       \verb{doi}
       \verb 10.1126/science.1213847
+      \endverb
+    \endentry
+    \entry{rasheed2026fluent}{misc}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=1c45a1ed00827d538bf5feb9ba93e089}{%
+           family={Rasheed},
+           familyi={R\bibinitperiod},
+           given={Razeen\bibnamedelima A.},
+           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=04d58bc34db6fd0b227c3aabdf038558}{%
+           family={Banerjee},
+           familyi={B\bibinitperiod},
+           given={Somnath},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4e3ea757023c9108a60ab1db12de7493}{%
+           family={Mukherjee},
+           familyi={M\bibinitperiod},
+           given={Animesh},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bc829de0c67d6aa74567c367e9d4de04}{%
+           family={Hazra},
+           familyi={H\bibinitperiod},
+           given={Rima},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{a26f28169c0b17f4d6244b9927198937}
+      \strng{fullhash}{cb7e17545cbfe13de34a56fe1a2bc187}
+      \strng{bibnamehash}{a26f28169c0b17f4d6244b9927198937}
+      \strng{authorbibnamehash}{a26f28169c0b17f4d6244b9927198937}
+      \strng{authornamehash}{a26f28169c0b17f4d6244b9927198937}
+      \strng{authorfullhash}{cb7e17545cbfe13de34a56fe1a2bc187}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprinttype}{arXiv}
+      \field{title}{{From Fluent to Verifiable: Claim-Level Auditability for Deep Research Agents}}
+      \field{year}{2026}
+      \verb{eprint}
+      \verb 2602.13855
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2602.13855
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2602.13855
       \endverb
     \endentry
     \entry{stodden2013toward}{article}{}
