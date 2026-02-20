@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 6.3501,
+  "elapsed_time": 3.0532,
   "field_status": {
     "education_level": {
       "status": "unknown",
@@ -37,7 +37,7 @@
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "grounding_blocked_source_value_mismatch",
+      "evidence": null,
       "attempts": 7,
       "descriptor": "string|Unknown"
     },
@@ -45,7 +45,7 @@
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "finalization_policy_demotion_unverified",
+      "evidence": null,
       "attempts": 7,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
@@ -94,15 +94,15 @@
       "value": 1982,
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": "scratchpad_source_backed",
-      "attempts": 2,
+      "attempts": 4,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
       "status": "found",
       "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
-      "attempts": 7,
+      "evidence": "source_consistency_fix",
+      "attempts": 4,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -131,7 +131,7 @@
     },
     "confidence": {
       "status": "found",
-      "value": "High",
+      "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 7,
@@ -139,7 +139,7 @@
     },
     "justification": {
       "status": "found",
-      "value": "Official Vice Presidency profile confirms birth date (1982) and prior role as President of the Women's Organization of Sub Central Sécure. Education and specific birth town are not listed in official or media sources, consistent with many indigenous representatives from rural territories (TIPNIS).",
+      "value": "Source-backed searches resolved 3 fields (including birth_year, birth_year_source, confidence), while 15 fields remain unknown due to limited verifiable evidence.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 7,
@@ -147,18 +147,18 @@
     }
   },
   "diagnostics": {
-    "grounding_blocks_count": 1,
-    "source_consistency_fixes_count": 3,
+    "grounding_blocks_count": 0,
+    "source_consistency_fixes_count": 1,
     "field_demotions_count": 3,
     "off_target_tool_results_count": 0,
     "empty_tool_results_count": 0,
     "retry_or_replan_events": 0,
-    "grounding_blocked_fields": "prior_occupation",
-    "source_consistency_fixes": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
-    "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source", "class_background"],
+    "webpage_llm_extraction_calls": 0,
+    "grounding_blocked_fields": [],
+    "source_consistency_fixes": "birth_year_source",
+    "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
     "field_demotion_reason_counts": {
-      "source_consistency_demotion": 3,
-      "finalization_policy_demotion_unverified": 1
+      "source_consistency_demotion": 3
     },
     "retrieval_interventions": []
   }

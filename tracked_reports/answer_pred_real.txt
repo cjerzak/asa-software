@@ -4,7 +4,7 @@
   "education_field": "Unknown",
   "education_source": null,
   "prior_occupation": "Unknown",
-  "class_background": "Working class",
+  "class_background": "Unknown",
   "prior_occupation_source": null,
   "disability_status": "Unknown",
   "disability_source": null,
@@ -15,6 +15,6 @@
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "High",
-  "justification": "Official Vice Presidency profile confirms birth date (1982) and prior role as President of the Women's Organization of Sub Central Sécure. Education and specific birth town are not listed in official or media sources, consistent with many indigenous representatives from rural territories (TIPNIS)."
+  "confidence": "Low",
+  "justification": "Source-backed searches resolved 3 fields (including birth_year, birth_year_source, confidence), while 15 fields remain unknown due to limited verifiable evidence."
 }

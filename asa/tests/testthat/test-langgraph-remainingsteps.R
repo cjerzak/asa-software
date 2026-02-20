@@ -4077,6 +4077,103 @@ test_that("finalization policy keeps allowlisted unsourced meta fields while dem
   expect_equal(tolower(as.character(out$prior_occupation_source$status)), "unknown")
 })
 
+test_that("finalization policy demotions are reflected in terminal JSON output (standard)", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  asa_test_fake_search_tool(
+    return_value = "{\"ok\":true}",
+    var_name = "unsourced_demotion_search_tool",
+    tool_name = "Search"
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _UnsourcedDemotionLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        sys_text = str(messages[0].content or '') if messages else ''\n",
+    "        if 'FINALIZE MODE' in sys_text:\n",
+    "            return AIMessage(content='{\"class_background\":\"Working class\"}')\n",
+    "        return AIMessage(\n",
+    "            content='search',\n",
+    "            tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_' + str(self.calls)}]\n",
+    "        )\n\n",
+    "unsourced_demotion_llm = _UnsourcedDemotionLLM()\n"
+  ))
+
+  expected_schema <- list(
+    class_background = "Working class|Middle class/professional|Upper/elite|Unknown"
+  )
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$unsourced_demotion_llm,
+    tools = list(reticulate::py$unsourced_demotion_search_tool)
+  )
+
+  invoke <- asa_test_invoke_json_agent(
+    agent = agent,
+    expected_schema = expected_schema,
+    prompt = "Return strict JSON with class_background.",
+    expected_schema_source = "explicit",
+    config = list(
+      recursion_limit = 8L,
+      configurable = list(thread_id = "test_unsourced_demotion_terminal_sync_standard")
+    ),
+    backend = "gemini"
+  )
+  final_state <- invoke$final_state
+  parsed <- invoke$parsed
+
+  expect_equal(as.character(parsed$class_background), "Unknown")
+
+  field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
+  expect_true(is.list(field_status))
+  expect_equal(tolower(as.character(field_status$class_background$status)), "unknown")
+  expect_equal(as.character(field_status$class_background$evidence), "finalization_policy_demotion_unverified")
+})
+
+test_that("source consistency derivations promote *_source when base field has source_url", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  field_status <- list(
+    birth_place = list(
+      status = "found",
+      value = "Santa Cruz",
+      source_url = "https://example.com/profile",
+      descriptor = "string|Unknown",
+      evidence = "scratchpad_source_backed"
+    ),
+    birth_place_source = list(
+      status = "unknown",
+      value = NULL,
+      source_url = NULL,
+      descriptor = "string|null",
+      evidence = "source_consistency_demotion"
+    )
+  )
+
+  out <- prod$`_apply_field_status_derivations`(field_status)
+
+  expect_equal(tolower(as.character(out$birth_place$status)), "found")
+  expect_equal(as.character(out$birth_place$source_url), "https://example.com/profile")
+  expect_equal(tolower(as.character(out$birth_place_source$status)), "found")
+  expect_equal(as.character(out$birth_place_source$value), "https://example.com/profile")
+  expect_equal(as.character(out$birth_place_source$source_url), "https://example.com/profile")
+  expect_equal(as.character(out$birth_place_source$evidence), "source_consistency_fix")
+})
+
 test_that("source policy scoring prefers authority detail pages over search/list pages", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",

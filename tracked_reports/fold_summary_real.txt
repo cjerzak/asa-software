@@ -1,33 +1,51 @@
 {
   "version": 1,
-  "facts": ["[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609).", "Ramona Moye Camaconi is a MAS deputy for Circunscripción 6, Beni (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)."],
+  "facts": [],
   "decisions": [],
-  "open_questions": [],
+  "open_questions": ["What is Ramona Moye Camaconi's educational background?", "What was her specific occupation prior to becoming a deputy (beyond indigenous representation)?", "What was the outcome of the Ethics Commission complaint regarding the falsified medical licenses?"],
   "sources": [
     {
-      "tool": "OpenWebpage",
+      "tool": "Search",
       "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "title": "Vicepresidencia del Estado - Ramona Moye Camaconi",
-      "note": "Official profile containing birth date and prior activities"
+      "title": "Vicepresidencia del Estado - Perfil Parlamentario",
+      "note": "Source for birth year (1982)"
     },
     {
       "tool": "Search",
-      "url": "https://eju.tv/2018/09/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas",
-      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
-      "note": "News report on ethics complaint"
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3",
+      "title": "Vicepresidencia del Estado - Bancadas",
+      "note": "Source for constituency (Circunscripción 09)"
+    },
+    {
+      "tool": "Search",
+      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados/",
+      "title": "DIPUTADA MOYE DEL MAS ES DENUNCIADA POR PRESENTAR BAJAS MÉDICAS FALSIFICADAS",
+      "note": "Details on ethics complaint"
+    },
+    {
+      "tool": "Search",
+      "url": "https://eju.tv/2019/08/conozca-a-los-diputados-mas-ausentes-diputada-oficialista-la-mas-faltona",
+      "title": "Conozca a los diputados más ausentes",
+      "note": "Details on absenteeism"
+    },
+    {
+      "tool": "Search",
+      "url": "https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html",
+      "title": "Diputada del MAS admite que en el TIPNIS se produce coca",
+      "note": "Comments on coca production"
     },
     {
       "tool": "OpenWebpage",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "title": "Vicepresidencia del Estado",
+      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados/",
+      "title": "DIPUTADA MOYE DEL MAS ES DENUNCIADA POR PRESENTAR BAJAS MÉDICAS FALSIFICADAS PARA OBTENER LICENCIA EN LA CÁMARA DE DIPUTADOS – Radio Luis de Fuentes-Tarija",
       "note": null
     },
     {
       "tool": "OpenWebpage",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3",
       "title": "Vicepresidencia del Estado",
       "note": null
     }
   ],
-  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609). Full date of birth: January 7, 1982.", "UNGROUNDED: In 2018, Moye was denounced by deputy Jimena Costa for allegedly presenting falsified medical leave documents (source: https://eju.tv/2018/09/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas)."]
+  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: Ramona Moye Camaconi served as a MAS Deputy (Uninominal) for Circunscripción 09 (Beni) during the 2015-2020 legislative period (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_gestion=1&id_pestana=3).", "UNGROUNDED: Moye is an indigenous representative and has been involved in controversies regarding the TIPNIS territory (source: https://www.facebook.com/ErbolDigital/videos/diputada-del-mas-y-representante-indígena-ramona-moye-niega-presencia-del-narcot/329029707775320).", "UNGROUNDED: In 2019, Deputy Jimena Costa (UD) denounced Moye to the Ethics Commission for allegedly falsifying medical leave documents to obtain licenses from the Chamber of Deputies (source: https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados/).", "UNGROUNDED: Moye was identified in a study as one of the deputies with the highest absentee rates (source: https://eju.tv/2019/08/conozca-a-los-diputados-mas-ausentes-diputada-oficialista-la-mas-faltona).", "UNGROUNDED: Moye initially denied the presence of drug trafficking in TIPNIS but later admitted coca is produced there for traditional consumption (source: https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html)."]
 }

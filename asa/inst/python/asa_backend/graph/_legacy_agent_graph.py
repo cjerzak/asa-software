@@ -1197,6 +1197,15 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
     "field_resolver": {
         "enabled": True,
         "mode": "observe",
+        # Optional: LLM extraction pass over OpenWebpage tool outputs to improve
+        # recall for schema fields. Keep disabled by default; enable via
+        # orchestration_options to opt in.
+        "llm_webpage_extraction": False,
+        "llm_webpage_extraction_max_pages_per_round": 1,
+        "llm_webpage_extraction_max_total_pages": 2,
+        "llm_webpage_extraction_max_chars": 6000,
+        "llm_webpage_extraction_timeout_s": 18.0,
+        "llm_webpage_extraction_max_output_tokens": 420,
     },
     "finalizer": {
         "enabled": True,
@@ -2186,7 +2195,18 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
         source_status = str(source_entry.get("status") or _FIELD_STATUS_PENDING).lower()
         source_value = _normalize_url_match(source_entry.get("value"))
         if base_is_resolved:
-            if source_status == _FIELD_STATUS_FOUND and source_value:
+            base_source_url = _normalize_url_match(base_entry.get("source_url"))
+            # If the base field is resolved and we already have a provenance URL on
+            # the base entry (e.g., from scratchpad/summary sync), promote the
+            # sibling *_source field to keep the ledger internally consistent.
+            candidate_source = source_value or base_source_url
+            if candidate_source:
+                source_entry["status"] = _FIELD_STATUS_FOUND
+                source_entry["value"] = candidate_source
+                source_entry["source_url"] = candidate_source
+                if str(source_entry.get("evidence") or "") == "source_consistency_demotion":
+                    source_entry["evidence"] = "source_consistency_fix"
+            elif source_status == _FIELD_STATUS_FOUND and source_value:
                 source_entry["value"] = source_value
                 source_entry["source_url"] = source_value
             elif source_value and source_status != _FIELD_STATUS_UNKNOWN:
@@ -2719,6 +2739,7 @@ def _extract_field_status_updates(
     existing_field_status: Any,
     expected_schema: Any,
     tool_messages: Any,
+    extra_payloads: Any = None,
     tool_calls_delta: int,
     unknown_after_searches: int,
     entity_name_tokens: Any = None,
@@ -2747,6 +2768,9 @@ def _extract_field_status_updates(
         return field_status, ledger, stats
 
     payloads = _tool_message_payloads(tool_messages)
+    for payload in list(extra_payloads or []):
+        if isinstance(payload, dict):
+            payloads.append(payload)
     # Count "search attempts" by round only when deterministic extraction
     # had structured payloads to evaluate.
     attempts_delta = 0
@@ -4158,6 +4182,7 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "off_target_tool_results_count",
         "empty_tool_results_count",
         "retry_or_replan_events",
+        "webpage_llm_extraction_calls",
     )
     out: Dict[str, Any] = {}
     for key in counters:
@@ -4258,7 +4283,8 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         evidence = str(entry.get("evidence") or "").strip().lower()
         if evidence.startswith("grounding_blocked"):
             blocked_fields.append(str(key))
-        if "source_consistency" in evidence:
+        # Only count actual fixes, not demotions.
+        if evidence.startswith("source_consistency_fix"):
             consistency_fixes.append(str(key))
         if "demotion" in evidence:
             demotion_fields.append(str(key))
@@ -4790,6 +4816,7 @@ def _format_field_status_for_prompt(field_status: Any, max_entries: int = 80) ->
     keys = sorted(normalized.keys())[: max(1, int(max_entries))]
     lines = ["FIELD STATUS (use 'found' values verbatim in your output):"]
     found_count = 0
+    unresolved = []
     for key in keys:
         entry = normalized.get(key) or {}
         status = str(entry.get("status") or _FIELD_STATUS_PENDING)
@@ -4805,8 +4832,19 @@ def _format_field_status_for_prompt(field_status: Any, max_entries: int = 80) ->
         else:
             line = f"- {key}: {status}"
         lines.append(line)
+        if (
+            str(status).lower() in {_FIELD_STATUS_PENDING, _FIELD_STATUS_UNKNOWN}
+            and not str(key).endswith("_source")
+            and str(key) not in {"confidence", "justification"}
+        ):
+            unresolved.append(str(key))
     if found_count > 0:
         lines.append(f">>> {found_count} field(s) resolved. Use these exact values; do NOT replace with Unknown.")
+    if unresolved:
+        unresolved.sort()
+        preview = unresolved[:24]
+        suffix = " ..." if len(unresolved) > len(preview) else ""
+        lines.append(f"UNRESOLVED (prioritize search): {', '.join(preview)}{suffix}")
     lines.append("---")
     return "\n".join(lines)
 
@@ -7695,6 +7733,192 @@ def _should_auto_openwebpage_followup(
     return False
 
 
+def _llm_extract_schema_payloads_from_openwebpages(
+    *,
+    selector_model: Any,
+    expected_schema: Any,
+    field_status: Any,
+    tool_messages: Any,
+    entity_tokens: Optional[List[str]] = None,
+    extracted_urls: Optional[set] = None,
+    max_pages: int = 1,
+    max_chars: int = 6000,
+    max_output_tokens: int = 420,
+    timeout_s: float = 18.0,
+    debug: bool = False,
+) -> tuple[List[Dict[str, Any]], List[str]]:
+    """Best-effort schema extraction from OpenWebpage tool outputs.
+
+    Returns extra payload items (compatible with `_tool_message_payloads`) plus the
+    list of normalized URLs extracted, so callers can track extraction budget.
+
+    NOTE: This is generic (task-agnostic) and still relies on downstream evidence
+    scoring (value_support/entity_overlap/etc.) before promotion.
+    """
+    if selector_model is None or expected_schema is None:
+        return [], []
+
+    unresolved_fields = _collect_resolvable_unknown_fields(field_status)
+    if not unresolved_fields:
+        return [], []
+
+    schema_leaf_set = {
+        str(path or "").replace("[]", "").strip()
+        for path, _ in _schema_leaf_paths(expected_schema)
+        if "[]" not in str(path or "")
+    }
+    if not schema_leaf_set:
+        return [], []
+
+    allowed_keys = set(unresolved_fields)
+    for field in unresolved_fields:
+        source_key = f"{field}_source"
+        if source_key in schema_leaf_set:
+            allowed_keys.add(source_key)
+
+    already = set()
+    for raw in (extracted_urls or set()):
+        normalized = _normalize_url_match(raw)
+        if normalized:
+            already.add(normalized)
+
+    candidates: List[Dict[str, Any]] = []
+    for msg in list(tool_messages or []):
+        if not _message_is_tool(msg):
+            continue
+        if _normalize_match_text(_tool_message_name(msg)) != "openwebpage":
+            continue
+        text = _message_content_to_text(msg)
+        if not text or not text.strip():
+            continue
+        url_hits = _extract_url_candidates(text, max_urls=3)
+        page_url = next((_normalize_url_match(u) for u in url_hits if _normalize_url_match(u)), None)
+        if not page_url or page_url in already:
+            continue
+        score = float(_score_primary_source_url(page_url))
+        ratio = 0.0
+        if entity_tokens:
+            _, ratio = _entity_overlap_for_candidate(
+                entity_tokens,
+                candidate_url=page_url,
+                candidate_text=text,
+            )
+        candidates.append(
+            {
+                "url": page_url,
+                "text": text,
+                "url_score": score,
+                "entity_ratio": float(ratio),
+            }
+        )
+
+    if not candidates:
+        return [], []
+
+    # Prefer likely primary/official pages, then entity overlap.
+    candidates.sort(
+        key=lambda c: (-float(c.get("url_score", 0.0)), -float(c.get("entity_ratio", 0.0)), str(c.get("url") or "")),
+    )
+    chosen = candidates[: max(1, int(max_pages))]
+
+    try:
+        from langchain_core.messages import HumanMessage, SystemMessage
+    except Exception:
+        return [], []
+
+    out_payloads: List[Dict[str, Any]] = []
+    extracted: List[str] = []
+
+    for item in chosen:
+        page_url = _normalize_url_match(item.get("url"))
+        page_text = str(item.get("text") or "")
+        if not page_url or not page_text.strip():
+            continue
+
+        clipped_text = page_text[: max(512, int(max_chars))]
+        request = {
+            "page_url": page_url,
+            "allowed_keys": sorted(allowed_keys),
+            "schema_keys": sorted(schema_leaf_set),
+            "page_text": clipped_text,
+        }
+        system_msg = SystemMessage(content=(
+            "Extract structured schema field values from the provided webpage text.\n"
+            "Output ONLY strict JSON (no markdown, no prose).\n\n"
+            "Rules:\n"
+            "- Only include keys from allowed_keys.\n"
+            "- Only include fields with explicit concrete values in page_text.\n"
+            "- Do NOT output placeholders like Unknown/null/none/N/A.\n"
+            "- If you output a base field and the corresponding '<field>_source' key is allowed, "
+            "set '<field>_source' to page_url.\n"
+            "- Never guess.\n"
+        ))
+        human_msg = HumanMessage(content=(
+            "Return a JSON object with the extracted fields.\n"
+            f"INPUT:\n{json.dumps(request, ensure_ascii=False)}"
+        ))
+
+        response = _invoke_selector_model_with_timeout(
+            selector_model,
+            [system_msg, human_msg],
+            max_output_tokens=max(64, int(max_output_tokens)),
+            timeout_s=timeout_s,
+        )
+        if response is None:
+            continue
+        response_text = _message_content_to_text(getattr(response, "content", ""))
+        parsed = parse_llm_json(response_text)
+        if not isinstance(parsed, dict) or not parsed:
+            continue
+
+        extracted_payload: Dict[str, Any] = {}
+        for raw_key, raw_value in parsed.items():
+            key = str(raw_key or "").strip()
+            if not key or key not in allowed_keys:
+                continue
+            if _is_empty_like(raw_value):
+                continue
+            if isinstance(raw_value, str) and _is_unknown_marker(raw_value):
+                continue
+            if key.endswith("_source"):
+                normalized = _normalize_url_match(raw_value) or page_url
+                if normalized:
+                    extracted_payload[key] = normalized
+                continue
+            extracted_payload[key] = raw_value
+
+        if not extracted_payload:
+            continue
+
+        # Fill in sibling *_source keys deterministically when allowed.
+        for key, value in list(extracted_payload.items()):
+            if key.endswith("_source"):
+                continue
+            source_key = f"{key}_source"
+            if source_key in allowed_keys and source_key not in extracted_payload:
+                extracted_payload[source_key] = page_url
+
+        if debug:
+            logger.info(
+                "Webpage schema extract: url=%s keys=%s",
+                page_url,
+                sorted(list(extracted_payload.keys()))[:16],
+            )
+
+        out_payloads.append({
+            "tool_name": "webpage_schema_extract",
+            "text": clipped_text,
+            "payload": extracted_payload,
+            "source_blocks": [],
+            "source_payloads": [extracted_payload],
+            "has_structured_payload": True,
+            "urls": [page_url],
+        })
+        extracted.append(page_url)
+
+    return out_payloads, extracted
+
+
 def _create_tool_node_with_scratchpad(
     base_tool_node,
     *,
@@ -7796,6 +8020,64 @@ def _create_tool_node_with_scratchpad(
                     if debug:
                         logger.warning("Auto OpenWebpage follow-up failed: %s", follow_exc)
 
+        extra_payloads: List[Dict[str, Any]] = []
+        webpage_extract_urls: List[str] = []
+        webpage_extract_calls = 0
+        try:
+            field_resolver_options = orchestration_options.get("field_resolver", {}) if isinstance(orchestration_options, dict) else {}
+        except Exception:
+            field_resolver_options = {}
+
+        if (
+            selector_model is not None
+            and expected_schema is not None
+            and bool(field_resolver_options.get("llm_webpage_extraction", False))
+            and _orchestration_component_enabled(state, "field_resolver")
+            and _orchestration_component_mode(state, "field_resolver") == "enforce"
+            and not _is_critical_recursion_step(state, remaining_steps_value(state))
+        ):
+            try:
+                used_total = int((prior_budget or {}).get("webpage_extractions_used", 0) or 0)
+            except Exception:
+                used_total = 0
+            try:
+                max_total = max(0, int(field_resolver_options.get("llm_webpage_extraction_max_total_pages", 2) or 2))
+            except Exception:
+                max_total = 2
+            remaining_total = max(0, int(max_total) - int(used_total))
+            if remaining_total > 0:
+                try:
+                    max_per_round = max(1, int(field_resolver_options.get("llm_webpage_extraction_max_pages_per_round", 1) or 1))
+                except Exception:
+                    max_per_round = 1
+                try:
+                    max_chars = max(512, int(field_resolver_options.get("llm_webpage_extraction_max_chars", 6000) or 6000))
+                except Exception:
+                    max_chars = 6000
+                try:
+                    max_output_tokens = max(64, int(field_resolver_options.get("llm_webpage_extraction_max_output_tokens", 420) or 420))
+                except Exception:
+                    max_output_tokens = 420
+                try:
+                    timeout_s = float(field_resolver_options.get("llm_webpage_extraction_timeout_s", 18.0) or 18.0)
+                except Exception:
+                    timeout_s = 18.0
+                already_extracted = set((prior_budget or {}).get("webpage_extracted_urls") or [])
+                extra_payloads, webpage_extract_urls = _llm_extract_schema_payloads_from_openwebpages(
+                    selector_model=selector_model,
+                    expected_schema=expected_schema,
+                    field_status=field_status,
+                    tool_messages=tool_messages,
+                    entity_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
+                    extracted_urls=already_extracted,
+                    max_pages=min(int(max_per_round), int(remaining_total)),
+                    max_chars=max_chars,
+                    max_output_tokens=max_output_tokens,
+                    timeout_s=timeout_s,
+                    debug=debug,
+                )
+                webpage_extract_calls = int(len(webpage_extract_urls))
+
         search_calls_delta = sum(
             1
             for m in tool_messages
@@ -7805,6 +8087,7 @@ def _create_tool_node_with_scratchpad(
             existing_field_status=field_status,
             expected_schema=expected_schema,
             tool_messages=tool_messages,
+            extra_payloads=extra_payloads,
             tool_calls_delta=search_calls_delta,
             unknown_after_searches=unknown_after,
             entity_name_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
@@ -7824,6 +8107,16 @@ def _create_tool_node_with_scratchpad(
             model_budget_limit=state.get("model_budget_limit"),
             evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
+        if webpage_extract_calls > 0:
+            budget_state = _record_model_call_on_budget(budget_state, call_delta=int(webpage_extract_calls))
+            budget_state["webpage_extractions_used"] = int(budget_state.get("webpage_extractions_used", 0) or 0) + int(webpage_extract_calls)
+            prior_urls = list(budget_state.get("webpage_extracted_urls") or [])
+            for raw_url in list(webpage_extract_urls or []):
+                normalized_url = _normalize_url_match(raw_url)
+                if normalized_url and normalized_url not in prior_urls:
+                    prior_urls.append(normalized_url)
+            budget_state["webpage_extracted_urls"] = prior_urls[-64:]
+            diagnostics["webpage_llm_extraction_calls"] = int(diagnostics.get("webpage_llm_extraction_calls", 0) or 0) + int(webpage_extract_calls)
         budget_state["tool_calls_used"] = int(budget_state.get("tool_calls_used", 0)) + int(search_calls_delta)
         budget_state["tool_calls_remaining"] = max(
             0,
@@ -8582,7 +8875,10 @@ def create_memory_folding_agent(
                 context="agent",
                 debug=debug,
             )
-            response, field_status, canonical_event = _sync_terminal_response_with_field_status(
+            # First sync the terminal payload into the ledger; enforce policies on
+            # the ledger; then canonicalize the terminal JSON from the ledger so
+            # emitted output matches post-policy field_status.
+            response, field_status, _ = _sync_terminal_response_with_field_status(
                 response=response,
                 field_status=field_status,
                 expected_schema=expected_schema,
@@ -8592,7 +8888,7 @@ def create_memory_folding_agent(
                 finalization_policy=finalization_policy,
                 expected_schema_source=expected_schema_source,
                 context="agent",
-                force_canonical=force_fallback,
+                force_canonical=False,
                 debug=debug,
             )
             field_status = _apply_configured_field_rules(field_status, field_rules)
@@ -8600,6 +8896,30 @@ def create_memory_folding_agent(
                 field_status = _enforce_finalization_policy_on_field_status(
                     field_status,
                     finalization_policy,
+                )
+            canonical_event = None
+            if force_fallback or _is_within_finalization_cutoff(state, remaining):
+                response, canonical_event = _apply_field_status_terminal_guard(
+                    response,
+                    expected_schema,
+                    field_status=field_status,
+                    finalization_policy=finalization_policy,
+                    schema_source=expected_schema_source,
+                    context="agent",
+                    debug=debug,
+                )
+                response, field_status, _ = _sync_terminal_response_with_field_status(
+                    response=response,
+                    field_status=field_status,
+                    expected_schema=expected_schema,
+                    messages=messages,
+                    summary=summary,
+                    archive=archive,
+                    finalization_policy=finalization_policy,
+                    expected_schema_source=expected_schema_source,
+                    context="agent",
+                    force_canonical=False,
+                    debug=debug,
                 )
             budget_state.update(_field_status_progress(field_status))
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
@@ -8763,14 +9083,19 @@ def create_memory_folding_agent(
         finalize_invocations = int(state.get("finalize_invocations", 0) or 0) + 1
         finalize_trigger_reasons = _next_finalize_trigger_reasons(state, trigger_reason)
 
-        if not _should_finalize_after_terminal(state):
+        _finalize_check_state = {
+            **state,
+            "field_status": field_status,
+            "finalization_policy": finalization_policy,
+        }
+        if not _should_finalize_after_terminal(_finalize_check_state):
             terminal_payload = _terminal_payload_from_message(
                 messages[-1],
                 expected_schema=expected_schema,
             )
             terminal_payload_hash = _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
             completion_gate = _schema_outcome_gate_report(
-                state,
+                _finalize_check_state,
                 expected_schema=expected_schema,
                 field_status=field_status,
                 budget_state=budget_state,
@@ -8846,6 +9171,21 @@ def create_memory_folding_agent(
                 cached_response = AIMessage(content=cached_text)
             except Exception:
                 cached_response = {"role": "assistant", "content": cached_text}
+            cached_response, canonical_event = _apply_field_status_terminal_guard(
+                cached_response,
+                expected_schema,
+                field_status=field_status,
+                finalization_policy=finalization_policy,
+                schema_source=expected_schema_source,
+                context="finalize",
+                debug=debug,
+            )
+            canonical_payload = _terminal_payload_from_message(
+                cached_response,
+                expected_schema=expected_schema,
+            )
+            if canonical_payload is not None:
+                cached_payload = canonical_payload
             cached_payload_hash = _terminal_payload_hash(cached_payload, mode=dedupe_mode)
             prior_terminal_hash = _terminal_payload_hash_for_state(
                 state,
@@ -8877,7 +9217,7 @@ def create_memory_folding_agent(
                     state={**state, "orchestration_options": orchestration_options},
                     expected_schema=expected_schema,
                     terminal_payload=cached_payload,
-                    repair_events=None,
+                    repair_events=[canonical_event] if canonical_event else None,
                     context="finalize",
                 ),
                 "completion_gate": _schema_outcome_gate_report(
@@ -8972,7 +9312,9 @@ def create_memory_folding_agent(
             context="finalize",
             debug=debug,
         )
-        response, field_status, canonical_event = _sync_terminal_response_with_field_status(
+        # Sync terminal payload into ledger first, apply finalization policies, then
+        # rewrite terminal JSON from the post-policy ledger to avoid mismatches.
+        response, field_status, _ = _sync_terminal_response_with_field_status(
             response=response,
             field_status=field_status,
             expected_schema=expected_schema,
@@ -8982,11 +9324,33 @@ def create_memory_folding_agent(
             finalization_policy=finalization_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
-            force_canonical=True,
+            force_canonical=False,
             debug=debug,
         )
         field_status = _apply_configured_field_rules(field_status, field_rules)
         field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
+        response, canonical_event = _apply_field_status_terminal_guard(
+            response,
+            expected_schema,
+            field_status=field_status,
+            finalization_policy=finalization_policy,
+            schema_source=expected_schema_source,
+            context="finalize",
+            debug=debug,
+        )
+        response, field_status, _ = _sync_terminal_response_with_field_status(
+            response=response,
+            field_status=field_status,
+            expected_schema=expected_schema,
+            messages=messages,
+            summary=summary,
+            archive=archive,
+            finalization_policy=finalization_policy,
+            expected_schema_source=expected_schema_source,
+            context="finalize",
+            force_canonical=False,
+            debug=debug,
+        )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
@@ -10510,7 +10874,10 @@ def create_standard_agent(
                 context="agent",
                 debug=debug,
             )
-            response, field_status, canonical_event = _sync_terminal_response_with_field_status(
+            # First sync the terminal payload into the ledger; enforce policies on
+            # the ledger; then canonicalize the terminal JSON from the ledger so
+            # emitted output matches post-policy field_status.
+            response, field_status, _ = _sync_terminal_response_with_field_status(
                 response=response,
                 field_status=field_status,
                 expected_schema=expected_schema,
@@ -10518,7 +10885,7 @@ def create_standard_agent(
                 finalization_policy=finalization_policy,
                 expected_schema_source=expected_schema_source,
                 context="agent",
-                force_canonical=force_fallback,
+                force_canonical=False,
                 debug=debug,
             )
             field_status = _apply_configured_field_rules(field_status, field_rules)
@@ -10526,6 +10893,28 @@ def create_standard_agent(
                 field_status = _enforce_finalization_policy_on_field_status(
                     field_status,
                     finalization_policy,
+                )
+            canonical_event = None
+            if force_fallback or _is_within_finalization_cutoff(state, remaining):
+                response, canonical_event = _apply_field_status_terminal_guard(
+                    response,
+                    expected_schema,
+                    field_status=field_status,
+                    finalization_policy=finalization_policy,
+                    schema_source=expected_schema_source,
+                    context="agent",
+                    debug=debug,
+                )
+                response, field_status, _ = _sync_terminal_response_with_field_status(
+                    response=response,
+                    field_status=field_status,
+                    expected_schema=expected_schema,
+                    messages=messages,
+                    finalization_policy=finalization_policy,
+                    expected_schema_source=expected_schema_source,
+                    context="agent",
+                    force_canonical=False,
+                    debug=debug,
                 )
             budget_state.update(_field_status_progress(field_status))
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
@@ -10681,14 +11070,19 @@ def create_standard_agent(
         finalize_invocations = int(state.get("finalize_invocations", 0) or 0) + 1
         finalize_trigger_reasons = _next_finalize_trigger_reasons(state, trigger_reason)
 
-        if not _should_finalize_after_terminal(state):
+        _finalize_check_state = {
+            **state,
+            "field_status": field_status,
+            "finalization_policy": finalization_policy,
+        }
+        if not _should_finalize_after_terminal(_finalize_check_state):
             terminal_payload = _terminal_payload_from_message(
                 messages[-1],
                 expected_schema=expected_schema,
             )
             terminal_payload_hash = _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
             completion_gate = _schema_outcome_gate_report(
-                state,
+                _finalize_check_state,
                 expected_schema=expected_schema,
                 field_status=field_status,
                 budget_state=budget_state,
@@ -10764,6 +11158,21 @@ def create_standard_agent(
                 cached_response = AIMessage(content=cached_text)
             except Exception:
                 cached_response = {"role": "assistant", "content": cached_text}
+            cached_response, canonical_event = _apply_field_status_terminal_guard(
+                cached_response,
+                expected_schema,
+                field_status=field_status,
+                finalization_policy=finalization_policy,
+                schema_source=expected_schema_source,
+                context="finalize",
+                debug=debug,
+            )
+            canonical_payload = _terminal_payload_from_message(
+                cached_response,
+                expected_schema=expected_schema,
+            )
+            if canonical_payload is not None:
+                cached_payload = canonical_payload
             cached_payload_hash = _terminal_payload_hash(cached_payload, mode=dedupe_mode)
             prior_terminal_hash = _terminal_payload_hash_for_state(
                 state,
@@ -10795,7 +11204,7 @@ def create_standard_agent(
                     state={**state, "orchestration_options": orchestration_options},
                     expected_schema=expected_schema,
                     terminal_payload=cached_payload,
-                    repair_events=None,
+                    repair_events=[canonical_event] if canonical_event else None,
                     context="finalize",
                 ),
                 "completion_gate": _schema_outcome_gate_report(
@@ -10886,7 +11295,9 @@ def create_standard_agent(
             context="finalize",
             debug=debug,
         )
-        response, field_status, canonical_event = _sync_terminal_response_with_field_status(
+        # Sync terminal payload into ledger first, apply finalization policies, then
+        # rewrite terminal JSON from the post-policy ledger to avoid mismatches.
+        response, field_status, _ = _sync_terminal_response_with_field_status(
             response=response,
             field_status=field_status,
             expected_schema=expected_schema,
@@ -10894,11 +11305,31 @@ def create_standard_agent(
             finalization_policy=finalization_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
-            force_canonical=True,
+            force_canonical=False,
             debug=debug,
         )
         field_status = _apply_configured_field_rules(field_status, field_rules)
         field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
+        response, canonical_event = _apply_field_status_terminal_guard(
+            response,
+            expected_schema,
+            field_status=field_status,
+            finalization_policy=finalization_policy,
+            schema_source=expected_schema_source,
+            context="finalize",
+            debug=debug,
+        )
+        response, field_status, _ = _sync_terminal_response_with_field_status(
+            response=response,
+            field_status=field_status,
+            expected_schema=expected_schema,
+            messages=messages,
+            finalization_policy=finalization_policy,
+            expected_schema_source=expected_schema_source,
+            context="finalize",
+            force_canonical=False,
+            debug=debug,
+        )
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
         _usage = _token_usage_dict_from_message(response)

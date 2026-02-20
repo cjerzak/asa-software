@@ -2,9 +2,9 @@
   "released_from": "final_payload",
   "canonical_available": true,
   "canonical_matches_message": true,
-  "canonical_hash": "78eb956c7c9df08624d6cd184b3bfa49d6db4ca22469d7472f81d93ea9a39ebb",
-  "released_hash": "be2861c102db03e6bdc50e9f04c7bc420e9a62e580bf51a552601ef75732f139",
+  "canonical_hash": "34cbe0e555b7e2e11285d69051420a11fc01a279a46047727bc3277226bd4f98",
+  "released_hash": "0602caa82992100aa08ed84011111f8575dcfdd8ce00858d09b0f444efa29294",
   "released_hash_matches_canonical": false,
   "truncation_signals": [],
-  "json_repair_reasons": "field_status_canonical"
+  "json_repair_reasons": ["residual_tool_calls_no_content", "field_status_canonical"]
 }
