@@ -1,6 +1,25 @@
 
 ---
 
+## Implementation status (applied to `asa-paper/Paper/ms.tex`)
+
+- [x] Phase 0: tighten Intro contract + reproducibility target (DONE)
+- [x] Phase 1: add formal auditability/comparability subsection (DONE)
+- [x] Phase 1: add abstention as selective measurement subsection (DONE)
+- [x] Phase 2: specify evidence hierarchy + tiered sufficiency rule (E) (DONE)
+- [x] Phase 2: make conflict policy explicit (DONE)
+- [x] Phase 2: add ordered date-recovery heuristics for \(d(s)\) (DONE)
+- [x] Phase 2: add entity disambiguation rule (DONE)
+- [x] Phase 2: add trace schema + auditor checklist (DONE)
+- [x] Phase 3: expand Data section (leader records, codebooks, linkage) (DONE)
+- [x] Phase 4: expand Related Work (measurement validity, transparency, abstention) (DONE)
+- [x] Phase 5: add threats-to-validity subsection + explicit metric formulas (DONE)
+- [x] Phase 6: add JOP-style replication package paragraph + web persistence cites (DONE)
+- [x] Phase 7: expand Limitations/Ethics (coverage bias, link rot, sensitive traits) (DONE)
+- [x] Add missing bib entries with verified metadata (DONE)
+- [ ] Quick win: add 1-page ASA specification table (TODO)
+- [ ] Quick win: add worked audit example with a real record id (TODO)
+
 ## 1) What currently reads as “incomplete” to a JOP reviewer
 
 ### A. The “formalism” is narrowly focused on temporal leakage

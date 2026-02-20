@@ -443,6 +443,7 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
         canonical_matches_message = TRUE
       ),
       retrieval_metrics = list(dedupe_hits = 2L),
+      tool_quality_events = list(list(is_off_target = TRUE)),
       candidate_resolution = list(selected_candidate = "alpha"),
       finalization_status = list(schema_valid = TRUE),
       orchestration_options = list(retrieval_controller = list(mode = "observe")),
@@ -472,6 +473,7 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
   expect_true(is.list(aliased$payload_integrity))
   expect_equal(aliased$policy_version, "2026-02-20")
   expect_true(is.list(aliased$retrieval_metrics))
+  expect_true(is.list(aliased$tool_quality_events))
   expect_true(is.list(aliased$candidate_resolution))
   expect_true(is.list(aliased$finalization_status))
   expect_true(is.list(aliased$orchestration_options))

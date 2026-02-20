@@ -189,6 +189,7 @@
       token_trace = list()
     )
     err_resp$retrieval_metrics <- list()
+    err_resp$tool_quality_events <- list()
     err_resp$candidate_resolution <- list()
     err_resp$finalization_status <- list()
     err_resp$orchestration_options <- list()
@@ -219,6 +220,7 @@
   json_repair <- .coerce_py_list(raw_response$json_repair)
   completion_gate <- .coerce_py_list(raw_response$completion_gate)
   retrieval_metrics_out <- .coerce_py_list(raw_response$retrieval_metrics)
+  tool_quality_events_out <- .coerce_py_list(raw_response$tool_quality_events)
   candidate_resolution_out <- .coerce_py_list(raw_response$candidate_resolution)
   finalization_status_out <- .coerce_py_list(raw_response$finalization_status)
   orchestration_options_out <- .coerce_py_list(raw_response$orchestration_options)
@@ -302,6 +304,7 @@
   resp$observations <- observations
   resp$reflections <- reflections
   resp$retrieval_metrics <- retrieval_metrics_out
+  resp$tool_quality_events <- tool_quality_events_out
   resp$candidate_resolution <- candidate_resolution_out
   resp$finalization_status <- finalization_status_out
   resp$orchestration_options <- orchestration_options_out

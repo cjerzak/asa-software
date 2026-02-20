@@ -1160,6 +1160,7 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "allow_partial": True,
     "idempotent_finalize": True,
     "skip_finalize_if_terminal_valid": True,
+    "strict_source_field_contract": True,
     "terminal_dedupe_mode": "hash",
     "unsourced_allowlist_patterns": [
         "^confidence$",
@@ -1487,6 +1488,12 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
             policy.get(
                 "skip_finalize_if_terminal_valid",
                 _DEFAULT_FINALIZATION_POLICY["skip_finalize_if_terminal_valid"],
+            )
+        ),
+        "strict_source_field_contract": bool(
+            policy.get(
+                "strict_source_field_contract",
+                _DEFAULT_FINALIZATION_POLICY["strict_source_field_contract"],
             )
         ),
         "terminal_dedupe_mode": str(
@@ -3900,6 +3907,7 @@ def _sync_terminal_response_with_field_status(
     *,
     summary: Any = None,
     archive: Any = None,
+    finalization_policy: Any = None,
     expected_schema_source: Optional[str] = None,
     context: str = "",
     force_canonical: bool = False,
@@ -3932,6 +3940,7 @@ def _sync_terminal_response_with_field_status(
             response,
             expected_schema,
             field_status=field_status,
+            finalization_policy=finalization_policy,
             schema_source=expected_schema_source,
             context=context,
             debug=debug,
@@ -4356,6 +4365,31 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
                 out["per_required_field_novelty"][key] = max(0, int(raw_value))
             except Exception:
                 out["per_required_field_novelty"][key] = 0
+    return out
+
+
+def _normalize_tool_quality_events(events: Any) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    if not isinstance(events, list):
+        return out
+    for raw in events:
+        if not isinstance(raw, dict):
+            continue
+        tool_name = _normalize_match_text(raw.get("tool_name"))
+        if not tool_name:
+            tool_name = "unknown"
+        try:
+            message_index = int(raw.get("message_index_in_round", len(out) + 1))
+        except Exception:
+            message_index = len(out) + 1
+        message_index = max(1, message_index)
+        out.append({
+            "message_index_in_round": int(message_index),
+            "tool_name": tool_name,
+            "is_empty": bool(raw.get("is_empty", False)),
+            "is_off_target": bool(raw.get("is_off_target", False)),
+            "quality_version": str(raw.get("quality_version") or "v1"),
+        })
     return out
 
 
@@ -5117,10 +5151,16 @@ def _merge_canonical_payload_with_model_arrays(
     return canonical_payload
 
 
-def _canonical_payload_from_field_status(expected_schema: Any, field_status: Any) -> Optional[Any]:
+def _canonical_payload_from_field_status(
+    expected_schema: Any,
+    field_status: Any,
+    finalization_policy: Any = None,
+) -> Optional[Any]:
     """Build terminal payload from canonical field_status only (no model guesses)."""
     if expected_schema is None:
         return None
+    policy = _normalize_finalization_policy(finalization_policy)
+    strict_source_field_contract = bool(policy.get("strict_source_field_contract", True))
     normalized = _normalize_field_status_map(field_status, expected_schema)
     normalized = _apply_field_status_derivations(normalized)
     if not normalized:
@@ -5185,7 +5225,7 @@ def _canonical_payload_from_field_status(expected_schema: Any, field_status: Any
                 if src_status == _FIELD_STATUS_FOUND and isinstance(src_value, str) and src_value.startswith("http"):
                     source_url = src_value
 
-            if source_url is None and isinstance(base_entry, dict):
+            if source_url is None and (not strict_source_field_contract) and isinstance(base_entry, dict):
                 base_source = base_entry.get("source_url")
                 if isinstance(base_source, str) and base_source.startswith("http"):
                     source_url = base_source
@@ -5219,6 +5259,7 @@ def _apply_field_status_terminal_guard(
     expected_schema: Any,
     *,
     field_status: Any = None,
+    finalization_policy: Any = None,
     schema_source: Optional[str] = None,
     context: str = "",
     debug: bool = False,
@@ -5229,7 +5270,11 @@ def _apply_field_status_terminal_guard(
     if _extract_response_tool_calls(response):
         return response, None
 
-    payload = _canonical_payload_from_field_status(expected_schema, field_status)
+    payload = _canonical_payload_from_field_status(
+        expected_schema,
+        field_status,
+        finalization_policy=finalization_policy,
+    )
     if payload is None:
         # Canonical payload not built (e.g. no resolved fields), but still
         # apply derivations (justification, confidence) to model's raw output.
@@ -6674,6 +6719,7 @@ class MemoryFoldingAgentState(TypedDict):
     evidence_ledger: Annotated[dict, merge_dicts]
     evidence_stats: Annotated[dict, merge_dicts]
     diagnostics: Annotated[dict, merge_dicts]
+    tool_quality_events: Annotated[list, add_to_list]
     retrieval_metrics: Annotated[dict, merge_dicts]
     candidate_resolution: Annotated[dict, merge_dicts]
     finalization_status: Annotated[dict, merge_dicts]
@@ -7373,6 +7419,7 @@ def _should_finalize_after_terminal(state: Any) -> bool:
     canonical_payload = _canonical_payload_from_field_status(
         expected_schema,
         _state_field_status(state),
+        finalization_policy=policy,
     )
     if not isinstance(canonical_payload, (dict, list)) or not _is_nonempty_payload(canonical_payload):
         return False
@@ -7799,9 +7846,20 @@ def _create_tool_node_with_scratchpad(
         if budget_state["tool_budget_exhausted"] and not budget_state.get("limit_trigger_reason"):
             budget_state["limit_trigger_reason"] = "tool_budget"
 
-        quality_flags = [_classify_tool_message_quality(m) for m in tool_messages if _message_is_tool(m)]
-        empty_hits = sum(1 for q in quality_flags if q.get("is_empty"))
-        off_target_hits = sum(1 for q in quality_flags if q.get("is_off_target"))
+        tool_quality_events = []
+        for idx, msg in enumerate(tool_messages, start=1):
+            if not _message_is_tool(msg):
+                continue
+            quality = _classify_tool_message_quality(msg)
+            tool_quality_events.append({
+                "message_index_in_round": int(idx),
+                "tool_name": _normalize_match_text(_tool_message_name(msg)) or "unknown",
+                "is_empty": bool(quality.get("is_empty", False)),
+                "is_off_target": bool(quality.get("is_off_target", False)),
+                "quality_version": "v1",
+            })
+        empty_hits = sum(1 for q in tool_quality_events if q.get("is_empty"))
+        off_target_hits = sum(1 for q in tool_quality_events if q.get("is_off_target"))
         diagnostics["empty_tool_results_count"] = int(diagnostics.get("empty_tool_results_count", 0)) + int(empty_hits)
         diagnostics["off_target_tool_results_count"] = int(diagnostics.get("off_target_tool_results_count", 0)) + int(off_target_hits)
 
@@ -7904,6 +7962,7 @@ def _create_tool_node_with_scratchpad(
         result["field_status"] = field_status
         result["budget_state"] = budget_state
         result["diagnostics"] = diagnostics
+        result["tool_quality_events"] = _normalize_tool_quality_events(tool_quality_events)
         result["retrieval_metrics"] = retrieval_metrics
         result["candidate_resolution"] = candidate_resolution
         result["evidence_ledger"] = evidence_ledger
@@ -8530,6 +8589,7 @@ def create_memory_folding_agent(
                 messages=messages,
                 summary=summary,
                 archive=archive,
+                finalization_policy=finalization_policy,
                 expected_schema_source=expected_schema_source,
                 context="agent",
                 force_canonical=force_fallback,
@@ -8602,6 +8662,7 @@ def create_memory_folding_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
             "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
             "finalization_status": finalization_status,
             "completion_gate": completion_gate,
@@ -8729,6 +8790,7 @@ def create_memory_folding_agent(
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
                 "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
                 "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
                 "finalization_status": finalization_status,
                 "completion_gate": completion_gate,
@@ -8809,6 +8871,7 @@ def create_memory_folding_agent(
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
                 "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
                 "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
                 "finalization_status": _build_finalization_status(
                     state={**state, "orchestration_options": orchestration_options},
@@ -8916,6 +8979,7 @@ def create_memory_folding_agent(
             messages=messages,
             summary=summary,
             archive=archive,
+            finalization_policy=finalization_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
             force_canonical=True,
@@ -8975,6 +9039,7 @@ def create_memory_folding_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
             "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
             "finalization_status": _build_finalization_status(
                 state={**state, "orchestration_options": orchestration_options},
@@ -10225,6 +10290,7 @@ class StandardAgentState(TypedDict):
     evidence_ledger: Annotated[dict, merge_dicts]
     evidence_stats: Annotated[dict, merge_dicts]
     diagnostics: Annotated[dict, merge_dicts]
+    tool_quality_events: Annotated[list, add_to_list]
     retrieval_metrics: Annotated[dict, merge_dicts]
     candidate_resolution: Annotated[dict, merge_dicts]
     finalization_status: Annotated[dict, merge_dicts]
@@ -10449,6 +10515,7 @@ def create_standard_agent(
                 field_status=field_status,
                 expected_schema=expected_schema,
                 messages=messages,
+                finalization_policy=finalization_policy,
                 expected_schema_source=expected_schema_source,
                 context="agent",
                 force_canonical=force_fallback,
@@ -10520,6 +10587,7 @@ def create_standard_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
             "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
             "finalization_status": finalization_status,
             "completion_gate": completion_gate,
@@ -10640,6 +10708,7 @@ def create_standard_agent(
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
                 "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
                 "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
                 "finalization_status": finalization_status,
                 "completion_gate": completion_gate,
@@ -10720,6 +10789,7 @@ def create_standard_agent(
                 "budget_state": budget_state,
                 "diagnostics": diagnostics,
                 "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+                "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
                 "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
                 "finalization_status": _build_finalization_status(
                     state={**state, "orchestration_options": orchestration_options},
@@ -10821,6 +10891,7 @@ def create_standard_agent(
             field_status=field_status,
             expected_schema=expected_schema,
             messages=messages,
+            finalization_policy=finalization_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
             force_canonical=True,
@@ -10877,6 +10948,7 @@ def create_standard_agent(
             "budget_state": budget_state,
             "diagnostics": diagnostics,
             "retrieval_metrics": _normalize_retrieval_metrics(state.get("retrieval_metrics")),
+            "tool_quality_events": _normalize_tool_quality_events(state.get("tool_quality_events")),
             "candidate_resolution": _normalize_candidate_resolution(state.get("candidate_resolution")),
             "finalization_status": _build_finalization_status(
                 state={**state, "orchestration_options": orchestration_options},

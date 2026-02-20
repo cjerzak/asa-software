@@ -89,6 +89,23 @@ The ASA trace store is designed to make each measurement auditable.
 At minimum, it records (a) the record identifier and task configuration (including the codebook and temporal rule), (b) each retrieval action (query strings, tool responses, extracted snippets), and (c) the final structured output with confidence.
 This enables retrospective audits (follow the citations), re-filtering (apply stricter evidence rules), and reproducible aggregate statistics from a frozen trace store.
 
+\begin{table}[htb]
+\centering
+\caption{Minimum trace store fields needed for replayable audit and recomputation.}
+\label{tab:trace-fields}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.28\linewidth}X@{}}
+\toprule
+\textbf{Object} & \textbf{Required fields (minimum)} \\
+\midrule
+Decision record \(D_i\) &
+Record identifier; emitted label or abstention; evidence tier; codebook identifier/version; temporal cut \(\tau_i\); supporting citations (URLs plus bounded excerpt text); conflict flags; software version; run timestamp. \\
+Interaction trace \(T_i\) &
+Tool-call id; tool type; query string or URL; ranked results (bounded); extracted snippet/excerpt text (bounded); source domain; recovered publication/update date (and confidence) when available; tool timestamps; extraction metadata (e.g., parse method). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{Downstream illustration: full results\label{sec:appendix-downstream}}
 
 This appendix provides the full regression output underlying the downstream illustration in Section~\ref{sec:downstream}.

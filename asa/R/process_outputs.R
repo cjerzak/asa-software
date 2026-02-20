@@ -145,6 +145,62 @@
   )
 }
 
+#' Normalize tool-quality events emitted by runtime diagnostics
+#' @keywords internal
+.normalize_tool_quality_events <- function(tool_quality_events = list()) {
+  events <- .try_or(reticulate::py_to_r(tool_quality_events), tool_quality_events)
+  if (is.null(events)) {
+    return(list())
+  }
+  if (is.data.frame(events)) {
+    events <- split(events, seq_len(nrow(events)))
+  }
+  if (!is.list(events) || length(events) == 0L) {
+    return(list())
+  }
+
+  as_bool <- function(x, default = FALSE) {
+    if (is.null(x) || length(x) == 0L) return(default)
+    val <- .try_or(as.logical(x[[1]] %||% x), NA)
+    if (is.na(val)) default else isTRUE(val)
+  }
+
+  out <- list()
+  for (event in events) {
+    event <- .try_or(reticulate::py_to_r(event), event)
+    if (!is.list(event)) next
+
+    msg_index <- .as_scalar_int(event$message_index_in_round)
+    if (is.na(msg_index) || msg_index < 1L) {
+      msg_index <- NA_integer_
+    }
+
+    tool_name <- as.character(event$tool_name %||% "unknown")
+    if (length(tool_name) == 0L || is.na(tool_name[[1]]) || !nzchar(tool_name[[1]])) {
+      tool_name <- "unknown"
+    } else {
+      tool_name <- tool_name[[1]]
+    }
+
+    quality_version <- as.character(event$quality_version %||% "v1")
+    if (length(quality_version) == 0L || is.na(quality_version[[1]]) || !nzchar(quality_version[[1]])) {
+      quality_version <- "v1"
+    } else {
+      quality_version <- quality_version[[1]]
+    }
+
+    out[[length(out) + 1L]] <- list(
+      message_index_in_round = msg_index,
+      tool_name = tool_name,
+      is_empty = as_bool(event$is_empty),
+      is_off_target = as_bool(event$is_off_target),
+      quality_version = quality_version
+    )
+  }
+
+  out
+}
+
 #' Extract message-level token usage if present
 #' @keywords internal
 .extract_message_token_usage <- function(message) {
@@ -844,6 +900,10 @@
 
     run_len <- j - i + 1L
     if (run_len == 1L) {
+      ev$collapsed_event_count <- .as_scalar_int(ev$collapsed_event_count)
+      if (is.na(ev$collapsed_event_count) || ev$collapsed_event_count < 1L) {
+        ev$collapsed_event_count <- 1L
+      }
       collapsed[[length(collapsed) + 1L]] <- ev
       i <- i + 1L
       next
@@ -872,7 +932,8 @@
       actor = ev_actor,
       summary = sprintf("Returned %d results", run_len),
       preview = .clip_action_text(preview_text, max_chars = max_preview_chars),
-      elapsed_minutes = best_minutes
+      elapsed_minutes = best_minutes,
+      collapsed_event_count = run_len
     )
     i <- j + 1L
   }
@@ -882,7 +943,8 @@
 
 #' Attach anomaly flags to action steps
 #' @keywords internal
-.attach_step_anomaly_flags <- function(steps, field_status = list(), field_metrics = NULL) {
+.attach_step_anomaly_flags <- function(steps, field_status = list(), field_metrics = NULL,
+                                       tool_quality_events = list()) {
   if (!is.list(steps) || length(steps) == 0L) {
     return(steps)
   }
@@ -898,6 +960,9 @@
     }
   }
 
+  quality_events <- .normalize_tool_quality_events(tool_quality_events)
+  quality_cursor <- 1L
+
   for (i in seq_along(steps)) {
     step <- steps[[i]]
     if (!is.list(step)) next
@@ -910,11 +975,33 @@
     if (length(step_preview) == 0L || is.na(step_preview[[1]])) step_preview <- "" else step_preview <- step_preview[[1]]
 
     if (identical(step_type, "tool_result")) {
-      if (!nzchar(trimws(step_preview))) {
+      grouped_count <- .as_scalar_int(step$collapsed_event_count)
+      if (is.na(grouped_count) || grouped_count < 1L) {
+        grouped_count <- 1L
+      }
+      event_end <- min(length(quality_events), quality_cursor + grouped_count - 1L)
+      step_events <- if (quality_cursor <= event_end) {
+        quality_events[quality_cursor:event_end]
+      } else {
+        list()
+      }
+      quality_cursor <- quality_cursor + grouped_count
+
+      if (length(step_events) > 0L) {
+        if (any(vapply(step_events, function(ev) isTRUE(ev$is_empty), logical(1)))) {
+          steps[[i]]$flags <- unique(c(steps[[i]]$flags, "EMPTY_RESULT"))
+        }
+        if (any(vapply(step_events, function(ev) isTRUE(ev$is_off_target), logical(1)))) {
+          steps[[i]]$flags <- unique(c(steps[[i]]$flags, "OFF_TOPIC_RESULT"))
+        }
+      } else if (!nzchar(trimws(step_preview))) {
         steps[[i]]$flags <- unique(c(steps[[i]]$flags, "EMPTY_RESULT"))
       }
 
-      if (identical(step_actor, "Tool Search") && nzchar(step_preview) && i > 1L) {
+      if (length(step_events) == 0L &&
+          identical(step_actor, "Tool Search") &&
+          nzchar(step_preview) &&
+          i > 1L) {
         prev_ai_idx <- which(vapply(steps[seq_len(i - 1L)], function(s) {
           if (!is.list(s)) return(FALSE)
           s_type <- as.character(s$type %||% "")
@@ -957,9 +1044,23 @@
 
 #' Summarize anomaly flags across action steps
 #' @keywords internal
-.summarize_step_anomalies <- function(steps, max_chars = 88L) {
+.summarize_step_anomalies <- function(steps, diagnostics = list(), max_chars = 88L) {
   if (!is.list(steps) || length(steps) == 0L) {
     return(character(0))
+  }
+  diag_empty <- .as_scalar_int(diagnostics$empty_tool_results_count)
+  diag_off_target <- .as_scalar_int(diagnostics$off_target_tool_results_count)
+  diag_labels <- character(0)
+  if (!is.na(diag_empty)) {
+    diag_labels <- c(diag_labels, paste0("EMPTY_RESULT=", diag_empty))
+  }
+  if (!is.na(diag_off_target)) {
+    diag_labels <- c(diag_labels, paste0("OFF_TOPIC_RESULT=", diag_off_target))
+  }
+  diag_suffix <- if (length(diag_labels) > 0L) {
+    paste0("; diagnostics(", paste(diag_labels, collapse = ", "), ")")
+  } else {
+    ""
   }
 
   per_step_flags <- lapply(steps, function(step) {
@@ -970,20 +1071,33 @@
   })
   flagged_step_count <- sum(vapply(per_step_flags, function(x) length(x) > 0L, logical(1)))
   if (flagged_step_count == 0L) {
-    return(character(0))
+    if (length(diag_labels) == 0L) {
+      return(character(0))
+    }
+    return(.clip_action_text(
+      sprintf("Anomalies: %d flagged step(s)%s", flagged_step_count, diag_suffix),
+      max_chars = max_chars
+    ))
   }
 
   all_flags <- unlist(per_step_flags, use.names = FALSE)
   if (length(all_flags) == 0L) {
-    return(character(0))
+    if (length(diag_labels) == 0L) {
+      return(character(0))
+    }
+    return(.clip_action_text(
+      sprintf("Anomalies: %d flagged step(s)%s", flagged_step_count, diag_suffix),
+      max_chars = max_chars
+    ))
   }
   counts <- sort(table(all_flags), decreasing = TRUE)
   labels <- paste0(names(counts), "=", as.integer(counts))
   .clip_action_text(
     sprintf(
-      "Anomalies: %d flagged step(s) (%s)",
+      "Anomalies: %d flagged step(s) (%s)%s",
       flagged_step_count,
-      paste(labels, collapse = ", ")
+      paste(labels, collapse = ", "),
+      diag_suffix
     ),
     max_chars = max_chars
   )
@@ -991,7 +1105,8 @@
 
 #' Build high-level "what happened overall" lines for action maps
 #' @keywords internal
-.summarize_action_overall <- function(raw_steps, steps = list(), plan_summary = character(0), max_chars = 88L) {
+.summarize_action_overall <- function(raw_steps, steps = list(), plan_summary = character(0),
+                                      diagnostics = list(), max_chars = 88L) {
   if (!is.list(raw_steps) || length(raw_steps) == 0L) {
     return(c("No action events available."))
   }
@@ -1050,7 +1165,11 @@
   if (length(plan_summary) > 0L) {
     lines <- c(lines, paste0("Plan status: ", plan_summary[[1]]))
   }
-  anomaly_line <- .summarize_step_anomalies(steps, max_chars = max_chars)
+  anomaly_line <- .summarize_step_anomalies(
+    steps,
+    diagnostics = diagnostics,
+    max_chars = max_chars
+  )
   if (length(anomaly_line) > 0L && nzchar(anomaly_line[[1]])) {
     lines <- c(lines, anomaly_line[[1]])
   }
@@ -1063,6 +1182,8 @@
 .extract_action_trace <- function(trace_json = "", raw_trace = "", plan_history = list(),
                                   plan = list(),
                                   field_status = list(),
+                                  tool_quality_events = list(),
+                                  diagnostics = list(),
                                   max_preview_chars = 88L, max_steps = 200L,
                                   token_trace = list(),
                                   wall_time_minutes = NA_real_) {
@@ -1125,7 +1246,8 @@
     .attach_step_anomaly_flags(
       steps,
       field_status = field_status,
-      field_metrics = field_metrics
+      field_metrics = field_metrics,
+      tool_quality_events = tool_quality_events
     ),
     error = function(e) {
       warning("[action_trace:flags] ", conditionMessage(e), call. = FALSE)
@@ -1158,6 +1280,7 @@
       raw_steps,
       steps = steps,
       plan_summary = plan_summary,
+      diagnostics = diagnostics,
       max_chars = max_preview_chars
     ),
     error = function(e) {

@@ -261,6 +261,85 @@ test_that(".extract_action_trace annotates anomalies and investigator summary", 
   expect_true(any(grepl("Anomalies:", action$overall_summary)))
 })
 
+test_that(".extract_action_trace uses tool_quality_events for off-topic flags", {
+  trace_json <- jsonlite::toJSON(
+    list(
+      format = "asa_trace_v1",
+      messages = list(
+        list(message_type = "HumanMessage", name = NULL, content = "Find profile fields", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "", tool_calls = list(
+          list(name = "Search", args = list(query = "Alice Brown profile"))
+        )),
+        list(message_type = "ToolMessage", name = "Search", content = "Completely unrelated page about old novels.", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "", tool_calls = list(
+          list(name = "Search", args = list(query = "Alice Brown biography"))
+        )),
+        list(message_type = "ToolMessage", name = "Search", content = "Another unrelated page about restaurant menus.", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "{\"ok\":true}", tool_calls = list())
+      )
+    ),
+    auto_unbox = TRUE,
+    null = "null"
+  )
+
+  action <- asa:::.extract_action_trace(
+    trace_json = trace_json,
+    tool_quality_events = list(
+      list(message_index_in_round = 1L, tool_name = "Search", is_empty = FALSE, is_off_target = FALSE),
+      list(message_index_in_round = 1L, tool_name = "Search", is_empty = FALSE, is_off_target = TRUE)
+    ),
+    diagnostics = list(off_target_tool_results_count = 1L, empty_tool_results_count = 0L),
+    max_preview_chars = 220L
+  )
+
+  tool_steps <- which(vapply(action$steps, function(step) identical(step$type, "tool_result"), logical(1)))
+  expect_true(length(tool_steps) >= 2L)
+  first_flags <- action$steps[[tool_steps[[1]]]]$flags
+  second_flags <- action$steps[[tool_steps[[2]]]]$flags
+  if (is.null(first_flags)) first_flags <- character(0)
+  if (is.null(second_flags)) second_flags <- character(0)
+  expect_false("OFF_TOPIC_RESULT" %in% first_flags)
+  expect_true("OFF_TOPIC_RESULT" %in% second_flags)
+  expect_true(any(grepl("diagnostics\\(EMPTY_RESULT=0, OFF_TOPIC_RESULT=1\\)", action$overall_summary)))
+})
+
+test_that(".extract_action_trace maps grouped tool_quality_events onto collapsed tool results", {
+  trace_json <- jsonlite::toJSON(
+    list(
+      format = "asa_trace_v1",
+      messages = list(
+        list(message_type = "HumanMessage", name = NULL, content = "Task", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "", tool_calls = list(
+          list(name = "Search", args = list(query = "alice brown"))
+        )),
+        list(message_type = "ToolMessage", name = "Search", content = "result one", tool_calls = NULL),
+        list(message_type = "ToolMessage", name = "Search", content = "", tool_calls = NULL),
+        list(message_type = "ToolMessage", name = "Search", content = "result three", tool_calls = NULL),
+        list(message_type = "AIMessage", name = NULL, content = "{\"ok\":true}", tool_calls = list())
+      )
+    ),
+    auto_unbox = TRUE,
+    null = "null"
+  )
+
+  action <- asa:::.extract_action_trace(
+    trace_json = trace_json,
+    tool_quality_events = list(
+      list(message_index_in_round = 1L, tool_name = "Search", is_empty = FALSE, is_off_target = FALSE),
+      list(message_index_in_round = 2L, tool_name = "Search", is_empty = TRUE, is_off_target = FALSE),
+      list(message_index_in_round = 3L, tool_name = "Search", is_empty = FALSE, is_off_target = TRUE)
+    ),
+    diagnostics = list(off_target_tool_results_count = 1L, empty_tool_results_count = 1L)
+  )
+
+  tool_steps <- which(vapply(action$steps, function(step) identical(step$type, "tool_result"), logical(1)))
+  expect_true(length(tool_steps) >= 1L)
+  flags <- action$steps[[tool_steps[[1]]]]$flags
+  if (is.null(flags)) flags <- character(0)
+  expect_true("EMPTY_RESULT" %in% flags)
+  expect_true("OFF_TOPIC_RESULT" %in% flags)
+})
+
 test_that(".extract_action_trace maps token_trace entries onto visible AI steps", {
   trace_json <- jsonlite::toJSON(
     list(

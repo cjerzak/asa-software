@@ -437,6 +437,22 @@ run_task <- function(prompt,
       NA_real_
     }
   )
+  at_tool_quality_events <- tryCatch(
+    response$tool_quality_events %||% list(),
+    error = function(e) {
+      warning("[action_trace:arg] tool_quality_events access failed: ",
+              conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
+  at_diagnostics <- tryCatch(
+    response$diagnostics %||% list(),
+    error = function(e) {
+      warning("[action_trace:arg] diagnostics access failed: ",
+              conditionMessage(e), call. = FALSE)
+      list()
+    }
+  )
   action_trace <- tryCatch(
     .extract_action_trace(
       trace_json = at_trace_json,
@@ -444,6 +460,8 @@ run_task <- function(prompt,
       plan_history = at_plan_history,
       plan = at_plan,
       field_status = at_field_status,
+      tool_quality_events = at_tool_quality_events,
+      diagnostics = at_diagnostics,
       token_trace = at_token_trace,
       wall_time_minutes = at_wall_time
     ),
@@ -487,6 +505,7 @@ run_task <- function(prompt,
     field_status = response$field_status %||% list(),
     diagnostics = response$diagnostics %||% list(),
     retrieval_metrics = response$retrieval_metrics %||% list(),
+    tool_quality_events = response$tool_quality_events %||% list(),
     candidate_resolution = response$candidate_resolution %||% list(),
     finalization_status = response$finalization_status %||% list(),
     orchestration_options = response$orchestration_options %||% list(),
@@ -579,6 +598,7 @@ run_task <- function(prompt,
     token_stats = list(),
     diagnostics = list(),
     retrieval_metrics = list(),
+    tool_quality_events = list(),
     candidate_resolution = list(),
     finalization_status = list(),
     orchestration_options = list(),

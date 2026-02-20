@@ -66,7 +66,7 @@ urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
 \input{./../Figures/LLM_pol_party_Statistics.tex}
 
 \title{An Auditable Search Agent Methodology at Scale for Political Elite Research}
-\author{Final author list TBD}
+\author{Connor T. Jerzak \& Team (Final author list TBD)}
 \date{}
 
 \begin{document}
@@ -80,8 +80,12 @@ For each \(\langle\)person, country, year\(\rangle\) record, ASA runs a short se
 In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} leader--records; \LLMNumClassespolparty{} labels), ASA attains \LLMOverallAccHighpolparty{} accuracy on high-evidence cases while increasing usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% through conservative augmentation.
 \end{abstract}
 \vspace{0.4em}
-\noindent\textbf{Keywords:} political elites; measurement; tool-using retrieval; replication; temporal leakage.
-\spacingset{2}
+\noindent\textbf{Keywords:} political elites; measurement; tool-using
+retrieval; replication; temporal leakage.
+
+\noindent Note! Extremely preliminary. 
+
+\spacingset{1}
 
 \section{Introduction}
 
@@ -90,6 +94,9 @@ As digital traces proliferate, it is tempting to scale attribute coding by askin
 Yet, interactive question answering is not a measurement protocol: without explicit governance, such workflows tend to be difficult to audit, hard to replicate, and vulnerable to temporally invalid evidence.
 
 The stakes are substantive, not only technical. Party affiliation and related elite attributes are widely used to define key covariates (e.g., partisan control, coalition membership, and ideological composition) and to subset samples (e.g., focusing on elected officials with identifiable party ties). When labels are missing or miscoded, downstream analyses can suffer selection bias and reduced comparability across countries and years; when labels are coded using post-period biographies or retrospective summaries, they risk post-\(t\) contamination of baseline covariates.
+
+In political methodology terms, the problem is therefore \emph{measurement design}: how do we scale retrieval-augmented coding of elite attributes while preserving (i) auditability (a third party can verify why a label was produced), (ii) cross-national comparability (labels remain in a stable, closed set of classes), and (iii) temporal validity (evidence respects an ``as-of'' target).
+ASA is framed as a measurement protocol rather than as an accuracy-maximizing question-answering system.
 
 We argue that retrieval-augmented LLM agents can be useful for dataset construction only when embedded in an explicitly governed measurement protocol.
 We introduce the \emph{Auditable Search Agent} (ASA), implemented in the \texttt{asa} software stack, which formalizes retrieval as measurement: for each record \(\langle\)person, country, year\(\rangle\) and an expert-supplied closed codebook, the agent runs a short, budgeted search session; prioritizes evidence over parametric recall; emits a structured output with citations; abstains under weak or conflicting evidence; and archives a complete trace (queries, snippets, URLs, timestamps) for later audit and re-analysis.
@@ -108,6 +115,7 @@ Section~\ref{sec:hazards} motivates the design by formalizing three measurement 
 Section~\ref{sec:related} situates the contribution in political methodology, reproducible research, and recent retrieval-agent architectures.
 Sections~\ref{sec:method}--\ref{sec:validation} describe the ASA protocol and validate it on party affiliation.
 We conclude with guidance on transparency, limitations, and ethical considerations for web-based measurement.
+Our replication target is recomputation from a frozen trace store and versioned task specification; we do not claim that reruns on the live web will match.
 
 \section{Measurement hazards in search-enabled coding\label{sec:hazards}}
 
@@ -188,12 +196,61 @@ Explicit ``as-of'' rules with date verification where feasible; warnings and abs
 \end{tabularx}
 \end{table}
 
+\subsection{Auditability and comparability as formal properties\label{sec:formal-audit-compare}}
+
+Temporal leakage is only one way search-enabled coding can fail as measurement.
+To make retrieval an admissible instrument for political data construction, we also require
+(1) \emph{auditability} (a third party can reconstruct why a label was emitted) and
+(2) \emph{comparability} (outputs remain in a stable, closed set of classes across country-years).
+
+\paragraph{The trace as the measurement object.}
+Let \(\Omega_t\) denote the (unobserved) state of the web at time \(t\).
+A tool-using coding episode for record \(i\) produces a \emph{trace}
+\[
+  T_i = \big( (a_{i1}, o_{i1}, \kappa_{i1}), \ldots, (a_{iK}, o_{iK}, \kappa_{iK}) \big),
+\]
+where each step records the agent action \(a_{ik}\) (e.g., a query or page fetch),
+the observed tool output \(o_{ik}\) (e.g., ranked results and extracted snippets), and a timestamp \(\kappa_{ik}\).
+The reported label is a function of the trace and the task specification:
+\[
+  \hat{X}_{it} = M(T_i;\,\mathcal{C}_i,\tau_i,E,\theta),
+\]
+where \(\mathcal{C}_i\) is the closed codebook, \(\tau_i\) is the temporal cut,
+\(E\) is an evidence sufficiency rule, and \(\theta\) denotes implementation parameters
+(e.g., mapping thresholds and source-tier rules).
+
+\paragraph{Auditability.}
+We say a coding procedure is \emph{auditably reproducible} for a reported result if,
+given a \emph{frozen} trace store \(\mathcal{T}=\{T_i\}_{i=1}^N\) and a versioned task specification
+\((\mathcal{C}_i,\tau_i,E,\theta)\), an independent auditor can deterministically recompute every
+reported label and every aggregate statistic in the paper by replaying \(M(\cdot)\) on \(\mathcal{T}\).
+This is the relevant reproducibility target for web-based measurement: rerunning retrieval on the live web
+is not expected to match, but recomputation from an archived trace store is.\footnote{This distinction mirrors a broader point in agentic systems: raw action logs are often insufficient for claim-level auditability without structured, claim--evidence encodings \citep{rasheed2026fluent}.}
+
+\paragraph{Comparability via closed-world mapping.}
+Cross-national comparability requires that categorical labels be stable and enumerable.
+ASA enforces a closed-world constraint by requiring \(\hat{X}_{it}\in\mathcal{C}_i\) or abstention.
+Let \(g(\cdot)\) map extracted surface strings from evidence into codebook entries.
+Closed-world comparability requires \(g\) to be \emph{non-expansive}: it may normalize benign surface variation
+(punctuation, spacing, acronyms) but must never introduce a class outside \(\mathcal{C}_i\).
+When \(g\) is undefined, or evidence supports multiple codebook entries, ASA abstains rather than generating a novel label.
+This operationalizes a basic measurement-validity principle: prefer explicit, auditable missingness to uncontrolled label drift that silently changes the meaning of a variable across units and time \citep{adcock2001measurement,munck2002conceptualizing,lazer2014parable}.
+
 \section{Related work\label{sec:related}}
 
 Our contribution sits at the intersection of political methodology and recent advances in retrieval-augmented language models.
 Large cross-national datasets often rely on expert coding and bespoke compilation efforts; a central challenge is preserving comparability and documenting measurement decisions at scale.
 ASA complements such efforts by treating web retrieval as a first-class part of the measurement protocol and by archiving evidence trails that allow downstream users to audit labels and re-apply inclusion rules.
 The validation task we study is motivated by the same large-\(N\) political-elite measurement agenda that underlies recent work on global leadership and expert-coded cross-national datasets \citep{gerring2019rules,pemstein2020v}.
+
+The political-science measurement literature emphasizes that validity hinges on transparent linkages between concepts, operational rules, and observed indicators, and that measurement choices must be documented in a way that supports reinterpretation and audit.
+ASA's closed codebooks, explicit abstention boundary, and trace-based audit target these concerns \citep{adcock2001measurement,munck2002conceptualizing}.
+More broadly, digital trace data can be alluring but unstable; classic warnings about shifting data-generating processes in ``big data'' settings apply directly to web-based measurement \citep{lazer2014parable}.
+
+ASA is also aligned with transparency and replication norms in political science, where the goal is not merely to share code but to make measurement decisions inspectable and contestable.
+Calls for data access and research transparency (DA-RT), ``active citation,'' and practical guidance on code-and-data release motivate our emphasis on archivable evidence and replayable rules \citep{dart2015joint,moravcsik2014transparency,gentzkow2014code}.
+
+Finally, ASA's abstention gate connects to a long literature on the error--reject tradeoff in recognition systems and to modern selective prediction work that treats abstention as a principled way to control risk \citep{chow1970reject,geifman2017selective}.
 
 ASA is also aligned with calls for reproducible computational research: replication requires not only code, but durable documentation of the information environment that produced a label \citep{peng2011reproducible,stodden2013toward}.
 In web-based measurement, the information environment is inherently dynamic; capturing queries, snippets, URLs, and timestamps makes it possible to re-audit outputs when sources change.
@@ -216,6 +273,20 @@ The protocol has four core commitments:
 \item \textbf{Provenance preservation.} The system archives the full interaction trace: queries, tool responses, extracted snippets, URLs, and timestamps.
 \item \textbf{Conservative abstention.} Under weak or conflicting evidence, the agent abstains (or routes to humans) rather than guessing.
 \end{enumerate}
+
+\subsection{Abstention as selective measurement\label{sec:selective-measurement}}
+
+ASA's abstention rule is not merely an implementation detail; it defines the statistical object that is being produced.
+Let \(Y_{it}\) denote the expert-coded party label (when available).
+ASA returns a \emph{selective} prediction \(\hat{Y}_{it}\in \mathcal{C}_i \cup \{\bot\}\), where \(\bot\) denotes abstention.
+Two quantities therefore matter jointly:
+\[
+  \text{Coverage} \;\gamma \equiv \Pr(\hat{Y}_{it}\neq \bot),
+  \qquad
+  \text{Conditional error} \; R \equiv \Pr(\hat{Y}_{it}\neq Y_{it}\mid \hat{Y}_{it}\neq \bot).
+\]
+Tightening evidence requirements mechanically reduces \(R\) while lowering \(\gamma\), an instance of the classic error--reject tradeoff \citep{chow1970reject} and closely related to modern selective classification \citep{geifman2017selective}.
+In elite measurement settings, abstention is attractive because withheld cases can be routed to human coders or left missing under transparent, replayable rules---a preferable failure mode to un-auditable guesswork.
 
 \subsection{Task formalization}
 
@@ -241,6 +312,58 @@ The agent must return either (a) a label \(c \in \mathcal{C}_i\) with citations,
   \caption{A submission-ready ASA protocol statement. The task configuration specifies \(\mathcal{C}_i\), \(\tau_i\), \(B\), and \(E\); the shared execution layer enforces trace capture, temporal admissibility, and abstention.}
   \label{fig:asa-protocol}
 \end{figure}
+
+\subsection{Evidence sufficiency and confidence tiers\label{sec:evidence-rule}}
+
+The protocol parameter \(E\) encodes what counts as \emph{sufficient evidence} for emitting a high-confidence label.
+In party-affiliation coding, we implement \(E\) as a tiered evidence rule that privileges primary, contemporaneous sources and requires independence across sources.
+
+\paragraph{Source tiers.}
+Each retrieved source \(s\) is assigned a coarse reliability tier---primary, secondary, or tertiary---using domain lists and page cues.
+We treat \emph{primary/official} sources (e.g., government, parliament, election commission, party roster pages) as the strongest evidence; \emph{secondary} sources include major news outlets and established reference works; \emph{tertiary} sources (e.g., scraped bios and low-editability directories) may be used for navigation but are not, by themselves, sufficient for high-evidence decisions.
+
+\paragraph{Independence.}
+To reduce correlated error, we treat two sources as independent if they come from different base domains and are not obvious mirrors or syndicated copies.
+This criterion is deliberately coarse but easy to audit in stored traces.
+
+\paragraph{Tiered sufficiency rule.}
+Let \(S^{\mathrm{adm}}_{it}(\tau_i)\) be the admissible (dated, pre-\(\tau_i\)) evidence set defined in Section~\ref{sec:temporal-formal}.
+ASA assigns each record to one of three evidence tiers:
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item \textbf{Tier A (high evidence):} At least two independent admissible sources map non-expansively to the same codebook label, including at least one primary/official source with a recoverable date.
+\item \textbf{Tier B (moderate evidence):} Either (i) one admissible primary/official source maps cleanly to a label, or (ii) two independent secondary sources agree, but primary evidence is unavailable.
+\item \textbf{Tier C (weak/undated/conflicting):} Evidence is undated, post-period, maps to multiple labels, or relies only on tertiary sources.
+\end{enumerate}
+In our default configuration we emit a high-confidence label only under Tier A; Tier B is available for human review or sensitivity checks; Tier C cases are abstentions.
+This makes the abstention boundary explicit and replayable: downstream users can tighten or relax \(E\) and recompute headline statistics from the same frozen trace store.
+
+\begin{table}[htb]
+\centering
+\caption{Evidence tiers used by the sufficiency rule \(E\) in party-affiliation coding.}
+\label{tab:evidence-tiers}
+\small
+\begin{tabularx}{\linewidth}{@{}lP{2.9cm}X@{}}
+\toprule
+\textbf{Tier} & \textbf{Minimum sources} & \textbf{Operational rule (summary)} \\
+\midrule
+A (high evidence) & \(\ge 2\) independent & Dated, admissible sources agree on the mapped codebook label; includes \(\ge 1\) primary/official source with recoverable date; no unresolved conflict. Emit a high-confidence label. \\
+B (moderate evidence) & \(1\) primary or \(2\) secondary & Agreement under admissible dating, but primary evidence is limited or unavailable. Route to human review or treat as medium confidence in sensitivity checks. \\
+C (weak / conflicting) & -- & Evidence is undated or post-period, relies on tertiary sources, or supports multiple labels with comparable strength. Abstain. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Conflict policy: resolve or abstain\label{sec:conflict-policy}}
+
+Conflicts arise when two different codebook labels are each supported by at least one independent admissible source.
+Because post-hoc tie-breaking can silently encode researcher discretion, ASA defaults to abstention under conflict unless one label strictly dominates by evidence tier (e.g., Tier A support versus Tier B/C) and source tier (primary versus secondary/tertiary).
+All conflict flags and supporting citations are persisted so disagreements are auditable and can be routed to human coders.
+
+\subsection{Entity disambiguation\label{sec:disambiguation}}
+
+Elite names are not unique: homonyms, transliterations, and office changes can induce systematic misattribution if not governed explicitly.
+ASA therefore requires that at least one cited evidence span contain a corroborating identifier beyond the name (e.g., office/chamber, country, year/tenure, or constituency).
+When disambiguation remains unresolved, ASA abstains rather than guessing.
 
 \subsection{Implementation: ASA software stack}
 
@@ -321,6 +444,14 @@ The agent treats time as part of the measurement protocol. Each run is parameter
 When feasible, the system extracts publication dates from retrieved pages and enforces the constraint strictly; otherwise it falls back to best-effort warnings and abstention rather than silently using potentially post-period material.
 This guards against a common dataset-construction failure mode: coding pre-period attributes with post-period knowledge.
 
+\paragraph{Operational date recovery \(d(s)\).}
+For each retrieved page, ASA attempts to recover a publication or last-update date using an ordered set of heuristics:
+(i) structured metadata (e.g., schema.org JSON-LD fields such as \texttt{datePublished}/\texttt{dateModified}),
+(ii) HTML meta tags (e.g., OpenGraph/RSS cues),
+(iii) visible byline dates in page text, and
+(iv) weak URL date patterns as a last resort.
+If no reliable date is found, the source is treated as undated and cannot be the sole support for a Tier~A decision (Section~\ref{sec:evidence-rule}).
+
 Temporal controls are crucial because many online sources are retrospective and continuously updated: Wikipedia leads, later biographies, and obituaries often summarize whole careers, including events after \(t_i\). If such post-\(t_i\) material is used to code a pre-period attribute, the measurement can incorporate information that is itself downstream of later outcomes (e.g., a party switch or coalition realignment that occurs after \(t_i\)), creating look-ahead/data leakage and a close analogue of post-treatment conditioning. This can both inflate apparent coding accuracy (by using information unavailable at the time) and bias downstream relationships by contaminating ``baseline'' covariates with post-period events \citep{montgomery2018conditioning,kaufman2012leakage}.
 
 \subsection{Provenance preservation and storage}
@@ -329,24 +460,64 @@ All tool interactions and intermediate artifacts are persisted (including URLs a
 (i) verification of any individual label by following its citations, (ii) replication of aggregate statistics given the same trace store, and (iii) retrospective audits when codebooks change or new sources appear.
 The storage design also supports alternative downstream rules (e.g., only keep labels supported by government sources).
 
+\subsection{Trace schema and audit procedure\label{sec:trace-schema}}
+
+A key claim of ASA is that it produces measurements that are \emph{auditable by construction}.
+To make this concrete, the trace store persists two linked objects per record \(i\):
+
+\paragraph{(i) A structured decision record.}
+This is the minimal unit needed to reproduce the paper's tables:
+\[
+  D_i = \{\text{record id},\; \hat{Y}_{it},\; \text{tier},\; \mathcal{C}_i,\; \tau_i,\;
+  \text{supporting citations},\; \text{conflict flags},\; \text{software version}\}.
+\]
+The ``supporting citations'' field points to specific snippet spans within retrieved pages (not only URLs), so an auditor can verify that the cited text supports the mapped codebook label.
+
+\paragraph{(ii) A full interaction trace.}
+For each tool call \(k\), we store: query string or URL, ranked results, bounded snippet text, timestamp, domain, recovered publication/update date (if any), and extraction metadata.
+Storing bounded snippets rather than full pages reduces privacy and copyright exposure while preserving enough context for audit.
+Appendix~\ref{sec:appendix-trace} summarizes the minimum field set.
+
+\paragraph{Audit checklist (replayable).}
+Given \((D_i, T_i)\), an auditor can verify a high-confidence label by checking:
+(1) all cited sources are admissible under the temporal cut (\(d(s)\le\tau_i\)),
+(2) cited spans contain an explicit party mention that maps non-expansively into \(\mathcal{C}_i\),
+(3) the required number of independent sources is met for the claimed tier (Section~\ref{sec:evidence-rule}),
+and (4) there is no unresolved conflict with similarly supported alternatives (Section~\ref{sec:conflict-policy}).
+This moves verification from ``trust the model'' to ``inspect the stored evidence.''
+
 \section{Data and gold standard\label{sec:data}}
 
 We validate ASA on party affiliation, a verifiable elite attribute that is frequently missing in large political-elite panels yet can often be corroborated from public records (party rosters, parliamentary biographies), reputable encyclopedic sources, and contemporaneous news coverage.
 The unit of analysis is a leader--record indexed by \(\langle\)person, country, year\(\rangle\).
 
-\subsection{Elite records and country-year codebooks}
+\subsection{Leader records, temporal scope, and unit construction\label{sec:leader-records}}
 
-For each country-year, domain experts provide a \emph{closed codebook} of admissible party labels.
+We begin from a cross-national panel of political elites assembled as part of the Global Leadership Project research program \citep{gerring2019rules,gerring2024composition}.
+From this source we construct leader--records indexed by \(\langle\)person, country, year \(t\rangle\).
+The observation year \(t\) defines the temporal target for party affiliation, and each ASA run is parameterized by a record-specific temporal cut \(\tau_i\) (Section~\ref{sec:temporal-formal}).
+
+Because names vary across languages and sources, we retain both the original name string and a normalized form (case-folding, diacritic handling) in the trace store.
+This supports downstream audits of homonyms and transliterations (Section~\ref{sec:disambiguation}).
+
+\subsection{Expert labels and codebook construction\label{sec:codebooks}}
+
+For each country-year, domain experts provide a \emph{closed codebook} \(\mathcal{C}_i\) of admissible party labels.
 The codebook enforces cross-national comparability by preventing open-ended label generation, while allowing country-specific party systems to be represented without forcing artificial cross-country harmonization.
-When party naming conventions evolve (coalitions, mergers, rebrands), codebooks can be updated and prior labels can be re-audited using the archived traces.
+Operationally, codebooks are versioned and frozen for an ASA run; when party naming conventions evolve (coalitions, mergers, rebrands), codebooks can be updated and prior labels can be re-audited using archived traces.
+To reduce conservative normalization error, codebooks may include documented aliases that map non-expansively into canonical labels (Section~\ref{sec:formal-audit-compare}).
 
-\subsection{Expert labels and evaluation set}
+Expert party labels used for evaluation come from the underlying expert-coding workflow.
+We treat these labels as the gold standard for validation, while emphasizing that ASA's trace store preserves enough evidence to support audits and disagreement adjudication, consistent with measurement best practices \citep{adcock2001measurement,munck2002conceptualizing}.
 
-The evaluation set is the subset of leader--records with expert-provided party labels.
-We score ASA predictions against expert labels \emph{only} when the agent emits a high-confidence label that can be mapped to the country-year codebook.
-Low-confidence outputs are withheld by design (abstention), trading coverage for precision.
+\subsection{Record linkage and match quality\label{sec:record-linkage}}
 
-\subsection{Outcome definition and temporal target}
+Leader records, expert labels, and country-year codebooks must be linked to construct the evaluation subset.
+Where unique identifiers are available, linkage is deterministic; otherwise we implement a conservative matching procedure based on normalized names plus country and year, routing ambiguous matches to manual review.
+This conservative linkage step is important: linkage error can otherwise be misattributed to the coding agent.
+We preserve linkage decisions and match flags in the trace store so they are auditable \citep{fellegi1969theory}.
+
+\subsection{Outcome definition and temporal target\label{sec:outcome-target}}
 
 The target label is the leader's party affiliation for observation year \(t_i\).
 Because elites may switch parties within a year and sources are often retrospective, ASA applies an explicit ``as-of'' rule for admissible evidence.
@@ -368,8 +539,25 @@ We provide protocol details for these comparisons in Appendix~\ref{sec:appendix-
 
 \subsection{Metrics}
 
-We report (i) accuracy conditional on non-abstention (high confidence), (ii) coverage (the share of records receiving a high-confidence label), and (iii) coverage gain relative to expert-only availability.
+Because ASA is a selective measurement instrument (Section~\ref{sec:selective-measurement}), we report both performance \emph{conditional on non-abstention} and the corresponding coverage.
+Let \(\gamma \equiv \Pr(\hat{Y}_{it}\neq \bot)\) denote coverage (the share of records receiving a non-abstained label), and let \(R \equiv \Pr(\hat{Y}_{it}\neq Y_{it}\mid \hat{Y}_{it}\neq \bot)\) denote conditional error.
+Our headline ``high-confidence accuracy'' is \(1-R\) computed on the Tier~A/high-evidence subset under the default evidence rule \(E\) (Section~\ref{sec:evidence-rule}).
+We also report overall accuracy across all emitted labels and coverage gain relative to expert-only availability.
 Because the unit of analysis is nested within countries, uncertainty should be summarized with country-clustered or country-resampled intervals in a submission-ready version of the paper.
+
+\subsection{Threats to validity in evaluating web-based measurement\label{sec:eval-threats}}
+
+Two evaluation design choices are essential to interpret ASA's headline numbers.
+
+First, accuracy is reported \emph{conditional on non-abstention}.
+This is appropriate for a selective measurement instrument, but it means that evaluation is performed on the subset of records that satisfy the evidence sufficiency rule \(E\) under the temporal cut.
+As a result, accuracy alone is not meaningful without the corresponding coverage \(\gamma\) and a description of which cases are withheld (e.g., early years with sparse web records, low-salience elites, or non-English contexts).
+
+Second, web retrieval creates a potential dependence between the information environment available to experts and to ASA.
+To avoid conflating ``shared sources'' with methodological success, ASA stores its full evidence trails: readers can directly inspect whether correct labels are supported by contemporaneous primary sources or by retrospective summaries.
+This is one reason temporal governance is a core part of the protocol rather than a post-hoc evaluation filter.
+
+Finally, several error modes are predictable in elite party coding: homonyms and transliterations (addressed via disambiguation, Section~\ref{sec:disambiguation}); within-year party switches (addressed via record-specific temporal cuts, Section~\ref{sec:outcome-target}); coalition or alias naming (addressed via non-expansive codebook mapping, Section~\ref{sec:formal-audit-compare}); and sources without reliable dates (addressed via date recovery and abstention, Section~\ref{sec:temporal-formal}).
 
 \subsection{Results}
 
@@ -488,8 +676,19 @@ For sensitive or non-verifiable attributes (e.g., ethnicity without self-identif
 ASA produces two primary research artifacts: (i) a structured dataset of labels (including abstentions and confidence flags), and (ii) an auditable trace store that documents the evidence environment that produced each label.
 To support replication, we distinguish two targets: (i) recomputing reported metrics from a \emph{frozen trace store} (fully reproducible), versus (ii) rerunning fresh retrieval on the contemporary web (not expected to match).
 Concretely, a submission-ready package should (a) snapshot the trace store used for reported results, (b) include scripts that reproduce all tables and figures from that snapshot, and (c) version the task specification (codebooks, temporal rules, output schema) that governed retrieval.
-Where legally feasible, key sources can be augmented with lightweight stability aids (e.g., content hashes or archived snapshots) so that trace-based audits remain possible even under link rot.
+Where legally feasible, key sources can be augmented with lightweight stability aids (e.g., content hashes or archived snapshots) so that trace-based audits remain possible even under link rot \citep{klein2014scholarly,rfc7089}.
 More generally, recent work emphasizes that raw logs are necessary but not sufficient for claim-level auditability in agentic systems, motivating structured traces that make evidence explicit and machine-checkable \citep{rasheed2026fluent}.
+
+\paragraph{Replication package contents (JOP).}
+In line with Journal of Politics reproducibility expectations \citep{jop_instructions}, the replication package for this article will include:
+(i) a \texttt{README} specifying software versions and execution order,
+(ii) the analysis dataset(s) used to generate every table and figure in the main text and appendix,
+(iii) a codebook describing every variable used, and
+(iv) scripts that reproduce the paper from a frozen trace store snapshot
+(i.e., recompute all accuracy/coverage statistics and regenerate all figures without re-querying the live web).
+Where full trace release is constrained (e.g., terms of service, privacy, or copyright),
+we will provide de-identified example traces, the complete schema, and an access pathway for qualified auditors
+to verify claims against the full trace store under controlled conditions.
 
 Because the underlying elite panel and full trace store may be subject to access constraints, we recommend a controlled-access transparency strategy: release the \texttt{asa} software, schema definitions, and de-identified example traces immediately; and provide reviewers (and later readers) with an access pathway for full traces and expert codebooks consistent with ethical and legal constraints.
 
@@ -498,14 +697,20 @@ Because the underlying elite panel and full trace store may be subject to access
 \paragraph{Dynamic sources and dating.}
 Web sources evolve (link rot, edits, retroactive updates), and many pages lack reliable publication dates.
 Temporal governance reduces leakage risk but cannot guarantee that all evidence is contemporaneous; abstention is therefore a feature, not a bug.
+These concerns are not hypothetical: reference rot is widespread in scholarly communication, motivating both trace preservation and, where feasible, time-based access/snapshotting approaches \citep{klein2014scholarly,rfc7089}.
 
 \paragraph{Coverage and representation bias.}
 Evidence quality varies systematically by language, region, and historical period, and across types of elites.
 These differences can create uneven missingness and error that must be documented and, where possible, modeled downstream.
+Because ASA abstains under weak evidence, non-abstained labels are not a random subset of records; coverage \(\gamma\) therefore functions as a selection mechanism that should be reported and stress-tested by country, time, and elite type.
 
 \paragraph{Terms of service and privacy.}
 Web retrieval should respect site terms, robots policies, and privacy considerations.
 Trace storage policies should minimize unnecessary retention of personal data while preserving enough evidence for audit (e.g., store URLs and short snippets rather than bulk page content when feasible).
+
+\paragraph{Scope and sensitive attributes.}
+ASA is best suited to verifiable attributes with authoritative sources (party membership, office holding, election outcomes) and stable codebooks.
+For sensitive or non-verifiable attributes (e.g., ethnicity without self-identification), we recommend stricter abstention, explicit ethical review, and transparency about uncertainty and potential harm.
 
 \section{Conclusion}
 

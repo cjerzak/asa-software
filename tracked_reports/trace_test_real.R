@@ -219,6 +219,8 @@ if (!nzchar(action_ascii_text) &&
       trace_json = attempt$trace_json,
       raw_trace = attempt$trace %||% "",
       plan_history = attempt$plan_history %||% list(),
+      tool_quality_events = attempt$execution$tool_quality_events %||% list(),
+      diagnostics = attempt$execution$diagnostics %||% list(),
       token_trace = attempt$token_stats$token_trace %||% list(),
       wall_time_minutes = attempt$elapsed_time %||% NA_real_
     )$ascii %||% "",
