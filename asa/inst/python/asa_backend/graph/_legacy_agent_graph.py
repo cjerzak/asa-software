@@ -4384,6 +4384,66 @@ def _json_safe_value(value: Any) -> Any:
     return str(value)
 
 
+def _value_schema_compatible(value: Any, schema: Any) -> bool:
+    """Return True when `value` is recursively compatible with schema shape/types."""
+    if isinstance(schema, dict):
+        if not isinstance(value, dict):
+            return False
+        try:
+            if list_missing_required_keys(value, schema, max_items=200):
+                return False
+        except Exception:
+            return False
+        return _payload_schema_types_compatible(value, schema)
+
+    if isinstance(schema, list):
+        if not isinstance(value, list):
+            return False
+        if not schema:
+            return True
+        elem_schema = schema[0]
+        return all(_value_schema_compatible(item, elem_schema) for item in value)
+
+    return _terminal_leaf_type_compatible(value, schema)
+
+
+def _merge_canonical_payload_with_model_arrays(
+    canonical_payload: Any,
+    model_payload: Any,
+    schema: Any,
+) -> Any:
+    """Preserve schema-compatible model arrays when canonical payload has placeholders."""
+    if schema is None:
+        return canonical_payload
+
+    if isinstance(schema, dict):
+        if not isinstance(canonical_payload, dict):
+            return canonical_payload
+        model_dict = model_payload if isinstance(model_payload, dict) else {}
+        merged: Dict[str, Any] = {}
+        for key, child_schema in schema.items():
+            merged[key] = _merge_canonical_payload_with_model_arrays(
+                canonical_payload.get(key),
+                model_dict.get(key),
+                child_schema,
+            )
+        return merged
+
+    if isinstance(schema, list):
+        canonical_list = canonical_payload if isinstance(canonical_payload, list) else []
+        model_list = model_payload if isinstance(model_payload, list) else None
+        if (
+            isinstance(model_list, list)
+            and len(model_list) > 0
+            and len(canonical_list) == 0
+            and _value_schema_compatible(model_list, schema)
+        ):
+            return _json_safe_value(model_list)
+        return canonical_list
+
+    return canonical_payload
+
+
 def _canonical_payload_from_field_status(expected_schema: Any, field_status: Any) -> Optional[Any]:
     """Build terminal payload from canonical field_status only (no model guesses)."""
     if expected_schema is None:
@@ -4519,13 +4579,27 @@ def _apply_field_status_terminal_guard(
             pass
         return response, None
 
+    current_content = response.get("content") if isinstance(response, dict) else getattr(response, "content", None)
+    current_text = _message_content_to_text(current_content).strip()
+
+    merged_payload = payload
+    if current_text:
+        try:
+            parsed_current = parse_llm_json(current_text)
+        except Exception:
+            parsed_current = None
+        if parsed_current is not None:
+            merged_payload = _merge_canonical_payload_with_model_arrays(
+                payload,
+                parsed_current,
+                expected_schema,
+            )
+
     try:
-        canonical_text = json.dumps(_json_safe_value(payload), ensure_ascii=False)
+        canonical_text = json.dumps(_json_safe_value(merged_payload), ensure_ascii=False)
     except Exception:
         return response, None
 
-    current_content = response.get("content") if isinstance(response, dict) else getattr(response, "content", None)
-    current_text = _message_content_to_text(current_content).strip()
     if current_text == canonical_text:
         return response, None
 

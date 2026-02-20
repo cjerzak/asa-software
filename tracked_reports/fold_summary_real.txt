@@ -1,51 +1,39 @@
 {
   "version": 1,
-  "facts": [],
+  "facts": ["[ANCHORED] FIELD_EXTRACT: prior_occupation = Presidenta de la Organización de Mujeres - Sub Central Sécure (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "Ramona Moye Camaconi served as a Uninominal Deputy for Circunscripción 6 (Beni) representing the MAS party.", "Her substitute (suplente) deputy was Eloy Cartagena Yoamona.", "She served as President of the Organization of Women - Sub Central Sécure (Organización de Mujeres - Sub Central Sécure).", "She publicly admitted that coca is produced in the TIPNIS (Territorio Indígena y Parque Nacional Isibro Sécure) for traditional consumption."],
   "decisions": [],
-  "open_questions": ["What is Ramona Moye Camaconi's specific educational background?", "What was her specific occupation prior to 2014, beyond being an inhabitant of TIPNIS?"],
+  "open_questions": [],
   "sources": [
     {
-      "tool": "Search",
-      "url": "https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "El MAS gana en el TIPNIS con 83% y obtiene la diputación especial indígena de Beni",
-      "note": "Election results 2014"
+      "tool": "OpenWebpage",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "title": "Vicepresidencia del Estado - RAMONA MOYE CAMACONI",
+      "note": "Official biography containing birth date and activities"
     },
     {
       "tool": "Search",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
-      "title": "Vicepresidencia del Estado - Parlamentarios",
-      "note": "Official list of deputies"
+      "url": "https://radioluisdefuentes.com/nacion/diputada-moye-del-mas-es-denunciada-por-presentar-bajas-medicas-falsificadas-para-obtener-licencia-en-la-camara-de-diputados",
+      "title": "Diputada Moye del MAS es denunciada...",
+      "note": "Source for falsified medical leave allegation"
     },
     {
       "tool": "Search",
-      "url": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
-      "title": "Vicepresidencia del Estado - Parlamentarios (Detailed)",
-      "note": "Source for birth year and place"
-    },
-    {
-      "tool": "Search",
-      "url": "https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis",
-      "title": "Diputada oficialista amenaza a indígenas que se oponen a carretera por el Tipnis",
-      "note": "Political stance and origin"
-    },
-    {
-      "tool": "Search",
-      "url": "https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956",
-      "title": "Diputada Moye es denunciada por presentar bajas médicas falsificadas",
-      "note": "Controversy details"
+      "url": "https://www.anoticia2.com/2019/05/diputada-del-mas-admite-que-en-el.html",
+      "title": "Diputada del MAS admite...",
+      "note": "Source for TIPNIS coca statement"
     },
     {
       "tool": "OpenWebpage",
-      "url": "https://www.bolivia.com/elecciones/noticias/sdi577/100940/mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni",
-      "title": "(unavailable)",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "title": "Vicepresidencia del Estado",
       "note": null
     },
     {
       "tool": "OpenWebpage",
-      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "title": "Vicepresidencia del Estado",
       "note": null
     }
   ],
-  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios)", "UNGROUNDED: FIELD_EXTRACT: birth_place = Beni (source: https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios)", "UNGROUNDED: Ramona Moye Camaconi was elected as a titular deputy for the Movement for Socialism (MAS) in the 2014 Bolivian general elections, representing the Special Indigenous Constituency of Beni (TIPNIS) with 83% of the vote. (Source: https://www.la-razon.com/nacional/2014/10/14/el-mas-gana-en-el-tipnis-con-75-y-obtiene-la-diputacion-especial-indigena-de-beni)", "UNGROUNDED: Official Vicepresidencia records list her constituency as 'Circunscripción 09' (Uninominal). (Source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentarios&id_pestana=2&id_gestion=1)", "UNGROUNDED: She is an inhabitant of the TIPNIS territory and publicly supported the construction of a road through the park, stating that opponents should not interfere. (Source: https://eju.tv/2014/12/diputada-oficialista-amenaza-a-indgenas-que-se-oponen-a-carretera-por-el-tipnis)", "UNGROUNDED: She was denounced by opposition deputy Jimena Costa for allegedly presenting falsified medical leave requests. (Source: https://www.noticiasfides.com/nacional/politica/diputada-moye-es-denunciada-por-presentar-bajas-medicas-falsificadas-390956)"]
+  "warnings": ["UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609)", "UNGROUNDED: She was born on January 7, 1982.", "UNGROUNDED: Moye was denounced for allegedly presenting falsified medical leave requests to obtain licenses in the Chamber of Deputies."]
 }

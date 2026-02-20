@@ -2455,6 +2455,75 @@ test_that("finalize canonical guard overrides fabricated terminal values from fi
   expect_true(grepl("field_status_canonical", json_repair_text, fixed = TRUE))
 })
 
+test_that("finalize canonical guard preserves compatible non-empty arrays", {
+  graph_mod <- asa_test_import_langgraph_module(
+    "asa_backend.graph._legacy_agent_graph",
+    required_files = "asa_backend/graph/_legacy_agent_graph.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  expected_schema <- list(
+    status = "complete|partial",
+    steps = list(list(
+      step = "integer",
+      fact = "string",
+      checksum = "integer"
+    )),
+    missing = list("integer"),
+    notes = "string"
+  )
+
+  field_status <- list(
+    status = list(
+      status = "found",
+      value = "complete",
+      source_url = NULL,
+      evidence = "field_status_verified",
+      attempts = 0L
+    ),
+    notes = list(
+      status = "found",
+      value = "all steps completed",
+      source_url = NULL,
+      evidence = "field_status_verified",
+      attempts = 0L
+    )
+  )
+
+  response <- list(
+    role = "assistant",
+    content = paste0(
+      "{\"status\":\"complete\",\"steps\":[",
+      "{\"step\":1,\"fact\":\"fact_1\",\"checksum\":11},",
+      "{\"step\":10,\"fact\":\"fact_10\",\"checksum\":110}",
+      "],\"missing\":[],\"notes\":\"all steps completed\"}"
+    )
+  )
+
+  guarded <- graph_mod$`_apply_field_status_terminal_guard`(
+    response = response,
+    expected_schema = expected_schema,
+    field_status = field_status,
+    schema_source = "explicit",
+    context = "finalize",
+    debug = FALSE
+  )
+
+  guarded_response <- guarded[[1]]
+  guarded_text <- if (!is.null(guarded_response$content)) {
+    as.character(guarded_response$content)
+  } else {
+    as.character(guarded_response[["content"]])
+  }
+  parsed <- jsonlite::fromJSON(guarded_text)
+
+  expect_true(is.list(parsed))
+  expect_true(is.data.frame(parsed$steps))
+  expect_true(all(c("step", "fact", "checksum") %in% names(parsed$steps)))
+  expect_true(all(c(1L, 10L) %in% as.integer(parsed$steps$step)))
+  expect_equal(as.character(parsed$status), "complete")
+})
+
 test_that("canonical payload remains schema-constrained and fills confidence/justification without task-specific derivations", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 

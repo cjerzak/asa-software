@@ -1,168 +1,175 @@
 AGENT ACTION MAP
 ================
-Steps captured: 25
-LangGraph timed steps: 26
+Steps captured: 26
+LangGraph timed steps: 30
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
       Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
       Source-backed found values: 4 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 8 tool-call turn(s), 1 answer turn(s)
-      Tool results: 16 total (Tool Search=8, Tool OpenWebpage=6, Tool save_finding=2)
+      AI turns: 9 tool-call turn(s), 1 answer turn(s)
+      Tool results: 15 total (Tool Search=8, Tool OpenWebpage=6, Tool save_finding=1)
       Structured terminal answer emitted
-      Anomalies: 7 flagged step(s) (OFF_TOPIC_RESULT=6, LOW_EVIDENCE_FINAL_ANSWER=1)
+      Anomalies: 9 flagged step(s) (OFF_TOPIC_RESULT=8, LOW_EVIDENCE_FINAL_ANSWER=1)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 3.6728m (tok=0, n=10)
-      agent: 1.1140m (tok=77820, n=10)
-      summarize: 0.6916m (tok=8709, n=5)
-      finalize: 0.2380m (tok=11032, n=1)
+      tools: 2.0349m (tok=0, n=12)
+      agent: 1.2987m (tok=76715, n=12)
+      summarize: 0.4709m (tok=5239, n=5)
+      finalize: 0.3335m (tok=13190, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #06 tools: 1.3530m (tok=0)
-      #16 tools: 1.2337m (tok=0)
-      #08 tools: 0.7384m (tok=0)
-      #23 summarize: 0.6916m (tok=8709)
-      #26 finalize: 0.2380m (tok=11032)
-  +-- [TIMING] wall=5.7174m nodes=5.7164m delta=+0.0011m (overhead)
+      #29 tools: 0.8453m (tok=0)
+      #24 summarize: 0.4709m (tok=5239)
+      #02 tools: 0.3763m (tok=0)
+      #14 tools: 0.3621m (tok=0)
+      #30 finalize: 0.3335m (tok=13190)
+  +-- [TIMING] wall=4.1391m nodes=4.1380m delta=+0.0011m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (Search)
+  +-- [02] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=4557 out=380 total=4937
-      min: 0.1007m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye")
+      tok: in=3618 out=486 total=4104
+      min: 0.1240m
+      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
   +-- [03] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...ios </URL> __END_OF_SOURC...
-  +-- [04] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://vicepresidencia.gob.bo/spip.php?debut_parl...l - Circunscripción 36 No...
-  +-- [05] Requested 3 tool calls (save_finding, Search)
-      by: AI
-      tok: in=5129 out=783 total=5912
-      min: 0.1669m
-      detail: save_finding(finding=birth_year = 1982 (source:...parla...maconi" biografia ocupaci...
-  +-- [06] Returned 2 results
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...pestana=2&page=parlamenta...
-  +-- [07] Returned result
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
+  +-- [04] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4304 out=171 total=4475
+      min: 0.0636m
+      detail: Search(query=Ramona Moye Camaconi lugar de nacimiento ...)
+  +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Comandanta Ramon...16 </URL> __END_OF_SOURCE...
-  +-- [08] Requested 1 tool call (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...or </URL> __END_OF_SOURCE...
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.flickr.com/photos/194792615@N03/521807...w.flickr.com/signup] ✨ Ge...
+  +-- [07] Requested 1 tool call (Search)
       by: AI
-      tok: in=7724 out=295 total=8019
-      min: 0.0965m
-      detail: Search(query=site:bo "Ramona Moye Camaconi")
+      tok: in=5467 out=463 total=5930
+      min: 0.1076m
+      detail: Search(query=Ramona Moye Camaconi "Sub Central Sécure"...)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Radio Pedro Ignacio Mui...tml </URL> __END_OF_SOURC...
   +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://apcbolivia.org/2022/02/comunidad-oromomo-b..., captcha, cloudflare, bl...
+  +-- [10] Requested 1 tool call (Search)
+      by: AI
+      tok: in=6813 out=203 total=7016
+      min: 0.0688m
+      detail: Search(query=Ramona Moye Camaconi "hoja de vida" OR bi...)
+  +-- [11] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
-  +-- [10] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Request error opening URL: https://sisin.oep.org.bo/med...s.html first for more det...
-  +-- [11] Requested 1 tool call (Search)
-      by: AI
-      tok: in=8389 out=413 total=8802
-      min: 0.0948m
-      detail: Search(query="Ramona Moye Camaconi" "indígena que prov...)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Enviado por Kamio • 28 ...tml </URL> __END_OF_SOURC...
   +-- [12] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconies ...via </URL> __END_OF_SOURC...
-  +-- [13] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://observatorioccdbolivia.wordpress.com/2019/...iamiento/] Mercados de Ca...
-  +-- [14] Requested 1 tool call (Search)
+      detail: Request error opening URL: https://www.clubensayos.com/...s.html first for more det...
+  +-- [13] Requested 1 tool call (Search)
       by: AI
-      tok: in=9142 out=428 total=9570
-      min: 0.1181m
-      detail: Search(query="Ramona Moye Camaconi" declaracion jurada)
-  +-- [15] Returned result
+      tok: in=7227 out=160 total=7387
+      min: 0.0559m
+      detail: Search(query=Ramona Moye Camaconi discapacidad OR LGBT...)
+  +-- [14] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Pese a las pugna...116 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> LGBTQ people are indivi...ms </URL> __END_OF_SOURCE...
+  +-- [15] Requested 1 tool call (Search)
+      by: AI
+      tok: in=8405 out=340 total=8745
+      min: 0.1653m
+      detail: Search(query=Ramona Moye Camaconi profesión ocupación ...)
   +-- [16] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://web.archive.org/web/20180214145500/http:/w...y Pasar al contenido prin...
-  +-- [17] Requested 1 tool call (Search)
-      by: AI
-      tok: in=10584 out=543 total=11127
-      min: 0.1224m
-      detail: Search(query=site:oep.org.bo "Ramona Moye")
-  +-- [18] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Uno de los máximos logr...le </URL> __END_OF_SOURCE...
-  +-- [19] Returned result
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...428 </URL> __END_OF_SOURC...
+  +-- [17] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
       detail: Request error opening URL: https://sisin.oep.org.bo/med...s.html first for more det...
+  +-- [18] Requested 1 tool call (Search)
+      by: AI
+      tok: in=9619 out=244 total=9863
+      min: 0.0799m
+      detail: Search(query=Ramona Moye Camaconi declaración jurada b...)
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> LaDeclaraciónJuradadeBi...df </URL> __END_OF_SOURCE...
   +-- [20] Requested 1 tool call (Search)
       by: AI
-      tok: in=12282 out=346 total=12628
-      min: 0.0910m
-      detail: Search(query="Ramona Moye Camaconi" grado de instrucción)
+      tok: in=9704 out=276 total=9980
+      min: 0.1057m
+      detail: Search(query=Circunscripción 6 Beni 2014 provincias)
   +-- [21] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       flag: OFF_TOPIC_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...lle </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> El TED-Benicontinuará c...al </URL> __END_OF_SOURCE...
   +-- [22] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.noticiasfides.com/nacional/politica/di...asfides.com/pueblos-indig...
+      detail: URL: https://www.bolivia.com/actualidad/politica/sdi/88...status=403) Markers: forb...
   +-- [23] Requested 1 tool call (Search)
       by: AI
-      tok: in=11437 out=340 total=11777
-      min: 0.0980m
-      detail: Search(query="Ramona Moye Camaconi" estudios universit...)
+      tok: in=11286 out=847 total=12133
+      min: 0.1753m
+      detail: Search(query=Ramona Moye Camaconi "San Ignacio de Moxo...)
   +-- [24] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...via </URL> __END_OF_SOURC...
-  +-- [25] Produced structured answer
+      flag: OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Más de 25 comuni...=1 </URL> __END_OF_SOURCE...
+  +-- [25] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.sedem.gob.bo/mas-de-25-comunidades-del...jN] Memoria Institucional...
+  +-- [26] Produced structured answer
       by: AI
-      tok: in=9798 out=1234 total=11032
-      min: 0.2380m
+      tok: in=11804 out=1386 total=13190
+      min: 0.3335m
       flag: LOW_EVIDENCE_FINAL_ANSWER
       detail: {"education_level": "Unknown", "education_institution":...limited verifiable eviden...
 END
