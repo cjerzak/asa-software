@@ -35,7 +35,7 @@ from ddgs import DDGS  # ddgs.DDGS is a class, ddgs.ddgs is a module
 from ddgs.exceptions import DDGSException
 from langchain_community.tools.ddg_search.tool import DuckDuckGoSearchRun
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.common.by import By
@@ -312,6 +312,28 @@ def configure_search(
         return _default_config
 
 
+def _copy_search_config(config: Optional[SearchConfig] = None) -> SearchConfig:
+    """Return an isolated SearchConfig copy for per-run/per-wrapper use."""
+    src = config if isinstance(config, SearchConfig) else _default_config
+    try:
+        return SearchConfig(
+            max_results=int(src.max_results),
+            timeout=float(src.timeout),
+            max_retries=int(src.max_retries),
+            retry_delay=float(src.retry_delay),
+            backoff_multiplier=float(src.backoff_multiplier),
+            captcha_backoff_base=float(src.captcha_backoff_base),
+            page_load_wait=float(src.page_load_wait),
+            inter_search_delay=float(src.inter_search_delay),
+            humanize_timing=bool(src.humanize_timing),
+            jitter_factor=float(src.jitter_factor),
+            allow_direct_fallback=bool(src.allow_direct_fallback),
+        )
+    except Exception:
+        # Last-resort: avoid sharing mutable global config instance.
+        return copy.deepcopy(_default_config)
+
+
 def configure_logging(level: str = "WARNING") -> None:
     """Configure search module logging level. Call from R via reticulate.
 
@@ -356,17 +378,19 @@ def _with_ddgs(
     *,
     retries: int = 3,
     backoff: float = 1.5,
+    timeout: float = 20.0,
+    retry_delay: float = 0.01,
 ) -> Any:
     proxy = proxy or os.getenv("HTTP_PROXY") or os.getenv("HTTPS_PROXY")
     headers = dict(headers or {})
     headers.setdefault("User-Agent", _DEFAULT_UA)
 
-    sleep = 0.01
+    sleep = max(0.0, float(retry_delay))
     for attempt in range(1, retries + 1):
         try:
             # Use DDGS class (not ddgs module) for context manager
             # Note: newer versions of ddgs don't accept headers parameter
-            with DDGS(proxy=proxy, timeout=20) as client:
+            with DDGS(proxy=proxy, timeout=float(timeout)) as client:
                 return fn(client)
         except DDGSException as exc:
             logger.warning("ddgs raised %s (try %d/%d)", exc, attempt, retries)
@@ -2614,6 +2638,16 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
     use_browser: bool = False
     headless: bool = True
     bypass_proxy_for_driver: bool = True
+    search_config: Optional[SearchConfig] = Field(
+        default=None,
+        description="Optional per-wrapper SearchConfig override.",
+    )
+    _instance_search_lock: Any = PrivateAttr(default_factory=threading.Lock)
+    _instance_last_search_time: float = PrivateAttr(default=0.0)
+
+    def _runtime_search_config(self) -> SearchConfig:
+        """Resolve isolated runtime config for this wrapper invocation."""
+        return _copy_search_config(self.search_config)
 
     # ── override endpoints ───────────────────────────────────────────────
     def _search_text(self, query: str, max_results: int) -> List[Dict[str, str]]:
@@ -2626,17 +2660,16 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
             logger.warning("Empty query received in _search_text - returning empty results")
             return []
 
-        global _last_search_time
-        cfg = _default_config
+        cfg = self._runtime_search_config()
 
         # Apply inter-search delay to avoid rate limiting (thread-safe)
         # Uses humanized timing for less predictable patterns
         # HIGH FIX: Compute wait time under lock, then release before sleeping
         # This prevents synchronized "burst then stall" patterns across threads
         wait_time = 0
-        with _search_lock:
+        with self._instance_search_lock:
             if cfg.inter_search_delay > 0:
-                elapsed = time.time() - _last_search_time
+                elapsed = time.time() - float(self._instance_last_search_time or 0.0)
                 base_delay = cfg.inter_search_delay
                 humanized_delay = _humanize_delay(base_delay, cfg)
                 if elapsed < humanized_delay:
@@ -2648,8 +2681,8 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
             time.sleep(wait_time)
 
         # Update last search time under lock
-        with _search_lock:
-            _last_search_time = time.time()
+        with self._instance_search_lock:
+            self._instance_last_search_time = time.time()
 
         # ────────────────────────────────────────────────────────────────────────
         # Proactive Anti-Detection: Session reset and circuit rotation
@@ -3033,6 +3066,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     headers=self.headers,
                     headless=self.headless,
                     bypass_proxy_for_driver=self.bypass_proxy_for_driver,
+                    config=cfg,
                 )
             except WebDriverException as exc:
                 exc_name = type(exc).__name__
@@ -3069,6 +3103,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                         **ddgs_kwargs,
                     )
                 ),
+                retries=cfg.max_retries,
+                backoff=cfg.backoff_multiplier,
+                timeout=cfg.timeout,
+                retry_delay=cfg.retry_delay,
             )
             # Add tier info to each result
             for item in ddgs_results:
@@ -3093,6 +3131,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
             max_results=max_results,
             proxy=self.proxy,
             headers=self.headers,
+            timeout=max(1, int(cfg.timeout)),
         )
         if fallback_results:
             return fallback_results
@@ -3108,6 +3147,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                 max_results=max_results,
                 proxy=self.proxy,
                 headers=self.headers,
+                timeout=max(1, int(cfg.timeout)),
             )
             if relaxed_results:
                 return relaxed_results
@@ -3119,6 +3159,7 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
         return self._search_text(query, kw.get("max_results", self.k))
 
     def _ddgs_images(self, query: str, **kw):
+        cfg = self._runtime_search_config()
         ddgs_kwargs = _build_ddgs_kwargs(
             max_results=kw.get("max_results", self.k),
             region=self.region,
@@ -3134,9 +3175,14 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     **ddgs_kwargs,
                 )
             ),
+            retries=cfg.max_retries,
+            backoff=cfg.backoff_multiplier,
+            timeout=cfg.timeout,
+            retry_delay=cfg.retry_delay,
         )
 
     def _ddgs_videos(self, query: str, **kw):
+        cfg = self._runtime_search_config()
         ddgs_kwargs = _build_ddgs_kwargs(
             max_results=kw.get("max_results", self.k),
             region=self.region,
@@ -3152,9 +3198,14 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     **ddgs_kwargs,
                 )
             ),
+            retries=cfg.max_retries,
+            backoff=cfg.backoff_multiplier,
+            timeout=cfg.timeout,
+            retry_delay=cfg.retry_delay,
         )
 
     def _ddgs_news(self, query: str, **kw):
+        cfg = self._runtime_search_config()
         ddgs_kwargs = _build_ddgs_kwargs(
             max_results=kw.get("max_results", self.k),
             region=self.region,
@@ -3170,6 +3221,10 @@ class PatchedDuckDuckGoSearchAPIWrapper(DuckDuckGoSearchAPIWrapper):
                     **ddgs_kwargs,
                 )
             ),
+            retries=cfg.max_retries,
+            backoff=cfg.backoff_multiplier,
+            timeout=cfg.timeout,
+            retry_delay=cfg.retry_delay,
         )
 
 class PatchedDuckDuckGoSearchRun(DuckDuckGoSearchRun):
@@ -3713,10 +3768,22 @@ _TRACKING_QUERY_KEYS = {
     "utm_term",
 }
 _PREFER_HTTPS_URLS = _env_flag("ASA_PREFER_HTTPS_URLS", default=True)
-_AUTO_OPENWEBPAGE_PRIMARY_SOURCE = _env_flag(
+_legacy_auto_openwebpage_flag = _env_flag(
     "ASA_AUTO_OPENWEBPAGE_PRIMARY_SOURCE",
     default=True,
 )
+_raw_auto_openwebpage_policy = str(
+    os.getenv("ASA_AUTO_OPENWEBPAGE_POLICY", "")
+).strip().lower()
+if not _raw_auto_openwebpage_policy:
+    _AUTO_OPENWEBPAGE_POLICY = "aggressive" if _legacy_auto_openwebpage_flag else "off"
+elif _raw_auto_openwebpage_policy in {"off", "conservative", "aggressive"}:
+    _AUTO_OPENWEBPAGE_POLICY = _raw_auto_openwebpage_policy
+elif _raw_auto_openwebpage_policy in {"on", "true", "1", "enabled"}:
+    _AUTO_OPENWEBPAGE_POLICY = "aggressive"
+else:
+    _AUTO_OPENWEBPAGE_POLICY = "aggressive"
+_AUTO_OPENWEBPAGE_PRIMARY_SOURCE = _AUTO_OPENWEBPAGE_POLICY != "off"
 _AUTO_OPENWEBPAGE_SELECTOR_MODE = (
     str(os.getenv("ASA_AUTO_OPENWEBPAGE_SELECTOR_MODE", "heuristic") or "heuristic")
     .strip()

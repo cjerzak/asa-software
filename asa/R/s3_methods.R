@@ -510,6 +510,13 @@ search_options <- function(max_results = NULL,
                            retry_delay = NULL,
                            backoff_multiplier = NULL,
                            inter_search_delay = NULL,
+                           humanize_timing = NULL,
+                           jitter_factor = NULL,
+                           allow_direct_fallback = NULL,
+                           stability_profile = NULL,
+                           auto_openwebpage_policy = NULL,
+                           langgraph_node_retries = NULL,
+                           langgraph_cache_enabled = NULL,
                            allow_read_webpages = NULL,
                            webpage_relevance_mode = NULL,
                            webpage_heuristic_profile = NULL,
@@ -542,6 +549,19 @@ search_options <- function(max_results = NULL,
                            wiki_top_k_results = NULL,
                            wiki_doc_content_chars_max = NULL,
                            search_doc_content_chars_max = NULL) {
+  profile <- tolower(as.character(stability_profile %||% "stealth_first"))
+  if (!profile %in% c("deterministic", "balanced", "stealth_first")) {
+    profile <- "stealth_first"
+  }
+  auto_policy <- tolower(as.character(auto_openwebpage_policy %||% ""))
+  if (!auto_policy %in% c("off", "conservative", "aggressive")) {
+    auto_policy <- switch(
+      profile,
+      deterministic = "off",
+      balanced = "conservative",
+      stealth_first = "conservative"
+    )
+  }
 
   structure(
     list(
@@ -551,6 +571,13 @@ search_options <- function(max_results = NULL,
       retry_delay = retry_delay %||% 2.0,
       backoff_multiplier = backoff_multiplier %||% 1.5,
       inter_search_delay = inter_search_delay %||% ASA_DEFAULT_INTER_SEARCH_DELAY,
+      humanize_timing = humanize_timing %||% ASA_HUMANIZE_TIMING,
+      jitter_factor = jitter_factor %||% ASA_JITTER_FACTOR,
+      allow_direct_fallback = allow_direct_fallback %||% FALSE,
+      stability_profile = profile,
+      auto_openwebpage_policy = auto_policy,
+      langgraph_node_retries = langgraph_node_retries %||% TRUE,
+      langgraph_cache_enabled = langgraph_cache_enabled %||% FALSE,
       wiki_top_k_results = wiki_top_k_results %||% ASA_DEFAULT_WIKI_TOP_K,
       wiki_doc_content_chars_max = wiki_doc_content_chars_max %||% ASA_DEFAULT_WIKI_CHARS,
       search_doc_content_chars_max = search_doc_content_chars_max %||% 500L,
@@ -601,10 +628,15 @@ print.asa_search <- function(x, ...) {
       ", timeout=", x$timeout, "s",
       ", retries=", x$max_retries,
       ", delay=", x$inter_search_delay, "s",
+      ", profile=", x$stability_profile %||% "stealth_first",
       ", wiki_top_k_results=", x$wiki_top_k_results,
       ", wiki_doc_content_chars_max=", x$wiki_doc_content_chars_max,
       ", search_doc_content_chars_max=", x$search_doc_content_chars_max,
       ", allow_read_webpages=", x$allow_read_webpages, sep = "")
+  if (!is.null(x$auto_openwebpage_policy) &&
+      !identical(x$auto_openwebpage_policy, "conservative")) {
+    cat(", auto_openwebpage_policy=", x$auto_openwebpage_policy, sep = "")
+  }
   # Only show OpenWebpage size tuning when explicitly set.
   if (!is.null(x$webpage_max_chars)) {
     cat(", webpage_max_chars=", x$webpage_max_chars, sep = "")

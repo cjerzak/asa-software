@@ -19,6 +19,53 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global}
+    \entry{kaufman2012leakage}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=a63501185d4f0efbf451c58b68955177}{%
+           family={Kaufman},
+           familyi={K\bibinitperiod},
+           given={Shachar},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=419317fdd051d6322062748170149516}{%
+           family={Rosset},
+           familyi={R\bibinitperiod},
+           given={Saharon},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c333f5fc9269b6c1e7ae7c04a209af70}{%
+           family={Perlich},
+           familyi={P\bibinitperiod},
+           given={Claudia},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {ACM}%
+      }
+      \strng{namehash}{61ac07c4212f1718d55749b2e05972c3}
+      \strng{fullhash}{61ac07c4212f1718d55749b2e05972c3}
+      \strng{bibnamehash}{61ac07c4212f1718d55749b2e05972c3}
+      \strng{authorbibnamehash}{61ac07c4212f1718d55749b2e05972c3}
+      \strng{authornamehash}{61ac07c4212f1718d55749b2e05972c3}
+      \strng{authorfullhash}{61ac07c4212f1718d55749b2e05972c3}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ACM Transactions on Knowledge Discovery from Data}
+      \field{number}{4}
+      \field{title}{Leakage in data mining: Formulation, detection, and avoidance}
+      \field{volume}{6}
+      \field{year}{2012}
+      \field{pages}{15:1\bibrangedash 15:21}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1145/2382577.2382579
+      \endverb
+    \endentry
     \entry{lewis2020retrieval}{inproceedings}{}
       \name{author}{12}{}{%
         {{un=0,uniquepart=base,hash=ecbe786a5668bf643d74bb24fe1c3cfe}{%
@@ -153,6 +200,82 @@
       \field{year}{2018}
       \field{pages}{760\bibrangedash 775}
       \range{pages}{16}
+    \endentry
+    \entry{peng2011reproducible}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=4c07f81b520ea14b34f1539e6f29d185}{%
+           family={Peng},
+           familyi={P\bibinitperiod},
+           given={Roger\bibnamedelima D},
+           giveni={R\bibinitperiod\bibinitdelim D\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4c07f81b520ea14b34f1539e6f29d185}
+      \strng{fullhash}{4c07f81b520ea14b34f1539e6f29d185}
+      \strng{bibnamehash}{4c07f81b520ea14b34f1539e6f29d185}
+      \strng{authorbibnamehash}{4c07f81b520ea14b34f1539e6f29d185}
+      \strng{authornamehash}{4c07f81b520ea14b34f1539e6f29d185}
+      \strng{authorfullhash}{4c07f81b520ea14b34f1539e6f29d185}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Science}
+      \field{number}{6060}
+      \field{title}{Reproducible research in computational science}
+      \field{volume}{334}
+      \field{year}{2011}
+      \field{pages}{1226\bibrangedash 1227}
+      \range{pages}{2}
+      \verb{doi}
+      \verb 10.1126/science.1213847
+      \endverb
+    \endentry
+    \entry{stodden2013toward}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=2f18fc23a917fe1f0c74958b593f4e71}{%
+           family={Stodden},
+           familyi={S\bibinitperiod},
+           given={Victoria},
+           giveni={V\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5d6657900f7332062d27ba245b1a212e}{%
+           family={Guo},
+           familyi={G\bibinitperiod},
+           given={Peixuan},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1dfe3e99026450a5e9a935fb2edc2c8d}{%
+           family={Ma},
+           familyi={M\bibinitperiod},
+           given={Zhaokun},
+           giveni={Z\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{18989710ab1485ae0541515b5ea0a722}
+      \strng{fullhash}{18989710ab1485ae0541515b5ea0a722}
+      \strng{bibnamehash}{18989710ab1485ae0541515b5ea0a722}
+      \strng{authorbibnamehash}{18989710ab1485ae0541515b5ea0a722}
+      \strng{authornamehash}{18989710ab1485ae0541515b5ea0a722}
+      \strng{authorfullhash}{18989710ab1485ae0541515b5ea0a722}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{PLOS ONE}
+      \field{number}{6}
+      \field{title}{Toward Reproducible Computational Research: An Empirical Analysis of Data and Code Policy Adoption by Journals}
+      \field{volume}{8}
+      \field{year}{2013}
+      \field{pages}{e67111}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1371/journal.pone.0067111
+      \endverb
     \endentry
     \entry{yao2022react}{misc}{}
       \name{author}{7}{}{%

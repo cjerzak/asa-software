@@ -238,6 +238,68 @@ test_that(".with_search_config applies and restores when requested settings diff
   expect_equal(mock$state$current, fixture)
 })
 
+test_that(".with_search_config prefers wrapper-scoped SearchConfig when agent wrapper is available", {
+  asa_ns_env <- get("asa_env", envir = asNamespace("asa"))
+  old_tools <- asa_ns_env$tools
+  on.exit({
+    asa_ns_env$tools <- old_tools
+  }, add = TRUE)
+
+  wrapper <- new.env(parent = emptyenv())
+  wrapper$`_search_text` <- function(...) list()
+  wrapper$search_config <- list(max_results = 9L, timeout = 9)
+
+  agent <- asa::asa_agent(
+    python_agent = NULL,
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    config = list(),
+    llm = NULL,
+    tools = list(list(), list(api_wrapper = wrapper))
+  )
+
+  testthat::local_mocked_bindings(
+    use_condaenv = function(conda_env, required = TRUE) invisible(NULL),
+    .package = "reticulate"
+  )
+  testthat::local_mocked_bindings(
+    .import_backend_api = function(required = TRUE) {
+      list(SearchConfig = function(...) {
+        list(...)
+      })
+    },
+    .package = "asa"
+  )
+
+  search <- asa::search_options(
+    max_results = 12L,
+    timeout = 11,
+    max_retries = 4L,
+    retry_delay = 3,
+    backoff_multiplier = 2.0,
+    inter_search_delay = 0.5,
+    humanize_timing = FALSE,
+    jitter_factor = 0.1,
+    allow_direct_fallback = FALSE
+  )
+
+  inside_cfg <- NULL
+  out <- asa:::.with_search_config(
+    search = search,
+    conda_env = "asa_env",
+    agent = agent,
+    fn = function() {
+      inside_cfg <<- wrapper$search_config
+      "ok"
+    }
+  )
+
+  expect_identical(out, "ok")
+  expect_equal(inside_cfg$max_results, 12L)
+  expect_equal(inside_cfg$timeout, 11)
+  expect_identical(wrapper$search_config$max_results, 9L)
+})
+
 test_that(".with_webpage_reader_config skips configure/restore when requested settings already match", {
   asa_ns_env <- get("asa_env", envir = asNamespace("asa"))
   old_tool <- asa_ns_env$webpage_tool

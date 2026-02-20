@@ -21,6 +21,7 @@
                        search_budget_limit = NULL,
                        unknown_after_searches = NULL,
                        finalize_on_all_fields_resolved = NULL,
+                       auto_openwebpage_policy = NULL,
                        field_rules = NULL,
                        source_policy = NULL,
                        retry_policy = NULL,
@@ -79,6 +80,13 @@
   invoke_retry_backoff <- as.numeric(config$invoke_retry_backoff %||% ASA_DEFAULT_INVOKE_RETRY_BACKOFF)
   invoke_retry_jitter <- as.numeric(config$invoke_retry_jitter %||% ASA_DEFAULT_INVOKE_RETRY_JITTER)
   invoke_max_attempts <- max(1L, invoke_max_attempts)
+  if (is.null(auto_openwebpage_policy)) {
+    auto_openwebpage_policy <- config$search$auto_openwebpage_policy %||% NULL
+  }
+  if (isTRUE(config$search$langgraph_node_retries %||% FALSE)) {
+    # Avoid retry multiplication when graph nodes already retry natively.
+    invoke_max_attempts <- 1L
+  }
 
   # Build initial state and invoke agent
   invoke_output <- tryCatch({
@@ -96,6 +104,7 @@
             search_budget_limit = search_budget_limit,
             unknown_after_searches = unknown_after_searches,
             finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+            auto_openwebpage_policy = auto_openwebpage_policy,
             field_rules = field_rules,
             source_policy = source_policy,
             retry_policy = retry_policy,
@@ -121,6 +130,7 @@
             search_budget_limit = search_budget_limit,
             unknown_after_searches = unknown_after_searches,
             finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+            auto_openwebpage_policy = auto_openwebpage_policy,
             field_rules = field_rules,
             source_policy = source_policy,
             retry_policy = retry_policy,
@@ -400,6 +410,7 @@
                                          search_budget_limit = NULL,
                                          unknown_after_searches = NULL,
                                          finalize_on_all_fields_resolved = NULL,
+                                         auto_openwebpage_policy = NULL,
                                          field_rules = NULL,
                                          source_policy = NULL,
                                          retry_policy = NULL,
@@ -443,6 +454,9 @@
   }
   if (!is.null(finalize_on_all_fields_resolved)) {
     initial_state$finalize_on_all_fields_resolved <- isTRUE(finalize_on_all_fields_resolved)
+  }
+  if (!is.null(auto_openwebpage_policy) && nzchar(as.character(auto_openwebpage_policy))) {
+    initial_state$auto_openwebpage_policy <- as.character(auto_openwebpage_policy)
   }
   if (!is.null(field_rules)) {
     initial_state$field_rules <- field_rules
@@ -504,6 +518,7 @@
                                    search_budget_limit = NULL,
                                    unknown_after_searches = NULL,
                                    finalize_on_all_fields_resolved = NULL,
+                                   auto_openwebpage_policy = NULL,
                                    field_rules = NULL,
                                    source_policy = NULL,
                                    retry_policy = NULL,
@@ -545,6 +560,9 @@
   }
   if (!is.null(finalize_on_all_fields_resolved)) {
     initial_state$finalize_on_all_fields_resolved <- isTRUE(finalize_on_all_fields_resolved)
+  }
+  if (!is.null(auto_openwebpage_policy) && nzchar(as.character(auto_openwebpage_policy))) {
+    initial_state$auto_openwebpage_policy <- as.character(auto_openwebpage_policy)
   }
   if (!is.null(field_rules)) {
     initial_state$field_rules <- field_rules

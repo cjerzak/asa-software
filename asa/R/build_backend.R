@@ -143,19 +143,19 @@ build_backend <- function(conda_env = NULL,
 
   # LangChain ecosystem
   pip_install(c(
-    "langchain_groq",
-    "langchain_community",
-    "langchain_openai",
-    "langchain-google-genai",
-    "langchain-anthropic",
-    "langchain-aws",
-    "langgraph",
+    "langchain_groq>=0.2,<1.0",
+    "langchain_community>=0.3,<1.0",
+    "langchain_openai>=0.3,<1.0",
+    "langchain-google-genai>=2.1,<3.0",
+    "langchain-anthropic>=0.3,<1.0",
+    "langchain-aws>=0.2,<1.0",
+    "langgraph>=0.2,<1.0",
     "langchain-tavily"
   ))
 
   # Search and scraping tools
   pip_install(c(
-    "ddgs",
+    "ddgs>=8,<10",
     "selenium",
     "undetected-chromedriver",
     "primp",

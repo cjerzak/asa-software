@@ -66,7 +66,7 @@ urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
 \input{./../Figures/LLM_pol_party_Statistics.tex}
 
 \title{A Verifiable Search Agent Methodology at Scale for Political Elite Research}
-\author{(Authors omitted for review)}
+\author{Final author list TBD}
 \date{}
 
 \begin{document}
@@ -74,7 +74,7 @@ urlbordercolor={0 1 0}, citebordercolor={0 0 1}]{hyperref}
 \spacingset{1.25}
 
 \begin{abstract}
-Large-\(N\) political-elite datasets increasingly rely on digital traces, but scaling elite attribute coding with ``search-enabled LLMs'' raises three methodological hazards for inference and replication: (i) \emph{non-verifiability} (answers without durable evidence trails), (ii) \emph{non-comparability} (open-ended labels that drift across countries and time), and (iii) \emph{temporal leakage} (using post-period information to code pre-period attributes, a close analogue of post-treatment conditioning in causal inference).
+\noindent Large-\(N\) political-elite datasets increasingly rely on digital traces, but scaling elite attribute coding with ``search-enabled LLMs'' raises three methodological hazards for inference and replication: (i) \emph{non-verifiability} (answers without durable evidence trails), (ii) \emph{non-comparability} (open-ended labels that drift across countries and time), and (iii) \emph{temporal leakage} (using post-period information to code pre-period attributes, a close analogue of post-treatment conditioning in causal inference).
 We present a \emph{verifiable search agent} methodology that treats web retrieval as a measurement instrument whose inputs, outputs, and timing are explicitly governed and archived.
 The agent executes short, provenance-preserving search sessions; constrains decisions to expert-supplied closed codebooks; produces structured, citation-backed outputs; abstains under weak or conflicting evidence; and stores complete traces for audit and re-analysis.
 In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countries (\(N=\) \LLMNumInstancespolparty{} matched leader--records; \LLMNumClassespolparty{} party labels), the high-confidence accuracy is \LLMOverallAccHighpolparty{} while expanding usable coverage by \LLMNumPredictionsGainedPercentpolparty{}\% (\LLMNumPredictionsGainedpolparty{} previously missing labels) with a conservative abstention layer.
@@ -124,7 +124,11 @@ In a party-affiliation labeling task spanning \LLMNumCountriespolparty{} countri
   \label{fig:visual-abstract}
 \end{figure}
 
-\section{Motivation: why ``just use a search-enabled LLM'' is not enough}
+\section{Motivation: why ``just use an LLM'' is not enough}
+
+While large language models possess extensive parametric knowledge, relying solely on their internal weights to code elite political attributes introduces unacceptable risks for scientific research. Standalone LLMs lack inherent temporal awareness, meaning they cannot reliably distinguish between a politician's affiliation in 2010 versus 2024 without risking anachronistic errors.
+
+Furthermore, their tendency to confidently hallucinate niche factual details—especially for less prominent regional figures—and their fundamental inability to provide verifiable, reproducible primary citations make their raw outputs unsuitable for rigorous quantitative analysis.  Consequently, treating an LLM as a static oracle rather than a dynamic reasoning engine inevitably exposes researchers to three fundamental methodological hazards that compromise dataset integrity.
 
 Digital sources make it feasible to code political-elite attributes at scale, but research-grade datasets impose requirements that differ from interactive question answering.
 In practice, a default workflow---``ask a search-enabled model for the answer''---tends to fail on three dimensions central to quantitative political science.
@@ -283,7 +287,7 @@ Low-confidence outputs are withheld by design, trading recall for precision; the
   \label{fig:agent-heterogeneity}
 \end{figure}
 
-\input{./Figures/SamplePredictionsCompact_pol_party.tex}
+\input{./../Figures/SamplePredictionsCompact_pol_party.tex}
 
 \begin{figure}[htb]
 \centering

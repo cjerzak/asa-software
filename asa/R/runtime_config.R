@@ -87,15 +87,27 @@
   config_wiki_top_k <- ASA_DEFAULT_WIKI_TOP_K
   config_wiki_chars <- ASA_DEFAULT_WIKI_CHARS
   config_search_chars <- 500L
+  config_stability_profile <- "stealth_first"
+  config_langgraph_node_retries <- FALSE
+  config_langgraph_cache_enabled <- FALSE
   if (!is.null(config_search) && (inherits(config_search, "asa_search") || is.list(config_search))) {
     config_wiki_top_k <- config_search$wiki_top_k_results %||% config_wiki_top_k
     config_wiki_chars <- config_search$wiki_doc_content_chars_max %||% config_wiki_chars
     config_search_chars <- config_search$search_doc_content_chars_max %||% config_search_chars
+    config_stability_profile <- tolower(as.character(config_search$stability_profile %||% config_stability_profile))
+    config_langgraph_node_retries <- isTRUE(config_search$langgraph_node_retries %||% FALSE)
+    config_langgraph_cache_enabled <- isTRUE(config_search$langgraph_cache_enabled %||% FALSE)
   }
+  agent_stability_profile <- tolower(as.character(agent$config$stability_profile %||% "stealth_first"))
+  agent_langgraph_node_retries <- isTRUE(agent$config$langgraph_node_retries %||% FALSE)
+  agent_langgraph_cache_enabled <- isTRUE(agent$config$langgraph_cache_enabled %||% FALSE)
 
   same_search_tools <- identical(as.integer(agent_wiki_top_k), as.integer(config_wiki_top_k)) &&
     identical(as.integer(agent_wiki_chars), as.integer(config_wiki_chars)) &&
-    identical(as.integer(agent_search_chars), as.integer(config_search_chars))
+    identical(as.integer(agent_search_chars), as.integer(config_search_chars)) &&
+    identical(agent_stability_profile, config_stability_profile) &&
+    identical(agent_langgraph_node_retries, config_langgraph_node_retries) &&
+    identical(agent_langgraph_cache_enabled, config_langgraph_cache_enabled)
 
   isTRUE(same_backend && same_model && same_conda && same_proxy && same_browser &&
            same_folding && same_threshold && same_keep &&
@@ -184,7 +196,7 @@
 .with_runtime_wrappers <- function(runtime, conda_env = NULL, agent = NULL, fn) {
   conda_env <- conda_env %||% runtime$config_conda_env %||% .get_default_conda_env()
 
-  .with_search_config(runtime$config_search, conda_env = conda_env, function() {
+  .with_search_config(runtime$config_search, conda_env = conda_env, agent = agent, function() {
     .with_webpage_reader_config(
       runtime$allow_read_webpages,
       relevance_mode = runtime$relevance_mode,
@@ -292,10 +304,11 @@
 #'
 #' @param search asa_search object or list of search settings
 #' @param conda_env Conda env used by search tools
+#' @param agent Optional asa_agent used to apply per-wrapper search config
 #' @param fn Function to run with search config applied
 #' @return Result of fn()
 #' @keywords internal
-.with_search_config <- function(search, conda_env = NULL, fn) {
+.with_search_config <- function(search, conda_env = NULL, agent = NULL, fn) {
   conda_env <- conda_env %||% .get_default_conda_env()
   if (is.null(search)) {
     return(fn())
@@ -314,6 +327,73 @@
     return(fn())
   }
 
+  .resolve_search_api_wrapper <- function(agent = NULL) {
+    tools <- NULL
+    if (!is.null(agent) && inherits(agent, "asa_agent") && !is.null(agent$tools)) {
+      tools <- agent$tools
+    } else if (!is.null(asa_env$tools)) {
+      tools <- asa_env$tools
+    }
+    if (is.null(tools) || length(tools) < 2) {
+      return(NULL)
+    }
+    wrapper <- .try_or(tools[[2]]$api_wrapper, NULL)
+    if (is.null(wrapper)) {
+      return(NULL)
+    }
+    # Guard: wrapper should expose the patched search path.
+    has_search_method <- .try_or(is.function(wrapper$`_search_text`), FALSE)
+    if (!isTRUE(has_search_method)) {
+      return(NULL)
+    }
+    wrapper
+  }
+
+  search_wrapper <- .resolve_search_api_wrapper(agent = agent)
+  if (!is.null(search_wrapper)) {
+    wrapper_result <- tryCatch({
+      # Prefer wrapper-scoped SearchConfig to avoid global mutable-state bleed
+      # across concurrent runs.
+      reticulate::use_condaenv(conda_env, required = TRUE)
+      ddg_module <- .import_backend_api(required = TRUE)
+      previous_wrapper_cfg <- .try_or(search_wrapper$search_config, NULL)
+
+      requested_wrapper_cfg <- ddg_module$SearchConfig(
+        max_results = as.integer(search$max_results),
+        timeout = as.numeric(search$timeout),
+        max_retries = as.integer(search$max_retries),
+        retry_delay = as.numeric(search$retry_delay),
+        backoff_multiplier = as.numeric(search$backoff_multiplier),
+        inter_search_delay = as.numeric(search$inter_search_delay),
+        humanize_timing = isTRUE(search$humanize_timing %||% ASA_HUMANIZE_TIMING),
+        jitter_factor = as.numeric(search$jitter_factor %||% ASA_JITTER_FACTOR),
+        allow_direct_fallback = isTRUE(search$allow_direct_fallback %||% FALSE)
+      )
+
+      .with_config_snapshot(
+        snapshot_fn = function() {
+          previous_wrapper_cfg
+        },
+        restore_fn = function(previous) {
+          search_wrapper$search_config <- previous
+        },
+        should_restore = function(previous) {
+          TRUE
+        },
+        fn = function() {
+          search_wrapper$search_config <- requested_wrapper_cfg
+          fn()
+        }
+      )
+    }, error = function(e) NULL)
+
+    if (!is.null(wrapper_result)) {
+      return(wrapper_result)
+    }
+  }
+
+  # Fallback path for legacy callers without a live wrapper: use global backend
+  # defaults (thread-safe in Python, but process-wide).
   previous_cfg <- tryCatch(
     configure_search(conda_env = conda_env),
     error = function(e) NULL
@@ -401,4 +481,3 @@
 .resolve_option <- function(value, config, key) {
   if (is.null(value) && is.list(config) && !is.null(config[[key]])) config[[key]] else value
 }
-

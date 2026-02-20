@@ -323,7 +323,14 @@ initialize_agent <- function(backend = NULL,
 
   # Create LLM instance
   if (verbose) message("  Creating LLM (", backend, "/", model, ")...")
-  llm <- .create_llm(backend, model, clients, rate_limit, timeout = timeout)
+  llm <- .create_llm(
+    backend,
+    model,
+    clients,
+    rate_limit,
+    timeout = timeout,
+    stability_profile = search$stability_profile %||% "stealth_first"
+  )
 
   # Create search tools
   if (verbose) message("  Creating search tools...")
@@ -338,7 +345,9 @@ initialize_agent <- function(backend = NULL,
     memory_threshold = memory_threshold,
     memory_keep_recent = memory_keep_recent,
     fold_char_budget = fold_char_budget,
-    om_config = om_config
+    om_config = om_config,
+    langgraph_node_retries = isTRUE(search$langgraph_node_retries %||% FALSE),
+    langgraph_cache_enabled = isTRUE(search$langgraph_cache_enabled %||% FALSE)
   )
 
   # Store in package environment
@@ -371,6 +380,10 @@ initialize_agent <- function(backend = NULL,
     om_async_prebuffer = om_config$async_prebuffer,
     om_config = om_config,
     search = search,
+    stability_profile = search$stability_profile %||% "stealth_first",
+    auto_openwebpage_policy = search$auto_openwebpage_policy %||% "conservative",
+    langgraph_node_retries = isTRUE(search$langgraph_node_retries %||% FALSE),
+    langgraph_cache_enabled = isTRUE(search$langgraph_cache_enabled %||% FALSE),
     tor = tor
   )
 
@@ -476,7 +489,53 @@ initialize_agent <- function(backend = NULL,
 #' @param rate_limit Requests per second
 #' @param timeout Request timeout in seconds
 #' @keywords internal
-.create_llm <- function(backend, model, clients, rate_limit, timeout = ASA_DEFAULT_TIMEOUT) {
+.create_llm <- function(backend, model, clients, rate_limit,
+                        timeout = ASA_DEFAULT_TIMEOUT,
+                        stability_profile = "stealth_first") {
+  stability_profile <- tolower(as.character(stability_profile %||% "stealth_first"))
+  if (!stability_profile %in% c("deterministic", "balanced", "stealth_first")) {
+    stability_profile <- "stealth_first"
+  }
+
+  .profile_temperature <- function(name, profile = stability_profile) {
+    profile <- tolower(as.character(profile))
+    if (profile == "deterministic") {
+      return(switch(name,
+                    openai = 0.0,
+                    xai = 0.0,
+                    openrouter = 0.0,
+                    gemini = 0.1,
+                    groq = 0.0,
+                    anthropic = 0.0,
+                    bedrock = 0.0,
+                    exo = 0.01,
+                    0.0))
+    }
+    if (profile == "balanced") {
+      return(switch(name,
+                    openai = 0.5,
+                    xai = 0.5,
+                    openrouter = 0.5,
+                    gemini = 1.0,
+                    groq = 0.01,
+                    anthropic = ASA_DEFAULT_TEMPERATURES$anthropic,
+                    bedrock = ASA_DEFAULT_TEMPERATURES$bedrock,
+                    exo = 0.01,
+                    0.5))
+    }
+    # stealth_first profile: keep some variation while reducing extraction drift.
+    switch(name,
+           openai = 0.2,
+           xai = 0.2,
+           openrouter = 0.2,
+           gemini = 0.3,
+           groq = 0.01,
+           anthropic = 0.2,
+           bedrock = 0.2,
+           exo = 0.01,
+           0.2)
+  }
+
   # Create rate limiter
   rate_limiter <- asa_env$RateLimit$InMemoryRateLimiter(
     requests_per_second = rate_limit,
@@ -494,7 +553,7 @@ initialize_agent <- function(backend = NULL,
       openai = list(
         env = "OPENAI_API_KEY",
         base = Sys.getenv("OPENAI_API_BASE", unset = "https://api.openai.com/v1"),
-        temperature = 0.5,
+        temperature = .profile_temperature("openai"),
         http_client = clients$direct,
         include_response_headers = FALSE,
         rate_limiter = rate_limiter
@@ -502,17 +561,17 @@ initialize_agent <- function(backend = NULL,
       xai = list(
         env = "XAI_API_KEY",
         base = "https://api.x.ai/v1",
-        temperature = 0.5,
+        temperature = .profile_temperature("xai"),
         rate_limiter = rate_limiter
       ),
       exo = list(
         base = sprintf("http://%s:52415/v1", .get_local_ip()),
-        temperature = 0.01
+        temperature = .profile_temperature("exo")
       ),
       openrouter = list(
         env = "OPENROUTER_API_KEY",
         base = "https://openrouter.ai/api/v1",
-        temperature = 0.5,
+        temperature = .profile_temperature("openrouter"),
         http_client = clients$direct,
         include_response_headers = FALSE,
         rate_limiter = rate_limiter,
@@ -541,7 +600,7 @@ initialize_agent <- function(backend = NULL,
     llm <- chat_models$ChatGroq(
       groq_api_key = Sys.getenv("GROQ_API_KEY"),
       model = model,
-      temperature = 0.01,
+      temperature = .profile_temperature("groq"),
       streaming = TRUE,
       rate_limiter = rate_limiter
     )
@@ -554,7 +613,7 @@ initialize_agent <- function(backend = NULL,
 
     args <- list(
       model = model,
-      temperature = 1.0,
+      temperature = .profile_temperature("gemini"),
       timeout = as.numeric(timeout),
       rate_limiter = rate_limiter
     )
@@ -568,7 +627,7 @@ initialize_agent <- function(backend = NULL,
     llm <- chat_models$ChatAnthropic(
       api_key = Sys.getenv("ANTHROPIC_API_KEY"),
       model = model,
-      temperature = ASA_DEFAULT_TEMPERATURES$anthropic,
+      temperature = .profile_temperature("anthropic"),
       rate_limiter = rate_limiter
     )
   } else if (backend == "bedrock") {
@@ -577,7 +636,7 @@ initialize_agent <- function(backend = NULL,
     llm <- chat_models$ChatBedrockConverse(
       model_id = model,
       region_name = region,
-      temperature = ASA_DEFAULT_TEMPERATURES$bedrock
+      temperature = .profile_temperature("bedrock")
     )
   } else {
     stop("Unsupported backend: '", backend, "'. Supported backends: ",
@@ -597,18 +656,35 @@ initialize_agent <- function(backend = NULL,
   wiki_doc_content_chars_max <- ASA_DEFAULT_WIKI_CHARS
   search_doc_content_chars_max <- 500L
   search_max_results <- ASA_DEFAULT_MAX_RESULTS
+  search_humanize_timing <- ASA_HUMANIZE_TIMING
+  search_jitter_factor <- ASA_JITTER_FACTOR
+  search_allow_direct_fallback <- FALSE
 
   if (!is.null(search) && inherits(search, "asa_search")) {
     wiki_top_k_results <- search$wiki_top_k_results %||% wiki_top_k_results
     wiki_doc_content_chars_max <- search$wiki_doc_content_chars_max %||% wiki_doc_content_chars_max
     search_doc_content_chars_max <- search$search_doc_content_chars_max %||% search_doc_content_chars_max
     search_max_results <- search$max_results %||% search_max_results
+    search_humanize_timing <- search$humanize_timing %||% search_humanize_timing
+    search_jitter_factor <- search$jitter_factor %||% search_jitter_factor
+    search_allow_direct_fallback <- search$allow_direct_fallback %||% search_allow_direct_fallback
   }
 
   wiki_top_k_results <- as.integer(wiki_top_k_results)
   wiki_doc_content_chars_max <- as.integer(wiki_doc_content_chars_max)
   search_doc_content_chars_max <- as.integer(search_doc_content_chars_max)
   search_max_results <- as.integer(search_max_results)
+  search_cfg <- asa_env$backend_api$SearchConfig(
+    max_results = as.integer(search_max_results),
+    timeout = as.numeric(search$timeout %||% ASA_DEFAULT_SEARCH_TIMEOUT),
+    max_retries = as.integer(search$max_retries %||% ASA_DEFAULT_MAX_RETRIES),
+    retry_delay = as.numeric(search$retry_delay %||% 2.0),
+    backoff_multiplier = as.numeric(search$backoff_multiplier %||% 1.5),
+    inter_search_delay = as.numeric(search$inter_search_delay %||% ASA_DEFAULT_INTER_SEARCH_DELAY),
+    humanize_timing = isTRUE(search_humanize_timing),
+    jitter_factor = as.numeric(search_jitter_factor),
+    allow_direct_fallback = isTRUE(search_allow_direct_fallback)
+  )
 
   # Wikipedia tool
   wiki <- asa_env$community_tools$WikipediaQueryRun(
@@ -631,7 +707,8 @@ initialize_agent <- function(backend = NULL,
       use_browser = isTRUE(use_browser),
       max_results = search_max_results,
       safesearch = "moderate",
-      time = "none"
+      time = "none",
+      search_config = search_cfg
     ),
     doc_content_chars_max = search_doc_content_chars_max,
     timeout = 90L,
@@ -668,7 +745,19 @@ initialize_agent <- function(backend = NULL,
                           memory_threshold, memory_keep_recent,
                           fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET,
                           min_fold_batch = ASA_DEFAULT_MIN_FOLD_BATCH,
-                          om_config = NULL) {
+                          om_config = NULL,
+                          langgraph_node_retries = FALSE,
+                          langgraph_cache_enabled = FALSE) {
+  node_retry_policy <- if (isTRUE(langgraph_node_retries)) {
+    list(
+      max_attempts = 2L,
+      initial_interval = 0.5,
+      backoff_factor = 2.0,
+      jitter = TRUE
+    )
+  } else {
+    NULL
+  }
   if (use_memory_folding) {
     # Use custom memory folding agent with unified API
     agent <- asa_env$backend_api$create_memory_folding_agent(
@@ -680,7 +769,9 @@ initialize_agent <- function(backend = NULL,
       fold_char_budget = as.integer(fold_char_budget),
       min_fold_batch = as.integer(min_fold_batch),
       debug = FALSE,
-      om_config = om_config %||% list(enabled = FALSE, scope = "thread", cross_thread_memory = FALSE)
+      om_config = om_config %||% list(enabled = FALSE, scope = "thread", cross_thread_memory = FALSE),
+      node_retry_policy = node_retry_policy,
+      cache_enabled = isTRUE(langgraph_cache_enabled)
     )
   } else {
     # Use standard ReAct agent with RemainingSteps guard
@@ -688,7 +779,9 @@ initialize_agent <- function(backend = NULL,
       model = llm,
       tools = tools,
       checkpointer = asa_env$MemorySaver(),
-      debug = FALSE
+      debug = FALSE,
+      node_retry_policy = node_retry_policy,
+      cache_enabled = isTRUE(langgraph_cache_enabled)
     )
   }
 

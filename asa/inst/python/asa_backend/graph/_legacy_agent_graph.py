@@ -33,6 +33,7 @@ from asa_backend.schema_state import (
     schema_leaf_paths as _shared_schema_leaf_paths,
 )
 from asa_backend.search._legacy_transport import (
+    _AUTO_OPENWEBPAGE_POLICY,
     _AUTO_OPENWEBPAGE_PRIMARY_SOURCE,
     _AUTO_OPENWEBPAGE_SELECTOR_MODE,
     _LOW_SIGNAL_HOST_FRAGMENTS,
@@ -5935,6 +5936,7 @@ class MemoryFoldingAgentState(TypedDict):
     source_policy: Optional[Dict[str, Any]]
     retry_policy: Optional[Dict[str, Any]]
     finalization_policy: Optional[Dict[str, Any]]
+    auto_openwebpage_policy: Optional[str]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
     candidate_facts: Optional[List[Dict[str, Any]]]
@@ -6839,6 +6841,61 @@ def _build_retry_rewrite_message(
     )
 
 
+def _normalize_auto_openwebpage_policy(raw_policy: Any) -> str:
+    token = str(raw_policy or "").strip().lower()
+    if token in {"off", "none", "disabled", "false", "0"}:
+        return "off"
+    if token in {"conservative", "safe", "budgeted"}:
+        return "conservative"
+    if token in {"aggressive", "on", "enabled", "true", "1"}:
+        return "aggressive"
+    return ""
+
+
+def _state_auto_openwebpage_policy(state: Any) -> str:
+    explicit = _normalize_auto_openwebpage_policy(state.get("auto_openwebpage_policy"))
+    if explicit:
+        return explicit
+    default_policy = _normalize_auto_openwebpage_policy(_AUTO_OPENWEBPAGE_POLICY)
+    if default_policy:
+        return default_policy
+    return "aggressive" if _AUTO_OPENWEBPAGE_PRIMARY_SOURCE else "off"
+
+
+def _should_auto_openwebpage_followup(
+    state: Any,
+    tool_messages: List[Any],
+    search_queries: List[str],
+) -> bool:
+    policy = _state_auto_openwebpage_policy(state)
+    if policy == "off":
+        return False
+    if not search_queries:
+        return False
+    if not tool_messages:
+        return False
+
+    budget = _state_budget(state)
+    remaining = int(budget.get("tool_calls_remaining", 0) or 0)
+    min_remaining = 2 if policy == "conservative" else 1
+    if remaining < min_remaining:
+        return False
+
+    if policy == "aggressive":
+        return True
+
+    for msg in tool_messages:
+        if not _message_is_tool(msg):
+            continue
+        tool_name = _normalize_match_text(_tool_message_name(msg))
+        if "search" not in tool_name:
+            continue
+        content = _message_content_to_text(msg)
+        if "__START_OF_SOURCE" in content and "<URL>" in content:
+            return True
+    return False
+
+
 def _create_tool_node_with_scratchpad(
     base_tool_node,
     *,
@@ -6905,9 +6962,9 @@ def _create_tool_node_with_scratchpad(
 
         tool_messages = list(result.get("messages") or [])
         if (
-            _AUTO_OPENWEBPAGE_PRIMARY_SOURCE
-            and not had_explicit_openwebpage_call
+            not had_explicit_openwebpage_call
             and not _is_critical_recursion_step(state, remaining_steps_value(state))
+            and _should_auto_openwebpage_followup(state, tool_messages, search_queries)
         ):
             follow_url = _select_round_openwebpage_candidate(
                 state.get("messages") or [],
@@ -7167,6 +7224,94 @@ def _should_force_finalize(state) -> bool:
     return _is_within_finalization_cutoff(state, remaining)
 
 
+def _normalize_langgraph_node_retry_policy(raw_policy: Any) -> Optional[Dict[str, Any]]:
+    if not raw_policy:
+        return None
+    policy: Dict[str, Any] = dict(raw_policy) if isinstance(raw_policy, dict) else {}
+    try:
+        max_attempts = int(policy.get("max_attempts", 2))
+    except Exception:
+        max_attempts = 2
+    if max_attempts <= 1:
+        return None
+    out: Dict[str, Any] = {"max_attempts": max(2, max_attempts)}
+    for key in ("initial_interval", "backoff_factor", "max_interval", "jitter"):
+        if key not in policy:
+            continue
+        value = policy.get(key)
+        if value is None:
+            continue
+        out[key] = value
+    return out
+
+
+def _coerce_langgraph_retry_policy(raw_policy: Optional[Dict[str, Any]]) -> Any:
+    if not raw_policy:
+        return None
+    try:
+        from langgraph.types import RetryPolicy as _LangGraphRetryPolicy
+
+        return _LangGraphRetryPolicy(**dict(raw_policy))
+    except Exception:
+        return dict(raw_policy)
+
+
+def _resolve_langgraph_cache(cache_enabled: bool) -> Tuple[Any, Any]:
+    if not cache_enabled:
+        return None, None
+    cache_policy = None
+    cache_backend = None
+    try:
+        from langgraph.types import CachePolicy as _LangGraphCachePolicy
+
+        cache_policy = _LangGraphCachePolicy()
+    except Exception:
+        cache_policy = None
+    try:
+        from langgraph.cache.memory import InMemoryCache as _LangGraphInMemoryCache
+
+        cache_backend = _LangGraphInMemoryCache()
+    except Exception:
+        cache_backend = None
+    return cache_policy, cache_backend
+
+
+def _add_node_with_native_policies(
+    workflow: Any,
+    node_name: str,
+    node_callable: Any,
+    *,
+    retry_policy: Any = None,
+    cache_policy: Any = None,
+) -> None:
+    kwargs: Dict[str, Any] = {}
+    if retry_policy is not None:
+        kwargs["retry_policy"] = retry_policy
+    if cache_policy is not None:
+        kwargs["cache_policy"] = cache_policy
+    if kwargs:
+        try:
+            workflow.add_node(node_name, node_callable, **kwargs)
+            return
+        except TypeError:
+            # Older LangGraph versions may not support these kwargs.
+            pass
+        except Exception:
+            pass
+    workflow.add_node(node_name, node_callable)
+
+
+def _compile_with_optional_cache(workflow: Any, *, checkpointer: Any = None, cache_backend: Any = None) -> Any:
+    if cache_backend is not None:
+        try:
+            return workflow.compile(checkpointer=checkpointer, cache=cache_backend)
+        except TypeError:
+            pass
+        except Exception:
+            pass
+    return workflow.compile(checkpointer=checkpointer)
+
+
 def create_memory_folding_agent(
     model,
     tools: list,
@@ -7179,6 +7324,8 @@ def create_memory_folding_agent(
     summarizer_model = None,
     debug: bool = False,
     om_config: Optional[Dict[str, Any]] = None,
+    node_retry_policy: Optional[Dict[str, Any]] = None,
+    cache_enabled: bool = False,
 ):
     """
     Create a LangGraph agent with autonomous memory folding.
@@ -7207,6 +7354,10 @@ def create_memory_folding_agent(
     if summarizer_model is None:
         summarizer_model = model
     om_config = _normalize_om_config(om_config)
+    native_retry_policy = _coerce_langgraph_retry_policy(
+        _normalize_langgraph_node_retry_policy(node_retry_policy)
+    )
+    native_cache_policy, cache_backend = _resolve_langgraph_cache(bool(cache_enabled))
 
     # Auto-clamp min_fold_batch so aggressive test configs (threshold=2) still fold.
     # For production (threshold=16): effective = min(6, 8) = 6
@@ -9111,14 +9262,34 @@ def create_memory_folding_agent(
     # Build the StateGraph
     workflow = StateGraph(MemoryFoldingAgentState)
 
-    # Add nodes
-    workflow.add_node("agent", agent_node)
-    workflow.add_node("tools", tool_node_with_scratchpad)
-    workflow.add_node("observe", observe_conversation)
-    workflow.add_node("reflect", summarize_conversation)
-    workflow.add_node("summarize", summarize_conversation)
-    workflow.add_node("finalize", finalize_answer)
-    workflow.add_node("nudge", nudge_node)
+    # Add nodes (retry policy is best-effort and ignored on older LangGraph versions).
+    _add_node_with_native_policies(
+        workflow,
+        "agent",
+        agent_node,
+        retry_policy=native_retry_policy,
+    )
+    _add_node_with_native_policies(
+        workflow,
+        "tools",
+        tool_node_with_scratchpad,
+        retry_policy=native_retry_policy,
+    )
+    _add_node_with_native_policies(workflow, "observe", observe_conversation)
+    _add_node_with_native_policies(workflow, "reflect", summarize_conversation)
+    _add_node_with_native_policies(workflow, "summarize", summarize_conversation)
+    _add_node_with_native_policies(
+        workflow,
+        "finalize",
+        finalize_answer,
+        retry_policy=native_retry_policy,
+    )
+    _add_node_with_native_policies(
+        workflow,
+        "nudge",
+        nudge_node,
+        cache_policy=native_cache_policy,
+    )
 
     workflow.set_entry_point("agent")
 
@@ -9188,8 +9359,12 @@ def create_memory_folding_agent(
 
     workflow.add_edge("finalize", END)
 
-    # Compile with optional checkpointer and return
-    return workflow.compile(checkpointer=checkpointer)
+    # Compile with optional checkpointer/cache and return.
+    return _compile_with_optional_cache(
+        workflow,
+        checkpointer=checkpointer,
+        cache_backend=cache_backend,
+    )
 
 
 class StandardAgentState(TypedDict):
@@ -9216,6 +9391,7 @@ class StandardAgentState(TypedDict):
     source_policy: Optional[Dict[str, Any]]
     retry_policy: Optional[Dict[str, Any]]
     finalization_policy: Optional[Dict[str, Any]]
+    auto_openwebpage_policy: Optional[str]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
     candidate_facts: Optional[List[Dict[str, Any]]]
@@ -9245,7 +9421,9 @@ def create_standard_agent(
     tools: list,
     *,
     checkpointer=None,
-    debug: bool = False
+    debug: bool = False,
+    node_retry_policy: Optional[Dict[str, Any]] = None,
+    cache_enabled: bool = False,
 ):
     """
     Create a standard ReAct-style LangGraph agent with RemainingSteps guard.
@@ -9253,6 +9431,10 @@ def create_standard_agent(
     from langgraph.graph import StateGraph, END
     from langchain_core.messages import SystemMessage, HumanMessage
     from langgraph.prebuilt import ToolNode
+    native_retry_policy = _coerce_langgraph_retry_policy(
+        _normalize_langgraph_node_retry_policy(node_retry_policy)
+    )
+    native_cache_policy, cache_backend = _resolve_langgraph_cache(bool(cache_enabled))
 
     # Create save_finding and update_plan tools, combine with user-provided tools
     save_finding = _make_save_finding_tool()
@@ -9885,10 +10067,30 @@ def create_standard_agent(
         return _route_after_tools_step(state)
 
     workflow = StateGraph(StandardAgentState)
-    workflow.add_node("agent", agent_node)
-    workflow.add_node("tools", tool_node_with_scratchpad)
-    workflow.add_node("finalize", finalize_answer)
-    workflow.add_node("nudge", nudge_node)
+    _add_node_with_native_policies(
+        workflow,
+        "agent",
+        agent_node,
+        retry_policy=native_retry_policy,
+    )
+    _add_node_with_native_policies(
+        workflow,
+        "tools",
+        tool_node_with_scratchpad,
+        retry_policy=native_retry_policy,
+    )
+    _add_node_with_native_policies(
+        workflow,
+        "finalize",
+        finalize_answer,
+        retry_policy=native_retry_policy,
+    )
+    _add_node_with_native_policies(
+        workflow,
+        "nudge",
+        nudge_node,
+        cache_policy=native_cache_policy,
+    )
 
     workflow.set_entry_point("agent")
 
@@ -9917,7 +10119,11 @@ def create_standard_agent(
 
     workflow.add_edge("finalize", END)
 
-    return workflow.compile(checkpointer=checkpointer)
+    return _compile_with_optional_cache(
+        workflow,
+        checkpointer=checkpointer,
+        cache_backend=cache_backend,
+    )
 
 
 def create_memory_folding_agent_with_checkpointer(

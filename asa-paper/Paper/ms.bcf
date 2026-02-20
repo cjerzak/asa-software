@@ -2371,8 +2371,18 @@
   <bcf:section number="0">
     <bcf:citekey order="1" intorder="1">montgomery2018conditioning</bcf:citekey>
     <bcf:citekey order="2" intorder="1">montgomery2018conditioning</bcf:citekey>
-    <bcf:citekey order="3" intorder="1">yao2022react</bcf:citekey>
-    <bcf:citekey order="3" intorder="2">lewis2020retrieval</bcf:citekey>
+    <bcf:citekey order="3" intorder="1">montgomery2018conditioning</bcf:citekey>
+    <bcf:citekey order="3" intorder="2">kaufman2012leakage</bcf:citekey>
+    <bcf:citekey order="4" intorder="1">peng2011reproducible</bcf:citekey>
+    <bcf:citekey order="4" intorder="2">stodden2013toward</bcf:citekey>
+    <bcf:citekey order="5" intorder="1">yao2022react</bcf:citekey>
+    <bcf:citekey order="5" intorder="2">lewis2020retrieval</bcf:citekey>
+    <bcf:citekey order="6" intorder="1">montgomery2018conditioning</bcf:citekey>
+    <bcf:citekey order="6" intorder="2">kaufman2012leakage</bcf:citekey>
+    <bcf:citekey order="7" intorder="1">kaufman2012leakage</bcf:citekey>
+    <bcf:citekey order="8" intorder="1">montgomery2018conditioning</bcf:citekey>
+    <bcf:citekey order="9" intorder="1">peng2011reproducible</bcf:citekey>
+    <bcf:citekey order="9" intorder="2">stodden2013toward</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nyt">
