@@ -1158,6 +1158,10 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "skip_finalize_if_terminal_valid": True,
     "strict_source_field_contract": True,
     "terminal_dedupe_mode": "hash",
+    "field_recovery_enabled": True,
+    "field_recovery_mode": "balanced",
+    "field_recovery_min_support_tokens": 8,
+    "field_recovery_allow_source_only_when_base_unknown": False,
     "unsourced_allowlist_patterns": [
         "^confidence$",
         "^justification$",
@@ -1511,6 +1515,26 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
     policy = dict(_DEFAULT_FINALIZATION_POLICY)
     if isinstance(raw_policy, dict):
         policy.update(raw_policy)
+
+    field_recovery_mode = str(
+        policy.get("field_recovery_mode", _DEFAULT_FINALIZATION_POLICY["field_recovery_mode"])
+        or _DEFAULT_FINALIZATION_POLICY["field_recovery_mode"]
+    ).strip().lower()
+    if field_recovery_mode not in {"precision", "balanced", "recall"}:
+        field_recovery_mode = _DEFAULT_FINALIZATION_POLICY["field_recovery_mode"]
+    try:
+        field_recovery_min_support_tokens = int(
+            policy.get(
+                "field_recovery_min_support_tokens",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_min_support_tokens"],
+            )
+        )
+    except Exception:
+        field_recovery_min_support_tokens = int(
+            _DEFAULT_FINALIZATION_POLICY["field_recovery_min_support_tokens"]
+        )
+    field_recovery_min_support_tokens = max(4, min(80, field_recovery_min_support_tokens))
+
     return {
         "require_verified_for_non_unknown": bool(
             policy.get(
@@ -1542,6 +1566,20 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
         ).strip().lower()
         if str(policy.get("terminal_dedupe_mode", _DEFAULT_FINALIZATION_POLICY["terminal_dedupe_mode"]) or "").strip().lower() in {"hash", "semantic"}
         else _DEFAULT_FINALIZATION_POLICY["terminal_dedupe_mode"],
+        "field_recovery_enabled": bool(
+            policy.get(
+                "field_recovery_enabled",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_enabled"],
+            )
+        ),
+        "field_recovery_mode": field_recovery_mode,
+        "field_recovery_min_support_tokens": field_recovery_min_support_tokens,
+        "field_recovery_allow_source_only_when_base_unknown": bool(
+            policy.get(
+                "field_recovery_allow_source_only_when_base_unknown",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_allow_source_only_when_base_unknown"],
+            )
+        ),
         "unsourced_allowlist_patterns": _normalize_regex_pattern_list(
             policy.get("unsourced_allowlist_patterns", _DEFAULT_FINALIZATION_POLICY["unsourced_allowlist_patterns"])
         ),
@@ -2133,6 +2171,370 @@ def _source_supports_value(value: Any, source_text: Any) -> bool:
     return False
 
 
+_FIELD_RECOVERY_STOP_TOKENS = {
+    "field",
+    "source",
+    "status",
+    "details",
+    "confidence",
+    "justification",
+    "unknown",
+    "null",
+    "value",
+}
+
+
+def _normalize_field_recovery_mode(mode: Any) -> str:
+    normalized = str(mode or "balanced").strip().lower()
+    if normalized not in {"precision", "balanced", "recall"}:
+        return "balanced"
+    return normalized
+
+
+def _field_recovery_keywords(path: str, aliases: Sequence[str], *, max_tokens: int = 10) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    raw_tokens = re.findall(r"[a-z0-9]+", _normalize_match_text(path))
+    for alias in list(aliases or []):
+        raw_tokens.extend(re.findall(r"[a-z0-9]+", _normalize_match_text(alias)))
+    for token in raw_tokens:
+        if not token or len(token) < 3:
+            continue
+        if token in _FIELD_RECOVERY_STOP_TOKENS:
+            continue
+        if token in seen:
+            continue
+        seen.add(token)
+        out.append(token)
+        if len(out) >= max(1, int(max_tokens)):
+            break
+    return out
+
+
+def _descriptor_enum_options(descriptor: Any) -> List[str]:
+    if not isinstance(descriptor, str) or "|" not in descriptor:
+        return []
+    options: List[str] = []
+    type_keywords = {"string", "integer", "null", "number", "boolean", "float"}
+    for raw in descriptor.split("|"):
+        clean = str(raw or "").strip()
+        if not clean:
+            continue
+        if clean.lower() in type_keywords:
+            continue
+        if clean.lower() in {"unknown", "null"}:
+            continue
+        if clean not in options:
+            options.append(clean)
+    return options
+
+
+def _recover_values_from_source_text(
+    *,
+    descriptor: Any,
+    source_text: Any,
+    keywords: Sequence[str],
+    mode: str,
+) -> List[Any]:
+    text_norm = _normalize_match_text(source_text)
+    if not text_norm:
+        return []
+
+    recovered: List[Any] = []
+    for option in _descriptor_enum_options(descriptor):
+        option_norm = _normalize_match_text(option)
+        if option_norm and option_norm in text_norm and option not in recovered:
+            recovered.append(option)
+    if recovered:
+        return recovered[:2]
+
+    if not isinstance(descriptor, str):
+        return []
+    descriptor_lower = descriptor.lower()
+    if "integer" not in descriptor_lower:
+        return []
+
+    year_pattern = re.compile(r"\b(1[6-9]\d{2}|20\d{2}|2100)\b")
+    numeric_pattern = re.compile(r"-?\d+")
+    year_matches = list(year_pattern.finditer(text_norm))
+    numeric_matches = list(numeric_pattern.finditer(text_norm))
+    candidate_matches = year_matches if year_matches else numeric_matches
+    if not candidate_matches:
+        return []
+
+    unique_years = {int(m.group(0)) for m in year_matches}
+    ranked: List[Tuple[float, int]] = []
+    for match in candidate_matches[:24]:
+        raw = str(match.group(0) or "").strip()
+        if not raw or raw == "-":
+            continue
+        try:
+            parsed = int(raw)
+        except Exception:
+            continue
+        if abs(parsed) > 999999:
+            continue
+        context = text_norm[max(0, match.start() - 64): min(len(text_norm), match.end() + 64)]
+        keyword_hits = 0
+        for token in list(keywords or []):
+            if token and token in context:
+                keyword_hits += 1
+        score = 0.10
+        if match in year_matches:
+            score += 0.20
+            if len(unique_years) == 1:
+                score += 0.20
+            if re.search(r"\b\d{4}\s*[-/]\s*\d{1,2}\s*[-/]\s*\d{1,2}\b", context):
+                score += 0.10
+        score += min(0.40, 0.12 * float(keyword_hits))
+        ranked.append((score, parsed))
+
+    if not ranked:
+        return []
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    best_score, best_value = ranked[0]
+
+    normalized_mode = _normalize_field_recovery_mode(mode)
+    if normalized_mode == "precision":
+        if best_score < 0.36:
+            return []
+    elif normalized_mode == "balanced":
+        if best_score < 0.28:
+            return []
+    else:
+        if best_score < 0.18:
+            return []
+    return [best_value]
+
+
+def _normalize_recovery_rejection_reason(reason: Any) -> Optional[str]:
+    token = str(reason or "").strip().lower()
+    if not token:
+        return None
+    mapping = {
+        "grounding_blocked_untrusted_source_url": "recovery_blocked_untrusted_source_url",
+        "grounding_blocked_missing_source_url": "recovery_blocked_missing_source_url",
+        "grounding_blocked_missing_source_text": "recovery_blocked_missing_source_text",
+        "grounding_blocked_source_value_mismatch": "recovery_blocked_source_value_mismatch",
+        "grounding_blocked_entity_source_mismatch": "recovery_blocked_entity_mismatch",
+        "source_specificity_demotion": "recovery_blocked_non_specific_source",
+    }
+    if token in mapping:
+        return mapping[token]
+    token = re.sub(r"[^a-z0-9_]+", "_", token).strip("_")
+    if not token:
+        return None
+    if token.startswith("recovery_blocked_"):
+        return token
+    return f"recovery_blocked_{token}"
+
+
+def _recover_unknown_fields_from_tool_evidence(
+    *,
+    field_status: Any,
+    expected_schema: Any,
+    finalization_policy: Any = None,
+    allowed_source_urls: Any = None,
+    source_text_index: Any = None,
+    entity_name_tokens: Any = None,
+) -> Dict[str, Dict[str, Any]]:
+    """Attempt deterministic recovery for unresolved fields from tool evidence."""
+    normalized = _normalize_field_status_map(field_status, expected_schema)
+    if not normalized or expected_schema is None:
+        return normalized
+
+    policy = _normalize_finalization_policy(finalization_policy)
+    if not bool(policy.get("field_recovery_enabled", True)):
+        return normalized
+    recovery_mode = _normalize_field_recovery_mode(policy.get("field_recovery_mode"))
+    try:
+        min_support_tokens = max(4, int(policy.get("field_recovery_min_support_tokens", 8)))
+    except Exception:
+        min_support_tokens = 8
+    allow_source_only = bool(
+        policy.get("field_recovery_allow_source_only_when_base_unknown", False)
+    )
+
+    allowed = set()
+    for raw_url in list(allowed_source_urls or []):
+        normalized_url = _normalize_url_match(raw_url)
+        if normalized_url:
+            allowed.add(normalized_url)
+
+    sources: List[Tuple[str, str]] = []
+    for raw_url, raw_text in dict(source_text_index or {}).items():
+        normalized_url = _normalize_url_match(raw_url)
+        text = str(raw_text or "").strip()
+        if not normalized_url or not text:
+            continue
+        if allowed and normalized_url not in allowed:
+            continue
+        token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(text)))
+        if token_count < int(min_support_tokens):
+            continue
+        sources.append((normalized_url, text))
+    if not sources:
+        return normalized
+
+    entity_tokens: List[str] = []
+    for token in list(entity_name_tokens or []):
+        norm = _normalize_match_text(token)
+        if not norm or len(norm) < 3:
+            continue
+        if norm in entity_tokens:
+            continue
+        entity_tokens.append(norm)
+    schema_leaf_set = {path for path, _ in _schema_leaf_paths(expected_schema)}
+
+    for path, _ in _schema_leaf_paths(expected_schema):
+        if "[]" in path:
+            continue
+        aliases = _field_key_aliases(path)
+        key = next((a for a in aliases if a in normalized), path.replace("[]", ""))
+        if key.endswith("_source") or key in {"confidence", "justification"}:
+            continue
+        entry = normalized.get(key)
+        if not isinstance(entry, dict):
+            continue
+
+        status = str(entry.get("status") or "").lower()
+        value = entry.get("value")
+        if status == _FIELD_STATUS_FOUND and not _is_empty_like(value) and not _is_unknown_marker(value):
+            continue
+
+        descriptor = entry.get("descriptor")
+        requires_source = f"{path}_source" in schema_leaf_set
+        keywords = _field_recovery_keywords(path, aliases)
+        candidate_pool: List[Dict[str, Any]] = []
+        rejected_reasons: List[str] = []
+
+        for source_url, source_text in sources:
+            overlap_hits = 0
+            overlap_ratio = 1.0
+            if len(entity_tokens) >= 2:
+                overlap_hits, overlap_ratio = _entity_overlap_for_candidate(
+                    entity_tokens,
+                    candidate_url=source_url,
+                    candidate_text=source_text,
+                )
+                min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
+                min_hits = max(1, int(min_hits))
+                if int(overlap_hits) < min_hits and float(overlap_ratio) < float(min_ratio):
+                    rejected_reasons.append("recovery_blocked_entity_mismatch")
+                    continue
+
+            recovered_values = _recover_values_from_source_text(
+                descriptor=descriptor,
+                source_text=source_text,
+                keywords=keywords,
+                mode=recovery_mode,
+            )
+            if not recovered_values:
+                continue
+
+            for recovered_value in recovered_values:
+                normalized_source = _normalize_url_match(source_url)
+                if requires_source and not normalized_source:
+                    rejected_reasons.append("recovery_blocked_missing_source_url")
+                    continue
+                if requires_source and allowed and normalized_source not in allowed:
+                    rejected_reasons.append("recovery_blocked_untrusted_source_url")
+                    continue
+                if not _source_supports_value(recovered_value, source_text):
+                    rejected_reasons.append("recovery_blocked_source_value_mismatch")
+                    continue
+                allow_non_specific = True
+                if normalized_source and not _is_source_specific_url(normalized_source):
+                    allow_non_specific = _allow_non_specific_source_url(
+                        source_url=normalized_source,
+                        value=recovered_value,
+                        source_text=source_text,
+                        entity_tokens=entity_tokens,
+                        source_field=False,
+                    )
+                if not allow_non_specific:
+                    rejected_reasons.append("recovery_blocked_non_specific_source")
+                    continue
+                candidate = _build_evidence_candidate(
+                    value=recovered_value,
+                    source_url=normalized_source,
+                    source_text=source_text,
+                    entity_tokens=entity_tokens,
+                    allow_non_specific=allow_non_specific,
+                    source_field=False,
+                )
+                if requires_source and not normalized_source:
+                    candidate["rejection_reason"] = "grounding_blocked_missing_source_url"
+                candidate_pool.append(candidate)
+
+        scored = _score_evidence_candidates(candidate_pool, mode=recovery_mode)
+        selected, decision_reason = _select_promotable_candidate(
+            scored,
+            mode=recovery_mode,
+            requires_source=requires_source,
+            require_second_source=False,
+        )
+        if isinstance(selected, dict) and not _is_empty_like(selected.get("value")):
+            coerced_value = _coerce_found_value_for_descriptor(selected.get("value"), descriptor)
+            if _is_empty_like(coerced_value) or _is_unknown_marker(coerced_value):
+                selected = None
+                decision_reason = "unusable_value"
+            else:
+                found_source = _normalize_url_match(selected.get("source_url"))
+                entry["status"] = _FIELD_STATUS_FOUND
+                entry["value"] = coerced_value
+                entry["source_url"] = found_source
+                entry["evidence"] = "recovery_source_backed"
+                entry["evidence_reason"] = str(decision_reason or "recovery_promoted")
+                entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
+                normalized[key] = entry
+                source_key = f"{key}_source"
+                if source_key in normalized and found_source:
+                    source_entry = dict(normalized.get(source_key) or {})
+                    source_entry["status"] = _FIELD_STATUS_FOUND
+                    source_entry["value"] = found_source
+                    source_entry["source_url"] = found_source
+                    source_entry["evidence"] = "recovery_source_backed"
+                    source_entry["evidence_reason"] = str(decision_reason or "recovery_promoted")
+                    source_entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
+                    normalized[source_key] = source_entry
+                continue
+
+        top_source = None
+        if scored:
+            top_source = _normalize_url_match(scored[0].get("source_url"))
+        if allow_source_only and requires_source and top_source:
+            source_key = f"{key}_source"
+            if source_key in normalized:
+                source_entry = dict(normalized.get(source_key) or {})
+                source_entry["status"] = _FIELD_STATUS_FOUND
+                source_entry["value"] = top_source
+                source_entry["source_url"] = top_source
+                source_entry["evidence"] = "recovery_source_backed_source_only"
+                source_entry["evidence_reason"] = "source_only_recovery"
+                source_entry["evidence_score"] = round(float(scored[0].get("score", 0.0)), 4)
+                normalized[source_key] = source_entry
+
+        blocked_reason = _normalize_recovery_rejection_reason(decision_reason)
+        if blocked_reason is None:
+            rejected_reason = next(
+                (str(c.get("rejection_reason") or "").strip() for c in scored if str(c.get("rejection_reason") or "").strip()),
+                None,
+            )
+            blocked_reason = _normalize_recovery_rejection_reason(rejected_reason)
+        if blocked_reason is None and rejected_reasons:
+            blocked_reason = str(rejected_reasons[0])
+        if blocked_reason:
+            entry["evidence"] = blocked_reason
+            entry["evidence_reason"] = blocked_reason
+            if scored:
+                entry["evidence_score"] = round(float(scored[0].get("score", 0.0)), 4)
+            normalized[key] = entry
+
+    normalized = _apply_field_status_derivations(normalized)
+    return normalized
+
+
 def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     """Apply generic consistency and normalization rules to canonical field_status."""
     if not isinstance(field_status, dict):
@@ -2245,6 +2647,18 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
                 source_entry["value"] = source_value
                 source_entry["source_url"] = source_value
         else:
+            preserve_source_only = (
+                str(source_entry.get("evidence") or "").strip().lower()
+                == "recovery_source_backed_source_only"
+            )
+            if preserve_source_only:
+                preserved_source = _normalize_url_match(source_entry.get("value"))
+                if preserved_source:
+                    source_entry["status"] = _FIELD_STATUS_FOUND
+                    source_entry["value"] = preserved_source
+                    source_entry["source_url"] = preserved_source
+                    normalized_out[key] = source_entry
+                    continue
             source_entry["status"] = (
                 _FIELD_STATUS_UNKNOWN
                 if base_status == _FIELD_STATUS_UNKNOWN
@@ -3986,6 +4400,7 @@ def _sync_terminal_response_with_field_status(
     debug: bool = False,
 ) -> tuple[Any, Dict[str, Dict[str, Any]], Optional[Dict[str, Any]]]:
     """Single entry-point for terminal sync plus optional canonical guard."""
+    normalized_finalization_policy = _normalize_finalization_policy(finalization_policy)
     entity_name_tokens = _task_name_tokens_from_messages(messages)
     allowed_source_urls = _collect_tool_urls_from_messages(
         messages,
@@ -4005,6 +4420,14 @@ def _sync_terminal_response_with_field_status(
         source_text_index=source_text_index,
         entity_name_tokens=entity_name_tokens,
     )
+    field_status = _recover_unknown_fields_from_tool_evidence(
+        field_status=field_status,
+        expected_schema=expected_schema,
+        finalization_policy=normalized_finalization_policy,
+        allowed_source_urls=allowed_source_urls,
+        source_text_index=source_text_index,
+        entity_name_tokens=entity_name_tokens,
+    )
 
     canonical_event = None
     if force_canonical:
@@ -4012,7 +4435,7 @@ def _sync_terminal_response_with_field_status(
             response,
             expected_schema,
             field_status=field_status,
-            finalization_policy=finalization_policy,
+            finalization_policy=normalized_finalization_policy,
             schema_source=expected_schema_source,
             context=context,
             debug=debug,
@@ -4023,6 +4446,14 @@ def _sync_terminal_response_with_field_status(
             response=response,
             field_status=field_status,
             expected_schema=expected_schema,
+            allowed_source_urls=allowed_source_urls,
+            source_text_index=source_text_index,
+            entity_name_tokens=entity_name_tokens,
+        )
+        field_status = _recover_unknown_fields_from_tool_evidence(
+            field_status=field_status,
+            expected_schema=expected_schema,
+            finalization_policy=normalized_finalization_policy,
             allowed_source_urls=allowed_source_urls,
             source_text_index=source_text_index,
             entity_name_tokens=entity_name_tokens,
@@ -4267,6 +4698,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "grounding_blocks_count",
         "source_consistency_fixes_count",
         "field_demotions_count",
+        "recovery_promotions_count",
+        "recovery_rejections_count",
         "off_target_tool_results_count",
         "empty_tool_results_count",
         "retry_or_replan_events",
@@ -4281,6 +4714,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["grounding_blocked_fields"] = list(existing.get("grounding_blocked_fields") or [])[:64]
     out["source_consistency_fixes"] = list(existing.get("source_consistency_fixes") or [])[:64]
     out["field_demotion_fields"] = list(existing.get("field_demotion_fields") or [])[:64]
+    out["recovery_promoted_fields"] = list(existing.get("recovery_promoted_fields") or [])[:64]
+    out["recovery_rejected_fields"] = list(existing.get("recovery_rejected_fields") or [])[:64]
     demotion_reason_counts_raw = existing.get("field_demotion_reason_counts") or {}
     demotion_reason_counts: Dict[str, int] = {}
     if isinstance(demotion_reason_counts_raw, dict):
@@ -4293,6 +4728,18 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
             except Exception:
                 demotion_reason_counts[reason] = 0
     out["field_demotion_reason_counts"] = demotion_reason_counts
+    recovery_reason_counts_raw = existing.get("recovery_reason_counts") or {}
+    recovery_reason_counts: Dict[str, int] = {}
+    if isinstance(recovery_reason_counts_raw, dict):
+        for raw_reason, raw_count in recovery_reason_counts_raw.items():
+            reason = str(raw_reason or "").strip()
+            if not reason:
+                continue
+            try:
+                recovery_reason_counts[reason] = max(0, int(raw_count))
+            except Exception:
+                recovery_reason_counts[reason] = 0
+    out["recovery_reason_counts"] = recovery_reason_counts
     out["retrieval_interventions"] = list(existing.get("retrieval_interventions") or [])[:64]
     return out
 
@@ -4382,6 +4829,9 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     consistency_fixes: List[str] = []
     demotion_fields: List[str] = []
     demotion_reason_counts: Dict[str, int] = {}
+    recovery_promoted_fields: List[str] = []
+    recovery_rejected_fields: List[str] = []
+    recovery_reason_counts: Dict[str, int] = {}
     for key, entry in (normalized or {}).items():
         if not isinstance(entry, dict):
             continue
@@ -4394,6 +4844,11 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         if "demotion" in evidence:
             demotion_fields.append(str(key))
             demotion_reason_counts[evidence] = int(demotion_reason_counts.get(evidence, 0)) + 1
+        if evidence.startswith("recovery_source_backed"):
+            recovery_promoted_fields.append(str(key))
+        if evidence.startswith("recovery_blocked"):
+            recovery_rejected_fields.append(str(key))
+            recovery_reason_counts[evidence] = int(recovery_reason_counts.get(evidence, 0)) + 1
     return {
         "grounding_blocks_count": len(blocked_fields),
         "grounding_blocked_fields": blocked_fields[:64],
@@ -4402,6 +4857,11 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         "field_demotions_count": len(demotion_fields),
         "field_demotion_fields": demotion_fields[:64],
         "field_demotion_reason_counts": demotion_reason_counts,
+        "recovery_promotions_count": len(recovery_promoted_fields),
+        "recovery_promoted_fields": recovery_promoted_fields[:64],
+        "recovery_rejections_count": len(recovery_rejected_fields),
+        "recovery_rejected_fields": recovery_rejected_fields[:64],
+        "recovery_reason_counts": recovery_reason_counts,
     }
 
 
@@ -4419,6 +4879,14 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
     out["field_demotions_count"] = int(max(
         out.get("field_demotions_count", 0),
         field_diag.get("field_demotions_count", 0),
+    ))
+    out["recovery_promotions_count"] = int(max(
+        out.get("recovery_promotions_count", 0),
+        field_diag.get("recovery_promotions_count", 0),
+    ))
+    out["recovery_rejections_count"] = int(max(
+        out.get("recovery_rejections_count", 0),
+        field_diag.get("recovery_rejections_count", 0),
     ))
     for blocked_field in field_diag.get("grounding_blocked_fields", []):
         out["grounding_blocked_fields"] = _append_limited_unique(
@@ -4438,6 +4906,18 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             demoted_field,
             max_items=64,
         )
+    for promoted_field in field_diag.get("recovery_promoted_fields", []):
+        out["recovery_promoted_fields"] = _append_limited_unique(
+            out.get("recovery_promoted_fields"),
+            promoted_field,
+            max_items=64,
+        )
+    for rejected_field in field_diag.get("recovery_rejected_fields", []):
+        out["recovery_rejected_fields"] = _append_limited_unique(
+            out.get("recovery_rejected_fields"),
+            rejected_field,
+            max_items=64,
+        )
     reason_counts = out.get("field_demotion_reason_counts") or {}
     if not isinstance(reason_counts, dict):
         reason_counts = {}
@@ -4451,6 +4931,19 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             count = 0
         reason_counts[reason] = max(int(reason_counts.get(reason, 0) or 0), count)
     out["field_demotion_reason_counts"] = reason_counts
+    recovery_reason_counts = out.get("recovery_reason_counts") or {}
+    if not isinstance(recovery_reason_counts, dict):
+        recovery_reason_counts = {}
+    for raw_reason, raw_count in (field_diag.get("recovery_reason_counts") or {}).items():
+        reason = str(raw_reason or "").strip()
+        if not reason:
+            continue
+        try:
+            count = max(0, int(raw_count))
+        except Exception:
+            count = 0
+        recovery_reason_counts[reason] = max(int(recovery_reason_counts.get(reason, 0) or 0), count)
+    out["recovery_reason_counts"] = recovery_reason_counts
     return out
 
 

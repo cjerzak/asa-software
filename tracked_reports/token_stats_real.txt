@@ -1,7 +1,7 @@
 {
-  "tokens_used": 26292,
-  "input_tokens": 23464,
-  "output_tokens": 2828,
+  "tokens_used": 53562,
+  "input_tokens": 49335,
+  "output_tokens": 4227,
   "fold_tokens": 0,
   "token_trace": [
     {
@@ -9,48 +9,104 @@
       "input_tokens": 1377,
       "output_tokens": 99,
       "total_tokens": 1476,
-      "elapsed_minutes": 0.0938
+      "elapsed_minutes": 0.1197
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0037
+      "elapsed_minutes": 2.2846
     },
     {
       "node": "agent",
-      "input_tokens": 1424,
-      "output_tokens": 173,
-      "total_tokens": 1597,
-      "elapsed_minutes": 0.0672
+      "input_tokens": 3078,
+      "output_tokens": 38,
+      "total_tokens": 3116,
+      "elapsed_minutes": 0.0171
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0803
+      "elapsed_minutes": 0
     },
     {
       "node": "agent",
-      "input_tokens": 2038,
-      "output_tokens": 110,
-      "total_tokens": 2148,
-      "elapsed_minutes": 0.0357
+      "input_tokens": 3189,
+      "output_tokens": 63,
+      "total_tokens": 3252,
+      "elapsed_minutes": 0.0625
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0618
+      "elapsed_minutes": 0.0499
     },
     {
       "node": "agent",
-      "input_tokens": 3795,
-      "output_tokens": 54,
-      "total_tokens": 3849,
+      "input_tokens": 3404,
+      "output_tokens": 28,
+      "total_tokens": 3432,
+      "elapsed_minutes": 0.0275
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.0085
+    },
+    {
+      "node": "agent",
+      "input_tokens": 3444,
+      "output_tokens": 239,
+      "total_tokens": 3683,
+      "elapsed_minutes": 0.1091
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.0353
+    },
+    {
+      "node": "agent",
+      "input_tokens": 3931,
+      "output_tokens": 53,
+      "total_tokens": 3984,
+      "elapsed_minutes": 0.0233
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4069,
+      "output_tokens": 41,
+      "total_tokens": 4110,
+      "elapsed_minutes": 0.0526
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.0328
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4531,
+      "output_tokens": 55,
+      "total_tokens": 4586,
       "elapsed_minutes": 0.0281
     },
     {
@@ -58,42 +114,56 @@
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0198
+      "elapsed_minutes": 0.0001
     },
     {
       "node": "agent",
-      "input_tokens": 4211,
-      "output_tokens": 37,
-      "total_tokens": 4248,
-      "elapsed_minutes": 0.0277
+      "input_tokens": 4776,
+      "output_tokens": 244,
+      "total_tokens": 5020,
+      "elapsed_minutes": 0.2448
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0918
+      "elapsed_minutes": 0.0773
     },
     {
       "node": "agent",
-      "input_tokens": 4361,
-      "output_tokens": 43,
-      "total_tokens": 4404,
-      "elapsed_minutes": 0.0335
+      "input_tokens": 5710,
+      "output_tokens": 48,
+      "total_tokens": 5758,
+      "elapsed_minutes": 0.0237
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0603
+      "elapsed_minutes": 0.0593
+    },
+    {
+      "node": "agent",
+      "input_tokens": 5946,
+      "output_tokens": 381,
+      "total_tokens": 6327,
+      "elapsed_minutes": 0.1783
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.0195
     },
     {
       "node": "finalize",
-      "input_tokens": 6258,
-      "output_tokens": 2312,
-      "total_tokens": 8570,
-      "elapsed_minutes": 0.4548
+      "input_tokens": 5880,
+      "output_tokens": 2938,
+      "total_tokens": 8818,
+      "elapsed_minutes": 0.8916
     }
   ]
 }

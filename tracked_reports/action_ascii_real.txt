@@ -1,13 +1,13 @@
 AGENT ACTION MAP
 ================
-Steps captured: 20
-LangGraph timed steps: 13
+Steps captured: 30
+LangGraph timed steps: 23
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
-      Source-backed found values: 0 (across 18 tracked fields)
+      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 18 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
@@ -15,122 +15,173 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 9 tool-call turn(s), 1 answer turn(s)
-      Tool results: 9 total (Tool OpenWebpage=5, Tool Search=3, Tool wikipedia=1)
+      AI turns: 14 tool-call turn(s), 1 answer turn(s)
+      Tool results: 14 total (Tool OpenWebpage=7, Tool save_f...ol Search=3, Tool wikipedia=1)
       Structured terminal answer emitted
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDE..._RESULT=2, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      finalize: 0.4548m (tok=8570, n=1)
-      tools: 0.3178m (tok=0, n=6)
-      agent: 0.2861m (tok=17722, n=6)
+      tools: 2.5673m (tok=0, n=11)
+      finalize: 0.8916m (tok=8818, n=1)
+      agent: 0.8868m (tok=44744, n=11)
   +-- [LANGGRAPH] Slowest timed invocations
-      #13 finalize: 0.4548m (tok=8570)
-      #01 agent: 0.0938m (tok=1476)
-      #10 tools: 0.0918m (tok=0)
-      #04 tools: 0.0803m (tok=0)
-      #03 agent: 0.0672m (tok=1597)
-  +-- [TIMING] wall=1.0593m nodes=1.0587m delta=+0.0005m (overhead)
+      #02 tools: 2.2846m (tok=0)
+      #23 finalize: 0.8916m (tok=8818)
+      #17 agent: 0.2448m (tok=5020)
+      #21 agent: 0.1783m (tok=6327)
+      #01 agent: 0.1197m (tok=1476)
+  +-- [TIMING] wall=4.3469m nodes=4.3457m delta=+0.0012m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (wikipedia)
+  +-- [02] Requested 1 tool call (Search)
       by: AI
       tok: in=0 out=0 total=0
       min: n/a
-      detail: wikipedia(query=Ramona Moye Camaconi Bolivia MAS Beni 2014)
+      detail: Search(query=Ramona Moye Camaconi Bolivia MAS Beni 2014)
   +-- [03] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> En el caso de la diputa...14 </URL> __END_OF_SOURCE...
+  +-- [04] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://radiopatuju.blogsp...en-el-beni.html)
+  +-- [05] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://radiopatuju.blogspot.com/2014/10/bancadas-...lina Zabala de UD. BANCAD...
+  +-- [06] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_place = pending (source: Radiopatuj..., category=fact)
+  +-- [07] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = pending (source: Radiopatuju post about Beni rep...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1377 out=99 total=1476
+      min: 0.1197m
+      detail: OpenWebpage(url=https://www.la-razon.com/n...ndigena-de-beni)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.la-razon.com/nacional/2014/10/14/el-ma...d cookies, title:just a m...
+  +-- [10] Requested 1 tool call (wikipedia)
+      by: AI
+      tok: in=3078 out=38 total=3116
+      min: 0.0171m
+      detail: wikipedia(query=Ramona Moye Camaconi)
+  +-- [11] Returned result
       by: Tool wikipedia
       tok: in=0 out=0 total=0
       min: n/a
       detail: No good Wikipedia Search Result was found
-  +-- [04] Requested 1 tool call (Search)
-      by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Search(query=Ramona Moye Camaconi Beni MAS 2014 "Ramon...)
-  +-- [05] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...916 </URL> __END_OF_SOURC...
-  +-- [06] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: OpenWebpage(url=https://www.flickr.com/pho...N03/52180793916)
-  +-- [07] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://www.flickr.com/photos/194792615@N03/521807...w.flickr.com/signup] ✨ Ge...
-  +-- [08] Requested 1 tool call (Search)
-      by: AI
-      tok: in=1377 out=99 total=1476
-      min: 0.0938m
-      detail: Search(query=Ramona Moye Camaconi diputada Beni "Ramon...)
-  +-- [09] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> ←→ Back to photostreamA...=en </URL> __END_OF_SOURC...
-  +-- [10] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=1424 out=173 total=1597
-      min: 0.0672m
-      detail: OpenWebpage(url=https://ftierra.org/index....ca-de-fortaleza)
-  +-- [11] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://ftierra.org/index.php/tema/derechos-indige...iticas-publicas] Quiénes ...
   +-- [12] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=2038 out=110 total=2148
-      min: 0.0357m
-      detail: OpenWebpage(url=https://anteriorportal.erb...cia_comunitaria)
+      tok: in=3189 out=63 total=3252
+      min: 0.0625m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
   +-- [13] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://anteriorportal.erbol.com.bo/noticia/indige...adas a orillas del río Sé...
-  +-- [14] Requested 1 tool call (OpenWebpage)
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
+  +-- [14] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=3795 out=54 total=3849
-      min: 0.0281m
-      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
+      tok: in=3404 out=28 total=3432
+      min: 0.0275m
+      detail: save_finding(finding=prior_occupation = pending (source: Vicep..., category=fact)
   +-- [15] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: prior_occupation = pending (source: Vicepresidencia - shows El...
+  +-- [16] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3444 out=239 total=3683
+      min: 0.1091m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
+  +-- [17] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":3,"attempt...
-  +-- [16] Requested 1 tool call (Search)
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
+  +-- [18] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=4211 out=37 total=4248
-      min: 0.0277m
-      detail: Search(query=Ramona Moye Camaconi biografia "Ramona Mo...)
-  +-- [17] Returned result
+      tok: in=3931 out=53 total=3984
+      min: 0.0233m
+      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
+  +-- [19] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
+  +-- [20] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4069 out=41 total=4110
+      min: 0.0526m
+      detail: Search(query="Ramona Moye Camaconi" biografía educació...)
+  +-- [21] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi,dipu...les </URL> __END_OF_SOURC...
-  +-- [18] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi,dipu...via </URL> __END_OF_SOURC...
+  +-- [22] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=4361 out=43 total=4404
-      min: 0.0335m
-      detail: OpenWebpage(url=https://www.noticiasfides....ificadas-390956)
-  +-- [19] Returned result
+      tok: in=4531 out=55 total=4586
+      min: 0.0281m
+      detail: OpenWebpage(url=https://www.ftierra.org/in...ca-de-fortaleza)
+  +-- [23] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.noticiasfides.com/nacional/politica/di...asfides.com/pueblos-indig...
-  +-- [20] Produced structured answer
+      flag: EMPTY_RESULT
+      detail: URL: https://www.ftierra.org/index.php/derechos-indigen...uestas para políticas púb...
+  +-- [24] Requested 1 tool call (Search)
       by: AI
-      tok: in=6258 out=2312 total=8570
-      min: 0.4548m
+      tok: in=4776 out=244 total=5020
+      min: 0.2448m
+      detail: Search(query=Ramona Moye lugar de nacimiento 'Ramona M...)
+  +-- [25] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Looking forRamonaMoye? ...oye </URL> __END_OF_SOURC...
+  +-- [26] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5710 out=48 total=5758
+      min: 0.0237m
+      detail: OpenWebpage(url=https://www.idcrawl.com/ramona-moye)
+  +-- [27] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.idcrawl.com/ramona-moye Final URL: htt...status=403) Markers: forb...
+  +-- [28] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5946 out=381 total=6327
+      min: 0.1783m
+      detail: OpenWebpage(url=https://anteriorportal.erb...cia_comunitaria)
+  +-- [29] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://anteriorportal.erbol.com.bo/noticia/indige...adas a orillas del río Sé...
+  +-- [30] Produced structured answer
+      by: AI
+      tok: in=5880 out=2938 total=8818
+      min: 0.8916m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution": "Unknown", "education_field...
+      detail: {"education_level": "Unknown", "education_institution":...limited verifiable eviden...
 END

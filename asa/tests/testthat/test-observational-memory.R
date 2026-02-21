@@ -577,3 +577,155 @@ test_that("model-call recorder sets exhaustion reason when budget is hit", {
   expect_true(isTRUE(as.logical(budget_r$budget_exhausted)))
   expect_equal(as.character(budget_r$limit_trigger_reason), "model_budget")
 })
+
+test_that("field recovery promotes source-backed unresolved integer fields", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  recover_fn <- reticulate::py_get_attr(prod, "_recover_unknown_fields_from_tool_evidence")
+  profile_url <- "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609"
+
+  recovered <- recover_fn(
+    field_status = list(
+      birth_year = list(
+        status = "unknown",
+        value = "Unknown",
+        source_url = NULL,
+        descriptor = "integer|null|Unknown"
+      ),
+      birth_year_source = list(
+        status = "unknown",
+        value = NULL,
+        source_url = NULL,
+        descriptor = "string|null"
+      )
+    ),
+    expected_schema = list(
+      birth_year = "integer|null|Unknown",
+      birth_year_source = "string|null"
+    ),
+    finalization_policy = list(
+      field_recovery_enabled = TRUE,
+      field_recovery_mode = "balanced"
+    ),
+    allowed_source_urls = list(profile_url),
+    source_text_index = list(
+      "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609" =
+        "RAMONA MOYE CAMACONI Fecha de nacimiento: 1982-01-07 Diputado uninominal - Circunscripción 6"
+    ),
+    entity_name_tokens = list("Ramona", "Moye", "Camaconi")
+  )
+  out <- reticulate::py_to_r(recovered)
+
+  expect_equal(as.character(out$birth_year$status), "found")
+  expect_equal(as.integer(out$birth_year$value), 1982L)
+  expect_equal(as.character(out$birth_year_source$status), "found")
+  expect_equal(as.character(out$birth_year_source$value), profile_url)
+  expect_equal(as.character(out$birth_year$evidence), "recovery_source_backed")
+})
+
+test_that("field recovery can be disabled via finalization policy", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  recover_fn <- reticulate::py_get_attr(prod, "_recover_unknown_fields_from_tool_evidence")
+  profile_url <- "https://example.gov/profile"
+
+  recovered <- recover_fn(
+    field_status = list(
+      birth_year = list(
+        status = "unknown",
+        value = "Unknown",
+        source_url = NULL,
+        descriptor = "integer|null|Unknown"
+      ),
+      birth_year_source = list(
+        status = "unknown",
+        value = NULL,
+        source_url = NULL,
+        descriptor = "string|null"
+      )
+    ),
+    expected_schema = list(
+      birth_year = "integer|null|Unknown",
+      birth_year_source = "string|null"
+    ),
+    finalization_policy = list(field_recovery_enabled = FALSE),
+    allowed_source_urls = list(profile_url),
+    source_text_index = list(
+      "https://example.gov/profile" = "PROFILE CARD Date of birth: 1982-01-07"
+    )
+  )
+  out <- reticulate::py_to_r(recovered)
+
+  expect_equal(as.character(out$birth_year$status), "unknown")
+  expect_true(is.null(out$birth_year_source$value) || is.na(out$birth_year_source$value))
+})
+
+test_that("field-status diagnostics include recovery promotion and rejection counters", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  collect_diag <- reticulate::py_get_attr(prod, "_collect_field_status_diagnostics")
+  merge_diag <- reticulate::py_get_attr(prod, "_merge_field_status_diagnostics")
+
+  field_status <- list(
+    birth_year = list(
+      status = "found",
+      value = 1982L,
+      source_url = "https://example.gov/profile",
+      evidence = "recovery_source_backed",
+      descriptor = "integer|null|Unknown"
+    ),
+    birth_year_source = list(
+      status = "found",
+      value = "https://example.gov/profile",
+      source_url = "https://example.gov/profile",
+      evidence = "recovery_source_backed",
+      descriptor = "string|null"
+    ),
+    education_level = list(
+      status = "unknown",
+      value = "Unknown",
+      source_url = NULL,
+      evidence = "recovery_blocked_entity_mismatch",
+      descriptor = "string|Unknown"
+    )
+  )
+
+  collected <- reticulate::py_to_r(collect_diag(field_status = field_status))
+  expect_equal(as.integer(collected$recovery_promotions_count), 2L)
+  expect_equal(as.integer(collected$recovery_rejections_count), 1L)
+  expect_true("birth_year" %in% as.character(collected$recovery_promoted_fields))
+  expect_true("education_level" %in% as.character(collected$recovery_rejected_fields))
+  expect_equal(
+    as.integer(collected$recovery_reason_counts$recovery_blocked_entity_mismatch),
+    1L
+  )
+
+  merged <- reticulate::py_to_r(merge_diag(
+    diagnostics = list(
+      recovery_promotions_count = 1L,
+      recovery_rejections_count = 0L,
+      recovery_promoted_fields = list("stale_recovery"),
+      recovery_reason_counts = list(recovery_blocked_non_specific_source = 1L)
+    ),
+    field_status = field_status
+  ))
+  expect_equal(as.integer(merged$recovery_promotions_count), 2L)
+  expect_equal(as.integer(merged$recovery_rejections_count), 1L)
+  expect_true("stale_recovery" %in% as.character(merged$recovery_promoted_fields))
+  expect_equal(
+    as.integer(merged$recovery_reason_counts$recovery_blocked_non_specific_source),
+    1L
+  )
+})

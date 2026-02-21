@@ -1,29 +1,32 @@
 {
-  "elapsed_time": 1.1032,
+  "elapsed_time": 4.393,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
+      "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "education_institution": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "string|Unknown"
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "education_field": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "string|Unknown"
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "education_source": {
       "status": "unknown",
@@ -37,17 +40,19 @@
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "string|Unknown"
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "class_background": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
+      "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "prior_occupation_source": {
       "status": "unknown",
@@ -61,9 +66,10 @@
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "No disability|Some disability|Unknown"
+      "descriptor": "No disability|Some disability|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "disability_source": {
       "status": "unknown",
@@ -77,9 +83,10 @@
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "string|Unknown"
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "birth_place_source": {
       "status": "unknown",
@@ -90,36 +97,38 @@
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": null,
-      "attempts": 5,
+      "status": "found",
+      "value": 1982,
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "scratchpad_source_backed",
+      "attempts": 3,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "unknown",
-      "value": null,
-      "source_url": null,
-      "evidence": "source_consistency_demotion",
-      "attempts": 5,
+      "status": "found",
+      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "source_consistency_fix",
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
+      "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "lgbtq_details": {
       "status": "unknown",
       "value": null,
       "source_url": null,
-      "evidence": null,
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 5,
-      "descriptor": "string|null"
+      "descriptor": "string|null",
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "lgbtq_source": {
       "status": "unknown",
@@ -139,7 +148,7 @@
     },
     "justification": {
       "status": "found",
-      "value": "Searches did not find reliable, source-backed evidence for the required fields.",
+      "value": "Source-backed searches resolved 3 fields (including birth_year, birth_year_source, confidence), while 15 fields remain unknown due to limited verifiable evidence.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 5,
@@ -148,17 +157,24 @@
   },
   "diagnostics": {
     "grounding_blocks_count": 0,
-    "source_consistency_fixes_count": 0,
+    "source_consistency_fixes_count": 1,
     "field_demotions_count": 3,
+    "recovery_promotions_count": 0,
+    "recovery_rejections_count": 9,
     "off_target_tool_results_count": 0,
-    "empty_tool_results_count": 1,
+    "empty_tool_results_count": 2,
     "retry_or_replan_events": 0,
     "webpage_llm_extraction_calls": 0,
     "grounding_blocked_fields": [],
-    "source_consistency_fixes": [],
+    "source_consistency_fixes": "birth_year_source",
     "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
+    "recovery_promoted_fields": [],
+    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
     "field_demotion_reason_counts": {
       "source_consistency_demotion": 3
+    },
+    "recovery_reason_counts": {
+      "recovery_blocked_no_candidates": 9
     },
     "retrieval_interventions": []
   }

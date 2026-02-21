@@ -130,8 +130,8 @@ attempt <- run_task(
       use_browser = FALSE, 
       use_memory_folding = TRUE,
       #recursion_limit = 32L, memory_threshold = 8L, memory_keep_recent = 4L, # production
-      recursion_limit = 32L, memory_threshold = 16L, memory_keep_recent = 8L, # production
-      #recursion_limit = 64L, memory_threshold = 32L, memory_keep_recent = 16L, # production
+      #recursion_limit = 32L, memory_threshold = 16L, memory_keep_recent = 8L, # production
+      recursion_limit = 64L, memory_threshold = 32L, memory_keep_recent = 16L, # production
       #fold_char_budget = 5L * (10000L), # default is 30000L
       fold_char_budget = 5L * (10000L), # default is 30000L
       rate_limit = 0.3,

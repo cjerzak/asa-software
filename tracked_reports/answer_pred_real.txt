@@ -10,11 +10,11 @@
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
-  "birth_year": "Unknown",
-  "birth_year_source": null,
+  "birth_year": 1982,
+  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": "Searches did not find reliable, source-backed evidence for the required fields."
+  "justification": "Source-backed searches resolved 3 fields (including birth_year, birth_year_source, confidence), while 15 fields remain unknown due to limited verifiable evidence."
 }
