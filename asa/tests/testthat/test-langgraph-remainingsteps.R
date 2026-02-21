@@ -2233,18 +2233,112 @@ test_that("field_status unknown-after threshold triggers semantic finalize with 
   expect_true(is.list(field_status))
   expect_equal(as.character(field_status$birth_year$status), "unknown")
   expect_equal(as.character(field_status$birth_place$status), "unknown")
-  expect_true(as.integer(field_status$birth_year$attempts) >= 3L)
-  expect_true(as.integer(field_status$birth_place$attempts) >= 3L)
+  expect_equal(as.integer(field_status$birth_year$attempts), 3L)
+  expect_equal(as.integer(field_status$birth_place$attempts), 3L)
 
   budget_state <- tryCatch(reticulate::py_to_r(final_state$budget_state), error = function(e) final_state$budget_state)
   expect_true(is.list(budget_state))
   expect_true(isTRUE(as.logical(budget_state$all_resolved)))
-  expect_true(as.integer(budget_state$tool_calls_used) <= 4L)
+  expect_true(as.integer(budget_state$tool_calls_used) <= 3L)
 
   expect_true(is.list(parsed))
   expect_true(all(c("birth_year", "birth_place") %in% names(parsed)))
   expect_true(is.null(parsed$birth_year) || is.na(parsed$birth_year))
   expect_equal(as.character(parsed$birth_place), "Unknown")
+})
+
+test_that("field attempt budget mode clamps attempts in strict_cap and increments in soft_cap", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  extract_fn <- reticulate::py_get_attr(prod, "_extract_field_status_updates")
+
+  expected_schema <- list(
+    birth_year = "integer"
+  )
+  seeded_status <- list(
+    birth_year = list(
+      status = "unknown",
+      value = NULL,
+      attempts = 3L
+    )
+  )
+  tool_messages <- list(
+    list(
+      role = "tool",
+      name = "Search",
+      content = "{\"noise\":\"irrelevant\"}"
+    )
+  )
+
+  strict_out <- reticulate::py_to_r(extract_fn(
+    existing_field_status = seeded_status,
+    expected_schema = expected_schema,
+    tool_messages = tool_messages,
+    tool_calls_delta = 1L,
+    unknown_after_searches = 3L,
+    field_attempt_budget_mode = "strict_cap"
+  ))
+  strict_status <- strict_out[[1]]
+  expect_equal(as.integer(strict_status$birth_year$attempts), 3L)
+  expect_equal(as.character(strict_status$birth_year$status), "unknown")
+
+  soft_out <- reticulate::py_to_r(extract_fn(
+    existing_field_status = seeded_status,
+    expected_schema = expected_schema,
+    tool_messages = tool_messages,
+    tool_calls_delta = 1L,
+    unknown_after_searches = 3L,
+    field_attempt_budget_mode = "soft_cap"
+  ))
+  soft_status <- soft_out[[1]]
+  expect_true(as.integer(soft_status$birth_year$attempts) > 3L)
+  expect_equal(as.character(soft_status$birth_year$status), "unknown")
+})
+
+test_that("all-unresolved-exhausted finalization trigger obeys orchestration flag", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  state_base <- list(
+    expected_schema = list(
+      birth_year = "integer",
+      birth_place = "string"
+    ),
+    field_status = list(
+      birth_year = list(status = "unknown", value = NULL, attempts = 3L),
+      birth_place = list(status = "unknown", value = "Unknown", attempts = 3L)
+    ),
+    budget_state = list(
+      tool_calls_used = 2L,
+      tool_calls_limit = 10L,
+      unknown_after_searches = 3L
+    ),
+    search_budget_limit = 10L,
+    finalize_on_all_fields_resolved = FALSE
+  )
+
+  state_enabled <- utils::modifyList(
+    state_base,
+    list(orchestration_options = list(finalizer = list(finalize_when_all_unresolved_exhausted = TRUE)))
+  )
+  state_disabled <- utils::modifyList(
+    state_base,
+    list(orchestration_options = list(finalizer = list(finalize_when_all_unresolved_exhausted = FALSE)))
+  )
+
+  expect_true(isTRUE(reticulate::py_to_r(prod$`_should_force_finalize`(state_enabled))))
+  expect_equal(
+    as.character(reticulate::py_to_r(prod$`_finalize_reason_for_state`(state_enabled))),
+    "all_unresolved_exhausted"
+  )
+  expect_false(isTRUE(reticulate::py_to_r(prod$`_should_force_finalize`(state_disabled))))
 })
 
 test_that("field_status parses Search source blocks with embedded JSON facts", {

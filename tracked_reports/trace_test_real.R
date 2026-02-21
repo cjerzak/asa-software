@@ -173,8 +173,7 @@ readr::write_file(
 )
 
 # summary/archive from memory folding state (if present)
-summary_state <- NULL
-archive_state <- NULL
+archive_state <- ummary_state <- NULL
 if (!is.null(attempt$raw_response)) {
   summary_state <- tryCatch(reticulate::py_to_r(attempt$raw_response$summary), error = function(e) NULL)
   archive_state <- tryCatch(reticulate::py_to_r(attempt$raw_response$archive), error = function(e) NULL)

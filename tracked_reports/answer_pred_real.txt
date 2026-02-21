@@ -16,5 +16,5 @@
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": "Source-backed searches resolved 1 fields (including confidence), while 17 fields remain unknown due to limited verifiable evidence."
+  "justification": "Searches did not find reliable, source-backed evidence for the required fields."
 }

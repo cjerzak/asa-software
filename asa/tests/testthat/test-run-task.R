@@ -284,6 +284,37 @@ test_that("run_task validation accepts orchestration_options", {
   )
 })
 
+test_that("search_options stores orchestration override knobs", {
+  search <- asa::search_options(
+    finalize_when_all_unresolved_exhausted = FALSE,
+    field_attempt_budget_mode = "soft_cap"
+  )
+
+  expect_false(isTRUE(search$finalize_when_all_unresolved_exhausted))
+  expect_equal(as.character(search$field_attempt_budget_mode), "soft_cap")
+})
+
+test_that(".resolve_orchestration_options_for_run_task merges search overrides", {
+  search <- asa::search_options(
+    finalize_when_all_unresolved_exhausted = FALSE,
+    field_attempt_budget_mode = "soft_cap"
+  )
+
+  merged <- asa:::.resolve_orchestration_options_for_run_task(
+    orchestration_options = list(
+      retrieval_controller = list(mode = "observe"),
+      finalizer = list(strict_schema_finalize = TRUE)
+    ),
+    config_search = search
+  )
+
+  expect_true(is.list(merged))
+  expect_equal(as.character(merged$retrieval_controller$mode), "observe")
+  expect_true(isTRUE(merged$finalizer$strict_schema_finalize))
+  expect_false(isTRUE(merged$finalizer$finalize_when_all_unresolved_exhausted))
+  expect_equal(as.character(merged$field_resolver$field_attempt_budget_mode), "soft_cap")
+})
+
 test_that("run_task rejects non-asa_config config", {
   expect_error(
     run_task("test prompt", config = list(foo = "bar")),

@@ -3,7 +3,7 @@
   "source_consistency_fixes_count": 0,
   "field_demotions_count": 3,
   "off_target_tool_results_count": 0,
-  "empty_tool_results_count": 0,
+  "empty_tool_results_count": 1,
   "retry_or_replan_events": 0,
   "webpage_llm_extraction_calls": 0,
   "grounding_blocked_fields": [],

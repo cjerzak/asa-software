@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 0.8527,
+  "elapsed_time": 1.1032,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
     },
     "education_institution": {
@@ -14,7 +14,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|Unknown"
     },
     "education_field": {
@@ -22,15 +22,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|Unknown"
     },
     "education_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|null"
     },
     "prior_occupation": {
@@ -38,7 +38,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|Unknown"
     },
     "class_background": {
@@ -46,7 +46,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
     },
     "prior_occupation_source": {
@@ -54,7 +54,7 @@
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|null"
     },
     "disability_status": {
@@ -62,15 +62,15 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "No disability|Some disability|Unknown"
     },
     "disability_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|null"
     },
     "birth_place": {
@@ -78,7 +78,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|Unknown"
     },
     "birth_place_source": {
@@ -86,7 +86,7 @@
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|null"
     },
     "birth_year": {
@@ -94,7 +94,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
@@ -102,7 +102,7 @@
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -110,7 +110,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
     },
     "lgbtq_details": {
@@ -118,15 +118,15 @@
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|null"
     },
     "lgbtq_source": {
-      "status": "pending",
+      "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string|null"
     },
     "confidence": {
@@ -134,15 +134,15 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
       "status": "found",
-      "value": "Source-backed searches resolved 1 fields (including confidence), while 17 fields remain unknown due to limited verifiable evidence.",
+      "value": "Searches did not find reliable, source-backed evidence for the required fields.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 0,
+      "attempts": 5,
       "descriptor": "string"
     }
   },
@@ -151,7 +151,7 @@
     "source_consistency_fixes_count": 0,
     "field_demotions_count": 3,
     "off_target_tool_results_count": 0,
-    "empty_tool_results_count": 0,
+    "empty_tool_results_count": 1,
     "retry_or_replan_events": 0,
     "webpage_llm_extraction_calls": 0,
     "grounding_blocked_fields": [],

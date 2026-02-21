@@ -409,6 +409,12 @@ print.asa_temporal <- function(x, ...) {
 #' @param search_doc_content_chars_max Maximum number of characters to include
 #'   from DuckDuckGo Search tool outputs (default: 500). This caps the text
 #'   returned to the LLM per Search tool invocation.
+#' @param finalize_when_all_unresolved_exhausted Optional override for
+#'   orchestration finalizer behavior. When TRUE, finalize once all unresolved
+#'   fields have exhausted their search-attempt budget.
+#' @param field_attempt_budget_mode Optional field-attempt budget mode passed to
+#'   orchestration field_resolver. One of \code{"strict_cap"} or
+#'   \code{"soft_cap"}.
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
@@ -517,6 +523,8 @@ search_options <- function(max_results = NULL,
                            auto_openwebpage_policy = NULL,
                            langgraph_node_retries = NULL,
                            langgraph_cache_enabled = NULL,
+                           finalize_when_all_unresolved_exhausted = NULL,
+                           field_attempt_budget_mode = NULL,
                            allow_read_webpages = NULL,
                            webpage_relevance_mode = NULL,
                            webpage_heuristic_profile = NULL,
@@ -562,6 +570,13 @@ search_options <- function(max_results = NULL,
       stealth_first = "conservative"
     )
   }
+  field_attempt_mode <- field_attempt_budget_mode
+  if (!is.null(field_attempt_mode)) {
+    field_attempt_mode <- tolower(as.character(field_attempt_mode)[[1]])
+    if (!field_attempt_mode %in% c("strict_cap", "soft_cap")) {
+      field_attempt_mode <- NULL
+    }
+  }
 
   structure(
     list(
@@ -578,6 +593,8 @@ search_options <- function(max_results = NULL,
       auto_openwebpage_policy = auto_policy,
       langgraph_node_retries = langgraph_node_retries %||% TRUE,
       langgraph_cache_enabled = langgraph_cache_enabled %||% FALSE,
+      finalize_when_all_unresolved_exhausted = if (is.null(finalize_when_all_unresolved_exhausted)) NULL else isTRUE(finalize_when_all_unresolved_exhausted),
+      field_attempt_budget_mode = field_attempt_mode,
       wiki_top_k_results = wiki_top_k_results %||% ASA_DEFAULT_WIKI_TOP_K,
       wiki_doc_content_chars_max = wiki_doc_content_chars_max %||% ASA_DEFAULT_WIKI_CHARS,
       search_doc_content_chars_max = search_doc_content_chars_max %||% 500L,
@@ -636,6 +653,12 @@ print.asa_search <- function(x, ...) {
   if (!is.null(x$auto_openwebpage_policy) &&
       !identical(x$auto_openwebpage_policy, "conservative")) {
     cat(", auto_openwebpage_policy=", x$auto_openwebpage_policy, sep = "")
+  }
+  if (!is.null(x$finalize_when_all_unresolved_exhausted)) {
+    cat(", finalize_when_all_unresolved_exhausted=", x$finalize_when_all_unresolved_exhausted, sep = "")
+  }
+  if (!is.null(x$field_attempt_budget_mode)) {
+    cat(", field_attempt_budget_mode=", x$field_attempt_budget_mode, sep = "")
   }
   # Only show OpenWebpage size tuning when explicitly set.
   if (!is.null(x$webpage_max_chars)) {

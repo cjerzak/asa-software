@@ -1,7 +1,7 @@
 AGENT ACTION MAP
 ================
-Steps captured: 9
-LangGraph timed steps: 7
+Steps captured: 20
+LangGraph timed steps: 13
 
 INVESTIGATOR SIGNALS
 --------------------
@@ -15,66 +15,122 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 3 tool-call turn(s), 1 answer turn(s)
-      Tool results: 4 total (Tool OpenWebpage=1, Tool Search=...date_plan=1, Tool wikipedia=1)
+      AI turns: 9 tool-call turn(s), 1 answer turn(s)
+      Tool results: 9 total (Tool OpenWebpage=5, Tool Search=3, Tool wikipedia=1)
       Structured terminal answer emitted
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 0.5935m (tok=0, n=3)
-      agent: 0.2161m (tok=4729, n=4)
+      finalize: 0.4548m (tok=8570, n=1)
+      tools: 0.3178m (tok=0, n=6)
+      agent: 0.2861m (tok=17722, n=6)
   +-- [LANGGRAPH] Slowest timed invocations
-      #06 tools: 0.5562m (tok=0)
-      #01 agent: 0.1355m (tok=1569)
-      #05 agent: 0.0483m (tok=1675)
-      #04 tools: 0.0372m (tok=0)
-      #03 agent: 0.0297m (tok=1485)
-  +-- [TIMING] wall=0.8100m nodes=0.8096m delta=+0.0004m (overhead)
+      #13 finalize: 0.4548m (tok=8570)
+      #01 agent: 0.0938m (tok=1476)
+      #10 tools: 0.0918m (tok=0)
+      #04 tools: 0.0803m (tok=0)
+      #03 agent: 0.0672m (tok=1597)
+  +-- [TIMING] wall=1.0593m nodes=1.0587m delta=+0.0005m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (update_plan)
+  +-- [02] Requested 1 tool call (wikipedia)
       by: AI
-      tok: in=1377 out=192 total=1569
-      min: 0.1355m
-      detail: update_plan(status=in_progress, step_id=1)
-  +-- [03] Returned result
-      by: Tool update_plan
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Plan step 1 updated to 'in_progress'
-  +-- [04] Requested 1 tool call (wikipedia)
-      by: AI
-      tok: in=1456 out=29 total=1485
-      min: 0.0297m
       detail: wikipedia(query=Ramona Moye Camaconi Bolivia MAS Beni 2014)
-  +-- [05] Returned result
+  +-- [03] Returned result
       by: Tool wikipedia
       tok: in=0 out=0 total=0
       min: n/a
       detail: No good Wikipedia Search Result was found
-  +-- [06] Requested 1 tool call (Search)
+  +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=1503 out=172 total=1675
-      min: 0.0483m
-      detail: Search(query=Ramona Moye Camaconi Beni MAS 2014 diputa...)
-  +-- [07] Returned result
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Ramona Moye Camaconi Beni MAS 2014 "Ramon...)
+  +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Especial: (Cir 6)Ramona...428 </URL> __END_OF_SOURC...
-  +-- [08] Returned result
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...916 </URL> __END_OF_SOURC...
+  +-- [06] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.flickr.com/pho...N03/52180793916)
+  +-- [07] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Refusing to open URL (resolve_error:[Errno 8] nodename ...-renovacion-de-la-mayoria...
-  +-- [09] Produced structured answer
+      detail: URL: https://www.flickr.com/photos/194792615@N03/521807...w.flickr.com/signup] ✨ Ge...
+  +-- [08] Requested 1 tool call (Search)
       by: AI
+      tok: in=1377 out=99 total=1476
+      min: 0.0938m
+      detail: Search(query=Ramona Moye Camaconi diputada Beni "Ramon...)
+  +-- [09] Returned result
+      by: Tool Search
       tok: in=0 out=0 total=0
-      min: 0.0027m
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ←→ Back to photostreamA...=en </URL> __END_OF_SOURC...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1424 out=173 total=1597
+      min: 0.0672m
+      detail: OpenWebpage(url=https://ftierra.org/index....ca-de-fortaleza)
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://ftierra.org/index.php/tema/derechos-indige...iticas-publicas] Quiénes ...
+  +-- [12] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2038 out=110 total=2148
+      min: 0.0357m
+      detail: OpenWebpage(url=https://anteriorportal.erb...cia_comunitaria)
+  +-- [13] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://anteriorportal.erbol.com.bo/noticia/indige...adas a orillas del río Sé...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3795 out=54 total=3849
+      min: 0.0281m
+      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":3,"attempt...
+  +-- [16] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4211 out=37 total=4248
+      min: 0.0277m
+      detail: Search(query=Ramona Moye Camaconi biografia "Ramona Mo...)
+  +-- [17] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi,dipu...les </URL> __END_OF_SOURC...
+  +-- [18] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4361 out=43 total=4404
+      min: 0.0335m
+      detail: OpenWebpage(url=https://www.noticiasfides....ificadas-390956)
+  +-- [19] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.noticiasfides.com/nacional/politica/di...asfides.com/pueblos-indig...
+  +-- [20] Produced structured answer
+      by: AI
+      tok: in=6258 out=2312 total=8570
+      min: 0.4548m
       flag: LOW_EVIDENCE_FINAL_ANSWER
       detail: {"education_level": "Unknown", "education_institution": "Unknown", "education_field...
 END

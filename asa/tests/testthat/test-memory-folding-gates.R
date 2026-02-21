@@ -51,6 +51,52 @@ test_that("message-count folding requires minimum transcript size", {
   expect_equal(as.integer(reticulate::py$fold_gate_summarizer$calls), 0L)
 })
 
+test_that("fold routing skips summarize node when eligibility gate fails", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  asa_test_stub_llm(mode = "simple", response_content = "done", var_name = "fold_route_gate_llm")
+  asa_test_stub_summarizer(var_name = "fold_route_gate_summarizer")
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$fold_route_gate_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(1),
+    keep_recent = as.integer(1),
+    fold_char_budget = as.integer(1),
+    min_fold_batch = as.integer(10),
+    summarizer_model = reticulate::py$fold_route_gate_summarizer,
+    debug = FALSE,
+    om_config = list(enabled = FALSE, cross_thread_memory = FALSE)
+  )
+
+  state <- reticulate::dict(
+    messages = list(reticulate::dict(role = "user", content = "hi")),
+    summary = "",
+    archive = list(),
+    fold_stats = reticulate::dict(fold_count = 0L),
+    om_config = list(enabled = FALSE, cross_thread_memory = FALSE),
+    stop_reason = NULL
+  )
+
+  out <- agent$invoke(state, config = list(recursion_limit = as.integer(6)))
+  token_trace <- tryCatch(reticulate::py_to_r(out$token_trace), error = function(e) list())
+  nodes <- vapply(token_trace, function(entry) {
+    if (is.list(entry) && !is.null(entry$node)) {
+      as.character(entry$node)
+    } else {
+      NA_character_
+    }
+  }, character(1))
+
+  expect_false(any(nodes == "summarize", na.rm = TRUE))
+  expect_equal(as.integer(reticulate::py$fold_route_gate_summarizer$calls), 0L)
+})
+
 test_that("summarizer output cap is passed via model.bind", {
   old_env <- Sys.getenv("ASA_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS", unset = NA_character_)
   on.exit({
@@ -123,4 +169,3 @@ test_that("summarizer output cap is passed via model.bind", {
   expect_equal(as.integer(kwargs$max_output_tokens), 400L)
   expect_equal(as.integer(reticulate::py$cap_summarizer$calls), 1L)
 })
-

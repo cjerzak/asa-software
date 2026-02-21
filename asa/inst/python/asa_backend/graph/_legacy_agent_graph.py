@@ -1193,6 +1193,9 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
     "field_resolver": {
         "enabled": True,
         "mode": "observe",
+        # Controls whether field attempts keep incrementing after a field is
+        # marked unknown at unknown_after_searches.
+        "field_attempt_budget_mode": "strict_cap",
         # Optional: LLM extraction pass over OpenWebpage tool outputs to improve
         # recall for schema fields. Keep disabled by default; enable via
         # orchestration_options to opt in.
@@ -1207,6 +1210,8 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "enabled": True,
         "mode": "observe",
         "strict_schema_finalize": True,
+        # End the run when all unresolved fields have exhausted attempt budget.
+        "finalize_when_all_unresolved_exhausted": True,
     },
     "artifacts": {
         "enabled": True,
@@ -1299,11 +1304,41 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
         rc["max_repeat_offtopic"] = 8
 
     options["source_tier_provider"] = _normalize_source_tier_provider(options.get("source_tier_provider"))
+
+    fr = options["field_resolver"]
+    attempt_mode = str(fr.get("field_attempt_budget_mode") or "strict_cap").strip().lower()
+    if attempt_mode not in {"strict_cap", "soft_cap"}:
+        attempt_mode = "strict_cap"
+    fr["field_attempt_budget_mode"] = attempt_mode
+
+    finalizer = options["finalizer"]
+    finalizer["finalize_when_all_unresolved_exhausted"] = bool(
+        finalizer.get("finalize_when_all_unresolved_exhausted", True)
+    )
     return options
 
 
 def _state_orchestration_options(state: Any) -> Dict[str, Any]:
     return _normalize_orchestration_options(state.get("orchestration_options"))
+
+
+def _state_field_attempt_budget_mode(state: Any) -> str:
+    options = _state_orchestration_options(state)
+    field_resolver = options.get("field_resolver") if isinstance(options, dict) else None
+    if not isinstance(field_resolver, dict):
+        return "strict_cap"
+    mode = str(field_resolver.get("field_attempt_budget_mode") or "strict_cap").strip().lower()
+    if mode not in {"strict_cap", "soft_cap"}:
+        return "strict_cap"
+    return mode
+
+
+def _state_finalize_when_all_unresolved_exhausted(state: Any) -> bool:
+    options = _state_orchestration_options(state)
+    finalizer = options.get("finalizer") if isinstance(options, dict) else None
+    if not isinstance(finalizer, dict):
+        return True
+    return bool(finalizer.get("finalize_when_all_unresolved_exhausted", True))
 
 
 def _orchestration_component_enabled(state: Any, component_name: str) -> bool:
@@ -2738,6 +2773,7 @@ def _extract_field_status_updates(
     extra_payloads: Any = None,
     tool_calls_delta: int,
     unknown_after_searches: int,
+    field_attempt_budget_mode: Any = "strict_cap",
     entity_name_tokens: Any = None,
     evidence_ledger: Any = None,
     evidence_stats: Any = None,
@@ -2749,6 +2785,13 @@ def _extract_field_status_updates(
 ) -> tuple[Dict[str, Dict[str, Any]], Dict[str, List[Dict[str, Any]]], Dict[str, Any]]:
     """Update canonical field_status based on recent tool outputs."""
     field_status = _normalize_field_status_map(existing_field_status, expected_schema)
+    try:
+        unknown_after_threshold = max(1, int(unknown_after_searches))
+    except Exception:
+        unknown_after_threshold = int(_DEFAULT_UNKNOWN_AFTER_SEARCHES)
+    attempt_budget_mode = str(field_attempt_budget_mode or "strict_cap").strip().lower()
+    if attempt_budget_mode not in {"strict_cap", "soft_cap"}:
+        attempt_budget_mode = "strict_cap"
     ledger = _normalize_evidence_ledger(evidence_ledger)
     stats = _normalize_evidence_stats(evidence_stats)
     mode = _normalize_evidence_mode(evidence_mode)
@@ -3030,11 +3073,20 @@ def _extract_field_status_updates(
             field_status[key] = entry
 
         if attempts_delta > 0:
-            entry["attempts"] = int(entry.get("attempts", 0)) + attempts_delta
-            if entry.get("status") != _FIELD_STATUS_FOUND and entry["attempts"] >= int(unknown_after_searches):
+            try:
+                previous_attempts = max(0, int(entry.get("attempts", 0)))
+            except Exception:
+                previous_attempts = 0
+            next_attempts = previous_attempts + int(attempts_delta)
+            if attempt_budget_mode == "strict_cap":
+                next_attempts = min(next_attempts, int(unknown_after_threshold))
+            entry["attempts"] = int(next_attempts)
+            if entry.get("status") != _FIELD_STATUS_FOUND and entry["attempts"] >= int(unknown_after_threshold):
                 entry["status"] = _FIELD_STATUS_UNKNOWN
                 if _is_empty_like(entry.get("value")):
                     entry["value"] = None
+                if attempt_budget_mode == "strict_cap":
+                    entry["attempts"] = int(unknown_after_threshold)
             field_status[key] = entry
 
     field_status = _apply_field_status_derivations(field_status)
@@ -4029,6 +4081,46 @@ def _collect_resolvable_unknown_fields(field_status: Any) -> List[str]:
 
 def _has_resolvable_unknown_fields(field_status: Any) -> bool:
     return bool(_collect_resolvable_unknown_fields(field_status))
+
+
+def _resolve_unknown_after_threshold(raw_value: Any) -> int:
+    try:
+        return max(1, int(raw_value))
+    except Exception:
+        return int(_DEFAULT_UNKNOWN_AFTER_SEARCHES)
+
+
+def _all_resolvable_fields_attempt_exhausted(
+    field_status: Any,
+    *,
+    unknown_after_searches: Any,
+) -> bool:
+    """True when every unresolved non-source field reached attempt budget."""
+    unresolved = _collect_resolvable_unknown_fields(field_status)
+    if not unresolved:
+        return False
+
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    threshold = _resolve_unknown_after_threshold(unknown_after_searches)
+    for key in unresolved:
+        entry = normalized.get(key)
+        if not isinstance(entry, dict):
+            return False
+        try:
+            attempts = max(0, int(entry.get("attempts", 0)))
+        except Exception:
+            attempts = 0
+        if attempts < int(threshold):
+            return False
+    return True
+
+
+def _state_all_resolvable_fields_attempt_exhausted(state: Any) -> bool:
+    budget = _state_budget(state)
+    return _all_resolvable_fields_attempt_exhausted(
+        _state_field_status(state),
+        unknown_after_searches=budget.get("unknown_after_searches"),
+    )
 
 
 def _normalize_budget_state(
@@ -7377,6 +7469,11 @@ def _budget_or_resolution_finalize(state: Any) -> bool:
     progress = _field_status_progress(_state_field_status(state))
     has_field_targets = int(progress.get("total_fields", 0)) > 0
     finalize_on_resolution = bool(state.get("finalize_on_all_fields_resolved", False))
+    finalize_on_exhausted = bool(_state_finalize_when_all_unresolved_exhausted(state))
+    all_unresolved_exhausted = bool(
+        finalize_on_exhausted
+        and _state_all_resolvable_fields_attempt_exhausted(state)
+    )
     explicit_budget = (
         state.get("search_budget_limit") is not None
         or state.get("model_budget_limit") is not None
@@ -7390,6 +7487,8 @@ def _budget_or_resolution_finalize(state: Any) -> bool:
     )
     if budget.get("budget_exhausted") and (has_field_targets or explicit_budget):
         return True
+    if all_unresolved_exhausted and has_field_targets:
+        return True
     return bool(finalize_on_resolution and progress.get("all_resolved"))
 
 
@@ -7398,6 +7497,7 @@ def _finalize_reason_for_state(state: Any) -> Optional[str]:
     progress = _field_status_progress(_state_field_status(state))
     has_field_targets = int(progress.get("total_fields", 0)) > 0
     finalize_on_resolution = bool(state.get("finalize_on_all_fields_resolved", False))
+    finalize_on_exhausted = bool(_state_finalize_when_all_unresolved_exhausted(state))
     explicit_budget = (
         state.get("search_budget_limit") is not None
         or state.get("model_budget_limit") is not None
@@ -7411,6 +7511,8 @@ def _finalize_reason_for_state(state: Any) -> Optional[str]:
     )
     if budget.get("budget_exhausted") and (has_field_targets or explicit_budget):
         return _budget_exhaustion_reason(budget) or "budget_exhausted"
+    if finalize_on_exhausted and _state_all_resolvable_fields_attempt_exhausted(state):
+        return "all_unresolved_exhausted"
     if bool(finalize_on_resolution and progress.get("all_resolved")):
         return "all_fields_resolved"
     remaining = remaining_steps_value(state)
@@ -8109,6 +8211,7 @@ def _create_tool_node_with_scratchpad(
             extra_payloads=extra_payloads,
             tool_calls_delta=search_calls_delta,
             unknown_after_searches=unknown_after,
+            field_attempt_budget_mode=_state_field_attempt_budget_mode(state),
             entity_name_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
             evidence_ledger=prior_evidence_ledger,
             evidence_stats=prior_evidence_stats,
@@ -9545,6 +9648,152 @@ def create_memory_folding_agent(
             },
         }
 
+    def _compute_effective_keep_recent_messages(messages: list, keep_recent_exchanges: int) -> int:
+        """Map exchange-level keep policy to concrete message count."""
+        if keep_recent_exchanges <= 0:
+            return 0
+
+        exchanges: List[Tuple[int, int]] = []
+        n_messages = len(messages)
+        idx = 0
+        while idx < n_messages:
+            start = idx
+            end = n_messages - 1
+            cursor = idx
+            while cursor < n_messages:
+                msg = messages[cursor]
+                msg_type = type(msg).__name__
+                if msg_type == "HumanMessage" and cursor != idx:
+                    end = cursor - 1
+                    break
+                if msg_type == "AIMessage":
+                    tool_calls = getattr(msg, "tool_calls", None)
+                    if not tool_calls:
+                        end = cursor
+                        break
+                cursor += 1
+            exchanges.append((start, end))
+            idx = end + 1
+
+        if len(exchanges) <= keep_recent_exchanges:
+            # Fall back to completed round boundaries so long single exchanges can still fold.
+            if n_messages <= 1:
+                return n_messages
+
+            completion_boundaries: List[int] = []
+            for msg_idx, msg in enumerate(messages):
+                msg_type = type(msg).__name__
+                if msg_type == "AIMessage":
+                    tool_calls = getattr(msg, "tool_calls", None)
+                    if not tool_calls:
+                        completion_boundaries.append(msg_idx + 1)
+                elif msg_type == "ToolMessage":
+                    next_type = type(messages[msg_idx + 1]).__name__ if (msg_idx + 1) < n_messages else ""
+                    if next_type != "ToolMessage":
+                        completion_boundaries.append(msg_idx + 1)
+
+            if completion_boundaries:
+                keep_units = max(1, int(keep_recent_exchanges))
+                if len(completion_boundaries) >= keep_units:
+                    boundary_idx = completion_boundaries[-keep_units]
+                else:
+                    boundary_idx = completion_boundaries[0]
+                boundary_idx = min(max(0, int(boundary_idx)), n_messages - 1)
+                return max(1, n_messages - boundary_idx)
+            return n_messages
+
+        boundary_idx = exchanges[-keep_recent_exchanges][0]
+        return n_messages - boundary_idx
+
+    def _build_fold_eligibility(
+        messages: list,
+        *,
+        keep_recent_exchanges: int,
+        min_fold_batch: int,
+        preserve_terminal_exchange: bool = False,
+    ) -> Dict[str, Any]:
+        """Determine whether a fold would remove a safe, non-trivial message batch."""
+        kept_exchanges = int(max(0, keep_recent_exchanges))
+        if preserve_terminal_exchange and kept_exchanges < 1:
+            kept_exchanges = 1
+
+        effective_keep_recent_messages = _compute_effective_keep_recent_messages(messages, kept_exchanges)
+        if len(messages) <= int(effective_keep_recent_messages):
+            return {
+                "eligible": False,
+                "reason": "insufficient_messages",
+                "keep_recent_exchanges": kept_exchanges,
+                "effective_keep_recent_messages": int(effective_keep_recent_messages),
+            }
+
+        preserve_first_user = bool(messages) and type(messages[0]).__name__ == "HumanMessage"
+
+        safe_fold_idx = 0
+        idx = 0
+        upper_bound = max(0, len(messages) - int(effective_keep_recent_messages))
+        while idx < upper_bound:
+            msg = messages[idx]
+            msg_type = type(msg).__name__
+            if msg_type == "AIMessage":
+                tool_calls = getattr(msg, "tool_calls", None)
+                if not tool_calls:
+                    safe_fold_idx = idx + 1
+            elif msg_type == "ToolMessage":
+                next_type = type(messages[idx + 1]).__name__ if (idx + 1) < len(messages) else ""
+                if next_type != "ToolMessage":
+                    safe_fold_idx = idx + 1
+            idx += 1
+
+        if safe_fold_idx <= 0:
+            return {
+                "eligible": False,
+                "reason": "no_safe_boundary",
+                "keep_recent_exchanges": kept_exchanges,
+                "effective_keep_recent_messages": int(effective_keep_recent_messages),
+            }
+
+        messages_to_fold = messages[:safe_fold_idx]
+        if not messages_to_fold:
+            return {
+                "eligible": False,
+                "reason": "empty_fold_window",
+                "keep_recent_exchanges": kept_exchanges,
+                "effective_keep_recent_messages": int(effective_keep_recent_messages),
+            }
+
+        summary_candidates = messages_to_fold[1:] if preserve_first_user else messages_to_fold
+        if not summary_candidates:
+            return {
+                "eligible": False,
+                "reason": "empty_summary_candidates",
+                "keep_recent_exchanges": kept_exchanges,
+                "effective_keep_recent_messages": int(effective_keep_recent_messages),
+                "safe_fold_idx": int(safe_fold_idx),
+            }
+
+        min_batch = max(1, int(min_fold_batch))
+        if len(summary_candidates) < int(min_batch):
+            return {
+                "eligible": False,
+                "reason": "below_min_fold_batch",
+                "keep_recent_exchanges": kept_exchanges,
+                "effective_keep_recent_messages": int(effective_keep_recent_messages),
+                "safe_fold_idx": int(safe_fold_idx),
+                "eligible_count": int(len(summary_candidates)),
+                "min_fold_batch": int(min_batch),
+            }
+
+        return {
+            "eligible": True,
+            "reason": "eligible",
+            "keep_recent_exchanges": kept_exchanges,
+            "effective_keep_recent_messages": int(effective_keep_recent_messages),
+            "safe_fold_idx": int(safe_fold_idx),
+            "preserve_first_user": bool(preserve_first_user),
+            "messages_to_fold": messages_to_fold,
+            "summary_candidates": summary_candidates,
+        }
+
     def summarize_conversation(state: MemoryFoldingAgentState) -> dict:
         """
         The memory folding node - compresses old messages into summary.
@@ -9609,137 +9858,32 @@ def create_memory_folding_agent(
         else:
             fold_trigger_reason = "manual_or_unknown"
 
-        def _compute_effective_keep_recent_messages(messages, keep_recent_exchanges):
-            # keep_recent_exchanges counts full user/assistant exchanges, where an exchange
-            # ends at the first AIMessage without tool_calls (or the last message if open).
-            if keep_recent_exchanges <= 0:
-                return 0
-
-            exchanges = []
-            n = len(messages)
-            i = 0
-            while i < n:
-                start = i
-                end = n - 1
-                j = i
-                while j < n:
-                    msg = messages[j]
-                    msg_type = type(msg).__name__
-                    if msg_type == "HumanMessage" and j != i:
-                        end = j - 1
-                        break
-                    if msg_type == "AIMessage":
-                        tool_calls = getattr(msg, "tool_calls", None)
-                        if not tool_calls:
-                            end = j
-                            break
-                    j += 1
-                exchanges.append((start, end))
-                i = end + 1
-
-            if len(exchanges) <= keep_recent_exchanges:
-                # A single user exchange can still contain many completed tool rounds.
-                # Fall back to round boundaries so we can fold older rounds instead of
-                # keeping the entire transcript forever.
-                if n <= 1:
-                    return n
-
-                completion_boundaries: List[int] = []
-                for idx, msg in enumerate(messages):
-                    msg_type = type(msg).__name__
-                    if msg_type == "AIMessage":
-                        tool_calls = getattr(msg, "tool_calls", None)
-                        if not tool_calls:
-                            completion_boundaries.append(idx + 1)
-                    elif msg_type == "ToolMessage":
-                        next_type = type(messages[idx + 1]).__name__ if (idx + 1) < n else ""
-                        if next_type != "ToolMessage":
-                            completion_boundaries.append(idx + 1)
-
-                if completion_boundaries:
-                    keep_units = max(1, int(keep_recent_exchanges))
-                    if len(completion_boundaries) >= keep_units:
-                        boundary_idx = completion_boundaries[-keep_units]
-                    else:
-                        boundary_idx = completion_boundaries[0]
-                    boundary_idx = min(max(0, int(boundary_idx)), n - 1)
-                    return max(1, n - boundary_idx)
-                return n
-
-            boundary_idx = exchanges[-keep_recent_exchanges][0]
-            return n - boundary_idx
-
-        keep_recent_exchanges = keep_recent
-        if preserve_terminal_exchange and keep_recent_exchanges < 1:
-            keep_recent_exchanges = 1
-        effective_keep_recent_messages = _compute_effective_keep_recent_messages(
-            messages, keep_recent_exchanges
+        fold_plan = _build_fold_eligibility(
+            messages,
+            keep_recent_exchanges=keep_recent,
+            min_fold_batch=min_fold_batch,
+            preserve_terminal_exchange=preserve_terminal_exchange,
         )
+        keep_recent_exchanges = int(fold_plan.get("keep_recent_exchanges", max(0, int(keep_recent))))
+        effective_keep_recent_messages = int(fold_plan.get("effective_keep_recent_messages", 0))
         if debug:
             logger.info(
                 f"Preserving {keep_recent_exchanges} exchanges => "
                 f"keeping last {effective_keep_recent_messages} messages"
             )
 
-        if len(messages) <= effective_keep_recent_messages:
-            return _summarize_result()  # Nothing to fold
-
-        # IMPORTANT: Never fold away the initial HumanMessage. Some providers
-        # (notably Gemini function calling) require tool-call turns to follow a
-        # user turn or a tool response turn. If we fold away the initial user
-        # prompt, the first remaining AI tool-call message can become the first
-        # turn after the system prompt, triggering INVALID_ARGUMENT errors.
-        preserve_first_user = bool(messages) and type(messages[0]).__name__ == "HumanMessage"
-
-        # Find safe fold boundary - we need to fold complete "rounds"
-        # A round = HumanMessage -> AIMessage(with tool_calls) -> ToolMessages -> AIMessage(final)
-        # We fold only complete sequences (never split tool-call / tool-response pairs).
-        safe_fold_idx = 0
-        i = 0
-        while i < len(messages) - effective_keep_recent_messages:
-            msg = messages[i]
-            msg_type = type(msg).__name__
-
-            if msg_type == "AIMessage":
-                tool_calls = getattr(msg, "tool_calls", None)
-                if not tool_calls:
-                    # This AI message has no tool calls - safe boundary.
-                    safe_fold_idx = i + 1
-            elif msg_type == "ToolMessage":
-                # Tool responses are safe fold boundaries (tool call has completed),
-                # but only at the END of a contiguous ToolMessage block. An AIMessage
-                # can request multiple tool calls, producing multiple ToolMessages
-                # in a row; folding mid-block would orphan later ToolMessages.
-                next_type = type(messages[i + 1]).__name__ if (i + 1) < len(messages) else ""
-                if next_type != "ToolMessage":
-                    safe_fold_idx = i + 1
-
-            i += 1
-
-        # If safe_fold_idx is 0, we can't safely fold anything yet.
-        if safe_fold_idx == 0:
-            if debug:
-                logger.info("No safe fold boundary found, skipping fold")
-            return _summarize_result()
-
-        messages_to_fold = messages[:safe_fold_idx]
-        if not messages_to_fold:
-            return _summarize_result()
-
-        # Exclude the preserved initial user message from both summary input and removal.
-        summary_candidates = messages_to_fold[1:] if preserve_first_user else messages_to_fold
-        if not summary_candidates:
-            return _summarize_result()
-
-        # Fix 1: Minimum fold batch — skip fold if too few messages are eligible.
-        # Tiny folds (2-3 messages) cost ~7K summarizer tokens but compress almost nothing.
-        if len(summary_candidates) < min_fold_batch:
+        if not bool(fold_plan.get("eligible", False)):
             if debug:
                 logger.info(
-                    "Skipping fold: only %d candidates (min_fold_batch=%d)",
-                    len(summary_candidates), min_fold_batch,
+                    "Skipping fold: eligibility gate=%s",
+                    str(fold_plan.get("reason") or "unknown"),
                 )
             return _summarize_result()
+
+        preserve_first_user = bool(fold_plan.get("preserve_first_user", False))
+        safe_fold_idx = int(fold_plan.get("safe_fold_idx", 0))
+        messages_to_fold = list(fold_plan.get("messages_to_fold") or [])
+        summary_candidates = list(fold_plan.get("summary_candidates") or [])
 
         if debug:
             logger.info(
@@ -10113,6 +10257,25 @@ def create_memory_folding_agent(
                     if isinstance(repaired_candidate, dict) and repaired_candidate:
                         parsed_memory = repaired_candidate
                         fold_parse_success = True
+            if not fold_parse_success:
+                repaired_json = repair_json_output_to_schema(
+                    summary_text_str,
+                    _MEMORY_REPAIR_SCHEMA,
+                    fallback_on_failure=True,
+                )
+                if isinstance(repaired_json, str) and repaired_json.strip():
+                    repaired_candidate = parse_llm_json(repaired_json)
+                    if isinstance(repaired_candidate, dict) and repaired_candidate:
+                        repaired_candidate = _sanitize_memory_dict(repaired_candidate)
+                        # Avoid memory loss when schema-repair fallback returns sparse skeletons.
+                        for _memory_key in ("facts", "decisions", "open_questions", "sources", "warnings"):
+                            if not list(repaired_candidate.get(_memory_key) or []):
+                                repaired_candidate[_memory_key] = list(current_memory.get(_memory_key) or [])
+                        parsed_memory = repaired_candidate
+                        fold_parse_success = True
+                        fold_warnings.append(
+                            "Summarizer output required schema-repair fallback."
+                        )
             if not isinstance(parsed_memory, dict):
                 parsed_memory = {}
             # Parse fallback: keep existing memory + recover FIELD_EXTRACT lines from
@@ -10408,7 +10571,7 @@ def create_memory_folding_agent(
             "token_trace": [build_node_trace_entry(token_trace_node, usage=_usage, started_at=node_started_at)],
         })
 
-    def should_fold_messages(messages: list) -> bool:
+    def should_fold_messages(messages: list, *, state: Optional[MemoryFoldingAgentState] = None) -> bool:
         """Check whether the conversation exceeds the fold budget."""
         # Primary trigger: estimated total chars across messages exceeds budget.
         # Backstop: message count exceeds threshold.
@@ -10435,6 +10598,40 @@ def create_memory_folding_agent(
                 )
             )
             should_fold = msg_tokens >= max(1, obs_budget)
+        if should_fold:
+            preserve_terminal_exchange_local = False
+            if state is not None:
+                remaining_before_fold = remaining_steps_value(state)
+                terminal_response_present = _reusable_terminal_finalize_response(messages) is not None
+                near_finalize_edge = (
+                    remaining_before_fold is not None
+                    and remaining_before_fold <= (FINALIZE_WHEN_REMAINING_STEPS_LTE + 1)
+                )
+                preserve_terminal_exchange_local = bool(terminal_response_present and near_finalize_edge)
+            fold_plan = _build_fold_eligibility(
+                messages,
+                keep_recent_exchanges=keep_recent,
+                min_fold_batch=min_fold_batch,
+                preserve_terminal_exchange=preserve_terminal_exchange_local,
+            )
+            if not bool(fold_plan.get("eligible", False)):
+                keep_noop_summarize_edge = False
+                if state is not None:
+                    remaining_before_fold = remaining_steps_value(state)
+                    terminal_response_present = _reusable_terminal_finalize_response(messages) is not None
+                    keep_noop_summarize_edge = bool(
+                        terminal_response_present
+                        and remaining_before_fold is not None
+                        and remaining_before_fold <= (FINALIZE_WHEN_REMAINING_STEPS_LTE + 1)
+                    )
+                if keep_noop_summarize_edge:
+                    return True
+                if debug:
+                    logger.info(
+                        "Memory fold skipped by eligibility gate: %s",
+                        str(fold_plan.get("reason") or "unknown"),
+                    )
+                return False
         if should_fold and debug:
             logger.info(
                 "Memory fold triggered: %s chars (budget=%s), %s msgs (threshold=%s)",
@@ -10464,7 +10661,7 @@ def create_memory_folding_agent(
         base_result = _route_after_agent_step(
             state,
             allow_summarize=True,
-            should_fold=should_fold_messages,
+            should_fold=lambda msgs: should_fold_messages(msgs, state=state),
         )
         if base_result == "summarize" and _state_om_enabled(state):
             return "observe"
@@ -10519,7 +10716,7 @@ def create_memory_folding_agent(
             return "end"
         # Primary fold trigger: compress before returning to agent
         messages = state.get("messages", [])
-        if should_fold_messages(messages):
+        if should_fold_messages(messages, state=state):
             if _state_om_enabled(state):
                 return "observe"
             return "summarize"
@@ -10541,7 +10738,7 @@ def create_memory_folding_agent(
         cfg = _state_om_config(state)
         activation_ratio = _observation_activation_ratio(state)
         block_after = float(cfg.get("block_after", _OM_DEFAULT_CONFIG["block_after"]))
-        if should_fold_messages(state.get("messages", [])) and activation_ratio >= block_after:
+        if should_fold_messages(state.get("messages", []), state=state) and activation_ratio >= block_after:
             return "reflect"
 
         return "agent"

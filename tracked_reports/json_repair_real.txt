@@ -1,26 +1,11 @@
 [
   {
     "repair_applied": true,
-    "repair_reason": "invoke_exception_fallback",
-    "missing_keys_count": 0,
-    "missing_keys_sample": [],
-    "fallback_on_failure": true,
-    "schema_source": "explicit",
-    "context": "agent",
-    "error_type": "BadRequestError",
-    "error_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: messages with role 'tool' must be a response to a preceeding message with 'tool_calls'.\", 'type': 'invalid_request_error', 'param': 'messages.[8].role', 'code': None}}",
-    "retry_attempts": 1,
-    "retry_max_attempts": 3,
-    "retryable_error": false,
-    "retry_exhausted": false
-  },
-  {
-    "repair_applied": true,
     "repair_reason": "field_status_canonical",
     "missing_keys_count": 0,
     "missing_keys_sample": [],
     "fallback_on_failure": true,
     "schema_source": "explicit",
-    "context": "agent"
+    "context": "finalize"
   }
 ]

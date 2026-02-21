@@ -171,6 +171,83 @@
 #'   \code{\link{asa_config}}, \code{\link{temporal_options}}
 #'
 #' @export
+.deep_merge_named_lists <- function(base, override) {
+  out <- base %||% list()
+  if (is.null(override) || length(override) == 0L) {
+    return(out)
+  }
+  override_names <- names(override)
+  if (is.null(override_names)) {
+    return(out)
+  }
+  for (name in override_names) {
+    if (!nzchar(name)) {
+      next
+    }
+    override_value <- override[[name]]
+    base_value <- out[[name]]
+    can_recurse <- (
+      is.list(base_value) &&
+      is.list(override_value) &&
+      !is.null(names(base_value)) &&
+      !is.null(names(override_value))
+    )
+    if (can_recurse) {
+      out[[name]] <- .deep_merge_named_lists(base_value, override_value)
+    } else {
+      out[[name]] <- override_value
+    }
+  }
+  out
+}
+
+.search_orchestration_overrides <- function(config_search = NULL) {
+  if (is.null(config_search) || !(inherits(config_search, "asa_search") || is.list(config_search))) {
+    return(list())
+  }
+
+  overrides <- list()
+
+  if (!is.null(config_search$finalize_when_all_unresolved_exhausted)) {
+    overrides$finalizer <- list(
+      finalize_when_all_unresolved_exhausted = isTRUE(config_search$finalize_when_all_unresolved_exhausted)
+    )
+  }
+
+  field_attempt_mode <- config_search$field_attempt_budget_mode
+  if (!is.null(field_attempt_mode)) {
+    field_attempt_mode <- tolower(trimws(as.character(field_attempt_mode)[[1]]))
+    if (field_attempt_mode %in% c("strict_cap", "soft_cap")) {
+      overrides$field_resolver <- .deep_merge_named_lists(
+        overrides$field_resolver %||% list(),
+        list(field_attempt_budget_mode = field_attempt_mode)
+      )
+    }
+  }
+
+  overrides
+}
+
+.resolve_orchestration_options_for_run_task <- function(orchestration_options = NULL,
+                                                        config_search = NULL) {
+  overrides <- .search_orchestration_overrides(config_search)
+  if (length(overrides) == 0L) {
+    return(orchestration_options)
+  }
+
+  base_options <- orchestration_options
+  if (is.null(base_options)) {
+    base_options <- list()
+  } else if (!is.list(base_options)) {
+    base_options <- .try_or(reticulate::py_to_r(base_options), base_options)
+  }
+  if (!is.list(base_options)) {
+    base_options <- list()
+  }
+
+  .deep_merge_named_lists(base_options, overrides)
+}
+
 run_task <- function(prompt,
                      output_format = "text",
                      temporal = NULL,
@@ -282,6 +359,11 @@ run_task <- function(prompt,
   # Validate temporal if provided
   .validate_temporal(temporal)
 
+  resolved_orchestration_options <- .resolve_orchestration_options_for_run_task(
+    orchestration_options = orchestration_options,
+    config_search = runtime$config_search
+  )
+
   # Augment prompt with temporal hints if dates specified
   augmented_prompt <- .augment_prompt_temporal(prompt, temporal, verbose = verbose)
   if (isTRUE(allow_rw)) {
@@ -314,7 +396,7 @@ run_task <- function(prompt,
       source_policy = source_policy,
       retry_policy = retry_policy,
       finalization_policy = finalization_policy,
-      orchestration_options = orchestration_options,
+      orchestration_options = resolved_orchestration_options,
       query_templates = query_templates,
       use_plan_mode = use_plan_mode,
       verbose = verbose
