@@ -20,13 +20,13 @@ test_that("infer_required_json_schema recognizes schema: anchors", {
 
 test_that("structured Search JSON is not flagged as empty low-signal output", {
   python_path <- asa_test_skip_if_no_python(
-    required_files = "asa_backend/graph/_legacy_agent_graph.py",
+    required_files = "asa_backend/graph/core.py",
     initialize = FALSE
   )
   asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
 
   graph <- tryCatch(
-    reticulate::import_from_path("asa_backend.graph._legacy_agent_graph", path = python_path),
+    reticulate::import_from_path("asa_backend.graph.core", path = python_path),
     error = function(e) {
       skip(paste0("Failed to import graph module: ", conditionMessage(e)))
     }
@@ -52,13 +52,13 @@ test_that("structured Search JSON is not flagged as empty low-signal output", {
 
 test_that("structured OpenWebpage error JSON is flagged as empty error output", {
   python_path <- asa_test_skip_if_no_python(
-    required_files = "asa_backend/graph/_legacy_agent_graph.py",
+    required_files = "asa_backend/graph/core.py",
     initialize = FALSE
   )
   asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
 
   graph <- tryCatch(
-    reticulate::import_from_path("asa_backend.graph._legacy_agent_graph", path = python_path),
+    reticulate::import_from_path("asa_backend.graph.core", path = python_path),
     error = function(e) {
       skip(paste0("Failed to import graph module: ", conditionMessage(e)))
     }

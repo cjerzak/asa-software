@@ -7,7 +7,7 @@
 extract_urls(text, source = NULL)
 }
 \arguments{
-\item{text}{Raw agent trace text, or a structured JSON trace (asa_trace_v1)}
+\item{text}{Structured JSON trace (asa_trace_v1)}
 
 \item{source}{Optional integer vector of source numbers to return (1-indexed).
 If NULL (default), returns a character vector for all sources encountered

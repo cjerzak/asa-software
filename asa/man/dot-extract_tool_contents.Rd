@@ -2,11 +2,11 @@
 % Please edit documentation in R/process_outputs.R
 \name{.extract_tool_contents}
 \alias{.extract_tool_contents}
-\title{Extract tool message contents from either text trace or asa_trace_v1 JSON.}
+\title{Extract tool message contents from asa_trace_v1 JSON traces.}
 \usage{
 .extract_tool_contents(text, tool_name)
 }
 \description{
-Extract tool message contents from either text trace or asa_trace_v1 JSON.
+Extract tool message contents from asa_trace_v1 JSON traces.
 }
 \keyword{internal}

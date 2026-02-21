@@ -32,7 +32,7 @@ from asa_backend.schema_state import (
     normalize_field_status_map as _shared_normalize_field_status_map,
     schema_leaf_paths as _shared_schema_leaf_paths,
 )
-from asa_backend.search._legacy_transport import (
+from asa_backend.search.transport import (
     _AUTO_OPENWEBPAGE_POLICY,
     _AUTO_OPENWEBPAGE_PRIMARY_SOURCE,
     _AUTO_OPENWEBPAGE_SELECTOR_MODE,
@@ -6717,11 +6717,11 @@ def _repair_best_effort_json(
             # Don't coerce shapes unless explicitly allowed (e.g., recursion-limit paths).
             return response, None
 
-        # Use the public `asa_backend.agent_graph` hook when available so tests
+        # Use the public `asa_backend.agent_api` hook when available so tests
         # (and downstream callers) can monkeypatch repair behavior reliably.
         repair_fn = None
         try:
-            public_mod = sys.modules.get("asa_backend.agent_graph")
+            public_mod = sys.modules.get("asa_backend.agent_api")
             if public_mod is not None:
                 repair_fn = getattr(public_mod, "repair_json_output_to_schema", None)
         except Exception:

@@ -29,17 +29,41 @@ options(asa.default_conda_env = "asa_env")
 
 .asa_test_bind_conda_once("asa_env")
 
-.asa_test_resolve_backend_module <- function(module_name, required_files = character()) {
+.asa_test_normalize_required_files <- function(required_files = character()) {
   files <- required_files %||% character(0)
   files <- as.character(files)
   files <- files[nzchar(files)]
+  if (length(files) == 0L) {
+    return(files)
+  }
+
+  files[files == "custom_ddg_production.py"] <- "asa_backend/graph/core.py"
+  files[files == "asa_backend/agent_graph.py"] <- "asa_backend/graph/core.py"
+  files[files == "asa_backend/graph/_legacy_agent_graph.py"] <- "asa_backend/graph/core.py"
+  files[files == "asa_backend/search/_legacy_transport.py"] <- "asa_backend/search/transport.py"
+  files[files == "asa_backend/search_transport.py"] <- "asa_backend/search/__init__.py"
+
+  unique(files)
+}
+
+.asa_test_resolve_backend_module <- function(module_name, required_files = character()) {
+  files <- .asa_test_normalize_required_files(required_files)
 
   if (identical(module_name, "custom_ddg_production")) {
-    module_name <- "asa_backend.agent_api"
-    files[files == "custom_ddg_production.py"] <- "asa_backend/agent_api.py"
+    module_name <- "asa_backend.graph.core"
+    files[files == "custom_ddg_production.py"] <- "asa_backend/graph/core.py"
     if (length(files) == 0L) {
-      files <- "asa_backend/agent_api.py"
+      files <- "asa_backend/graph/core.py"
     }
+  }
+  if (identical(module_name, "asa_backend.graph._legacy_agent_graph")) {
+    module_name <- "asa_backend.graph.core"
+  }
+  if (identical(module_name, "asa_backend.agent_graph")) {
+    module_name <- "asa_backend.graph.core"
+  }
+  if (identical(module_name, "asa_backend.search_transport")) {
+    module_name <- "asa_backend.search"
   }
 
   list(module_name = module_name, required_files = files)
@@ -118,6 +142,7 @@ asa_test_skip_if_no_python <- function(required_files = character(),
     testthat::skip("reticulate not installed")
   }
 
+  required_files <- .asa_test_normalize_required_files(required_files)
   python_path <- asa_test_python_path(required_files = required_files)
   if (!nzchar(python_path) || !dir.exists(python_path)) {
     testthat::skip("Python modules not found")

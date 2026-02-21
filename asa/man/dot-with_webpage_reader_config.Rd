@@ -45,7 +45,7 @@
 otherwise falls back to lexical overlap.}
 
 \item{heuristic_profile}{Heuristic profile for hyperlink annotation:
-"generic" (task-agnostic default) or "legacy".}
+"generic" (task-agnostic default).}
 
 \item{embedding_provider}{Embedding provider for relevance ("auto",
 "openai", or "sentence_transformers").}

@@ -1607,7 +1607,7 @@
   paste(lines, collapse = "\n")
 }
 
-#' Extract tool message contents from either text trace or asa_trace_v1 JSON.
+#' Extract tool message contents from asa_trace_v1 JSON traces.
 #' @keywords internal
 .extract_tool_contents <- function(text, tool_name) {
   msgs <- .parse_trace_json_messages(text)
@@ -1625,74 +1625,6 @@
     contents <- c(contents, as.character(m$content %||% ""))
   }
   contents
-}
-
-#' Decode legacy ToolMessage content (Python repr-like escapes)
-#' @keywords internal
-.decode_legacy_toolmessage_content <- function(x) {
-  if (!is.character(x) || length(x) != 1 || is.na(x) || !nzchar(x)) {
-    return("")
-  }
-
-  decoded <- .decode_trace_escaped_string(x)
-  if (is.character(decoded) && length(decoded) == 1L && !is.null(decoded)) {
-    return(decoded)
-  }
-
-  # Backward-compatible fallback: manual unescaping for common sequences.
-  out <- x
-  out <- gsub("\\\\n", " ", out)
-  out <- gsub("\\\\'", "'", out)
-  out <- gsub('\\\\"', '"', out)
-  out <- gsub("\\\\\\\\", "\\\\", out)
-  out
-}
-
-#' Extract tool contents from legacy (non-JSON) ToolMessage(...) traces
-#' @keywords internal
-.extract_tool_contents_legacy <- function(text, tool_name) {
-  if (!is.character(text) || length(text) != 1 || is.na(text) || !nzchar(text)) {
-    return(character(0))
-  }
-
-  tool_name <- as.character(tool_name)
-  tool_name_esc <- gsub("([\\\\.^$|()\\[\\]{}*+?])", "\\\\\\1", tool_name, perl = TRUE)
-
-  tool_pattern <- paste0(
-    "ToolMessage\\(content=(?:'([^']*(?:\\\\'[^']*)*)'|",
-    "\"([^\"]*(?:\\\\\"[^\"]*)*)\"), ",
-    "name=(?:'(?i:", tool_name_esc, ")'|\"(?i:", tool_name_esc, ")\").*?\\)"
-  )
-
-  tool_matches <- gregexpr(tool_pattern, text, perl = TRUE)[[1]]
-  if (tool_matches[1] == -1) {
-    return(character(0))
-  }
-
-  match_texts <- regmatches(text, list(tool_matches))[[1]]
-  contents <- character(0)
-
-  for (match_text in match_texts) {
-    content_match <- regmatches(match_text, regexec(tool_pattern, match_text, perl = TRUE))[[1]]
-
-    # Content is in group 2 or 3 (single-quoted vs double-quoted).
-    content <- ifelse(nchar(content_match[2]) > 0, content_match[2], content_match[3])
-    if (is.na(content) || !nzchar(content)) next
-
-    contents <- c(contents, .decode_legacy_toolmessage_content(content))
-  }
-
-  contents
-}
-
-#' Extract tool contents from either asa_trace_v1 JSON or legacy ToolMessage traces.
-#' @keywords internal
-.extract_tool_contents_any <- function(text, tool_name) {
-  tool_contents <- .extract_tool_contents(text, tool_name)
-  if (!is.null(tool_contents)) {
-    return(tool_contents)
-  }
-  .extract_tool_contents_legacy(text, tool_name)
 }
 
 #' Select sources from an ordered vector (1-indexed)
@@ -1716,7 +1648,7 @@
 .extract_search_sources <- function(text, field = c("content", "url"), source = NULL) {
   field <- match.arg(field)
 
-  tool_contents <- .extract_tool_contents_any(text, "search")
+  tool_contents <- .extract_tool_contents(text, "search")
   if (length(tool_contents) == 0) {
     return(character(0))
   }
@@ -1787,7 +1719,7 @@
 #'
 #' Extracts content from Search tool messages in the agent trace.
 #'
-#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
+#' @param text Structured JSON trace (asa_trace_v1)
 #' @param source Optional integer vector of source numbers to return (1-indexed).
 #'   If NULL (default), returns a character vector for all sources encountered
 #'   (with empty strings for missing indices).
@@ -1808,7 +1740,7 @@ extract_search_snippets <- function(text, source = NULL) {
 #'
 #' Extracts content from Wikipedia tool messages in the agent trace.
 #'
-#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
+#' @param text Structured JSON trace (asa_trace_v1)
 #'
 #' @return Character vector of Wikipedia snippets
 #'
@@ -1821,7 +1753,7 @@ extract_search_snippets <- function(text, source = NULL) {
 extract_wikipedia_content <- function(text) {
   snippets <- character(0)
 
-  tool_contents <- .extract_tool_contents_any(text, "wikipedia")
+  tool_contents <- .extract_tool_contents(text, "wikipedia")
   for (content in tool_contents) {
     if (is.na(content) || !nzchar(content)) next
     if ((grepl("Page:", content) || grepl("Summary:", content)) &&
@@ -1840,7 +1772,7 @@ extract_wikipedia_content <- function(text) {
 #'
 #' Extracts URLs from Search tool messages in the agent trace.
 #'
-#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
+#' @param text Structured JSON trace (asa_trace_v1)
 #' @param source Optional integer vector of source numbers to return (1-indexed).
 #'   If NULL (default), returns a character vector for all sources encountered
 #'   (with empty strings for missing indices).
@@ -1868,7 +1800,7 @@ extract_urls <- function(text, source = NULL) {
 #'   \item requests: Raw POST to DuckDuckGo HTML endpoint (Tier 3)
 #' }
 #'
-#' @param text Raw agent trace text, or a structured JSON trace (asa_trace_v1)
+#' @param text Structured JSON trace (asa_trace_v1)
 #'
 #' @return Character vector of unique tier names encountered
 #'   (e.g., "primp", "selenium", "ddgs", "requests")

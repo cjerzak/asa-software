@@ -420,8 +420,7 @@ print.asa_temporal <- function(x, ...) {
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
 #'   One of: "auto", "lexical", "embeddings".
 #' @param webpage_heuristic_profile Heuristic profile used when annotating links
-#'   from opened webpages. One of: "generic" (task-agnostic default) or
-#'   "legacy" (compatibility mode with older domain-biased cues).
+#'   from opened webpages. Must be "generic" (task-agnostic default).
 #' @param webpage_embedding_provider Embedding provider for relevance. One of:
 #'   "auto", "openai", "sentence_transformers".
 #' @param webpage_embedding_model Embedding model identifier for relevance.
@@ -575,6 +574,23 @@ search_options <- function(max_results = NULL,
     field_attempt_mode <- tolower(as.character(field_attempt_mode)[[1]])
     if (!field_attempt_mode %in% c("strict_cap", "soft_cap")) {
       field_attempt_mode <- NULL
+    }
+  }
+  if (!is.null(webpage_heuristic_profile)) {
+    webpage_heuristic_profile <- tolower(as.character(webpage_heuristic_profile)[1])
+    webpage_heuristic_profile <- webpage_heuristic_profile[
+      !is.na(webpage_heuristic_profile) & nzchar(webpage_heuristic_profile)
+    ]
+    webpage_heuristic_profile <- if (length(webpage_heuristic_profile) > 0L) {
+      webpage_heuristic_profile[[1]]
+    } else {
+      ""
+    }
+    if (!identical(webpage_heuristic_profile, "generic")) {
+      stop(
+        "`webpage_heuristic_profile` must be \"generic\". Legacy heuristic profiles are no longer supported.",
+        call. = FALSE
+      )
     }
   }
 

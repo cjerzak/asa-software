@@ -12,6 +12,9 @@
   memory_keep_recent,
   fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET,
   min_fold_batch = ASA_DEFAULT_MIN_FOLD_BATCH,
+  min_fold_chars = ASA_DEFAULT_MIN_FOLD_CHARS,
+  min_fold_tokens_est = ASA_DEFAULT_MIN_FOLD_TOKENS_EST,
+  summarizer_max_output_tokens = ASA_DEFAULT_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS,
   om_config = NULL,
   langgraph_node_retries = FALSE,
   langgraph_cache_enabled = FALSE

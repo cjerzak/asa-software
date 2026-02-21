@@ -43,7 +43,7 @@
 
 \item{webpage_relevance_mode}{"auto", "lexical", "embeddings", or NULL}
 
-\item{webpage_heuristic_profile}{"generic", "legacy", or NULL}
+\item{webpage_heuristic_profile}{"generic" or NULL}
 
 \item{webpage_embedding_provider}{"auto", "openai", "sentence_transformers", or NULL}
 

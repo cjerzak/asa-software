@@ -10,13 +10,14 @@ returns a best-effort terminal state instead of raising).
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, Optional
 
 from langgraph.errors import GraphRecursionError
+from state_utils import repair_json_output_to_schema as repair_json_output_to_schema
 
-from . import agent_graph as _agent_graph
-from .agent_graph import (
+from .graph.core import (
+    _exception_fallback_text,
+    _reusable_terminal_finalize_response,
     create_memory_folding_agent,
     create_memory_folding_agent_with_checkpointer,
     create_standard_agent,
@@ -101,12 +102,12 @@ def invoke_graph_safely(
             if isinstance(messages, list) and messages:
                 terminal = None
                 try:
-                    terminal = _agent_graph._reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
+                    terminal = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
                 except Exception:
                     terminal = None
                 if terminal is None:
                     try:
-                        fallback_text = _agent_graph._exception_fallback_text(
+                        fallback_text = _exception_fallback_text(
                             expected_schema,
                             context="agent",
                             messages=messages,
@@ -136,58 +137,6 @@ def invoke_graph_safely(
         return state
 
 
-_WARNED_DEPRECATED: set[str] = set()
-
-
-def __getattr__(name: str):
-    """Compatibility fallback for legacy callers.
-
-    Historically, `agent_api` re-exported nearly everything from `agent_graph`
-    (and, indirectly, parts of the search transport). We keep a soft fallback
-    so internal symbols can be migrated gradually without breaking callers.
-    """
-    if hasattr(_agent_graph, name):
-        if name not in _WARNED_DEPRECATED:
-            warnings.warn(
-                f"`asa_backend.agent_api.{name}` is deprecated; import from `asa_backend.agent_graph` "
-                "or the appropriate `asa_backend.graph.*` module instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            _WARNED_DEPRECATED.add(name)
-        return getattr(_agent_graph, name)
-
-    try:
-        from . import search_transport as _search_transport
-    except Exception:
-        _search_transport = None
-
-    if _search_transport is not None and hasattr(_search_transport, name):
-        if name not in _WARNED_DEPRECATED:
-            warnings.warn(
-                f"`asa_backend.agent_api.{name}` is deprecated; import from `asa_backend.search_transport` "
-                "or `asa_backend.search.*` instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            _WARNED_DEPRECATED.add(name)
-        return getattr(_search_transport, name)
-
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
-def __dir__():
-    names = set(__all__)
-    names.update(dir(_agent_graph))
-    try:
-        from . import search_transport as _search_transport
-
-        names.update(dir(_search_transport))
-    except Exception:
-        pass
-    return sorted(names)
-
-
 __all__ = [
     # Runtime guards
     "invoke_graph_safely",
@@ -206,4 +155,6 @@ __all__ = [
     "PatchedDuckDuckGoSearchRun",
     "BrowserDuckDuckGoSearchAPIWrapper",
     "BrowserDuckDuckGoSearchRun",
+    # Utility hook for test monkeypatching / guarded repair paths.
+    "repair_json_output_to_schema",
 ]

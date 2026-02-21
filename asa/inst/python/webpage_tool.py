@@ -51,7 +51,7 @@ class WebpageReaderConfig:
     chunk_chars: int = 1_200
     # Relevance selection: "auto" (default), "lexical", "embeddings"
     relevance_mode: str = "auto"
-    # Link annotation heuristics profile: "generic" (default) or "legacy"
+    # Link annotation heuristics profile: "generic" (default)
     heuristic_profile: str = "generic"
     # Embedding selection: "auto" (default), "openai", "sentence_transformers"
     embedding_provider: str = "auto"
@@ -287,9 +287,13 @@ def configure_webpage_reader(
 
 def _normalize_heuristic_profile(profile: Optional[str]) -> str:
     text = str(profile or "").strip().lower()
-    if text in {"generic", "legacy"}:
-        return text
-    return "generic"
+    if text in {"", "generic"}:
+        return "generic"
+    if text == "legacy":
+        raise ValueError(
+            "heuristic_profile='legacy' is no longer supported; use 'generic'."
+        )
+    raise ValueError("heuristic_profile must be 'generic'.")
 
 
 def _is_disallowed_host(hostname: str) -> Tuple[bool, str]:
@@ -460,30 +464,6 @@ def _extract_main_text(
             return True
         if not is_absolute and len(text_lower) >= 3:
             return True
-
-        if heuristic_profile == "legacy":
-            # Optional compatibility profile: restores older domain-biased cues.
-            legacy_keywords = [
-                "parliament",
-                "senate",
-                "congress",
-                "assembly",
-                "legislature",
-                ".gov",
-                ".gob",
-                "government",
-                "official",
-                "ver el",
-                "ver perfil",
-                "ver la",
-                "profile",
-                "perfil",
-            ]
-            if any(kw in href_lower or kw in text_lower for kw in legacy_keywords):
-                return True
-            if len(text_lower) >= 5 and len(words) >= 2:
-                if all(w[0].isupper() for w in words if len(w) > 1):
-                    return True
         return False
 
     def _resolve_href(href: str) -> str:

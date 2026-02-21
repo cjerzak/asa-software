@@ -1,11 +1,11 @@
 test_that("auto OpenWebpage follow-up preserves tool-call pairing", {
   python_path <- asa_test_skip_if_no_python(
-    required_files = "asa_backend/graph/_legacy_agent_graph.py",
+    required_files = "asa_backend/graph/core.py",
     initialize = TRUE
   )
   asa_test_require_langgraph_stack(c(ASA_TEST_LANGGRAPH_MODULES, "langgraph.runtime"))
 
-  graph <- reticulate::import_from_path("asa_backend.graph._legacy_agent_graph", path = python_path)
+  graph <- reticulate::import_from_path("asa_backend.graph.core", path = python_path)
 
   # Monkeypatch the follow-up decision so we deterministically trigger it.
   original_should <- reticulate::py_get_attr(graph, "_should_auto_openwebpage_followup")

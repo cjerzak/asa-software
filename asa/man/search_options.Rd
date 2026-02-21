@@ -18,6 +18,8 @@ search_options(
   auto_openwebpage_policy = NULL,
   langgraph_node_retries = NULL,
   langgraph_cache_enabled = NULL,
+  finalize_when_all_unresolved_exhausted = NULL,
+  field_attempt_budget_mode = NULL,
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,
   webpage_heuristic_profile = NULL,
@@ -71,6 +73,14 @@ E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1
 \item{inter_search_delay}{Minimum delay in seconds between consecutive searches.
 Helps avoid rate limiting from search providers. Default: 1.5.}
 
+\item{finalize_when_all_unresolved_exhausted}{Optional override for
+orchestration finalizer behavior. When TRUE, finalize once all unresolved
+fields have exhausted their search-attempt budget.}
+
+\item{field_attempt_budget_mode}{Optional field-attempt budget mode passed to
+orchestration field_resolver. One of \code{"strict_cap"} or
+\code{"soft_cap"}.}
+
 \item{allow_read_webpages}{If TRUE, allows the agent to open and read full
 webpages (HTML/text) via the OpenWebpage tool. Disabled by default.}
 
@@ -78,8 +88,7 @@ webpages (HTML/text) via the OpenWebpage tool. Disabled by default.}
 One of: "auto", "lexical", "embeddings".}
 
 \item{webpage_heuristic_profile}{Heuristic profile used when annotating links
-from opened webpages. One of: "generic" (task-agnostic default) or
-"legacy" (compatibility mode with older domain-biased cues).}
+from opened webpages. Must be "generic" (task-agnostic default).}
 
 \item{webpage_embedding_provider}{Embedding provider for relevance. One of:
 "auto", "openai", "sentence_transformers".}

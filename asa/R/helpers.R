@@ -824,7 +824,7 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param config_search asa_search object or list of search settings
 #' @param allow_read_webpages TRUE/FALSE/NULL
 #' @param webpage_relevance_mode "auto", "lexical", "embeddings", or NULL
-#' @param webpage_heuristic_profile "generic", "legacy", or NULL
+#' @param webpage_heuristic_profile "generic" or NULL
 #' @param webpage_embedding_provider "auto", "openai", "sentence_transformers", or NULL
 #' @param webpage_embedding_model Embedding model identifier or NULL
 #' @param webpage_timeout OpenWebpage timeout in seconds, or NULL to use the
@@ -961,6 +961,18 @@ configure_temporal <- function(time_filter = NULL) {
     .resolve_option(fields[[nm]], config_search, config_keys[[nm]])
   })
   names(result) <- names(fields)
+  if (!is.null(result$heuristic_profile)) {
+    profile <- tolower(as.character(result$heuristic_profile)[1])
+    profile <- profile[!is.na(profile) & nzchar(profile)]
+    profile <- if (length(profile) > 0L) profile[[1]] else ""
+    if (!identical(profile, "generic")) {
+      stop(
+        "`webpage_heuristic_profile` must be \"generic\". Legacy heuristic profiles are no longer supported.",
+        call. = FALSE
+      )
+    }
+    result$heuristic_profile <- profile
+  }
   result
 }
 
@@ -975,7 +987,7 @@ configure_temporal <- function(time_filter = NULL) {
 #'   "auto", "lexical", or "embeddings". "auto" uses embeddings when available,
 #'   otherwise falls back to lexical overlap.
 #' @param heuristic_profile Heuristic profile for hyperlink annotation:
-#'   "generic" (task-agnostic default) or "legacy".
+#'   "generic" (task-agnostic default).
 #' @param embedding_provider Embedding provider for relevance ("auto",
 #'   "openai", or "sentence_transformers").
 #' @param embedding_model Embedding model identifier for relevance.

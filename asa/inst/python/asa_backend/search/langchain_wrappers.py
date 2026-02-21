@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ._legacy_transport import (
+from .transport import (
     BrowserDuckDuckGoSearchAPIWrapper,
     BrowserDuckDuckGoSearchRun,
     PatchedDuckDuckGoSearchAPIWrapper,

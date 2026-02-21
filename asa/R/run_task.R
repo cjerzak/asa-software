@@ -170,7 +170,17 @@
 #' @seealso \code{\link{initialize_agent}}, \code{\link{run_task_batch}},
 #'   \code{\link{asa_config}}, \code{\link{temporal_options}}
 #'
-#' @export
+#' @name run_task
+NULL
+
+#' Recursively Merge Named Lists
+#'
+#' Internal helper that recursively merges nested named lists.
+#'
+#' @param base Base list.
+#' @param override Override list.
+#' @return A merged list.
+#' @keywords internal
 .deep_merge_named_lists <- function(base, override) {
   out <- base %||% list()
   if (is.null(override) || length(override) == 0L) {
@@ -248,6 +258,8 @@
   .deep_merge_named_lists(base_options, overrides)
 }
 
+#' @rdname run_task
+#' @export
 run_task <- function(prompt,
                      output_format = "text",
                      temporal = NULL,
