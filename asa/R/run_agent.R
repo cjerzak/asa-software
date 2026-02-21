@@ -85,10 +85,6 @@
   if (is.null(auto_openwebpage_policy)) {
     auto_openwebpage_policy <- config$search$auto_openwebpage_policy %||% NULL
   }
-  if (isTRUE(config$search$langgraph_node_retries %||% FALSE)) {
-    # Avoid retry multiplication when graph nodes already retry natively.
-    invoke_max_attempts <- 1L
-  }
 
   # Build initial state and invoke agent
   invoke_output <- tryCatch({

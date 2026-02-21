@@ -88,10 +88,6 @@ _MEMORY_LIST_MAX_ITEMS = max(1, int(os.environ.get("ASA_MEMORY_LIST_MAX_ITEMS", 
 _MEMORY_LIST_MAX_TOTAL_CHARS = max(500, int(os.environ.get("ASA_MEMORY_LIST_MAX_TOTAL_CHARS", "3000")))
 _MEMORY_LIST_MAX_ITEM_CHARS = max(80, int(os.environ.get("ASA_MEMORY_LIST_MAX_ITEM_CHARS", "220")))
 _MEMORY_SOURCE_MAX_ITEMS = max(1, int(os.environ.get("ASA_MEMORY_SOURCE_MAX_ITEMS", "30")))
-_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS = max(
-    256,
-    int(os.environ.get("ASA_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS", "5000")),
-)
 
 _OM_DEFAULT_CONFIG: Dict[str, Any] = {
     # OFF by default to preserve existing behavior unless explicitly enabled.
@@ -4209,10 +4205,10 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     return out
 
 
-def _classify_tool_message_quality(msg: Any) -> Dict[str, bool]:
+def _classify_tool_message_quality(msg: Any) -> Dict[str, Any]:
     """Classify tool outputs as empty or low-signal/off-target."""
     if not _message_is_tool(msg):
-        return {"is_empty": False, "is_off_target": False}
+        return {"is_empty": False, "is_off_target": False, "is_error": False, "error_type": None}
 
     tool_name = _normalize_match_text(_tool_message_name(msg))
     content = _message_content_from_message(msg)
@@ -4220,13 +4216,25 @@ def _classify_tool_message_quality(msg: Any) -> Dict[str, bool]:
     text_lower = text.lower()
 
     if not text:
-        return {"is_empty": True, "is_off_target": False}
+        return {"is_empty": True, "is_off_target": False, "is_error": False, "error_type": None}
 
     if "no good duckduckgo search result was found" in text_lower:
-        return {"is_empty": True, "is_off_target": True}
+        return {"is_empty": True, "is_off_target": True, "is_error": False, "error_type": None}
+
+    if tool_name == "openwebpage":
+        if text.lstrip().startswith("{"):
+            parsed = parse_llm_json(text)
+            if isinstance(parsed, dict) and parsed.get("ok") is False:
+                error_type = str(parsed.get("error_type") or parsed.get("error") or "error").strip() or "error"
+                return {"is_empty": True, "is_off_target": False, "is_error": True, "error_type": error_type}
+        if "blocked fetch detected" in text_lower or "hit_blocked" in text_lower:
+            return {"is_empty": True, "is_off_target": False, "is_error": True, "error_type": "blocked"}
+        if "failed to open url" in text_lower or "request error opening url" in text_lower:
+            return {"is_empty": True, "is_off_target": False, "is_error": True, "error_type": "fetch_failed"}
+        return {"is_empty": False, "is_off_target": False, "is_error": False, "error_type": None}
 
     if tool_name != "search":
-        return {"is_empty": False, "is_off_target": False}
+        return {"is_empty": False, "is_off_target": False, "is_error": False, "error_type": None}
 
     def _urls_low_signal(urls: list) -> bool:
         low_signal_only = True
@@ -4258,17 +4266,22 @@ def _classify_tool_message_quality(msg: Any) -> Dict[str, bool]:
                 max_urls=16,
             )
             if payload_urls:
-                return {"is_empty": False, "is_off_target": _urls_low_signal(payload_urls)}
-            return {"is_empty": False, "is_off_target": False}
+                return {
+                    "is_empty": False,
+                    "is_off_target": _urls_low_signal(payload_urls),
+                    "is_error": False,
+                    "error_type": None,
+                }
+            return {"is_empty": False, "is_off_target": False, "is_error": False, "error_type": None}
 
         # Wrapped Search output with no URL grounding remains low-signal.
         if blocks:
-            return {"is_empty": False, "is_off_target": True}
+            return {"is_empty": False, "is_off_target": True, "is_error": False, "error_type": None}
 
         # Search returned no parseable/structured result.
-        return {"is_empty": True, "is_off_target": False}
+        return {"is_empty": True, "is_off_target": False, "is_error": False, "error_type": None}
 
-    return {"is_empty": False, "is_off_target": _urls_low_signal(urls)}
+    return {"is_empty": False, "is_off_target": _urls_low_signal(urls), "is_error": False, "error_type": None}
 
 
 def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
@@ -4414,6 +4427,8 @@ def _normalize_tool_quality_events(events: Any) -> List[Dict[str, Any]]:
             "tool_name": tool_name,
             "is_empty": bool(raw.get("is_empty", False)),
             "is_off_target": bool(raw.get("is_off_target", False)),
+            "is_error": bool(raw.get("is_error", False)),
+            "error_type": str(raw.get("error_type") or "").strip() or None,
             "quality_version": str(raw.get("quality_version") or "v1"),
         })
     return out
@@ -8014,6 +8029,10 @@ def _create_tool_node_with_scratchpad(
                     follow_result = base_tool_node.invoke(follow_state)
                     follow_messages = list((follow_result or {}).get("messages") or [])
                     if follow_messages:
+                        # Preserve tool-call pairing invariants for models (notably OpenAI):
+                        # Tool messages must always follow a preceding AI message that contains
+                        # the corresponding tool_calls entry.
+                        tool_messages.append(follow_ai)
                         tool_messages.extend(follow_messages)
                         result["messages"] = tool_messages
                 except Exception as follow_exc:
@@ -8149,6 +8168,8 @@ def _create_tool_node_with_scratchpad(
                 "tool_name": _normalize_match_text(_tool_message_name(msg)) or "unknown",
                 "is_empty": bool(quality.get("is_empty", False)),
                 "is_off_target": bool(quality.get("is_off_target", False)),
+                "is_error": bool(quality.get("is_error", False)),
+                "error_type": str(quality.get("error_type") or "").strip() or None,
                 "quality_version": "v1",
             })
         empty_hits = sum(1 for q in tool_quality_events if q.get("is_empty"))
@@ -8460,7 +8481,10 @@ def create_memory_folding_agent(
     keep_recent: int = 4,
     fold_char_budget: int = 30000,
     min_fold_batch: int = 6,
+    min_fold_chars: int = 0,
+    min_fold_tokens_est: int = 0,
     summarizer_model = None,
+    summarizer_max_output_tokens: int = 1200,
     debug: bool = False,
     om_config: Optional[Dict[str, Any]] = None,
     node_retry_policy: Optional[Dict[str, Any]] = None,
@@ -8479,7 +8503,10 @@ def create_memory_folding_agent(
         checkpointer: Optional LangGraph checkpointer for persistence (e.g., MemorySaver())
         message_threshold: Trigger folding when messages exceed this count
         keep_recent: Number of recent exchanges to preserve after folding
+        min_fold_chars: Minimum transcript chars required for message-count folding (0 disables gate)
+        min_fold_tokens_est: Minimum estimated tokens required for message-count folding (0 disables gate)
         summarizer_model: Optional separate model for summarization (defaults to main model)
+        summarizer_max_output_tokens: Max output tokens for summarization (env override supported)
         debug: Enable debug logging
         om_config: Optional observational-memory config dictionary
 
@@ -8493,6 +8520,25 @@ def create_memory_folding_agent(
     if summarizer_model is None:
         summarizer_model = model
     om_config = _normalize_om_config(om_config)
+    try:
+        min_fold_chars = max(0, int(min_fold_chars))
+    except Exception:
+        min_fold_chars = 0
+    try:
+        min_fold_tokens_est = max(0, int(min_fold_tokens_est))
+    except Exception:
+        min_fold_tokens_est = 0
+    try:
+        summarizer_output_cap = int(summarizer_max_output_tokens)
+    except Exception:
+        summarizer_output_cap = 1200
+    env_output_cap = os.getenv("ASA_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS")
+    if env_output_cap:
+        try:
+            summarizer_output_cap = int(env_output_cap)
+        except Exception:
+            pass
+    summarizer_output_cap = max(256, min(int(summarizer_output_cap), 2000))
     native_retry_policy = _coerce_langgraph_retry_policy(
         _normalize_langgraph_node_retry_policy(node_retry_policy)
     )
@@ -10044,11 +10090,12 @@ def create_memory_folding_agent(
         fold_fallback_applied = False
         fold_fallback_reason = None
         fold_parse_error_type = None
+        fold_warnings: List[str] = []
         try:
             summary_response = _invoke_model_with_output_cap(
                 summarizer_model,
                 [HumanMessage(content=summarize_prompt)],
-                max_output_tokens=_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS,
+                max_output_tokens=summarizer_output_cap,
             )
             fold_summarizer_latency_m = (time.perf_counter() - summarize_started) / 60.0
             summary_text = summary_response.content if hasattr(summary_response, "content") else str(summary_response)
@@ -10086,9 +10133,7 @@ def create_memory_folding_agent(
                         recovered_facts.append(f"FIELD_EXTRACT: {_fe_name} = {_fe_val}")
                 parsed_memory = dict(current_memory)
                 parsed_memory["facts"] = recovered_facts
-                parsed_memory.setdefault("warnings", [])
-                parsed_memory["warnings"] = list(parsed_memory.get("warnings") or [])
-                parsed_memory["warnings"].append(
+                fold_warnings.append(
                     "Summarizer parse failed; using deterministic fallback memory update."
                 )
             new_memory = _sanitize_memory_dict(parsed_memory)
@@ -10102,6 +10147,9 @@ def create_memory_folding_agent(
             fold_fallback_reason = "summarizer_invoke_exception"
             fold_parse_error_type = type(fold_exc).__name__
             summary_response = None
+            fold_warnings.append(
+                f"Summarizer invoke failed ({fold_parse_error_type}); using degraded fold."
+            )
             if debug:
                 logger.warning("Summarizer invoke failed, using degraded fold: %s", fold_exc)
             degraded_facts = list(current_memory.get("facts") or [])
@@ -10156,7 +10204,7 @@ def create_memory_folding_agent(
                             summarizer_model,
                             [HumanMessage(content=repair_prompt)],
                             max_output_tokens=max(
-                                256, int(_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS // 2)
+                                256, int(summarizer_output_cap // 2)
                             ),
                         )
                         repair_text = _message_content_to_text(
@@ -10351,6 +10399,7 @@ def create_memory_folding_agent(
                 "fold_fallback_applied": fold_fallback_applied,
                 "fold_fallback_reason": fold_fallback_reason,
                 "fold_parse_error_type": fold_parse_error_type,
+                "fold_warnings": fold_warnings,
             },
             "om_stats": om_stats_update,
             "tokens_used": state.get("tokens_used", 0) + _usage["total_tokens"],
@@ -10367,11 +10416,18 @@ def create_memory_folding_agent(
             len(_message_content_to_text(getattr(m, "content", "")) or "")
             for m in messages
         )
-        should_fold = total_chars > fold_char_budget or len(messages) > message_threshold
+        should_fold = total_chars > fold_char_budget
+        tokens_est = None
+        if not should_fold and len(messages) > message_threshold:
+            tokens_est = _estimate_messages_tokens(messages)
+            should_fold = bool(
+                total_chars >= min_fold_chars
+                or tokens_est >= min_fold_tokens_est
+            )
         # OM-aware trigger: observe/reflect when message-token budget is exhausted.
         om_cfg_local = _normalize_om_config(om_config)
         if not should_fold and om_cfg_local.get("enabled", False):
-            msg_tokens = _estimate_messages_tokens(messages)
+            msg_tokens = tokens_est if tokens_est is not None else _estimate_messages_tokens(messages)
             obs_budget = int(
                 om_cfg_local.get(
                     "observation_message_tokens",
@@ -10539,13 +10595,13 @@ def create_memory_folding_agent(
         workflow,
         "agent",
         agent_node,
-        retry_policy=native_retry_policy,
     )
     _add_node_with_native_policies(
         workflow,
         "tools",
         tool_node_with_scratchpad,
         retry_policy=native_retry_policy,
+        cache_policy=native_cache_policy,
     )
     _add_node_with_native_policies(workflow, "observe", observe_conversation)
     _add_node_with_native_policies(workflow, "reflect", summarize_conversation)
@@ -10554,13 +10610,11 @@ def create_memory_folding_agent(
         workflow,
         "finalize",
         finalize_answer,
-        retry_policy=native_retry_policy,
     )
     _add_node_with_native_policies(
         workflow,
         "nudge",
         nudge_node,
-        cache_policy=native_cache_policy,
     )
 
     workflow.set_entry_point("agent")
@@ -11478,25 +11532,23 @@ def create_standard_agent(
         workflow,
         "agent",
         agent_node,
-        retry_policy=native_retry_policy,
     )
     _add_node_with_native_policies(
         workflow,
         "tools",
         tool_node_with_scratchpad,
         retry_policy=native_retry_policy,
+        cache_policy=native_cache_policy,
     )
     _add_node_with_native_policies(
         workflow,
         "finalize",
         finalize_answer,
-        retry_policy=native_retry_policy,
     )
     _add_node_with_native_policies(
         workflow,
         "nudge",
         nudge_node,
-        cache_policy=native_cache_policy,
     )
 
     workflow.set_entry_point("agent")

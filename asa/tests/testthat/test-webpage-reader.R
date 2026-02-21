@@ -259,6 +259,53 @@ test_that("200 blocked detection avoids single generic marker false positives", 
   })
 })
 
+test_that("OpenWebpage returns structured JSON on transient RequestException", {
+  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  asa_test_skip_if_missing_python_modules(
+    c("curl_cffi", "bs4", "pydantic", "langchain_core")
+  )
+
+  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  .with_restored_webpage_reader(webpage_tool, {
+    webpage_tool$configure_webpage_reader(
+      allow_read_webpages = TRUE,
+      relevance_mode = "lexical",
+      cache_enabled = FALSE
+    )
+    tool <- webpage_tool$create_webpage_reader_tool()
+
+    reticulate::py_run_string(paste0(
+      "import webpage_tool\n",
+      "_asa_old_fetch_html = webpage_tool._fetch_html\n",
+      "_asa_old_sleep = webpage_tool.time.sleep\n",
+      "_asa_fetch_calls = 0\n",
+      "def _asa_fake_fetch(url, proxy=None, cfg=None):\n",
+      "    global _asa_fetch_calls\n",
+      "    _asa_fetch_calls += 1\n",
+      "    raise webpage_tool.RequestException('curl: (28) Connection timed out after 20002 milliseconds')\n",
+      "webpage_tool._fetch_html = _asa_fake_fetch\n",
+      "webpage_tool.time.sleep = lambda s: None\n"
+    ))
+    on.exit(
+      try(reticulate::py_run_string(paste0(
+        "import webpage_tool\n",
+        "if '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html\n",
+        "if '_asa_old_sleep' in globals(): webpage_tool.time.sleep = _asa_old_sleep\n"
+      )), silent = TRUE),
+      add = TRUE
+    )
+
+    out <- tool$`_run`(url = "https://example.com/transient", query = "bio")
+    parsed <- jsonlite::fromJSON(out)
+
+    expect_false(isTRUE(parsed$ok))
+    expect_equal(as.character(parsed$tool), "OpenWebpage")
+    expect_equal(as.character(parsed$error_type), "timeout")
+    expect_true(isTRUE(parsed$retryable))
+    expect_equal(as.integer(reticulate::py$`_asa_fetch_calls`), 3L)
+  })
+})
+
 test_that("OpenWebpage does not blocked-cache generic HTTP errors", {
   python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
   asa_test_skip_if_missing_python_modules(
@@ -303,10 +350,23 @@ test_that("OpenWebpage does not blocked-cache generic HTTP errors", {
     out1 <- tool$`_run`(url = "https://example.com/http500", query = "test")
     out2 <- tool$`_run`(url = "https://example.com/http500", query = "test")
 
-    expect_match(out1, "Error: http_error", fixed = TRUE)
-    expect_match(out2, "Error: http_error", fixed = TRUE)
+    parsed1 <- jsonlite::fromJSON(out1, simplifyVector = FALSE)
+    parsed2 <- jsonlite::fromJSON(out2, simplifyVector = FALSE)
+
+    expect_false(isTRUE(parsed1$ok))
+    expect_equal(as.character(parsed1$tool), "OpenWebpage")
+    expect_equal(as.character(parsed1$error_type), "http_error")
+    expect_equal(as.integer(parsed1$status_code), 500L)
+
+    expect_false(isTRUE(parsed2$ok))
+    expect_equal(as.character(parsed2$tool), "OpenWebpage")
+    expect_equal(as.character(parsed2$error_type), "http_error")
+    expect_equal(as.integer(parsed2$status_code), 500L)
     expect_false(grepl("HIT_BLOCKED", out2, fixed = TRUE))
-    expect_equal(as.integer(reticulate::py$`_asa_fetch_calls`), 2L)
+    expect_equal(
+      as.integer(reticulate::py$`_asa_fetch_calls`),
+      as.integer(parsed1$attempts) + as.integer(parsed2$attempts)
+    )
   })
 })
 

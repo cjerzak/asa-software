@@ -11,6 +11,7 @@
 #
 import hashlib
 import ipaddress
+import json
 import logging
 import math
 import os
@@ -22,7 +23,7 @@ import threading
 import tempfile
 import time
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Dict, List, Optional, Tuple, Type
 from urllib.parse import urljoin, urlparse, urlunparse
 
@@ -1213,6 +1214,65 @@ def _fetch_html(url: str, *, proxy: Optional[str], cfg: WebpageReaderConfig) -> 
         raise
 
 
+def _is_retryable_http_status(status_code: Any) -> bool:
+    try:
+        code = int(status_code)
+    except Exception:
+        return False
+    if code in (408, 425, 429, 500, 502, 503, 504):
+        return True
+    if 520 <= code < 600:
+        return True
+    return False
+
+
+def _classify_request_exception(exc: Exception) -> Tuple[str, bool]:
+    text = str(exc or "").strip().lower()
+    if not text:
+        return "request_exception", True
+
+    if "curl" in text and "(28)" in text:
+        return "timeout", True
+    if "timeout" in text or "timed out" in text:
+        return "timeout", True
+    if "connection reset" in text or "connection aborted" in text or "connection error" in text:
+        return "connection_error", True
+    if "ssl" in text or "tls" in text:
+        return "tls_error", True
+    if "name or service not known" in text or "dns" in text:
+        return "dns_error", True
+
+    return "request_exception", True
+
+
+def _format_openwebpage_error_payload(
+    *,
+    error_type: str,
+    retryable: bool,
+    url: str,
+    final_url: Optional[str] = None,
+    status_code: Optional[int] = None,
+    error: Optional[str] = None,
+    error_detail: Optional[str] = None,
+    attempt: Optional[int] = None,
+    attempts: Optional[int] = None,
+) -> str:
+    payload: Dict[str, Any] = {
+        "ok": False,
+        "tool": "OpenWebpage",
+        "error_type": str(error_type or "error"),
+        "retryable": bool(retryable),
+        "url": str(url or ""),
+        "final_url": final_url,
+        "status_code": int(status_code) if status_code is not None else None,
+        "error": str(error or "")[:800] if error else None,
+        "error_detail": str(error_detail or "")[:1200] if error_detail else None,
+        "attempt": int(attempt) if attempt is not None else None,
+        "attempts": int(attempts) if attempts is not None else None,
+    }
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+
 class OpenWebpageInput(BaseModel):
     url: str = Field(..., description="Public http(s) URL to open.")
     query: Optional[str] = Field(
@@ -1296,8 +1356,38 @@ class OpenWebpageTool(BaseTool):
                 )
 
             if cache_entry is None:
-                fetched = _fetch_html(norm, proxy=self._proxy, cfg=cfg)
-                if not fetched.get("ok"):
+                fetch_attempts = 3
+                base_timeout = float(cfg.timeout or 20.0)
+                backoff_schedule = (0.5, 1.5)
+                fetched = None
+
+                for attempt_idx in range(1, fetch_attempts + 1):
+                    attempt_timeout = base_timeout
+                    if attempt_idx == fetch_attempts:
+                        attempt_timeout = max(1.0, base_timeout * 1.5)
+                    attempt_cfg = cfg if attempt_timeout == cfg.timeout else replace(cfg, timeout=attempt_timeout)
+
+                    try:
+                        fetched = _fetch_html(norm, proxy=self._proxy, cfg=attempt_cfg)
+                    except RequestException as exc:
+                        error_type, retryable = _classify_request_exception(exc)
+                        if retryable and attempt_idx < fetch_attempts:
+                            time.sleep(backoff_schedule[min(attempt_idx - 1, len(backoff_schedule) - 1)])
+                            continue
+                        return _format_openwebpage_error_payload(
+                            error_type=error_type,
+                            retryable=retryable,
+                            url=norm,
+                            final_url=None,
+                            status_code=None,
+                            error=str(exc),
+                            attempt=attempt_idx,
+                            attempts=fetch_attempts,
+                        )
+
+                    if fetched.get("ok"):
+                        break
+
                     if bool(fetched.get("is_blocked")):
                         final_url = fetched.get("final_url") or norm
                         final_key = _normalize_url_for_cache(final_url)
@@ -1331,35 +1421,23 @@ class OpenWebpageTool(BaseTool):
                                 else ""
                             )
                         )
-                    return (
-                        f"Failed to open URL: {norm}\n"
-                        f"Error: {fetched.get('error')}\n"
-                        + (
-                            f"Status: {fetched.get('status_code')}\n"
-                            if fetched.get("status_code") is not None
-                            else ""
-                        )
-                        + (
-                            f"Content-Type: {fetched.get('content_type')}\n"
-                            if fetched.get("content_type") is not None
-                            else ""
-                        )
-                        + f"Final URL: {fetched.get('final_url')}"
-                        + (
-                            f"\nDetail: {fetched.get('error_detail')}"
-                            if fetched.get("error_detail")
-                            else ""
-                        )
-                        + (
-                            f"\nProbe bytes: {fetched.get('bytes_probed')}"
-                            if fetched.get("bytes_probed") is not None
-                            else ""
-                        )
-                        + (
-                            f"\nMarkers: {', '.join(str(x) for x in (fetched.get('marker_hits') or [])[:4])}"
-                            if fetched.get("marker_hits")
-                            else ""
-                        )
+
+                    status_code = fetched.get("status_code")
+                    retryable = bool(fetched.get("error") == "http_error" and _is_retryable_http_status(status_code))
+                    if retryable and attempt_idx < fetch_attempts:
+                        time.sleep(backoff_schedule[min(attempt_idx - 1, len(backoff_schedule) - 1)])
+                        continue
+
+                    return _format_openwebpage_error_payload(
+                        error_type=str(fetched.get("error") or "fetch_failed"),
+                        retryable=retryable,
+                        url=norm,
+                        final_url=fetched.get("final_url"),
+                        status_code=status_code if status_code is not None else None,
+                        error=str(fetched.get("error") or ""),
+                        error_detail=fetched.get("error_detail"),
+                        attempt=attempt_idx,
+                        attempts=fetch_attempts,
                     )
 
                 source_type = str(fetched.get("source_type") or "html")
@@ -1440,10 +1518,25 @@ class OpenWebpageTool(BaseTool):
             return out
 
         except RequestException as e:
-            return f"Request error opening URL: {norm}\nError: {e}"
+            error_type, retryable = _classify_request_exception(e)
+            return _format_openwebpage_error_payload(
+                error_type=error_type,
+                retryable=retryable,
+                url=norm,
+                final_url=None,
+                status_code=None,
+                error=str(e),
+            )
         except Exception as e:
             logger.exception("OpenWebpageTool error")
-            return f"Error opening URL: {norm}\nError: {e}"
+            return _format_openwebpage_error_payload(
+                error_type=type(e).__name__,
+                retryable=False,
+                url=norm,
+                final_url=None,
+                status_code=None,
+                error=str(e),
+            )
 
     async def _arun(self, url: str, query: Optional[str] = None) -> str:  # pragma: no cover
         # Keep synchronous implementation for now.

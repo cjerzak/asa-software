@@ -320,13 +320,6 @@ to_json_scalar <- function(x) {
   txt[[1]]
 }
 
-hash_scalar <- function(x) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    return(NA_character_)
-  }
-  digest::digest(enc2utf8(x), algo = "sha256")
-}
-
 payload_integrity <- attempt$execution$payload_integrity %||% list()
 canonical_text <- to_json_scalar(extracted[["json_data_canonical"]])
 released_text <- if (is.character(attempt$message) && length(attempt$message) == 1L) {
@@ -334,20 +327,50 @@ released_text <- if (is.character(attempt$message) && length(attempt$message) ==
 } else {
   to_json_scalar(attempt$message)
 }
-canonical_hash <- hash_scalar(canonical_text)
-released_hash <- hash_scalar(released_text)
+canonical_byte_hash <- asa:::.text_sha256(canonical_text)
+released_byte_hash <- asa:::.text_sha256(released_text)
+canonical_semantic_hash <- asa:::.semantic_json_sha256(canonical_text)
+released_semantic_hash <- asa:::.semantic_json_sha256(released_text)
+
+byte_hash_matches <- (
+  !is.na(canonical_byte_hash) &&
+    !is.na(released_byte_hash) &&
+    identical(canonical_byte_hash, released_byte_hash)
+)
+semantic_hash_matches <- (
+  !is.na(canonical_semantic_hash) &&
+    !is.na(released_semantic_hash) &&
+    identical(canonical_semantic_hash, released_semantic_hash)
+)
+hash_mismatch_type <- NA_character_
+if (
+  !is.na(canonical_byte_hash) &&
+    !is.na(released_byte_hash) &&
+    !is.na(canonical_semantic_hash) &&
+    !is.na(released_semantic_hash)
+) {
+  if (!byte_hash_matches && semantic_hash_matches) {
+    hash_mismatch_type <- "byte_only"
+  } else if (!byte_hash_matches && !semantic_hash_matches) {
+    hash_mismatch_type <- "byte_and_semantic"
+  } else if (byte_hash_matches && !semantic_hash_matches) {
+    hash_mismatch_type <- "semantic_only"
+  } else {
+    hash_mismatch_type <- "none"
+  }
+}
 
 payload_release_audit <- list(
   released_from = payload_integrity$released_from %||% NA_character_,
   canonical_available = isTRUE(payload_integrity$canonical_available),
   canonical_matches_message = isTRUE(payload_integrity$canonical_matches_message),
-  canonical_hash = canonical_hash,
-  released_hash = released_hash,
-  released_hash_matches_canonical = (
-    !is.na(canonical_hash) &&
-      !is.na(released_hash) &&
-      identical(canonical_hash, released_hash)
-  ),
+  canonical_byte_hash = canonical_byte_hash,
+  released_byte_hash = released_byte_hash,
+  byte_hash_matches = isTRUE(byte_hash_matches),
+  canonical_semantic_hash = canonical_semantic_hash,
+  released_semantic_hash = released_semantic_hash,
+  semantic_hash_matches = isTRUE(semantic_hash_matches),
+  hash_mismatch_type = hash_mismatch_type,
   truncation_signals = payload_integrity$truncation_signals %||% character(0),
   json_repair_reasons = payload_integrity$json_repair_reasons %||% character(0)
 )

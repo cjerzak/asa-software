@@ -686,6 +686,30 @@ initialize_agent <- function(backend = NULL,
     allow_direct_fallback = isTRUE(search_allow_direct_fallback)
   )
 
+  # Configure baseline OpenWebpage timeouts (Tor-friendly). Per-run overrides can
+  # still be applied via run_task(..., webpage_timeout=...).
+  if (!is.null(asa_env$webpage_tool)) {
+    timeout_init <- NULL
+    pdf_timeout_init <- NULL
+    if (!is.null(search) && inherits(search, "asa_search")) {
+      timeout_init <- search$webpage_timeout %||% NULL
+      pdf_timeout_init <- search$webpage_pdf_timeout %||% NULL
+    }
+    if (is.null(timeout_init)) {
+      timeout_init <- if (!is.null(proxy)) 45 else 20
+    }
+    if (is.null(pdf_timeout_init)) {
+      pdf_timeout_init <- timeout_init
+    }
+    tryCatch(
+      asa_env$webpage_tool$configure_webpage_reader(
+        timeout = as.numeric(timeout_init),
+        pdf_timeout = as.numeric(pdf_timeout_init)
+      ),
+      error = function(e) NULL
+    )
+  }
+
   # Wikipedia tool
   wiki <- asa_env$community_tools$WikipediaQueryRun(
     api_wrapper = asa_env$community_utils$WikipediaAPIWrapper(
@@ -745,6 +769,9 @@ initialize_agent <- function(backend = NULL,
                           memory_threshold, memory_keep_recent,
                           fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET,
                           min_fold_batch = ASA_DEFAULT_MIN_FOLD_BATCH,
+                          min_fold_chars = ASA_DEFAULT_MIN_FOLD_CHARS,
+                          min_fold_tokens_est = ASA_DEFAULT_MIN_FOLD_TOKENS_EST,
+                          summarizer_max_output_tokens = ASA_DEFAULT_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS,
                           om_config = NULL,
                           langgraph_node_retries = FALSE,
                           langgraph_cache_enabled = FALSE) {
@@ -768,6 +795,9 @@ initialize_agent <- function(backend = NULL,
       keep_recent = as.integer(memory_keep_recent),
       fold_char_budget = as.integer(fold_char_budget),
       min_fold_batch = as.integer(min_fold_batch),
+      min_fold_chars = as.integer(min_fold_chars),
+      min_fold_tokens_est = as.integer(min_fold_tokens_est),
+      summarizer_max_output_tokens = as.integer(summarizer_max_output_tokens),
       debug = FALSE,
       om_config = om_config %||% list(enabled = FALSE, scope = "thread", cross_thread_memory = FALSE),
       node_retry_policy = node_retry_policy,

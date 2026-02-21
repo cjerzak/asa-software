@@ -49,3 +49,31 @@ test_that("structured Search JSON is not flagged as empty low-signal output", {
   )))
   expect_true(isTRUE(empty_quality$is_empty))
 })
+
+test_that("structured OpenWebpage error JSON is flagged as empty error output", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/_legacy_agent_graph.py",
+    initialize = FALSE
+  )
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
+
+  graph <- tryCatch(
+    reticulate::import_from_path("asa_backend.graph._legacy_agent_graph", path = python_path),
+    error = function(e) {
+      skip(paste0("Failed to import graph module: ", conditionMessage(e)))
+    }
+  )
+
+  classifier <- graph[["_classify_tool_message_quality"]]
+
+  quality <- reticulate::py_to_r(classifier(reticulate::dict(
+    type = "tool",
+    name = "OpenWebpage",
+    content = "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"timeout\",\"retryable\":true,\"url\":\"https://example.com\",\"final_url\":null}"
+  )))
+
+  expect_true(isTRUE(quality$is_empty))
+  expect_false(isTRUE(quality$is_off_target))
+  expect_true(isTRUE(quality$is_error))
+  expect_equal(as.character(quality$error_type), "timeout")
+})

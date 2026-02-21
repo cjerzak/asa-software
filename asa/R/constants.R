@@ -101,6 +101,23 @@ ASA_DEFAULT_FOLD_CHAR_BUDGET <- 30000L
 #' @keywords internal
 ASA_DEFAULT_MIN_FOLD_BATCH <- 6L
 
+#' Default Minimum Fold Transcript Size (chars)
+#' @description When the message-count backstop triggers, require the transcript
+#'   to be at least this many characters (or meet ASA_DEFAULT_MIN_FOLD_TOKENS_EST)
+#'   before folding. This avoids tiny folds that spend many tokens on the
+#'   summarizer but compress almost nothing.
+#' @keywords internal
+ASA_DEFAULT_MIN_FOLD_CHARS <- 6000L
+
+#' Default Minimum Fold Transcript Size (estimated tokens)
+#' @description Token-based companion gate for message-count folding.
+#' @keywords internal
+ASA_DEFAULT_MIN_FOLD_TOKENS_EST <- 1200L
+
+#' Default Memory Summarizer Output Cap (tokens)
+#' @keywords internal
+ASA_DEFAULT_MEMORY_SUMMARIZER_MAX_OUTPUT_TOKENS <- 1200L
+
 #' Default Observational Memory Enabled
 #' @keywords internal
 ASA_DEFAULT_USE_OBSERVATIONAL_MEMORY <- FALSE
