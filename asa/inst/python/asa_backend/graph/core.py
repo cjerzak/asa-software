@@ -969,7 +969,14 @@ def _sync_scratchpad_to_field_status(scratchpad, field_status):
                     _entry["value"] = normalized_source
                     _entry["source_url"] = normalized_source
                 else:
-                    _entry["value"] = _fv
+                    semantic_state = _field_value_semantic_state(
+                        field_key=_fn,
+                        value=_fv,
+                        descriptor=_entry.get("descriptor"),
+                    )
+                    if not bool(semantic_state.get("pass", False)):
+                        continue
+                    _entry["value"] = semantic_state.get("value", _fv)
                     if _normalized_fs:
                         _entry["source_url"] = _normalized_fs
                 _entry["status"] = _FIELD_STATUS_FOUND
@@ -1025,7 +1032,14 @@ def _sync_summary_facts_to_field_status(summary, field_status):
             entry["value"] = normalized_source
             entry["source_url"] = normalized_source
         else:
-            entry["value"] = field_value
+            semantic_state = _field_value_semantic_state(
+                field_key=field_name,
+                value=field_value,
+                descriptor=entry.get("descriptor"),
+            )
+            if not bool(semantic_state.get("pass", False)):
+                continue
+            entry["value"] = semantic_state.get("value", field_value)
             if normalized_source:
                 entry["source_url"] = normalized_source
 
@@ -1115,10 +1129,12 @@ except Exception:
 _DEFAULT_SOURCE_POLICY: Dict[str, Any] = {
     "deny_host_fragments": list(_LOW_SIGNAL_HOST_FRAGMENTS),
     "allow_host_fragments": [],
-    "min_candidate_score": 0.55,
-    "min_source_quality": 0.20,
-    "min_source_specificity": 0.15,
+    "min_candidate_score": 0.58,
+    "min_source_quality": 0.26,
+    "min_source_specificity": 0.22,
+    "min_source_quality_textual_nonfree": 0.34,
     "require_source_for_non_unknown": True,
+    "require_target_anchor": False,
     "require_entity_anchor": False,
     "authority_host_weights": {
         ".gob.": 0.98,
@@ -1170,6 +1186,20 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     # for recall.
     "field_recovery_require_keyword_hit_for_numbers": None,
     "field_recovery_allow_source_only_when_base_unknown": False,
+    "field_recovery_entity_tolerance_enabled": True,
+    "field_recovery_entity_tolerance_hit_slack": 1,
+    "field_recovery_entity_tolerance_ratio_slack": 0.20,
+    "field_recovery_entity_tolerance_penalty": 0.12,
+    "anchor_mode": "adaptive",
+    "anchor_strict_min_confidence": 0.65,
+    "anchor_soft_min_confidence": 0.25,
+    "anchor_mismatch_penalty": 0.15,
+    "anchor_hard_block_min_strength": "strong",
+    "field_recovery_min_source_quality": 0.26,
+    "quality_gate_enforce": True,
+    "quality_gate_unknown_ratio_max": 0.75,
+    "quality_gate_min_resolvable_fields": 3,
+    "semantic_validation_enabled": True,
     "unsourced_allowlist_patterns": [
         "^confidence$",
         "^justification$",
@@ -1501,6 +1531,17 @@ def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
     except Exception:
         min_source_specificity = float(_DEFAULT_SOURCE_POLICY["min_source_specificity"])
     try:
+        min_source_quality_textual_nonfree = float(
+            policy.get(
+                "min_source_quality_textual_nonfree",
+                _DEFAULT_SOURCE_POLICY["min_source_quality_textual_nonfree"],
+            )
+        )
+    except Exception:
+        min_source_quality_textual_nonfree = float(
+            _DEFAULT_SOURCE_POLICY["min_source_quality_textual_nonfree"]
+        )
+    try:
         max_candidates = int(policy.get("max_candidates_per_field", _EVIDENCE_MAX_CANDIDATES_PER_FIELD))
     except Exception:
         max_candidates = int(_EVIDENCE_MAX_CANDIDATES_PER_FIELD)
@@ -1519,11 +1560,24 @@ def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
         "min_candidate_score": _clamp01(min_candidate_score, default=_DEFAULT_SOURCE_POLICY["min_candidate_score"]),
         "min_source_quality": _clamp01(min_source_quality, default=_DEFAULT_SOURCE_POLICY["min_source_quality"]),
         "min_source_specificity": _clamp01(min_source_specificity, default=_DEFAULT_SOURCE_POLICY["min_source_specificity"]),
+        "min_source_quality_textual_nonfree": _clamp01(
+            min_source_quality_textual_nonfree,
+            default=_DEFAULT_SOURCE_POLICY["min_source_quality_textual_nonfree"],
+        ),
         "require_source_for_non_unknown": bool(
             policy.get("require_source_for_non_unknown", _DEFAULT_SOURCE_POLICY["require_source_for_non_unknown"])
         ),
+        "require_target_anchor": bool(
+            policy.get(
+                "require_target_anchor",
+                policy.get("require_entity_anchor", _DEFAULT_SOURCE_POLICY["require_target_anchor"]),
+            )
+        ),
         "require_entity_anchor": bool(
-            policy.get("require_entity_anchor", _DEFAULT_SOURCE_POLICY["require_entity_anchor"])
+            policy.get(
+                "require_entity_anchor",
+                policy.get("require_target_anchor", _DEFAULT_SOURCE_POLICY["require_entity_anchor"]),
+            )
         ),
         "authority_host_weights": authority_weights,
         "prefer_detail_pages": bool(
@@ -1600,6 +1654,160 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
     else:
         field_recovery_require_keyword_hit_for_numbers = bool(raw_require_keyword_hit_for_numbers)
 
+    try:
+        field_recovery_entity_tolerance_hit_slack = int(
+            policy.get(
+                "field_recovery_entity_tolerance_hit_slack",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_hit_slack"],
+            )
+        )
+    except Exception:
+        field_recovery_entity_tolerance_hit_slack = int(
+            _DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_hit_slack"]
+        )
+    field_recovery_entity_tolerance_hit_slack = max(0, min(3, field_recovery_entity_tolerance_hit_slack))
+
+    try:
+        field_recovery_entity_tolerance_ratio_slack = float(
+            policy.get(
+                "field_recovery_entity_tolerance_ratio_slack",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_ratio_slack"],
+            )
+        )
+    except Exception:
+        field_recovery_entity_tolerance_ratio_slack = float(
+            _DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_ratio_slack"]
+        )
+    field_recovery_entity_tolerance_ratio_slack = max(
+        0.0,
+        min(0.50, field_recovery_entity_tolerance_ratio_slack),
+    )
+
+    try:
+        field_recovery_entity_tolerance_penalty = float(
+            policy.get(
+                "field_recovery_entity_tolerance_penalty",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_penalty"],
+            )
+        )
+    except Exception:
+        field_recovery_entity_tolerance_penalty = float(
+            _DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_penalty"]
+        )
+    field_recovery_entity_tolerance_penalty = _clamp01(
+        field_recovery_entity_tolerance_penalty,
+        default=_DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_penalty"],
+    )
+
+    anchor_mode = str(
+        policy.get("anchor_mode", _DEFAULT_FINALIZATION_POLICY["anchor_mode"])
+        or _DEFAULT_FINALIZATION_POLICY["anchor_mode"]
+    ).strip().lower()
+    if anchor_mode not in {"adaptive", "strict", "soft"}:
+        anchor_mode = str(_DEFAULT_FINALIZATION_POLICY["anchor_mode"])
+    try:
+        anchor_strict_min_confidence = float(
+            policy.get(
+                "anchor_strict_min_confidence",
+                _DEFAULT_FINALIZATION_POLICY["anchor_strict_min_confidence"],
+            )
+        )
+    except Exception:
+        anchor_strict_min_confidence = float(
+            _DEFAULT_FINALIZATION_POLICY["anchor_strict_min_confidence"]
+        )
+    anchor_strict_min_confidence = _clamp01(
+        anchor_strict_min_confidence,
+        default=_DEFAULT_FINALIZATION_POLICY["anchor_strict_min_confidence"],
+    )
+    try:
+        anchor_soft_min_confidence = float(
+            policy.get(
+                "anchor_soft_min_confidence",
+                _DEFAULT_FINALIZATION_POLICY["anchor_soft_min_confidence"],
+            )
+        )
+    except Exception:
+        anchor_soft_min_confidence = float(
+            _DEFAULT_FINALIZATION_POLICY["anchor_soft_min_confidence"]
+        )
+    anchor_soft_min_confidence = _clamp01(
+        anchor_soft_min_confidence,
+        default=_DEFAULT_FINALIZATION_POLICY["anchor_soft_min_confidence"],
+    )
+    if anchor_soft_min_confidence > anchor_strict_min_confidence:
+        anchor_soft_min_confidence = float(anchor_strict_min_confidence)
+    try:
+        anchor_mismatch_penalty = float(
+            policy.get(
+                "anchor_mismatch_penalty",
+                _DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
+            )
+        )
+    except Exception:
+        anchor_mismatch_penalty = float(
+            _DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"]
+        )
+    anchor_mismatch_penalty = _clamp01(
+        anchor_mismatch_penalty,
+        default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
+    )
+    anchor_hard_block_min_strength = str(
+        policy.get(
+            "anchor_hard_block_min_strength",
+            _DEFAULT_FINALIZATION_POLICY["anchor_hard_block_min_strength"],
+        )
+        or _DEFAULT_FINALIZATION_POLICY["anchor_hard_block_min_strength"]
+    ).strip().lower()
+    if anchor_hard_block_min_strength not in {"none", "weak", "moderate", "strong"}:
+        anchor_hard_block_min_strength = str(
+            _DEFAULT_FINALIZATION_POLICY["anchor_hard_block_min_strength"]
+        )
+
+    try:
+        quality_gate_unknown_ratio_max = float(
+            policy.get(
+                "quality_gate_unknown_ratio_max",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_unknown_ratio_max"],
+            )
+        )
+    except Exception:
+        quality_gate_unknown_ratio_max = float(
+            _DEFAULT_FINALIZATION_POLICY["quality_gate_unknown_ratio_max"]
+        )
+    quality_gate_unknown_ratio_max = _clamp01(
+        quality_gate_unknown_ratio_max,
+        default=_DEFAULT_FINALIZATION_POLICY["quality_gate_unknown_ratio_max"],
+    )
+
+    try:
+        quality_gate_min_resolvable_fields = int(
+            policy.get(
+                "quality_gate_min_resolvable_fields",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_min_resolvable_fields"],
+            )
+        )
+    except Exception:
+        quality_gate_min_resolvable_fields = int(
+            _DEFAULT_FINALIZATION_POLICY["quality_gate_min_resolvable_fields"]
+        )
+    quality_gate_min_resolvable_fields = max(1, min(200, quality_gate_min_resolvable_fields))
+    try:
+        field_recovery_min_source_quality = float(
+            policy.get(
+                "field_recovery_min_source_quality",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_min_source_quality"],
+            )
+        )
+    except Exception:
+        field_recovery_min_source_quality = float(
+            _DEFAULT_FINALIZATION_POLICY["field_recovery_min_source_quality"]
+        )
+    field_recovery_min_source_quality = _clamp01(
+        field_recovery_min_source_quality,
+        default=_DEFAULT_FINALIZATION_POLICY["field_recovery_min_source_quality"],
+    )
+
     return {
         "require_verified_for_non_unknown": bool(
             policy.get(
@@ -1644,6 +1852,35 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
             policy.get(
                 "field_recovery_allow_source_only_when_base_unknown",
                 _DEFAULT_FINALIZATION_POLICY["field_recovery_allow_source_only_when_base_unknown"],
+            )
+        ),
+        "field_recovery_entity_tolerance_enabled": bool(
+            policy.get(
+                "field_recovery_entity_tolerance_enabled",
+                _DEFAULT_FINALIZATION_POLICY["field_recovery_entity_tolerance_enabled"],
+            )
+        ),
+        "field_recovery_entity_tolerance_hit_slack": field_recovery_entity_tolerance_hit_slack,
+        "field_recovery_entity_tolerance_ratio_slack": field_recovery_entity_tolerance_ratio_slack,
+        "field_recovery_entity_tolerance_penalty": float(field_recovery_entity_tolerance_penalty),
+        "anchor_mode": anchor_mode,
+        "anchor_strict_min_confidence": float(anchor_strict_min_confidence),
+        "anchor_soft_min_confidence": float(anchor_soft_min_confidence),
+        "anchor_mismatch_penalty": float(anchor_mismatch_penalty),
+        "anchor_hard_block_min_strength": anchor_hard_block_min_strength,
+        "field_recovery_min_source_quality": float(field_recovery_min_source_quality),
+        "quality_gate_enforce": bool(
+            policy.get(
+                "quality_gate_enforce",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_enforce"],
+            )
+        ),
+        "quality_gate_unknown_ratio_max": float(quality_gate_unknown_ratio_max),
+        "quality_gate_min_resolvable_fields": int(quality_gate_min_resolvable_fields),
+        "semantic_validation_enabled": bool(
+            policy.get(
+                "semantic_validation_enabled",
+                _DEFAULT_FINALIZATION_POLICY["semantic_validation_enabled"],
             )
         ),
         "unsourced_allowlist_patterns": _normalize_regex_pattern_list(
@@ -2407,6 +2644,420 @@ def _source_supports_value(value: Any, source_text: Any) -> bool:
     return False
 
 
+def _is_free_text_field_key(field_key: Any) -> bool:
+    token = _normalize_match_text(field_key)
+    if not token:
+        return False
+    hints = (
+        "justification",
+        "details",
+        "description",
+        "summary",
+        "note",
+        "notes",
+        "rationale",
+        "explanation",
+        "evidence",
+        "comment",
+        "comments",
+    )
+    return any(hint in token for hint in hints)
+
+
+def _field_value_semantic_state(
+    *,
+    field_key: Any,
+    value: Any,
+    descriptor: Any = None,
+) -> Dict[str, Any]:
+    """Validate generic semantic plausibility for structured (non-free-text) fields."""
+    key_norm = _normalize_match_text(field_key)
+    free_text = _is_free_text_field_key(field_key)
+    descriptor_text = str(descriptor or "").strip().lower()
+
+    if _is_empty_like(value) or _is_unknown_marker(value):
+        return {
+            "pass": False,
+            "reason": "semantic_empty_or_unknown",
+        }
+
+    if "integer" in descriptor_text:
+        if isinstance(value, bool):
+            return {"pass": False, "reason": "semantic_integer_bool"}
+        if isinstance(value, int):
+            return {"pass": True, "reason": "semantic_integer_ok", "value": int(value)}
+        if isinstance(value, float) and float(value).is_integer():
+            return {"pass": True, "reason": "semantic_integer_ok", "value": int(value)}
+        if isinstance(value, str):
+            raw = str(value).strip()
+            if re.fullmatch(r"-?\d+", raw):
+                try:
+                    return {"pass": True, "reason": "semantic_integer_ok", "value": int(raw)}
+                except Exception:
+                    pass
+            # Generic year/date normalization for integer descriptors.
+            date_match = re.search(r"\b(1[6-9]\d{2}|20\d{2}|2100)\s*[-/]\s*\d{1,2}\s*[-/]\s*\d{1,2}\b", raw)
+            if date_match:
+                year_match = re.search(r"(1[6-9]\d{2}|20\d{2}|2100)", str(date_match.group(0)))
+                if year_match:
+                    try:
+                        return {
+                            "pass": True,
+                            "reason": "semantic_integer_from_date",
+                            "value": int(year_match.group(1)),
+                        }
+                    except Exception:
+                        pass
+        return {"pass": False, "reason": "semantic_integer_unparseable"}
+
+    if not isinstance(value, str):
+        return {"pass": True, "reason": "semantic_non_string_ok", "value": value}
+
+    cleaned = re.sub(r"\s+", " ", str(value).strip())
+    if not cleaned:
+        return {"pass": False, "reason": "semantic_empty_string"}
+
+    if free_text:
+        return {"pass": True, "reason": "semantic_free_text_ok", "value": cleaned}
+
+    token_count = len(re.findall(r"[A-Za-z0-9]+", cleaned))
+    sentence_breaks = len(re.findall(r"[.!?;]\s+", cleaned))
+    if token_count > 18:
+        return {"pass": False, "reason": "semantic_value_too_long"}
+    if sentence_breaks >= 1:
+        return {"pass": False, "reason": "semantic_sentence_like_value"}
+    if re.search(r"https?://", cleaned, flags=re.IGNORECASE):
+        return {"pass": False, "reason": "semantic_url_in_non_source_field"}
+
+    if any(hint in key_norm for hint in ("occupation", "profession", "job", "role", "title", "position")):
+        if token_count > 12 or len(cleaned) > 96:
+            return {"pass": False, "reason": "semantic_role_value_too_long"}
+    if any(hint in key_norm for hint in ("place", "city", "country", "state", "province", "region", "location")):
+        if token_count > 8:
+            return {"pass": False, "reason": "semantic_location_value_too_long"}
+        lowered = cleaned.lower()
+        if re.match(
+            r"^(is|was|from|born|nacid[oa]|provien[ea]|originari[oa]|lives|resides)\b",
+            lowered,
+        ):
+            return {"pass": False, "reason": "semantic_location_phrase_not_value"}
+
+    return {"pass": True, "reason": "semantic_string_ok", "value": cleaned}
+
+
+def _value_alignment_windows_raw(
+    value: Any,
+    source_text: Any,
+    *,
+    window_chars: int = 260,
+    max_windows: int = 8,
+) -> List[str]:
+    """Build raw-text windows around value anchors (preserving case cues)."""
+    source_raw = str(source_text or "")
+    if not source_raw.strip():
+        return []
+    source_lower = source_raw.lower()
+    anchors = _value_alignment_anchor_terms(value, max_terms=max_windows)
+    if not anchors:
+        return []
+    out: List[str] = []
+    seen = set()
+    max_window_chars = max(80, int(window_chars))
+    max_windows_int = max(1, int(max_windows))
+    for anchor in anchors:
+        anchor_l = str(anchor or "").strip().lower()
+        if not anchor_l:
+            continue
+        start_idx = 0
+        while start_idx < len(source_lower):
+            hit = source_lower.find(anchor_l, start_idx)
+            if hit < 0:
+                break
+            left = max(0, hit - max_window_chars)
+            right = min(len(source_raw), hit + len(anchor_l) + max_window_chars)
+            snippet = source_raw[left:right].strip()
+            if snippet and snippet not in seen:
+                seen.add(snippet)
+                out.append(snippet)
+                if len(out) >= max_windows_int:
+                    return out
+            start_idx = hit + len(anchor_l)
+    return out
+
+
+def _name_like_phrases(text: Any, *, max_names: int = 24) -> List[str]:
+    raw = str(text or "")
+    if not raw.strip():
+        return []
+    pattern = re.compile(
+        r"\b([A-ZÀ-ÖØ-Ý][a-zà-öø-ÿ]+(?:\s+[A-ZÀ-ÖØ-Ý][a-zà-öø-ÿ]+){1,3})\b"
+    )
+    names: List[str] = []
+    for match in pattern.finditer(raw):
+        candidate = _normalize_match_text(match.group(1))
+        if not candidate:
+            continue
+        if candidate in names:
+            continue
+        names.append(candidate)
+        if len(names) >= max(1, int(max_names)):
+            break
+    return names
+
+
+def _entity_relation_contamination_state(
+    *,
+    value: Any,
+    source_text: Any,
+    entity_tokens: Any = None,
+) -> Dict[str, Any]:
+    """Detect relation-heavy contexts likely describing a different person/entity."""
+    target_tokens: List[str] = []
+    for raw in list(entity_tokens or []):
+        norm = _normalize_match_text(raw)
+        if not norm or len(norm) < 3:
+            continue
+        if norm in target_tokens:
+            continue
+        target_tokens.append(norm)
+    if len(target_tokens) < 2:
+        return {"pass": True, "checked": False, "reason": "entity_tokens_insufficient"}
+
+    windows = _value_alignment_windows_raw(
+        value,
+        source_text,
+        window_chars=260,
+        max_windows=8,
+    )
+    if not windows:
+        return {"pass": True, "checked": False, "reason": "value_anchor_not_found"}
+
+    relation_markers = (
+        "suplente",
+        "titular",
+        "deputy",
+        "alternate",
+        "assistant",
+        "spouse",
+        "wife",
+        "husband",
+        "son of",
+        "daughter of",
+        "brother",
+        "sister",
+    )
+    target_set = set(target_tokens)
+    for window in windows:
+        normalized_window = _normalize_match_text(window)
+        if not normalized_window:
+            continue
+        relation_hit = any(marker in normalized_window for marker in relation_markers)
+        if not relation_hit:
+            continue
+        names = _name_like_phrases(window)
+        if not names:
+            continue
+        non_target_names = 0
+        target_names = 0
+        for name in names:
+            name_tokens = [tok for tok in re.findall(r"[a-z0-9]+", name) if len(tok) >= 3]
+            overlap = len(set(name_tokens) & target_set)
+            if overlap >= 2:
+                target_names += 1
+            else:
+                non_target_names += 1
+        if non_target_names >= 2:
+            return {
+                "pass": False,
+                "checked": True,
+                "reason": "relation_contamination_multi_entity",
+            }
+        if non_target_names >= 1 and target_names <= 0:
+            return {
+                "pass": False,
+                "checked": True,
+                "reason": "relation_contamination_non_target",
+            }
+
+    return {"pass": True, "checked": True, "reason": "relation_context_ok"}
+
+
+def _value_alignment_anchor_terms(value: Any, *, max_terms: int = 8) -> List[str]:
+    """Extract stable text anchors from a value for local entity alignment checks."""
+    terms: List[str] = []
+
+    def _add_term(raw_term: Any) -> None:
+        term = _normalize_match_text(raw_term)
+        if not term:
+            return
+        if term in {"unknown", "null", "none", "n_a"}:
+            return
+        if len(term) <= 1:
+            return
+        if term in terms:
+            return
+        terms.append(term)
+
+    def _walk(raw_value: Any) -> None:
+        if len(terms) >= int(max_terms):
+            return
+        if _is_empty_like(raw_value) or _is_unknown_marker(raw_value):
+            return
+        if isinstance(raw_value, (int, float)) and not isinstance(raw_value, bool):
+            if isinstance(raw_value, float) and float(raw_value).is_integer():
+                _add_term(str(int(raw_value)))
+            else:
+                _add_term(str(raw_value))
+            return
+        if isinstance(raw_value, str):
+            normalized = _normalize_match_text(raw_value)
+            if not normalized:
+                return
+            if re.fullmatch(r"-?\d+(?:\.\d+)?", normalized):
+                _add_term(normalized)
+                return
+            tokens = [
+                tok for tok in re.findall(r"[a-z0-9]+", normalized)
+                if len(tok) >= 3 and tok not in {"unknown", "null", "none"}
+            ]
+            if len(tokens) <= 4 and len(normalized) <= 80:
+                _add_term(normalized)
+            for tok in sorted(set(tokens), key=len, reverse=True):
+                _add_term(tok)
+                if len(terms) >= int(max_terms):
+                    break
+            return
+        if isinstance(raw_value, list):
+            for item in raw_value:
+                _walk(item)
+                if len(terms) >= int(max_terms):
+                    break
+            return
+        if isinstance(raw_value, dict):
+            for item in raw_value.values():
+                _walk(item)
+                if len(terms) >= int(max_terms):
+                    break
+
+    _walk(value)
+    return terms[: max(1, int(max_terms))]
+
+
+def _value_alignment_windows(
+    value: Any,
+    source_text: Any,
+    *,
+    window_chars: int = 260,
+    max_windows: int = 8,
+) -> List[str]:
+    """Build nearby text windows around value anchors for entity-value checks."""
+    source_norm = _normalize_match_text(source_text)
+    if not source_norm:
+        return []
+    anchors = _value_alignment_anchor_terms(value, max_terms=max_windows)
+    if not anchors:
+        return []
+    windows: List[str] = []
+    seen = set()
+    max_window_chars = max(80, int(window_chars))
+    max_windows_int = max(1, int(max_windows))
+    for anchor in anchors:
+        if not anchor:
+            continue
+        pattern = re.compile(rf"(?<![a-z0-9]){re.escape(anchor)}(?![a-z0-9])")
+        for match in pattern.finditer(source_norm):
+            start = max(0, int(match.start()) - max_window_chars)
+            end = min(len(source_norm), int(match.end()) + max_window_chars)
+            snippet = source_norm[start:end].strip()
+            if not snippet or snippet in seen:
+                continue
+            seen.add(snippet)
+            windows.append(snippet)
+            if len(windows) >= max_windows_int:
+                return windows
+    return windows
+
+
+def _entity_value_alignment_state(
+    *,
+    value: Any,
+    source_text: Any,
+    entity_tokens: Any = None,
+) -> Dict[str, Any]:
+    """Require strict entity overlap near the concrete value mention."""
+    tokens: List[str] = []
+    for raw in list(entity_tokens or []):
+        norm = _normalize_match_text(raw)
+        if not norm or len(norm) < 3:
+            continue
+        if norm in tokens:
+            continue
+        tokens.append(norm)
+    if len(tokens) < 2:
+        return {
+            "pass": True,
+            "checked": False,
+            "hits": 0,
+            "ratio": 1.0,
+            "min_hits": 0,
+            "min_ratio": 0.0,
+            "reason": "entity_tokens_insufficient",
+        }
+    windows = _value_alignment_windows(
+        value,
+        source_text,
+        window_chars=260,
+        max_windows=8,
+    )
+    if not windows:
+        return {
+            "pass": True,
+            "checked": False,
+            "hits": 0,
+            "ratio": 0.0,
+            "min_hits": 0,
+            "min_ratio": 0.0,
+            "reason": "value_anchor_not_found",
+        }
+
+    min_hits, min_ratio = _entity_match_thresholds(len(tokens))
+    min_hits = max(1, int(min_hits))
+    min_ratio = float(min_ratio)
+    best_hits = 0
+    best_ratio = 0.0
+    for window in windows:
+        hits, ratio = _entity_overlap_for_candidate(
+            tokens,
+            candidate_url="",
+            candidate_text=window,
+        )
+        if int(hits) > int(best_hits) or (
+            int(hits) == int(best_hits) and float(ratio) > float(best_ratio)
+        ):
+            best_hits = int(hits)
+            best_ratio = float(ratio)
+        if int(hits) >= min_hits or float(ratio) >= min_ratio:
+            return {
+                "pass": True,
+                "checked": True,
+                "hits": int(hits),
+                "ratio": float(ratio),
+                "min_hits": int(min_hits),
+                "min_ratio": float(min_ratio),
+                "reason": "value_aligned_to_entity",
+            }
+
+    return {
+        "pass": False,
+        "checked": True,
+        "hits": int(best_hits),
+        "ratio": float(best_ratio),
+        "min_hits": int(min_hits),
+        "min_ratio": float(min_ratio),
+        "reason": "entity_value_mismatch",
+    }
+
+
 _FIELD_RECOVERY_STOP_TOKENS = {
     "field",
     "source",
@@ -2571,7 +3222,12 @@ def _normalize_recovery_rejection_reason(reason: Any) -> Optional[str]:
         "grounding_blocked_missing_source_url": "recovery_blocked_missing_source_url",
         "grounding_blocked_missing_source_text": "recovery_blocked_missing_source_text",
         "grounding_blocked_source_value_mismatch": "recovery_blocked_source_value_mismatch",
+        "grounding_blocked_anchor_source_mismatch": "recovery_blocked_anchor_mismatch",
+        "grounding_blocked_anchor_mismatch": "recovery_blocked_anchor_mismatch",
         "grounding_blocked_entity_source_mismatch": "recovery_blocked_entity_mismatch",
+        "grounding_blocked_entity_value_mismatch": "recovery_blocked_entity_value_mismatch",
+        "grounding_blocked_relation_contamination": "recovery_blocked_relation_contamination",
+        "semantic_validation_failed": "recovery_blocked_semantic_validation",
         "source_specificity_demotion": "recovery_blocked_non_specific_source",
     }
     if token in mapping:
@@ -2592,6 +3248,7 @@ def _recover_unknown_fields_from_tool_evidence(
     allowed_source_urls: Any = None,
     source_text_index: Any = None,
     entity_name_tokens: Any = None,
+    target_anchor: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Attempt deterministic recovery for unresolved fields from tool evidence."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -2634,14 +3291,10 @@ def _recover_unknown_fields_from_tool_evidence(
     if not sources:
         return normalized
 
-    entity_tokens: List[str] = []
-    for token in list(entity_name_tokens or []):
-        norm = _normalize_match_text(token)
-        if not norm or len(norm) < 3:
-            continue
-        if norm in entity_tokens:
-            continue
-        entity_tokens.append(norm)
+    target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_name_tokens)
+    anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
+    anchor_mode = _anchor_mode_for_policy(target_anchor_state, policy)
+    strict_anchor = bool(anchor_mode == "strict" and len(anchor_tokens) >= 2)
     schema_leaf_set = {path for path, _ in _schema_leaf_paths(expected_schema)}
 
     for path, _ in _schema_leaf_paths(expected_schema):
@@ -2667,19 +3320,18 @@ def _recover_unknown_fields_from_tool_evidence(
         rejected_reasons: List[str] = []
 
         for source_url, source_text in sources:
-            overlap_hits = 0
-            overlap_ratio = 1.0
-            if len(entity_tokens) >= 2:
-                overlap_hits, overlap_ratio = _entity_overlap_for_candidate(
-                    entity_tokens,
-                    candidate_url=source_url,
-                    candidate_text=source_text,
-                )
-                min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
-                min_hits = max(1, int(min_hits))
-                if int(overlap_hits) < min_hits and float(overlap_ratio) < float(min_ratio):
-                    rejected_reasons.append("recovery_blocked_entity_mismatch")
-                    continue
+            anchor_state = _anchor_mismatch_state(
+                target_anchor=target_anchor_state,
+                candidate_url=source_url,
+                candidate_text=source_text,
+                finalization_policy=policy,
+            )
+            if bool(anchor_state.get("hard_block", False)):
+                blocked_reason = "recovery_blocked_anchor_mismatch"
+                if bool(target_anchor_state.get("legacy_entity_tokens", False)):
+                    blocked_reason = "recovery_blocked_entity_mismatch"
+                rejected_reasons.append(blocked_reason)
+                continue
 
             recovered_values = _recover_values_from_source_text(
                 descriptor=descriptor,
@@ -2702,14 +3354,32 @@ def _recover_unknown_fields_from_tool_evidence(
                 if not _source_supports_value(recovered_value, source_text):
                     rejected_reasons.append("recovery_blocked_source_value_mismatch")
                     continue
+                if strict_anchor:
+                    alignment = _entity_value_alignment_state(
+                        value=recovered_value,
+                        source_text=source_text,
+                        entity_tokens=anchor_tokens,
+                    )
+                    if bool(alignment.get("checked", False)) and not bool(alignment.get("pass", False)):
+                        rejected_reasons.append("recovery_blocked_entity_value_mismatch")
+                        continue
+                    relation_state = _entity_relation_contamination_state(
+                        value=recovered_value,
+                        source_text=source_text,
+                        entity_tokens=anchor_tokens,
+                    )
+                    if bool(relation_state.get("checked", False)) and not bool(relation_state.get("pass", False)):
+                        rejected_reasons.append("recovery_blocked_relation_contamination")
+                        continue
                 allow_non_specific = True
                 if normalized_source and not _is_source_specific_url(normalized_source):
                     allow_non_specific = _allow_non_specific_source_url(
                         source_url=normalized_source,
                         value=recovered_value,
                         source_text=source_text,
-                        entity_tokens=entity_tokens,
+                        target_anchor=target_anchor_state,
                         source_field=False,
+                        finalization_policy=policy,
                     )
                 if not allow_non_specific:
                     rejected_reasons.append("recovery_blocked_non_specific_source")
@@ -2718,10 +3388,17 @@ def _recover_unknown_fields_from_tool_evidence(
                     value=recovered_value,
                     source_url=normalized_source,
                     source_text=source_text,
-                    entity_tokens=entity_tokens,
+                    target_anchor=target_anchor_state,
                     allow_non_specific=allow_non_specific,
                     source_field=False,
                 )
+                if bool(anchor_state.get("tolerated", False)):
+                    tolerance_penalty = _clamp01(
+                        policy.get("anchor_mismatch_penalty", _DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"]),
+                        default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
+                    )
+                    candidate["anchor_mismatch_penalty"] = float(tolerance_penalty)
+                    candidate["evidence_reason"] = "recovery_anchor_soft_penalty"
                 if requires_source and not normalized_source:
                     candidate["rejection_reason"] = "grounding_blocked_missing_source_url"
                 candidate_pool.append(candidate)
@@ -2739,12 +3416,49 @@ def _recover_unknown_fields_from_tool_evidence(
                 selected = None
                 decision_reason = "unusable_value"
             else:
+                semantic_state = _field_value_semantic_state(
+                    field_key=key,
+                    value=coerced_value,
+                    descriptor=descriptor,
+                )
+                if not bool(semantic_state.get("pass", False)):
+                    selected = None
+                    decision_reason = "semantic_validation_failed"
+                else:
+                    coerced_value = semantic_state.get("value", coerced_value)
+            if isinstance(selected, dict):
+                min_source_quality = _clamp01(
+                    policy.get("field_recovery_min_source_quality", 0.26),
+                    default=0.26,
+                )
+                if (
+                    not _is_free_text_field_key(key)
+                    and float(selected.get("source_quality", 0.0)) < float(min_source_quality)
+                ):
+                    strong_direct_support = bool(
+                        float(selected.get("value_support", 0.0)) >= 0.95
+                        and float(selected.get("source_specificity", 0.0)) >= 0.45
+                        and _normalize_url_match(selected.get("source_url"))
+                    )
+                    if not strong_direct_support:
+                        selected = None
+                        decision_reason = "source_quality_below_threshold"
+        if isinstance(selected, dict) and not _is_empty_like(selected.get("value")):
+            if _is_empty_like(coerced_value) or _is_unknown_marker(coerced_value):
+                selected = None
+                decision_reason = "unusable_value"
+            else:
                 found_source = _normalize_url_match(selected.get("source_url"))
                 entry["status"] = _FIELD_STATUS_FOUND
                 entry["value"] = coerced_value
                 entry["source_url"] = found_source
                 entry["evidence"] = "recovery_source_backed"
-                entry["evidence_reason"] = str(decision_reason or "recovery_promoted")
+                selected_reason = str(decision_reason or "recovery_promoted")
+                if bool(selected.get("entity_match_tolerated", False)):
+                    selected_reason = "recovery_promoted_entity_tolerance"
+                elif bool(selected.get("anchor_match_soft_penalty", False)):
+                    selected_reason = "recovery_promoted_anchor_soft_penalty"
+                entry["evidence_reason"] = selected_reason
                 entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
                 normalized[key] = entry
                 source_key = f"{key}_source"
@@ -2754,7 +3468,7 @@ def _recover_unknown_fields_from_tool_evidence(
                     source_entry["value"] = found_source
                     source_entry["source_url"] = found_source
                     source_entry["evidence"] = "recovery_source_backed"
-                    source_entry["evidence_reason"] = str(decision_reason or "recovery_promoted")
+                    source_entry["evidence_reason"] = selected_reason
                     source_entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
                     normalized[source_key] = source_entry
                 continue
@@ -2856,7 +3570,21 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
                         normalized_confidence = _normalize_confidence_label(coerced)
                         if normalized_confidence is not None:
                             coerced = normalized_confidence
-                    value = coerced
+                    semantic_state = _field_value_semantic_state(
+                        field_key=key,
+                        value=coerced,
+                        descriptor=descriptor,
+                    )
+                    if not bool(semantic_state.get("pass", False)):
+                        status = _FIELD_STATUS_UNKNOWN
+                        value = _unknown_value_for_descriptor(descriptor)
+                        source_url = None
+                        entry["evidence"] = str(entry.get("evidence") or "semantic_validation_failed")
+                        entry["evidence_reason"] = str(
+                            entry.get("evidence_reason") or semantic_state.get("reason") or "semantic_validation_failed"
+                        )
+                    else:
+                        value = semantic_state.get("value", coerced)
             elif explicit_unknown:
                 status = _FIELD_STATUS_UNKNOWN
                 value = _unknown_value_for_descriptor(descriptor)
@@ -3195,10 +3923,12 @@ def _normalize_evidence_ledger(ledger: Any) -> Dict[str, List[Dict[str, Any]]]:
                 "source_specificity": _clamp01(raw.get("source_specificity"), default=0.0),
                 "value_support": _clamp01(raw.get("value_support"), default=0.0),
                 "entity_overlap": _clamp01(raw.get("entity_overlap"), default=0.0),
+                "anchor_overlap": _clamp01(raw.get("anchor_overlap", raw.get("entity_overlap")), default=0.0),
                 "corroboration": _clamp01(raw.get("corroboration"), default=0.0),
                 "score": _clamp01(raw.get("score"), default=0.0),
                 "confidence_hint": _normalize_confidence_label(raw.get("confidence_hint")) or "Low",
                 "evidence_excerpt": str(raw.get("evidence_excerpt") or "")[:240],
+                "anchor_mismatch_penalty": _clamp01(raw.get("anchor_mismatch_penalty"), default=0.0),
                 "rejection_reason": str(raw.get("rejection_reason") or "").strip() or None,
             }
             if _is_empty_like(item.get("value")):
@@ -3217,6 +3947,8 @@ def _normalize_evidence_stats(stats: Any) -> Dict[str, Any]:
         "candidates_rejected": 0,
         "fields_with_candidates": 0,
         "fields_promoted": 0,
+        "anchor_soft_penalties": 0,
+        "anchor_hard_blocks": 0,
     }
     out: Dict[str, Any] = {}
     for key, default in counters.items():
@@ -3256,6 +3988,7 @@ def _build_evidence_candidate(
     source_url: Any,
     source_text: Any,
     entity_tokens: Optional[List[str]] = None,
+    target_anchor: Any = None,
     allow_non_specific: bool = True,
     source_field: bool = False,
 ) -> Dict[str, Any]:
@@ -3270,10 +4003,12 @@ def _build_evidence_candidate(
     elif source_tokens < int(_EVIDENCE_SNIPPET_MIN_TOKENS):
         value_support = 0.35
 
+    anchor = _normalize_target_anchor(target_anchor, entity_tokens=entity_tokens)
+    anchor_tokens = _target_anchor_tokens(anchor, max_tokens=16)
     entity_overlap = 0.50
-    if entity_tokens:
+    if anchor_tokens:
         _, ratio = _entity_overlap_for_candidate(
-            entity_tokens,
+            anchor_tokens,
             candidate_url=normalized_source or "",
             candidate_text=source_text_str,
         )
@@ -3298,10 +4033,12 @@ def _build_evidence_candidate(
         "source_specificity": source_specificity,
         "value_support": value_support,
         "entity_overlap": entity_overlap,
+        "anchor_overlap": entity_overlap,
         "corroboration": 0.0,
         "score": 0.0,
         "confidence_hint": "Low",
         "evidence_excerpt": source_text_str[:240],
+        "anchor_mismatch_penalty": 0.0,
         "rejection_reason": rejection_reason,
     }
 
@@ -3386,14 +4123,31 @@ def _score_evidence_candidates(
         elif len(hosts) == 1:
             corroboration = 0.35
         item["corroboration"] = corroboration
+        entity_tolerance_penalty = _clamp01(
+            item.get("entity_tolerance_penalty"),
+            default=0.0,
+        )
+        anchor_mismatch_penalty = _clamp01(
+            item.get("anchor_mismatch_penalty"),
+            default=0.0,
+        )
+        combined_penalty = _clamp01(
+            float(entity_tolerance_penalty) + float(anchor_mismatch_penalty),
+            default=0.0,
+        )
         score = (
             float(item.get("source_quality", 0.0)) * weights["source_quality"]
             + float(item.get("source_specificity", 0.0)) * weights["source_specificity"]
             + float(item.get("value_support", 0.0)) * weights["value_support"]
             + float(item.get("entity_overlap", 0.0)) * weights["entity_overlap"]
             + float(item.get("corroboration", 0.0)) * weights["corroboration"]
+            - float(combined_penalty)
         )
         item["score"] = _clamp01(score, default=0.0)
+        item["entity_tolerance_penalty"] = float(entity_tolerance_penalty)
+        item["anchor_mismatch_penalty"] = float(anchor_mismatch_penalty)
+        item["entity_match_tolerated"] = bool(float(entity_tolerance_penalty) > 0.0)
+        item["anchor_match_soft_penalty"] = bool(float(anchor_mismatch_penalty) > 0.0)
         item["confidence_hint"] = _candidate_confidence_hint(
             float(item["score"]),
             float(item.get("corroboration", 0.0)),
@@ -3450,6 +4204,7 @@ def _extract_field_status_updates(
     unknown_after_searches: int,
     field_attempt_budget_mode: Any = "strict_cap",
     entity_name_tokens: Any = None,
+    target_anchor: Any = None,
     evidence_ledger: Any = None,
     evidence_stats: Any = None,
     evidence_mode: Any = None,
@@ -3457,6 +4212,7 @@ def _extract_field_status_updates(
     evidence_require_second_source: Any = None,
     source_policy: Any = None,
     source_tier_provider: Any = None,
+    finalization_policy: Any = None,
 ) -> tuple[Dict[str, Dict[str, Any]], Dict[str, List[Dict[str, Any]]], Dict[str, Any]]:
     """Update canonical field_status based on recent tool outputs."""
     field_status = _normalize_field_status_map(existing_field_status, expected_schema)
@@ -3492,14 +4248,10 @@ def _extract_field_status_updates(
         has_structured_payload = any(bool(item.get("has_structured_payload")) for item in payloads)
         if has_structured_payload:
             attempts_delta = 1
-    entity_tokens: List[str] = []
-    for tok in list(entity_name_tokens or []):
-        normalized_tok = _normalize_match_text(tok)
-        if not normalized_tok or len(normalized_tok) < 3:
-            continue
-        if normalized_tok in entity_tokens:
-            continue
-        entity_tokens.append(normalized_tok)
+    target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_name_tokens)
+    anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
+    anchor_mode = _anchor_mode_for_policy(target_anchor_state, finalization_policy)
+    strict_anchor = bool(anchor_mode == "strict" and len(anchor_tokens) >= 2)
     schema_leaf_set = {leaf_path for leaf_path, _ in _schema_leaf_paths(expected_schema)}
 
     for path, _ in _schema_leaf_paths(expected_schema):
@@ -3578,18 +4330,59 @@ def _extract_field_status_updates(
                         source_url=candidate_source,
                         value=value,
                         source_text=text,
-                        entity_tokens=entity_tokens,
+                        target_anchor=target_anchor_state,
                         source_field=source_field,
+                        finalization_policy=finalization_policy,
                     )
                 candidate = _build_evidence_candidate(
                     value=value,
                     source_url=candidate_source,
                     source_text=text,
-                    entity_tokens=entity_tokens,
+                    target_anchor=target_anchor_state,
                     allow_non_specific=allow_non_specific,
                     source_field=source_field,
                 )
-                if requires_source and not candidate_source:
+                anchor_state = _anchor_mismatch_state(
+                    target_anchor=target_anchor_state,
+                    candidate_url=candidate_source or "",
+                    candidate_text=text,
+                    finalization_policy=finalization_policy,
+                )
+                if bool(anchor_state.get("hard_block", False)):
+                    block_reason = "grounding_blocked_anchor_mismatch"
+                    if bool(target_anchor_state.get("legacy_entity_tokens", False)):
+                        block_reason = "grounding_blocked_entity_source_mismatch"
+                    candidate["rejection_reason"] = block_reason
+                    stats["anchor_hard_blocks"] = int(stats.get("anchor_hard_blocks", 0) or 0) + 1
+                elif bool(anchor_state.get("tolerated", False)):
+                    candidate["anchor_mismatch_penalty"] = _clamp01(
+                        anchor_state.get("penalty"),
+                        default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
+                    )
+                    stats["anchor_soft_penalties"] = int(stats.get("anchor_soft_penalties", 0) or 0) + 1
+                if (
+                    strict_anchor
+                    and not source_field
+                ):
+                    alignment = _entity_value_alignment_state(
+                        value=value,
+                        source_text=text,
+                        entity_tokens=anchor_tokens,
+                    )
+                    if bool(alignment.get("checked", False)) and not bool(alignment.get("pass", False)):
+                        candidate["rejection_reason"] = "grounding_blocked_entity_value_mismatch"
+                    relation_state = _entity_relation_contamination_state(
+                        value=value,
+                        source_text=text,
+                        entity_tokens=anchor_tokens,
+                    )
+                    if (
+                        bool(relation_state.get("checked", False))
+                        and not bool(relation_state.get("pass", False))
+                        and not candidate.get("rejection_reason")
+                    ):
+                        candidate["rejection_reason"] = "grounding_blocked_relation_contamination"
+                if requires_source and not candidate_source and not candidate.get("rejection_reason"):
                     candidate["rejection_reason"] = "grounding_blocked_missing_source_url"
 
                 candidate_pool.append(candidate)
@@ -3626,7 +4419,13 @@ def _extract_field_status_updates(
                     < float(normalized_source_policy.get("min_source_quality", 0.0))
                     and not candidate.get("rejection_reason")
                 ):
-                    candidate["rejection_reason"] = "source_quality_below_policy_threshold"
+                    strong_direct_support = bool(
+                        float(candidate.get("value_support", 0.0)) >= 0.95
+                        and float(candidate.get("source_specificity", 0.0)) >= 0.45
+                        and _normalize_url_match(candidate.get("source_url"))
+                    )
+                    if not strong_direct_support:
+                        candidate["rejection_reason"] = "source_quality_below_policy_threshold"
                 if (
                     float(candidate.get("source_specificity", 0.0))
                     < float(normalized_source_policy.get("min_source_specificity", 0.0))
@@ -3634,8 +4433,13 @@ def _extract_field_status_updates(
                 ):
                     candidate["rejection_reason"] = "source_specificity_below_policy_threshold"
                 if (
-                    bool(normalized_source_policy.get("require_entity_anchor", True))
-                    and len(entity_tokens) >= 2
+                    bool(
+                        normalized_source_policy.get(
+                            "require_target_anchor",
+                            normalized_source_policy.get("require_entity_anchor", True),
+                        )
+                    )
+                    and strict_anchor
                     and not source_field
                     and len(re.findall(r"[a-z0-9]+", _normalize_match_text(str(candidate.get("evidence_excerpt") or "")))) >= 8
                     and float(candidate.get("entity_overlap", 0.0)) < 0.15
@@ -3690,6 +4494,30 @@ def _extract_field_status_updates(
                 if normalized_value:
                     found_value = normalized_value
             coerced_value = _coerce_found_value_for_descriptor(found_value, entry.get("descriptor"))
+            semantic_state = _field_value_semantic_state(
+                field_key=key,
+                value=coerced_value,
+                descriptor=entry.get("descriptor"),
+            )
+            if not bool(semantic_state.get("pass", False)):
+                selected = None
+                decision_reason = "semantic_validation_failed"
+            else:
+                coerced_value = semantic_state.get("value", coerced_value)
+            if isinstance(selected, dict) and not _is_free_text_field_key(key):
+                min_textual_quality = float(
+                    normalized_source_policy.get("min_source_quality_textual_nonfree", 0.34)
+                )
+                if float(selected.get("source_quality", 0.0)) < float(min_textual_quality):
+                    strong_direct_support = bool(
+                        float(selected.get("value_support", 0.0)) >= 0.95
+                        and float(selected.get("source_specificity", 0.0)) >= 0.45
+                        and _normalize_url_match(selected.get("source_url"))
+                    )
+                    if not strong_direct_support:
+                        selected = None
+                        decision_reason = "source_quality_textual_nonfree"
+        if isinstance(selected, dict) and not _is_empty_like(selected.get("value")):
             entry["status"] = _FIELD_STATUS_FOUND
             if not _is_empty_like(coerced_value):
                 entry["value"] = coerced_value
@@ -3722,7 +4550,7 @@ def _extract_field_status_updates(
             stats["fields_promoted"] = int(stats.get("fields_promoted", 0)) + 1
             continue
 
-        if decision_reason and decision_reason != "no_candidates":
+        if decision_reason and decision_reason not in {"no_candidates", "all_candidates_rejected"}:
             rejected_evidence = str(decision_reason)
         if not rejected_evidence:
             rejected_evidence = next(
@@ -4264,40 +5092,519 @@ def _task_name_tokens_from_messages(
     *,
     max_tokens: int = 8,
 ) -> List[str]:
-    """Extract primary entity name tokens from the latest user prompt."""
+    """Backward-compatible wrapper for target-anchor token extraction."""
+    anchor = _task_target_anchor_from_messages(messages, max_tokens=max_tokens)
+    return _target_anchor_tokens(anchor, max_tokens=max_tokens)
+
+
+def _anchor_strength_rank(value: Any) -> int:
+    token = str(value or "").strip().lower()
+    order = {
+        "none": 0,
+        "weak": 1,
+        "moderate": 2,
+        "strong": 3,
+    }
+    return int(order.get(token, 0))
+
+
+def _anchor_strength_from_confidence(confidence: Any) -> str:
+    score = _clamp01(confidence, default=0.0)
+    if score >= 0.65:
+        return "strong"
+    if score >= 0.45:
+        return "moderate"
+    if score >= 0.25:
+        return "weak"
+    return "none"
+
+
+def _normalize_target_anchor(
+    target_anchor: Any = None,
+    *,
+    entity_tokens: Any = None,
+) -> Dict[str, Any]:
+    raw = target_anchor if isinstance(target_anchor, dict) else {}
+    out: Dict[str, Any] = {
+        "tokens": [],
+        "phrases": [],
+        "id_signals": [],
+        "confidence": 0.0,
+        "strength": "none",
+        "provenance": [],
+        "mode": "adaptive",
+        "legacy_entity_tokens": False,
+    }
+
+    for key in ("tokens", "phrases", "id_signals", "provenance"):
+        values: List[str] = []
+        for raw_value in list(raw.get(key) or []):
+            token = str(raw_value or "").strip()
+            if not token:
+                continue
+            if key == "tokens":
+                token = _normalize_match_text(token)
+                if len(token) < 3:
+                    continue
+            if token in values:
+                continue
+            values.append(token)
+            if len(values) >= 24:
+                break
+        out[key] = values
+
+    legacy_tokens: List[str] = []
+    for raw_token in list(entity_tokens or []):
+        token = _normalize_match_text(raw_token)
+        if not token or len(token) < 3:
+            continue
+        if token in legacy_tokens:
+            continue
+        legacy_tokens.append(token)
+        if len(legacy_tokens) >= 24:
+            break
+    if legacy_tokens and not out["tokens"]:
+        out["tokens"] = legacy_tokens
+        out["legacy_entity_tokens"] = True
+        out["provenance"] = _append_limited_unique(out.get("provenance"), "legacy_entity_tokens", max_items=16)
+        # Backward compatibility: explicit legacy entity token inputs historically
+        # enabled strict anti-contamination checks.
+        if len(legacy_tokens) >= 2:
+            out["confidence"] = max(float(out.get("confidence", 0.0) or 0.0), 0.85)
+            out["strength"] = "strong"
+        elif len(legacy_tokens) == 1:
+            out["confidence"] = max(float(out.get("confidence", 0.0) or 0.0), 0.45)
+            out["strength"] = "moderate"
+
+    out["mode"] = str(raw.get("mode") or "adaptive").strip().lower()
+    if out["mode"] not in {"adaptive", "strict", "soft"}:
+        out["mode"] = "adaptive"
+
+    raw_confidence = raw.get("confidence")
+    if raw_confidence is None:
+        out["confidence"] = _clamp01(out.get("confidence"), default=0.0)
+    else:
+        out["confidence"] = _clamp01(raw_confidence, default=0.0)
+    strength = str(raw.get("strength") or out.get("strength") or "").strip().lower()
+    if strength not in {"none", "weak", "moderate", "strong"}:
+        strength = _anchor_strength_from_confidence(out["confidence"])
+    out["strength"] = strength
+
+    if out["confidence"] <= 0.0:
+        heuristic = 0.0
+        heuristic += min(0.45, 0.06 * float(len(out["tokens"])))
+        heuristic += min(0.30, 0.08 * float(len(out["phrases"])))
+        heuristic += min(0.35, 0.12 * float(len(out["id_signals"])))
+        out["confidence"] = _clamp01(heuristic, default=0.0)
+        out["strength"] = _anchor_strength_from_confidence(out["confidence"])
+    return out
+
+
+def _target_anchor_tokens(target_anchor: Any, *, max_tokens: int = 12) -> List[str]:
+    normalized = _normalize_target_anchor(target_anchor)
+    out: List[str] = []
+    seen = set()
+
+    def _add(raw_value: Any) -> None:
+        token = _normalize_match_text(raw_value)
+        if not token or len(token) < 3:
+            return
+        if token in seen:
+            return
+        seen.add(token)
+        out.append(token)
+
+    for token in list(normalized.get("tokens") or []):
+        _add(token)
+        if len(out) >= max(1, int(max_tokens)):
+            return out
+
+    for phrase in list(normalized.get("phrases") or []):
+        for part in re.findall(r"[a-z0-9]+", _normalize_match_text(phrase)):
+            _add(part)
+            if len(out) >= max(1, int(max_tokens)):
+                return out
+
+    for signal in list(normalized.get("id_signals") or []):
+        for part in re.findall(r"[a-z0-9]+", _normalize_match_text(signal)):
+            _add(part)
+            if len(out) >= max(1, int(max_tokens)):
+                return out
+    return out
+
+
+def _target_anchor_present(target_anchor: Any) -> bool:
+    normalized = _normalize_target_anchor(target_anchor)
+    return bool(
+        normalized.get("tokens")
+        or normalized.get("phrases")
+        or normalized.get("id_signals")
+    )
+
+
+def _anchor_mode_for_policy(target_anchor: Any, finalization_policy: Any = None) -> str:
+    anchor = _normalize_target_anchor(target_anchor)
+    policy = _normalize_finalization_policy(finalization_policy)
+    configured = str(policy.get("anchor_mode", "adaptive") or "adaptive").strip().lower()
+    if configured in {"strict", "soft"}:
+        return configured
+
+    confidence = _clamp01(anchor.get("confidence"), default=0.0)
+    strict_min = _clamp01(policy.get("anchor_strict_min_confidence"), default=0.65)
+    soft_min = _clamp01(policy.get("anchor_soft_min_confidence"), default=0.25)
+    strength_rank = _anchor_strength_rank(anchor.get("strength"))
+    if confidence >= strict_min and strength_rank >= _anchor_strength_rank("moderate"):
+        return "strict"
+    if confidence >= soft_min:
+        return "soft"
+    return "soft"
+
+
+def _anchor_overlap_for_candidate(
+    *,
+    target_anchor: Any,
+    candidate_url: Any,
+    candidate_text: Any,
+) -> Dict[str, Any]:
+    anchor = _normalize_target_anchor(target_anchor)
+    tokens = _target_anchor_tokens(anchor, max_tokens=16)
+    text_raw = f"{str(candidate_url or '')} {str(candidate_text or '')}".strip()
+    text_norm = _normalize_match_text(text_raw)
+
+    token_hits = 0
+    token_ratio = 0.0
+    checked = False
+    if tokens:
+        checked = True
+        token_hits, token_ratio = _entity_overlap_for_candidate(
+            tokens,
+            candidate_url=candidate_url,
+            candidate_text=candidate_text,
+        )
+
+    phrase_hits = 0
+    for raw_phrase in list(anchor.get("phrases") or []):
+        phrase = _normalize_match_text(raw_phrase)
+        if phrase and phrase in text_norm:
+            phrase_hits += 1
+
+    id_hits = 0
+    lowered = text_raw.lower()
+    for raw_signal in list(anchor.get("id_signals") or []):
+        signal = str(raw_signal or "").strip().lower()
+        if signal and signal in lowered:
+            id_hits += 1
+
+    score = 0.0
+    score = max(score, _clamp01(token_ratio, default=0.0))
+    if phrase_hits > 0:
+        score = max(score, _clamp01(0.35 + (0.15 * phrase_hits), default=0.0))
+        checked = True
+    if id_hits > 0:
+        score = max(score, _clamp01(0.55 + (0.20 * id_hits), default=0.0))
+        checked = True
+
+    return {
+        "checked": bool(checked),
+        "hits": int(token_hits),
+        "ratio": float(token_ratio),
+        "phrase_hits": int(phrase_hits),
+        "id_hits": int(id_hits),
+        "score": _clamp01(score, default=0.0),
+        "token_count": int(len(tokens)),
+    }
+
+
+def _anchor_mismatch_state(
+    *,
+    target_anchor: Any,
+    candidate_url: Any,
+    candidate_text: Any,
+    finalization_policy: Any = None,
+) -> Dict[str, Any]:
+    anchor = _normalize_target_anchor(target_anchor)
+    if not _target_anchor_present(anchor):
+        return {
+            "checked": False,
+            "pass": True,
+            "hard_block": False,
+            "penalty": 0.0,
+            "mode": "soft",
+            "reason": "anchor_absent",
+            "score": 1.0,
+        }
+
+    policy = _normalize_finalization_policy(finalization_policy)
+    mode = _anchor_mode_for_policy(anchor, policy)
+    overlap = _anchor_overlap_for_candidate(
+        target_anchor=anchor,
+        candidate_url=candidate_url,
+        candidate_text=candidate_text,
+    )
+    if not bool(overlap.get("checked", False)):
+        return {
+            "checked": False,
+            "pass": True,
+            "hard_block": False,
+            "penalty": 0.0,
+            "mode": mode,
+            "reason": "anchor_not_observable",
+            "score": float(overlap.get("score", 0.0)),
+        }
+
+    penalty_default = _clamp01(
+        policy.get("anchor_mismatch_penalty"),
+        default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
+    )
+    score = _clamp01(overlap.get("score"), default=0.0)
+    token_hits = int(overlap.get("hits", 0) or 0)
+    token_ratio = float(overlap.get("ratio", 0.0) or 0.0)
+    phrase_hits = int(overlap.get("phrase_hits", 0) or 0)
+    id_hits = int(overlap.get("id_hits", 0) or 0)
+    token_count = max(1, int(overlap.get("token_count", 1) or 1))
+    min_hits, min_ratio = _entity_match_thresholds(token_count)
+    min_hits = max(1, int(min_hits))
+    min_ratio = float(min_ratio)
+    strong_match = bool(
+        token_hits >= min_hits
+        or token_ratio >= min_ratio
+        or phrase_hits > 0
+        or id_hits > 0
+    )
+    mismatch = not strong_match
+
+    hard_block = False
+    penalty = 0.0
+    passed = True
+    reason = "anchor_match"
+    tolerated = False
+    if mode == "strict" and mismatch:
+        if bool(policy.get("field_recovery_entity_tolerance_enabled", True)):
+            try:
+                hit_slack = max(0, int(policy.get("field_recovery_entity_tolerance_hit_slack", 1)))
+            except Exception:
+                hit_slack = 1
+            try:
+                ratio_slack = float(policy.get("field_recovery_entity_tolerance_ratio_slack", 0.20))
+            except Exception:
+                ratio_slack = 0.20
+            ratio_slack = max(0.0, min(0.50, ratio_slack))
+            tolerated = bool(
+                token_hits >= max(0, int(min_hits) - int(hit_slack))
+                and token_ratio >= max(0.0, float(min_ratio) - float(ratio_slack))
+            )
+        if tolerated:
+            penalty = float(penalty_default)
+            reason = "anchor_mismatch_soft_penalty"
+        else:
+            min_strength = str(policy.get("anchor_hard_block_min_strength") or "strong").strip().lower()
+            hard_block = bool(
+                _anchor_strength_rank(anchor.get("strength"))
+                >= _anchor_strength_rank(min_strength)
+            )
+            if hard_block:
+                passed = False
+                reason = "anchor_mismatch_hard_block"
+            else:
+                penalty = float(penalty_default)
+                reason = "anchor_mismatch_soft_penalty"
+    elif mismatch:
+        penalty = float(penalty_default)
+        reason = "anchor_mismatch_soft_penalty"
+
+    return {
+        "checked": True,
+        "pass": bool(passed),
+        "hard_block": bool(hard_block),
+        "penalty": _clamp01(penalty, default=0.0),
+        "mode": mode,
+        "reason": reason,
+        "score": float(score),
+        "hits": int(token_hits),
+        "ratio": float(token_ratio),
+        "phrase_hits": int(phrase_hits),
+        "id_hits": int(id_hits),
+        "min_hits": int(min_hits),
+        "min_ratio": float(min_ratio),
+        "tolerated": bool(tolerated or (mismatch and not hard_block and penalty > 0.0)),
+    }
+
+
+def _task_target_anchor_from_messages(
+    messages: Any,
+    *,
+    max_tokens: int = 8,
+) -> Dict[str, Any]:
     prompt = _extract_last_user_prompt(list(messages or []))
     if not prompt:
-        return []
+        return _normalize_target_anchor({})
 
     hints = _extract_profile_hints(prompt)
     tokens: List[str] = []
-    seen = set()
+    phrases: List[str] = []
+    id_signals: List[str] = []
+    provenance: List[str] = []
+    seen_tokens = set()
 
     for token in list(hints.get("name_tokens") or []):
         tok = _normalize_match_text(token)
         if not tok or len(tok) < 3:
             continue
-        if tok in seen:
+        if tok in seen_tokens:
             continue
-        seen.add(tok)
-        tokens.append(tok)
-        if len(tokens) >= max(1, int(max_tokens)):
-            return tokens
-
-    if tokens:
-        return tokens
-
-    for token in _query_focus_tokens(prompt, max_tokens=max_tokens):
-        tok = _normalize_match_text(token)
-        if not tok or len(tok) < 3:
-            continue
-        if tok in seen:
-            continue
-        seen.add(tok)
+        seen_tokens.add(tok)
         tokens.append(tok)
         if len(tokens) >= max(1, int(max_tokens)):
             break
-    return tokens
+    if tokens:
+        provenance.append("profile_hints")
+        phrase = " ".join(tokens[: max(2, min(len(tokens), 4))]).strip()
+        if phrase:
+            phrases.append(phrase)
+
+    for quoted in re.findall(r'"([^"]+)"', str(prompt or "")):
+        normalized = _normalize_match_text(quoted)
+        if not normalized:
+            continue
+        phrase_tokens = [tok for tok in re.findall(r"[a-z0-9]+", normalized) if len(tok) >= 3]
+        if len(phrase_tokens) >= 2:
+            phrase = " ".join(phrase_tokens[:6]).strip()
+            if phrase and phrase not in phrases:
+                phrases.append(phrase)
+                provenance = _append_limited_unique(provenance, "quoted_phrase", max_items=12)
+            for tok in phrase_tokens:
+                if tok in seen_tokens:
+                    continue
+                seen_tokens.add(tok)
+                tokens.append(tok)
+                if len(tokens) >= max(1, int(max_tokens)):
+                    break
+        if len(tokens) >= max(1, int(max_tokens)):
+            break
+
+    for match in re.findall(r"https?://[^\s)>\"]+", str(prompt or "")):
+        signal = str(match or "").strip()
+        if signal and signal not in id_signals:
+            id_signals.append(signal[:160])
+            provenance = _append_limited_unique(provenance, "url_id_signal", max_items=12)
+        if len(id_signals) >= 8:
+            break
+    for match in re.findall(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", str(prompt or ""), flags=re.IGNORECASE):
+        signal = str(match or "").strip()
+        if signal and signal not in id_signals:
+            id_signals.append(signal[:160])
+            provenance = _append_limited_unique(provenance, "email_id_signal", max_items=12)
+        if len(id_signals) >= 8:
+            break
+    for match in re.findall(r"[@#][A-Za-z0-9_.-]{3,}", str(prompt or "")):
+        signal = str(match or "").strip()
+        if signal and signal not in id_signals:
+            id_signals.append(signal[:160])
+            provenance = _append_limited_unique(provenance, "handle_id_signal", max_items=12)
+        if len(id_signals) >= 8:
+            break
+
+    confidence = 0.0
+    confidence += min(0.45, 0.06 * float(len(tokens)))
+    confidence += min(0.30, 0.08 * float(len(phrases)))
+    confidence += min(0.35, 0.12 * float(len(id_signals)))
+    if hints.get("raw_hint_lines"):
+        confidence += 0.10
+        provenance = _append_limited_unique(provenance, "labeled_hint", max_items=12)
+    confidence = _clamp01(confidence, default=0.0)
+
+    return _normalize_target_anchor({
+        "tokens": tokens,
+        "phrases": phrases,
+        "id_signals": id_signals,
+        "confidence": confidence,
+        "strength": _anchor_strength_from_confidence(confidence),
+        "provenance": provenance,
+        "mode": "adaptive",
+    })
+
+
+def _entity_match_with_tolerance(
+    *,
+    entity_tokens: Any,
+    candidate_url: Any,
+    candidate_text: Any,
+    finalization_policy: Any = None,
+) -> Dict[str, Any]:
+    tokens: List[str] = []
+    for raw in list(entity_tokens or []):
+        norm = _normalize_match_text(raw)
+        if not norm or len(norm) < 3:
+            continue
+        if norm in tokens:
+            continue
+        tokens.append(norm)
+
+    if len(tokens) < 2:
+        return {
+            "pass": True,
+            "strict": True,
+            "tolerated": False,
+            "hits": 0,
+            "ratio": 1.0,
+            "min_hits": 0,
+            "min_ratio": 0.0,
+        }
+
+    hits, ratio = _entity_overlap_for_candidate(
+        tokens,
+        candidate_url=candidate_url,
+        candidate_text=candidate_text,
+    )
+    min_hits, min_ratio = _entity_match_thresholds(len(tokens))
+    min_hits = max(1, int(min_hits))
+    ratio = float(ratio)
+    strict_pass = bool(int(hits) >= min_hits or ratio >= float(min_ratio))
+    if strict_pass:
+        return {
+            "pass": True,
+            "strict": True,
+            "tolerated": False,
+            "hits": int(hits),
+            "ratio": ratio,
+            "min_hits": int(min_hits),
+            "min_ratio": float(min_ratio),
+        }
+
+    policy = _normalize_finalization_policy(finalization_policy)
+    if not bool(policy.get("field_recovery_entity_tolerance_enabled", True)):
+        return {
+            "pass": False,
+            "strict": False,
+            "tolerated": False,
+            "hits": int(hits),
+            "ratio": ratio,
+            "min_hits": int(min_hits),
+            "min_ratio": float(min_ratio),
+        }
+
+    try:
+        hit_slack = max(0, int(policy.get("field_recovery_entity_tolerance_hit_slack", 1)))
+    except Exception:
+        hit_slack = 1
+    try:
+        ratio_slack = float(policy.get("field_recovery_entity_tolerance_ratio_slack", 0.20))
+    except Exception:
+        ratio_slack = 0.20
+    ratio_slack = max(0.0, min(0.50, ratio_slack))
+    tolerated = bool(
+        int(hits) >= max(0, int(min_hits) - int(hit_slack))
+        and float(ratio) >= max(0.0, float(min_ratio) - float(ratio_slack))
+    )
+    return {
+        "pass": tolerated,
+        "strict": False,
+        "tolerated": tolerated,
+        "hits": int(hits),
+        "ratio": float(ratio),
+        "min_hits": int(min_hits),
+        "min_ratio": float(min_ratio),
+    }
 
 
 def _allow_non_specific_source_url(
@@ -4306,7 +5613,9 @@ def _allow_non_specific_source_url(
     value: Any,
     source_text: Any = None,
     entity_tokens: Optional[List[str]] = None,
+    target_anchor: Any = None,
     source_field: bool = False,
+    finalization_policy: Any = None,
 ) -> bool:
     """Allow non-specific URLs only with strong generic support."""
     normalized_source = _normalize_url_match(source_url)
@@ -4316,20 +5625,23 @@ def _allow_non_specific_source_url(
         return True
 
     source_text_str = str(source_text or "")
+    anchor = _normalize_target_anchor(target_anchor, entity_tokens=entity_tokens)
+    anchor_tokens = _target_anchor_tokens(anchor, max_tokens=16)
     entity_supported = True
-    if entity_tokens:
-        hits, ratio = _entity_overlap_for_candidate(
-            entity_tokens,
+    if anchor_tokens:
+        anchor_state = _anchor_mismatch_state(
+            target_anchor=anchor,
             candidate_url=normalized_source,
             candidate_text=source_text_str,
+            finalization_policy=finalization_policy,
         )
-        min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
-        min_hits = max(1, int(min_hits))
-        entity_supported = bool(int(hits) >= min_hits or float(ratio) >= float(min_ratio))
+        entity_supported = bool(anchor_state.get("pass", False))
+        if bool(anchor_state.get("hard_block", False)):
+            return False
 
     token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(source_text_str)))
     if source_field:
-        if entity_tokens:
+        if anchor_tokens:
             return bool(entity_supported)
         return token_count >= 8
 
@@ -4345,6 +5657,8 @@ def _promote_terminal_payload_into_field_status(
     allowed_source_urls: Any = None,
     source_text_index: Any = None,
     entity_name_tokens: Any = None,
+    target_anchor: Any = None,
+    finalization_policy: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Promote source-backed terminal JSON values into canonical field_status."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -4365,14 +5679,10 @@ def _promote_terminal_payload_into_field_status(
         normalized_url = _normalize_url_match(raw)
         if normalized_url:
             allowed.add(normalized_url)
-    entity_tokens: List[str] = []
-    for tok in list(entity_name_tokens or []):
-        normalized_tok = _normalize_match_text(tok)
-        if not normalized_tok or len(normalized_tok) < 3:
-            continue
-        if normalized_tok in entity_tokens:
-            continue
-        entity_tokens.append(normalized_tok)
+    target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_name_tokens)
+    anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
+    anchor_mode = _anchor_mode_for_policy(target_anchor_state, finalization_policy)
+    strict_anchor = bool(anchor_mode == "strict" and len(anchor_tokens) >= 2)
     schema_leaf_set = {path for path, _ in _schema_leaf_paths(expected_schema)}
 
     for path, _ in _schema_leaf_paths(expected_schema):
@@ -4430,16 +5740,17 @@ def _promote_terminal_payload_into_field_status(
             source_text = None
             if isinstance(source_text_index, dict):
                 source_text = source_text_index.get(normalized_source)
-            if not _allow_non_specific_source_url(
-                source_url=normalized_source,
-                value=value,
-                source_text=source_text,
-                entity_tokens=entity_tokens,
-                source_field=True,
-            ):
-                entry["evidence"] = "source_specificity_demotion"
-                normalized[key] = entry
-                continue
+                if not _allow_non_specific_source_url(
+                    source_url=normalized_source,
+                    value=value,
+                    source_text=source_text,
+                    target_anchor=target_anchor_state,
+                    source_field=True,
+                    finalization_policy=finalization_policy,
+                ):
+                    entry["evidence"] = "source_specificity_demotion"
+                    normalized[key] = entry
+                    continue
             base_key = key[:-7]
             base_entry = normalized.get(base_key)
             base_found = (
@@ -4477,24 +5788,46 @@ def _promote_terminal_payload_into_field_status(
                     entry["evidence"] = "grounding_blocked_source_value_mismatch"
                     normalized[key] = entry
                     continue
-                if len(entity_tokens) >= 2 and source_token_count >= 8:
-                    hits, ratio = _entity_overlap_for_candidate(
-                        entity_tokens,
+                if source_token_count >= 8:
+                    anchor_state = _anchor_mismatch_state(
+                        target_anchor=target_anchor_state,
                         candidate_url=normalized_source or "",
                         candidate_text=source_text,
+                        finalization_policy=finalization_policy,
                     )
-                    min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
-                    min_hits = max(1, int(min_hits))
-                    if int(hits) < min_hits and float(ratio) < float(min_ratio):
-                        entry["evidence"] = "grounding_blocked_entity_source_mismatch"
+                    if bool(anchor_state.get("hard_block", False)):
+                        evidence_reason = "grounding_blocked_anchor_source_mismatch"
+                        if bool(target_anchor_state.get("legacy_entity_tokens", False)):
+                            evidence_reason = "grounding_blocked_entity_source_mismatch"
+                        entry["evidence"] = evidence_reason
+                        normalized[key] = entry
+                        continue
+                if strict_anchor and source_token_count >= 8:
+                    alignment = _entity_value_alignment_state(
+                        value=value,
+                        source_text=source_text,
+                        entity_tokens=anchor_tokens,
+                    )
+                    if bool(alignment.get("checked", False)) and not bool(alignment.get("pass", False)):
+                        entry["evidence"] = "grounding_blocked_entity_value_mismatch"
+                        normalized[key] = entry
+                        continue
+                    relation_state = _entity_relation_contamination_state(
+                        value=value,
+                        source_text=source_text,
+                        entity_tokens=anchor_tokens,
+                    )
+                    if bool(relation_state.get("checked", False)) and not bool(relation_state.get("pass", False)):
+                        entry["evidence"] = "grounding_blocked_relation_contamination"
                         normalized[key] = entry
                         continue
                 if not _allow_non_specific_source_url(
                     source_url=normalized_source,
                     value=value,
                     source_text=source_text,
-                    entity_tokens=entity_tokens,
+                    target_anchor=target_anchor_state,
                     source_field=False,
+                    finalization_policy=finalization_policy,
                 ):
                     entry["evidence"] = "source_specificity_demotion"
                     normalized[key] = entry
@@ -4513,6 +5846,16 @@ def _promote_terminal_payload_into_field_status(
             entry["evidence"] = "grounding_blocked_unusable_value"
             normalized[key] = entry
             continue
+        semantic_state = _field_value_semantic_state(
+            field_key=key,
+            value=coerced_value,
+            descriptor=descriptor,
+        )
+        if not bool(semantic_state.get("pass", False)):
+            entry["evidence"] = "semantic_validation_failed"
+            normalized[key] = entry
+            continue
+        coerced_value = semantic_state.get("value", coerced_value)
         entry["status"] = _FIELD_STATUS_FOUND
         if key.endswith("_source") and normalized_source:
             entry["value"] = normalized_source
@@ -4535,6 +5878,8 @@ def _sync_field_status_from_terminal_payload(
     allowed_source_urls: Any = None,
     source_text_index: Any = None,
     entity_name_tokens: Any = None,
+    target_anchor: Any = None,
+    finalization_policy: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Synchronize field_status to the terminal JSON payload (supports demotions)."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -4551,6 +5896,8 @@ def _sync_field_status_from_terminal_payload(
         allowed_source_urls=allowed_source_urls,
         source_text_index=source_text_index,
         entity_name_tokens=entity_name_tokens,
+        target_anchor=target_anchor,
+        finalization_policy=finalization_policy,
     )
 
     content = response.get("content") if isinstance(response, dict) else getattr(response, "content", None)
@@ -4662,7 +6009,7 @@ def _sync_terminal_response_with_field_status(
 ) -> tuple[Any, Dict[str, Dict[str, Any]], Optional[Dict[str, Any]]]:
     """Single entry-point for terminal sync plus optional canonical guard."""
     normalized_finalization_policy = _normalize_finalization_policy(finalization_policy)
-    entity_name_tokens = _task_name_tokens_from_messages(messages)
+    target_anchor = _task_target_anchor_from_messages(messages)
     allowed_source_urls = _collect_tool_urls_from_messages(
         messages,
         summary=summary,
@@ -4679,7 +6026,8 @@ def _sync_terminal_response_with_field_status(
         expected_schema=expected_schema,
         allowed_source_urls=allowed_source_urls,
         source_text_index=source_text_index,
-        entity_name_tokens=entity_name_tokens,
+        target_anchor=target_anchor,
+        finalization_policy=normalized_finalization_policy,
     )
     field_status = _recover_unknown_fields_from_tool_evidence(
         field_status=field_status,
@@ -4687,7 +6035,7 @@ def _sync_terminal_response_with_field_status(
         finalization_policy=normalized_finalization_policy,
         allowed_source_urls=allowed_source_urls,
         source_text_index=source_text_index,
-        entity_name_tokens=entity_name_tokens,
+        target_anchor=target_anchor,
     )
 
     canonical_event = None
@@ -4709,7 +6057,8 @@ def _sync_terminal_response_with_field_status(
             expected_schema=expected_schema,
             allowed_source_urls=allowed_source_urls,
             source_text_index=source_text_index,
-            entity_name_tokens=entity_name_tokens,
+            target_anchor=target_anchor,
+            finalization_policy=normalized_finalization_policy,
         )
         field_status = _recover_unknown_fields_from_tool_evidence(
             field_status=field_status,
@@ -4717,7 +6066,7 @@ def _sync_terminal_response_with_field_status(
             finalization_policy=normalized_finalization_policy,
             allowed_source_urls=allowed_source_urls,
             source_text_index=source_text_index,
-            entity_name_tokens=entity_name_tokens,
+            target_anchor=target_anchor,
         )
 
     return response, field_status, canonical_event
@@ -4754,20 +6103,31 @@ def _field_status_progress(field_status: Any) -> Dict[str, Any]:
     }
 
 
+def _collect_resolvable_field_keys(field_status: Any) -> List[str]:
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    keys: List[str] = []
+    for key, entry in normalized.items():
+        if not isinstance(entry, dict):
+            continue
+        if key.endswith("_source") or key in {"confidence", "justification"}:
+            continue
+        keys.append(str(key))
+    keys.sort()
+    return keys
+
+
 def _collect_resolvable_unknown_fields(field_status: Any) -> List[str]:
     """Collect non-source fields still requiring resolution."""
     normalized = _normalize_field_status_map(field_status, expected_schema=None)
     unresolved: List[str] = []
-    for key, entry in normalized.items():
+    for key in _collect_resolvable_field_keys(normalized):
+        entry = normalized.get(key)
         if not isinstance(entry, dict):
             continue
         status = str(entry.get("status") or "").lower()
         if status not in {_FIELD_STATUS_PENDING, _FIELD_STATUS_UNKNOWN}:
             continue
-        if key.endswith("_source") or key in {"confidence", "justification"}:
-            continue
         unresolved.append(key)
-    unresolved.sort()
     return unresolved
 
 
@@ -4897,6 +6257,7 @@ def _normalize_budget_state(
         "no_signal_streak": max(0, int(existing.get("no_signal_streak", 0) or 0)),
         "replan_requested": bool(existing.get("replan_requested", False)),
         "premature_end_nudge_count": max(0, int(existing.get("premature_end_nudge_count", 0) or 0)),
+        "structural_repair_retry_required": bool(existing.get("structural_repair_retry_required", False)),
     })
     return out
 
@@ -4961,9 +6322,20 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "field_demotions_count",
         "recovery_promotions_count",
         "recovery_rejections_count",
+        "unknown_fields_count",
+        "grounding_blocks_count_current",
+        "source_consistency_fixes_count_current",
+        "field_demotions_count_current",
+        "recovery_promotions_count_current",
+        "recovery_rejections_count_current",
+        "unknown_fields_count_current",
         "off_target_tool_results_count",
         "empty_tool_results_count",
         "retry_or_replan_events",
+        "quality_gate_failures",
+        "no_payload_extraction_rounds",
+        "webpage_no_payload_rounds",
+        "search_snippet_no_payload_rounds",
         "webpage_llm_extraction_calls",
         "webpage_langextract_calls",
         "webpage_langextract_fallback_calls",
@@ -4972,6 +6344,24 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "webpage_openwebpage_candidates_selected",
         "webpage_openwebpage_skipped_hard_failures",
         "webpage_openwebpage_skipped_empty",
+        "webpage_deterministic_fallback_calls",
+        "webpage_deterministic_fallback_payloads",
+        "webpage_deterministic_fallback_no_payload",
+        "search_snippet_llm_extraction_calls",
+        "search_snippet_langextract_calls",
+        "search_snippet_langextract_fallback_calls",
+        "search_snippet_langextract_errors",
+        "search_snippet_candidates_total",
+        "search_snippet_candidates_selected",
+        "search_snippet_skipped_duplicate_urls",
+        "search_snippet_deterministic_fallback_calls",
+        "search_snippet_deterministic_fallback_payloads",
+        "search_snippet_deterministic_fallback_no_payload",
+        "structural_repair_events",
+        "structural_repair_retry_events",
+        "finalization_invariant_failures",
+        "anchor_hard_blocks_count",
+        "anchor_soft_penalties_count",
     )
     out: Dict[str, Any] = {}
     for key in counters:
@@ -4984,6 +6374,37 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["field_demotion_fields"] = list(existing.get("field_demotion_fields") or [])[:64]
     out["recovery_promoted_fields"] = list(existing.get("recovery_promoted_fields") or [])[:64]
     out["recovery_rejected_fields"] = list(existing.get("recovery_rejected_fields") or [])[:64]
+    out["unknown_fields"] = list(existing.get("unknown_fields") or [])[:64]
+    out["grounding_blocked_fields_current"] = list(
+        existing.get("grounding_blocked_fields_current")
+        or existing.get("grounding_blocked_fields")
+        or []
+    )[:64]
+    out["source_consistency_fixes_current"] = list(
+        existing.get("source_consistency_fixes_current")
+        or existing.get("source_consistency_fixes")
+        or []
+    )[:64]
+    out["field_demotion_fields_current"] = list(
+        existing.get("field_demotion_fields_current")
+        or existing.get("field_demotion_fields")
+        or []
+    )[:64]
+    out["recovery_promoted_fields_current"] = list(
+        existing.get("recovery_promoted_fields_current")
+        or existing.get("recovery_promoted_fields")
+        or []
+    )[:64]
+    out["recovery_rejected_fields_current"] = list(
+        existing.get("recovery_rejected_fields_current")
+        or existing.get("recovery_rejected_fields")
+        or []
+    )[:64]
+    out["unknown_fields_current"] = list(
+        existing.get("unknown_fields_current")
+        or existing.get("unknown_fields")
+        or []
+    )[:64]
     demotion_reason_counts_raw = existing.get("field_demotion_reason_counts") or {}
     demotion_reason_counts: Dict[str, int] = {}
     if isinstance(demotion_reason_counts_raw, dict):
@@ -5008,10 +6429,76 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
             except Exception:
                 recovery_reason_counts[reason] = 0
     out["recovery_reason_counts"] = recovery_reason_counts
+    unknown_reason_counts_raw = existing.get("unknown_reason_counts") or {}
+    unknown_reason_counts: Dict[str, int] = {}
+    if isinstance(unknown_reason_counts_raw, dict):
+        for raw_reason, raw_count in unknown_reason_counts_raw.items():
+            reason = str(raw_reason or "").strip()
+            if not reason:
+                continue
+            try:
+                unknown_reason_counts[reason] = max(0, int(raw_count))
+            except Exception:
+                unknown_reason_counts[reason] = 0
+    out["unknown_reason_counts"] = unknown_reason_counts
+    unknown_fields_by_reason_raw = existing.get("unknown_fields_by_reason") or {}
+    unknown_fields_by_reason: Dict[str, List[str]] = {}
+    if isinstance(unknown_fields_by_reason_raw, dict):
+        for raw_reason, raw_fields in unknown_fields_by_reason_raw.items():
+            reason = str(raw_reason or "").strip()
+            if not reason:
+                continue
+            bucket: List[str] = []
+            for raw_field in list(raw_fields or []):
+                field_name = str(raw_field or "").strip()
+                if not field_name:
+                    continue
+                if field_name not in bucket:
+                    bucket.append(field_name)
+                if len(bucket) >= 64:
+                    break
+            unknown_fields_by_reason[reason] = bucket
+    out["unknown_fields_by_reason"] = unknown_fields_by_reason
     out["retrieval_interventions"] = list(existing.get("retrieval_interventions") or [])[:64]
     out["webpage_openwebpage_skip_reasons"] = list(existing.get("webpage_openwebpage_skip_reasons") or [])[:32]
     out["webpage_langextract_provider"] = str(existing.get("webpage_langextract_provider") or "")
     out["webpage_langextract_last_error"] = str(existing.get("webpage_langextract_last_error") or "")[:400]
+    out["search_snippet_langextract_provider"] = str(existing.get("search_snippet_langextract_provider") or "")
+    out["search_snippet_langextract_last_error"] = str(existing.get("search_snippet_langextract_last_error") or "")[:400]
+    out["anchor_strength_current"] = str(existing.get("anchor_strength_current") or "none").strip().lower()
+    if out["anchor_strength_current"] not in {"none", "weak", "moderate", "strong"}:
+        out["anchor_strength_current"] = "none"
+    out["anchor_mode_current"] = str(existing.get("anchor_mode_current") or "soft").strip().lower()
+    if out["anchor_mode_current"] not in {"adaptive", "strict", "soft"}:
+        out["anchor_mode_current"] = "soft"
+    out["anchor_confidence_current"] = _clamp01(existing.get("anchor_confidence_current"), default=0.0)
+    out["anchor_reasons_current"] = list(existing.get("anchor_reasons_current") or [])[:8]
+    # Current-snapshot counters should always reflect latest field_status, while
+    # legacy counters keep max/peak behavior for run-level telemetry.
+    out["grounding_blocks_count_current"] = max(
+        int(out.get("grounding_blocks_count_current", 0) or 0),
+        len(out.get("grounding_blocked_fields_current") or []),
+    )
+    out["source_consistency_fixes_count_current"] = max(
+        int(out.get("source_consistency_fixes_count_current", 0) or 0),
+        len(out.get("source_consistency_fixes_current") or []),
+    )
+    out["field_demotions_count_current"] = max(
+        int(out.get("field_demotions_count_current", 0) or 0),
+        len(out.get("field_demotion_fields_current") or []),
+    )
+    out["recovery_promotions_count_current"] = max(
+        int(out.get("recovery_promotions_count_current", 0) or 0),
+        len(out.get("recovery_promoted_fields_current") or []),
+    )
+    out["recovery_rejections_count_current"] = max(
+        int(out.get("recovery_rejections_count_current", 0) or 0),
+        len(out.get("recovery_rejected_fields_current") or []),
+    )
+    out["unknown_fields_count_current"] = max(
+        int(out.get("unknown_fields_count_current", 0) or 0),
+        len(out.get("unknown_fields_current") or []),
+    )
     return out
 
 
@@ -5094,6 +6581,36 @@ def _classify_tool_message_quality(msg: Any) -> Dict[str, Any]:
     return {"is_empty": False, "is_off_target": _urls_low_signal(urls), "is_error": False, "error_type": None}
 
 
+def _field_unknown_reason(entry: Any) -> str:
+    if not isinstance(entry, dict):
+        return "missing_field_entry"
+    status = str(entry.get("status") or "").strip().lower()
+    evidence = str(entry.get("evidence") or "").strip().lower()
+    if status == _FIELD_STATUS_FOUND:
+        value = entry.get("value")
+        if not _is_empty_like(value) and not _is_unknown_marker(value):
+            return "resolved"
+    if evidence.startswith("recovery_blocked_"):
+        return evidence
+    if evidence.startswith("grounding_blocked_"):
+        return evidence
+    if "demotion" in evidence:
+        return evidence
+    try:
+        attempts = max(0, int(entry.get("attempts", 0) or 0))
+    except Exception:
+        attempts = 0
+    if status == _FIELD_STATUS_UNKNOWN:
+        if attempts > 0:
+            return "attempted_no_verified_evidence"
+        return "not_attempted"
+    if status == _FIELD_STATUS_PENDING:
+        if attempts > 0:
+            return "pending_after_attempts"
+        return "pending_not_attempted"
+    return "unresolved_or_missing"
+
+
 def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     normalized = _normalize_field_status_map(field_status, expected_schema=None)
     blocked_fields: List[str] = []
@@ -5103,10 +6620,14 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     recovery_promoted_fields: List[str] = []
     recovery_rejected_fields: List[str] = []
     recovery_reason_counts: Dict[str, int] = {}
+    unknown_fields: List[str] = []
+    unknown_reason_counts: Dict[str, int] = {}
+    unknown_fields_by_reason: Dict[str, List[str]] = {}
     for key, entry in (normalized or {}).items():
         if not isinstance(entry, dict):
             continue
         evidence = str(entry.get("evidence") or "").strip().lower()
+        status = str(entry.get("status") or "").strip().lower()
         if evidence.startswith("grounding_blocked"):
             blocked_fields.append(str(key))
         # Only count actual fixes, not demotions.
@@ -5120,6 +6641,18 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         if evidence.startswith("recovery_blocked"):
             recovery_rejected_fields.append(str(key))
             recovery_reason_counts[evidence] = int(recovery_reason_counts.get(evidence, 0)) + 1
+        if status == _FIELD_STATUS_UNKNOWN:
+            key_str = str(key)
+            unknown_fields.append(key_str)
+            reason = _field_unknown_reason(entry)
+            if reason:
+                unknown_reason_counts[reason] = int(unknown_reason_counts.get(reason, 0)) + 1
+                bucket = unknown_fields_by_reason.get(reason)
+                if not isinstance(bucket, list):
+                    bucket = []
+                if key_str not in bucket:
+                    bucket.append(key_str)
+                unknown_fields_by_reason[reason] = bucket[:64]
     return {
         "grounding_blocks_count": len(blocked_fields),
         "grounding_blocked_fields": blocked_fields[:64],
@@ -5133,6 +6666,10 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         "recovery_rejections_count": len(recovery_rejected_fields),
         "recovery_rejected_fields": recovery_rejected_fields[:64],
         "recovery_reason_counts": recovery_reason_counts,
+        "unknown_fields_count": len(unknown_fields),
+        "unknown_fields": unknown_fields[:64],
+        "unknown_reason_counts": unknown_reason_counts,
+        "unknown_fields_by_reason": unknown_fields_by_reason,
     }
 
 
@@ -5158,6 +6695,10 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
     out["recovery_rejections_count"] = int(max(
         out.get("recovery_rejections_count", 0),
         field_diag.get("recovery_rejections_count", 0),
+    ))
+    out["unknown_fields_count"] = int(max(
+        out.get("unknown_fields_count", 0),
+        field_diag.get("unknown_fields_count", 0),
     ))
     for blocked_field in field_diag.get("grounding_blocked_fields", []):
         out["grounding_blocked_fields"] = _append_limited_unique(
@@ -5189,6 +6730,25 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             rejected_field,
             max_items=64,
         )
+    for unknown_field in field_diag.get("unknown_fields", []):
+        out["unknown_fields"] = _append_limited_unique(
+            out.get("unknown_fields"),
+            unknown_field,
+            max_items=64,
+        )
+    # Current snapshot values (latest turn, no max/union semantics).
+    out["grounding_blocks_count_current"] = int(field_diag.get("grounding_blocks_count", 0) or 0)
+    out["source_consistency_fixes_count_current"] = int(field_diag.get("source_consistency_fixes_count", 0) or 0)
+    out["field_demotions_count_current"] = int(field_diag.get("field_demotions_count", 0) or 0)
+    out["recovery_promotions_count_current"] = int(field_diag.get("recovery_promotions_count", 0) or 0)
+    out["recovery_rejections_count_current"] = int(field_diag.get("recovery_rejections_count", 0) or 0)
+    out["unknown_fields_count_current"] = int(field_diag.get("unknown_fields_count", 0) or 0)
+    out["grounding_blocked_fields_current"] = list(field_diag.get("grounding_blocked_fields") or [])[:64]
+    out["source_consistency_fixes_current"] = list(field_diag.get("source_consistency_fixes") or [])[:64]
+    out["field_demotion_fields_current"] = list(field_diag.get("field_demotion_fields") or [])[:64]
+    out["recovery_promoted_fields_current"] = list(field_diag.get("recovery_promoted_fields") or [])[:64]
+    out["recovery_rejected_fields_current"] = list(field_diag.get("recovery_rejected_fields") or [])[:64]
+    out["unknown_fields_current"] = list(field_diag.get("unknown_fields") or [])[:64]
     reason_counts = out.get("field_demotion_reason_counts") or {}
     if not isinstance(reason_counts, dict):
         reason_counts = {}
@@ -5215,6 +6775,35 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             count = 0
         recovery_reason_counts[reason] = max(int(recovery_reason_counts.get(reason, 0) or 0), count)
     out["recovery_reason_counts"] = recovery_reason_counts
+    unknown_reason_counts = out.get("unknown_reason_counts") or {}
+    if not isinstance(unknown_reason_counts, dict):
+        unknown_reason_counts = {}
+    for raw_reason, raw_count in (field_diag.get("unknown_reason_counts") or {}).items():
+        reason = str(raw_reason or "").strip()
+        if not reason:
+            continue
+        try:
+            count = max(0, int(raw_count))
+        except Exception:
+            count = 0
+        unknown_reason_counts[reason] = max(int(unknown_reason_counts.get(reason, 0) or 0), count)
+    out["unknown_reason_counts"] = unknown_reason_counts
+    unknown_fields_by_reason = out.get("unknown_fields_by_reason") or {}
+    if not isinstance(unknown_fields_by_reason, dict):
+        unknown_fields_by_reason = {}
+    for raw_reason, fields in (field_diag.get("unknown_fields_by_reason") or {}).items():
+        reason = str(raw_reason or "").strip()
+        if not reason:
+            continue
+        existing = list(unknown_fields_by_reason.get(reason) or [])
+        for field_name in list(fields or []):
+            token = str(field_name or "").strip()
+            if not token:
+                continue
+            if token not in existing:
+                existing.append(token)
+        unknown_fields_by_reason[reason] = existing[:64]
+    out["unknown_fields_by_reason"] = unknown_fields_by_reason
     return out
 
 
@@ -5226,6 +6815,8 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
         "search_calls",
         "query_dedupe_hits",
         "url_dedupe_hits",
+        "round_url_dedupe_hits",
+        "last_round_url_dedupe_hits",
         "new_sources",
         "new_required_fields",
         "low_novelty_streak",
@@ -5372,6 +6963,59 @@ def _found_field_keys(field_status: Any) -> set:
     return out
 
 
+def _missing_required_field_details(
+    *,
+    expected_schema: Any,
+    field_status: Any,
+    max_items: int = 64,
+) -> List[Dict[str, Any]]:
+    normalized = _normalize_field_status_map(field_status, expected_schema)
+    required_keys = _required_field_keys(expected_schema, normalized)
+    schema_leaf_set = set()
+    if expected_schema is not None:
+        schema_leaf_set = {path for path, _ in _schema_leaf_paths(expected_schema)}
+
+    details: List[Dict[str, Any]] = []
+    for key in required_keys:
+        entry = normalized.get(key)
+        status = "missing"
+        value = None
+        attempts = 0
+        descriptor = None
+        if isinstance(entry, dict):
+            status = str(entry.get("status") or "missing").strip().lower()
+            value = entry.get("value")
+            try:
+                attempts = max(0, int(entry.get("attempts", 0) or 0))
+            except Exception:
+                attempts = 0
+            descriptor = entry.get("descriptor")
+
+        is_resolved = bool(
+            status == _FIELD_STATUS_FOUND
+            and not _is_empty_like(value)
+            and not _is_unknown_marker(value)
+        )
+        if is_resolved:
+            continue
+
+        requires_source = bool(f"{key}_source" in schema_leaf_set and not key.endswith("_source"))
+        details.append(
+            {
+                "field": str(key),
+                "status": status,
+                "attempts": int(attempts),
+                "unknown_reason": _field_unknown_reason(entry),
+                "evidence": str((entry or {}).get("evidence") or "").strip() if isinstance(entry, dict) else "",
+                "requires_source": bool(requires_source),
+                "descriptor": str(descriptor or "") if descriptor is not None else "",
+            }
+        )
+        if len(details) >= max(1, int(max_items)):
+            break
+    return details
+
+
 def _round_tool_urls(tool_messages: Any) -> List[str]:
     urls: List[str] = []
     for payload_item in _tool_message_payloads(tool_messages):
@@ -5430,8 +7074,22 @@ def _build_retrieval_metrics(
     seen_urls = list(out.get("seen_urls") or [])
     seen_url_set = set(seen_urls)
     url_dedupe_hits = int(out.get("url_dedupe_hits", 0))
-    round_urls = _round_tool_urls(tool_messages)
-    for url in round_urls:
+    round_url_dedupe_hits = int(out.get("round_url_dedupe_hits", 0))
+    last_round_url_dedupe_hits = 0
+    round_urls_raw: List[str] = []
+    for payload_item in _tool_message_payloads(tool_messages):
+        for raw_url in payload_item.get("urls") or []:
+            normalized = _normalize_url_match(raw_url)
+            if not normalized:
+                continue
+            round_urls_raw.append(normalized)
+    round_seen_urls = set()
+    for url in round_urls_raw:
+        if url in round_seen_urls:
+            round_url_dedupe_hits += 1
+            last_round_url_dedupe_hits += 1
+            continue
+        round_seen_urls.add(url)
         if dedupe_urls and url in seen_url_set:
             url_dedupe_hits += 1
             continue
@@ -5439,6 +7097,8 @@ def _build_retrieval_metrics(
             seen_url_set.add(url)
             seen_urls.append(url)
     out["url_dedupe_hits"] = url_dedupe_hits
+    out["round_url_dedupe_hits"] = round_url_dedupe_hits
+    out["last_round_url_dedupe_hits"] = int(last_round_url_dedupe_hits)
     out["seen_urls"] = seen_urls[-512:]
 
     before_sources = _ledger_source_urls(prior_evidence_ledger)
@@ -5520,7 +7180,8 @@ def _candidate_resolution_from_ledger(
     enabled = bool(resolver.get("enabled", True))
     top_k = max(1, int(resolver.get("top_k", 5) or 5))
     source_tier_provider = options.get("source_tier_provider")
-    entity_tokens = _task_name_tokens_from_messages(state.get("messages") or [])
+    target_anchor = _task_target_anchor_from_messages(state.get("messages") or [])
+    anchor_tokens = _target_anchor_tokens(target_anchor, max_tokens=16)
     required_fields = [
         key for key in _required_field_keys(_state_expected_schema(state), field_status)
         if not str(key).endswith("_source")
@@ -5552,7 +7213,10 @@ def _candidate_resolution_from_ledger(
             row["fields"].add(str(field_name))
             row["score_sum"] += float(candidate.get("score", 0.0) or 0.0)
             row["score_count"] += 1
-            row["entity_match"] = max(row["entity_match"], _clamp01(candidate.get("entity_overlap"), default=0.0))
+            row["entity_match"] = max(
+                row["entity_match"],
+                _clamp01(candidate.get("anchor_overlap", candidate.get("entity_overlap")), default=0.0),
+            )
             row["source_tier"] = _get_source_tier(
                 source_url,
                 source_metadata=candidate,
@@ -5595,7 +7259,7 @@ def _candidate_resolution_from_ledger(
     if isinstance(top, dict) and isinstance(second, dict):
         margin = float(top.get("score", 0.0)) - float(second.get("score", 0.0))
     id_match_score = float(top.get("entity_match", 0.0)) if isinstance(top, dict) else 0.0
-    if not entity_tokens and top is not None:
+    if not anchor_tokens and not list(target_anchor.get("id_signals") or []) and top is not None:
         id_match_score = 1.0
 
     unresolved_reason = None
@@ -5832,6 +7496,20 @@ def _coerce_found_value_for_descriptor(value: Any, descriptor: Any) -> Any:
                     return int(text)
                 except Exception:
                     return value
+            date_match = re.search(r"\b(1[6-9]\d{2}|20\d{2}|2100)\s*[-/]\s*\d{1,2}\s*[-/]\s*\d{1,2}\b", text)
+            if date_match:
+                year_match = re.search(r"(1[6-9]\d{2}|20\d{2}|2100)", str(date_match.group(0)))
+                if year_match:
+                    try:
+                        return int(year_match.group(1))
+                    except Exception:
+                        return value
+            year_only = re.search(r"\b(1[6-9]\d{2}|20\d{2}|2100)\b", text)
+            if year_only and len(re.findall(r"\d", text)) <= 8:
+                try:
+                    return int(year_only.group(1))
+                except Exception:
+                    return value
 
     # Enum coercion for pipe-separated descriptors
     options = [o.strip() for o in descriptor.split("|")]
@@ -5858,6 +7536,8 @@ def _coerce_found_value_for_descriptor(value: Any, descriptor: Any) -> Any:
         # No good match — fall back to "Unknown" if available
         if "Unknown" in options_concrete:
             return "Unknown"
+    if isinstance(value, str):
+        return re.sub(r"\s+", " ", value.strip())
     return value
 
 
@@ -5925,14 +7605,15 @@ def _normalize_confidence_label(value: Any) -> Optional[str]:
 
 
 def _derive_justification_from_field_status(normalized_field_status: Dict[str, Dict[str, Any]]) -> str:
-    found_fields = []
-    unknown_fields = []
-    for key, entry in (normalized_field_status or {}).items():
+    found_fields: List[str] = []
+    unknown_fields: List[str] = []
+    for key in _collect_resolvable_field_keys(normalized_field_status):
+        entry = (normalized_field_status or {}).get(key)
         if not isinstance(entry, dict):
             continue
         status = str(entry.get("status") or "").lower()
         value = entry.get("value")
-        if status == _FIELD_STATUS_FOUND and not _is_empty_like(value):
+        if status == _FIELD_STATUS_FOUND and not _is_empty_like(value) and not _is_unknown_marker(value):
             found_fields.append(str(key))
         elif status in {_FIELD_STATUS_UNKNOWN, _FIELD_STATUS_PENDING}:
             unknown_fields.append(str(key))
@@ -5940,10 +7621,57 @@ def _derive_justification_from_field_status(normalized_field_status: Dict[str, D
     if found_fields:
         sample = ", ".join(found_fields[:3])
         return (
-            f"Source-backed searches resolved {len(found_fields)} fields (including {sample}), "
-            f"while {len(unknown_fields)} fields remain unknown due to limited verifiable evidence."
+            f"Source-backed searches resolved {len(found_fields)} core fields (including {sample}), "
+            f"while {len(unknown_fields)} core fields remain unknown due to limited verifiable evidence."
         )
-    return "Searches did not find reliable, source-backed evidence for the required fields."
+    return "Searches did not find reliable, source-backed evidence for the required core fields."
+
+
+def _justification_counts_from_text(text: Any) -> Dict[str, Optional[int]]:
+    raw = str(text or "").strip()
+    if not raw:
+        return {"resolved": None, "unknown": None}
+    resolved = None
+    unknown = None
+    resolved_match = re.search(r"resolved\s+(\d+)\s+(?:core\s+)?fields?", raw, flags=re.IGNORECASE)
+    if resolved_match:
+        try:
+            resolved = int(resolved_match.group(1))
+        except Exception:
+            resolved = None
+    unknown_match = re.search(
+        r"(\d+)\s+(?:core\s+)?fields?\s+remain\s+unknown",
+        raw,
+        flags=re.IGNORECASE,
+    )
+    if unknown_match:
+        try:
+            unknown = int(unknown_match.group(1))
+        except Exception:
+            unknown = None
+    return {"resolved": resolved, "unknown": unknown}
+
+
+def _justification_counts_match_field_status(
+    text: Any,
+    normalized_field_status: Dict[str, Dict[str, Any]],
+) -> bool:
+    counts = _justification_counts_from_text(text)
+    if counts.get("resolved") is None or counts.get("unknown") is None:
+        return True
+    found = 0
+    unknown = 0
+    for key in _collect_resolvable_field_keys(normalized_field_status):
+        entry = (normalized_field_status or {}).get(key)
+        if not isinstance(entry, dict):
+            continue
+        status = str(entry.get("status") or "").lower()
+        value = entry.get("value")
+        if status == _FIELD_STATUS_FOUND and not _is_empty_like(value) and not _is_unknown_marker(value):
+            found += 1
+        elif status in {_FIELD_STATUS_UNKNOWN, _FIELD_STATUS_PENDING}:
+            unknown += 1
+    return int(counts.get("resolved")) == int(found) and int(counts.get("unknown")) == int(unknown)
 
 
 def _apply_canonical_payload_derivations(
@@ -5963,7 +7691,11 @@ def _apply_canonical_payload_derivations(
 
     if "justification" in payload:
         justification = payload.get("justification")
-        if _is_empty_like(justification) or _is_unknown_marker(justification):
+        if (
+            _is_empty_like(justification)
+            or _is_unknown_marker(justification)
+            or not _justification_counts_match_field_status(justification, normalized_field_status)
+        ):
             payload["justification"] = _derive_justification_from_field_status(normalized_field_status)
 
     return payload
@@ -6193,7 +7925,7 @@ def _apply_field_status_terminal_guard(
         try:
             raw_json = json.loads(raw_text)
             patched = _apply_canonical_payload_derivations(raw_json, normalized_fs)
-            patched_text = json.dumps(_json_safe_value(patched), ensure_ascii=False)
+            patched_text = _canonical_json_text(patched)
             if patched_text != raw_text:
                 if isinstance(response, dict):
                     response["content"] = patched_text
@@ -6223,7 +7955,7 @@ def _apply_field_status_terminal_guard(
             )
 
     try:
-        canonical_text = json.dumps(_json_safe_value(merged_payload), ensure_ascii=False)
+        canonical_text = _canonical_json_text(merged_payload)
     except Exception:
         return response, None
 
@@ -7144,11 +8876,21 @@ def _terminal_payload_from_message(msg: Any, expected_schema: Any = None) -> Opt
     return parsed
 
 
+def _canonical_json_text(value: Any, *, sort_keys: bool = False) -> str:
+    """Serialize JSON deterministically for payload parity and hashing."""
+    return json.dumps(
+        _json_safe_value(value),
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=bool(sort_keys),
+    )
+
+
 def _terminal_payload_hash(payload: Any, *, mode: str = "hash") -> Optional[str]:
     if not isinstance(payload, (dict, list)) or not _is_nonempty_payload(payload):
         return None
     try:
-        canonical = json.dumps(_json_safe_value(payload), ensure_ascii=False, sort_keys=True)
+        canonical = _canonical_json_text(payload, sort_keys=True)
     except Exception:
         canonical = str(payload)
     normalized_mode = str(mode or "hash").strip().lower()
@@ -7447,6 +9189,53 @@ def _extract_last_user_prompt(messages: list) -> str:
     return ""
 
 
+def _normalize_missing_key_paths(missing: Any, *, max_items: int = 50) -> List[str]:
+    """Normalize missing-key output into a stable list of path tokens."""
+    raw_items: List[Any]
+    if isinstance(missing, (list, tuple, set)):
+        raw_items = list(missing)
+    elif isinstance(missing, str):
+        raw_items = [missing]
+    elif missing is None:
+        raw_items = []
+    else:
+        raw_items = [missing]
+
+    out: List[str] = []
+    seen = set()
+    for raw in raw_items:
+        token = str(raw or "").strip()
+        if not token:
+            continue
+        # Some schema validators use "$" as root path sentinel.
+        if token == "$":
+            token = "$"
+        if token in seen:
+            continue
+        seen.add(token)
+        out.append(token)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _repair_event_is_structural(event: Any) -> bool:
+    if not isinstance(event, dict):
+        return False
+    severity = str(event.get("repair_severity") or "").strip().lower()
+    if severity == "structural":
+        return True
+    reason = str(event.get("repair_reason") or "").strip().lower()
+    return reason in {"missing_keys", "type_mismatch"}
+
+
+def _repair_events_require_structural_retry(events: Any) -> bool:
+    for event in list(events or []):
+        if _repair_event_is_structural(event):
+            return True
+    return False
+
+
 def _repair_best_effort_json(
     expected_schema: Any,
     response: Any,
@@ -7471,7 +9260,10 @@ def _repair_best_effort_json(
             return response, None
 
         parsed = parse_llm_json(text)
-        missing = list_missing_required_keys(parsed, expected_schema, max_items=50)
+        missing = _normalize_missing_key_paths(
+            list_missing_required_keys(parsed, expected_schema, max_items=50),
+            max_items=50,
+        )
 
         type_mismatch = (
             (isinstance(expected_schema, dict) and not isinstance(parsed, dict))
@@ -7504,12 +9296,14 @@ def _repair_best_effort_json(
 
         repair_applied = bool(missing) or (type_mismatch and fallback_on_failure)
         reason = "missing_keys" if missing else ("type_mismatch" if type_mismatch else "ok")
+        severity = "structural" if reason in {"missing_keys", "type_mismatch"} else "none"
 
         event = None
         if repair_applied:
             event = {
                 "repair_applied": True,
                 "repair_reason": reason,
+                "repair_severity": severity,
                 "missing_keys_count": len(missing),
                 "missing_keys_sample": missing[:20],
                 "fallback_on_failure": bool(fallback_on_failure),
@@ -8080,12 +9874,138 @@ def _state_field_status(state: Any) -> Dict[str, Dict[str, Any]]:
     )
 
 
+def _core_field_resolution_counts(field_status: Any) -> Dict[str, Any]:
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    keys = _collect_resolvable_field_keys(normalized)
+    found_keys: List[str] = []
+    unknown_keys: List[str] = []
+    for key in keys:
+        entry = normalized.get(key)
+        if not isinstance(entry, dict):
+            continue
+        status = str(entry.get("status") or "").strip().lower()
+        value = entry.get("value")
+        if status == _FIELD_STATUS_FOUND and not _is_empty_like(value) and not _is_unknown_marker(value):
+            found_keys.append(str(key))
+            continue
+        if status in {_FIELD_STATUS_UNKNOWN, _FIELD_STATUS_PENDING}:
+            unknown_keys.append(str(key))
+    return {
+        "total": int(len(keys)),
+        "found": int(len(found_keys)),
+        "unknown": int(len(unknown_keys)),
+        "found_keys": found_keys[:64],
+        "unknown_keys": unknown_keys[:64],
+    }
+
+
+def _terminal_payload_for_invariants(state: Any, expected_schema: Any = None) -> Any:
+    if expected_schema is None:
+        expected_schema = _state_expected_schema(state)
+    messages = list(state.get("messages") or [])
+    if not messages:
+        return None
+    return _terminal_payload_from_message(messages[-1], expected_schema=expected_schema)
+
+
+def _finalization_invariant_report(
+    state: Any,
+    *,
+    expected_schema: Any = None,
+    field_status: Any = None,
+    diagnostics: Any = None,
+    terminal_payload: Any = None,
+) -> Dict[str, Any]:
+    if expected_schema is None:
+        expected_schema = _state_expected_schema(state)
+    if field_status is None:
+        field_status = _normalize_field_status_map(state.get("field_status"), expected_schema)
+    raw_diagnostics = diagnostics
+    if diagnostics is None:
+        diagnostics = _normalize_diagnostics(state.get("diagnostics"))
+        raw_diagnostics = state.get("diagnostics")
+    else:
+        diagnostics = _normalize_diagnostics(diagnostics)
+    if terminal_payload is None:
+        terminal_payload = _terminal_payload_for_invariants(state, expected_schema=expected_schema)
+
+    core_counts = _core_field_resolution_counts(field_status)
+    issues: List[Dict[str, Any]] = []
+    reasons: List[str] = []
+
+    diag_unknown_count = int(diagnostics.get("unknown_fields_count_current", 0) or 0)
+    diag_unknown_fields = [
+        str(v) for v in list(diagnostics.get("unknown_fields_current") or []) if str(v).strip()
+    ]
+    status_unknown_count = int(core_counts.get("unknown", 0) or 0)
+    status_unknown_fields = [str(v) for v in list(core_counts.get("unknown_keys") or []) if str(v).strip()]
+    diagnostics_has_current_snapshot = bool(
+        isinstance(raw_diagnostics, dict)
+        and (
+            "unknown_fields_count_current" in raw_diagnostics
+            or "unknown_fields_current" in raw_diagnostics
+        )
+    )
+    if diagnostics_has_current_snapshot and diag_unknown_count != status_unknown_count:
+        reasons.append("diagnostics_unknown_count_mismatch")
+        issues.append({
+            "code": "diagnostics_unknown_count_mismatch",
+            "diagnostics_unknown_fields_count_current": int(diag_unknown_count),
+            "field_status_core_unknown_fields": int(status_unknown_count),
+        })
+    diag_unknown_set = set(diag_unknown_fields)
+    status_unknown_set = set(status_unknown_fields)
+    if (
+        diagnostics_has_current_snapshot
+        and diag_unknown_set
+        and status_unknown_set
+        and diag_unknown_set != status_unknown_set
+    ):
+        reasons.append("diagnostics_unknown_fields_mismatch")
+        issues.append({
+            "code": "diagnostics_unknown_fields_mismatch",
+            "diagnostics_unknown_fields_current_sample": sorted(list(diag_unknown_set))[:16],
+            "field_status_core_unknown_fields_sample": sorted(list(status_unknown_set))[:16],
+        })
+
+    if isinstance(terminal_payload, dict) and "justification" in terminal_payload:
+        justification = terminal_payload.get("justification")
+        parsed_counts = _justification_counts_from_text(justification)
+        resolved_in_text = parsed_counts.get("resolved")
+        unknown_in_text = parsed_counts.get("unknown")
+        if resolved_in_text is not None and unknown_in_text is not None:
+            if int(resolved_in_text) != int(core_counts.get("found", 0) or 0) or int(unknown_in_text) != int(status_unknown_count):
+                reasons.append("terminal_justification_count_mismatch")
+                issues.append({
+                    "code": "terminal_justification_count_mismatch",
+                    "justification_resolved": int(resolved_in_text),
+                    "justification_unknown": int(unknown_in_text),
+                    "field_status_core_found": int(core_counts.get("found", 0) or 0),
+                    "field_status_core_unknown": int(status_unknown_count),
+                })
+
+    return {
+        "ok": not bool(reasons),
+        "failed": bool(reasons),
+        "reasons": reasons[:16],
+        "issues": issues[:16],
+        "core_total_fields": int(core_counts.get("total", 0) or 0),
+        "core_found_fields": int(core_counts.get("found", 0) or 0),
+        "core_unknown_fields": int(core_counts.get("unknown", 0) or 0),
+        "diagnostics_unknown_fields_count_current": int(diag_unknown_count),
+        "diagnostics_unknown_fields_current_sample": diag_unknown_fields[:16],
+        "field_status_core_unknown_fields_sample": status_unknown_fields[:16],
+        "diagnostics_current_snapshot_present": bool(diagnostics_has_current_snapshot),
+    }
+
+
 def _schema_outcome_gate_report(
     state: Any,
     *,
     expected_schema: Any = None,
     field_status: Any = None,
     budget_state: Any = None,
+    diagnostics: Any = None,
 ) -> Dict[str, Any]:
     if expected_schema is None:
         expected_schema = _state_expected_schema(state)
@@ -8106,10 +10026,110 @@ def _schema_outcome_gate_report(
     )
     if not isinstance(report, dict):
         report = {}
+    finalization_policy = _state_finalization_policy(state)
+    missing_details = _missing_required_field_details(
+        expected_schema=expected_schema,
+        field_status=field_status,
+        max_items=64,
+    )
+    resolvable_keys = _collect_resolvable_field_keys(field_status)
+    resolvable_unknown = _collect_resolvable_unknown_fields(field_status)
+    unknown_ratio = 0.0
+    if resolvable_keys:
+        unknown_ratio = float(len(resolvable_unknown)) / float(len(resolvable_keys))
+    invariant = _finalization_invariant_report(
+        state,
+        expected_schema=expected_schema,
+        field_status=field_status,
+        diagnostics=diagnostics if diagnostics is not None else state.get("diagnostics"),
+        terminal_payload=_terminal_payload_for_invariants(state, expected_schema=expected_schema),
+    )
+    invariant_failed = bool(invariant.get("failed", False))
+    budget_exhausted = bool((budget_state or {}).get("budget_exhausted", False))
+    if invariant_failed and not budget_exhausted:
+        report["done"] = False
+        report["completion_status"] = "in_progress"
+        report["reason"] = "finalization_invariant_failed"
+    quality_gate_failed = False
+    quality_gate_reason = None
+    if (
+        bool(finalization_policy.get("quality_gate_enforce", True))
+        and len(resolvable_keys) >= int(finalization_policy.get("quality_gate_min_resolvable_fields", 3) or 3)
+        and float(unknown_ratio) > float(finalization_policy.get("quality_gate_unknown_ratio_max", 0.75) or 0.75)
+        and not budget_exhausted
+    ):
+        quality_gate_failed = True
+        quality_gate_reason = "unknown_ratio_exceeds_limit"
+        report["done"] = False
+        report["completion_status"] = "in_progress"
+        report["reason"] = "quality_gate_failed"
+
+    invoke_error_present = False
+    for event in list(state.get("json_repair") or []):
+        if not isinstance(event, dict):
+            continue
+        if str(event.get("repair_reason") or "").strip() == "invoke_exception_fallback":
+            invoke_error_present = True
+            break
+    artifact_markers = ["completion_gate", "field_status"]
+    if bool(state.get("use_plan_mode", False)):
+        artifact_markers.append("plan_enabled")
+        artifact_markers.append("plan_present" if state.get("plan") is not None else "plan_missing")
+    else:
+        artifact_markers.append("plan_mode_disabled")
+    artifact_markers.append("invoke_error_present" if invoke_error_present else "invoke_error_absent")
+
     report["finalize_on_all_fields_resolved"] = bool(
         state.get("finalize_on_all_fields_resolved", False)
     )
+    report["missing_required_field_count"] = int(len(missing_details))
+    report["missing_required_field_details"] = missing_details
+    report["resolvable_fields_count"] = int(len(resolvable_keys))
+    report["resolvable_unknown_fields_count"] = int(len(resolvable_unknown))
+    report["unknown_field_ratio"] = round(float(unknown_ratio), 4)
+    report["quality_gate_failed"] = bool(quality_gate_failed)
+    report["quality_gate_reason"] = quality_gate_reason
+    report["finalization_invariant_failed"] = bool(invariant_failed)
+    report["finalization_invariant_reasons"] = list(invariant.get("reasons") or [])[:16]
+    report["finalization_invariant_ok"] = bool(invariant.get("ok", True))
+    report["finalization_invariant"] = invariant
+    report["quality_gate_unknown_ratio_max"] = float(
+        finalization_policy.get("quality_gate_unknown_ratio_max", 0.75) or 0.75
+    )
+    report["quality_gate_min_resolvable_fields"] = int(
+        finalization_policy.get("quality_gate_min_resolvable_fields", 3) or 3
+    )
+    report["artifact_markers"] = artifact_markers
     return report
+
+
+def _quality_gate_finalize_block(
+    state: Any,
+    *,
+    expected_schema: Any = None,
+    field_status: Any = None,
+    budget_state: Any = None,
+) -> Dict[str, Any]:
+    """Return whether quality-gate policy should block early finalization."""
+    if budget_state is None:
+        budget_state = _state_budget(state)
+    report = _schema_outcome_gate_report(
+        state,
+        expected_schema=expected_schema,
+        field_status=field_status,
+        budget_state=budget_state,
+    )
+    quality_gate_failed = bool(report.get("quality_gate_failed", False))
+    invariant_failed = bool(report.get("finalization_invariant_failed", False))
+    budget_exhausted = bool((budget_state or {}).get("budget_exhausted", False))
+    reason = str(report.get("quality_gate_reason") or "").strip() or None
+    if not reason and invariant_failed:
+        reason = "finalization_invariant_failed"
+    return {
+        "blocked": bool((quality_gate_failed or invariant_failed) and not budget_exhausted),
+        "reason": reason,
+        "report": report,
+    }
 
 
 def _finalization_cutoff(state: Any) -> int:
@@ -8230,7 +10250,8 @@ def _build_observation_buffer(state: Any, *, max_items: int = 60) -> Dict[str, A
 
 def _budget_or_resolution_finalize(state: Any) -> bool:
     budget = _state_budget(state)
-    progress = _field_status_progress(_state_field_status(state))
+    field_status = _state_field_status(state)
+    progress = _field_status_progress(field_status)
     has_field_targets = int(progress.get("total_fields", 0)) > 0
     finalize_on_resolution = bool(state.get("finalize_on_all_fields_resolved", False))
     finalize_on_exhausted = bool(_state_finalize_when_all_unresolved_exhausted(state))
@@ -8238,6 +10259,13 @@ def _budget_or_resolution_finalize(state: Any) -> bool:
         finalize_on_exhausted
         and _state_all_resolvable_fields_attempt_exhausted(state)
     )
+    gate_block = _quality_gate_finalize_block(
+        state,
+        field_status=field_status,
+        budget_state=budget,
+    )
+    if bool(gate_block.get("blocked", False)):
+        return False
     explicit_budget = (
         state.get("search_budget_limit") is not None
         or state.get("model_budget_limit") is not None
@@ -8258,10 +10286,18 @@ def _budget_or_resolution_finalize(state: Any) -> bool:
 
 def _finalize_reason_for_state(state: Any) -> Optional[str]:
     budget = _state_budget(state)
-    progress = _field_status_progress(_state_field_status(state))
+    field_status = _state_field_status(state)
+    progress = _field_status_progress(field_status)
     has_field_targets = int(progress.get("total_fields", 0)) > 0
     finalize_on_resolution = bool(state.get("finalize_on_all_fields_resolved", False))
     finalize_on_exhausted = bool(_state_finalize_when_all_unresolved_exhausted(state))
+    gate_block = _quality_gate_finalize_block(
+        state,
+        field_status=field_status,
+        budget_state=budget,
+    )
+    if bool(gate_block.get("blocked", False)):
+        return None
     explicit_budget = (
         state.get("search_budget_limit") is not None
         or state.get("model_budget_limit") is not None
@@ -8327,9 +10363,31 @@ def _should_finalize_after_terminal(state: Any) -> bool:
     if _has_pending_tool_calls(last_message):
         return True
     policy = _state_finalization_policy(state)
+    expected_schema = _state_expected_schema(state)
+    field_status = _state_field_status(state)
+    budget_state = _state_budget(state)
     if not bool(policy.get("skip_finalize_if_terminal_valid", True)):
         return True
-    expected_schema = _state_expected_schema(state)
+    gate_block = _quality_gate_finalize_block(
+        state,
+        field_status=field_status,
+        budget_state=budget_state,
+    )
+    if bool(gate_block.get("blocked", False)):
+        # Keep searching/nudging when evidence quality is below threshold and
+        # budget remains.
+        return True
+    invariant = _finalization_invariant_report(
+        state,
+        expected_schema=expected_schema,
+        field_status=field_status,
+        diagnostics=state.get("diagnostics"),
+        terminal_payload=_terminal_payload_for_invariants(state, expected_schema=expected_schema),
+    )
+    if bool(invariant.get("failed", False)) and not bool(budget_state.get("budget_exhausted", False)):
+        # Invariant drift means canonical ledger/telemetry/terminal response are
+        # out of sync; keep the run active for another retrieval/nudge turn.
+        return True
     terminal_payload = _terminal_payload_from_message(last_message, expected_schema=expected_schema)
     if terminal_payload is None:
         return True
@@ -8337,7 +10395,7 @@ def _should_finalize_after_terminal(state: Any) -> bool:
         return False
     canonical_payload = _canonical_payload_from_field_status(
         expected_schema,
-        _state_field_status(state),
+        field_status,
         finalization_policy=policy,
     )
     if not isinstance(canonical_payload, (dict, list)) or not _is_nonempty_payload(canonical_payload):
@@ -8614,6 +10672,94 @@ def _should_auto_openwebpage_followup(
     return False
 
 
+def _deterministic_schema_payload_from_source_text(
+    *,
+    expected_schema: Any,
+    field_status: Any,
+    source_url: Any,
+    source_text: Any,
+    allowed_keys: Any = None,
+    entity_tokens: Any = None,
+    target_anchor: Any = None,
+    finalization_policy: Any = None,
+) -> Dict[str, Any]:
+    """Recover sparse schema payload deterministically from one source text."""
+    if expected_schema is None:
+        return {}
+    normalized_source = _normalize_url_match(source_url)
+    if not normalized_source:
+        return {}
+    text = str(source_text or "").strip()
+    if not text:
+        return {}
+
+    allowed_set = set()
+    for raw_key in list(allowed_keys or []):
+        key = str(raw_key or "").strip()
+        if key:
+            allowed_set.add(key)
+
+    before = _normalize_field_status_map(field_status, expected_schema)
+    if not before:
+        return {}
+
+    recovered = _recover_unknown_fields_from_tool_evidence(
+        field_status=before,
+        expected_schema=expected_schema,
+        finalization_policy=_normalize_finalization_policy(finalization_policy),
+        allowed_source_urls=[normalized_source],
+        source_text_index={normalized_source: text},
+        entity_name_tokens=list(entity_tokens or []),
+        target_anchor=target_anchor,
+    )
+    if not recovered:
+        return {}
+
+    payload: Dict[str, Any] = {}
+    for key, after_entry in (recovered or {}).items():
+        key_str = str(key or "").strip()
+        if not key_str:
+            continue
+        if allowed_set and key_str not in allowed_set:
+            continue
+        if not isinstance(after_entry, dict):
+            continue
+        after_status = str(after_entry.get("status") or "").strip().lower()
+        after_value = after_entry.get("value")
+        after_source = _normalize_url_match(after_entry.get("source_url"))
+        if after_status != _FIELD_STATUS_FOUND:
+            continue
+        if _is_empty_like(after_value) or _is_unknown_marker(after_value):
+            continue
+
+        before_entry = before.get(key_str) if isinstance(before, dict) else None
+        before_status = str((before_entry or {}).get("status") or "").strip().lower()
+        before_value_key = _candidate_value_key((before_entry or {}).get("value")) if isinstance(before_entry, dict) else None
+        after_value_key = _candidate_value_key(after_value)
+        before_source = _normalize_url_match((before_entry or {}).get("source_url")) if isinstance(before_entry, dict) else None
+
+        value_changed = (
+            before_status != _FIELD_STATUS_FOUND
+            or before_value_key != after_value_key
+            or before_source != after_source
+        )
+        if not value_changed:
+            continue
+
+        if key_str.endswith("_source"):
+            source_value = _normalize_url_match(after_value) or after_source
+            if source_value:
+                payload[key_str] = source_value
+            continue
+
+        payload[key_str] = after_value
+        source_key = f"{key_str}_source"
+        if (not allowed_set or source_key in allowed_set) and after_source:
+            payload[source_key] = after_source
+
+    return payload
+
+
 def _llm_extract_schema_payloads_from_openwebpages(
     *,
     selector_model: Any,
@@ -8621,6 +10767,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
     field_status: Any,
     tool_messages: Any,
     entity_tokens: Optional[List[str]] = None,
+    target_anchor: Any = None,
     extracted_urls: Optional[set] = None,
     max_pages: int = 1,
     max_chars: int = 9000,
@@ -8649,6 +10796,9 @@ def _llm_extract_schema_payloads_from_openwebpages(
         "langextract_errors": 0,
         "langextract_provider": "",
         "langextract_last_error": "",
+        "deterministic_fallback_calls": 0,
+        "deterministic_fallback_payloads": 0,
+        "deterministic_fallback_no_payload": 0,
         "openwebpage_candidates_total": 0,
         "openwebpage_candidates_selected": 0,
         "openwebpage_skipped_hard_failures": 0,
@@ -8658,6 +10808,9 @@ def _llm_extract_schema_payloads_from_openwebpages(
 
     if selector_model is None or expected_schema is None:
         return [], [], metadata
+
+    target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_tokens)
+    anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
 
     unresolved_fields = _collect_resolvable_unknown_fields(field_status)
     if not unresolved_fields:
@@ -8721,7 +10874,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
             continue
         cleaned_text = _prepare_openwebpage_text_for_extraction(
             text,
-            entity_tokens=entity_tokens,
+            entity_tokens=anchor_tokens,
             max_chars=max(512, int(max_chars)),
         )
         if not cleaned_text:
@@ -8734,12 +10887,13 @@ def _llm_extract_schema_payloads_from_openwebpages(
             continue
         score = float(_score_primary_source_url(page_url))
         ratio = 0.0
-        if entity_tokens:
-            _, ratio = _entity_overlap_for_candidate(
-                entity_tokens,
+        if _target_anchor_present(target_anchor_state):
+            overlap = _anchor_overlap_for_candidate(
+                target_anchor=target_anchor_state,
                 candidate_url=page_url,
                 candidate_text=cleaned_text,
             )
+            ratio = float(overlap.get("score", 0.0) or 0.0)
         candidates.append(
             {
                 "url": page_url,
@@ -8795,6 +10949,31 @@ def _llm_extract_schema_payloads_from_openwebpages(
                 "urls": [page_url],
             })
             extracted.append(page_url)
+
+        def _emit_deterministic_fallback() -> bool:
+            metadata["deterministic_fallback_calls"] = int(
+                metadata.get("deterministic_fallback_calls", 0) or 0
+            ) + 1
+            extracted_payload = _deterministic_schema_payload_from_source_text(
+                expected_schema=expected_schema,
+                field_status=field_status,
+                source_url=page_url,
+                source_text=clipped_text,
+                allowed_keys=sorted(allowed_keys),
+                entity_tokens=entity_tokens,
+                target_anchor=target_anchor_state,
+                finalization_policy=None,
+            )
+            if isinstance(extracted_payload, dict) and extracted_payload:
+                metadata["deterministic_fallback_payloads"] = int(
+                    metadata.get("deterministic_fallback_payloads", 0) or 0
+                ) + 1
+                _emit_payload(extracted_payload)
+                return True
+            metadata["deterministic_fallback_no_payload"] = int(
+                metadata.get("deterministic_fallback_no_payload", 0) or 0
+            ) + 1
+            return False
 
         if engine == "langextract":
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
@@ -8860,10 +11039,12 @@ def _llm_extract_schema_payloads_from_openwebpages(
             timeout_s=timeout_s,
         )
         if response is None:
+            _emit_deterministic_fallback()
             continue
         response_text = _message_content_to_text(getattr(response, "content", ""))
         parsed = parse_llm_json(response_text)
         if not isinstance(parsed, dict) or not parsed:
+            _emit_deterministic_fallback()
             continue
 
         extracted_payload: Dict[str, Any] = {}
@@ -8883,6 +11064,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
             extracted_payload[key] = raw_value
 
         if not extracted_payload:
+            _emit_deterministic_fallback()
             continue
 
         # Fill in sibling *_source keys deterministically when allowed.
@@ -8905,6 +11087,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
     field_status: Any,
     tool_messages: Any,
     entity_tokens: Optional[List[str]] = None,
+    target_anchor: Any = None,
     extracted_urls: Optional[set] = None,
     max_sources: int = 2,
     max_chars: int = 2000,
@@ -8934,6 +11117,9 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "langextract_errors": 0,
         "langextract_provider": "",
         "langextract_last_error": "",
+        "deterministic_fallback_calls": 0,
+        "deterministic_fallback_payloads": 0,
+        "deterministic_fallback_no_payload": 0,
         "snippet_candidates_total": 0,
         "snippet_candidates_selected": 0,
         "snippet_skipped_duplicate_urls": 0,
@@ -8941,6 +11127,8 @@ def _llm_extract_schema_payloads_from_search_snippets(
 
     if selector_model is None or expected_schema is None:
         return [], [], metadata
+
+    target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_tokens)
 
     unresolved_fields = _collect_resolvable_unknown_fields(field_status)
     if not unresolved_fields:
@@ -9005,12 +11193,13 @@ def _llm_extract_schema_payloads_from_search_snippets(
 
             url_score = float(_score_primary_source_url(page_url))
             entity_ratio = 0.0
-            if entity_tokens:
-                _, entity_ratio = _entity_overlap_for_candidate(
-                    entity_tokens,
+            if _target_anchor_present(target_anchor_state):
+                overlap = _anchor_overlap_for_candidate(
+                    target_anchor=target_anchor_state,
                     candidate_url=page_url,
                     candidate_text=snippet_text,
                 )
+                entity_ratio = float(overlap.get("score", 0.0) or 0.0)
             existing = candidate_map.get(page_url)
             if existing:
                 merged = str(existing.get("text") or "")
@@ -9074,6 +11263,31 @@ def _llm_extract_schema_payloads_from_search_snippets(
             })
             extracted.append(page_url)
 
+        def _emit_deterministic_fallback() -> bool:
+            metadata["deterministic_fallback_calls"] = int(
+                metadata.get("deterministic_fallback_calls", 0) or 0
+            ) + 1
+            extracted_payload = _deterministic_schema_payload_from_source_text(
+                expected_schema=expected_schema,
+                field_status=field_status,
+                source_url=page_url,
+                source_text=clipped_text,
+                allowed_keys=sorted(allowed_keys),
+                entity_tokens=entity_tokens,
+                target_anchor=target_anchor_state,
+                finalization_policy=None,
+            )
+            if isinstance(extracted_payload, dict) and extracted_payload:
+                metadata["deterministic_fallback_payloads"] = int(
+                    metadata.get("deterministic_fallback_payloads", 0) or 0
+                ) + 1
+                _emit_payload(extracted_payload)
+                return True
+            metadata["deterministic_fallback_no_payload"] = int(
+                metadata.get("deterministic_fallback_no_payload", 0) or 0
+            ) + 1
+            return False
+
         if engine == "langextract":
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
             langextract_result = _langextract_extract_schema_from_openwebpage_text(
@@ -9130,10 +11344,12 @@ def _llm_extract_schema_payloads_from_search_snippets(
             timeout_s=timeout_s,
         )
         if response is None:
+            _emit_deterministic_fallback()
             continue
         response_text = _message_content_to_text(getattr(response, "content", ""))
         parsed = parse_llm_json(response_text)
         if not isinstance(parsed, dict) or not parsed:
+            _emit_deterministic_fallback()
             continue
 
         extracted_payload: Dict[str, Any] = {}
@@ -9153,6 +11369,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
             extracted_payload[key] = raw_value
 
         if not extracted_payload:
+            _emit_deterministic_fallback()
             continue
 
         for key, value in list(extracted_payload.items()):
@@ -9275,10 +11492,23 @@ def _create_tool_node_with_scratchpad(
         extra_payloads: List[Dict[str, Any]] = []
         webpage_extract_urls: List[str] = []
         webpage_extract_calls = 0
+        webpage_payload_count = 0
         webpage_extract_meta: Dict[str, Any] = {}
         snippet_extract_urls: List[str] = []
         snippet_extract_calls = 0
+        snippet_payload_count = 0
         snippet_extract_meta: Dict[str, Any] = {}
+        target_anchor = _task_target_anchor_from_messages(state.get("messages") or [])
+        diagnostics["anchor_strength_current"] = str(target_anchor.get("strength") or "none")
+        diagnostics["anchor_mode_current"] = _anchor_mode_for_policy(
+            target_anchor,
+            finalization_policy,
+        )
+        diagnostics["anchor_confidence_current"] = round(
+            float(_clamp01(target_anchor.get("confidence"), default=0.0)),
+            4,
+        )
+        diagnostics["anchor_reasons_current"] = list(target_anchor.get("provenance") or [])[:8]
         try:
             field_resolver_options = orchestration_options.get("field_resolver", {}) if isinstance(orchestration_options, dict) else {}
         except Exception:
@@ -9345,7 +11575,7 @@ def _create_tool_node_with_scratchpad(
                     expected_schema=expected_schema,
                     field_status=field_status,
                     tool_messages=tool_messages,
-                    entity_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
+                    target_anchor=target_anchor,
                     extracted_urls=already_extracted,
                     max_pages=min(int(max_per_round), int(remaining_total)),
                     max_chars=max_chars,
@@ -9360,6 +11590,7 @@ def _create_tool_node_with_scratchpad(
                     debug=debug,
                 )
                 webpage_extract_calls = int(len(webpage_extract_urls))
+                webpage_payload_count = int(len(extra_payloads or []))
 
         if (
             selector_model is not None
@@ -9433,7 +11664,7 @@ def _create_tool_node_with_scratchpad(
                     expected_schema=expected_schema,
                     field_status=field_status,
                     tool_messages=tool_messages,
-                    entity_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
+                    target_anchor=target_anchor,
                     extracted_urls=already_extracted,
                     max_sources=min(int(max_per_round), int(remaining_total)),
                     max_chars=max_chars,
@@ -9447,6 +11678,7 @@ def _create_tool_node_with_scratchpad(
                     langextract_model_id=langextract_model_id,
                     debug=debug,
                 )
+                snippet_payload_count = int(len(snippet_payloads or []))
                 if snippet_payloads:
                     extra_payloads.extend(list(snippet_payloads))
                 snippet_extract_calls = int(len(snippet_extract_urls))
@@ -9464,7 +11696,7 @@ def _create_tool_node_with_scratchpad(
             tool_calls_delta=search_calls_delta,
             unknown_after_searches=unknown_after,
             field_attempt_budget_mode=_state_field_attempt_budget_mode(state),
-            entity_name_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
+            target_anchor=target_anchor,
             evidence_ledger=prior_evidence_ledger,
             evidence_stats=prior_evidence_stats,
             evidence_mode=state.get("evidence_mode") or _EVIDENCE_MODE,
@@ -9472,7 +11704,14 @@ def _create_tool_node_with_scratchpad(
             evidence_require_second_source=state.get("evidence_require_second_source"),
             source_policy=source_policy,
             source_tier_provider=source_tier_provider,
+            finalization_policy=finalization_policy,
         )
+        diagnostics["anchor_hard_blocks_count"] = int(
+            diagnostics.get("anchor_hard_blocks_count", 0) or 0
+        ) + int((evidence_stats or {}).get("anchor_hard_blocks", 0) or 0)
+        diagnostics["anchor_soft_penalties_count"] = int(
+            diagnostics.get("anchor_soft_penalties_count", 0) or 0
+        ) + int((evidence_stats or {}).get("anchor_soft_penalties", 0) or 0)
         field_status = _apply_configured_field_rules(field_status, state.get("field_rules"))
         budget_state = _normalize_budget_state(
             prior_budget,
@@ -9527,6 +11766,15 @@ def _create_tool_node_with_scratchpad(
             diagnostics["webpage_openwebpage_skipped_empty"] = int(
                 diagnostics.get("webpage_openwebpage_skipped_empty", 0) or 0
             ) + int(webpage_extract_meta.get("openwebpage_skipped_empty", 0) or 0)
+            diagnostics["webpage_deterministic_fallback_calls"] = int(
+                diagnostics.get("webpage_deterministic_fallback_calls", 0) or 0
+            ) + int(webpage_extract_meta.get("deterministic_fallback_calls", 0) or 0)
+            diagnostics["webpage_deterministic_fallback_payloads"] = int(
+                diagnostics.get("webpage_deterministic_fallback_payloads", 0) or 0
+            ) + int(webpage_extract_meta.get("deterministic_fallback_payloads", 0) or 0)
+            diagnostics["webpage_deterministic_fallback_no_payload"] = int(
+                diagnostics.get("webpage_deterministic_fallback_no_payload", 0) or 0
+            ) + int(webpage_extract_meta.get("deterministic_fallback_no_payload", 0) or 0)
             for reason in list(webpage_extract_meta.get("openwebpage_skip_reasons") or []):
                 reason_token = str(reason or "").strip()
                 if not reason_token:
@@ -9561,12 +11809,48 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_skipped_duplicate_urls"] = int(
                 diagnostics.get("search_snippet_skipped_duplicate_urls", 0) or 0
             ) + int(snippet_extract_meta.get("snippet_skipped_duplicate_urls", 0) or 0)
+            diagnostics["search_snippet_deterministic_fallback_calls"] = int(
+                diagnostics.get("search_snippet_deterministic_fallback_calls", 0) or 0
+            ) + int(snippet_extract_meta.get("deterministic_fallback_calls", 0) or 0)
+            diagnostics["search_snippet_deterministic_fallback_payloads"] = int(
+                diagnostics.get("search_snippet_deterministic_fallback_payloads", 0) or 0
+            ) + int(snippet_extract_meta.get("deterministic_fallback_payloads", 0) or 0)
+            diagnostics["search_snippet_deterministic_fallback_no_payload"] = int(
+                diagnostics.get("search_snippet_deterministic_fallback_no_payload", 0) or 0
+            ) + int(snippet_extract_meta.get("deterministic_fallback_no_payload", 0) or 0)
             provider_name = str(snippet_extract_meta.get("langextract_provider") or "").strip()
             if provider_name:
                 diagnostics["search_snippet_langextract_provider"] = provider_name
             last_error = str(snippet_extract_meta.get("langextract_last_error") or "").strip()
             if last_error:
                 diagnostics["search_snippet_langextract_last_error"] = last_error[:400]
+        no_payload_events = 0
+        if int(webpage_extract_calls) > 0 and int(webpage_payload_count) <= 0:
+            diagnostics["no_payload_extraction_rounds"] = int(
+                diagnostics.get("no_payload_extraction_rounds", 0) or 0
+            ) + 1
+            diagnostics["webpage_no_payload_rounds"] = int(
+                diagnostics.get("webpage_no_payload_rounds", 0) or 0
+            ) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                "webpage_extraction_no_payload",
+                max_items=64,
+            )
+            no_payload_events += 1
+        if int(snippet_extract_calls) > 0 and int(snippet_payload_count) <= 0:
+            diagnostics["no_payload_extraction_rounds"] = int(
+                diagnostics.get("no_payload_extraction_rounds", 0) or 0
+            ) + 1
+            diagnostics["search_snippet_no_payload_rounds"] = int(
+                diagnostics.get("search_snippet_no_payload_rounds", 0) or 0
+            ) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                "search_snippet_extraction_no_payload",
+                max_items=64,
+            )
+            no_payload_events += 1
         budget_state["tool_calls_used"] = int(budget_state.get("tool_calls_used", 0)) + int(search_calls_delta)
         budget_state["tool_calls_remaining"] = max(
             0,
@@ -9620,7 +11904,7 @@ def _create_tool_node_with_scratchpad(
         )
 
         prior_streak = int(prior_budget.get("no_signal_streak", 0) or 0)
-        no_signal_delta = int(empty_hits) + int(off_target_hits)
+        no_signal_delta = int(empty_hits) + int(off_target_hits) + int(no_payload_events)
         if int(search_calls_delta) > 0:
             streak = prior_streak + 1 if no_signal_delta > 0 else 0
         else:
@@ -9629,11 +11913,18 @@ def _create_tool_node_with_scratchpad(
         rewrite_threshold = int(retry_policy.get("rewrite_after_streak", _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD))
         stop_threshold = int(retry_policy.get("stop_after_streak", _LOW_SIGNAL_STREAK_STOP_THRESHOLD))
         budget_state["replan_requested"] = bool(streak >= rewrite_threshold)
+        if streak >= rewrite_threshold:
+            budget_state["priority_retry_reason"] = "low_signal_escalation"
         if streak >= rewrite_threshold and prior_streak < rewrite_threshold:
             diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0)) + 1
             diagnostics["retrieval_interventions"] = _append_limited_unique(
                 diagnostics.get("retrieval_interventions"),
                 f"low_signal_streak_rewrite:{streak}",
+                max_items=64,
+            )
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                "retry_escalation:low_signal",
                 max_items=64,
             )
         if streak >= stop_threshold and prior_streak < stop_threshold:
@@ -9668,6 +11959,10 @@ def _create_tool_node_with_scratchpad(
             or budget_state.get("model_budget_exhausted")
             or budget_state.get("low_signal_cap_exhausted")
         )
+        # A tool round has been executed; clear one-shot structural retry marker.
+        budget_state["structural_repair_retry_required"] = False
+        if str(budget_state.get("priority_retry_reason") or "").strip().lower() == "structural_repair":
+            budget_state["priority_retry_reason"] = None
         if (
             _orchestration_component_enabled(state, "retrieval_controller")
             and _orchestration_component_mode(state, "retrieval_controller") == "enforce"
@@ -9727,6 +12022,7 @@ def _create_tool_node_with_scratchpad(
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
+            diagnostics=diagnostics,
         )
 
         # Apply plan updates if plan mode is enabled and the agent called update_plan.
@@ -10402,13 +12698,50 @@ def create_memory_folding_agent(
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
-        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
+        _state_for_gate = {
+            **state,
+            "messages": list(messages or []) + [response],
+            "field_status": field_status,
+            "budget_state": budget_state,
+            "diagnostics": diagnostics,
+        }
         completion_gate = _schema_outcome_gate_report(
             _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
+            diagnostics=diagnostics,
         )
+        structural_events = list(repair_events or [])
+        if repair_event:
+            structural_events.append(repair_event)
+        if canonical_event:
+            structural_events.append(canonical_event)
+        structural_repair_event_count = sum(
+            1 for event in structural_events if _repair_event_is_structural(event)
+        )
+        if structural_repair_event_count > 0:
+            diagnostics["structural_repair_events"] = int(
+                diagnostics.get("structural_repair_events", 0) or 0
+            ) + int(structural_repair_event_count)
+        if bool(completion_gate.get("finalization_invariant_failed", False)):
+            diagnostics["finalization_invariant_failures"] = int(
+                diagnostics.get("finalization_invariant_failures", 0) or 0
+            ) + 1
+        if structural_repair_event_count > 0 and not bool(budget_state.get("budget_exhausted", False)):
+            budget_state["structural_repair_retry_required"] = True
+            budget_state["replan_requested"] = True
+            budget_state["priority_retry_reason"] = "structural_repair"
+            diagnostics["structural_repair_retry_events"] = int(
+                diagnostics.get("structural_repair_retry_events", 0) or 0
+            ) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                "structural_repair_retry",
+                max_items=64,
+            )
+        elif bool(budget_state.get("budget_exhausted", False)):
+            budget_state["structural_repair_retry_required"] = False
         finalization_status = _build_finalization_status(
             state={**state, "orchestration_options": orchestration_options},
             expected_schema=expected_schema,
@@ -10444,7 +12777,7 @@ def create_memory_folding_agent(
                 _is_within_finalization_cutoff(state, remaining)
                 or bool(completion_gate.get("done"))
                 or bool(finalize_reason)
-            )
+            ) and not bool(completion_gate.get("quality_gate_failed", False))
             if should_mark_final:
                 final_payload = terminal_payload
                 final_emitted = True
@@ -10576,6 +12909,7 @@ def create_memory_folding_agent(
                 expected_schema=expected_schema,
                 field_status=field_status,
                 budget_state=budget_state,
+                diagnostics=diagnostics,
             )
             finalization_status = _build_finalization_status(
                 state={**state, "orchestration_options": orchestration_options},
@@ -10640,7 +12974,7 @@ def create_memory_folding_agent(
         ):
             cached_payload = state.get("final_payload")
             try:
-                cached_text = json.dumps(_json_safe_value(cached_payload), ensure_ascii=False)
+                cached_text = _canonical_json_text(cached_payload)
             except Exception:
                 cached_text = str(cached_payload)
             try:
@@ -10702,6 +13036,7 @@ def create_memory_folding_agent(
                     expected_schema=expected_schema,
                     field_status=field_status,
                     budget_state=budget_state,
+                    diagnostics=diagnostics,
                 ),
                 "finalize_reason": _finalize_reason_for_state(state) or "recursion_limit",
                 "source_policy": source_policy,
@@ -10832,12 +13167,19 @@ def create_memory_folding_agent(
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
-        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
+        _state_for_gate = {
+            **state,
+            "messages": list(messages or []) + [response],
+            "field_status": field_status,
+            "budget_state": budget_state,
+            "diagnostics": diagnostics,
+        }
         completion_gate = _schema_outcome_gate_report(
             _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
+            diagnostics=diagnostics,
         )
         finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
         budget_state["finalize_reason"] = finalize_reason
@@ -11557,6 +13899,37 @@ def create_memory_folding_agent(
             f"{task_constraints_block}"
         )
 
+        parse_retry_history: List[Dict[str, Any]] = []
+
+        def _record_parse_attempt(
+            stage: str,
+            success: bool,
+            *,
+            error_type: Optional[str] = None,
+            detail: Optional[str] = None,
+        ) -> None:
+            entry: Dict[str, Any] = {"stage": stage, "success": bool(success)}
+            if error_type:
+                entry["error_type"] = error_type
+            if detail:
+                entry["detail"] = detail
+            parse_retry_history.append(entry)
+
+        def _ensure_anchor_facts(base_facts: List[str]) -> List[str]:
+            normalized: set = {
+                str(x).strip().lower()
+                for x in base_facts
+                if str(x).strip()
+            }
+            result = list(base_facts)
+            for anchor in anchored_facts:
+                anchor_text = str(anchor).strip()
+                if not anchor_text or anchor_text.lower() in normalized:
+                    continue
+                result.append(anchor_text)
+                normalized.add(anchor_text.lower())
+            return result
+
         summarize_started = time.perf_counter()
         fold_degraded = False
         fold_fallback_applied = False
@@ -11574,23 +13947,39 @@ def create_memory_folding_agent(
             summary_text_str = _message_content_to_text(summary_text) or str(summary_text)
             parsed_memory = parse_llm_json(summary_text_str)
             fold_parse_success = isinstance(parsed_memory, dict) and bool(parsed_memory)
+            _record_parse_attempt(
+                "initial_parse",
+                fold_parse_success,
+                error_type=None if fold_parse_success else "invalid_json",
+                detail="raw_json",
+            )
+            repaired_json = None
             if not fold_parse_success:
                 repaired_json = repair_json_output_to_schema(
                     summary_text_str,
                     _MEMORY_REPAIR_SCHEMA,
                     fallback_on_failure=False,
                 )
+                repair_success = False
                 if isinstance(repaired_json, str) and repaired_json.strip():
                     repaired_candidate = parse_llm_json(repaired_json)
                     if isinstance(repaired_candidate, dict) and repaired_candidate:
                         parsed_memory = repaired_candidate
                         fold_parse_success = True
+                        repair_success = True
+                _record_parse_attempt(
+                    "schema_repair_strict",
+                    repair_success,
+                    error_type=None if repair_success else "invalid_json",
+                    detail="schema_repair_strict",
+                )
             if not fold_parse_success:
                 repaired_json = repair_json_output_to_schema(
                     summary_text_str,
                     _MEMORY_REPAIR_SCHEMA,
                     fallback_on_failure=True,
                 )
+                fallback_success = False
                 if isinstance(repaired_json, str) and repaired_json.strip():
                     repaired_candidate = parse_llm_json(repaired_json)
                     if isinstance(repaired_candidate, dict) and repaired_candidate:
@@ -11601,14 +13990,26 @@ def create_memory_folding_agent(
                                 repaired_candidate[_memory_key] = list(current_memory.get(_memory_key) or [])
                         parsed_memory = repaired_candidate
                         fold_parse_success = True
+                        fallback_success = True
                         fold_warnings.append(
                             "Summarizer output required schema-repair fallback."
                         )
+                _record_parse_attempt(
+                    "schema_repair_relaxed",
+                    fallback_success,
+                    error_type=None if fallback_success else "invalid_json",
+                    detail="schema_repair_relaxed",
+                )
             if not isinstance(parsed_memory, dict):
                 parsed_memory = {}
             # Parse fallback: keep existing memory + recover FIELD_EXTRACT lines from
             # current fold input instead of storing malformed raw JSON text.
             if not parsed_memory:
+                _record_parse_attempt(
+                    "fallback_memory",
+                    True,
+                    detail="deterministic_current_memory",
+                )
                 fold_degraded = True
                 fold_fallback_applied = True
                 fold_fallback_reason = "summarizer_parse_empty_or_invalid"
@@ -11622,6 +14023,7 @@ def create_memory_folding_agent(
                     _fe_name, _fe_val = _fe_match.group(1).strip(), _fe_match.group(2).strip()
                     if _is_informative_field_extract(_fe_name, _fe_val):
                         recovered_facts.append(f"FIELD_EXTRACT: {_fe_name} = {_fe_val}")
+                recovered_facts = _ensure_anchor_facts(recovered_facts)
                 parsed_memory = dict(current_memory)
                 parsed_memory["facts"] = recovered_facts
                 fold_warnings.append(
@@ -11641,6 +14043,12 @@ def create_memory_folding_agent(
             fold_warnings.append(
                 f"Summarizer invoke failed ({fold_parse_error_type}); using degraded fold."
             )
+            _record_parse_attempt(
+                "summarizer_invoke",
+                False,
+                error_type=fold_parse_error_type,
+                detail="summarizer call failed",
+            )
             if debug:
                 logger.warning("Summarizer invoke failed, using degraded fold: %s", fold_exc)
             degraded_facts = list(current_memory.get("facts") or [])
@@ -11652,8 +14060,14 @@ def create_memory_folding_agent(
                 _fe_name, _fe_val = _fe_match.group(1).strip(), _fe_match.group(2).strip()
                 if _is_informative_field_extract(_fe_name, _fe_val):
                     degraded_facts.append(f"FIELD_EXTRACT: {_fe_name} = {_fe_val}")
+            degraded_facts = _ensure_anchor_facts(degraded_facts)
             degraded_memory = dict(current_memory)
             degraded_memory["facts"] = degraded_facts
+            _record_parse_attempt(
+                "fallback_memory",
+                True,
+                detail="deterministic_current_memory",
+            )
             new_memory = _sanitize_memory_dict(degraded_memory)
 
         # Post-fold schema field validation & recovery.
@@ -11890,6 +14304,7 @@ def create_memory_folding_agent(
                 "fold_fallback_applied": fold_fallback_applied,
                 "fold_fallback_reason": fold_fallback_reason,
                 "fold_parse_error_type": fold_parse_error_type,
+                "fold_parse_retry": list(parse_retry_history),
                 "fold_warnings": fold_warnings,
             },
             "om_stats": om_stats_update,
@@ -11994,6 +14409,23 @@ def create_memory_folding_agent(
         if base_result == "summarize" and _state_om_enabled(state):
             return "observe"
         if base_result == "end":
+            structural_retry_required = bool(
+                (state.get("budget_state") or {}).get("structural_repair_retry_required", False)
+            ) and not bool((state.get("budget_state") or {}).get("budget_exhausted", False))
+            if structural_retry_required:
+                unresolved_fields = _collect_premature_nudge_fields(state)
+                if bool(tools) and unresolved_fields:
+                    if debug:
+                        logger.info(
+                            "Nudging agent due to structural repair retry: unresolved=%s",
+                            len(unresolved_fields),
+                        )
+                    return "nudge"
+                if (
+                    _state_expected_schema(state) is not None
+                    and _has_resolvable_unknown_fields(_state_field_status(state))
+                ):
+                    return "finalize"
             if not _should_finalize_after_terminal(state):
                 return "end"
             if _can_end_on_recursion_stop(state, state.get("messages", []), remaining_steps_value(state)):
@@ -12499,13 +14931,50 @@ def create_standard_agent(
             diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
-        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
+        _state_for_gate = {
+            **state,
+            "messages": list(messages or []) + [response],
+            "field_status": field_status,
+            "budget_state": budget_state,
+            "diagnostics": diagnostics,
+        }
         completion_gate = _schema_outcome_gate_report(
             _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
+            diagnostics=diagnostics,
         )
+        structural_events = list(repair_events or [])
+        if repair_event:
+            structural_events.append(repair_event)
+        if canonical_event:
+            structural_events.append(canonical_event)
+        structural_repair_event_count = sum(
+            1 for event in structural_events if _repair_event_is_structural(event)
+        )
+        if structural_repair_event_count > 0:
+            diagnostics["structural_repair_events"] = int(
+                diagnostics.get("structural_repair_events", 0) or 0
+            ) + int(structural_repair_event_count)
+        if bool(completion_gate.get("finalization_invariant_failed", False)):
+            diagnostics["finalization_invariant_failures"] = int(
+                diagnostics.get("finalization_invariant_failures", 0) or 0
+            ) + 1
+        if structural_repair_event_count > 0 and not bool(budget_state.get("budget_exhausted", False)):
+            budget_state["structural_repair_retry_required"] = True
+            budget_state["replan_requested"] = True
+            budget_state["priority_retry_reason"] = "structural_repair"
+            diagnostics["structural_repair_retry_events"] = int(
+                diagnostics.get("structural_repair_retry_events", 0) or 0
+            ) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                "structural_repair_retry",
+                max_items=64,
+            )
+        elif bool(budget_state.get("budget_exhausted", False)):
+            budget_state["structural_repair_retry_required"] = False
         finalization_status = _build_finalization_status(
             state={**state, "orchestration_options": orchestration_options},
             expected_schema=expected_schema,
@@ -12541,7 +15010,7 @@ def create_standard_agent(
                 _is_within_finalization_cutoff(state, remaining)
                 or bool(completion_gate.get("done"))
                 or bool(finalize_reason)
-            )
+            ) and not bool(completion_gate.get("quality_gate_failed", False))
             if should_mark_final:
                 final_payload = terminal_payload
                 final_emitted = True
@@ -12665,6 +15134,7 @@ def create_standard_agent(
                 expected_schema=expected_schema,
                 field_status=field_status,
                 budget_state=budget_state,
+                diagnostics=diagnostics,
             )
             finalization_status = _build_finalization_status(
                 state={**state, "orchestration_options": orchestration_options},
@@ -12729,7 +15199,7 @@ def create_standard_agent(
         ):
             cached_payload = state.get("final_payload")
             try:
-                cached_text = json.dumps(_json_safe_value(cached_payload), ensure_ascii=False)
+                cached_text = _canonical_json_text(cached_payload)
             except Exception:
                 cached_text = str(cached_payload)
             try:
@@ -12791,6 +15261,7 @@ def create_standard_agent(
                     expected_schema=expected_schema,
                     field_status=field_status,
                     budget_state=budget_state,
+                    diagnostics=diagnostics,
                 ),
                 "finalize_reason": _finalize_reason_for_state(state) or "recursion_limit",
                 "source_policy": source_policy,
@@ -12912,12 +15383,19 @@ def create_standard_agent(
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
         _usage = _token_usage_dict_from_message(response)
-        _state_for_gate = {**state, "field_status": field_status, "budget_state": budget_state}
+        _state_for_gate = {
+            **state,
+            "messages": list(messages or []) + [response],
+            "field_status": field_status,
+            "budget_state": budget_state,
+            "diagnostics": diagnostics,
+        }
         completion_gate = _schema_outcome_gate_report(
             _state_for_gate,
             expected_schema=expected_schema,
             field_status=field_status,
             budget_state=budget_state,
+            diagnostics=diagnostics,
         )
         finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
         budget_state["finalize_reason"] = finalize_reason
@@ -13021,6 +15499,23 @@ def create_standard_agent(
             return "end"
         base_result = _route_after_agent_step(state)
         if base_result == "end":
+            structural_retry_required = bool(
+                (state.get("budget_state") or {}).get("structural_repair_retry_required", False)
+            ) and not bool((state.get("budget_state") or {}).get("budget_exhausted", False))
+            if structural_retry_required:
+                unresolved_fields = _collect_premature_nudge_fields(state)
+                if bool(tools) and unresolved_fields:
+                    if debug:
+                        logger.info(
+                            "Nudging agent due to structural repair retry: unresolved=%s",
+                            len(unresolved_fields),
+                        )
+                    return "nudge"
+                if (
+                    _state_expected_schema(state) is not None
+                    and _has_resolvable_unknown_fields(_state_field_status(state))
+                ):
+                    return "finalize"
             if not _should_finalize_after_terminal(state):
                 return "end"
             if _can_end_on_recursion_stop(state, state.get("messages", []), remaining_steps_value(state)):
@@ -13139,6 +15634,55 @@ def create_memory_folding_agent_with_checkpointer(
     )
 
 
+def _materialize_terminal_payload_state(state: Any) -> Any:
+    """Populate terminal payload metadata from the latest assistant message."""
+    if state is None:
+        return state
+
+    def _state_get(key: str, default: Any = None) -> Any:
+        if isinstance(state, dict):
+            return state.get(key, default)
+        return getattr(state, key, default)
+
+    def _state_set(key: str, value: Any) -> None:
+        if isinstance(state, dict):
+            state[key] = value
+            return
+        try:
+            setattr(state, key, value)
+        except Exception:
+            pass
+
+    expected_schema = _state_get("expected_schema")
+    finalization_policy = _normalize_finalization_policy(_state_get("finalization_policy"))
+    dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
+    messages = _state_get("messages")
+
+    terminal_payload = None
+    if isinstance(messages, list) and messages:
+        terminal_payload = _terminal_payload_from_message(
+            messages[-1],
+            expected_schema=expected_schema,
+        )
+    if terminal_payload is None:
+        existing_payload = _state_get("final_payload")
+        if isinstance(existing_payload, (dict, list)) and _is_nonempty_payload(existing_payload):
+            terminal_payload = existing_payload
+
+    if terminal_payload is not None:
+        _state_set("final_payload", terminal_payload)
+        _state_set("terminal_valid", True)
+        terminal_hash = _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
+        _state_set("terminal_payload_hash", terminal_hash)
+        return state
+
+    _state_set("terminal_valid", False)
+    existing_hash = str(_state_get("terminal_payload_hash") or "").strip()
+    if not existing_hash:
+        _state_set("terminal_payload_hash", None)
+    return state
+
+
 def invoke_graph_safely(
     graph: Any,
     initial_state: Any,
@@ -13170,11 +15714,15 @@ def invoke_graph_safely(
             for chunk in stream(initial_state, config=config, stream_mode=stream_mode):
                 last_state = chunk
         else:
-            return graph.invoke(initial_state, config=config)
+            return _materialize_terminal_payload_state(
+                graph.invoke(initial_state, config=config)
+            )
 
         if last_state is None:
-            return graph.invoke(initial_state, config=config)
-        return last_state
+            return _materialize_terminal_payload_state(
+                graph.invoke(initial_state, config=config)
+            )
+        return _materialize_terminal_payload_state(last_state)
     except Exception as exc:
         if GraphRecursionError is None or not isinstance(exc, GraphRecursionError):
             raise
@@ -13236,4 +15784,4 @@ def invoke_graph_safely(
         except Exception:
             pass
 
-        return state
+        return _materialize_terminal_payload_state(state)

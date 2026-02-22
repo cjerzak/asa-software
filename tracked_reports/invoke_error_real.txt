@@ -1,1 +1,7 @@
-[]
+{
+  "status": "empty",
+  "artifact": "invoke_error",
+  "reason": "invoke_exception_absent",
+  "run_id": "trace_real_20260222T144459",
+  "generated_at": "2026-02-22T20:44:59Z"
+}

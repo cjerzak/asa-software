@@ -2,8 +2,8 @@
   {
     "repair_applied": true,
     "repair_reason": "missing_keys",
-    "missing_keys_count": 18,
-    "missing_keys_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
+    "missing_keys_count": 1,
+    "missing_keys_sample": "$",
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "agent"
@@ -16,5 +16,23 @@
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "agent"
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "missing_keys_count": 18,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize"
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize"
   }
 ]

@@ -24,6 +24,46 @@ options(error=NULL)
 # Prefer local package source so trace runs validate current repo code.
 devtools::load_all('~/Documents/asa-software/asa')
 
+trace_run_timestamp <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+trace_run_id <- paste0("trace_real_", format(Sys.time(), "%Y%m%dT%H%M%S"))
+
+artifact_sentinel <- function(artifact, reason = "artifact_not_available") {
+  list(
+    status = "empty",
+    artifact = artifact,
+    reason = reason,
+    run_id = trace_run_id,
+    generated_at = trace_run_timestamp
+  )
+}
+
+artifact_or_sentinel <- function(value,
+                                 artifact,
+                                 reason = "artifact_not_available") {
+  is_empty <- FALSE
+  if (is.null(value)) {
+    is_empty <- TRUE
+  } else if (is.list(value) && length(value) == 0L) {
+    is_empty <- TRUE
+  } else if (is.atomic(value) && length(value) == 0L) {
+    is_empty <- TRUE
+  } else if (
+    is.character(value) &&
+      length(value) == 1L &&
+      !is.na(value[[1]]) &&
+      !nzchar(value[[1]])
+  ) {
+    is_empty <- TRUE
+  }
+
+  if (isTRUE(is_empty)) {
+    return(artifact_sentinel(artifact = artifact, reason = reason))
+  }
+  value
+}
+
+plan_mode_enabled <- FALSE
+
 prompt <- r"(TASK OVERVIEW:
 You are a search-enabled research agent specializing in biographical information about political elites.
 
@@ -113,7 +153,7 @@ attempt <- run_task(
     expected_fields = NULL,
     expected_schema = EXPECTED_SCHEMA,
     verbose = TRUE,
-    use_plan_mode = FALSE,
+    use_plan_mode = plan_mode_enabled,
     search_budget_limit = 14L,
     unknown_after_searches = 5L,
     retry_policy = list(
@@ -122,9 +162,9 @@ attempt <- run_task(
     ),
     agent = initialize_agent(
       #backend = "gemini", model = "gemini-2.5-pro",
-      #backend = "gemini", model = "gemini-3-pro-preview",
+      backend = "gemini", model = "gemini-3-pro-preview",
       #backend = "gemini", model = "gemini-3-flash-preview",
-      backend = "openai", model = "gpt-5-mini-2025-08-07",
+      #backend = "openai", model = "gpt-5-mini-2025-08-07",
       #backend = "openai", model = "gpt-5-nano-2025-08-07",
       proxy = "socks5h://127.0.0.1:9050",
       use_browser = FALSE, 
@@ -164,11 +204,24 @@ readr::write_file(
 )
 
 readr::write_file(jsonlite::toJSON(attempt$token_stats, auto_unbox = TRUE, pretty = TRUE, null = "null"), "~/Documents/asa-software/tracked_reports/token_stats_real.txt")
-readr::write_file(jsonlite::toJSON(attempt$plan, auto_unbox = TRUE, pretty = TRUE, null = "null"), "~/Documents/asa-software/tracked_reports/plan_output_real.txt")
+plan_output <- artifact_or_sentinel(
+  attempt$plan,
+  artifact = "plan_output",
+  reason = if (isTRUE(plan_mode_enabled)) "plan_not_generated" else "plan_mode_disabled"
+)
+readr::write_file(
+  jsonlite::toJSON(plan_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  "~/Documents/asa-software/tracked_reports/plan_output_real.txt"
+)
 
 # fold_stats
+fold_stats_output <- artifact_or_sentinel(
+  attempt$fold_stats,
+  artifact = "fold_stats",
+  reason = "fold_stats_not_available"
+)
 readr::write_file(
-  jsonlite::toJSON(attempt$fold_stats, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  jsonlite::toJSON(fold_stats_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   "~/Documents/asa-software/tracked_reports/fold_stats_real.txt"
 )
 
@@ -181,12 +234,23 @@ if (!is.null(attempt$raw_response)) {
 if (is.null(summary_state)) summary_state <- list()
 if (is.null(archive_state)) archive_state <- list()
 
+fold_summary_output <- artifact_or_sentinel(
+  summary_state,
+  artifact = "fold_summary",
+  reason = "fold_summary_not_available"
+)
+fold_archive_output <- artifact_or_sentinel(
+  archive_state,
+  artifact = "fold_archive",
+  reason = "fold_archive_not_available"
+)
+
 readr::write_file(
-  jsonlite::toJSON(summary_state, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  jsonlite::toJSON(fold_summary_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   "~/Documents/asa-software/tracked_reports/fold_summary_real.txt"
 )
 readr::write_file(
-  jsonlite::toJSON(archive_state, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  jsonlite::toJSON(fold_archive_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   "~/Documents/asa-software/tracked_reports/fold_archive_real.txt"
 )
 
@@ -236,13 +300,23 @@ if (is.list(json_repair) && length(json_repair) > 0) {
   }
 }
 if (is.null(invoke_error)) invoke_error <- list()
+invoke_error <- artifact_or_sentinel(
+  invoke_error,
+  artifact = "invoke_error",
+  reason = "invoke_exception_absent"
+)
 
 readr::write_file(
   jsonlite::toJSON(invoke_error, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   "~/Documents/asa-software/tracked_reports/invoke_error_real.txt"
 )
 
-if (length(invoke_error) > 0) {
+has_invoke_error <- (
+  is.list(invoke_error) &&
+    !is.null(invoke_error$error_type) &&
+    !all(is.na(invoke_error$error_type))
+)
+if (isTRUE(has_invoke_error)) {
   message(
     sprintf(
       "Model invoke failed (%s): %s",

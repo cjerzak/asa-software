@@ -729,3 +729,267 @@ test_that("field-status diagnostics include recovery promotion and rejection cou
     1L
   )
 })
+
+test_that("field-status diagnostics include unknown reason buckets", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  collect_diag <- reticulate::py_get_attr(prod, "_collect_field_status_diagnostics")
+  merge_diag <- reticulate::py_get_attr(prod, "_merge_field_status_diagnostics")
+
+  field_status <- list(
+    education_level = list(
+      status = "unknown",
+      value = "Unknown",
+      evidence = "recovery_blocked_entity_mismatch",
+      attempts = 2L,
+      descriptor = "string|Unknown"
+    ),
+    birth_place = list(
+      status = "unknown",
+      value = "Unknown",
+      attempts = 1L,
+      descriptor = "string|Unknown"
+    ),
+    prior_occupation = list(
+      status = "found",
+      value = "Teacher",
+      source_url = "https://example.gov/profile",
+      evidence = "recovery_source_backed",
+      descriptor = "string|Unknown"
+    )
+  )
+
+  collected <- reticulate::py_to_r(collect_diag(field_status = field_status))
+  expect_equal(as.integer(collected$unknown_fields_count), 2L)
+  expect_true("education_level" %in% as.character(collected$unknown_fields))
+  expect_equal(
+    as.integer(collected$unknown_reason_counts$recovery_blocked_entity_mismatch),
+    1L
+  )
+  expect_equal(
+    as.integer(collected$unknown_reason_counts$attempted_no_verified_evidence),
+    1L
+  )
+  expect_true(
+    "education_level" %in% as.character(
+      collected$unknown_fields_by_reason$recovery_blocked_entity_mismatch
+    )
+  )
+
+  merged <- reticulate::py_to_r(merge_diag(
+    diagnostics = list(
+      unknown_fields_count = 1L,
+      unknown_reason_counts = list(not_attempted = 3L),
+      unknown_fields_by_reason = list(not_attempted = list("stale_field"))
+    ),
+    field_status = field_status
+  ))
+  expect_equal(as.integer(merged$unknown_fields_count), 2L)
+  expect_equal(as.integer(merged$unknown_reason_counts$not_attempted), 3L)
+  expect_true("stale_field" %in% as.character(merged$unknown_fields_by_reason$not_attempted))
+})
+
+test_that("schema outcome quality gate blocks completion when unknown ratio is high", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  gate_fn <- reticulate::py_get_attr(prod, "_schema_outcome_gate_report")
+  state <- list(
+    expected_schema = list(
+      education_level = "string|Unknown",
+      prior_occupation = "string|Unknown",
+      birth_year = "integer|null|Unknown"
+    ),
+    field_status = list(
+      education_level = list(status = "unknown", value = "Unknown", attempts = 2L),
+      prior_occupation = list(status = "unknown", value = "Unknown", attempts = 2L),
+      birth_year = list(status = "found", value = 1982L, attempts = 1L)
+    ),
+    budget_state = list(budget_exhausted = FALSE),
+    finalization_policy = list(
+      quality_gate_enforce = TRUE,
+      quality_gate_unknown_ratio_max = 0.50,
+      quality_gate_min_resolvable_fields = 2L
+    ),
+    use_plan_mode = FALSE,
+    json_repair = list()
+  )
+
+  report <- reticulate::py_to_r(gate_fn(
+    state = state,
+    expected_schema = state$expected_schema,
+    field_status = state$field_status,
+    budget_state = state$budget_state
+  ))
+
+  expect_true(isTRUE(report$quality_gate_failed))
+  expect_equal(as.character(report$quality_gate_reason), "unknown_ratio_exceeds_limit")
+  expect_equal(as.character(report$completion_status), "in_progress")
+  expect_false(isTRUE(report$done))
+  expect_equal(as.integer(report$missing_required_field_count), 2L)
+  expect_true("plan_mode_disabled" %in% as.character(report$artifact_markers))
+  expect_true("invoke_error_absent" %in% as.character(report$artifact_markers))
+})
+
+test_that("summarize fallback records parse retry history", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  asa_test_stub_llm(mode = "simple", response_content = "done", var_name = "fold_retry_llm")
+  reticulate::py_run_string(paste0(
+    "class _ASABadSummarizer:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        class _Resp:\n",
+    "            def __init__(self, content):\n",
+    "                self.content = content\n",
+    "        return _Resp('not valid json output')\n",
+    "_asa_bad_summarizer = _ASABadSummarizer()\n"
+  ))
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$fold_retry_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(2),
+    keep_recent = as.integer(1),
+    summarizer_model = reticulate::py$`_asa_bad_summarizer`,
+    om_config = list(enabled = FALSE, cross_thread_memory = FALSE),
+    debug = FALSE
+  )
+
+  summarize_state <- reticulate::dict(
+    messages = list(
+      msgs$HumanMessage(content = "user 1", id = "frh1"),
+      msgs$AIMessage(content = "assistant 1", id = "fra1"),
+      msgs$HumanMessage(content = "user 2", id = "frh2"),
+      msgs$AIMessage(content = "assistant 2", id = "fra2")
+    ),
+    summary = "",
+    archive = list(),
+    fold_stats = reticulate::dict(fold_count = 0L),
+    om_config = list(enabled = FALSE, cross_thread_memory = FALSE),
+    stop_reason = NULL
+  )
+
+  summarize_out <- agent$nodes[["summarize"]]$bound$invoke(summarize_state)
+  fs <- reticulate::py_to_r(summarize_out$fold_stats)
+  parse_retry <- fs$fold_parse_retry
+  retry_stages <- vapply(
+    X = parse_retry,
+    FUN = function(x) {
+      if (!is.list(x) || is.null(x$stage)) return("")
+      as.character(x$stage)
+    },
+    FUN.VALUE = character(1)
+  )
+
+  expect_true(length(parse_retry) >= 2L)
+  expect_true("initial_parse" %in% retry_stages)
+  expect_true("schema_repair_strict" %in% retry_stages)
+  expect_true(any(retry_stages != "initial_parse"))
+})
+
+test_that("retrieval metrics track duplicate URLs within a round", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  build_metrics <- reticulate::py_get_attr(prod, "_build_retrieval_metrics")
+  search_tool_text <- paste0(
+    "__START_OF_SOURCE 1__ <URL> https://example.gov/profile/1 </URL> <CONTENT> A </CONTENT> __END_OF_SOURCE 1__ ",
+    "__START_OF_SOURCE 2__ <URL> https://example.gov/profile/1 </URL> <CONTENT> B </CONTENT> __END_OF_SOURCE 2__"
+  )
+  metrics <- reticulate::py_to_r(build_metrics(
+    state = list(retrieval_metrics = list(), expected_schema = list()),
+    search_queries = list("example query"),
+    tool_messages = list(
+      list(role = "tool", name = "Search", content = search_tool_text),
+      list(role = "tool", name = "Search", content = search_tool_text)
+    ),
+    prior_field_status = list(),
+    field_status = list(),
+    prior_evidence_ledger = list(),
+    evidence_ledger = list(),
+    diagnostics = list()
+  ))
+
+  expect_equal(as.integer(metrics$last_round_url_dedupe_hits), 1L)
+  expect_equal(as.integer(metrics$round_url_dedupe_hits), 1L)
+})
+
+test_that("quality gate blocks terminal short-circuit when budget remains", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  should_finalize <- reticulate::py_get_attr(prod, "_should_finalize_after_terminal")
+  state <- list(
+    messages = list(list(
+      role = "assistant",
+      content = "{\"education_level\":\"Unknown\",\"prior_occupation\":\"Unknown\",\"birth_year\":1982}"
+    )),
+    expected_schema = list(
+      education_level = "string|Unknown",
+      prior_occupation = "string|Unknown",
+      birth_year = "integer|null|Unknown"
+    ),
+    field_status = list(
+      education_level = list(status = "unknown", value = "Unknown", attempts = 2L),
+      prior_occupation = list(status = "unknown", value = "Unknown", attempts = 2L),
+      birth_year = list(status = "found", value = 1982L, attempts = 1L)
+    ),
+    budget_state = list(budget_exhausted = FALSE),
+    finalization_policy = list(
+      skip_finalize_if_terminal_valid = TRUE,
+      quality_gate_enforce = TRUE,
+      quality_gate_unknown_ratio_max = 0.50,
+      quality_gate_min_resolvable_fields = 2L
+    )
+  )
+
+  expect_true(isTRUE(reticulate::py_to_r(should_finalize(state))))
+})
+
+test_that("invoke_graph_safely materializes terminal payload metadata", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  reticulate::py_run_string(paste0(
+    "class _ASAInvokeGraphStub:\n",
+    "    def stream(self, initial_state, config=None, stream_mode='values'):\n",
+    "        yield {\n",
+    "            'messages': [{'role': 'assistant', 'content': '{\"birth_year\":1982}'}],\n",
+    "            'expected_schema': {'birth_year': 'integer|null|Unknown'},\n",
+    "            'finalization_policy': {'terminal_dedupe_mode': 'hash'}\n",
+    "        }\n",
+    "_asa_invoke_graph_stub = _ASAInvokeGraphStub()\n"
+  ))
+
+  invoke_safely <- reticulate::py_get_attr(core, "invoke_graph_safely")
+  out <- reticulate::py_to_r(invoke_safely(
+    graph = reticulate::py$`_asa_invoke_graph_stub`,
+    initial_state = list()
+  ))
+
+  expect_true(is.list(out$final_payload))
+  expect_equal(as.integer(out$final_payload$birth_year), 1982L)
+  expect_true(isTRUE(out$terminal_valid))
+  expect_true(nzchar(as.character(out$terminal_payload_hash)))
+})

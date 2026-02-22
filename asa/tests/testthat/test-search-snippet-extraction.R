@@ -153,3 +153,105 @@ test_that("deterministic recovery reports entity mismatch when candidates exist 
   expect_equal(as.character(out_r$birth_year$evidence_reason), "recovery_blocked_entity_mismatch")
 })
 
+test_that("deterministic recovery blocks near-miss entity/value mismatches", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  schema <- list(
+    birth_year = "integer|null|Unknown",
+    birth_year_source = "string|null"
+  )
+  source_url <- "https://www.example.gov/profile/12345"
+  source_text <- paste(
+    "Ramona profile card.",
+    "Date of birth: 1982-01-07.",
+    "Legislative profile summary."
+  )
+
+  out <- core$`_recover_unknown_fields_from_tool_evidence`(
+    field_status = list(),
+    expected_schema = schema,
+    finalization_policy = list(
+      field_recovery_enabled = TRUE,
+      field_recovery_mode = "balanced",
+      field_recovery_require_keyword_hit_for_numbers = FALSE,
+      field_recovery_entity_tolerance_enabled = TRUE,
+      field_recovery_entity_tolerance_hit_slack = 1L,
+      field_recovery_entity_tolerance_ratio_slack = 0.20,
+      field_recovery_entity_tolerance_penalty = 0.10
+    ),
+    allowed_source_urls = list(source_url),
+    source_text_index = stats::setNames(list(source_text), source_url),
+    entity_name_tokens = list("Ramona", "Moye", "Camaconi")
+  )
+
+  out_r <- reticulate::py_to_r(out)
+  expect_false(identical(as.character(out_r$birth_year$status), "found"))
+  expect_equal(
+    as.character(out_r$birth_year$evidence),
+    "recovery_blocked_entity_value_mismatch"
+  )
+  expect_equal(
+    as.character(out_r$birth_year$evidence_reason),
+    "recovery_blocked_entity_value_mismatch"
+  )
+  expect_false(identical(as.character(out_r$birth_year_source$status), "found"))
+})
+
+test_that("field-status extraction rejects candidates with entity/value mismatch", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  schema <- list(
+    prior_occupation = "string|Unknown",
+    prior_occupation_source = "string|null"
+  )
+  field_status <- list(
+    prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  profile_url <- "https://example.gov/profile/ramona"
+  separator <- paste(rep("archival snippet without target identity", 80), collapse = " ")
+  source_text <- paste(
+    "Ramona Moye Camaconi is a Bolivian legislator.",
+    separator,
+    "Juan Perez worked as a teacher before politics.",
+    "Profile registry with mixed person snippets."
+  )
+  payload <- list(
+    prior_occupation = "teacher",
+    prior_occupation_source = profile_url
+  )
+  extra_payloads <- list(list(
+    tool_name = "search_snippet_extract",
+    text = source_text,
+    payload = payload,
+    source_blocks = list(),
+    source_payloads = list(payload),
+    has_structured_payload = TRUE,
+    urls = list(profile_url)
+  ))
+
+  updates <- core$`_extract_field_status_updates`(
+    existing_field_status = field_status,
+    expected_schema = schema,
+    tool_messages = list(),
+    extra_payloads = extra_payloads,
+    tool_calls_delta = 1L,
+    unknown_after_searches = 3L,
+    entity_name_tokens = list("Ramona", "Moye", "Camaconi"),
+    evidence_enabled = TRUE
+  )
+  updates_r <- reticulate::py_to_r(updates)
+  updated_fs <- updates_r[[1]]
+
+  expect_false(identical(as.character(updated_fs$prior_occupation$status), "found"))
+  expect_equal(
+    as.character(updated_fs$prior_occupation$evidence),
+    "grounding_blocked_entity_value_mismatch"
+  )
+})

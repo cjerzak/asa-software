@@ -1,7 +1,7 @@
 AGENT ACTION MAP
 ================
-Steps captured: 32
-LangGraph timed steps: 42
+Steps captured: 33
+LangGraph timed steps: 33
 
 INVESTIGATOR SIGNALS
 --------------------
@@ -14,182 +14,190 @@ INVESTIGATOR SIGNALS
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
-      Human prompts: 1
+      Human prompts: 2
       AI turns: 15 tool-call turn(s), 1 answer turn(s)
-      Tool results: 15 total (Tool Search=6, Tool OpenWebpage=5, Tool save_finding=4)
+      Tool results: 15 total (Tool Search=7, Tool OpenWebpage=6, Tool save_finding=2)
       Structured terminal answer emitted
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=3, OFF_TOPIC_RESULT=2)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=2, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 7.4213m (tok=0, n=19)
-      agent: 2.0794m (tok=126237, n=20)
-      summarize: 0.9632m (tok=9638, n=3)
+      tools: 12.0488m (tok=0, n=14)
+      agent: 1.9969m (tok=94922, n=15)
+      summarize: 0.5562m (tok=5783, n=2)
+      finalize: 0.1245m (tok=12289, n=1)
+      nudge: 0.0000m (tok=0, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #08 tools: 1.3295m (tok=0)
-      #18 tools: 1.2861m (tok=0)
-      #12 tools: 1.0145m (tok=0)
-      #04 tools: 0.8950m (tok=0)
-      #33 tools: 0.8320m (tok=0)
-  +-- [TIMING] wall=10.5376m nodes=10.4638m delta=+0.0738m (overhead)
+      #27 tools: 2.6701m (tok=0)
+      #04 tools: 1.5328m (tok=0)
+      #08 tools: 1.3276m (tok=0)
+      #22 tools: 1.2304m (tok=0)
+      #14 tools: 1.1765m (tok=0)
+  +-- [TIMING] wall=14.7304m nodes=14.7264m delta=+0.0040m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (Search)
+  +-- [02] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=4356 out=88 total=4444
-      min: 0.0297m
-      detail: Search(query="Ramona Moye Camaconi" biografía Ramona M...)
+      tok: in=1377 out=28 total=1405
+      min: 0.0824m
+      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/12843/detalle)
   +-- [03] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...eza </URL> __END_OF_SOURC...
-  +-- [04] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=4599 out=369 total=4968
-      min: 0.1341m
-      detail: OpenWebpage(url=https://ftierra.org/index....ca-de-fortaleza)
-  +-- [05] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://ftierra.org/index.php/tema/derechos-indige...iticas-publicas] Quiénes ...
-  +-- [06] Requested 1 tool call (save_finding)
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":3,"attempt...
+  +-- [04] Produced structured answer
       by: AI
-      tok: in=5173 out=59 total=5232
-      min: 0.0256m
-      detail: save_finding(finding=prior_occupation = Ramona ...03/52180793916), category=fact)
-  +-- [07] Returned result
-      by: Tool save_finding
+      tok: in=1417 out=35 total=1452
+      min: 0.0542m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_institution":"U...limited verifiable eviden...
+  +-- [05] Submitted task prompt
+      by: Human
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: prior_occupation = Ramona Moye, di...tos/194792615@N03/5218079...
+      detail: CONTINUE SEARCHING — 8 fields are still unresolved: bir...urce: URL)', category='fa...
+  +-- [06] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3238 out=66 total=3304
+      min: 0.0235m
+      detail: Search(query=Ramona Moye Camaconi año de nacimiento)
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...AL </URL> __END_OF_SOURCE...
   +-- [08] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=5329 out=247 total=5576
-      min: 0.1206m
-      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
+      tok: in=3433 out=103 total=3536
+      min: 0.0783m
+      detail: OpenWebpage(url=https://pub.eldiario.net/n...s-falsificadas=)
   +-- [09] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
+      detail: URL: https://pub.eldiario.net/noticias/2018/2018_09/nt1.../i_deportes.php] INTERNAC...
   +-- [10] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=5397 out=45 total=5442
-      min: 0.0196m
-      detail: save_finding(finding=prior_occupation = Ramona ...lamentario=609), category=fact)
+      tok: in=4593 out=37 total=4630
+      min: 0.0203m
+      detail: save_finding(finding=birth_place = Beni (source.../12843/detalle), category=fact)
   +-- [11] Returned result
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: prior_occupation = Ramona Moye, Di...p?page=parlamentario&id_p...
-  +-- [12] Requested 1 tool call (Search)
+      detail: Saved to scratchpad: birth_place = Beni (source: https:...edios_digitales/12843/det...
+  +-- [12] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=6454 out=69 total=6523
-      min: 0.0220m
-      detail: Search(query="Ramona Moye" lugar nacimiento 'Ramona Mo...)
+      tok: in=4889 out=2366 total=7255
+      min: 0.6474m
+      detail: save_finding(finding=prior_occupation = La prim...n-el-beni.html), category=fact)
   +-- [13] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...tml </URL> __END_OF_SOURC...
-  +-- [14] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=6640 out=303 total=6943
-      min: 0.1159m
-      detail: OpenWebpage(url=https://correodelsur.com/p...ja-de-coca.html)
-  +-- [15] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://correodelsur.com/politica/20190601/diputad...laró Moye, oriunda del Ti...
-  +-- [16] Requested 1 tool call (save_finding)
-      by: AI
-      tok: in=7102 out=92 total=7194
-      min: 0.0279m
-      detail: save_finding(finding=prior_occupation = Ramona ...a-de-coca.html), category=fact)
-  +-- [17] Returned result
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: prior_occupation = Ramona Moye (MA...-se-produce-hoja-de-coca....
+      detail: Saved to scratchpad: prior_occupation = La primer diput...-ud-y-del-mas-en-el-beni....
+  +-- [14] Requested 1 tool call (Search)
+      by: AI
+      tok: in=5246 out=1311 total=6557
+      min: 0.3302m
+      detail: Search(query=Ramona Moye fecha de nacimiento Ramona Mo...)
+  +-- [15] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ¿Cómo saber lafechadena...mos </URL> __END_OF_SOURC...
+  +-- [16] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=6663 out=50 total=6713
+      min: 0.0226m
+      detail: OpenWebpage(url=https://es.scribd.com/docu...atos-de-Creemos)
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://es.scribd.com/document/445454847/Lista-de-...idaturas de CREEMOS en Bo...
   +-- [18] Requested 1 tool call (Search)
       by: AI
-      tok: in=7353 out=281 total=7634
-      min: 0.0982m
-      detail: Search(query=Ramona Moye Wikipedia 'Ramona Moye Camaco...)
+      tok: in=6792 out=66 total=6858
+      min: 0.0655m
+      detail: Search(query=Ramona Moye año nacimiento "Ramona Moye C...)
   +-- [19] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> The new law, proposed b...ple </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi is o...916 </URL> __END_OF_SOURC...
   +-- [20] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=8801 out=77 total=8878
-      min: 0.0352m
-      detail: OpenWebpage(url=https://santiagotimes.com/...digenous-people)
+      tok: in=6969 out=488 total=7457
+      min: 0.1978m
+      detail: OpenWebpage(url=https://www.flickr.com/pho...N03/52180793916)
   +-- [21] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://santiagotimes.com/latin-america/evo-morale...com/contact-us/] Home Fea...
+      detail: URL: https://www.flickr.com/photos/194792615@N03/521807...w.flickr.com/signup] ✨ Ge...
   +-- [22] Requested 1 tool call (Search)
       by: AI
-      tok: in=7361 out=237 total=7598
-      min: 0.0635m
-      detail: Search(query="Ramona Moye Camaconi" educación 'licenci...)
+      tok: in=7838 out=421 total=8259
+      min: 0.1236m
+      detail: Search(query=Ramona Moye educación estudió "Ramona Moy...)
   +-- [23] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...as= </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pr...dad </URL> __END_OF_SOURC...
   +-- [24] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=8030 out=763 total=8793
-      min: 0.1691m
-      detail: OpenWebpage(url=https://www.noticiasfides....ificadas-390956)
+      tok: in=8667 out=34 total=8701
+      min: 0.0240m
+      detail: OpenWebpage(url=https://www.honorsociety.o...ers/ramona-moye)
   +-- [25] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.noticiasfides.com/nacional/politica/di...asfides.com/pueblos-indig...
-  +-- [26] Requested 1 tool call (save_finding)
+      detail: URL: https://www.honorsociety.org/members/ramona-moye F...&_ss=r&variant=3965348367...
+  +-- [26] Requested 1 tool call (Search)
       by: AI
-      tok: in=8219 out=71 total=8290
-      min: 0.0326m
-      detail: save_finding(finding=prior_occupation = Ramona ...lamentario=609), category=fact)
+      tok: in=8366 out=613 total=8979
+      min: 0.1606m
+      detail: Search(query="Ramona Moye Camaconi" "fecha de nacimiento")
   +-- [27] Returned result
-      by: Tool save_finding
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: prior_occupation = Ramona Moye was...mentario&id_parlamentario...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona Ponce | P...60 </URL> __END_OF_SOURCE...
   +-- [28] Requested 1 tool call (Search)
       by: AI
-      tok: in=8411 out=964 total=9375
-      min: 0.2300m
-      detail: Search(query="Organización de Mujeres - Sub Central Sé...)
+      tok: in=9618 out=224 total=9842
+      min: 0.0609m
+      detail: Search(query="Ramona Moye Camaconi" nacimiento año)
   +-- [29] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-  +-- [30] Requested 1 tool call (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...as= </URL> __END_OF_SOURC...
+  +-- [30] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=8479 out=56 total=8535
-      min: 0.0356m
-      detail: Search(query=Ramona Moye 'circunscripción especial' 'B...)
+      tok: in=9675 out=299 total=9974
+      min: 0.1057m
+      detail: OpenWebpage(url=https://ftierra.org/index....ca-de-fortaleza)
   +-- [31] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://ftierra.org/index.php/tema/derechos-indige...iticas-publicas] Quiénes ...
+  +-- [32] Requested 1 tool call (Search)
+      by: AI
+      tok: in=11770 out=519 total=12289
+      min: 0.1245m
+      detail: Search(query="Ramona Moye Camaconi" nació año OR "naci...)
+  +-- [33] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: No good DuckDuckGo Search Result was found
-  +-- [32] Produced structured answer
-      by: AI
-      tok: in=8068 out=2348 total=10416
-      min: 0.6343m
-      flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level": "Unknown", "education_institution":...limited verifiable eviden...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona Galarza -...05 </URL> __END_OF_SOURCE...
 END

@@ -1,12 +1,12 @@
 {
-  "elapsed_time": 10.5642,
+  "elapsed_time": 14.7569,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": "recovery_blocked_entity_mismatch",
-      "attempts": 2,
+      "attempts": 5,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown",
       "evidence_reason": "recovery_blocked_entity_mismatch"
     },
@@ -38,9 +38,9 @@
     },
     "prior_occupation": {
       "status": "found",
-      "value": "La bancada de Unidad Demócrata en la Asamblea Legislativa Plurinacional por el Beni está integrada por dos senadores, un diputado plurinominal y tres uninominales. Además, obtuvo un representante supraestatal.",
+      "value": "La primer diputada plurinominal titular",
       "source_url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
-      "evidence": "content='URL: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html\\nFinal URL: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html\\nTitle: Radio Patujú 95.2 FM: BANCADAS DE UD Y DEL",
+      "evidence": "La primer diputada plurinominal titular es Susana Rivero, con su suplente Braulio Gutiérrez Dumay. El segundo diputado plurinominal titular es Walter Roque Gómez y su suplente es Lizeth Veliz Rivero. Resultó elegida en la circunscripción es",
       "attempts": 0,
       "descriptor": "string|Unknown"
     },
@@ -49,7 +49,7 @@
       "value": "Unknown",
       "source_url": null,
       "evidence": "recovery_blocked_entity_mismatch",
-      "attempts": 5,
+      "attempts": 1,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown",
       "evidence_reason": "recovery_blocked_entity_mismatch"
     },
@@ -79,36 +79,36 @@
       "descriptor": "string|null"
     },
     "birth_place": {
+      "status": "found",
+      "value": "Beni",
+      "source_url": "https://sisin.oep.org.bo/medios_digitales/12843/detalle",
+      "evidence": "Ladiputadaindígena deBeniRamonaMoye, del MAS, sostuvo que en su visita al TIPNIS, el Tribunal Internacional de Derechos de la Naturaleza conocerá cómo las políticas del presidente Evo Morales protegen el medioambiente y mejoran las condicio",
+      "attempts": 1,
+      "descriptor": "string|Unknown"
+    },
+    "birth_place_source": {
+      "status": "found",
+      "value": "https://sisin.oep.org.bo/medios_digitales/12843/detalle",
+      "source_url": "https://sisin.oep.org.bo/medios_digitales/12843/detalle",
+      "evidence": "derived_from_evidence_candidate",
+      "attempts": 1,
+      "descriptor": "string|null"
+    },
+    "birth_year": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
       "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
-      "descriptor": "string|Unknown",
+      "descriptor": "integer|null|Unknown",
       "evidence_reason": "recovery_blocked_entity_mismatch"
     },
-    "birth_place_source": {
+    "birth_year_source": {
       "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
       "attempts": 5,
-      "descriptor": "string|null"
-    },
-    "birth_year": {
-      "status": "found",
-      "value": "1969-12-01",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "evidence": "content='URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\\nFinal URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\\nTitle: Vicepresidencia del Estado\\nBytes read",
-      "attempts": 2,
-      "descriptor": "integer|null|Unknown"
-    },
-    "birth_year_source": {
-      "status": "found",
-      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
-      "evidence": "derived_from_evidence_candidate",
-      "attempts": 2,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -142,48 +142,66 @@
       "value": "Low",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 5,
+      "attempts": 3,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
       "status": "found",
-      "value": "Source-backed searches resolved 5 fields (including prior_occupation, prior_occupation_source, birth_year), while 13 fields remain unknown due to limited verifiable evidence.",
+      "value": "Source-backed searches resolved 5 fields (including prior_occupation, prior_occupation_source, birth_place), while 13 fields remain unknown due to limited verifiable evidence.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 5,
+      "attempts": 3,
       "descriptor": "string"
     }
   },
   "diagnostics": {
-    "grounding_blocks_count": 0,
+    "grounding_blocks_count": 1,
     "source_consistency_fixes_count": 0,
     "field_demotions_count": 3,
     "recovery_promotions_count": 0,
     "recovery_rejections_count": 8,
-    "off_target_tool_results_count": 2,
-    "empty_tool_results_count": 3,
+    "unknown_fields_count": 12,
+    "off_target_tool_results_count": 0,
+    "empty_tool_results_count": 2,
     "retry_or_replan_events": 1,
-    "webpage_llm_extraction_calls": 2,
-    "webpage_langextract_calls": 3,
-    "webpage_langextract_fallback_calls": 1,
-    "webpage_langextract_errors": 1,
-    "webpage_openwebpage_candidates_total": 3,
-    "webpage_openwebpage_candidates_selected": 3,
-    "webpage_openwebpage_skipped_hard_failures": 0,
+    "quality_gate_failures": 0,
+    "no_payload_extraction_rounds": 0,
+    "webpage_no_payload_rounds": 0,
+    "search_snippet_no_payload_rounds": 0,
+    "webpage_llm_extraction_calls": 0,
+    "webpage_langextract_calls": 6,
+    "webpage_langextract_fallback_calls": 6,
+    "webpage_langextract_errors": 6,
+    "webpage_openwebpage_candidates_total": 8,
+    "webpage_openwebpage_candidates_selected": 6,
+    "webpage_openwebpage_skipped_hard_failures": 2,
     "webpage_openwebpage_skipped_empty": 0,
-    "grounding_blocked_fields": [],
+    "grounding_blocked_fields": "birth_year",
     "source_consistency_fixes": [],
     "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
     "recovery_promoted_fields": [],
-    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_year", "lgbtq_status", "lgbtq_details"],
+    "unknown_fields": ["class_background", "education_level", "education_institution", "education_field", "disability_status", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details", "education_source", "disability_source", "lgbtq_source"],
     "field_demotion_reason_counts": {
       "source_consistency_demotion": 3
     },
     "recovery_reason_counts": {
       "recovery_blocked_entity_mismatch": 8
     },
-    "retrieval_interventions": "low_signal_streak_rewrite:2",
-    "webpage_openwebpage_skip_reasons": [],
+    "unknown_reason_counts": {
+      "attempted_no_verified_evidence": 10,
+      "recovery_blocked_entity_mismatch": 8,
+      "source_consistency_demotion": 1,
+      "grounding_blocked_entity_value_mismatch": 1
+    },
+    "unknown_fields_by_reason": {
+      "attempted_no_verified_evidence": ["class_background", "education_source", "disability_source", "lgbtq_source", "education_level", "education_institution", "education_field", "disability_status", "lgbtq_status", "lgbtq_details"],
+      "recovery_blocked_entity_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_year", "lgbtq_status", "lgbtq_details"],
+      "source_consistency_demotion": "birth_year_source",
+      "grounding_blocked_entity_value_mismatch": "birth_year"
+    },
+    "retrieval_interventions": ["low_signal_streak_rewrite:2", "retry_escalation:low_signal"],
+    "webpage_openwebpage_skip_reasons": "tool_error:request_exception",
     "webpage_langextract_provider": "openai",
     "webpage_langextract_last_error": "no_payload"
   }
