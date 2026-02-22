@@ -1,32 +1,32 @@
 {
-  "elapsed_time": 4.393,
+  "elapsed_time": 10.5642,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
-      "attempts": 5,
+      "evidence": "recovery_blocked_entity_mismatch",
+      "attempts": 2,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "education_institution": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
+      "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
       "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "education_field": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
+      "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
       "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "education_source": {
       "status": "unknown",
@@ -37,39 +37,38 @@
       "descriptor": "string|null"
     },
     "prior_occupation": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
-      "attempts": 5,
-      "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "status": "found",
+      "value": "La bancada de Unidad Demócrata en la Asamblea Legislativa Plurinacional por el Beni está integrada por dos senadores, un diputado plurinominal y tres uninominales. Además, obtuvo un representante supraestatal.",
+      "source_url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "evidence": "content='URL: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html\\nFinal URL: https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html\\nTitle: Radio Patujú 95.2 FM: BANCADAS DE UD Y DEL",
+      "attempts": 0,
+      "descriptor": "string|Unknown"
     },
     "class_background": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
+      "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "prior_occupation_source": {
-      "status": "unknown",
-      "value": null,
-      "source_url": null,
-      "evidence": "source_consistency_demotion",
-      "attempts": 5,
+      "status": "found",
+      "value": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "source_url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "evidence": "derived_from_evidence_candidate",
+      "attempts": 0,
       "descriptor": "string|null"
     },
     "disability_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
+      "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
       "descriptor": "No disability|Some disability|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "disability_source": {
       "status": "unknown",
@@ -83,10 +82,10 @@
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
+      "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
       "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "birth_place_source": {
       "status": "unknown",
@@ -98,37 +97,37 @@
     },
     "birth_year": {
       "status": "found",
-      "value": 1982,
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "scratchpad_source_backed",
-      "attempts": 3,
+      "value": "1969-12-01",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "evidence": "content='URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\\nFinal URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428\\nTitle: Vicepresidencia del Estado\\nBytes read",
+      "attempts": 2,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
       "status": "found",
-      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "source_consistency_fix",
-      "attempts": 3,
+      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "evidence": "derived_from_evidence_candidate",
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
+      "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "lgbtq_details": {
       "status": "unknown",
       "value": null,
       "source_url": null,
-      "evidence": "recovery_blocked_no_candidates",
+      "evidence": "recovery_blocked_entity_mismatch",
       "attempts": 5,
       "descriptor": "string|null",
-      "evidence_reason": "recovery_blocked_no_candidates"
+      "evidence_reason": "recovery_blocked_entity_mismatch"
     },
     "lgbtq_source": {
       "status": "unknown",
@@ -148,7 +147,7 @@
     },
     "justification": {
       "status": "found",
-      "value": "Source-backed searches resolved 3 fields (including birth_year, birth_year_source, confidence), while 15 fields remain unknown due to limited verifiable evidence.",
+      "value": "Source-backed searches resolved 5 fields (including prior_occupation, prior_occupation_source, birth_year), while 13 fields remain unknown due to limited verifiable evidence.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 5,
@@ -157,25 +156,35 @@
   },
   "diagnostics": {
     "grounding_blocks_count": 0,
-    "source_consistency_fixes_count": 1,
+    "source_consistency_fixes_count": 0,
     "field_demotions_count": 3,
     "recovery_promotions_count": 0,
-    "recovery_rejections_count": 9,
-    "off_target_tool_results_count": 0,
-    "empty_tool_results_count": 2,
-    "retry_or_replan_events": 0,
-    "webpage_llm_extraction_calls": 0,
+    "recovery_rejections_count": 8,
+    "off_target_tool_results_count": 2,
+    "empty_tool_results_count": 3,
+    "retry_or_replan_events": 1,
+    "webpage_llm_extraction_calls": 2,
+    "webpage_langextract_calls": 3,
+    "webpage_langextract_fallback_calls": 1,
+    "webpage_langextract_errors": 1,
+    "webpage_openwebpage_candidates_total": 3,
+    "webpage_openwebpage_candidates_selected": 3,
+    "webpage_openwebpage_skipped_hard_failures": 0,
+    "webpage_openwebpage_skipped_empty": 0,
     "grounding_blocked_fields": [],
-    "source_consistency_fixes": "birth_year_source",
+    "source_consistency_fixes": [],
     "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
     "recovery_promoted_fields": [],
-    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
     "field_demotion_reason_counts": {
       "source_consistency_demotion": 3
     },
     "recovery_reason_counts": {
-      "recovery_blocked_no_candidates": 9
+      "recovery_blocked_entity_mismatch": 8
     },
-    "retrieval_interventions": []
+    "retrieval_interventions": "low_signal_streak_rewrite:2",
+    "webpage_openwebpage_skip_reasons": [],
+    "webpage_langextract_provider": "openai",
+    "webpage_langextract_last_error": "no_payload"
   }
 }

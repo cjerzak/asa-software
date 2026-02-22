@@ -1,1 +1,27 @@
-[]
+{
+  "version": 1,
+  "facts": [],
+  "decisions": [],
+  "open_questions": [],
+  "sources": [
+    {
+      "tool": "OpenWebpage",
+      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+      "title": "Radio Patujú 95.2 FM: BANCADAS DE UD Y DEL MAS EN EL BENI",
+      "note": null
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "https://www.flickr.com/photos/194792615@N03/52180793916",
+      "title": "Ramona Moye Camaconi | Ramona Moye Camaconi, diputada titula… | Flickr",
+      "note": null
+    },
+    {
+      "tool": "OpenWebpage",
+      "url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
+      "title": "Vicepresidencia del Estado",
+      "note": null
+    }
+  ],
+  "warnings": []
+}

@@ -50,6 +50,9 @@ from asa_backend.search.transport import (
     _shared_message_content_from_message,
     _shared_message_content_to_text,
 )
+from asa_backend.extraction.langextract_bridge import (
+    extract_schema_from_openwebpage_text as _langextract_extract_schema_from_openwebpage_text,
+)
 from state_utils import (
     build_node_trace_entry,
     _token_usage_dict_from_message,
@@ -1161,6 +1164,11 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "field_recovery_enabled": True,
     "field_recovery_mode": "balanced",
     "field_recovery_min_support_tokens": 8,
+    # If True, deterministic numeric recovery requires a nearby keyword hit
+    # derived from the schema key (to avoid promoting unrelated years).
+    # When NULL/unspecified, defaults to True for precision/balanced and False
+    # for recall.
+    "field_recovery_require_keyword_hit_for_numbers": None,
     "field_recovery_allow_source_only_when_base_unknown": False,
     "unsourced_allowlist_patterns": [
         "^confidence$",
@@ -1176,7 +1184,7 @@ _DEFAULT_QUERY_TEMPLATES: Dict[str, str] = {
 }
 
 _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
-    "policy_version": "2026-02-20",
+    "policy_version": "2026-02-21",
     "candidate_resolver": {
         "enabled": True,
         "mode": "observe",
@@ -1200,15 +1208,31 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         # Controls whether field attempts keep incrementing after a field is
         # marked unknown at unknown_after_searches.
         "field_attempt_budget_mode": "strict_cap",
-        # Optional: LLM extraction pass over OpenWebpage tool outputs to improve
-        # recall for schema fields. Keep disabled by default; enable via
-        # orchestration_options to opt in.
-        "llm_webpage_extraction": False,
+        # Search-snippet schema extraction (from Search tool __START_OF_SOURCE blocks).
+        # This is a lightweight fallback when full OpenWebpage extraction fails.
+        "search_snippet_extraction_enabled": True,
+        "search_snippet_extraction_max_sources_per_round": 2,
+        "search_snippet_extraction_max_total_sources": 8,
+        "search_snippet_extraction_max_chars": 2000,
+        # Webpage extraction engine. "langextract" is default; "legacy" keeps
+        # the prior selector-model JSON extraction path.
+        "webpage_extraction_engine": "langextract",
+        # Engine-level enable gate. Backward-compatible alias:
+        # llm_webpage_extraction.
+        "webpage_extraction_enabled": True,
+        "llm_webpage_extraction": True,
         "llm_webpage_extraction_max_pages_per_round": 1,
         "llm_webpage_extraction_max_total_pages": 2,
-        "llm_webpage_extraction_max_chars": 6000,
+        "llm_webpage_extraction_max_chars": 9000,
         "llm_webpage_extraction_timeout_s": 18.0,
         "llm_webpage_extraction_max_output_tokens": 420,
+        # Langextract-specific tuning knobs.
+        "langextract_extraction_passes": 2,
+        "langextract_max_char_buffer": 2000,
+        "langextract_prompt_validation_level": "warning",
+        # Optional overrides; leave NULL/empty to infer from selector model.
+        "langextract_backend_hint": None,
+        "langextract_model_id": None,
     },
     "finalizer": {
         "enabled": True,
@@ -1261,7 +1285,9 @@ def _normalize_source_tier_provider(raw_provider: Any) -> Dict[str, Any]:
 
 def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
     options = copy.deepcopy(_DEFAULT_ORCHESTRATION_OPTIONS)
+    raw_field_resolver = None
     if isinstance(raw_options, dict):
+        raw_field_resolver = raw_options.get("field_resolver") if isinstance(raw_options.get("field_resolver"), dict) else None
         for key in (
             "candidate_resolver",
             "retrieval_controller",
@@ -1314,6 +1340,39 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
     if attempt_mode not in {"strict_cap", "soft_cap"}:
         attempt_mode = "strict_cap"
     fr["field_attempt_budget_mode"] = attempt_mode
+    engine = str(fr.get("webpage_extraction_engine") or "langextract").strip().lower()
+    if engine not in {"langextract", "legacy"}:
+        engine = "langextract"
+    fr["webpage_extraction_engine"] = engine
+    # Backward compatibility for legacy option name:
+    # - If explicit webpage_extraction_enabled is present, it wins.
+    # - Else llm_webpage_extraction controls the gate.
+    if isinstance(raw_field_resolver, dict) and "webpage_extraction_enabled" in raw_field_resolver:
+        enabled = bool(fr.get("webpage_extraction_enabled"))
+    else:
+        enabled = bool(fr.get("llm_webpage_extraction", True))
+    fr["webpage_extraction_enabled"] = enabled
+    fr["llm_webpage_extraction"] = enabled
+    try:
+        fr["langextract_extraction_passes"] = max(1, int(fr.get("langextract_extraction_passes", 2)))
+    except Exception:
+        fr["langextract_extraction_passes"] = 2
+    try:
+        fr["langextract_max_char_buffer"] = max(200, int(fr.get("langextract_max_char_buffer", 2000)))
+    except Exception:
+        fr["langextract_max_char_buffer"] = 2000
+    pv_level = str(fr.get("langextract_prompt_validation_level") or "warning").strip().lower()
+    if pv_level not in {"off", "warning", "error"}:
+        pv_level = "warning"
+    fr["langextract_prompt_validation_level"] = pv_level
+    backend_hint = fr.get("langextract_backend_hint")
+    if backend_hint is not None:
+        backend_hint = str(backend_hint).strip().lower() or None
+    fr["langextract_backend_hint"] = backend_hint
+    model_override = fr.get("langextract_model_id")
+    if model_override is not None:
+        model_override = str(model_override).strip() or None
+    fr["langextract_model_id"] = model_override
 
     finalizer = options["finalizer"]
     finalizer["finalize_when_all_unresolved_exhausted"] = bool(
@@ -1535,6 +1594,12 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
         )
     field_recovery_min_support_tokens = max(4, min(80, field_recovery_min_support_tokens))
 
+    raw_require_keyword_hit_for_numbers = policy.get("field_recovery_require_keyword_hit_for_numbers")
+    if raw_require_keyword_hit_for_numbers is None:
+        field_recovery_require_keyword_hit_for_numbers = field_recovery_mode in {"precision", "balanced"}
+    else:
+        field_recovery_require_keyword_hit_for_numbers = bool(raw_require_keyword_hit_for_numbers)
+
     return {
         "require_verified_for_non_unknown": bool(
             policy.get(
@@ -1574,6 +1639,7 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
         ),
         "field_recovery_mode": field_recovery_mode,
         "field_recovery_min_support_tokens": field_recovery_min_support_tokens,
+        "field_recovery_require_keyword_hit_for_numbers": bool(field_recovery_require_keyword_hit_for_numbers),
         "field_recovery_allow_source_only_when_base_unknown": bool(
             policy.get(
                 "field_recovery_allow_source_only_when_base_unknown",
@@ -1853,6 +1919,176 @@ def _extract_url_candidates(text: str, *, max_urls: int = 8) -> list:
         if len(out) >= max_urls:
             break
     return out
+
+
+_OPENWEBPAGE_HEADER_LINE_RE = re.compile(
+    r"^(?:url|final url|title|bytes read|cache)\s*:",
+    flags=re.IGNORECASE,
+)
+_OPENWEBPAGE_LINK_LINE_RE = re.compile(r"^\[link:\s*https?://", flags=re.IGNORECASE)
+_OPENWEBPAGE_EXCERPT_INDEX_RE = re.compile(r"^\[\d+\]\s*$")
+_OPENWEBPAGE_NAV_NOISE_TOKENS = {
+    "menu",
+    "menu and widgets",
+    "log in",
+    "sign up",
+    "subscribe",
+    "suscribete",
+    "suscriptores",
+    "portada",
+    "explore",
+    "whats new",
+    "recent photos",
+    "events",
+    "the commons",
+    "flickr galleries",
+    "world map",
+    "camera finder",
+    "flickr blog",
+    "prints",
+    "pro plans",
+}
+
+
+def _normalize_url_from_text_snippet(raw_url: Any) -> Optional[str]:
+    text = str(raw_url or "").strip()
+    if not text:
+        return None
+    text = re.sub(r"\\[rn]", " ", text)
+    text = re.sub(r"(?i)\bfinal\s+url\s*:\s*", " ", text)
+    text = re.sub(r"(?i)\\n\s*final\b.*$", "", text).strip()
+    for raw in re.findall(r"https?://[^\s<>()\"']+", text):
+        normalized = _canonicalize_url(raw)
+        if normalized:
+            return normalized
+    normalized = _canonicalize_url(text)
+    if normalized:
+        return normalized
+    for raw in re.findall(r"https?://[^\s<>()\"']+", text):
+        normalized = _canonicalize_url(raw)
+        if normalized:
+            return normalized
+    return None
+
+
+def _openwebpage_hard_failure_reason(text: Any) -> Optional[str]:
+    raw = str(text or "").strip()
+    if not raw:
+        return "empty_message"
+
+    if raw.lstrip().startswith("{"):
+        parsed = parse_llm_json(raw)
+        if isinstance(parsed, dict) and parsed.get("ok") is False:
+            error_type = str(parsed.get("error_type") or parsed.get("error") or "tool_error").strip().lower()
+            return f"tool_error:{error_type[:80] or 'unknown'}"
+
+    lowered = raw.lower()
+    if "\"ok\":false" in lowered or "\"ok\": false" in lowered:
+        match = re.search(r"\"error_type\"\s*:\s*\"([^\"]+)\"", lowered)
+        if match:
+            return f"tool_error:{str(match.group(1) or '').strip().lower()[:80] or 'unknown'}"
+        return "tool_error:unknown"
+    if "blocked fetch detected" in lowered or "hit_blocked" in lowered or "http_403_bot_marker" in lowered:
+        return "blocked_fetch"
+    if "failed to open url" in lowered or "request error opening url" in lowered:
+        return "fetch_failed"
+    if "request_exception" in lowered and "openwebpage" in lowered:
+        return "tool_error:request_exception"
+    if ("enable javascript and cookies" in lowered or "just a moment" in lowered) and "bytes read: 0" in lowered:
+        return "bot_wall"
+    return None
+
+
+def _openwebpage_line_has_signal(line: str, *, entity_tokens: Optional[List[str]] = None) -> bool:
+    text = str(line or "").strip()
+    if not text:
+        return False
+    normalized = _normalize_match_text(text)
+    token_list = [_normalize_match_text(tok) for tok in list(entity_tokens or [])]
+    token_list = [tok for tok in token_list if tok]
+    if any(tok in normalized for tok in token_list):
+        return True
+    if re.search(r"\d", text):
+        return True
+    if len(re.findall(r"[A-Za-z0-9]+", text)) >= 7:
+        return True
+    if len(text) >= 30 and re.search(r"[.;:!?]", text):
+        return True
+
+    text_norm = re.sub(r"\s+", " ", text).strip().lower()
+    if text_norm in _OPENWEBPAGE_NAV_NOISE_TOKENS:
+        return False
+    if len(text) <= 24 and len(re.findall(r"[A-Za-z0-9]+", text)) <= 4:
+        return False
+    return True
+
+
+def _prepare_openwebpage_text_for_extraction(
+    text: Any,
+    *,
+    entity_tokens: Optional[List[str]] = None,
+    max_chars: int = 9000,
+) -> str:
+    raw = str(text or "")
+    if not raw.strip():
+        return ""
+
+    normalized = raw.replace("\r\n", "\n").replace("\r", "\n")
+    excerpts_match = re.search(r"\n\s*Relevant excerpts:\s*\n", normalized, flags=re.IGNORECASE)
+    if excerpts_match:
+        normalized = normalized[excerpts_match.end():]
+
+    cleaned_lines: List[str] = []
+    for line in normalized.split("\n"):
+        stripped = str(line or "").strip()
+        if not stripped:
+            continue
+        if _OPENWEBPAGE_HEADER_LINE_RE.match(stripped):
+            continue
+        if _OPENWEBPAGE_EXCERPT_INDEX_RE.match(stripped):
+            continue
+        if _OPENWEBPAGE_LINK_LINE_RE.match(stripped):
+            continue
+        if stripped.lower().startswith("relevant excerpts:"):
+            continue
+        if stripped.startswith("http://") or stripped.startswith("https://"):
+            # Bare link-only lines are usually navigation artifacts.
+            continue
+        cleaned_lines.append(stripped)
+
+    if not cleaned_lines:
+        return ""
+
+    signal_lines = [
+        line for line in cleaned_lines
+        if _openwebpage_line_has_signal(line, entity_tokens=entity_tokens)
+    ]
+
+    selected_lines = signal_lines if signal_lines else cleaned_lines
+
+    if entity_tokens:
+        token_list = [_normalize_match_text(tok) for tok in list(entity_tokens or [])]
+        token_list = [tok for tok in token_list if len(tok) >= 3]
+        if token_list:
+            hit_indexes: List[int] = []
+            for idx, line in enumerate(selected_lines):
+                normalized_line = _normalize_match_text(line)
+                if any(tok in normalized_line for tok in token_list):
+                    hit_indexes.append(idx)
+            if hit_indexes:
+                keep_indexes = set()
+                for idx in hit_indexes:
+                    for candidate_idx in range(max(0, idx - 2), min(len(selected_lines), idx + 3)):
+                        keep_indexes.add(candidate_idx)
+                around_mentions = [selected_lines[idx] for idx in sorted(keep_indexes)]
+                if len(" ".join(around_mentions)) >= 180:
+                    selected_lines = around_mentions
+
+    compact = "\n".join(selected_lines)
+    compact = re.sub(r"\n{3,}", "\n\n", compact).strip()
+    if not compact:
+        return ""
+    return compact[: max(512, int(max_chars))]
 
 
 def _tool_message_name(msg: Any) -> str:
@@ -2191,12 +2427,25 @@ def _normalize_field_recovery_mode(mode: Any) -> str:
     return normalized
 
 
+def _field_recovery_raw_tokens(text: Any) -> List[str]:
+    raw = str(text or "").strip()
+    if not raw:
+        return []
+    # Preserve separators for token splitting, and split simple CamelCase.
+    spaced = re.sub(r"[\[\]\\/\\._\\-]+", " ", raw)
+    spaced = re.sub(r"([a-z])([A-Z])", r"\\1 \\2", spaced)
+    spaced = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\\1 \\2", spaced)
+    normalized = _normalize_match_text(spaced)
+    return re.findall(r"[a-z0-9]+", normalized)
+
+
 def _field_recovery_keywords(path: str, aliases: Sequence[str], *, max_tokens: int = 10) -> List[str]:
     out: List[str] = []
     seen = set()
-    raw_tokens = re.findall(r"[a-z0-9]+", _normalize_match_text(path))
+    raw_tokens = _field_recovery_raw_tokens(path)
     for alias in list(aliases or []):
-        raw_tokens.extend(re.findall(r"[a-z0-9]+", _normalize_match_text(alias)))
+        raw_tokens.extend(_field_recovery_raw_tokens(alias))
+
     for token in raw_tokens:
         if not token or len(token) < 3:
             continue
@@ -2235,6 +2484,7 @@ def _recover_values_from_source_text(
     source_text: Any,
     keywords: Sequence[str],
     mode: str,
+    require_keyword_hit_for_numbers: bool = True,
 ) -> List[Any]:
     text_norm = _normalize_match_text(source_text)
     if not text_norm:
@@ -2256,6 +2506,7 @@ def _recover_values_from_source_text(
 
     year_pattern = re.compile(r"\b(1[6-9]\d{2}|20\d{2}|2100)\b")
     numeric_pattern = re.compile(r"-?\d+")
+    structured_date_pattern = re.compile(r"\b\d{4}\s*[-/]\s*\d{1,2}\s*[-/]\s*\d{1,2}\b")
     year_matches = list(year_pattern.finditer(text_norm))
     numeric_matches = list(numeric_pattern.finditer(text_norm))
     candidate_matches = year_matches if year_matches else numeric_matches
@@ -2264,6 +2515,7 @@ def _recover_values_from_source_text(
 
     unique_years = {int(m.group(0)) for m in year_matches}
     ranked: List[Tuple[float, int]] = []
+    require_keyword_hit = bool(require_keyword_hit_for_numbers) and bool(list(keywords or []))
     for match in candidate_matches[:24]:
         raw = str(match.group(0) or "").strip()
         if not raw or raw == "-":
@@ -2279,12 +2531,15 @@ def _recover_values_from_source_text(
         for token in list(keywords or []):
             if token and token in context:
                 keyword_hits += 1
+        allow_without_keyword = bool(match in year_matches and structured_date_pattern.search(context))
+        if require_keyword_hit and keyword_hits <= 0 and not allow_without_keyword:
+            continue
         score = 0.10
         if match in year_matches:
             score += 0.20
             if len(unique_years) == 1:
                 score += 0.20
-            if re.search(r"\b\d{4}\s*[-/]\s*\d{1,2}\s*[-/]\s*\d{1,2}\b", context):
+            if structured_date_pattern.search(context):
                 score += 0.10
         score += min(0.40, 0.12 * float(keyword_hits))
         ranked.append((score, parsed))
@@ -2353,6 +2608,9 @@ def _recover_unknown_fields_from_tool_evidence(
         min_support_tokens = 8
     allow_source_only = bool(
         policy.get("field_recovery_allow_source_only_when_base_unknown", False)
+    )
+    require_keyword_hit_for_numbers = bool(
+        policy.get("field_recovery_require_keyword_hit_for_numbers", True)
     )
 
     allowed = set()
@@ -2428,6 +2686,7 @@ def _recover_unknown_fields_from_tool_evidence(
                 source_text=source_text,
                 keywords=keywords,
                 mode=recovery_mode,
+                require_keyword_hit_for_numbers=require_keyword_hit_for_numbers,
             )
             if not recovered_values:
                 continue
@@ -2516,6 +2775,8 @@ def _recover_unknown_fields_from_tool_evidence(
                 normalized[source_key] = source_entry
 
         blocked_reason = _normalize_recovery_rejection_reason(decision_reason)
+        if blocked_reason == "recovery_blocked_no_candidates" and rejected_reasons:
+            blocked_reason = str(rejected_reasons[0])
         if blocked_reason is None:
             rejected_reason = next(
                 (str(c.get("rejection_reason") or "").strip() for c in scored if str(c.get("rejection_reason") or "").strip()),
@@ -3990,7 +4251,7 @@ def _collect_tool_source_text_index(
 
 
 def _normalize_url_match(url: Any) -> Optional[str]:
-    normalized = _canonicalize_url(url)
+    normalized = _normalize_url_from_text_snippet(url)
     if not normalized:
         return None
     if _is_noise_source_url(normalized):
@@ -4704,6 +4965,13 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "empty_tool_results_count",
         "retry_or_replan_events",
         "webpage_llm_extraction_calls",
+        "webpage_langextract_calls",
+        "webpage_langextract_fallback_calls",
+        "webpage_langextract_errors",
+        "webpage_openwebpage_candidates_total",
+        "webpage_openwebpage_candidates_selected",
+        "webpage_openwebpage_skipped_hard_failures",
+        "webpage_openwebpage_skipped_empty",
     )
     out: Dict[str, Any] = {}
     for key in counters:
@@ -4741,6 +5009,9 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
                 recovery_reason_counts[reason] = 0
     out["recovery_reason_counts"] = recovery_reason_counts
     out["retrieval_interventions"] = list(existing.get("retrieval_interventions") or [])[:64]
+    out["webpage_openwebpage_skip_reasons"] = list(existing.get("webpage_openwebpage_skip_reasons") or [])[:32]
+    out["webpage_langextract_provider"] = str(existing.get("webpage_langextract_provider") or "")
+    out["webpage_langextract_last_error"] = str(existing.get("webpage_langextract_last_error") or "")[:400]
     return out
 
 
@@ -8352,25 +8623,45 @@ def _llm_extract_schema_payloads_from_openwebpages(
     entity_tokens: Optional[List[str]] = None,
     extracted_urls: Optional[set] = None,
     max_pages: int = 1,
-    max_chars: int = 6000,
+    max_chars: int = 9000,
     max_output_tokens: int = 420,
     timeout_s: float = 18.0,
+    extraction_engine: str = "langextract",
+    langextract_extraction_passes: int = 2,
+    langextract_max_char_buffer: int = 2000,
+    langextract_prompt_validation_level: str = "warning",
+    langextract_backend_hint: Optional[str] = None,
+    langextract_model_id: Optional[str] = None,
     debug: bool = False,
-) -> tuple[List[Dict[str, Any]], List[str]]:
+) -> tuple[List[Dict[str, Any]], List[str], Dict[str, Any]]:
     """Best-effort schema extraction from OpenWebpage tool outputs.
 
     Returns extra payload items (compatible with `_tool_message_payloads`) plus the
     list of normalized URLs extracted, so callers can track extraction budget.
+    Also returns metadata for diagnostics.
 
     NOTE: This is generic (task-agnostic) and still relies on downstream evidence
     scoring (value_support/entity_overlap/etc.) before promotion.
     """
+    metadata: Dict[str, Any] = {
+        "langextract_calls": 0,
+        "langextract_fallback_calls": 0,
+        "langextract_errors": 0,
+        "langextract_provider": "",
+        "langextract_last_error": "",
+        "openwebpage_candidates_total": 0,
+        "openwebpage_candidates_selected": 0,
+        "openwebpage_skipped_hard_failures": 0,
+        "openwebpage_skipped_empty": 0,
+        "openwebpage_skip_reasons": [],
+    }
+
     if selector_model is None or expected_schema is None:
-        return [], []
+        return [], [], metadata
 
     unresolved_fields = _collect_resolvable_unknown_fields(field_status)
     if not unresolved_fields:
-        return [], []
+        return [], [], metadata
 
     schema_leaf_set = {
         str(path or "").replace("[]", "").strip()
@@ -8378,7 +8669,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
         if "[]" not in str(path or "")
     }
     if not schema_leaf_set:
-        return [], []
+        return [], [], metadata
 
     allowed_keys = set(unresolved_fields)
     for field in unresolved_fields:
@@ -8398,12 +8689,48 @@ def _llm_extract_schema_payloads_from_openwebpages(
             continue
         if _normalize_match_text(_tool_message_name(msg)) != "openwebpage":
             continue
+        metadata["openwebpage_candidates_total"] = int(metadata.get("openwebpage_candidates_total", 0) or 0) + 1
         text = _message_content_to_text(msg)
         if not text or not text.strip():
+            metadata["openwebpage_skipped_empty"] = int(metadata.get("openwebpage_skipped_empty", 0) or 0) + 1
+            metadata["openwebpage_skip_reasons"] = _append_limited_unique(
+                metadata.get("openwebpage_skip_reasons"),
+                "empty_message",
+                max_items=16,
+            )
+            continue
+        hard_failure = _openwebpage_hard_failure_reason(text)
+        if hard_failure:
+            metadata["openwebpage_skipped_hard_failures"] = int(
+                metadata.get("openwebpage_skipped_hard_failures", 0) or 0
+            ) + 1
+            metadata["openwebpage_skip_reasons"] = _append_limited_unique(
+                metadata.get("openwebpage_skip_reasons"),
+                hard_failure,
+                max_items=16,
+            )
             continue
         url_hits = _extract_url_candidates(text, max_urls=3)
-        page_url = next((_normalize_url_match(u) for u in url_hits if _normalize_url_match(u)), None)
+        page_url = None
+        for raw_url in url_hits:
+            normalized_url = _normalize_url_match(raw_url)
+            if normalized_url:
+                page_url = normalized_url
+                break
         if not page_url or page_url in already:
+            continue
+        cleaned_text = _prepare_openwebpage_text_for_extraction(
+            text,
+            entity_tokens=entity_tokens,
+            max_chars=max(512, int(max_chars)),
+        )
+        if not cleaned_text:
+            metadata["openwebpage_skipped_empty"] = int(metadata.get("openwebpage_skipped_empty", 0) or 0) + 1
+            metadata["openwebpage_skip_reasons"] = _append_limited_unique(
+                metadata.get("openwebpage_skip_reasons"),
+                "empty_after_cleaning",
+                max_items=16,
+            )
             continue
         score = float(_score_primary_source_url(page_url))
         ratio = 0.0
@@ -8411,33 +8738,37 @@ def _llm_extract_schema_payloads_from_openwebpages(
             _, ratio = _entity_overlap_for_candidate(
                 entity_tokens,
                 candidate_url=page_url,
-                candidate_text=text,
+                candidate_text=cleaned_text,
             )
         candidates.append(
             {
                 "url": page_url,
-                "text": text,
+                "text": cleaned_text,
                 "url_score": score,
                 "entity_ratio": float(ratio),
             }
         )
 
     if not candidates:
-        return [], []
+        return [], [], metadata
 
     # Prefer likely primary/official pages, then entity overlap.
     candidates.sort(
         key=lambda c: (-float(c.get("url_score", 0.0)), -float(c.get("entity_ratio", 0.0)), str(c.get("url") or "")),
     )
     chosen = candidates[: max(1, int(max_pages))]
+    metadata["openwebpage_candidates_selected"] = len(chosen)
 
     try:
         from langchain_core.messages import HumanMessage, SystemMessage
     except Exception:
-        return [], []
+        return [], [], metadata
 
     out_payloads: List[Dict[str, Any]] = []
     extracted: List[str] = []
+    engine = str(extraction_engine or "langextract").strip().lower()
+    if engine not in {"langextract", "legacy"}:
+        engine = "langextract"
 
     for item in chosen:
         page_url = _normalize_url_match(item.get("url"))
@@ -8446,6 +8777,60 @@ def _llm_extract_schema_payloads_from_openwebpages(
             continue
 
         clipped_text = page_text[: max(512, int(max_chars))]
+
+        def _emit_payload(extracted_payload: Dict[str, Any]) -> None:
+            if debug:
+                logger.info(
+                    "Webpage schema extract: url=%s keys=%s",
+                    page_url,
+                    sorted(list(extracted_payload.keys()))[:16],
+                )
+            out_payloads.append({
+                "tool_name": "webpage_schema_extract",
+                "text": clipped_text,
+                "payload": extracted_payload,
+                "source_blocks": [],
+                "source_payloads": [extracted_payload],
+                "has_structured_payload": True,
+                "urls": [page_url],
+            })
+            extracted.append(page_url)
+
+        if engine == "langextract":
+            metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
+            langextract_result = _langextract_extract_schema_from_openwebpage_text(
+                page_url=page_url,
+                page_text=page_text,
+                allowed_keys=sorted(allowed_keys),
+                schema_keys=sorted(schema_leaf_set),
+                selector_model=selector_model,
+                backend_hint=langextract_backend_hint,
+                model_id_override=langextract_model_id,
+                extraction_passes=max(1, int(langextract_extraction_passes or 2)),
+                max_char_buffer=max(200, int(langextract_max_char_buffer or 2000)),
+                prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
+                max_chars=max(512, int(max_chars)),
+            )
+            provider = str(langextract_result.get("provider") or "").strip()
+            if provider:
+                metadata["langextract_provider"] = provider
+            extracted_payload = langextract_result.get("payload") if isinstance(langextract_result, dict) else {}
+            if isinstance(extracted_payload, dict) and extracted_payload:
+                _emit_payload(extracted_payload)
+                continue
+            metadata["langextract_fallback_calls"] = (
+                int(metadata.get("langextract_fallback_calls", 0) or 0) + 1
+            )
+            if langextract_result and langextract_result.get("error"):
+                metadata["langextract_errors"] = int(metadata.get("langextract_errors", 0) or 0) + 1
+                metadata["langextract_last_error"] = str(langextract_result.get("error") or "")[:400]
+                if debug:
+                    logger.info(
+                        "Langextract fallback for %s due to: %s",
+                        page_url,
+                        str(langextract_result.get("error")),
+                    )
+
         request = {
             "page_url": page_url,
             "allowed_keys": sorted(allowed_keys),
@@ -8508,25 +8893,278 @@ def _llm_extract_schema_payloads_from_openwebpages(
             if source_key in allowed_keys and source_key not in extracted_payload:
                 extracted_payload[source_key] = page_url
 
-        if debug:
-            logger.info(
-                "Webpage schema extract: url=%s keys=%s",
-                page_url,
-                sorted(list(extracted_payload.keys()))[:16],
+        _emit_payload(extracted_payload)
+
+    return out_payloads, extracted, metadata
+
+
+def _llm_extract_schema_payloads_from_search_snippets(
+    *,
+    selector_model: Any,
+    expected_schema: Any,
+    field_status: Any,
+    tool_messages: Any,
+    entity_tokens: Optional[List[str]] = None,
+    extracted_urls: Optional[set] = None,
+    max_sources: int = 2,
+    max_chars: int = 2000,
+    max_output_tokens: int = 420,
+    timeout_s: float = 18.0,
+    extraction_engine: str = "langextract",
+    langextract_extraction_passes: int = 2,
+    langextract_max_char_buffer: int = 2000,
+    langextract_prompt_validation_level: str = "warning",
+    langextract_backend_hint: Optional[str] = None,
+    langextract_model_id: Optional[str] = None,
+    debug: bool = False,
+) -> tuple[List[Dict[str, Any]], List[str], Dict[str, Any]]:
+    """Best-effort schema extraction from Search tool snippet blocks.
+
+    The Search tool emits multiple `__START_OF_SOURCE` blocks with `<CONTENT>` and
+    `<URL>` values. This function runs lightweight schema extraction directly on
+    those snippets (without requiring full OpenWebpage fetches).
+
+    Returns extra payload items (compatible with `_tool_message_payloads`) plus
+    the list of normalized URLs extracted, so callers can track extraction
+    budget. Also returns metadata for diagnostics.
+    """
+    metadata: Dict[str, Any] = {
+        "langextract_calls": 0,
+        "langextract_fallback_calls": 0,
+        "langextract_errors": 0,
+        "langextract_provider": "",
+        "langextract_last_error": "",
+        "snippet_candidates_total": 0,
+        "snippet_candidates_selected": 0,
+        "snippet_skipped_duplicate_urls": 0,
+    }
+
+    if selector_model is None or expected_schema is None:
+        return [], [], metadata
+
+    unresolved_fields = _collect_resolvable_unknown_fields(field_status)
+    if not unresolved_fields:
+        return [], [], metadata
+
+    schema_leaf_set = {
+        str(path or "").replace("[]", "").strip()
+        for path, _ in _schema_leaf_paths(expected_schema)
+        if "[]" not in str(path or "")
+    }
+    if not schema_leaf_set:
+        return [], [], metadata
+
+    allowed_keys = set(unresolved_fields)
+    for field in unresolved_fields:
+        source_key = f"{field}_source"
+        if source_key in schema_leaf_set:
+            allowed_keys.add(source_key)
+
+    already = set()
+    for raw in (extracted_urls or set()):
+        normalized = _normalize_url_match(raw)
+        if normalized:
+            already.add(normalized)
+
+    engine = str(extraction_engine or "langextract").strip().lower()
+    if engine not in {"langextract", "legacy"}:
+        engine = "langextract"
+
+    max_chars_int = max(256, int(max_chars or 2000))
+    candidate_map: Dict[str, Dict[str, Any]] = {}
+    for msg in list(tool_messages or []):
+        if not _message_is_tool(msg):
+            continue
+        if _normalize_match_text(_tool_message_name(msg)) != "search":
+            continue
+        text = _message_content_to_text(msg)
+        if not text or not text.strip():
+            continue
+        for block in _parse_source_blocks(text):
+            page_url = _normalize_url_match(block.get("url"))
+            if not page_url:
+                continue
+            if page_url in already:
+                metadata["snippet_skipped_duplicate_urls"] = int(
+                    metadata.get("snippet_skipped_duplicate_urls", 0) or 0
+                ) + 1
+                continue
+            snippet_text = str(block.get("content") or "").strip()
+            if not snippet_text:
+                continue
+            snippet_text = re.sub(r"\s+", " ", snippet_text).strip()
+            if not snippet_text:
+                continue
+            snippet_text = snippet_text[:max_chars_int]
+
+            source_id = block.get("source_id")
+            try:
+                source_order = int(source_id) if source_id is not None else 9999
+            except Exception:
+                source_order = 9999
+
+            url_score = float(_score_primary_source_url(page_url))
+            entity_ratio = 0.0
+            if entity_tokens:
+                _, entity_ratio = _entity_overlap_for_candidate(
+                    entity_tokens,
+                    candidate_url=page_url,
+                    candidate_text=snippet_text,
+                )
+            existing = candidate_map.get(page_url)
+            if existing:
+                merged = str(existing.get("text") or "")
+                if snippet_text and snippet_text not in merged:
+                    merged = f"{merged} {snippet_text}".strip() if merged else snippet_text
+                    existing["text"] = merged[:max_chars_int]
+                existing["url_score"] = max(float(existing.get("url_score", 0.0)), url_score)
+                existing["entity_ratio"] = max(float(existing.get("entity_ratio", 0.0)), float(entity_ratio))
+                existing["order"] = min(int(existing.get("order", 9999)), int(source_order))
+                continue
+            candidate_map[page_url] = {
+                "url": page_url,
+                "text": snippet_text,
+                "url_score": float(url_score),
+                "entity_ratio": float(entity_ratio),
+                "order": int(source_order),
+            }
+
+    candidates = list(candidate_map.values())
+    metadata["snippet_candidates_total"] = len(candidates)
+    if not candidates:
+        return [], [], metadata
+
+    candidates.sort(
+        key=lambda c: (-float(c.get("url_score", 0.0)), -float(c.get("entity_ratio", 0.0)), int(c.get("order", 9999)), str(c.get("url") or "")),
+    )
+    chosen = candidates[: max(1, int(max_sources))]
+    metadata["snippet_candidates_selected"] = len(chosen)
+
+    try:
+        from langchain_core.messages import HumanMessage, SystemMessage
+    except Exception:
+        return [], [], metadata
+
+    out_payloads: List[Dict[str, Any]] = []
+    extracted: List[str] = []
+
+    for item in chosen:
+        page_url = _normalize_url_match(item.get("url"))
+        page_text = str(item.get("text") or "")
+        if not page_url or not page_text.strip():
+            continue
+
+        clipped_text = page_text[:max_chars_int]
+
+        def _emit_payload(extracted_payload: Dict[str, Any]) -> None:
+            if debug:
+                logger.info(
+                    "Search snippet schema extract: url=%s keys=%s",
+                    page_url,
+                    sorted(list(extracted_payload.keys()))[:16],
+                )
+            out_payloads.append({
+                "tool_name": "search_snippet_schema_extract",
+                "text": clipped_text,
+                "payload": extracted_payload,
+                "source_blocks": [],
+                "source_payloads": [extracted_payload],
+                "has_structured_payload": True,
+                "urls": [page_url],
+            })
+            extracted.append(page_url)
+
+        if engine == "langextract":
+            metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
+            langextract_result = _langextract_extract_schema_from_openwebpage_text(
+                page_url=page_url,
+                page_text=page_text,
+                allowed_keys=sorted(allowed_keys),
+                schema_keys=sorted(schema_leaf_set),
+                selector_model=selector_model,
+                backend_hint=langextract_backend_hint,
+                model_id_override=langextract_model_id,
+                extraction_passes=max(1, int(langextract_extraction_passes or 2)),
+                max_char_buffer=max(200, int(langextract_max_char_buffer or 2000)),
+                prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
+                max_chars=max_chars_int,
             )
+            provider = str(langextract_result.get("provider") or "").strip()
+            if provider:
+                metadata["langextract_provider"] = provider
+            extracted_payload = langextract_result.get("payload") if isinstance(langextract_result, dict) else {}
+            if isinstance(extracted_payload, dict) and extracted_payload:
+                _emit_payload(extracted_payload)
+                continue
+            metadata["langextract_fallback_calls"] = int(metadata.get("langextract_fallback_calls", 0) or 0) + 1
+            if langextract_result and langextract_result.get("error"):
+                metadata["langextract_errors"] = int(metadata.get("langextract_errors", 0) or 0) + 1
+                metadata["langextract_last_error"] = str(langextract_result.get("error") or "")[:400]
 
-        out_payloads.append({
-            "tool_name": "webpage_schema_extract",
-            "text": clipped_text,
-            "payload": extracted_payload,
-            "source_blocks": [],
-            "source_payloads": [extracted_payload],
-            "has_structured_payload": True,
-            "urls": [page_url],
-        })
-        extracted.append(page_url)
+        request = {
+            "page_url": page_url,
+            "allowed_keys": sorted(allowed_keys),
+            "schema_keys": sorted(schema_leaf_set),
+            "page_text": clipped_text,
+        }
+        system_msg = SystemMessage(content=(
+            "Extract structured schema field values from the provided text snippet.\n"
+            "Output ONLY strict JSON (no markdown, no prose).\n\n"
+            "Rules:\n"
+            "- Only include keys from allowed_keys.\n"
+            "- Only include fields with explicit concrete values in page_text.\n"
+            "- Do NOT output placeholders like Unknown/null/none/N/A.\n"
+            "- If you output a base field and the corresponding '<field>_source' key is allowed, "
+            "set '<field>_source' to page_url.\n"
+            "- Never guess.\n"
+        ))
+        human_msg = HumanMessage(content=(
+            "Return a JSON object with the extracted fields.\n"
+            f"INPUT:\n{json.dumps(request, ensure_ascii=False)}"
+        ))
 
-    return out_payloads, extracted
+        response = _invoke_selector_model_with_timeout(
+            selector_model,
+            [system_msg, human_msg],
+            max_output_tokens=max(64, int(max_output_tokens)),
+            timeout_s=timeout_s,
+        )
+        if response is None:
+            continue
+        response_text = _message_content_to_text(getattr(response, "content", ""))
+        parsed = parse_llm_json(response_text)
+        if not isinstance(parsed, dict) or not parsed:
+            continue
+
+        extracted_payload: Dict[str, Any] = {}
+        for raw_key, raw_value in parsed.items():
+            key = str(raw_key or "").strip()
+            if not key or key not in allowed_keys:
+                continue
+            if _is_empty_like(raw_value):
+                continue
+            if isinstance(raw_value, str) and _is_unknown_marker(raw_value):
+                continue
+            if key.endswith("_source"):
+                normalized = _normalize_url_match(raw_value) or page_url
+                if normalized:
+                    extracted_payload[key] = normalized
+                continue
+            extracted_payload[key] = raw_value
+
+        if not extracted_payload:
+            continue
+
+        for key, value in list(extracted_payload.items()):
+            if key.endswith("_source"):
+                continue
+            source_key = f"{key}_source"
+            if source_key in allowed_keys and source_key not in extracted_payload:
+                extracted_payload[source_key] = page_url
+
+        _emit_payload(extracted_payload)
+
+    return out_payloads, extracted, metadata
 
 
 def _create_tool_node_with_scratchpad(
@@ -8637,6 +9275,10 @@ def _create_tool_node_with_scratchpad(
         extra_payloads: List[Dict[str, Any]] = []
         webpage_extract_urls: List[str] = []
         webpage_extract_calls = 0
+        webpage_extract_meta: Dict[str, Any] = {}
+        snippet_extract_urls: List[str] = []
+        snippet_extract_calls = 0
+        snippet_extract_meta: Dict[str, Any] = {}
         try:
             field_resolver_options = orchestration_options.get("field_resolver", {}) if isinstance(orchestration_options, dict) else {}
         except Exception:
@@ -8645,9 +9287,8 @@ def _create_tool_node_with_scratchpad(
         if (
             selector_model is not None
             and expected_schema is not None
-            and bool(field_resolver_options.get("llm_webpage_extraction", False))
+            and bool(field_resolver_options.get("webpage_extraction_enabled", field_resolver_options.get("llm_webpage_extraction", False)))
             and _orchestration_component_enabled(state, "field_resolver")
-            and _orchestration_component_mode(state, "field_resolver") == "enforce"
             and not _is_critical_recursion_step(state, remaining_steps_value(state))
         ):
             try:
@@ -8665,9 +9306,9 @@ def _create_tool_node_with_scratchpad(
                 except Exception:
                     max_per_round = 1
                 try:
-                    max_chars = max(512, int(field_resolver_options.get("llm_webpage_extraction_max_chars", 6000) or 6000))
+                    max_chars = max(512, int(field_resolver_options.get("llm_webpage_extraction_max_chars", 9000) or 9000))
                 except Exception:
-                    max_chars = 6000
+                    max_chars = 9000
                 try:
                     max_output_tokens = max(64, int(field_resolver_options.get("llm_webpage_extraction_max_output_tokens", 420) or 420))
                 except Exception:
@@ -8676,8 +9317,30 @@ def _create_tool_node_with_scratchpad(
                     timeout_s = float(field_resolver_options.get("llm_webpage_extraction_timeout_s", 18.0) or 18.0)
                 except Exception:
                     timeout_s = 18.0
+                extraction_engine = str(field_resolver_options.get("webpage_extraction_engine") or "langextract").strip().lower()
+                if extraction_engine not in {"langextract", "legacy"}:
+                    extraction_engine = "langextract"
+                try:
+                    langextract_extraction_passes = max(1, int(field_resolver_options.get("langextract_extraction_passes", 2) or 2))
+                except Exception:
+                    langextract_extraction_passes = 2
+                try:
+                    langextract_max_char_buffer = max(200, int(field_resolver_options.get("langextract_max_char_buffer", 2000) or 2000))
+                except Exception:
+                    langextract_max_char_buffer = 2000
+                langextract_prompt_validation_level = str(
+                    field_resolver_options.get("langextract_prompt_validation_level") or "warning"
+                ).strip().lower()
+                if langextract_prompt_validation_level not in {"off", "warning", "error"}:
+                    langextract_prompt_validation_level = "warning"
+                langextract_backend_hint = field_resolver_options.get("langextract_backend_hint")
+                if langextract_backend_hint is not None:
+                    langextract_backend_hint = str(langextract_backend_hint).strip().lower() or None
+                langextract_model_id = field_resolver_options.get("langextract_model_id")
+                if langextract_model_id is not None:
+                    langextract_model_id = str(langextract_model_id).strip() or None
                 already_extracted = set((prior_budget or {}).get("webpage_extracted_urls") or [])
-                extra_payloads, webpage_extract_urls = _llm_extract_schema_payloads_from_openwebpages(
+                extra_payloads, webpage_extract_urls, webpage_extract_meta = _llm_extract_schema_payloads_from_openwebpages(
                     selector_model=selector_model,
                     expected_schema=expected_schema,
                     field_status=field_status,
@@ -8688,9 +9351,105 @@ def _create_tool_node_with_scratchpad(
                     max_chars=max_chars,
                     max_output_tokens=max_output_tokens,
                     timeout_s=timeout_s,
+                    extraction_engine=extraction_engine,
+                    langextract_extraction_passes=langextract_extraction_passes,
+                    langextract_max_char_buffer=langextract_max_char_buffer,
+                    langextract_prompt_validation_level=langextract_prompt_validation_level,
+                    langextract_backend_hint=langextract_backend_hint,
+                    langextract_model_id=langextract_model_id,
                     debug=debug,
                 )
                 webpage_extract_calls = int(len(webpage_extract_urls))
+
+        if (
+            selector_model is not None
+            and expected_schema is not None
+            and bool(field_resolver_options.get("search_snippet_extraction_enabled", True))
+            and _orchestration_component_enabled(state, "field_resolver")
+            and not _is_critical_recursion_step(state, remaining_steps_value(state))
+            and int(webpage_extract_calls) <= 0
+        ):
+            try:
+                used_total = int((prior_budget or {}).get("search_snippet_extractions_used", 0) or 0)
+            except Exception:
+                used_total = 0
+            try:
+                max_total = max(0, int(field_resolver_options.get("search_snippet_extraction_max_total_sources", 8) or 8))
+            except Exception:
+                max_total = 8
+            remaining_total = max(0, int(max_total) - int(used_total))
+            if remaining_total > 0:
+                try:
+                    max_per_round = max(
+                        1, int(field_resolver_options.get("search_snippet_extraction_max_sources_per_round", 2) or 2)
+                    )
+                except Exception:
+                    max_per_round = 2
+                try:
+                    max_chars = max(
+                        256, int(field_resolver_options.get("search_snippet_extraction_max_chars", 2000) or 2000)
+                    )
+                except Exception:
+                    max_chars = 2000
+                try:
+                    max_output_tokens = max(
+                        64, int(field_resolver_options.get("llm_webpage_extraction_max_output_tokens", 420) or 420)
+                    )
+                except Exception:
+                    max_output_tokens = 420
+                try:
+                    timeout_s = float(field_resolver_options.get("llm_webpage_extraction_timeout_s", 18.0) or 18.0)
+                except Exception:
+                    timeout_s = 18.0
+                extraction_engine = str(field_resolver_options.get("webpage_extraction_engine") or "langextract").strip().lower()
+                if extraction_engine not in {"langextract", "legacy"}:
+                    extraction_engine = "langextract"
+                try:
+                    langextract_extraction_passes = max(
+                        1, int(field_resolver_options.get("langextract_extraction_passes", 2) or 2)
+                    )
+                except Exception:
+                    langextract_extraction_passes = 2
+                try:
+                    langextract_max_char_buffer = max(
+                        200, int(field_resolver_options.get("langextract_max_char_buffer", 2000) or 2000)
+                    )
+                except Exception:
+                    langextract_max_char_buffer = 2000
+                langextract_prompt_validation_level = str(
+                    field_resolver_options.get("langextract_prompt_validation_level") or "warning"
+                ).strip().lower()
+                if langextract_prompt_validation_level not in {"off", "warning", "error"}:
+                    langextract_prompt_validation_level = "warning"
+                langextract_backend_hint = field_resolver_options.get("langextract_backend_hint")
+                if langextract_backend_hint is not None:
+                    langextract_backend_hint = str(langextract_backend_hint).strip().lower() or None
+                langextract_model_id = field_resolver_options.get("langextract_model_id")
+                if langextract_model_id is not None:
+                    langextract_model_id = str(langextract_model_id).strip() or None
+                already_extracted = set((prior_budget or {}).get("search_snippet_extracted_urls") or [])
+                snippet_payloads, snippet_extract_urls, snippet_extract_meta = _llm_extract_schema_payloads_from_search_snippets(
+                    selector_model=selector_model,
+                    expected_schema=expected_schema,
+                    field_status=field_status,
+                    tool_messages=tool_messages,
+                    entity_tokens=_task_name_tokens_from_messages(state.get("messages") or []),
+                    extracted_urls=already_extracted,
+                    max_sources=min(int(max_per_round), int(remaining_total)),
+                    max_chars=max_chars,
+                    max_output_tokens=max_output_tokens,
+                    timeout_s=timeout_s,
+                    extraction_engine=extraction_engine,
+                    langextract_extraction_passes=langextract_extraction_passes,
+                    langextract_max_char_buffer=langextract_max_char_buffer,
+                    langextract_prompt_validation_level=langextract_prompt_validation_level,
+                    langextract_backend_hint=langextract_backend_hint,
+                    langextract_model_id=langextract_model_id,
+                    debug=debug,
+                )
+                if snippet_payloads:
+                    extra_payloads.extend(list(snippet_payloads))
+                snippet_extract_calls = int(len(snippet_extract_urls))
 
         search_calls_delta = sum(
             1
@@ -8732,6 +9491,82 @@ def _create_tool_node_with_scratchpad(
                     prior_urls.append(normalized_url)
             budget_state["webpage_extracted_urls"] = prior_urls[-64:]
             diagnostics["webpage_llm_extraction_calls"] = int(diagnostics.get("webpage_llm_extraction_calls", 0) or 0) + int(webpage_extract_calls)
+        if snippet_extract_calls > 0:
+            budget_state = _record_model_call_on_budget(budget_state, call_delta=int(snippet_extract_calls))
+            budget_state["search_snippet_extractions_used"] = int(
+                budget_state.get("search_snippet_extractions_used", 0) or 0
+            ) + int(snippet_extract_calls)
+            prior_urls = list(budget_state.get("search_snippet_extracted_urls") or [])
+            for raw_url in list(snippet_extract_urls or []):
+                normalized_url = _normalize_url_match(raw_url)
+                if normalized_url and normalized_url not in prior_urls:
+                    prior_urls.append(normalized_url)
+            budget_state["search_snippet_extracted_urls"] = prior_urls[-64:]
+            diagnostics["search_snippet_llm_extraction_calls"] = int(
+                diagnostics.get("search_snippet_llm_extraction_calls", 0) or 0
+            ) + int(snippet_extract_calls)
+        if isinstance(webpage_extract_meta, dict) and webpage_extract_meta:
+            diagnostics["webpage_langextract_calls"] = int(diagnostics.get("webpage_langextract_calls", 0) or 0) + int(
+                webpage_extract_meta.get("langextract_calls", 0) or 0
+            )
+            diagnostics["webpage_langextract_fallback_calls"] = int(
+                diagnostics.get("webpage_langextract_fallback_calls", 0) or 0
+            ) + int(webpage_extract_meta.get("langextract_fallback_calls", 0) or 0)
+            diagnostics["webpage_langextract_errors"] = int(diagnostics.get("webpage_langextract_errors", 0) or 0) + int(
+                webpage_extract_meta.get("langextract_errors", 0) or 0
+            )
+            diagnostics["webpage_openwebpage_candidates_total"] = int(
+                diagnostics.get("webpage_openwebpage_candidates_total", 0) or 0
+            ) + int(webpage_extract_meta.get("openwebpage_candidates_total", 0) or 0)
+            diagnostics["webpage_openwebpage_candidates_selected"] = int(
+                diagnostics.get("webpage_openwebpage_candidates_selected", 0) or 0
+            ) + int(webpage_extract_meta.get("openwebpage_candidates_selected", 0) or 0)
+            diagnostics["webpage_openwebpage_skipped_hard_failures"] = int(
+                diagnostics.get("webpage_openwebpage_skipped_hard_failures", 0) or 0
+            ) + int(webpage_extract_meta.get("openwebpage_skipped_hard_failures", 0) or 0)
+            diagnostics["webpage_openwebpage_skipped_empty"] = int(
+                diagnostics.get("webpage_openwebpage_skipped_empty", 0) or 0
+            ) + int(webpage_extract_meta.get("openwebpage_skipped_empty", 0) or 0)
+            for reason in list(webpage_extract_meta.get("openwebpage_skip_reasons") or []):
+                reason_token = str(reason or "").strip()
+                if not reason_token:
+                    continue
+                diagnostics["webpage_openwebpage_skip_reasons"] = _append_limited_unique(
+                    diagnostics.get("webpage_openwebpage_skip_reasons"),
+                    reason_token,
+                    max_items=32,
+                )
+            provider_name = str(webpage_extract_meta.get("langextract_provider") or "").strip()
+            if provider_name:
+                diagnostics["webpage_langextract_provider"] = provider_name
+            last_error = str(webpage_extract_meta.get("langextract_last_error") or "").strip()
+            if last_error:
+                diagnostics["webpage_langextract_last_error"] = last_error[:400]
+        if isinstance(snippet_extract_meta, dict) and snippet_extract_meta:
+            diagnostics["search_snippet_langextract_calls"] = int(
+                diagnostics.get("search_snippet_langextract_calls", 0) or 0
+            ) + int(snippet_extract_meta.get("langextract_calls", 0) or 0)
+            diagnostics["search_snippet_langextract_fallback_calls"] = int(
+                diagnostics.get("search_snippet_langextract_fallback_calls", 0) or 0
+            ) + int(snippet_extract_meta.get("langextract_fallback_calls", 0) or 0)
+            diagnostics["search_snippet_langextract_errors"] = int(
+                diagnostics.get("search_snippet_langextract_errors", 0) or 0
+            ) + int(snippet_extract_meta.get("langextract_errors", 0) or 0)
+            diagnostics["search_snippet_candidates_total"] = int(
+                diagnostics.get("search_snippet_candidates_total", 0) or 0
+            ) + int(snippet_extract_meta.get("snippet_candidates_total", 0) or 0)
+            diagnostics["search_snippet_candidates_selected"] = int(
+                diagnostics.get("search_snippet_candidates_selected", 0) or 0
+            ) + int(snippet_extract_meta.get("snippet_candidates_selected", 0) or 0)
+            diagnostics["search_snippet_skipped_duplicate_urls"] = int(
+                diagnostics.get("search_snippet_skipped_duplicate_urls", 0) or 0
+            ) + int(snippet_extract_meta.get("snippet_skipped_duplicate_urls", 0) or 0)
+            provider_name = str(snippet_extract_meta.get("langextract_provider") or "").strip()
+            if provider_name:
+                diagnostics["search_snippet_langextract_provider"] = provider_name
+            last_error = str(snippet_extract_meta.get("langextract_last_error") or "").strip()
+            if last_error:
+                diagnostics["search_snippet_langextract_last_error"] = last_error[:400]
         budget_state["tool_calls_used"] = int(budget_state.get("tool_calls_used", 0)) + int(search_calls_delta)
         budget_state["tool_calls_remaining"] = max(
             0,
@@ -12302,3 +13137,103 @@ def create_memory_folding_agent_with_checkpointer(
         checkpointer=checkpointer,
         **kwargs
     )
+
+
+def invoke_graph_safely(
+    graph: Any,
+    initial_state: Any,
+    config: Optional[dict] = None,
+    *,
+    stream_mode: str = "values",
+    max_error_chars: int = 500,
+) -> Any:
+    """Invoke a compiled LangGraph graph, returning last known state on recursion exhaustion.
+
+    LangGraph raises `GraphRecursionError` when `recursion_limit` is reached
+    without hitting END. For trace-heavy callers we prefer returning the last
+    yielded state (with a best-effort terminal assistant message) so downstream
+    code can still serialize artifacts and extract partial results.
+
+    Notes:
+      - Only GraphRecursionError is caught. Other exceptions propagate.
+      - Uses graph.stream(stream_mode="values") so we can retain last_state.
+    """
+    try:
+        from langgraph.errors import GraphRecursionError  # type: ignore
+    except Exception:
+        GraphRecursionError = None  # type: ignore
+
+    last_state = None
+    try:
+        stream = getattr(graph, "stream", None)
+        if callable(stream):
+            for chunk in stream(initial_state, config=config, stream_mode=stream_mode):
+                last_state = chunk
+        else:
+            return graph.invoke(initial_state, config=config)
+
+        if last_state is None:
+            return graph.invoke(initial_state, config=config)
+        return last_state
+    except Exception as exc:
+        if GraphRecursionError is None or not isinstance(exc, GraphRecursionError):
+            raise
+
+        state = last_state
+        try:
+            if state is None:
+                state = {}
+            if not hasattr(state, "get") and isinstance(state, dict) is False:
+                state = {"value": state}
+        except Exception:
+            state = {}
+
+        try:
+            if isinstance(state, dict):
+                state.setdefault("stop_reason", "recursion_limit")
+                state["error"] = str(exc)[:max_error_chars] if str(exc) else "GraphRecursionError"
+            else:
+                try:
+                    setattr(state, "stop_reason", getattr(state, "stop_reason", None) or "recursion_limit")
+                    setattr(state, "error", str(exc)[:max_error_chars] if str(exc) else "GraphRecursionError")
+                except Exception:
+                    pass
+
+            messages = state.get("messages") if isinstance(state, dict) else getattr(state, "messages", None)
+            expected_schema = state.get("expected_schema") if isinstance(state, dict) else getattr(state, "expected_schema", None)
+            field_status = state.get("field_status") if isinstance(state, dict) else getattr(state, "field_status", None)
+            if isinstance(messages, list) and messages:
+                terminal = None
+                try:
+                    terminal = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
+                except Exception:
+                    terminal = None
+                if terminal is None:
+                    try:
+                        fallback_text = _exception_fallback_text(
+                            expected_schema,
+                            context="agent",
+                            messages=messages,
+                            field_status=field_status,
+                        )
+                    except Exception:
+                        fallback_text = "Unable to finalize due to recursion limit."
+
+                    try:
+                        from langchain_core.messages import AIMessage
+
+                        messages.append(AIMessage(content=str(fallback_text)))
+                    except Exception:
+                        messages.append({"role": "assistant", "content": str(fallback_text)})
+
+                    if isinstance(state, dict):
+                        state["messages"] = messages
+                    else:
+                        try:
+                            setattr(state, "messages", messages)
+                        except Exception:
+                            pass
+        except Exception:
+            pass
+
+        return state

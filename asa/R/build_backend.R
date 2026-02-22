@@ -28,6 +28,7 @@
 #'   \item selenium, primp (browser automation)
 #'   \item undetected-chromedriver (stealth Chrome)
 #'   \item beautifulsoup4, curl_cffi, requests
+#'   \item langextract (schema extraction from webpage text)
 #'   \item fake_headers, httpx
 #'   \item stem (Tor control)
 #'   \item pysocks, socksio (proxy support)
@@ -135,50 +136,19 @@ build_backend <- function(conda_env = NULL,
     })
   }
 
-  # Install packages in order
-  msg("Installing Python dependencies...")
-
-  # Core packages
-  pip_install(c("uv", "setuptools"))
-
-  # LangChain ecosystem
-  pip_install(c(
-    "langchain_groq>=0.2,<1.0",
-    "langchain_community>=0.3,<1.0",
-    "langchain_openai>=0.3,<1.0",
-    "langchain-google-genai>=2.1,<3.0",
-    "langchain-anthropic>=0.3,<1.0",
-    "langchain-aws>=0.2,<1.0",
-    "langgraph>=0.2,<1.0",
-    "langchain-tavily"
-  ))
-
-  # Search and scraping tools
-  pip_install(c(
-    "ddgs>=8,<10",
-    "selenium",
-    "undetected-chromedriver",
-    "primp",
-    "beautifulsoup4",
-    "curl_cffi",
-    "requests",
-    "fake_headers"
-  ))
-
-  # HTTP and proxy support
-  pip_install(c(
-    "httpx",
-    "pysocks",
-    "socksio",
-    "stem"
-  ))
-
-  # Additional utilities
-  pip_install(c(
-    "python-dotenv",
-    "arxiv",
-    "wikipedia"
-  ))
+  # Install groups in stable order using latest available package versions.
+  msg("Installing Python dependencies (latest versions available at install time)...")
+  dependency_groups <- .build_backend_python_dependency_groups()
+  for (group_name in names(dependency_groups)) {
+    packages <- dependency_groups[[group_name]]
+    msg(
+      "Installing '%s' package group (%d): %s",
+      group_name,
+      length(packages),
+      paste(packages, collapse = ", ")
+    )
+    pip_install(packages)
+  }
 
   # Verify installation (strict: build_backend installs full dependency set)
 
@@ -219,6 +189,47 @@ build_backend <- function(conda_env = NULL,
   }
 
   invisible(NULL)
+}
+
+.build_backend_python_dependency_groups <- function() {
+  list(
+    core = c(
+      "uv",
+      "setuptools"
+    ),
+    langchain = c(
+      "langchain_groq",
+      "langchain_community",
+      "langchain_openai",
+      "langchain-google-genai",
+      "langchain-anthropic",
+      "langchain-aws",
+      "langgraph",
+      "langchain-tavily"
+    ),
+    search_scraping = c(
+      "ddgs",
+      "selenium",
+      "undetected-chromedriver",
+      "primp",
+      "beautifulsoup4",
+      "curl_cffi",
+      "requests",
+      "fake_headers",
+      "langextract[openai]"
+    ),
+    http_proxy = c(
+      "httpx",
+      "pysocks",
+      "socksio",
+      "stem"
+    ),
+    utilities = c(
+      "python-dotenv",
+      "arxiv",
+      "wikipedia"
+    )
+  )
 }
 
 .parse_major_version <- function(version_str) {
@@ -595,7 +606,8 @@ check_backend <- function(conda_env = NULL, strict = FALSE) {
       "selenium",
       "primp",
       "httpx",
-      "fake_headers"
+      "fake_headers",
+      "langextract"
     )
 
     optional_packages <- c(

@@ -3,18 +3,18 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "Unknown",
+  "prior_occupation": "La bancada de Unidad Demócrata en la Asamblea Legislativa Plurinacional por el Beni está integrada por dos senadores, un diputado plurinominal y tres uninominales. Además, obtuvo un representante supraestatal.",
   "class_background": "Unknown",
-  "prior_occupation_source": null,
+  "prior_occupation_source": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
   "disability_status": "Unknown",
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
-  "birth_year": 1982,
-  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "birth_year": "1969-12-01",
+  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=428",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": "Source-backed searches resolved 3 fields (including birth_year, birth_year_source, confidence), while 15 fields remain unknown due to limited verifiable evidence."
+  "justification": "Source-backed searches resolved 5 fields (including prior_occupation, prior_occupation_source, birth_year), while 13 fields remain unknown due to limited verifiable evidence."
 }

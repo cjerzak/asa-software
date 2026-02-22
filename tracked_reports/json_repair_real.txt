@@ -2,11 +2,11 @@
   {
     "repair_applied": true,
     "repair_reason": "missing_keys",
-    "missing_keys_count": 8,
-    "missing_keys_sample": ["education_level", "education_institution", "education_field", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
+    "missing_keys_count": 18,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
     "fallback_on_failure": true,
     "schema_source": "explicit",
-    "context": "finalize"
+    "context": "agent"
   },
   {
     "repair_applied": true,
@@ -15,6 +15,6 @@
     "missing_keys_sample": [],
     "fallback_on_failure": true,
     "schema_source": "explicit",
-    "context": "finalize"
+    "context": "agent"
   }
 ]
