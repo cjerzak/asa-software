@@ -1,66 +1,166 @@
 AGENT ACTION MAP
 ================
-Steps captured: 6
-LangGraph timed steps: 6
+Steps captured: 26
+LangGraph timed steps: 25
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
-      Source-backed found values: 0 (across 18 tracked fields)
+      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 18 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
-      Human prompts: 3
-      AI turns: 0 tool-call turn(s), 3 answer turn(s)
-      Tool results: 0 total (none)
+      Human prompts: 1
+      AI turns: 12 tool-call turn(s), 1 answer turn(s)
+      Tool results: 12 total (Tool Search=10, Tool OpenWebpage=2)
       Structured terminal answer emitted
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      agent: 1.7551m (tok=0, n=3)
-      finalize: 0.0001m (tok=0, n=1)
-      nudge: 0.0000m (tok=0, n=2)
+      tools: 2.2168m (tok=0, n=12)
+      agent: 0.5794m (tok=86122, n=12)
+      finalize: 0.1583m (tok=13523, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #01 agent: 0.6301m (tok=0)
-      #03 agent: 0.5652m (tok=0)
-      #05 agent: 0.5599m (tok=0)
-      #06 finalize: 0.0001m (tok=0)
-      #04 nudge: 0.0000m (tok=0)
-  +-- [TIMING] wall=1.7554m nodes=1.7552m delta=+0.0002m (overhead)
+      #10 tools: 0.7989m (tok=0)
+      #18 tools: 0.5601m (tok=0)
+      #24 tools: 0.5075m (tok=0)
+      #25 finalize: 0.1583m (tok=13523)
+      #01 agent: 0.0986m (tok=1709)
+  +-- [TIMING] wall=2.9558m nodes=2.9546m delta=+0.0012m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Produced structured answer
+  +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=0 out=0 total=0
-      min: 0.5652m
-      detail: {"education_level":"Unknown","education_institution":"Unknown","education_field":"U...
-  +-- [03] Submitted task prompt
-      by: Human
+      tok: in=1489 out=220 total=1709
+      min: 0.0986m
+      detail: Search(query=Ramona Moye Camaconi Bolivia MAS Beni bio...)
+  +-- [03] Returned result
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: CONTINUE SEARCHING — 10 fields are still unresolved: bi...urce: URL)', category='fa...
-  +-- [04] Produced structured answer
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...rio </URL> __END_OF_SOURC...
+  +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=0 out=0 total=0
-      min: 0.5599m
-      detail: {"education_level":"Unknown","education_institution":"Unknown","education_field":"U...
-  +-- [05] Submitted task prompt
-      by: Human
+      tok: in=2433 out=221 total=2654
+      min: 0.0435m
+      detail: Search(query=Ramona Moye Camaconi biografía hoja de vida)
+  +-- [05] Returned result
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: CONTINUE SEARCHING — 10 fields are still unresolved: bi...urce: URL)', category='fa...
-  +-- [06] Produced structured answer
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...le </URL> __END_OF_SOURCE...
+  +-- [06] Requested 1 tool call (Search)
       by: AI
+      tok: in=3682 out=204 total=3886
+      min: 0.0400m
+      detail: Search(query="Ramona Moye Camaconi" biografia lugar de...)
+  +-- [07] Returned result
+      by: Tool Search
       tok: in=0 out=0 total=0
-      min: 0.0001m
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4535 out=238 total=4773
+      min: 0.0452m
+      detail: Search(query="Ramona Moye Camaconi" TIPNIS estudios pr...)
+  +-- [09] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...via </URL> __END_OF_SOURC...
+  +-- [10] Requested 1 tool call (Search)
+      by: AI
+      tok: in=5288 out=120 total=5408
+      min: 0.0449m
+      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient...)
+  +-- [11] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: 1 BOLETIN JUDICI...49 </URL> __END_OF_SOURCE...
+  +-- [12] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7031 out=150 total=7181
+      min: 0.0315m
+      detail: Search(query="Ramona Moye Camaconi" biografia "Beni" T...)
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconi, d...916 </URL> __END_OF_SOURC...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=7310 out=403 total=7713
+      min: 0.0532m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
+  +-- [16] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=8258 out=137 total=8395
+      min: 0.0293m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
+  +-- [18] Requested 1 tool call (Search)
+      by: AI
+      tok: in=8916 out=338 total=9254
+      min: 0.0547m
+      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient...)
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ministerio de Ed...=2 </URL> __END_OF_SOURCE...
+  +-- [20] Requested 1 tool call (Search)
+      by: AI
+      tok: in=10942 out=275 total=11217
+      min: 0.0550m
+      detail: Search(query=site:oep.org.bo "Ramona Moye Camaconi")
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
+  +-- [22] Requested 1 tool call (Search)
+      by: AI
+      tok: in=11459 out=185 total=11644
+      min: 0.0374m
+      detail: Search(query="Ramona Moye Camaconi" nació en)
+  +-- [23] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
+  +-- [24] Requested 1 tool call (Search)
+      by: AI
+      tok: in=12154 out=134 total=12288
+      min: 0.0461m
+      detail: Search(query="Ramona Moye Camaconi" "Sub Central Sécur...)
+  +-- [25] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: ¿Una carretera i...ye </URL> __END_OF_SOURCE...
+  +-- [26] Produced structured answer
+      by: AI
+      tok: in=12285 out=1238 total=13523
+      min: 0.1583m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_institution":"Unknown","education_field":"U...
+      detail: {"education_level":"Unknown","education_institution":"U...or LGBTQ identity was fou...
 END

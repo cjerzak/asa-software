@@ -302,7 +302,8 @@ test_that("OpenWebpage returns structured JSON on transient RequestException", {
     expect_equal(as.character(parsed$tool), "OpenWebpage")
     expect_equal(as.character(parsed$error_type), "timeout")
     expect_true(isTRUE(parsed$retryable))
-    expect_equal(as.integer(reticulate::py$`_asa_fetch_calls`), 3L)
+    expect_equal(as.integer(parsed$attempts), 2L)
+    expect_equal(as.integer(reticulate::py$`_asa_fetch_calls`), 2L)
   })
 })
 

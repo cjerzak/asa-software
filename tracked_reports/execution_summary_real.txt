@@ -1,164 +1,173 @@
 {
-  "elapsed_time": 1.7826,
+  "elapsed_time": 3.0043,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "education_institution": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "string|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "education_field": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "string|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "education_source": {
       "status": "pending",
       "value": null,
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
+      "evidence": "grounding_blocked_unresolved_base_field",
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "prior_occupation": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "string|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "class_background": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "prior_occupation_source": {
       "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "disability_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "No disability|Some disability|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "No disability|Some disability|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "disability_source": {
       "status": "pending",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "birth_place": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "string|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "string|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "birth_place_source": {
       "status": "unknown",
       "value": null,
       "source_url": null,
       "evidence": "source_consistency_demotion",
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "birth_year": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": null,
-      "attempts": 0,
+      "status": "found",
+      "value": 1982,
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "terminal_payload_source_backed",
+      "attempts": 2,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
-      "status": "unknown",
-      "value": null,
-      "source_url": null,
-      "evidence": "source_consistency_demotion",
-      "attempts": 0,
+      "status": "found",
+      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "semantic_validation_failed",
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "lgbtq_details": {
       "status": "unknown",
       "value": null,
       "source_url": null,
-      "evidence": null,
-      "attempts": 0,
-      "descriptor": "string|null"
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "attempts": 2,
+      "descriptor": "string|null",
+      "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "lgbtq_source": {
       "status": "pending",
       "value": null,
       "source_url": null,
       "evidence": null,
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string|null"
     },
     "confidence": {
       "status": "found",
-      "value": "Low",
+      "value": "High",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "Low|Medium|High"
     },
     "justification": {
       "status": "found",
-      "value": "Searches did not find reliable, source-backed evidence for the required core fields.",
+      "value": "Ramona Moye Camaconi is an indigenous Mojeño-Trinitario leader from the TIPNIS territory in Beni, Bolivia. Her official parliamentary profile confirms her birth date as January 7, 1982, and identifies her primary prior activity as the President of the Women's Organization of the Sub Central Sécure. This role as a community leader in an indigenous territory, combined with the lack of listed professional degrees (unlike her substitute), supports a working-class background classification. No public information regarding disability or LGBTQ identity was found.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
-      "attempts": 0,
+      "attempts": 2,
       "descriptor": "string"
     }
   },
   "diagnostics": {
-    "grounding_blocks_count": 0,
+    "grounding_blocks_count": 1,
     "source_consistency_fixes_count": 0,
     "field_demotions_count": 3,
     "recovery_promotions_count": 0,
-    "recovery_rejections_count": 0,
-    "unknown_fields_count": 13,
-    "grounding_blocks_count_current": 0,
+    "recovery_rejections_count": 9,
+    "unknown_fields_count": 11,
+    "grounding_blocks_count_current": 1,
     "source_consistency_fixes_count_current": 0,
-    "field_demotions_count_current": 3,
+    "field_demotions_count_current": 2,
     "recovery_promotions_count_current": 0,
-    "recovery_rejections_count_current": 0,
-    "unknown_fields_count_current": 13,
+    "recovery_rejections_count_current": 9,
+    "unknown_fields_count_current": 11,
     "off_target_tool_results_count": 0,
     "empty_tool_results_count": 0,
     "retry_or_replan_events": 0,
@@ -187,34 +196,47 @@
     "search_snippet_deterministic_fallback_calls": 0,
     "search_snippet_deterministic_fallback_payloads": 0,
     "search_snippet_deterministic_fallback_no_payload": 0,
+    "webpage_langextract_elapsed_ms_total": 0,
+    "webpage_langextract_error_elapsed_ms_total": 0,
+    "search_snippet_langextract_elapsed_ms_total": 0,
+    "search_snippet_langextract_error_elapsed_ms_total": 0,
+    "low_signal_rewrite_events": 0,
+    "low_signal_stop_events": 0,
+    "low_signal_rewrite_elapsed_ms_total": 0,
+    "low_signal_stop_elapsed_ms_total": 0,
+    "retry_threshold_crossings": 0,
+    "adaptive_budget_events": 0,
+    "adaptive_budget_reduced_calls_total": 0,
     "structural_repair_events": 0,
     "structural_repair_retry_events": 0,
-    "finalization_invariant_failures": 3,
+    "finalization_invariant_failures": 12,
     "anchor_hard_blocks_count": 0,
     "anchor_soft_penalties_count": 0,
-    "grounding_blocked_fields": [],
+    "grounding_blocked_fields": "education_source",
     "source_consistency_fixes": [],
     "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
     "recovery_promoted_fields": [],
-    "recovery_rejected_fields": [],
-    "unknown_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details"],
-    "grounding_blocked_fields_current": [],
+    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "unknown_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details"],
+    "grounding_blocked_fields_current": "education_source",
     "source_consistency_fixes_current": [],
-    "field_demotion_fields_current": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
+    "field_demotion_fields_current": ["prior_occupation_source", "birth_place_source"],
     "recovery_promoted_fields_current": [],
-    "recovery_rejected_fields_current": [],
-    "unknown_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details"],
+    "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "unknown_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details"],
     "field_demotion_reason_counts": {
       "source_consistency_demotion": 3
     },
-    "recovery_reason_counts": {},
+    "recovery_reason_counts": {
+      "recovery_blocked_anchor_mismatch": 9
+    },
     "unknown_reason_counts": {
-      "not_attempted": 10,
-      "source_consistency_demotion": 3
+      "recovery_blocked_anchor_mismatch": 9,
+      "source_consistency_demotion": 2
     },
     "unknown_fields_by_reason": {
-      "not_attempted": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
-      "source_consistency_demotion": ["prior_occupation_source", "birth_place_source", "birth_year_source"]
+      "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+      "source_consistency_demotion": ["prior_occupation_source", "birth_place_source"]
     },
     "retrieval_interventions": [],
     "webpage_openwebpage_skip_reasons": [],
@@ -222,9 +244,43 @@
     "webpage_langextract_last_error": "",
     "search_snippet_langextract_provider": "",
     "search_snippet_langextract_last_error": "",
-    "anchor_strength_current": "none",
+    "anchor_strength_current": "moderate",
     "anchor_mode_current": "soft",
-    "anchor_confidence_current": 0,
-    "anchor_reasons_current": []
+    "anchor_confidence_current": 0.56,
+    "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
+    "performance": {
+      "tool_round_count": 12,
+      "tool_round_elapsed_ms_total": 132936,
+      "tool_round_elapsed_ms_last": 30442,
+      "tool_round_elapsed_ms_max": 47919,
+      "search_tool_calls": 10,
+      "openwebpage_tool_calls": 2,
+      "other_tool_calls": 0,
+      "search_tool_elapsed_ms_est_total": 126677,
+      "openwebpage_tool_elapsed_ms_est_total": 6259,
+      "other_tool_elapsed_ms_est_total": 0,
+      "provider_error_count": 0,
+      "provider_error_elapsed_ms_total": 0,
+      "low_signal_streak_peak": 0,
+      "diminishing_returns_streak_peak": 10,
+      "adaptive_budget_events": 0,
+      "adaptive_budget_reduced_calls_total": 0,
+      "fold_event_count": 0,
+      "fold_summarizer_latency_m_total": 0,
+      "fold_summarizer_latency_m_last": 0,
+      "webpage_langextract_elapsed_ms_total": 0,
+      "webpage_langextract_error_elapsed_ms_total": 0,
+      "search_snippet_langextract_elapsed_ms_total": 0,
+      "search_snippet_langextract_error_elapsed_ms_total": 0,
+      "low_signal_rewrite_events": 0,
+      "low_signal_stop_events": 0,
+      "low_signal_rewrite_elapsed_ms_total": 0,
+      "low_signal_stop_elapsed_ms_total": 0,
+      "retry_threshold_crossings": 0,
+      "adaptive_budget_last_reason": null,
+      "fold_last_trigger_reason": null,
+      "provider_error_last_type": null,
+      "provider_error_last_message": null
+    }
   }
 }

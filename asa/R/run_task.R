@@ -386,11 +386,17 @@ run_task <- function(prompt,
   }
 
   start_time <- Sys.time()
+  phase_marks <- list(
+    run_task_started = start_time
+  )
 
   # Acquire rate limit token BEFORE making request (proactive rate limiting)
+  phase_marks$rate_limit_started <- Sys.time()
   .acquire_rate_limit_token(verbose = verbose)
+  phase_marks$rate_limit_finished <- Sys.time()
 
   # Run agent with temporal filtering applied
+  phase_marks$backend_invoke_started <- Sys.time()
   response <- .with_runtime_wrappers(runtime = runtime, agent = agent, fn = function() {
     .run_agent(
       augmented_prompt,
@@ -414,10 +420,12 @@ run_task <- function(prompt,
       verbose = verbose
     )
   })
+  phase_marks$backend_invoke_finished <- Sys.time()
 
   elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
 
   # Parse output based on format
+  phase_marks$output_parse_started <- Sys.time()
   parsed <- NULL
   status <- if (response$status_code == ASA_STATUS_SUCCESS) "success" else "error"
 
@@ -445,6 +453,7 @@ run_task <- function(prompt,
 
   # Validate parsed JSON against expected schema (if expected_fields provided)
   parsing_status <- .validate_json_schema(parsed, expected_fields)
+  phase_marks$output_parse_finished <- Sys.time()
 
   # Extract search tier from trace (if search was used)
   search_tier <- .extract_search_tier(response$trace)
@@ -547,6 +556,7 @@ run_task <- function(prompt,
       list()
     }
   )
+  phase_marks$action_trace_started <- Sys.time()
   action_trace <- tryCatch(
     .extract_action_trace(
       trace_json = at_trace_json,
@@ -579,6 +589,7 @@ run_task <- function(prompt,
       )
     }
   )
+  phase_marks$action_trace_finished <- Sys.time()
   payload_integrity <- response$payload_integrity %||% list()
   terminal_payload_source <- .try_or(as.character(payload_integrity$released_from), character(0))
   terminal_payload_source <- if (length(terminal_payload_source) > 0 && nzchar(terminal_payload_source[[1]])) {
@@ -603,6 +614,33 @@ run_task <- function(prompt,
       }
     }
   }
+  phase_marks$execution_assembly_started <- Sys.time()
+
+  run_task_phase_timings <- list(
+    total_minutes = elapsed,
+    rate_limit_wait_minutes = as.numeric(difftime(
+      phase_marks$rate_limit_finished,
+      phase_marks$rate_limit_started,
+      units = "mins"
+    )),
+    backend_invoke_minutes = as.numeric(difftime(
+      phase_marks$backend_invoke_finished,
+      phase_marks$backend_invoke_started,
+      units = "mins"
+    )),
+    output_parse_minutes = as.numeric(difftime(
+      phase_marks$output_parse_finished,
+      phase_marks$output_parse_started,
+      units = "mins"
+    )),
+    action_trace_minutes = as.numeric(difftime(
+      phase_marks$action_trace_finished,
+      phase_marks$action_trace_started,
+      units = "mins"
+    )),
+    backend = response$phase_timings %||% list()
+  )
+
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
@@ -646,7 +684,17 @@ run_task <- function(prompt,
     action_plan_summary = action_trace$plan_summary %||% character(0),
     action_investigator_summary = action_trace$investigator_summary %||% character(0),
     action_overall = action_trace$overall_summary %||% character(0),
-    langgraph_step_timings = action_trace$langgraph_step_timings %||% list()
+    langgraph_step_timings = action_trace$langgraph_step_timings %||% list(),
+    phase_timings = run_task_phase_timings
+  )
+  phase_marks$execution_assembly_finished <- Sys.time()
+  execution$phase_timings$execution_assembly_minutes <- as.numeric(difftime(
+    phase_marks$execution_assembly_finished,
+    phase_marks$execution_assembly_started,
+    units = "mins"
+  ))
+  execution$phase_timings$langgraph_node_aggregate <- .aggregate_langgraph_timings(
+    execution$langgraph_step_timings %||% list()
   )
   if (isTRUE(payload_integrity$canonical_available) &&
       !isTRUE(payload_integrity$canonical_matches_message)) {
@@ -725,7 +773,8 @@ run_task <- function(prompt,
     action_ascii = "",
     action_investigator_summary = character(0),
     action_overall = character(0),
-    langgraph_step_timings = list()
+    langgraph_step_timings = list(),
+    phase_timings = list()
   )
 
   for (alias_name in names(alias_defaults)) {

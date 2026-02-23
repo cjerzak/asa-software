@@ -490,7 +490,11 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
       action_ascii = "ascii",
       action_investigator_summary = c("summary"),
       action_overall = c("overall"),
-      langgraph_step_timings = list(list(node = "agent"))
+      langgraph_step_timings = list(list(node = "agent")),
+      phase_timings = list(
+        total_minutes = 0.1,
+        backend_invoke_minutes = 0.05
+      )
     )
   )
 
@@ -511,6 +515,8 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
   expect_true(is.list(aliased$artifact_status))
   expect_equal(aliased$token_stats$tokens_used, 12L)
   expect_equal(aliased$action_ascii, "ascii")
+  expect_true(is.list(aliased$phase_timings))
+  expect_equal(as.numeric(aliased$phase_timings$total_minutes), 0.1, tolerance = 1e-8)
   expect_false("raw_response" %in% names(aliased))
   expect_false("trace" %in% names(aliased))
 

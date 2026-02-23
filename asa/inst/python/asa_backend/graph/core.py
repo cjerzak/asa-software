@@ -1232,6 +1232,13 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "early_stop_min_gain": 0.10,
         "early_stop_patience_steps": 2,
         "max_repeat_offtopic": 8,
+        # Generic diminishing-returns controller (task-agnostic).
+        # In enforce mode this can tighten effective search budgets when
+        # repeated rounds produce little incremental signal.
+        "adaptive_budget_enabled": True,
+        "adaptive_min_remaining_calls": 1,
+        "adaptive_low_value_threshold": 0.08,
+        "adaptive_patience_steps": 2,
     },
     "field_resolver": {
         "enabled": True,
@@ -1363,6 +1370,22 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
         rc["max_repeat_offtopic"] = max(1, int(rc.get("max_repeat_offtopic", 8)))
     except Exception:
         rc["max_repeat_offtopic"] = 8
+    rc["adaptive_budget_enabled"] = bool(rc.get("adaptive_budget_enabled", True))
+    try:
+        rc["adaptive_min_remaining_calls"] = max(0, int(rc.get("adaptive_min_remaining_calls", 1)))
+    except Exception:
+        rc["adaptive_min_remaining_calls"] = 1
+    rc["adaptive_low_value_threshold"] = _clamp01(
+        rc.get("adaptive_low_value_threshold"),
+        default=0.08,
+    )
+    try:
+        rc["adaptive_patience_steps"] = max(
+            1,
+            int(rc.get("adaptive_patience_steps", rc.get("early_stop_patience_steps", 2)) or 2),
+        )
+    except Exception:
+        rc["adaptive_patience_steps"] = max(1, int(rc.get("early_stop_patience_steps", 2) or 2))
 
     options["source_tier_provider"] = _normalize_source_tier_provider(options.get("source_tier_provider"))
 
@@ -6532,6 +6555,78 @@ def _append_limited_unique(items: Any, value: Any, *, max_items: int = 64) -> Li
     return out
 
 
+def _nonneg_int(value: Any, default: int = 0) -> int:
+    try:
+        return max(0, int(value))
+    except Exception:
+        return int(default)
+
+
+def _nonneg_float(value: Any, default: float = 0.0) -> float:
+    try:
+        parsed = float(value)
+    except Exception:
+        return float(default)
+    if parsed < 0:
+        return float(default)
+    return parsed
+
+
+def _normalize_performance_diagnostics(performance: Any) -> Dict[str, Any]:
+    existing = performance if isinstance(performance, dict) else {}
+    out: Dict[str, Any] = {
+        "tool_round_count": _nonneg_int(existing.get("tool_round_count", 0)),
+        "tool_round_elapsed_ms_total": _nonneg_int(existing.get("tool_round_elapsed_ms_total", 0)),
+        "tool_round_elapsed_ms_last": _nonneg_int(existing.get("tool_round_elapsed_ms_last", 0)),
+        "tool_round_elapsed_ms_max": _nonneg_int(existing.get("tool_round_elapsed_ms_max", 0)),
+        "search_tool_calls": _nonneg_int(existing.get("search_tool_calls", 0)),
+        "openwebpage_tool_calls": _nonneg_int(existing.get("openwebpage_tool_calls", 0)),
+        "other_tool_calls": _nonneg_int(existing.get("other_tool_calls", 0)),
+        "search_tool_elapsed_ms_est_total": _nonneg_int(existing.get("search_tool_elapsed_ms_est_total", 0)),
+        "openwebpage_tool_elapsed_ms_est_total": _nonneg_int(
+            existing.get("openwebpage_tool_elapsed_ms_est_total", 0)
+        ),
+        "other_tool_elapsed_ms_est_total": _nonneg_int(existing.get("other_tool_elapsed_ms_est_total", 0)),
+        "provider_error_count": _nonneg_int(existing.get("provider_error_count", 0)),
+        "provider_error_elapsed_ms_total": _nonneg_int(existing.get("provider_error_elapsed_ms_total", 0)),
+        "low_signal_streak_peak": _nonneg_int(existing.get("low_signal_streak_peak", 0)),
+        "diminishing_returns_streak_peak": _nonneg_int(existing.get("diminishing_returns_streak_peak", 0)),
+        "adaptive_budget_events": _nonneg_int(existing.get("adaptive_budget_events", 0)),
+        "adaptive_budget_reduced_calls_total": _nonneg_int(
+            existing.get("adaptive_budget_reduced_calls_total", 0)
+        ),
+        "fold_event_count": _nonneg_int(existing.get("fold_event_count", 0)),
+        "fold_summarizer_latency_m_total": _nonneg_float(existing.get("fold_summarizer_latency_m_total", 0.0)),
+        "fold_summarizer_latency_m_last": _nonneg_float(existing.get("fold_summarizer_latency_m_last", 0.0)),
+        "webpage_langextract_elapsed_ms_total": _nonneg_int(
+            existing.get("webpage_langextract_elapsed_ms_total", 0)
+        ),
+        "webpage_langextract_error_elapsed_ms_total": _nonneg_int(
+            existing.get("webpage_langextract_error_elapsed_ms_total", 0)
+        ),
+        "search_snippet_langextract_elapsed_ms_total": _nonneg_int(
+            existing.get("search_snippet_langextract_elapsed_ms_total", 0)
+        ),
+        "search_snippet_langextract_error_elapsed_ms_total": _nonneg_int(
+            existing.get("search_snippet_langextract_error_elapsed_ms_total", 0)
+        ),
+        "low_signal_rewrite_events": _nonneg_int(existing.get("low_signal_rewrite_events", 0)),
+        "low_signal_stop_events": _nonneg_int(existing.get("low_signal_stop_events", 0)),
+        "low_signal_rewrite_elapsed_ms_total": _nonneg_int(
+            existing.get("low_signal_rewrite_elapsed_ms_total", 0)
+        ),
+        "low_signal_stop_elapsed_ms_total": _nonneg_int(
+            existing.get("low_signal_stop_elapsed_ms_total", 0)
+        ),
+        "retry_threshold_crossings": _nonneg_int(existing.get("retry_threshold_crossings", 0)),
+    }
+    out["adaptive_budget_last_reason"] = str(existing.get("adaptive_budget_last_reason") or "").strip() or None
+    out["fold_last_trigger_reason"] = str(existing.get("fold_last_trigger_reason") or "").strip() or None
+    out["provider_error_last_type"] = str(existing.get("provider_error_last_type") or "").strip() or None
+    out["provider_error_last_message"] = str(existing.get("provider_error_last_message") or "").strip()[:400] or None
+    return out
+
+
 def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     existing = diagnostics if isinstance(diagnostics, dict) else {}
     counters = (
@@ -6575,6 +6670,17 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "search_snippet_deterministic_fallback_calls",
         "search_snippet_deterministic_fallback_payloads",
         "search_snippet_deterministic_fallback_no_payload",
+        "webpage_langextract_elapsed_ms_total",
+        "webpage_langextract_error_elapsed_ms_total",
+        "search_snippet_langextract_elapsed_ms_total",
+        "search_snippet_langextract_error_elapsed_ms_total",
+        "low_signal_rewrite_events",
+        "low_signal_stop_events",
+        "low_signal_rewrite_elapsed_ms_total",
+        "low_signal_stop_elapsed_ms_total",
+        "retry_threshold_crossings",
+        "adaptive_budget_events",
+        "adaptive_budget_reduced_calls_total",
         "structural_repair_events",
         "structural_repair_retry_events",
         "finalization_invariant_failures",
@@ -6691,6 +6797,7 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         out["anchor_mode_current"] = "soft"
     out["anchor_confidence_current"] = _clamp01(existing.get("anchor_confidence_current"), default=0.0)
     out["anchor_reasons_current"] = list(existing.get("anchor_reasons_current") or [])[:8]
+    out["performance"] = _normalize_performance_diagnostics(existing.get("performance"))
     # Current-snapshot counters should always reflect latest field_status, while
     # legacy counters keep max/peak behavior for run-level telemetry.
     out["grounding_blocks_count_current"] = max(
@@ -7038,6 +7145,8 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
         "new_sources",
         "new_required_fields",
         "low_novelty_streak",
+        "diminishing_returns_streak",
+        "adaptive_budget_triggers",
         "offtopic_counter",
     )
     for key in int_keys:
@@ -7045,7 +7154,7 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
             out[key] = max(0, int(existing.get(key, 0)))
         except Exception:
             out[key] = 0
-    float_keys = ("global_novelty", "early_stop_min_gain")
+    float_keys = ("global_novelty", "early_stop_min_gain", "value_per_search_call")
     for key in float_keys:
         try:
             out[key] = _clamp01(existing.get(key, 0.0), default=0.0)
@@ -7094,6 +7203,7 @@ def _normalize_tool_quality_events(events: Any) -> List[Dict[str, Any]]:
             "is_off_target": bool(raw.get("is_off_target", False)),
             "is_error": bool(raw.get("is_error", False)),
             "error_type": str(raw.get("error_type") or "").strip() or None,
+            "elapsed_ms_estimate": _nonneg_int(raw.get("elapsed_ms_estimate", 0)),
             "quality_version": str(raw.get("quality_version") or "v1"),
         })
     return out
@@ -7344,10 +7454,33 @@ def _build_retrieval_metrics(
     global_novelty = _clamp01((0.55 * found_novelty) + (0.45 * source_novelty), default=0.0)
     out["global_novelty"] = global_novelty
 
+    search_calls_this_round = max(0, int(len(search_queries or [])))
+    # A generic marginal-value signal for search calls this round.
+    raw_round_value = (1.5 * float(len(new_found_fields))) + (0.5 * float(new_sources_count))
+    value_per_search_call = 0.0
+    if search_calls_this_round > 0:
+        value_per_search_call = min(1.0, raw_round_value / float(max(1, 2 * search_calls_this_round)))
+    out["value_per_search_call"] = _clamp01(value_per_search_call, default=0.0)
+
     if global_novelty < float(out.get("early_stop_min_gain", 0.10)):
         out["low_novelty_streak"] = int(out.get("low_novelty_streak", 0)) + 1
     else:
         out["low_novelty_streak"] = 0
+
+    adaptive_enabled = bool(controller.get("adaptive_budget_enabled", True))
+    adaptive_low_value_threshold = _clamp01(controller.get("adaptive_low_value_threshold"), default=0.08)
+    diminishing_streak_prior = int(out.get("diminishing_returns_streak", 0) or 0)
+    diminishing_streak = diminishing_streak_prior
+    if search_calls_this_round > 0:
+        if (
+            adaptive_enabled
+            and float(out.get("value_per_search_call", 0.0) or 0.0) <= adaptive_low_value_threshold
+            and global_novelty <= float(out.get("early_stop_min_gain", 0.10))
+        ):
+            diminishing_streak = diminishing_streak_prior + 1
+        else:
+            diminishing_streak = 0
+    out["diminishing_returns_streak"] = int(max(0, diminishing_streak))
 
     off_target_counter = int((diagnostics or {}).get("off_target_tool_results_count", 0) or 0)
     out["offtopic_counter"] = off_target_counter
@@ -7378,6 +7511,16 @@ def _build_retrieval_metrics(
     if mode == "enforce" and off_target_counter >= max_offtopic:
         early_stop_eligible = True
         early_stop_reason = "offtopic_threshold"
+    adaptive_patience = max(1, int(controller.get("adaptive_patience_steps", patience) or patience))
+    if (
+        mode == "enforce"
+        and adaptive_enabled
+        and not candidate_unresolved
+        and int(out.get("diminishing_returns_streak", 0)) >= adaptive_patience
+    ):
+        early_stop_eligible = True
+        early_stop_reason = "diminishing_returns"
+        out["adaptive_budget_triggers"] = int(out.get("adaptive_budget_triggers", 0) or 0) + 1
 
     out["early_stop_eligible"] = bool(early_stop_eligible)
     out["early_stop_reason"] = early_stop_reason
@@ -11014,6 +11157,9 @@ def _llm_extract_schema_payloads_from_openwebpages(
         "langextract_errors": 0,
         "langextract_provider": "",
         "langextract_last_error": "",
+        "langextract_elapsed_ms_total": 0,
+        "langextract_elapsed_ms_max": 0,
+        "langextract_error_elapsed_ms_total": 0,
         "deterministic_fallback_calls": 0,
         "deterministic_fallback_payloads": 0,
         "deterministic_fallback_no_payload": 0,
@@ -11196,6 +11342,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
         if engine == "langextract":
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
             _entity_hint = " ".join(anchor_tokens) if anchor_tokens else None
+            _langextract_started = time.perf_counter()
             langextract_result = _langextract_extract_schema_with_fallback(
                 page_url=page_url,
                 page_text=page_text,
@@ -11209,6 +11356,17 @@ def _llm_extract_schema_payloads_from_openwebpages(
                 prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
                 max_chars=max(512, int(max_chars)),
                 entity_hint=_entity_hint,
+            )
+            _langextract_elapsed_ms = max(
+                0,
+                int(round((time.perf_counter() - _langextract_started) * 1000.0)),
+            )
+            metadata["langextract_elapsed_ms_total"] = int(
+                metadata.get("langextract_elapsed_ms_total", 0) or 0
+            ) + int(_langextract_elapsed_ms)
+            metadata["langextract_elapsed_ms_max"] = max(
+                int(metadata.get("langextract_elapsed_ms_max", 0) or 0),
+                int(_langextract_elapsed_ms),
             )
             provider = str(langextract_result.get("provider") or "").strip()
             if provider:
@@ -11226,6 +11384,9 @@ def _llm_extract_schema_payloads_from_openwebpages(
             )
             if langextract_result and langextract_result.get("error"):
                 metadata["langextract_errors"] = int(metadata.get("langextract_errors", 0) or 0) + 1
+                metadata["langextract_error_elapsed_ms_total"] = int(
+                    metadata.get("langextract_error_elapsed_ms_total", 0) or 0
+                ) + int(_langextract_elapsed_ms)
                 metadata["langextract_last_error"] = str(langextract_result.get("error") or "")[:400]
                 if debug:
                     logger.info(
@@ -11341,6 +11502,9 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "langextract_errors": 0,
         "langextract_provider": "",
         "langextract_last_error": "",
+        "langextract_elapsed_ms_total": 0,
+        "langextract_elapsed_ms_max": 0,
+        "langextract_error_elapsed_ms_total": 0,
         "deterministic_fallback_calls": 0,
         "deterministic_fallback_payloads": 0,
         "deterministic_fallback_no_payload": 0,
@@ -11516,6 +11680,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
         if engine == "langextract":
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
             _entity_hint = " ".join(anchor_tokens) if anchor_tokens else None
+            _langextract_started = time.perf_counter()
             langextract_result = _langextract_extract_schema_with_fallback(
                 page_url=page_url,
                 page_text=page_text,
@@ -11529,6 +11694,17 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
                 max_chars=max_chars_int,
                 entity_hint=_entity_hint,
+            )
+            _langextract_elapsed_ms = max(
+                0,
+                int(round((time.perf_counter() - _langextract_started) * 1000.0)),
+            )
+            metadata["langextract_elapsed_ms_total"] = int(
+                metadata.get("langextract_elapsed_ms_total", 0) or 0
+            ) + int(_langextract_elapsed_ms)
+            metadata["langextract_elapsed_ms_max"] = max(
+                int(metadata.get("langextract_elapsed_ms_max", 0) or 0),
+                int(_langextract_elapsed_ms),
             )
             provider = str(langextract_result.get("provider") or "").strip()
             if provider:
@@ -11544,6 +11720,9 @@ def _llm_extract_schema_payloads_from_search_snippets(
             metadata["langextract_fallback_calls"] = int(metadata.get("langextract_fallback_calls", 0) or 0) + 1
             if langextract_result and langextract_result.get("error"):
                 metadata["langextract_errors"] = int(metadata.get("langextract_errors", 0) or 0) + 1
+                metadata["langextract_error_elapsed_ms_total"] = int(
+                    metadata.get("langextract_error_elapsed_ms_total", 0) or 0
+                ) + int(_langextract_elapsed_ms)
                 metadata["langextract_last_error"] = str(langextract_result.get("error") or "")[:400]
 
         request = {
@@ -11670,6 +11849,7 @@ def _create_tool_node_with_scratchpad(
             "unknown_after_searches",
             retry_policy.get("max_attempts_per_field", _DEFAULT_UNKNOWN_AFTER_SEARCHES),
         )
+        tool_round_started_at = time.perf_counter()
 
         try:
             result = base_tool_node.invoke(state)
@@ -11719,6 +11899,11 @@ def _create_tool_node_with_scratchpad(
                 except Exception as follow_exc:
                     if debug:
                         logger.warning("Auto OpenWebpage follow-up failed: %s", follow_exc)
+
+        tool_round_elapsed_ms = max(
+            0,
+            int(round((time.perf_counter() - tool_round_started_at) * 1000.0)),
+        )
 
         extra_payloads: List[Dict[str, Any]] = []
         webpage_extract_urls: List[str] = []
@@ -11985,6 +12170,12 @@ def _create_tool_node_with_scratchpad(
             diagnostics["webpage_langextract_errors"] = int(diagnostics.get("webpage_langextract_errors", 0) or 0) + int(
                 webpage_extract_meta.get("langextract_errors", 0) or 0
             )
+            diagnostics["webpage_langextract_elapsed_ms_total"] = int(
+                diagnostics.get("webpage_langextract_elapsed_ms_total", 0) or 0
+            ) + int(webpage_extract_meta.get("langextract_elapsed_ms_total", 0) or 0)
+            diagnostics["webpage_langextract_error_elapsed_ms_total"] = int(
+                diagnostics.get("webpage_langextract_error_elapsed_ms_total", 0) or 0
+            ) + int(webpage_extract_meta.get("langextract_error_elapsed_ms_total", 0) or 0)
             diagnostics["webpage_openwebpage_candidates_total"] = int(
                 diagnostics.get("webpage_openwebpage_candidates_total", 0) or 0
             ) + int(webpage_extract_meta.get("openwebpage_candidates_total", 0) or 0)
@@ -12031,6 +12222,12 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_langextract_errors"] = int(
                 diagnostics.get("search_snippet_langextract_errors", 0) or 0
             ) + int(snippet_extract_meta.get("langextract_errors", 0) or 0)
+            diagnostics["search_snippet_langextract_elapsed_ms_total"] = int(
+                diagnostics.get("search_snippet_langextract_elapsed_ms_total", 0) or 0
+            ) + int(snippet_extract_meta.get("langextract_elapsed_ms_total", 0) or 0)
+            diagnostics["search_snippet_langextract_error_elapsed_ms_total"] = int(
+                diagnostics.get("search_snippet_langextract_error_elapsed_ms_total", 0) or 0
+            ) + int(snippet_extract_meta.get("langextract_error_elapsed_ms_total", 0) or 0)
             diagnostics["search_snippet_candidates_total"] = int(
                 diagnostics.get("search_snippet_candidates_total", 0) or 0
             ) + int(snippet_extract_meta.get("snippet_candidates_total", 0) or 0)
@@ -12118,6 +12315,25 @@ def _create_tool_node_with_scratchpad(
                 "error_type": str(quality.get("error_type") or "").strip() or None,
                 "quality_version": "v1",
             })
+        external_tool_events = [
+            q for q in tool_quality_events
+            if str(q.get("tool_name") or "").strip().lower() not in _INTERNAL_TOOL_NAMES
+        ]
+        external_tool_count = len(external_tool_events)
+        per_tool_elapsed_ms_est = int(round(float(tool_round_elapsed_ms) / float(external_tool_count))) if external_tool_count > 0 else 0
+        if external_tool_count > 0 and per_tool_elapsed_ms_est > 0:
+            for q in external_tool_events:
+                q["elapsed_ms_estimate"] = int(per_tool_elapsed_ms_est)
+
+        search_tool_hits = sum(
+            1 for q in external_tool_events
+            if str(q.get("tool_name") or "").strip().lower() == "search"
+        )
+        openwebpage_tool_hits = sum(
+            1 for q in external_tool_events
+            if str(q.get("tool_name") or "").strip().lower() == "openwebpage"
+        )
+        other_tool_hits = max(0, int(external_tool_count) - int(search_tool_hits) - int(openwebpage_tool_hits))
         empty_hits = sum(1 for q in tool_quality_events if q.get("is_empty"))
         off_target_hits = sum(1 for q in tool_quality_events if q.get("is_off_target"))
         diagnostics["empty_tool_results_count"] = int(diagnostics.get("empty_tool_results_count", 0)) + int(empty_hits)
@@ -12143,11 +12359,18 @@ def _create_tool_node_with_scratchpad(
         budget_state["no_signal_streak"] = max(0, int(streak))
         rewrite_threshold = int(retry_policy.get("rewrite_after_streak", _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD))
         stop_threshold = int(retry_policy.get("stop_after_streak", _LOW_SIGNAL_STREAK_STOP_THRESHOLD))
+        rewrite_crossed = bool(streak >= rewrite_threshold and prior_streak < rewrite_threshold)
+        stop_crossed = bool(streak >= stop_threshold and prior_streak < stop_threshold)
         budget_state["replan_requested"] = bool(streak >= rewrite_threshold)
         if streak >= rewrite_threshold:
             budget_state["priority_retry_reason"] = "low_signal_escalation"
-        if streak >= rewrite_threshold and prior_streak < rewrite_threshold:
+        if rewrite_crossed:
             diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0)) + 1
+            diagnostics["low_signal_rewrite_events"] = int(diagnostics.get("low_signal_rewrite_events", 0) or 0) + 1
+            diagnostics["low_signal_rewrite_elapsed_ms_total"] = int(
+                diagnostics.get("low_signal_rewrite_elapsed_ms_total", 0) or 0
+            ) + int(tool_round_elapsed_ms)
+            diagnostics["retry_threshold_crossings"] = int(diagnostics.get("retry_threshold_crossings", 0) or 0) + 1
             diagnostics["retrieval_interventions"] = _append_limited_unique(
                 diagnostics.get("retrieval_interventions"),
                 f"low_signal_streak_rewrite:{streak}",
@@ -12158,8 +12381,13 @@ def _create_tool_node_with_scratchpad(
                 "retry_escalation:low_signal",
                 max_items=64,
             )
-        if streak >= stop_threshold and prior_streak < stop_threshold:
+        if stop_crossed:
             diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0)) + 1
+            diagnostics["low_signal_stop_events"] = int(diagnostics.get("low_signal_stop_events", 0) or 0) + 1
+            diagnostics["low_signal_stop_elapsed_ms_total"] = int(
+                diagnostics.get("low_signal_stop_elapsed_ms_total", 0) or 0
+            ) + int(tool_round_elapsed_ms)
+            diagnostics["retry_threshold_crossings"] = int(diagnostics.get("retry_threshold_crossings", 0) or 0) + 1
             diagnostics["retrieval_interventions"] = _append_limited_unique(
                 diagnostics.get("retrieval_interventions"),
                 f"low_signal_streak_stop:{streak}",
@@ -12185,6 +12413,66 @@ def _create_tool_node_with_scratchpad(
                 max_items=64,
             )
 
+        controller = orchestration_options.get("retrieval_controller", {}) if isinstance(orchestration_options, dict) else {}
+        adaptive_budget_enabled = bool(controller.get("adaptive_budget_enabled", True))
+        adaptive_min_remaining_calls = max(0, int(controller.get("adaptive_min_remaining_calls", 1) or 1))
+        adaptive_mode = _normalize_component_mode(controller.get("mode"))
+        adaptive_patience_steps = max(1, int(controller.get("adaptive_patience_steps", 2) or 2))
+        adaptive_reason = None
+        adaptive_reduced_calls = 0
+        if (
+            adaptive_budget_enabled
+            and adaptive_mode == "enforce"
+            and int(search_calls_delta) > 0
+            and int(retrieval_metrics.get("diminishing_returns_streak", 0) or 0) >= adaptive_patience_steps
+            and not bool(budget_state.get("budget_exhausted", False))
+        ):
+            effective_limit_before = int(
+                budget_state.get("tool_calls_limit_effective", budget_state.get("tool_calls_limit", 0)) or 0
+            )
+            tool_calls_used_now = int(budget_state.get("tool_calls_used", 0) or 0)
+            adaptive_effective_limit = max(
+                tool_calls_used_now,
+                tool_calls_used_now + int(adaptive_min_remaining_calls),
+            )
+            adaptive_effective_limit = min(effective_limit_before, adaptive_effective_limit)
+            if adaptive_effective_limit < effective_limit_before:
+                adaptive_reason = "diminishing_returns_budget_tighten"
+                adaptive_reduced_calls = int(effective_limit_before - adaptive_effective_limit)
+                budget_state["tool_calls_limit_effective"] = int(adaptive_effective_limit)
+                budget_state["tool_calls_remaining"] = max(
+                    0,
+                    int(adaptive_effective_limit) - int(tool_calls_used_now),
+                )
+                budget_state["verification_reserve_remaining"] = max(
+                    0,
+                    int(adaptive_effective_limit)
+                    - max(int(budget_state.get("tool_calls_limit", 0) or 0), int(tool_calls_used_now)),
+                )
+                budget_state["adaptive_budget_active"] = True
+                budget_state["adaptive_budget_reason"] = adaptive_reason
+                budget_state["adaptive_budget_reduction"] = int(adaptive_reduced_calls)
+                diagnostics["adaptive_budget_events"] = int(diagnostics.get("adaptive_budget_events", 0) or 0) + 1
+                diagnostics["adaptive_budget_reduced_calls_total"] = int(
+                    diagnostics.get("adaptive_budget_reduced_calls_total", 0) or 0
+                ) + int(adaptive_reduced_calls)
+                diagnostics["retrieval_interventions"] = _append_limited_unique(
+                    diagnostics.get("retrieval_interventions"),
+                    (
+                        "adaptive_budget_tighten:"
+                        f"reason={adaptive_reason},"
+                        f"reduced={int(adaptive_reduced_calls)}"
+                    ),
+                    max_items=64,
+                )
+
+        budget_state["tool_budget_exhausted"] = bool(
+            int(budget_state.get("tool_calls_used", 0) or 0)
+            >= int(budget_state.get("tool_calls_limit_effective", budget_state.get("tool_calls_limit", 0)) or 0)
+        )
+        if budget_state["tool_budget_exhausted"] and not budget_state.get("limit_trigger_reason"):
+            budget_state["limit_trigger_reason"] = "tool_budget"
+
         budget_state["budget_exhausted"] = bool(
             budget_state.get("tool_budget_exhausted")
             or budget_state.get("model_budget_exhausted")
@@ -12207,6 +12495,93 @@ def _create_tool_node_with_scratchpad(
         limit_reason = _budget_exhaustion_reason(budget_state)
         if limit_reason:
             budget_state["finalize_reason"] = limit_reason
+
+        webpage_langextract_elapsed_delta = int(
+            webpage_extract_meta.get("langextract_elapsed_ms_total", 0) if isinstance(webpage_extract_meta, dict) else 0
+        )
+        webpage_langextract_error_elapsed_delta = int(
+            webpage_extract_meta.get("langextract_error_elapsed_ms_total", 0) if isinstance(webpage_extract_meta, dict) else 0
+        )
+        search_snippet_langextract_elapsed_delta = int(
+            snippet_extract_meta.get("langextract_elapsed_ms_total", 0) if isinstance(snippet_extract_meta, dict) else 0
+        )
+        search_snippet_langextract_error_elapsed_delta = int(
+            snippet_extract_meta.get("langextract_error_elapsed_ms_total", 0) if isinstance(snippet_extract_meta, dict) else 0
+        )
+        provider_error_count_delta = int(
+            (webpage_extract_meta.get("langextract_errors", 0) if isinstance(webpage_extract_meta, dict) else 0)
+            + (snippet_extract_meta.get("langextract_errors", 0) if isinstance(snippet_extract_meta, dict) else 0)
+        )
+        provider_error_elapsed_delta = int(
+            webpage_langextract_error_elapsed_delta + search_snippet_langextract_error_elapsed_delta
+        )
+
+        perf = _normalize_performance_diagnostics(diagnostics.get("performance"))
+        perf["tool_round_count"] = int(perf.get("tool_round_count", 0)) + 1
+        perf["tool_round_elapsed_ms_total"] = int(perf.get("tool_round_elapsed_ms_total", 0)) + int(tool_round_elapsed_ms)
+        perf["tool_round_elapsed_ms_last"] = int(tool_round_elapsed_ms)
+        perf["tool_round_elapsed_ms_max"] = max(int(perf.get("tool_round_elapsed_ms_max", 0)), int(tool_round_elapsed_ms))
+        perf["search_tool_calls"] = int(perf.get("search_tool_calls", 0)) + int(search_tool_hits)
+        perf["openwebpage_tool_calls"] = int(perf.get("openwebpage_tool_calls", 0)) + int(openwebpage_tool_hits)
+        perf["other_tool_calls"] = int(perf.get("other_tool_calls", 0)) + int(other_tool_hits)
+        perf["search_tool_elapsed_ms_est_total"] = int(
+            perf.get("search_tool_elapsed_ms_est_total", 0)
+        ) + int(per_tool_elapsed_ms_est * int(search_tool_hits))
+        perf["openwebpage_tool_elapsed_ms_est_total"] = int(
+            perf.get("openwebpage_tool_elapsed_ms_est_total", 0)
+        ) + int(per_tool_elapsed_ms_est * int(openwebpage_tool_hits))
+        perf["other_tool_elapsed_ms_est_total"] = int(
+            perf.get("other_tool_elapsed_ms_est_total", 0)
+        ) + int(per_tool_elapsed_ms_est * int(other_tool_hits))
+        perf["provider_error_count"] = int(perf.get("provider_error_count", 0)) + int(provider_error_count_delta)
+        perf["provider_error_elapsed_ms_total"] = int(
+            perf.get("provider_error_elapsed_ms_total", 0)
+        ) + int(provider_error_elapsed_delta)
+        perf["webpage_langextract_elapsed_ms_total"] = int(
+            perf.get("webpage_langextract_elapsed_ms_total", 0)
+        ) + int(webpage_langextract_elapsed_delta)
+        perf["webpage_langextract_error_elapsed_ms_total"] = int(
+            perf.get("webpage_langextract_error_elapsed_ms_total", 0)
+        ) + int(webpage_langextract_error_elapsed_delta)
+        perf["search_snippet_langextract_elapsed_ms_total"] = int(
+            perf.get("search_snippet_langextract_elapsed_ms_total", 0)
+        ) + int(search_snippet_langextract_elapsed_delta)
+        perf["search_snippet_langextract_error_elapsed_ms_total"] = int(
+            perf.get("search_snippet_langextract_error_elapsed_ms_total", 0)
+        ) + int(search_snippet_langextract_error_elapsed_delta)
+        perf["low_signal_streak_peak"] = max(int(perf.get("low_signal_streak_peak", 0)), int(streak))
+        perf["diminishing_returns_streak_peak"] = max(
+            int(perf.get("diminishing_returns_streak_peak", 0)),
+            int(retrieval_metrics.get("diminishing_returns_streak", 0) or 0),
+        )
+        perf["low_signal_rewrite_events"] = int(perf.get("low_signal_rewrite_events", 0)) + int(1 if rewrite_crossed else 0)
+        perf["low_signal_stop_events"] = int(perf.get("low_signal_stop_events", 0)) + int(1 if stop_crossed else 0)
+        perf["low_signal_rewrite_elapsed_ms_total"] = int(
+            perf.get("low_signal_rewrite_elapsed_ms_total", 0)
+        ) + int(tool_round_elapsed_ms if rewrite_crossed else 0)
+        perf["low_signal_stop_elapsed_ms_total"] = int(
+            perf.get("low_signal_stop_elapsed_ms_total", 0)
+        ) + int(tool_round_elapsed_ms if stop_crossed else 0)
+        perf["retry_threshold_crossings"] = int(perf.get("retry_threshold_crossings", 0)) + int(
+            int(1 if rewrite_crossed else 0) + int(1 if stop_crossed else 0)
+        )
+        if adaptive_reason:
+            perf["adaptive_budget_events"] = int(perf.get("adaptive_budget_events", 0)) + 1
+            perf["adaptive_budget_reduced_calls_total"] = int(
+                perf.get("adaptive_budget_reduced_calls_total", 0)
+            ) + int(adaptive_reduced_calls)
+            perf["adaptive_budget_last_reason"] = adaptive_reason
+        if provider_error_count_delta > 0:
+            last_error_text = str(
+                (snippet_extract_meta.get("langextract_last_error") if isinstance(snippet_extract_meta, dict) else "")
+                or (webpage_extract_meta.get("langextract_last_error") if isinstance(webpage_extract_meta, dict) else "")
+                or ""
+            ).strip()
+            if last_error_text:
+                perf["provider_error_last_message"] = last_error_text[:400]
+                last_error_type = last_error_text.split(":", 1)[0].strip()
+                perf["provider_error_last_type"] = last_error_type or "provider_error"
+        diagnostics["performance"] = perf
 
         progress = _field_status_progress(field_status)
         budget_state.update(progress)
@@ -14505,12 +14880,22 @@ def create_memory_folding_agent(
                 "reflector_reflection_count": len(updated_reflections),
             }
         token_trace_node = "reflect" if om_cfg.get("enabled") else "summarize"
+        updated_diagnostics = _normalize_diagnostics(state.get("diagnostics"))
+        perf_diag = _normalize_performance_diagnostics(updated_diagnostics.get("performance"))
+        perf_diag["fold_event_count"] = int(perf_diag.get("fold_event_count", 0)) + 1
+        perf_diag["fold_summarizer_latency_m_total"] = float(
+            perf_diag.get("fold_summarizer_latency_m_total", 0.0)
+        ) + float(fold_summarizer_latency_m or 0.0)
+        perf_diag["fold_summarizer_latency_m_last"] = float(fold_summarizer_latency_m or 0.0)
+        perf_diag["fold_last_trigger_reason"] = str(fold_trigger_reason or "unknown")
+        updated_diagnostics["performance"] = perf_diag
         return _summarize_result({
             "summary": new_memory,
             "archive": [archive_entry],
             "messages": remove_messages,
             "observations": updated_observations,
             "reflections": updated_reflections,
+            "diagnostics": updated_diagnostics,
             "fold_stats": {
                 "fold_count": fold_count + 1,
                 "fold_messages_removed": fold_messages_removed,

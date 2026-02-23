@@ -1336,7 +1336,7 @@ class OpenWebpageTool(BaseTool):
                 )
 
             if cache_entry is None:
-                fetch_attempts = 3
+                fetch_attempts = 2
                 base_timeout = float(cfg.timeout or 20.0)
                 backoff_schedule = (0.5, 1.5)
                 fetched = None

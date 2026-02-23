@@ -76,6 +76,9 @@
 
   if (verbose) message("Running agent...")
   t0 <- Sys.time()
+  timing_marks <- list(
+    run_agent_started = t0
+  )
   resolved_thread_id <- .resolve_thread_id(thread_id)
   invoke_max_attempts <- as.integer(config$invoke_max_attempts %||% ASA_DEFAULT_INVOKE_MAX_ATTEMPTS)
   invoke_retry_delay <- as.numeric(config$invoke_retry_delay %||% ASA_DEFAULT_INVOKE_RETRY_DELAY)
@@ -87,6 +90,7 @@
   }
 
   # Build initial state and invoke agent
+  timing_marks$invoke_with_retry_started <- Sys.time()
   invoke_output <- tryCatch({
     .invoke_agent_with_retry(
       invoke_fn = function() {
@@ -150,7 +154,13 @@
   }, error = function(e) {
     structure(list(error = e$message, thread_id = resolved_thread_id), class = "asa_error")
   })
+  timing_marks$invoke_with_retry_finished <- Sys.time()
   raw_response <- if (inherits(invoke_output, "asa_error")) invoke_output else invoke_output$response
+  backend_phase_timings <- if (!inherits(invoke_output, "asa_error")) {
+    invoke_output$phase_timings %||% list()
+  } else {
+    list()
+  }
   if (!inherits(invoke_output, "asa_error")) {
     resolved_thread_id <- invoke_output$thread_id %||% resolved_thread_id
   }
@@ -184,6 +194,15 @@
       output_tokens = NA_integer_,
       token_trace = list()
     )
+    err_resp$phase_timings <- list(
+      total_minutes = elapsed,
+      invoke_with_retry_minutes = as.numeric(difftime(
+        timing_marks$invoke_with_retry_finished,
+        timing_marks$invoke_with_retry_started,
+        units = "mins"
+      )),
+      backend = backend_phase_timings
+    )
     err_resp$retrieval_metrics <- list()
     err_resp$tool_quality_events <- list()
     err_resp$candidate_resolution <- list()
@@ -194,6 +213,7 @@
     return(err_resp)
   }
 
+  timing_marks$postprocess_started <- Sys.time()
   # Extract canonical payload metadata and response text
   final_payload_info <- .extract_final_payload_details(raw_response)
   response_payload <- .extract_response_text(raw_response, config$backend, with_meta = TRUE)
@@ -263,6 +283,22 @@
   om_stats <- .try_or(reticulate::py_to_r(raw_response$om_stats), list())
   observations <- .try_or(reticulate::py_to_r(raw_response$observations), list())
   reflections <- .try_or(reticulate::py_to_r(raw_response$reflections), list())
+  timing_marks$postprocess_finished <- Sys.time()
+
+  phase_timings <- list(
+    total_minutes = elapsed,
+    invoke_with_retry_minutes = as.numeric(difftime(
+      timing_marks$invoke_with_retry_finished,
+      timing_marks$invoke_with_retry_started,
+      units = "mins"
+    )),
+    postprocess_minutes = as.numeric(difftime(
+      timing_marks$postprocess_finished,
+      timing_marks$postprocess_started,
+      units = "mins"
+    )),
+    backend = backend_phase_timings
+  )
 
   # Return response object
   resp <- asa_response(
@@ -294,6 +330,7 @@
     output_tokens = output_tokens,
     token_trace = token_trace
   )
+  resp$phase_timings <- phase_timings
   resp$plan <- plan
   resp$plan_history <- plan_history
   resp$om_stats <- om_stats
@@ -691,11 +728,13 @@
                                          use_plan_mode = FALSE,
                                          om_config = NULL,
                                          model_timeout_s = NULL) {
+  invoke_phase_started <- Sys.time()
   # Import message type
   from_schema <- reticulate::import("langchain_core.messages")
   initial_message <- from_schema$HumanMessage(content = prompt)
   resolved_thread_id <- .resolve_thread_id(thread_id)
 
+  state_build_started <- Sys.time()
   initial_state <- list(messages = list(initial_message))
   initial_state$thread_id <- resolved_thread_id
   # Reset terminal markers for this invocation so checkpointed threads do not
@@ -772,8 +811,10 @@
     initial_state$om_stats <- list()
     initial_state$om_prebuffer <- list()
   }
+  state_build_finished <- Sys.time()
 
   ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
+  graph_invoke_started <- Sys.time()
   response <- ddg_module$invoke_graph_safely(
     python_agent,
     initial_state,
@@ -782,7 +823,17 @@
       recursion_limit = as.integer(recursion_limit)
     )
   )
-  list(response = response, thread_id = resolved_thread_id)
+  graph_invoke_finished <- Sys.time()
+  invoke_phase_finished <- Sys.time()
+  list(
+    response = response,
+    thread_id = resolved_thread_id,
+    phase_timings = list(
+      total_minutes = as.numeric(difftime(invoke_phase_finished, invoke_phase_started, units = "mins")),
+      state_build_minutes = as.numeric(difftime(state_build_finished, state_build_started, units = "mins")),
+      graph_invoke_minutes = as.numeric(difftime(graph_invoke_finished, graph_invoke_started, units = "mins"))
+    )
+  )
 }
 
 #' Invoke Standard Agent
@@ -802,7 +853,9 @@
                                    query_templates = NULL,
                                    use_plan_mode = FALSE,
                                    model_timeout_s = NULL) {
+  invoke_phase_started <- Sys.time()
   resolved_thread_id <- .resolve_thread_id(thread_id)
+  state_build_started <- Sys.time()
   initial_state <- list(
     messages = list(list(role = "user", content = prompt)),
     thread_id = resolved_thread_id,
@@ -862,8 +915,10 @@
   if (!is.null(model_timeout_s) && is.finite(as.numeric(model_timeout_s))) {
     initial_state$model_timeout_s <- as.numeric(model_timeout_s)
   }
+  state_build_finished <- Sys.time()
 
   ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
+  graph_invoke_started <- Sys.time()
   response <- ddg_module$invoke_graph_safely(
     python_agent,
     initial_state,
@@ -872,7 +927,17 @@
       recursion_limit = as.integer(recursion_limit)
     )
   )
-  list(response = response, thread_id = resolved_thread_id)
+  graph_invoke_finished <- Sys.time()
+  invoke_phase_finished <- Sys.time()
+  list(
+    response = response,
+    thread_id = resolved_thread_id,
+    phase_timings = list(
+      total_minutes = as.numeric(difftime(invoke_phase_finished, invoke_phase_started, units = "mins")),
+      state_build_minutes = as.numeric(difftime(state_build_finished, state_build_started, units = "mins")),
+      graph_invoke_minutes = as.numeric(difftime(graph_invoke_finished, graph_invoke_started, units = "mins"))
+    )
+  )
 }
 
 #' Extract Response Text from Raw Response

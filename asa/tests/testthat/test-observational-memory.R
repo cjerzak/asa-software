@@ -930,6 +930,70 @@ test_that("retrieval metrics track duplicate URLs within a round", {
   expect_equal(as.integer(metrics$round_url_dedupe_hits), 1L)
 })
 
+test_that("retrieval metrics expose diminishing-returns signals", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  build_metrics <- reticulate::py_get_attr(prod, "_build_retrieval_metrics")
+  metrics <- reticulate::py_to_r(build_metrics(
+    state = list(
+      retrieval_metrics = list(
+        diminishing_returns_streak = 1L,
+        early_stop_min_gain = 0.10
+      ),
+      expected_schema = list(name = "string"),
+      orchestration_options = list(
+        retrieval_controller = list(
+          enabled = TRUE,
+          mode = "enforce",
+          adaptive_budget_enabled = TRUE,
+          adaptive_low_value_threshold = 0.20,
+          adaptive_patience_steps = 2L
+        )
+      )
+    ),
+    search_queries = list("example query"),
+    tool_messages = list(
+      list(role = "tool", name = "Search", content = "__START_OF_SOURCE 1__ <URL> https://example.gov/profile/1 </URL> <CONTENT> A </CONTENT> __END_OF_SOURCE 1__")
+    ),
+    prior_field_status = list(),
+    field_status = list(),
+    prior_evidence_ledger = list(),
+    evidence_ledger = list(),
+    diagnostics = list()
+  ))
+
+  expect_equal(as.numeric(metrics$value_per_search_call), 0, tolerance = 1e-8)
+  expect_equal(as.integer(metrics$diminishing_returns_streak), 2L)
+})
+
+test_that("diagnostics normalization keeps performance telemetry bucket", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  normalize_diag <- reticulate::py_get_attr(prod, "_normalize_diagnostics")
+  diagnostics <- reticulate::py_to_r(normalize_diag(list(
+    performance = list(
+      tool_round_count = 2L,
+      tool_round_elapsed_ms_total = 450L,
+      provider_error_count = 1L,
+      provider_error_last_message = "TimeoutError: provider timeout"
+    )
+  )))
+
+  expect_true(is.list(diagnostics$performance))
+  expect_equal(as.integer(diagnostics$performance$tool_round_count), 2L)
+  expect_equal(as.integer(diagnostics$performance$tool_round_elapsed_ms_total), 450L)
+  expect_equal(as.integer(diagnostics$performance$provider_error_count), 1L)
+  expect_match(as.character(diagnostics$performance$provider_error_last_message), "TimeoutError")
+})
+
 test_that("quality gate blocks terminal short-circuit when budget remains", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",

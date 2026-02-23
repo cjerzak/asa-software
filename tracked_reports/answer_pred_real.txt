@@ -10,11 +10,11 @@
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
-  "birth_year": "Unknown",
-  "birth_year_source": null,
+  "birth_year": 1982,
+  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "Low",
-  "justification": "Searches did not find reliable, source-backed evidence for the required core fields."
+  "confidence": "High",
+  "justification": "Ramona Moye Camaconi is an indigenous Mojeño-Trinitario leader from the TIPNIS territory in Beni, Bolivia. Her official parliamentary profile confirms her birth date as January 7, 1982, and identifies her primary prior activity as the President of the Women's Organization of the Sub Central Sécure. This role as a community leader in an indigenous territory, combined with the lack of listed professional degrees (unlike her substitute), supports a working-class background classification. No public information regarding disability or LGBTQ identity was found."
 }

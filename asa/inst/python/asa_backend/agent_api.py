@@ -10,6 +10,9 @@ returns a best-effort terminal state instead of raising).
 
 from __future__ import annotations
 
+import os
+import re
+import time
 from typing import Any, Optional
 
 from langgraph.errors import GraphRecursionError
@@ -35,6 +38,154 @@ from .search import (
     configure_tor_registry,
 )
 
+_HEARTBEAT_STATE_ENV = "ASA_PROGRESS_STATE_FILE"
+
+
+def _state_get(state: Any, key: str, default: Any = None) -> Any:
+    if isinstance(state, dict):
+        return state.get(key, default)
+    try:
+        return getattr(state, key, default)
+    except Exception:
+        return default
+
+
+def _nonneg_int(value: Any, default: int = 0) -> int:
+    try:
+        out = int(value)
+    except Exception:
+        return int(default)
+    return out if out >= 0 else int(default)
+
+
+def _sanitize_token(value: Any, default: str = "na", max_chars: int = 96) -> str:
+    if value is None:
+        return default
+    text = str(value).strip()
+    if not text:
+        return default
+    text = re.sub(r"\s+", "_", text)
+    text = text.replace("|", "/").replace("=", "/")
+    text = re.sub(r"[^A-Za-z0-9_./:-]", "", text)
+    if not text:
+        return default
+    if len(text) > max_chars:
+        text = text[:max_chars]
+    return text
+
+
+def _pending_tool_calls(message: Any) -> bool:
+    if message is None:
+        return False
+    if isinstance(message, dict):
+        return bool(message.get("tool_calls"))
+    try:
+        return bool(getattr(message, "tool_calls", None))
+    except Exception:
+        return False
+
+
+def _last_node_name(token_trace: Any) -> str:
+    if not isinstance(token_trace, list) or not token_trace:
+        return "na"
+    last = token_trace[-1]
+    if isinstance(last, dict):
+        return _sanitize_token(last.get("node") or last.get("name"), default="na")
+    try:
+        return _sanitize_token(getattr(last, "node", None) or getattr(last, "name", None), default="na")
+    except Exception:
+        return "na"
+
+
+def _build_progress_line(
+    state: Any,
+    *,
+    phase: str,
+    chunk_index: int,
+    error_text: str = "",
+) -> str:
+    messages = _state_get(state, "messages", [])
+    message_count = len(messages) if isinstance(messages, list) else 0
+    pending_calls = False
+    if isinstance(messages, list) and message_count > 0:
+        pending_calls = _pending_tool_calls(messages[-1])
+
+    budget_state = _state_get(state, "budget_state", {})
+    if not isinstance(budget_state, dict):
+        budget_state = {}
+
+    diagnostics = _state_get(state, "diagnostics", {})
+    if not isinstance(diagnostics, dict):
+        diagnostics = {}
+
+    tool_limit = _nonneg_int(
+        budget_state.get("tool_calls_limit_effective", budget_state.get("tool_calls_limit", 0))
+    )
+    tool_used = _nonneg_int(budget_state.get("tool_calls_used", 0))
+    tool_remaining = _nonneg_int(
+        budget_state.get("tool_calls_remaining", max(0, tool_limit - tool_used))
+    )
+    resolved_fields = _nonneg_int(budget_state.get("resolved_fields", 0))
+    total_fields = _nonneg_int(budget_state.get("total_fields", 0))
+    unknown_fields = _nonneg_int(
+        budget_state.get("unknown_fields", budget_state.get("unknown_fields_count", 0))
+    )
+    if unknown_fields <= 0:
+        unknown_fields = _nonneg_int(
+            diagnostics.get("unknown_fields_count_current", diagnostics.get("unknown_fields_count", 0))
+        )
+
+    token_trace = _state_get(state, "token_trace", [])
+    node_name = _last_node_name(token_trace)
+    stop_reason = _sanitize_token(_state_get(state, "stop_reason", "none"), default="none")
+    final_emitted = 1 if bool(_state_get(state, "final_emitted", False)) else 0
+    error_token = _sanitize_token(error_text, default="none")
+
+    fields = [
+        f"ts={int(time.time())}",
+        f"phase={_sanitize_token(phase, default='unknown')}",
+        f"chunk={_nonneg_int(chunk_index)}",
+        f"node={node_name}",
+        f"messages={_nonneg_int(message_count)}",
+        f"pending_tool_calls={1 if pending_calls else 0}",
+        f"tool_used={tool_used}",
+        f"tool_limit={tool_limit}",
+        f"tool_rem={tool_remaining}",
+        f"resolved={resolved_fields}",
+        f"total={total_fields}",
+        f"unknown={unknown_fields}",
+        f"stop_reason={stop_reason}",
+        f"final_emitted={final_emitted}",
+        f"error={error_token}",
+    ]
+    return " ".join(fields)
+
+
+def _emit_progress_line(
+    progress_path: str,
+    state: Any,
+    *,
+    phase: str,
+    chunk_index: int,
+    error_text: str = "",
+) -> None:
+    if not progress_path:
+        return
+    try:
+        line = _build_progress_line(
+            state,
+            phase=phase,
+            chunk_index=chunk_index,
+            error_text=error_text,
+        )
+        tmp_path = f"{progress_path}.tmp"
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        os.replace(tmp_path, progress_path)
+    except Exception:
+        # Heartbeat diagnostics are best-effort only.
+        return
+
 
 def invoke_graph_safely(
     graph: Any,
@@ -57,19 +208,54 @@ def invoke_graph_safely(
       - Only GraphRecursionError is caught. Other exceptions propagate.
       - Uses graph.stream(stream_mode="values") so we can retain last_state.
     """
+    progress_path = str(os.environ.get(_HEARTBEAT_STATE_ENV, "") or "").strip()
+    chunk_index = 0
+    _emit_progress_line(
+        progress_path,
+        initial_state,
+        phase="start",
+        chunk_index=chunk_index,
+    )
     last_state = None
     try:
         stream = getattr(graph, "stream", None)
         if callable(stream):
             for chunk in stream(initial_state, config=config, stream_mode=stream_mode):
+                chunk_index += 1
                 last_state = chunk
+                _emit_progress_line(
+                    progress_path,
+                    chunk,
+                    phase="stream",
+                    chunk_index=chunk_index,
+                )
         else:
             # Fallback for unexpected graph types.
-            return graph.invoke(initial_state, config=config)
+            invoked = graph.invoke(initial_state, config=config)
+            _emit_progress_line(
+                progress_path,
+                invoked,
+                phase="invoke_return",
+                chunk_index=chunk_index,
+            )
+            return invoked
 
         if last_state is None:
             # Some graphs may not yield values; fall back to invoke().
-            return graph.invoke(initial_state, config=config)
+            invoked = graph.invoke(initial_state, config=config)
+            _emit_progress_line(
+                progress_path,
+                invoked,
+                phase="invoke_return",
+                chunk_index=chunk_index,
+            )
+            return invoked
+        _emit_progress_line(
+            progress_path,
+            last_state,
+            phase="complete",
+            chunk_index=chunk_index,
+        )
         return last_state
     except GraphRecursionError as exc:
         state = last_state
@@ -134,7 +320,23 @@ def invoke_graph_safely(
             # Never raise from the guard itself.
             pass
 
+        _emit_progress_line(
+            progress_path,
+            state,
+            phase="recursion_limit",
+            chunk_index=chunk_index,
+            error_text=str(exc)[:max_error_chars] if str(exc) else "GraphRecursionError",
+        )
         return state
+    except Exception as exc:
+        _emit_progress_line(
+            progress_path,
+            last_state if last_state is not None else initial_state,
+            phase="error",
+            chunk_index=chunk_index,
+            error_text=str(exc)[:max_error_chars] if str(exc) else "invoke_error",
+        )
+        raise
 
 
 __all__ = [

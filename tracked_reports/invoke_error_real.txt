@@ -1,7 +1,7 @@
 {
-  "error_type": "ChatGoogleGenerativeAIError",
-  "error_message": "Error calling model 'gemini-3-pro-preview' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_requests_per_model_per_day, limit: 0', 'status': 'RESOURCE_EX",
-  "retry_attempts": 1,
-  "retry_max_attempts": 3,
-  "retryable_error": false
+  "status": "empty",
+  "artifact": "invoke_error",
+  "reason": "invoke_exception_absent",
+  "run_id": "trace_real_20260223T101144",
+  "generated_at": "2026-02-23T16:11:44Z"
 }
