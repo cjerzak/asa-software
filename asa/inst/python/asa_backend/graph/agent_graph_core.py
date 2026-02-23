@@ -27,12 +27,12 @@ from urllib.parse import urlparse
 from typing import Any, Annotated, Callable, Dict, List, Optional, Sequence, Tuple, TypedDict
 from operator import add as operator_add
 from langgraph.managed import RemainingSteps
-from asa_backend.schema_state import (
+from asa_backend.schema.state import (
     field_key_aliases as _shared_field_key_aliases,
     normalize_field_status_map as _shared_normalize_field_status_map,
     schema_leaf_paths as _shared_schema_leaf_paths,
 )
-from asa_backend.search.transport import (
+from asa_backend.search.ddg_transport import (
     _AUTO_OPENWEBPAGE_POLICY,
     _AUTO_OPENWEBPAGE_PRIMARY_SOURCE,
     _AUTO_OPENWEBPAGE_SELECTOR_MODE,
@@ -50,11 +50,11 @@ from asa_backend.search.transport import (
     _shared_message_content_from_message,
     _shared_message_content_to_text,
 )
-from asa_backend.extraction.langextract_bridge import (
+from asa_backend.extraction.schema_langextract_bridge import (
     extract_schema_from_openwebpage_text as _langextract_extract_schema_from_openwebpage_text,
     extract_schema_with_provider_fallback as _langextract_extract_schema_with_fallback,
 )
-from state_utils import (
+from shared.state_graph_utils import (
     build_node_trace_entry,
     _token_usage_dict_from_message,
     _token_usage_from_message,
@@ -66,7 +66,7 @@ from state_utils import (
     remaining_steps_value,
     repair_json_output_to_schema,
 )
-from outcome_gate import evaluate_schema_outcome
+from shared.schema_outcome_gate import evaluate_schema_outcome
 
 logger = logging.getLogger(__name__)
 
@@ -9634,11 +9634,11 @@ def _repair_best_effort_json(
             # Don't coerce shapes unless explicitly allowed (e.g., recursion-limit paths).
             return response, None
 
-        # Use the public `asa_backend.agent_api` hook when available so tests
+        # Use the public `asa_backend.api.agent_api` hook when available so tests
         # (and downstream callers) can monkeypatch repair behavior reliably.
         repair_fn = None
         try:
-            public_mod = sys.modules.get("asa_backend.agent_api")
+            public_mod = sys.modules.get("asa_backend.api.agent_api")
             if public_mod is not None:
                 repair_fn = getattr(public_mod, "repair_json_output_to_schema", None)
         except Exception:

@@ -12,7 +12,7 @@ from typing import Any, Annotated, Dict, List, Optional, TypedDict
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.graph import END, StateGraph
 
-from state_utils import add_to_list, hash_result, merge_dicts, parse_llm_json
+from shared.state_graph_utils import add_to_list, hash_result, merge_dicts, parse_llm_json
 
 logger = logging.getLogger(__name__)
 

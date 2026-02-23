@@ -47,7 +47,16 @@
 
   # Attempt import
   asa_env[[env_name]] <- tryCatch(
-    reticulate::import_from_path(module_name, path = python_path),
+    {
+      # Ensure nested package imports resolve from inst/python.
+      sys <- reticulate::import("sys", convert = FALSE)
+      py_path <- normalizePath(python_path, winslash = "/", mustWork = FALSE)
+      path_vec <- .try_or(reticulate::py_to_r(sys$path), character(0))
+      if (is.character(py_path) && nzchar(py_path) && !(py_path %in% path_vec)) {
+        sys$path$insert(as.integer(0), py_path)
+      }
+      reticulate::import_from_path(module_name, path = python_path)
+    },
     error = function(e) {
       if (required) {
         stop(sprintf("Could not import Python module '%s': %s", module_name, e$message),
@@ -72,7 +81,7 @@
 #' @keywords internal
 .import_backend_api <- function(required = TRUE) {
   .import_python_module(
-    module_name = "asa_backend.agent_api",
+    module_name = "asa_backend.api.agent_api",
     env_name = "backend_api",
     required = required
   )

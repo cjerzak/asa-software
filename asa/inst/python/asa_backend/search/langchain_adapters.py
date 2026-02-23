@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .transport import (
+from .ddg_transport import (
     BrowserDuckDuckGoSearchAPIWrapper,
     BrowserDuckDuckGoSearchRun,
     PatchedDuckDuckGoSearchAPIWrapper,

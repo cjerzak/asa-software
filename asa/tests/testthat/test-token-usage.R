@@ -2,10 +2,10 @@
 
 test_that("state_utils parses response_metadata token_usage with input/output keys", {
   python_path <- asa_test_skip_if_no_python(
-    required_files = c("state_utils.py", "message_utils.py"),
+    required_files = c("shared/state_graph_utils.py", "shared/message_text_utils.py"),
     initialize = TRUE
   )
-  state_utils <- asa_test_import_from_path_or_skip("state_utils", python_path)
+  state_utils <- asa_test_import_from_path_or_skip("shared.state_graph_utils", python_path)
 
   reticulate::py_run_string(paste(
     "class _TokenMsg:",
@@ -26,10 +26,10 @@ test_that("state_utils parses response_metadata token_usage with input/output ke
 
 test_that("state_utils parses camelCase usage metadata for code execution paths", {
   python_path <- asa_test_skip_if_no_python(
-    required_files = c("state_utils.py", "message_utils.py"),
+    required_files = c("shared/state_graph_utils.py", "shared/message_text_utils.py"),
     initialize = TRUE
   )
-  state_utils <- asa_test_import_from_path_or_skip("state_utils", python_path)
+  state_utils <- asa_test_import_from_path_or_skip("shared.state_graph_utils", python_path)
 
   reticulate::py_run_string(paste(
     "class _CamelUsageMsg:",
@@ -56,10 +56,10 @@ test_that("state_utils parses camelCase usage metadata for code execution paths"
 
 test_that("state_utils falls back to additional_kwargs response metadata", {
   python_path <- asa_test_skip_if_no_python(
-    required_files = c("state_utils.py", "message_utils.py"),
+    required_files = c("shared/state_graph_utils.py", "shared/message_text_utils.py"),
     initialize = TRUE
   )
-  state_utils <- asa_test_import_from_path_or_skip("state_utils", python_path)
+  state_utils <- asa_test_import_from_path_or_skip("shared.state_graph_utils", python_path)
 
   reticulate::py_run_string(paste(
     "class _AdditionalKwargsMsg:",

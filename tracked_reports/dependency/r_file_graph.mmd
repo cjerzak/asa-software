@@ -1,0 +1,53 @@
+graph TD
+  r_asa_R_agent__initialize_R["agent__initialize.R"]
+  r_asa_R_agent__run_engine_R["agent__run_engine.R"]
+  r_asa_R_core__constants_R["core__constants.R"]
+  r_asa_R_core__package_state_R["core__package_state.R"]
+  r_asa_R_guardrails__validate_R["guardrails__validate.R"]
+  r_asa_R_infra__build_backend_R["infra__build_backend.R"]
+  r_asa_R_infra__proxy_R["infra__proxy.R"]
+  r_asa_R_infra__python_bridge_R["infra__python_bridge.R"]
+  r_asa_R_infra__recursion_limits_R["infra__recursion_limits.R"]
+  r_asa_R_infra__runtime_config_R["infra__runtime_config.R"]
+  r_asa_R_infra__system_cmd_R["infra__system_cmd.R"]
+  r_asa_R_infra__tor_options_R["infra__tor_options.R"]
+  r_asa_R_postprocess__extract_agent_results_R["postprocess__extract_agent_results.R"]
+  r_asa_R_postprocess__json_parse_R["postprocess__json_parse.R"]
+  r_asa_R_postprocess__process_outputs_R["postprocess__process_outputs.R"]
+  r_asa_R_postprocess__token_stats_R["postprocess__token_stats.R"]
+  r_asa_R_public__s3_methods_R["public__s3_methods.R"]
+  r_asa_R_shared__helpers_R["shared__helpers.R"]
+  r_asa_R_shared__utils_try_R["shared__utils_try.R"]
+  r_asa_R_workflow__audit_R["workflow__audit.R"]
+  r_asa_R_workflow__research_enumeration_R["workflow__research_enumeration.R"]
+  r_asa_R_workflow__run_task_R["workflow__run_task.R"]
+  r_asa_R_agent__initialize_R -->|asa_agent| r_asa_R_public__s3_methods_R
+  r_asa_R_agent__initialize_R -->|configure_tor_registry| r_asa_R_shared__helpers_R
+  r_asa_R_agent__initialize_R -->|search_options| r_asa_R_public__s3_methods_R
+  r_asa_R_agent__initialize_R -->|tor_options| r_asa_R_public__s3_methods_R
+  r_asa_R_agent__run_engine_R -->|asa_response| r_asa_R_public__s3_methods_R
+  r_asa_R_agent__run_engine_R -->|get_agent| r_asa_R_agent__initialize_R
+  r_asa_R_agent__run_engine_R -->|initialize_agent| r_asa_R_agent__initialize_R
+  r_asa_R_guardrails__validate_R -->|tor_options| r_asa_R_public__s3_methods_R
+  r_asa_R_infra__build_backend_R -->|initialize_agent| r_asa_R_agent__initialize_R
+  r_asa_R_infra__runtime_config_R -->|configure_search| r_asa_R_shared__helpers_R
+  r_asa_R_infra__runtime_config_R -->|get_agent| r_asa_R_agent__initialize_R
+  r_asa_R_postprocess__extract_agent_results_R -->|extract_search_snippets| r_asa_R_postprocess__process_outputs_R
+  r_asa_R_postprocess__extract_agent_results_R -->|extract_search_tiers| r_asa_R_postprocess__process_outputs_R
+  r_asa_R_postprocess__extract_agent_results_R -->|extract_urls| r_asa_R_postprocess__process_outputs_R
+  r_asa_R_postprocess__extract_agent_results_R -->|extract_wikipedia_content| r_asa_R_postprocess__process_outputs_R
+  r_asa_R_postprocess__process_outputs_R -->|extract_agent_results| r_asa_R_postprocess__extract_agent_results_R
+  r_asa_R_public__s3_methods_R -->|format_duration| r_asa_R_shared__helpers_R
+  r_asa_R_public__s3_methods_R -->|truncate_string| r_asa_R_shared__helpers_R
+  r_asa_R_shared__helpers_R -->|initialize_agent| r_asa_R_agent__initialize_R
+  r_asa_R_workflow__audit_R -->|asa_audit_result| r_asa_R_public__s3_methods_R
+  r_asa_R_workflow__audit_R -->|initialize_agent| r_asa_R_agent__initialize_R
+  r_asa_R_workflow__research_enumeration_R -->|asa_config| r_asa_R_public__s3_methods_R
+  r_asa_R_workflow__research_enumeration_R -->|asa_enumerate_result| r_asa_R_public__s3_methods_R
+  r_asa_R_workflow__research_enumeration_R -->|get_agent| r_asa_R_agent__initialize_R
+  r_asa_R_workflow__research_enumeration_R -->|initialize_agent| r_asa_R_agent__initialize_R
+  r_asa_R_workflow__run_task_R -->|asa_config| r_asa_R_public__s3_methods_R
+  r_asa_R_workflow__run_task_R -->|asa_result| r_asa_R_public__s3_methods_R
+  r_asa_R_workflow__run_task_R -->|get_agent| r_asa_R_agent__initialize_R
+  r_asa_R_workflow__run_task_R -->|initialize_agent| r_asa_R_agent__initialize_R
+  r_asa_R_workflow__run_task_R -->|process_one| r_asa_R_postprocess__process_outputs_R

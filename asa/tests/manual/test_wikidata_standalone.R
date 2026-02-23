@@ -16,23 +16,23 @@ use_condaenv("asa_env", required = TRUE)
 cat("2. Importing wikidata_tool module...\n")
 # Use development path (inst/python) or installed path
 python_path <- system.file("python", package = "asa")
-if (python_path == "" || !file.exists(file.path(python_path, "wikidata_tool.py"))) {
+if (python_path == "" || !file.exists(file.path(python_path, "tools/entity_wikidata_tool.py"))) {
   # Try development path
   python_path <- file.path(getwd(), "inst/python")
-  if (!file.exists(file.path(python_path, "wikidata_tool.py"))) {
+  if (!file.exists(file.path(python_path, "tools/entity_wikidata_tool.py"))) {
     python_path <- file.path(dirname(getwd()), "asa/inst/python")
   }
 }
 cat(sprintf("   Python path: %s\n", python_path))
-wikidata <- import_from_path("wikidata_tool", path = python_path)
+wikidata <- import_from_path("tools.entity_wikidata_tool", path = python_path)
 
 # Explicitly load optional template catalog for this manual test.
-template_path <- file.path(python_path, "wikidata_templates.json")
+template_path <- file.path(python_path, "shared/resources/wikidata_templates.json")
 if (file.exists(template_path)) {
   wikidata$configure_entity_templates(template_path = template_path)
   cat(sprintf("   Template path: %s\n", template_path))
 } else {
-  stop("wikidata_templates.json not found; pass template path explicitly for manual Wikidata tests")
+  stop("shared/resources/wikidata_templates.json not found; pass template path explicitly for manual Wikidata tests")
 }
 
 # Test 1: List known entity types

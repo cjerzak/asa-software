@@ -2,7 +2,7 @@ test_that("asa_backend.search aligns with agent_api public search surface", {
   python_path <- asa_test_skip_if_no_python(
     required_files = c(
       "asa_backend/search/__init__.py",
-      "asa_backend/agent_api.py"
+      "asa_backend/api/agent_api.py"
     )
   )
 
@@ -13,7 +13,7 @@ test_that("asa_backend.search aligns with agent_api public search surface", {
   )
 
   search_pkg <- reticulate::import_from_path("asa_backend.search", path = python_path)
-  api <- reticulate::import_from_path("asa_backend.agent_api", path = python_path)
+  api <- reticulate::import_from_path("asa_backend.api.agent_api", path = python_path)
 
   required <- c(
     "SearchConfig",

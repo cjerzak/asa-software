@@ -3,9 +3,9 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "Unknown",
+  "prior_occupation": "President of the Women's Organization - Sub Central Sécure",
   "class_background": "Unknown",
-  "prior_occupation_source": null,
+  "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "disability_status": "Unknown",
   "disability_source": null,
   "birth_place": "Unknown",
@@ -15,6 +15,6 @@
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "High",
-  "justification": "Ramona Moye Camaconi is an indigenous Mojeño-Trinitario leader from the TIPNIS territory in Beni, Bolivia. Her official parliamentary profile confirms her birth date as January 7, 1982, and identifies her primary prior activity as the President of the Women's Organization of the Sub Central Sécure. This role as a community leader in an indigenous territory, combined with the lack of listed professional degrees (unlike her substitute), supports a working-class background classification. No public information regarding disability or LGBTQ identity was found."
+  "confidence": "Medium",
+  "justification": "Ramona Moye Camaconi was born in 1982 and served as the President of the Women's Organization - Sub Central Sécure (Organización de Mujeres - Sub Central Sécure) before her election to the Chamber of Deputies in 2014. As an indigenous leader from the TIPNIS region (Moxeño Trinitario), her background as a community leader in a rural indigenous territory aligns with the working class/peasantry category. No specific educational degrees or disability/LGBTQ status are publicly documented in official parliamentary or electoral records."
 }

@@ -1031,8 +1031,8 @@ test_that("quality gate blocks terminal short-circuit when budget remains", {
 
 test_that("invoke_graph_safely materializes terminal payload metadata", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   reticulate::py_run_string(paste0(

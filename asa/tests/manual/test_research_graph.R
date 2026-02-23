@@ -20,8 +20,8 @@ use_condaenv("asa_env", required = TRUE)
 # Import modules
 cat("2. Importing Python modules...\n")
 python_path <- system.file("python", package = "asa")
-research_graph <- import_from_path("research_graph", path = python_path)
-wikidata_tool <- import_from_path("wikidata_tool", path = python_path)
+research_graph <- import_from_path("workflows.research_graph_workflow", path = python_path)
+wikidata_tool <- import_from_path("tools.entity_wikidata_tool", path = python_path)
 
 # Test ResearchConfig
 cat("\n3. Testing ResearchConfig...\n")

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from asa_backend.schema_state import (
+from asa_backend.schema.state import (
     field_key_aliases as _field_key_aliases,
     schema_leaf_paths as _flatten_schema_leaf_paths,
 )

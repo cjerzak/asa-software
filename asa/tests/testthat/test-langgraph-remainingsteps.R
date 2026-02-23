@@ -1,7 +1,7 @@
 # Tests for RemainingSteps-based recursion_limit handling in LangGraph graphs.
 
 test_that("research graph stops with stop_reason='recursion_limit' (RemainingSteps)", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   # Stub LLM for planner node: returns minimal valid JSON.
   reticulate::py_run_string(paste0(
@@ -62,7 +62,7 @@ test_that("research graph stops with stop_reason='recursion_limit' (RemainingSte
 })
 
 test_that("run_research forwards recursion_limit into graph config", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   reticulate::py_run_string(paste0(
     "class _ConfigCaptureInvokeGraph:\n",
@@ -91,7 +91,7 @@ test_that("run_research forwards recursion_limit into graph config", {
 })
 
 test_that("stream_research forwards recursion_limit into graph config", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   reticulate::py_run_string(paste0(
     "class _ConfigCaptureStreamGraph:\n",
@@ -123,7 +123,7 @@ test_that("stream_research forwards recursion_limit into graph config", {
 })
 
 test_that("run_research rejects recursion_limit outside [4, 500]", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   asa_test_noop_invoke_graph()
 
@@ -173,7 +173,7 @@ test_that("run_research rejects recursion_limit outside [4, 500]", {
 })
 
 test_that("stream_research rejects recursion_limit outside [4, 500]", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   asa_test_noop_stream_graph()
 
@@ -223,7 +223,7 @@ test_that("stream_research rejects recursion_limit outside [4, 500]", {
 })
 
 test_that("run_research with recursion_limit=4 executes at least one search round", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "research_graph.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   reticulate::py_run_string(paste0(
     "class _StubResponse:\n",
@@ -393,7 +393,7 @@ test_that("JSON repair populates nested required keys (explicit schema)", {
 })
 
 test_that("repair_json_output_to_schema is idempotent", {
-  utils <- asa_test_import_module("state_utils", required_modules = c("pydantic"))
+  utils <- asa_test_import_module("shared.state_graph_utils", required_modules = c("pydantic"))
 
   schema <- list(
     status = "complete|partial",
@@ -414,7 +414,7 @@ test_that("repair_json_output_to_schema is idempotent", {
 })
 
 test_that("repair_json_output_to_schema uses shape defaults for array/object leaves", {
-  utils <- asa_test_import_module("state_utils", required_modules = c("pydantic"))
+  utils <- asa_test_import_module("shared.state_graph_utils", required_modules = c("pydantic"))
 
   schema <- list(
     missing = "array",
@@ -1658,7 +1658,7 @@ test_that("finalize stays non-empty when first schema repair attempt fails (stan
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
   reticulate::py_run_string(paste0(
-    "import asa_backend.agent_api as _agent_api_for_test\n",
+    "import asa_backend.api.agent_api as _agent_api_for_test\n",
     "_asa_repair_calls = {'n': 0}\n",
     "_asa_orig_repair = _agent_api_for_test.repair_json_output_to_schema\n",
     "def _asa_flaky_repair(text, schema, fallback_on_failure=False):\n",
@@ -1670,7 +1670,7 @@ test_that("finalize stays non-empty when first schema repair attempt fails (stan
   ))
   on.exit(
     reticulate::py_run_string(
-      "import asa_backend.agent_api as _agent_api_for_test\n_agent_api_for_test.repair_json_output_to_schema = _asa_orig_repair"
+      "import asa_backend.api.agent_api as _agent_api_for_test\n_agent_api_for_test.repair_json_output_to_schema = _asa_orig_repair"
     ),
     add = TRUE
   )
@@ -2551,8 +2551,8 @@ test_that("finalize canonical guard overrides fabricated terminal values from fi
 
 test_that("finalize canonical guard preserves compatible non-empty arrays", {
   graph_mod <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py",
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py",
     required_modules = ASA_TEST_LANGGRAPH_MODULES
   )
 

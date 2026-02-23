@@ -1,7 +1,7 @@
 """Stable internal entrypoints for ASA backend consumers.
 
 This module defines the *stable* Python surface that the R glue layer imports
-via `reticulate::import_from_path("asa_backend.agent_api", ...)`.
+via `reticulate::import_from_path("asa_backend.api.agent_api", ...)`.
 
 It also provides small runtime helpers used by the R glue layer to make
 LangGraph invocation more robust (e.g., ensuring recursion-limit exhaustion
@@ -16,16 +16,16 @@ import time
 from typing import Any, Optional
 
 from langgraph.errors import GraphRecursionError
-from state_utils import repair_json_output_to_schema as repair_json_output_to_schema
+from shared.state_graph_utils import repair_json_output_to_schema as repair_json_output_to_schema
 
-from .graph.core import (
+from ..graph.agent_graph_core import (
     _exception_fallback_text,
     _reusable_terminal_finalize_response,
     create_memory_folding_agent,
     create_memory_folding_agent_with_checkpointer,
     create_standard_agent,
 )
-from .search import (
+from ..search import (
     BrowserDuckDuckGoSearchAPIWrapper,
     BrowserDuckDuckGoSearchRun,
     PatchedDuckDuckGoSearchAPIWrapper,

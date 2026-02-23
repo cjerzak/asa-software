@@ -1087,7 +1087,11 @@ configure_temporal <- function(time_filter = NULL) {
   # Ensure module is available. initialize_agent() imports this already, but
   # keep this resilient for call paths that bypass initialization order.
   if (is.null(asa_env$webpage_tool)) {
-    .import_python_module("webpage_tool", env_name = "webpage_tool", required = FALSE)
+    .import_python_module(
+      "tools.webpage_reader_tool",
+      env_name = "webpage_tool",
+      required = FALSE
+    )
   }
   if (is.null(asa_env$webpage_tool)) {
     warning("Webpage reader module unavailable; continuing without webpage reading.", call. = FALSE)

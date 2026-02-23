@@ -1,14 +1,14 @@
 """Search subsystem (transport, Tor, ranking, wrappers)."""
 
-from .config import SearchConfig, configure_logging, configure_search
-from .langchain_wrappers import (
+from .search_config import SearchConfig, configure_logging, configure_search
+from .langchain_adapters import (
     BrowserDuckDuckGoSearchAPIWrapper,
     BrowserDuckDuckGoSearchRun,
     PatchedDuckDuckGoSearchAPIWrapper,
     PatchedDuckDuckGoSearchRun,
 )
-from .tor import configure_tor, configure_tor_registry
-from .anti_detection import configure_anti_detection
+from .tor_config import configure_tor, configure_tor_registry
+from .anti_detection_config import configure_anti_detection
 
 __all__ = [
     "SearchConfig",
@@ -22,4 +22,3 @@ __all__ = [
     "BrowserDuckDuckGoSearchAPIWrapper",
     "BrowserDuckDuckGoSearchRun",
 ]
-

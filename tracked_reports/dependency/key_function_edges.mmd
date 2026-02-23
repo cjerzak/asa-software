@@ -1,0 +1,23 @@
+graph TD
+  k_py_agent_graph_core_py___schema_outcome_gate_report__["agent_graph_core.py::_schema_outcome_gate_report()"]
+  k_py_research_graph_workflow_py__create_deduper_node__["research_graph_workflow.py::create_deduper_node()"]
+  k_py_research_graph_workflow_py__create_searcher_node__["research_graph_workflow.py::create_searcher_node()"]
+  k_py_research_graph_workflow_py__create_stopper_node__["research_graph_workflow.py::create_stopper_node()"]
+  k_py_schema_outcome_gate_py["schema_outcome_gate.py"]
+  k_r_agent__initialize_R["agent__initialize.R"]
+  k_r_agent__run_engine_R["agent__run_engine.R"]
+  k_r_infra__build_backend_R["infra__build_backend.R"]
+  k_r_shared__helpers_R["shared__helpers.R"]
+  k_r_workflow__audit_R["workflow__audit.R"]
+  k_r_workflow__research_enumeration_R["workflow__research_enumeration.R"]
+  k_r_workflow__run_task_R["workflow__run_task.R"]
+  k_py_agent_graph_core_py___schema_outcome_gate_report__ -->|evaluate_schema_outcome| k_py_schema_outcome_gate_py
+  k_py_research_graph_workflow_py__create_deduper_node__ -->|evaluate_research_outcome| k_py_schema_outcome_gate_py
+  k_py_research_graph_workflow_py__create_searcher_node__ -->|evaluate_research_outcome| k_py_schema_outcome_gate_py
+  k_py_research_graph_workflow_py__create_stopper_node__ -->|evaluate_research_outcome| k_py_schema_outcome_gate_py
+  k_r_agent__run_engine_R -->|initialize_agent| k_r_agent__initialize_R
+  k_r_infra__build_backend_R -->|initialize_agent| k_r_agent__initialize_R
+  k_r_shared__helpers_R -->|initialize_agent| k_r_agent__initialize_R
+  k_r_workflow__audit_R -->|initialize_agent| k_r_agent__initialize_R
+  k_r_workflow__research_enumeration_R -->|initialize_agent| k_r_agent__initialize_R
+  k_r_workflow__run_task_R -->|initialize_agent| k_r_agent__initialize_R

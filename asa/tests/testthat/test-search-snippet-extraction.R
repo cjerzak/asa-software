@@ -2,8 +2,8 @@
 
 test_that("search snippet extraction produces structured payloads promotable into field_status", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   reticulate::py_run_string(paste0(
@@ -81,8 +81,8 @@ test_that("search snippet extraction produces structured payloads promotable int
 
 test_that("deterministic numeric recovery requires a keyword hit when configured", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   schema <- list(
@@ -118,8 +118,8 @@ test_that("deterministic numeric recovery requires a keyword hit when configured
 
 test_that("deterministic recovery reports entity mismatch when candidates exist but are off-target", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   schema <- list(
@@ -155,8 +155,8 @@ test_that("deterministic recovery reports entity mismatch when candidates exist 
 
 test_that("deterministic recovery blocks near-miss entity/value mismatches", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   schema <- list(
@@ -202,8 +202,8 @@ test_that("deterministic recovery blocks near-miss entity/value mismatches", {
 
 test_that("field-status extraction rejects candidates with entity/value mismatch", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   schema <- list(
@@ -261,8 +261,8 @@ test_that("field-status extraction rejects candidates with entity/value mismatch
 
 test_that("anchor confidence increases with context tokens from structured prompts", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   reticulate::py_run_string(paste0(
@@ -293,8 +293,8 @@ test_that("anchor confidence increases with context tokens from structured promp
 
 test_that("anchor overlap includes context_hits and context_ratio", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   anchor <- list(
@@ -330,8 +330,8 @@ test_that("anchor overlap includes context_hits and context_ratio", {
 
 test_that("context-contradiction hard blocks candidates from wrong country", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   anchor <- list(
@@ -362,8 +362,8 @@ test_that("context-contradiction hard blocks candidates from wrong country", {
 
 test_that("context-contradiction does not fire when candidate matches anchor country", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   anchor <- list(
@@ -392,8 +392,8 @@ test_that("context-contradiction does not fire when candidate matches anchor cou
 
 test_that("soft penalty scales inversely with anchor strength when in soft mode", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   # Weak anchor (low confidence, soft mode)

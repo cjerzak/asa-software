@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 3.0043,
+  "elapsed_time": 6.8777,
   "field_status": {
     "education_level": {
       "status": "unknown",
@@ -32,18 +32,17 @@
       "status": "pending",
       "value": null,
       "source_url": null,
-      "evidence": "grounding_blocked_unresolved_base_field",
+      "evidence": null,
       "attempts": 2,
       "descriptor": "string|null"
     },
     "prior_occupation": {
-      "status": "unknown",
-      "value": "Unknown",
-      "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "status": "found",
+      "value": "President of the Women's Organization - Sub Central Sécure",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "terminal_payload_source_backed",
       "attempts": 2,
-      "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "descriptor": "string|Unknown"
     },
     "class_background": {
       "status": "unknown",
@@ -55,10 +54,10 @@
       "evidence_reason": "recovery_blocked_anchor_mismatch"
     },
     "prior_occupation_source": {
-      "status": "unknown",
-      "value": null,
-      "source_url": null,
-      "evidence": "source_consistency_demotion",
+      "status": "found",
+      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "semantic_validation_failed",
       "attempts": 2,
       "descriptor": "string|null"
     },
@@ -100,7 +99,7 @@
       "status": "found",
       "value": 1982,
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "terminal_payload_source_backed",
+      "evidence": "scratchpad_source_backed",
       "attempts": 2,
       "descriptor": "integer|null|Unknown"
     },
@@ -108,7 +107,7 @@
       "status": "found",
       "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "semantic_validation_failed",
+      "evidence": "source_consistency_fix",
       "attempts": 2,
       "descriptor": "string|null"
     },
@@ -140,7 +139,7 @@
     },
     "confidence": {
       "status": "found",
-      "value": "High",
+      "value": 90,
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 2,
@@ -148,7 +147,7 @@
     },
     "justification": {
       "status": "found",
-      "value": "Ramona Moye Camaconi is an indigenous Mojeño-Trinitario leader from the TIPNIS territory in Beni, Bolivia. Her official parliamentary profile confirms her birth date as January 7, 1982, and identifies her primary prior activity as the President of the Women's Organization of the Sub Central Sécure. This role as a community leader in an indigenous territory, combined with the lack of listed professional degrees (unlike her substitute), supports a working-class background classification. No public information regarding disability or LGBTQ identity was found.",
+      "value": "Ramona Moye Camaconi was born in 1982 and served as the President of the Women's Organization - Sub Central Sécure (Organización de Mujeres - Sub Central Sécure) before her election to the Chamber of Deputies in 2014. As an indigenous leader from the TIPNIS region (Moxeño Trinitario), her background as a community leader in a rural indigenous territory aligns with the working class/peasantry category. No specific educational degrees or disability/LGBTQ status are publicly documented in official parliamentary or electoral records.",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 2,
@@ -156,20 +155,20 @@
     }
   },
   "diagnostics": {
-    "grounding_blocks_count": 1,
-    "source_consistency_fixes_count": 0,
+    "grounding_blocks_count": 0,
+    "source_consistency_fixes_count": 1,
     "field_demotions_count": 3,
     "recovery_promotions_count": 0,
-    "recovery_rejections_count": 9,
-    "unknown_fields_count": 11,
-    "grounding_blocks_count_current": 1,
-    "source_consistency_fixes_count_current": 0,
-    "field_demotions_count_current": 2,
+    "recovery_rejections_count": 8,
+    "unknown_fields_count": 9,
+    "grounding_blocks_count_current": 0,
+    "source_consistency_fixes_count_current": 1,
+    "field_demotions_count_current": 1,
     "recovery_promotions_count_current": 0,
-    "recovery_rejections_count_current": 9,
-    "unknown_fields_count_current": 11,
+    "recovery_rejections_count_current": 8,
+    "unknown_fields_count_current": 9,
     "off_target_tool_results_count": 0,
-    "empty_tool_results_count": 0,
+    "empty_tool_results_count": 2,
     "retry_or_replan_events": 0,
     "quality_gate_failures": 0,
     "no_payload_extraction_rounds": 0,
@@ -209,34 +208,34 @@
     "adaptive_budget_reduced_calls_total": 0,
     "structural_repair_events": 0,
     "structural_repair_retry_events": 0,
-    "finalization_invariant_failures": 12,
+    "finalization_invariant_failures": 13,
     "anchor_hard_blocks_count": 0,
     "anchor_soft_penalties_count": 0,
-    "grounding_blocked_fields": "education_source",
-    "source_consistency_fixes": [],
+    "grounding_blocked_fields": [],
+    "source_consistency_fixes": "birth_year_source",
     "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
     "recovery_promoted_fields": [],
-    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
-    "unknown_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details"],
-    "grounding_blocked_fields_current": "education_source",
-    "source_consistency_fixes_current": [],
-    "field_demotion_fields_current": ["prior_occupation_source", "birth_place_source"],
+    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details"],
+    "grounding_blocked_fields_current": [],
+    "source_consistency_fixes_current": "birth_year_source",
+    "field_demotion_fields_current": "birth_place_source",
     "recovery_promoted_fields_current": [],
-    "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
-    "unknown_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details"],
+    "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "unknown_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details"],
     "field_demotion_reason_counts": {
       "source_consistency_demotion": 3
     },
     "recovery_reason_counts": {
-      "recovery_blocked_anchor_mismatch": 9
+      "recovery_blocked_anchor_mismatch": 8
     },
     "unknown_reason_counts": {
-      "recovery_blocked_anchor_mismatch": 9,
-      "source_consistency_demotion": 2
+      "recovery_blocked_anchor_mismatch": 8,
+      "source_consistency_demotion": 1
     },
     "unknown_fields_by_reason": {
-      "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
-      "source_consistency_demotion": ["prior_occupation_source", "birth_place_source"]
+      "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+      "source_consistency_demotion": "birth_place_source"
     },
     "retrieval_interventions": [],
     "webpage_openwebpage_skip_reasons": [],
@@ -249,19 +248,19 @@
     "anchor_confidence_current": 0.56,
     "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
     "performance": {
-      "tool_round_count": 12,
-      "tool_round_elapsed_ms_total": 132936,
-      "tool_round_elapsed_ms_last": 30442,
-      "tool_round_elapsed_ms_max": 47919,
+      "tool_round_count": 13,
+      "tool_round_elapsed_ms_total": 342857,
+      "tool_round_elapsed_ms_last": 37142,
+      "tool_round_elapsed_ms_max": 58605,
       "search_tool_calls": 10,
       "openwebpage_tool_calls": 2,
       "other_tool_calls": 0,
-      "search_tool_elapsed_ms_est_total": 126677,
-      "openwebpage_tool_elapsed_ms_est_total": 6259,
+      "search_tool_elapsed_ms_est_total": 339625,
+      "openwebpage_tool_elapsed_ms_est_total": 3231,
       "other_tool_elapsed_ms_est_total": 0,
       "provider_error_count": 0,
       "provider_error_elapsed_ms_total": 0,
-      "low_signal_streak_peak": 0,
+      "low_signal_streak_peak": 1,
       "diminishing_returns_streak_peak": 10,
       "adaptive_budget_events": 0,
       "adaptive_budget_reduced_calls_total": 0,

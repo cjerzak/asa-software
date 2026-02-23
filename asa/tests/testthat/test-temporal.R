@@ -206,7 +206,7 @@ test_that(".create_research_config defaults use_wayback to FALSE", {
 })
 
 # ============================================================================
-# Date Extractor Tests (date_extractor.py)
+# Date Extractor Tests (shared/temporal_date_extractor.py)
 # ============================================================================
 
 test_that("_parse_date_string handles ISO 8601 formats", {
@@ -415,11 +415,11 @@ test_that("filter_results_by_date handles empty list", {
 })
 
 # ============================================================================
-# Wikidata Tool Tests (wikidata_tool.py)
+# Wikidata Tool Tests (tools/entity_wikidata_tool.py)
 # ============================================================================
 
 test_that("_build_temporal_filter generates correct SPARQL", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   # No dates - empty filter
   result <- wikidata$`_build_temporal_filter`(NULL, NULL)
@@ -443,7 +443,7 @@ test_that("_build_temporal_filter generates correct SPARQL", {
 })
 
 test_that("_inject_temporal_filter modifies query correctly", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   sample_query <- '
     SELECT ?person WHERE {
@@ -463,7 +463,7 @@ test_that("_inject_temporal_filter modifies query correctly", {
 })
 
 test_that("WikidataSearchTool._parse_temporal_from_query parses dates", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   tool <- wikidata$WikidataSearchTool()
 
@@ -482,7 +482,7 @@ test_that("WikidataSearchTool._parse_temporal_from_query parses dates", {
 })
 
 test_that("create_wikidata_tool accepts temporal parameters", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   tool <- wikidata$create_wikidata_tool(
     date_after = "2020-01-01",
@@ -494,7 +494,7 @@ test_that("create_wikidata_tool accepts temporal parameters", {
 })
 
 test_that("create_wikidata_tool handles NULL temporal parameters", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   tool <- wikidata$create_wikidata_tool()
 
@@ -503,12 +503,12 @@ test_that("create_wikidata_tool handles NULL temporal parameters", {
 })
 
 test_that("Wikidata templates are opt-in and can be loaded explicitly", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
-  python_path <- asa_test_python_path(required_files = c("wikidata_tool.py", "wikidata_templates.json"))
-  template_path <- file.path(python_path, "wikidata_templates.json")
+  python_path <- asa_test_python_path(required_files = c("tools/entity_wikidata_tool.py", "shared/resources/wikidata_templates.json"))
+  template_path <- file.path(python_path, "shared/resources/wikidata_templates.json")
   if (!file.exists(template_path)) {
-    skip("wikidata_templates.json not found in python path")
+    skip("shared/resources/wikidata_templates.json not found in python path")
   }
 
   old_env <- Sys.getenv("ASA_WIKIDATA_TEMPLATES", unset = NA_character_)
@@ -532,7 +532,7 @@ test_that("Wikidata templates are opt-in and can be loaded explicitly", {
 })
 
 test_that("WikidataConfig has correct defaults", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   config <- wikidata$WikidataConfig()
 
@@ -543,11 +543,11 @@ test_that("WikidataConfig has correct defaults", {
 })
 
 # ============================================================================
-# Wayback Tool Tests (wayback_tool.py)
+# Wayback Tool Tests (tools/archive_wayback_tool.py)
 # ============================================================================
 
 test_that("WaybackSearchTool._parse_query extracts URL and dates", {
-  wayback <- asa_test_import_langgraph_module("wayback_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wayback <- asa_test_import_langgraph_module("tools.archive_wayback_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   tool <- wayback$WaybackSearchTool()
 
@@ -569,7 +569,7 @@ test_that("WaybackSearchTool._parse_query extracts URL and dates", {
 })
 
 test_that("WaybackSearchTool._parse_query handles URL without prefix", {
-  wayback <- asa_test_import_langgraph_module("wayback_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wayback <- asa_test_import_langgraph_module("tools.archive_wayback_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   tool <- wayback$WaybackSearchTool()
 
@@ -579,7 +579,7 @@ test_that("WaybackSearchTool._parse_query handles URL without prefix", {
 })
 
 test_that("WaybackConfig has correct defaults", {
-  wayback <- asa_test_import_langgraph_module("wayback_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wayback <- asa_test_import_langgraph_module("tools.archive_wayback_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   config <- wayback$WaybackConfig()
 
@@ -591,7 +591,7 @@ test_that("WaybackConfig has correct defaults", {
 })
 
 test_that("create_wayback_tool returns configured tool", {
-  wayback <- asa_test_import_langgraph_module("wayback_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wayback <- asa_test_import_langgraph_module("tools.archive_wayback_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   custom_config <- wayback$WaybackConfig(timeout = 60.0, max_results = 50L)
   tool <- wayback$create_wayback_tool(config = custom_config)
@@ -602,7 +602,7 @@ test_that("create_wayback_tool returns configured tool", {
 })
 
 test_that("create_wayback_tool uses default config when not specified", {
-  wayback <- asa_test_import_langgraph_module("wayback_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wayback <- asa_test_import_langgraph_module("tools.archive_wayback_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   tool <- wayback$create_wayback_tool()
 
@@ -611,11 +611,11 @@ test_that("create_wayback_tool uses default config when not specified", {
 })
 
 # ============================================================================
-# ResearchConfig Tests (research_graph.py)
+# ResearchConfig Tests (workflows/research_graph_workflow.py)
 # ============================================================================
 
 test_that("ResearchConfig has temporal field defaults", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES, initialize = FALSE)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES, initialize = FALSE)
 
   config <- research$ResearchConfig()
 
@@ -627,7 +627,7 @@ test_that("ResearchConfig has temporal field defaults", {
 })
 
 test_that("ResearchConfig accepts temporal parameters", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES, initialize = FALSE)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES, initialize = FALSE)
 
   config <- research$ResearchConfig(
     time_filter = "m",
@@ -645,7 +645,7 @@ test_that("ResearchConfig accepts temporal parameters", {
 })
 
 test_that("ResearchConfig accepts all valid time_filter values", {
-  research <- asa_test_import_langgraph_module("research_graph", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES, initialize = FALSE)
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES, initialize = FALSE)
 
   for (filter in c("d", "w", "m", "y")) {
     config <- research$ResearchConfig(time_filter = filter)
@@ -654,7 +654,7 @@ test_that("ResearchConfig accepts all valid time_filter values", {
 })
 
 # ============================================================================
-# Stopper Node Tests (research_graph.py)
+# Stopper Node Tests (workflows/research_graph_workflow.py)
 # ============================================================================
 
 test_that("stopper honors target_items", {
@@ -705,7 +705,7 @@ test_that("stopper continues when novelty remains above threshold", {
 })
 
 # ============================================================================
-# ExtractedDate Dataclass Tests (date_extractor.py)
+# ExtractedDate Dataclass Tests (shared/temporal_date_extractor.py)
 # ============================================================================
 
 test_that("ExtractedDate dataclass works correctly", {
@@ -751,7 +751,7 @@ test_that("Date parsing handles ambiguous MM/DD vs DD/MM formats", {
 })
 
 test_that("SPARQL filter injection preserves query structure", {
-  wikidata <- asa_test_import_langgraph_module("wikidata_tool", required_files = "date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+  wikidata <- asa_test_import_langgraph_module("tools.entity_wikidata_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
 
   query_with_service <- '
     SELECT ?x WHERE {

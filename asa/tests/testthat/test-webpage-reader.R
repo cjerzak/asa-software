@@ -40,12 +40,12 @@
 }
 
 test_that("OpenWebpage tool is gated by allow_read_webpages", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     tool <- webpage_tool$create_webpage_reader_tool()
 
@@ -75,7 +75,7 @@ test_that("OpenWebpage tool is gated by allow_read_webpages", {
 })
 
 test_that(".with_webpage_reader_config toggles Python allow_read_webpages", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
@@ -85,7 +85,7 @@ test_that(".with_webpage_reader_config toggles Python allow_read_webpages", {
     skip("Default conda env not available")
   }
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   cfg_prev <- webpage_tool$configure_webpage_reader()
 
   inside <- tryCatch(
@@ -124,12 +124,12 @@ test_that(".with_webpage_reader_config toggles Python allow_read_webpages", {
 })
 
 test_that("OpenWebpage caches blocked responses (403/429/bot marker)", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     webpage_tool$configure_webpage_reader(
       allow_read_webpages = TRUE,
@@ -141,7 +141,7 @@ test_that("OpenWebpage caches blocked responses (403/429/bot marker)", {
     tool <- webpage_tool$create_webpage_reader_tool()
 
     reticulate::py_run_string(paste0(
-      "import webpage_tool\n",
+      "import tools.webpage_reader_tool as webpage_tool\n",
       "_asa_old_fetch_html = webpage_tool._fetch_html\n",
       "_asa_fetch_calls = 0\n",
       "def _asa_fake_fetch(url, proxy=None, cfg=None):\n",
@@ -160,7 +160,7 @@ test_that("OpenWebpage caches blocked responses (403/429/bot marker)", {
     ))
     on.exit(
       try(reticulate::py_run_string(
-        "import webpage_tool\nif '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html"
+        "import tools.webpage_reader_tool as webpage_tool\nif '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html"
       ), silent = TRUE),
       add = TRUE
     )
@@ -176,12 +176,12 @@ test_that("OpenWebpage caches blocked responses (403/429/bot marker)", {
 })
 
 test_that("OpenWebpage treats HTTP 200 challenge interstitials as blocked and caches", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     webpage_tool$configure_webpage_reader(
       allow_read_webpages = TRUE,
@@ -195,7 +195,7 @@ test_that("OpenWebpage treats HTTP 200 challenge interstitials as blocked and ca
     tool <- webpage_tool$create_webpage_reader_tool()
 
     reticulate::py_run_string(paste0(
-      "import webpage_tool\n",
+      "import tools.webpage_reader_tool as webpage_tool\n",
       "_asa_old_requests_get = webpage_tool.requests.get\n",
       "_asa_fetch_calls = 0\n",
       "class _ASAResp:\n",
@@ -222,7 +222,7 @@ test_that("OpenWebpage treats HTTP 200 challenge interstitials as blocked and ca
     ))
     on.exit(
       try(reticulate::py_run_string(
-        "import webpage_tool\nif '_asa_old_requests_get' in globals(): webpage_tool.requests.get = _asa_old_requests_get"
+        "import tools.webpage_reader_tool as webpage_tool\nif '_asa_old_requests_get' in globals(): webpage_tool.requests.get = _asa_old_requests_get"
       ), silent = TRUE),
       add = TRUE
     )
@@ -238,15 +238,15 @@ test_that("OpenWebpage treats HTTP 200 challenge interstitials as blocked and ca
 })
 
 test_that("200 blocked detection avoids single generic marker false positives", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     reticulate::py_run_string(paste0(
-      "import webpage_tool\n",
+      "import tools.webpage_reader_tool as webpage_tool\n",
       "_asa_detect = webpage_tool._detect_blocked_response(\n",
       "    200,\n",
       "    'This article studies blocked matrix methods in economics.',\n",
@@ -260,12 +260,12 @@ test_that("200 blocked detection avoids single generic marker false positives", 
 })
 
 test_that("OpenWebpage returns structured JSON on transient RequestException", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     webpage_tool$configure_webpage_reader(
       allow_read_webpages = TRUE,
@@ -275,7 +275,7 @@ test_that("OpenWebpage returns structured JSON on transient RequestException", {
     tool <- webpage_tool$create_webpage_reader_tool()
 
     reticulate::py_run_string(paste0(
-      "import webpage_tool\n",
+      "import tools.webpage_reader_tool as webpage_tool\n",
       "_asa_old_fetch_html = webpage_tool._fetch_html\n",
       "_asa_old_sleep = webpage_tool.time.sleep\n",
       "_asa_fetch_calls = 0\n",
@@ -288,7 +288,7 @@ test_that("OpenWebpage returns structured JSON on transient RequestException", {
     ))
     on.exit(
       try(reticulate::py_run_string(paste0(
-        "import webpage_tool\n",
+        "import tools.webpage_reader_tool as webpage_tool\n",
         "if '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html\n",
         "if '_asa_old_sleep' in globals(): webpage_tool.time.sleep = _asa_old_sleep\n"
       )), silent = TRUE),
@@ -308,12 +308,12 @@ test_that("OpenWebpage returns structured JSON on transient RequestException", {
 })
 
 test_that("OpenWebpage does not blocked-cache generic HTTP errors", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     webpage_tool$configure_webpage_reader(
       allow_read_webpages = TRUE,
@@ -325,7 +325,7 @@ test_that("OpenWebpage does not blocked-cache generic HTTP errors", {
     tool <- webpage_tool$create_webpage_reader_tool()
 
     reticulate::py_run_string(paste0(
-      "import webpage_tool\n",
+      "import tools.webpage_reader_tool as webpage_tool\n",
       "_asa_old_fetch_html = webpage_tool._fetch_html\n",
       "_asa_fetch_calls = 0\n",
       "def _asa_fake_fetch(url, proxy=None, cfg=None):\n",
@@ -343,7 +343,7 @@ test_that("OpenWebpage does not blocked-cache generic HTTP errors", {
     ))
     on.exit(
       try(reticulate::py_run_string(
-        "import webpage_tool\nif '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html"
+        "import tools.webpage_reader_tool as webpage_tool\nif '_asa_old_fetch_html' in globals(): webpage_tool._fetch_html = _asa_old_fetch_html"
       ), silent = TRUE),
       add = TRUE
     )
@@ -372,15 +372,15 @@ test_that("OpenWebpage does not blocked-cache generic HTTP errors", {
 })
 
 test_that("PDF extraction helper enforces char budget via pdftotext output", {
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     reticulate::py_run_string(paste0(
-      "import webpage_tool\n",
+      "import tools.webpage_reader_tool as webpage_tool\n",
       "_asa_old_run = webpage_tool.subprocess.run\n",
       "_asa_old_which = webpage_tool.shutil.which\n",
       "_asa_pdf_cmd = None\n",
@@ -401,7 +401,7 @@ test_that("PDF extraction helper enforces char budget via pdftotext output", {
     ))
     on.exit(
       try(reticulate::py_run_string(paste0(
-        "import webpage_tool\n",
+        "import tools.webpage_reader_tool as webpage_tool\n",
         "if '_asa_old_run' in globals(): webpage_tool.subprocess.run = _asa_old_run\n",
         "if '_asa_old_which' in globals(): webpage_tool.shutil.which = _asa_old_which\n"
       )), silent = TRUE),
@@ -419,12 +419,12 @@ test_that("PDF extraction helper enforces char budget via pdftotext output", {
 test_that("OpenWebpage can read collaborators page (live network)", {
   skip_on_cran()
 
-  python_path <- asa_test_skip_if_no_python(required_files = "webpage_tool.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "tools/webpage_reader_tool.py")
   asa_test_skip_if_missing_python_modules(
     c("curl_cffi", "bs4", "pydantic", "langchain_core")
   )
 
-  webpage_tool <- asa_test_import_from_path_or_skip("webpage_tool", python_path)
+  webpage_tool <- asa_test_import_from_path_or_skip("tools.webpage_reader_tool", python_path)
   .with_restored_webpage_reader(webpage_tool, {
     webpage_tool$configure_webpage_reader(
       allow_read_webpages = TRUE,

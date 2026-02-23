@@ -1,0 +1,1978 @@
+{
+  "language": "Python",
+  "generated_at": "2026-02-23T17:02:59Z",
+  "nodes": [
+    {
+      "id": "asa/inst/python/asa_backend/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/api/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/api/agent_api.py",
+      "label": "agent_api.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/extraction/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "label": "schema_langextract_bridge.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/graph/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "label": "agent_graph_core.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/graph/memory_folding.py",
+      "label": "memory_folding.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/prompts/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/prompts/agent_prompts.py",
+      "label": "agent_prompts.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/schema/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/schema/state.py",
+      "label": "state.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/search/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/search/anti_detection_config.py",
+      "label": "anti_detection_config.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "label": "ddg_transport.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/search/langchain_adapters.py",
+      "label": "langchain_adapters.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/search/search_config.py",
+      "label": "search_config.py"
+    },
+    {
+      "id": "asa/inst/python/asa_backend/search/tor_config.py",
+      "label": "tor_config.py"
+    },
+    {
+      "id": "asa/inst/python/shared/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/shared/http_retry_utils.py",
+      "label": "http_retry_utils.py"
+    },
+    {
+      "id": "asa/inst/python/shared/message_text_utils.py",
+      "label": "message_text_utils.py"
+    },
+    {
+      "id": "asa/inst/python/shared/network_config_base.py",
+      "label": "network_config_base.py"
+    },
+    {
+      "id": "asa/inst/python/shared/resources/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/shared/schema_outcome_gate.py",
+      "label": "schema_outcome_gate.py"
+    },
+    {
+      "id": "asa/inst/python/shared/schema_profile_registry.py",
+      "label": "schema_profile_registry.py"
+    },
+    {
+      "id": "asa/inst/python/shared/state_graph_utils.py",
+      "label": "state_graph_utils.py"
+    },
+    {
+      "id": "asa/inst/python/shared/temporal_date_extractor.py",
+      "label": "temporal_date_extractor.py"
+    },
+    {
+      "id": "asa/inst/python/tools/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/tools/archive_wayback_tool.py",
+      "label": "archive_wayback_tool.py"
+    },
+    {
+      "id": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "label": "entity_wikidata_tool.py"
+    },
+    {
+      "id": "asa/inst/python/tools/webpage_reader_tool.py",
+      "label": "webpage_reader_tool.py"
+    },
+    {
+      "id": "asa/inst/python/workflows/__init__.py",
+      "label": "__init__.py"
+    },
+    {
+      "id": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "label": "audit_graph_workflow.py"
+    },
+    {
+      "id": "asa/inst/python/workflows/research_graph_workflow.py",
+      "label": "research_graph_workflow.py"
+    }
+  ],
+  "edges": [
+    {
+      "from": "asa/inst/python/asa_backend/api/__init__.py",
+      "to": "asa/inst/python/asa_backend/api/agent_api.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/api/agent_api.py",
+      "to": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/api/agent_api.py",
+      "to": "asa/inst/python/asa_backend/search/__init__.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/api/agent_api.py",
+      "to": "asa/inst/python/shared/state_graph_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/extraction/__init__.py",
+      "to": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "to": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "to": "asa/inst/python/asa_backend/schema/state.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "to": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "to": "asa/inst/python/shared/schema_outcome_gate.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "to": "asa/inst/python/shared/state_graph_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/graph/memory_folding.py",
+      "to": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/prompts/__init__.py",
+      "to": "asa/inst/python/asa_backend/prompts/agent_prompts.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/prompts/agent_prompts.py",
+      "to": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/schema/__init__.py",
+      "to": "asa/inst/python/asa_backend/schema/state.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/__init__.py",
+      "to": "asa/inst/python/asa_backend/search/anti_detection_config.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/__init__.py",
+      "to": "asa/inst/python/asa_backend/search/langchain_adapters.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/__init__.py",
+      "to": "asa/inst/python/asa_backend/search/search_config.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/__init__.py",
+      "to": "asa/inst/python/asa_backend/search/tor_config.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/anti_detection_config.py",
+      "to": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "to": "asa/inst/python/shared/message_text_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/langchain_adapters.py",
+      "to": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/search_config.py",
+      "to": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/asa_backend/search/tor_config.py",
+      "to": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/shared/schema_outcome_gate.py",
+      "to": "asa/inst/python/asa_backend/schema/state.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/shared/state_graph_utils.py",
+      "to": "asa/inst/python/shared/message_text_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/tools/archive_wayback_tool.py",
+      "to": "asa/inst/python/shared/http_retry_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/tools/archive_wayback_tool.py",
+      "to": "asa/inst/python/shared/network_config_base.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/tools/archive_wayback_tool.py",
+      "to": "asa/inst/python/shared/state_graph_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "to": "asa/inst/python/shared/http_retry_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "to": "asa/inst/python/shared/network_config_base.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "to": "asa/inst/python/shared/state_graph_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "to": "asa/inst/python/shared/state_graph_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/workflows/research_graph_workflow.py",
+      "to": "asa/inst/python/shared/schema_outcome_gate.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/workflows/research_graph_workflow.py",
+      "to": "asa/inst/python/shared/state_graph_utils.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/workflows/research_graph_workflow.py",
+      "to": "asa/inst/python/shared/temporal_date_extractor.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/workflows/research_graph_workflow.py",
+      "to": "asa/inst/python/tools/archive_wayback_tool.py",
+      "kind": "import_from"
+    },
+    {
+      "from": "asa/inst/python/workflows/research_graph_workflow.py",
+      "to": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "kind": "import_from"
+    }
+  ],
+  "key_function_edges": [
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "from_function": "_schema_outcome_gate_report",
+      "call": "evaluate_schema_outcome",
+      "to_file": "asa/inst/python/shared/schema_outcome_gate.py"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "from_function": "create_searcher_node",
+      "call": "evaluate_research_outcome",
+      "to_file": "asa/inst/python/shared/schema_outcome_gate.py"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "from_function": "create_deduper_node",
+      "call": "evaluate_research_outcome",
+      "to_file": "asa/inst/python/shared/schema_outcome_gate.py"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "from_function": "create_stopper_node",
+      "call": "evaluate_research_outcome",
+      "to_file": "asa/inst/python/shared/schema_outcome_gate.py"
+    }
+  ],
+  "parse_errors": {},
+  "unresolved_imports": [
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "os",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "langgraph.errors.GraphRecursionError",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/api/agent_api.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "os",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "typing.Iterable",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "langextract",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "langextract",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/extraction/schema_langextract_bridge.py",
+      "import": "langextract.prompt_validation",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "os",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "copy",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "hashlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "queue",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "random",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "sys",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "threading",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "uuid",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.Annotated",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.Callable",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.Sequence",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "typing.TypedDict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "operator.add",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.managed.RemainingSteps",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.tools.tool",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.tools.tool",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.graph.StateGraph",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.graph.END",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.RemoveMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.prebuilt.ToolNode",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.graph.StateGraph",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.graph.END",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.prebuilt.ToolNode",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "concurrent.futures.ThreadPoolExecutor",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "concurrent.futures.TimeoutError",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.RemoveMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.RemoveMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.ToolMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.types.RetryPolicy",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.types.CachePolicy",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.cache.memory.InMemoryCache",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langgraph.errors.GraphRecursionError",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "copy",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/graph/agent_graph_core.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.Callable",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.Iterable",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.Set",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/schema/state.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/anti_detection_config.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "contextlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "copy",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "os",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "pathlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "shutil",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "sqlite3",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "subprocess",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "sys",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "tempfile",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "threading",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "traceback",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "uuid",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "dataclasses.field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "typing.Callable",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.parse_qs",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.parse_qsl",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.quote",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.unquote",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.urlencode",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "unicodedata",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "bs4.BeautifulSoup",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "ddgs.ddgs",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "ddgs.DDGS",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "ddgs.exceptions.DDGSException",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "langchain_community.tools.ddg_search.tool.DuckDuckGoSearchRun",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "langchain_community.utilities.duckduckgo_search.DuckDuckGoSearchAPIWrapper",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "pydantic.Field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "pydantic.PrivateAttr",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.common.exceptions.TimeoutException",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.common.exceptions.WebDriverException",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver.common.by.By",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver.firefox.options.Options",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver.support.expected_conditions",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver.support.ui.WebDriverWait",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "requests",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "random",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "primp",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "math",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver.common.action_chains.ActionChains",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "stem.Signal",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "stem.control.Controller",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver.chrome.options.Options",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "selenium.webdriver.chrome.service.Service",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "requests.adapters.HTTPAdapter",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib3.util.retry.Retry",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "socket",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "undetected_chromedriver",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.parse_qs",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.unquote",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "curl_cffi.requests",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "primp",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "bs4.BeautifulSoup",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.parse_qs",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.unquote",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "bs4.BeautifulSoup",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.parse_qs",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/ddg_transport.py",
+      "import": "urllib.parse.unquote",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/langchain_adapters.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/search_config.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/asa_backend/search/tor_config.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "typing.Callable",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "typing.TypeVar",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/http_retry_utils.py",
+      "import": "requests",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/message_text_utils.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/message_text_utils.py",
+      "import": "typing.Literal",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/network_config_base.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/network_config_base.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_outcome_gate.py",
+      "import": "__future__.annotations",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_outcome_gate.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_outcome_gate.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_outcome_gate.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_outcome_gate.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_outcome_gate.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_profile_registry.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/schema_profile_registry.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "hashlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "pathlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "sys",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/state_graph_utils.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "dataclasses.field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "datetime.datetime",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "requests",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "bs4.BeautifulSoup",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/shared/temporal_date_extractor.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "datetime.datetime",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "requests",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "langchain_core.tools.BaseTool",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "pydantic.Field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/archive_wayback_tool.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "os",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "pathlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "typing.Union",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "requests",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "langchain_core.tools.BaseTool",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/entity_wikidata_tool.py",
+      "import": "pydantic.Field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "hashlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "ipaddress",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "math",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "os",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "shutil",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "socket",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "subprocess",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "threading",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "tempfile",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "collections.OrderedDict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "dataclasses.replace",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "typing.Tuple",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "typing.Type",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "urllib.parse.urljoin",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "urllib.parse.urlparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "urllib.parse.urlunparse",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "curl_cffi.requests",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "bs4.BeautifulSoup",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "langchain_core.tools.BaseTool",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "pydantic.BaseModel",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "pydantic.Field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "sentence_transformers.SentenceTransformer",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/tools/webpage_reader_tool.py",
+      "import": "sentence_transformers",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "re",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "dataclasses.field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "typing.Annotated",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "typing.TypedDict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "langgraph.graph.END",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/audit_graph_workflow.py",
+      "import": "langgraph.graph.StateGraph",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "hashlib",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "json",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "logging",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "time",
+      "kind": "import"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "concurrent.futures.ThreadPoolExecutor",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "concurrent.futures.as_completed",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "datetime.datetime",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "dataclasses.dataclass",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "dataclasses.field",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "typing.Any",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "typing.Annotated",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "typing.Dict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "typing.List",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "typing.Optional",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "typing.Sequence",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "typing.TypedDict",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langchain_core.messages.AIMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langchain_core.messages.BaseMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langchain_core.messages.HumanMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langchain_core.messages.SystemMessage",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langgraph.errors.GraphRecursionError",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langgraph.graph.END",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langgraph.graph.StateGraph",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langgraph.graph.message.add_messages",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langgraph.managed.RemainingSteps",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langgraph.prebuilt.ToolNode",
+      "kind": "import_from_symbol"
+    },
+    {
+      "from_file": "asa/inst/python/workflows/research_graph_workflow.py",
+      "import": "langgraph.prebuilt.tools_condition",
+      "kind": "import_from_symbol"
+    }
+  ]
+}

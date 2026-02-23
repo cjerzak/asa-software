@@ -24,7 +24,7 @@ from langgraph.graph.message import add_messages
 from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import ToolNode, tools_condition
 
-from state_utils import (
+from shared.state_graph_utils import (
     build_node_trace_entry,
     _token_usage_dict_from_message,
     _token_usage_from_message,
@@ -34,12 +34,12 @@ from state_utils import (
     parse_llm_json,
     should_stop_for_recursion,
 )
-from outcome_gate import evaluate_research_outcome
-from wikidata_tool import get_entity_template, get_known_entity_types, query_known_entity
+from shared.schema_outcome_gate import evaluate_research_outcome
+from tools.entity_wikidata_tool import get_entity_template, get_known_entity_types, query_known_entity
 
 # Optional strict temporal verification (local module)
 try:
-    from date_extractor import verify_date_constraint, _parse_date_string
+    from shared.temporal_date_extractor import verify_date_constraint, _parse_date_string
 except Exception:  # pragma: no cover
     verify_date_constraint = None
     _parse_date_string = None
@@ -884,7 +884,7 @@ Use the Search tool to find information."""
                     # Optional Wayback fallback: accept a snapshot within range
                     if use_wayback and (v.get("passes") is None):
                         try:
-                            from wayback_tool import find_snapshots_in_range
+                            from tools.archive_wayback_tool import find_snapshots_in_range
                             snaps = find_snapshots_in_range(url, after_date=date_after, before_date=date_before, limit=5)
                             if snaps:
                                 snap = snaps[0]

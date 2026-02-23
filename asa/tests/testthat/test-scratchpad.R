@@ -1,7 +1,7 @@
 # Tests for scratchpad persistence and prompt injection via save_finding tool.
 
 test_that("save_finding tool_calls append to scratchpad and are injected into subsequent system prompts", {
-  asa_test_skip_if_no_python(required_files = "asa_backend/agent_api.py")
+  asa_test_skip_if_no_python(required_files = "asa_backend/api/agent_api.py")
   asa_test_skip_if_missing_python_modules(c(
     "langchain_core",
     "langgraph",

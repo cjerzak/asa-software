@@ -2,8 +2,8 @@
 
 test_that("field_resolver defaults use langextract engine and compatibility alias", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   defaults <- reticulate::py_to_r(core$`_normalize_orchestration_options`(list()))
@@ -29,8 +29,8 @@ test_that("field_resolver defaults use langextract engine and compatibility alia
 
 test_that("source URL normalization handles multiline and escaped-final-url tails", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   raw_multiline <- paste(
@@ -49,8 +49,8 @@ test_that("source URL normalization handles multiline and escaped-final-url tail
 
 test_that("openwebpage text cleaner removes boilerplate and keeps evidence lines", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   raw_text <- paste(
@@ -82,8 +82,8 @@ test_that("openwebpage text cleaner removes boilerplate and keeps evidence lines
 
 test_that("openwebpage hard-failure classifier catches blocked fetch outputs", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   blocked_text <- paste(
@@ -101,8 +101,8 @@ test_that("openwebpage hard-failure classifier catches blocked fetch outputs", {
 
 test_that("openwebpage hard-failure classifier catches tool error JSON payloads", {
   core <- asa_test_import_langgraph_module(
-    "asa_backend.graph.core",
-    required_files = "asa_backend/graph/core.py"
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
   )
 
   tool_error_json <- paste0(
@@ -117,8 +117,8 @@ test_that("openwebpage hard-failure classifier catches tool error JSON payloads"
 
 test_that("langextract bridge normalizes extracted keys and source siblings", {
   bridge <- asa_test_import_module(
-    "asa_backend.extraction.langextract_bridge",
-    required_file = "asa_backend/extraction/langextract_bridge.py",
+    "asa_backend.extraction.schema_langextract_bridge",
+    required_file = "asa_backend/extraction/schema_langextract_bridge.py",
     required_modules = character(0)
   )
 
@@ -144,8 +144,8 @@ test_that("langextract bridge normalizes extracted keys and source siblings", {
 
 test_that("langextract bridge normalizes gemini models/* route ids", {
   bridge <- asa_test_import_module(
-    "asa_backend.extraction.langextract_bridge",
-    required_file = "asa_backend/extraction/langextract_bridge.py",
+    "asa_backend.extraction.schema_langextract_bridge",
+    required_file = "asa_backend/extraction/schema_langextract_bridge.py",
     required_modules = character(0)
   )
 
@@ -169,8 +169,8 @@ test_that("langextract bridge normalizes gemini models/* route ids", {
 
 test_that("langextract bridge returns unsupported backend without importing provider runtime", {
   bridge <- asa_test_import_module(
-    "asa_backend.extraction.langextract_bridge",
-    required_file = "asa_backend/extraction/langextract_bridge.py",
+    "asa_backend.extraction.schema_langextract_bridge",
+    required_file = "asa_backend/extraction/schema_langextract_bridge.py",
     required_modules = character(0)
   )
 
@@ -196,8 +196,8 @@ test_that("langextract bridge returns unsupported backend without importing prov
 
 test_that("fuzzy key normalization resolves prefix/substring matches", {
   bridge <- asa_test_import_module(
-    "asa_backend.extraction.langextract_bridge",
-    required_file = "asa_backend/extraction/langextract_bridge.py",
+    "asa_backend.extraction.schema_langextract_bridge",
+    required_file = "asa_backend/extraction/schema_langextract_bridge.py",
     required_modules = character(0)
   )
 
@@ -241,8 +241,8 @@ test_that("fuzzy key normalization resolves prefix/substring matches", {
 
 test_that("entity_hint parameter enriches extraction prompt description", {
   bridge <- asa_test_import_module(
-    "asa_backend.extraction.langextract_bridge",
-    required_file = "asa_backend/extraction/langextract_bridge.py",
+    "asa_backend.extraction.schema_langextract_bridge",
+    required_file = "asa_backend/extraction/schema_langextract_bridge.py",
     required_modules = character(0)
   )
 
@@ -271,8 +271,8 @@ test_that("entity_hint parameter enriches extraction prompt description", {
 
 test_that("provider fallback function exists and accepts entity_hint", {
   bridge <- asa_test_import_module(
-    "asa_backend.extraction.langextract_bridge",
-    required_file = "asa_backend/extraction/langextract_bridge.py",
+    "asa_backend.extraction.schema_langextract_bridge",
+    required_file = "asa_backend/extraction/schema_langextract_bridge.py",
     required_modules = character(0)
   )
 

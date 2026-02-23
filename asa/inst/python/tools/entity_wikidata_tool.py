@@ -15,9 +15,9 @@ import requests
 from langchain_core.tools import BaseTool
 from pydantic import Field
 
-from config_base import BaseNetworkConfig
-from state_utils import parse_date_filters
-from http_utils import request_json
+from shared.network_config_base import BaseNetworkConfig
+from shared.state_graph_utils import parse_date_filters
+from shared.http_retry_utils import request_json
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,12 @@ WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql"
 DEFAULT_TIMEOUT = 60.0
 DEFAULT_USER_AGENT = "ASA-Research-Agent/1.0 (https://github.com/cjerzak/asa-software)"
 WIKIDATA_TEMPLATE_ENV = "ASA_WIKIDATA_TEMPLATES"
-DEFAULT_TEMPLATE_PATH = pathlib.Path(__file__).resolve().with_name("wikidata_templates.json")
+DEFAULT_TEMPLATE_PATH = (
+    pathlib.Path(__file__).resolve().parent.parent
+    / "shared"
+    / "resources"
+    / "wikidata_templates.json"
+)
 
 
 @dataclass

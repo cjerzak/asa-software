@@ -1,6 +1,6 @@
 """Planner and system prompt composition helpers."""
 
-from .graph.core import (
+from ..graph.agent_graph_core import (
     _base_system_prompt,
     _build_planner_prompt,
     _final_system_prompt,

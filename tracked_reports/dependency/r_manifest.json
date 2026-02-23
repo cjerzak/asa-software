@@ -1,0 +1,315 @@
+{
+  "language": "R",
+  "generated_at": "2026-02-23T17:02:59Z",
+  "nodes": [
+    {
+      "id": "asa/R/agent__initialize.R",
+      "label": "agent__initialize.R"
+    },
+    {
+      "id": "asa/R/agent__run_engine.R",
+      "label": "agent__run_engine.R"
+    },
+    {
+      "id": "asa/R/core__constants.R",
+      "label": "core__constants.R"
+    },
+    {
+      "id": "asa/R/core__package_state.R",
+      "label": "core__package_state.R"
+    },
+    {
+      "id": "asa/R/guardrails__validate.R",
+      "label": "guardrails__validate.R"
+    },
+    {
+      "id": "asa/R/infra__build_backend.R",
+      "label": "infra__build_backend.R"
+    },
+    {
+      "id": "asa/R/infra__proxy.R",
+      "label": "infra__proxy.R"
+    },
+    {
+      "id": "asa/R/infra__python_bridge.R",
+      "label": "infra__python_bridge.R"
+    },
+    {
+      "id": "asa/R/infra__recursion_limits.R",
+      "label": "infra__recursion_limits.R"
+    },
+    {
+      "id": "asa/R/infra__runtime_config.R",
+      "label": "infra__runtime_config.R"
+    },
+    {
+      "id": "asa/R/infra__system_cmd.R",
+      "label": "infra__system_cmd.R"
+    },
+    {
+      "id": "asa/R/infra__tor_options.R",
+      "label": "infra__tor_options.R"
+    },
+    {
+      "id": "asa/R/postprocess__extract_agent_results.R",
+      "label": "postprocess__extract_agent_results.R"
+    },
+    {
+      "id": "asa/R/postprocess__json_parse.R",
+      "label": "postprocess__json_parse.R"
+    },
+    {
+      "id": "asa/R/postprocess__process_outputs.R",
+      "label": "postprocess__process_outputs.R"
+    },
+    {
+      "id": "asa/R/postprocess__token_stats.R",
+      "label": "postprocess__token_stats.R"
+    },
+    {
+      "id": "asa/R/public__s3_methods.R",
+      "label": "public__s3_methods.R"
+    },
+    {
+      "id": "asa/R/shared__helpers.R",
+      "label": "shared__helpers.R"
+    },
+    {
+      "id": "asa/R/shared__utils_try.R",
+      "label": "shared__utils_try.R"
+    },
+    {
+      "id": "asa/R/workflow__audit.R",
+      "label": "workflow__audit.R"
+    },
+    {
+      "id": "asa/R/workflow__research_enumeration.R",
+      "label": "workflow__research_enumeration.R"
+    },
+    {
+      "id": "asa/R/workflow__run_task.R",
+      "label": "workflow__run_task.R"
+    }
+  ],
+  "edges": [
+    {
+      "from": "asa/R/agent__initialize.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "search_options"
+    },
+    {
+      "from": "asa/R/agent__initialize.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "tor_options"
+    },
+    {
+      "from": "asa/R/agent__initialize.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "asa_agent"
+    },
+    {
+      "from": "asa/R/agent__initialize.R",
+      "to": "asa/R/shared__helpers.R",
+      "kind": "function_call",
+      "call": "configure_tor_registry"
+    },
+    {
+      "from": "asa/R/agent__run_engine.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "initialize_agent"
+    },
+    {
+      "from": "asa/R/agent__run_engine.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "get_agent"
+    },
+    {
+      "from": "asa/R/agent__run_engine.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "asa_response"
+    },
+    {
+      "from": "asa/R/guardrails__validate.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "tor_options"
+    },
+    {
+      "from": "asa/R/infra__build_backend.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "initialize_agent"
+    },
+    {
+      "from": "asa/R/infra__runtime_config.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "get_agent"
+    },
+    {
+      "from": "asa/R/infra__runtime_config.R",
+      "to": "asa/R/shared__helpers.R",
+      "kind": "function_call",
+      "call": "configure_search"
+    },
+    {
+      "from": "asa/R/postprocess__extract_agent_results.R",
+      "to": "asa/R/postprocess__process_outputs.R",
+      "kind": "function_call",
+      "call": "extract_search_snippets"
+    },
+    {
+      "from": "asa/R/postprocess__extract_agent_results.R",
+      "to": "asa/R/postprocess__process_outputs.R",
+      "kind": "function_call",
+      "call": "extract_wikipedia_content"
+    },
+    {
+      "from": "asa/R/postprocess__extract_agent_results.R",
+      "to": "asa/R/postprocess__process_outputs.R",
+      "kind": "function_call",
+      "call": "extract_urls"
+    },
+    {
+      "from": "asa/R/postprocess__extract_agent_results.R",
+      "to": "asa/R/postprocess__process_outputs.R",
+      "kind": "function_call",
+      "call": "extract_search_tiers"
+    },
+    {
+      "from": "asa/R/postprocess__process_outputs.R",
+      "to": "asa/R/postprocess__extract_agent_results.R",
+      "kind": "function_call",
+      "call": "extract_agent_results"
+    },
+    {
+      "from": "asa/R/public__s3_methods.R",
+      "to": "asa/R/shared__helpers.R",
+      "kind": "function_call",
+      "call": "truncate_string"
+    },
+    {
+      "from": "asa/R/public__s3_methods.R",
+      "to": "asa/R/shared__helpers.R",
+      "kind": "function_call",
+      "call": "format_duration"
+    },
+    {
+      "from": "asa/R/shared__helpers.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "initialize_agent"
+    },
+    {
+      "from": "asa/R/workflow__audit.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "initialize_agent"
+    },
+    {
+      "from": "asa/R/workflow__audit.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "asa_audit_result"
+    },
+    {
+      "from": "asa/R/workflow__research_enumeration.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "initialize_agent"
+    },
+    {
+      "from": "asa/R/workflow__research_enumeration.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "get_agent"
+    },
+    {
+      "from": "asa/R/workflow__research_enumeration.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "asa_config"
+    },
+    {
+      "from": "asa/R/workflow__research_enumeration.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "asa_enumerate_result"
+    },
+    {
+      "from": "asa/R/workflow__run_task.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "initialize_agent"
+    },
+    {
+      "from": "asa/R/workflow__run_task.R",
+      "to": "asa/R/agent__initialize.R",
+      "kind": "function_call",
+      "call": "get_agent"
+    },
+    {
+      "from": "asa/R/workflow__run_task.R",
+      "to": "asa/R/postprocess__process_outputs.R",
+      "kind": "function_call",
+      "call": "process_one"
+    },
+    {
+      "from": "asa/R/workflow__run_task.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "asa_config"
+    },
+    {
+      "from": "asa/R/workflow__run_task.R",
+      "to": "asa/R/public__s3_methods.R",
+      "kind": "function_call",
+      "call": "asa_result"
+    }
+  ],
+  "key_function_edges": [
+    {
+      "from_file": "asa/R/agent__run_engine.R",
+      "to_file": "asa/R/agent__initialize.R",
+      "call": "initialize_agent"
+    },
+    {
+      "from_file": "asa/R/infra__build_backend.R",
+      "to_file": "asa/R/agent__initialize.R",
+      "call": "initialize_agent"
+    },
+    {
+      "from_file": "asa/R/shared__helpers.R",
+      "to_file": "asa/R/agent__initialize.R",
+      "call": "initialize_agent"
+    },
+    {
+      "from_file": "asa/R/workflow__audit.R",
+      "to_file": "asa/R/agent__initialize.R",
+      "call": "initialize_agent"
+    },
+    {
+      "from_file": "asa/R/workflow__research_enumeration.R",
+      "to_file": "asa/R/agent__initialize.R",
+      "call": "initialize_agent"
+    },
+    {
+      "from_file": "asa/R/workflow__run_task.R",
+      "to_file": "asa/R/agent__initialize.R",
+      "call": "initialize_agent"
+    }
+  ],
+  "python_module_edges": [
+    {
+      "from_file": "asa/R/agent__initialize.R",
+      "to_module": "tools.webpage_reader_tool",
+      "kind": "python_module_import"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 """Observational-memory and memory-folding helpers."""
 
-from .graph.core import (
+from .agent_graph_core import (
     _collect_message_observations,
     _format_memory_for_system_prompt,
     _merge_observations,

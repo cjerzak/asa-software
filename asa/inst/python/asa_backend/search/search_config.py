@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .transport import SearchConfig, configure_logging, configure_search
+from .ddg_transport import SearchConfig, configure_logging, configure_search
 
 __all__ = [
     "SearchConfig",

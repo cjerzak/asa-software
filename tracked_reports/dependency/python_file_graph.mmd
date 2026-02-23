@@ -1,0 +1,72 @@
+graph TD
+  py_asa_inst_python_asa_backend___init___py["__init__.py"]
+  py_asa_inst_python_asa_backend_api___init___py["__init__.py"]
+  py_asa_inst_python_asa_backend_api_agent_api_py["agent_api.py"]
+  py_asa_inst_python_asa_backend_extraction___init___py["__init__.py"]
+  py_asa_inst_python_asa_backend_extraction_schema_langextract_bridge_py["schema_langextract_bridge.py"]
+  py_asa_inst_python_asa_backend_graph___init___py["__init__.py"]
+  py_asa_inst_python_asa_backend_graph_agent_graph_core_py["agent_graph_core.py"]
+  py_asa_inst_python_asa_backend_graph_memory_folding_py["memory_folding.py"]
+  py_asa_inst_python_asa_backend_prompts___init___py["__init__.py"]
+  py_asa_inst_python_asa_backend_prompts_agent_prompts_py["agent_prompts.py"]
+  py_asa_inst_python_asa_backend_schema___init___py["__init__.py"]
+  py_asa_inst_python_asa_backend_schema_state_py["state.py"]
+  py_asa_inst_python_asa_backend_search___init___py["__init__.py"]
+  py_asa_inst_python_asa_backend_search_anti_detection_config_py["anti_detection_config.py"]
+  py_asa_inst_python_asa_backend_search_ddg_transport_py["ddg_transport.py"]
+  py_asa_inst_python_asa_backend_search_langchain_adapters_py["langchain_adapters.py"]
+  py_asa_inst_python_asa_backend_search_search_config_py["search_config.py"]
+  py_asa_inst_python_asa_backend_search_tor_config_py["tor_config.py"]
+  py_asa_inst_python_shared___init___py["__init__.py"]
+  py_asa_inst_python_shared_http_retry_utils_py["http_retry_utils.py"]
+  py_asa_inst_python_shared_message_text_utils_py["message_text_utils.py"]
+  py_asa_inst_python_shared_network_config_base_py["network_config_base.py"]
+  py_asa_inst_python_shared_resources___init___py["__init__.py"]
+  py_asa_inst_python_shared_schema_outcome_gate_py["schema_outcome_gate.py"]
+  py_asa_inst_python_shared_schema_profile_registry_py["schema_profile_registry.py"]
+  py_asa_inst_python_shared_state_graph_utils_py["state_graph_utils.py"]
+  py_asa_inst_python_shared_temporal_date_extractor_py["temporal_date_extractor.py"]
+  py_asa_inst_python_tools___init___py["__init__.py"]
+  py_asa_inst_python_tools_archive_wayback_tool_py["archive_wayback_tool.py"]
+  py_asa_inst_python_tools_entity_wikidata_tool_py["entity_wikidata_tool.py"]
+  py_asa_inst_python_tools_webpage_reader_tool_py["webpage_reader_tool.py"]
+  py_asa_inst_python_workflows___init___py["__init__.py"]
+  py_asa_inst_python_workflows_audit_graph_workflow_py["audit_graph_workflow.py"]
+  py_asa_inst_python_workflows_research_graph_workflow_py["research_graph_workflow.py"]
+  py_asa_inst_python_asa_backend_api___init___py -->|import_from| py_asa_inst_python_asa_backend_api_agent_api_py
+  py_asa_inst_python_asa_backend_api_agent_api_py -->|import_from| py_asa_inst_python_asa_backend_graph_agent_graph_core_py
+  py_asa_inst_python_asa_backend_api_agent_api_py -->|import_from| py_asa_inst_python_asa_backend_search___init___py
+  py_asa_inst_python_asa_backend_api_agent_api_py -->|import_from| py_asa_inst_python_shared_state_graph_utils_py
+  py_asa_inst_python_asa_backend_extraction___init___py -->|import_from| py_asa_inst_python_asa_backend_extraction_schema_langextract_bridge_py
+  py_asa_inst_python_asa_backend_graph_agent_graph_core_py -->|import_from| py_asa_inst_python_asa_backend_extraction_schema_langextract_bridge_py
+  py_asa_inst_python_asa_backend_graph_agent_graph_core_py -->|import_from| py_asa_inst_python_asa_backend_schema_state_py
+  py_asa_inst_python_asa_backend_graph_agent_graph_core_py -->|import_from| py_asa_inst_python_asa_backend_search_ddg_transport_py
+  py_asa_inst_python_asa_backend_graph_agent_graph_core_py -->|import_from| py_asa_inst_python_shared_schema_outcome_gate_py
+  py_asa_inst_python_asa_backend_graph_agent_graph_core_py -->|import_from| py_asa_inst_python_shared_state_graph_utils_py
+  py_asa_inst_python_asa_backend_graph_memory_folding_py -->|import_from| py_asa_inst_python_asa_backend_graph_agent_graph_core_py
+  py_asa_inst_python_asa_backend_prompts___init___py -->|import_from| py_asa_inst_python_asa_backend_prompts_agent_prompts_py
+  py_asa_inst_python_asa_backend_prompts_agent_prompts_py -->|import_from| py_asa_inst_python_asa_backend_graph_agent_graph_core_py
+  py_asa_inst_python_asa_backend_schema___init___py -->|import_from| py_asa_inst_python_asa_backend_schema_state_py
+  py_asa_inst_python_asa_backend_search___init___py -->|import_from| py_asa_inst_python_asa_backend_search_anti_detection_config_py
+  py_asa_inst_python_asa_backend_search___init___py -->|import_from| py_asa_inst_python_asa_backend_search_langchain_adapters_py
+  py_asa_inst_python_asa_backend_search___init___py -->|import_from| py_asa_inst_python_asa_backend_search_search_config_py
+  py_asa_inst_python_asa_backend_search___init___py -->|import_from| py_asa_inst_python_asa_backend_search_tor_config_py
+  py_asa_inst_python_asa_backend_search_anti_detection_config_py -->|import_from| py_asa_inst_python_asa_backend_search_ddg_transport_py
+  py_asa_inst_python_asa_backend_search_ddg_transport_py -->|import_from| py_asa_inst_python_shared_message_text_utils_py
+  py_asa_inst_python_asa_backend_search_langchain_adapters_py -->|import_from| py_asa_inst_python_asa_backend_search_ddg_transport_py
+  py_asa_inst_python_asa_backend_search_search_config_py -->|import_from| py_asa_inst_python_asa_backend_search_ddg_transport_py
+  py_asa_inst_python_asa_backend_search_tor_config_py -->|import_from| py_asa_inst_python_asa_backend_search_ddg_transport_py
+  py_asa_inst_python_shared_schema_outcome_gate_py -->|import_from| py_asa_inst_python_asa_backend_schema_state_py
+  py_asa_inst_python_shared_state_graph_utils_py -->|import_from| py_asa_inst_python_shared_message_text_utils_py
+  py_asa_inst_python_tools_archive_wayback_tool_py -->|import_from| py_asa_inst_python_shared_http_retry_utils_py
+  py_asa_inst_python_tools_archive_wayback_tool_py -->|import_from| py_asa_inst_python_shared_network_config_base_py
+  py_asa_inst_python_tools_archive_wayback_tool_py -->|import_from| py_asa_inst_python_shared_state_graph_utils_py
+  py_asa_inst_python_tools_entity_wikidata_tool_py -->|import_from| py_asa_inst_python_shared_http_retry_utils_py
+  py_asa_inst_python_tools_entity_wikidata_tool_py -->|import_from| py_asa_inst_python_shared_network_config_base_py
+  py_asa_inst_python_tools_entity_wikidata_tool_py -->|import_from| py_asa_inst_python_shared_state_graph_utils_py
+  py_asa_inst_python_workflows_audit_graph_workflow_py -->|import_from| py_asa_inst_python_shared_state_graph_utils_py
+  py_asa_inst_python_workflows_research_graph_workflow_py -->|import_from| py_asa_inst_python_shared_schema_outcome_gate_py
+  py_asa_inst_python_workflows_research_graph_workflow_py -->|import_from| py_asa_inst_python_shared_state_graph_utils_py
+  py_asa_inst_python_workflows_research_graph_workflow_py -->|import_from| py_asa_inst_python_shared_temporal_date_extractor_py
+  py_asa_inst_python_workflows_research_graph_workflow_py -->|import_from| py_asa_inst_python_tools_archive_wayback_tool_py
+  py_asa_inst_python_workflows_research_graph_workflow_py -->|import_from| py_asa_inst_python_tools_entity_wikidata_tool_py

@@ -444,8 +444,14 @@ asa_enumerate <- function(query,
 #' Import Research Python Modules
 #' @keywords internal
 .import_research_modules <- function() {
-  .import_python_module("research_graph")
-  .import_python_module("wikidata_tool")
+  .import_python_module(
+    module_name = "workflows.research_graph_workflow",
+    env_name = "research_graph"
+  )
+  .import_python_module(
+    module_name = "tools.entity_wikidata_tool",
+    env_name = "wikidata_tool"
+  )
   invisible(NULL)
 }
 

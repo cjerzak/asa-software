@@ -37,10 +37,10 @@ options(asa.default_conda_env = "asa_env")
     return(files)
   }
 
-  files[files == "custom_ddg_production.py"] <- "asa_backend/graph/core.py"
-  files[files == "asa_backend/agent_graph.py"] <- "asa_backend/graph/core.py"
-  files[files == "asa_backend/graph/_legacy_agent_graph.py"] <- "asa_backend/graph/core.py"
-  files[files == "asa_backend/search/_legacy_transport.py"] <- "asa_backend/search/transport.py"
+  files[files == "custom_ddg_production.py"] <- "asa_backend/graph/agent_graph_core.py"
+  files[files == "asa_backend/agent_graph.py"] <- "asa_backend/graph/agent_graph_core.py"
+  files[files == "asa_backend/graph/_legacy_agent_graph.py"] <- "asa_backend/graph/agent_graph_core.py"
+  files[files == "asa_backend/search/_legacy_transport.py"] <- "asa_backend/search/ddg_transport.py"
   files[files == "asa_backend/search_transport.py"] <- "asa_backend/search/__init__.py"
 
   unique(files)
@@ -50,17 +50,17 @@ options(asa.default_conda_env = "asa_env")
   files <- .asa_test_normalize_required_files(required_files)
 
   if (identical(module_name, "custom_ddg_production")) {
-    module_name <- "asa_backend.graph.core"
-    files[files == "custom_ddg_production.py"] <- "asa_backend/graph/core.py"
+    module_name <- "asa_backend.graph.agent_graph_core"
+    files[files == "custom_ddg_production.py"] <- "asa_backend/graph/agent_graph_core.py"
     if (length(files) == 0L) {
-      files <- "asa_backend/graph/core.py"
+      files <- "asa_backend/graph/agent_graph_core.py"
     }
   }
   if (identical(module_name, "asa_backend.graph._legacy_agent_graph")) {
-    module_name <- "asa_backend.graph.core"
+    module_name <- "asa_backend.graph.agent_graph_core"
   }
   if (identical(module_name, "asa_backend.agent_graph")) {
-    module_name <- "asa_backend.graph.core"
+    module_name <- "asa_backend.graph.agent_graph_core"
   }
   if (identical(module_name, "asa_backend.search_transport")) {
     module_name <- "asa_backend.search"
@@ -251,7 +251,7 @@ ASA_TEST_LANGGRAPH_MODULES <- c(
 
 asa_test_date_extractor <- function() {
   asa_test_import_module(
-    "date_extractor",
+    "shared.temporal_date_extractor",
     required_modules = ASA_TEST_DATE_EXTRACTOR_MODULES
   )
 }
@@ -268,11 +268,11 @@ asa_test_import_research_graph <- function(
     required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES
 ) {
   python_path <- asa_test_skip_if_no_python(
-    required_files = "research_graph.py",
+    required_files = "workflows/research_graph_workflow.py",
     initialize = FALSE
   )
   asa_test_require_langgraph_stack(required_modules)
-  reticulate::import_from_path("research_graph", path = python_path)
+  reticulate::import_from_path("workflows.research_graph_workflow", path = python_path)
 }
 
 # ---------------------------------------------------------------------------

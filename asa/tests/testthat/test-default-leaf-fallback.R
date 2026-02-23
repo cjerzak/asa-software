@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------------
 
 test_that("_default_leaf_value returns Unknown for pure enum with Unknown option", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   # Education level enum with Unknown at the end
   result <- utils$`_default_leaf_value`("High School|Some College|Bachelor|Unknown")
@@ -29,9 +29,9 @@ test_that("_default_leaf_value returns Unknown for pure enum with Unknown option
 })
 
 test_that("_default_leaf_value returns first enum when no Unknown present", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   result <- utils$`_default_leaf_value`("Low|Medium|High")
   expect_equal(result, "Low")
@@ -41,9 +41,9 @@ test_that("_default_leaf_value returns first enum when no Unknown present", {
 })
 
 test_that("_default_leaf_value returns Unknown for mixed type+Unknown descriptors", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   # string|Unknown should return "Unknown", not ""
   result <- utils$`_default_leaf_value`("string|Unknown")
@@ -55,9 +55,9 @@ test_that("_default_leaf_value returns Unknown for mixed type+Unknown descriptor
 })
 
 test_that("_default_leaf_value returns None for null descriptors without Unknown", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   result <- utils$`_default_leaf_value`("string|null")
   expect_null(result)
@@ -67,9 +67,9 @@ test_that("_default_leaf_value returns None for null descriptors without Unknown
 })
 
 test_that("_default_leaf_value preserves type-specific defaults", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   expect_equal(utils$`_default_leaf_value`("string"), "")
   expect_equal(utils$`_default_leaf_value`("array"), list())
@@ -79,9 +79,9 @@ test_that("_default_leaf_value preserves type-specific defaults", {
 })
 
 test_that("_default_leaf_value preserves partial preference for status key", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   result <- utils$`_default_leaf_value`("complete|partial", key = "status")
   expect_equal(result, "partial")
@@ -92,9 +92,9 @@ test_that("_default_leaf_value preserves partial preference for status key", {
 })
 
 test_that("repair_json_output_to_schema fills Unknown for enum fields with Unknown option", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(
     name = "string",
@@ -116,9 +116,9 @@ test_that("repair_json_output_to_schema fills Unknown for enum fields with Unkno
 })
 
 test_that("repair_json_output_to_schema preserves existing non-null values", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(
     name = "string",
@@ -136,9 +136,9 @@ test_that("repair_json_output_to_schema preserves existing non-null values", {
 })
 
 test_that("repair_json_output_to_schema is idempotent with Unknown defaults", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(
     name = "string",
@@ -157,9 +157,9 @@ test_that("repair_json_output_to_schema is idempotent with Unknown defaults", {
 # ---------------------------------------------------------------------------
 
 test_that("populate_required_fields replaces empty strings with Unknown for descriptors with Unknown option", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(
     education_level = "High School|Some College|Bachelor|Unknown",
@@ -173,9 +173,9 @@ test_that("populate_required_fields replaces empty strings with Unknown for desc
 })
 
 test_that("populate_required_fields preserves empty strings when descriptor lacks Unknown", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(
     name = "string",
@@ -189,9 +189,9 @@ test_that("populate_required_fields preserves empty strings when descriptor lack
 })
 
 test_that("populate_required_fields does not replace integer 0 for Unknown descriptors", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(
     score = "integer|null|Unknown"
@@ -203,9 +203,9 @@ test_that("populate_required_fields does not replace integer 0 for Unknown descr
 })
 
 test_that("repair_json_output_to_schema replaces empty strings with Unknown end-to-end", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(
     name = "string",
@@ -223,9 +223,9 @@ test_that("repair_json_output_to_schema replaces empty strings with Unknown end-
 })
 
 test_that("_descriptor_prefers_unknown returns correct boolean", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   expect_true(utils$`_descriptor_prefers_unknown`("High School|Unknown"))
   expect_true(utils$`_descriptor_prefers_unknown`("string|Unknown"))
@@ -236,9 +236,9 @@ test_that("_descriptor_prefers_unknown returns correct boolean", {
 })
 
 test_that("populate_required_fields handles nested array elements with empty strings", {
-  python_path <- asa_test_skip_if_no_python(required_files = "state_utils.py")
+  python_path <- asa_test_skip_if_no_python(required_files = "shared/state_graph_utils.py")
   asa_test_skip_if_missing_python_modules(c("pydantic"), method = "import")
-  utils <- reticulate::import_from_path("state_utils", path = python_path)
+  utils <- reticulate::import_from_path("shared.state_graph_utils", path = python_path)
 
   schema <- list(list(
     name = "string",

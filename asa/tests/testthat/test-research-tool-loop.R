@@ -1,9 +1,9 @@
-# Tests for LangGraph ToolNode/tools_condition tool loop in research_graph.py
+# Tests for LangGraph ToolNode/tools_condition tool loop in workflows/research_graph_workflow.py
 
 test_that("research searcher tool loop respects max_tool_calls_per_round", {
   research <- asa_test_import_langgraph_module(
-    "research_graph",
-    required_files = "research_graph.py",
+    "workflows.research_graph_workflow",
+    required_files = "workflows/research_graph_workflow.py",
     required_modules = ASA_TEST_LANGGRAPH_MODULES
   )
 

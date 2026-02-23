@@ -1,5 +1,5 @@
 test_that("evaluate_schema_outcome reports complete when all fields resolved", {
-  gate <- asa_test_import_module("outcome_gate", required_file = "outcome_gate.py")
+  gate <- asa_test_import_module("shared.schema_outcome_gate", required_file = "shared/schema_outcome_gate.py")
 
   schema <- list(
     status = "complete|partial",
@@ -24,7 +24,7 @@ test_that("evaluate_schema_outcome reports complete when all fields resolved", {
 })
 
 test_that("evaluate_schema_outcome reports partial when budget exhausts first", {
-  gate <- asa_test_import_module("outcome_gate", required_file = "outcome_gate.py")
+  gate <- asa_test_import_module("shared.schema_outcome_gate", required_file = "shared/schema_outcome_gate.py")
 
   schema <- list(name = "string", birth_year = "integer|null")
   field_status <- list(
@@ -43,7 +43,7 @@ test_that("evaluate_schema_outcome reports partial when budget exhausts first", 
 })
 
 test_that("evaluate_research_outcome distinguishes complete vs partial stops", {
-  gate <- asa_test_import_module("outcome_gate", required_file = "outcome_gate.py")
+  gate <- asa_test_import_module("shared.schema_outcome_gate", required_file = "shared/schema_outcome_gate.py")
 
   complete_report <- gate$evaluate_research_outcome(
     round_number = 2L,

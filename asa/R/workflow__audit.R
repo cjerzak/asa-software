@@ -374,7 +374,10 @@ backend <- match.arg(backend)
 #'
 #' @noRd
 .import_audit_modules <- function() {
-  .import_python_module("audit_graph")
+  .import_python_module(
+    module_name = "workflows.audit_graph_workflow",
+    env_name = "audit_graph"
+  )
 }
 
 #' Build Audit Prompt for Claude Code

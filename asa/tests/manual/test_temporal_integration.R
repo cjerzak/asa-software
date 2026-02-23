@@ -86,7 +86,7 @@ python_paths <- c(
 
 python_path <- NULL
 for (p in python_paths) {
-  if (dir.exists(p) && file.exists(file.path(p, "date_extractor.py"))) {
+  if (dir.exists(p) && file.exists(file.path(p, "shared/temporal_date_extractor.py"))) {
     python_path <- p
     break
   }
@@ -98,9 +98,9 @@ if (is.null(python_path)) {
 cat(sprintf("  Python path: %s\n", python_path))
 
 # Import modules
-date_extractor <- import_from_path("date_extractor", path = python_path)
-wayback_tool <- import_from_path("wayback_tool", path = python_path)
-wikidata_tool <- import_from_path("wikidata_tool", path = python_path)
+date_extractor <- import_from_path("shared.temporal_date_extractor", path = python_path)
+wayback_tool <- import_from_path("tools.archive_wayback_tool", path = python_path)
+wikidata_tool <- import_from_path("tools.entity_wikidata_tool", path = python_path)
 
 cat("  Modules loaded successfully.\n")
 

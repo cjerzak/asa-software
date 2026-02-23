@@ -47,18 +47,17 @@ import random as random
 import primp
 
 try:
-    from message_utils import (
+    from shared.message_text_utils import (
         message_content_from_message as _shared_message_content_from_message,
         message_content_to_text as _shared_message_content_to_text,
     )
 except ImportError:
     _module_dir = pathlib.Path(__file__).resolve().parent
-    _parent_dir = _module_dir.parent
-    _root_dir = _parent_dir.parent
-    for _candidate in (str(_root_dir), str(_parent_dir), str(_module_dir)):
+    _root_dir = _module_dir.parent.parent
+    for _candidate in (str(_root_dir), str(_module_dir.parent), str(_module_dir)):
         if _candidate not in sys.path:
             sys.path.insert(0, _candidate)
-    from message_utils import (
+    from shared.message_text_utils import (
         message_content_from_message as _shared_message_content_from_message,
         message_content_to_text as _shared_message_content_to_text,
     )

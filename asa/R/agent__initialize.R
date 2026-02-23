@@ -416,12 +416,12 @@ initialize_agent <- function(backend = NULL,
   python_path <- .get_python_path()
   if (python_path != "" && dir.exists(python_path)) {
     asa_env$backend_api <- reticulate::import_from_path(
-      "asa_backend.agent_api",
+      "asa_backend.api.agent_api",
       path = python_path
     )
     # Optional tool: webpage reader (disabled by default via Python config)
     asa_env$webpage_tool <- tryCatch(
-      reticulate::import_from_path("webpage_tool", path = python_path),
+      reticulate::import_from_path("tools.webpage_reader_tool", path = python_path),
       error = function(e) NULL
     )
   } else {

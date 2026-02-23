@@ -12,12 +12,14 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from message_utils import message_text_from_message
+    from shared.message_text_utils import message_text_from_message
 except ImportError:
     _module_dir = pathlib.Path(__file__).resolve().parent
-    if str(_module_dir) not in sys.path:
-        sys.path.insert(0, str(_module_dir))
-    from message_utils import message_text_from_message
+    _root_dir = _module_dir.parent
+    for _candidate in (str(_root_dir), str(_module_dir)):
+        if _candidate not in sys.path:
+            sys.path.insert(0, _candidate)
+    from shared.message_text_utils import message_text_from_message
 
 
 def remaining_steps_value(state: Any) -> Optional[int]:
