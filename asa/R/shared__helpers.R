@@ -1049,35 +1049,38 @@ configure_temporal <- function(time_filter = NULL) {
                                        conda_env = NULL,
                                        fn) {
   conda_env <- conda_env %||% .get_default_conda_env()
-  # If nothing was specified, don't touch Python config.
-  if (is.null(allow_read_webpages) &&
-      is.null(relevance_mode) &&
-      is.null(heuristic_profile) &&
-      is.null(embedding_provider) &&
-      is.null(embedding_model) &&
-      is.null(timeout) &&
-      is.null(max_bytes) &&
-      is.null(max_chars) &&
-      is.null(max_chunks) &&
-      is.null(chunk_chars) &&
-      is.null(embedding_api_base) &&
-      is.null(prefilter_k) &&
-      is.null(use_mmr) &&
-      is.null(mmr_lambda) &&
-      is.null(cache_enabled) &&
-      is.null(cache_max_entries) &&
-      is.null(cache_max_text_chars) &&
-      is.null(blocked_cache_ttl_sec) &&
-      is.null(blocked_cache_max_entries) &&
-      is.null(blocked_probe_bytes) &&
-      is.null(blocked_detect_on_200) &&
-      is.null(blocked_body_scan_bytes) &&
-      is.null(pdf_enabled) &&
-      is.null(pdf_timeout) &&
-      is.null(pdf_max_bytes) &&
-      is.null(pdf_max_pages) &&
-      is.null(pdf_max_text_chars) &&
-      is.null(user_agent)) {
+  allow_arg <- if (is.null(allow_read_webpages)) NULL else isTRUE(allow_read_webpages)
+  requested <- .compact_runtime_snapshot_args(list(
+    allow_read_webpages = allow_arg,
+    relevance_mode = relevance_mode,
+    heuristic_profile = heuristic_profile,
+    embedding_provider = embedding_provider,
+    embedding_model = embedding_model,
+    timeout = timeout,
+    max_bytes = max_bytes,
+    max_chars = max_chars,
+    max_chunks = max_chunks,
+    chunk_chars = chunk_chars,
+    embedding_api_base = embedding_api_base,
+    prefilter_k = prefilter_k,
+    use_mmr = use_mmr,
+    mmr_lambda = mmr_lambda,
+    cache_enabled = cache_enabled,
+    cache_max_entries = cache_max_entries,
+    cache_max_text_chars = cache_max_text_chars,
+    blocked_cache_ttl_sec = blocked_cache_ttl_sec,
+    blocked_cache_max_entries = blocked_cache_max_entries,
+    blocked_probe_bytes = blocked_probe_bytes,
+    blocked_detect_on_200 = blocked_detect_on_200,
+    blocked_body_scan_bytes = blocked_body_scan_bytes,
+    pdf_enabled = pdf_enabled,
+    pdf_timeout = pdf_timeout,
+    pdf_max_bytes = pdf_max_bytes,
+    pdf_max_pages = pdf_max_pages,
+    pdf_max_text_chars = pdf_max_text_chars,
+    user_agent = user_agent
+  ))
+  if (length(requested) == 0L) {
     return(fn())
   }
 
@@ -1110,90 +1113,21 @@ configure_temporal <- function(time_filter = NULL) {
     clear_cache()
   }
 
-  allow_arg <- if (is.null(allow_read_webpages)) NULL else isTRUE(allow_read_webpages)
-
   previous_cfg <- tryCatch(
     asa_env$webpage_tool$configure_webpage_reader(),
     error = function(e) NULL
   )
+  previous <- .serialize_runtime_config_snapshot(previous_cfg)
 
-  previous <- if (!is.null(previous_cfg)) {
-    list(
-      allow_read_webpages = previous_cfg$allow_read_webpages,
-      relevance_mode = previous_cfg$relevance_mode,
-      heuristic_profile = previous_cfg$heuristic_profile,
-      embedding_provider = previous_cfg$embedding_provider,
-      embedding_model = previous_cfg$embedding_model,
-      timeout = previous_cfg$timeout,
-      max_bytes = previous_cfg$max_bytes,
-      max_chars = previous_cfg$max_chars,
-      max_chunks = previous_cfg$max_chunks,
-      chunk_chars = previous_cfg$chunk_chars,
-      embedding_api_base = previous_cfg$embedding_api_base,
-      prefilter_k = previous_cfg$prefilter_k,
-      use_mmr = previous_cfg$use_mmr,
-      mmr_lambda = previous_cfg$mmr_lambda,
-      cache_enabled = previous_cfg$cache_enabled,
-      cache_max_entries = previous_cfg$cache_max_entries,
-      cache_max_text_chars = previous_cfg$cache_max_text_chars,
-      blocked_cache_ttl_sec = previous_cfg$blocked_cache_ttl_sec,
-      blocked_cache_max_entries = previous_cfg$blocked_cache_max_entries,
-      blocked_probe_bytes = previous_cfg$blocked_probe_bytes,
-      blocked_detect_on_200 = previous_cfg$blocked_detect_on_200,
-      blocked_body_scan_bytes = previous_cfg$blocked_body_scan_bytes,
-      pdf_enabled = previous_cfg$pdf_enabled,
-      pdf_timeout = previous_cfg$pdf_timeout,
-      pdf_max_bytes = previous_cfg$pdf_max_bytes,
-      pdf_max_pages = previous_cfg$pdf_max_pages,
-      pdf_max_text_chars = previous_cfg$pdf_max_text_chars,
-      user_agent = previous_cfg$user_agent
-    )
-  } else {
-    NULL
+  apply_snapshot <- function(snapshot) {
+    args <- .compact_runtime_snapshot_args(snapshot)
+    do.call(asa_env$webpage_tool$configure_webpage_reader, args)
   }
 
-  requested <- list(
-    allow_read_webpages = allow_arg,
-    relevance_mode = relevance_mode,
-    heuristic_profile = heuristic_profile,
-    embedding_provider = embedding_provider,
-    embedding_model = embedding_model,
-    timeout = timeout,
-    max_bytes = max_bytes,
-    max_chars = max_chars,
-    max_chunks = max_chunks,
-    chunk_chars = chunk_chars,
-    embedding_api_base = embedding_api_base,
-    prefilter_k = prefilter_k,
-    use_mmr = use_mmr,
-    mmr_lambda = mmr_lambda,
-    cache_enabled = cache_enabled,
-    cache_max_entries = cache_max_entries,
-    cache_max_text_chars = cache_max_text_chars,
-    blocked_cache_ttl_sec = blocked_cache_ttl_sec,
-    blocked_cache_max_entries = blocked_cache_max_entries,
-    blocked_probe_bytes = blocked_probe_bytes,
-    blocked_detect_on_200 = blocked_detect_on_200,
-    blocked_body_scan_bytes = blocked_body_scan_bytes,
-    pdf_enabled = pdf_enabled,
-    pdf_timeout = pdf_timeout,
-    pdf_max_bytes = pdf_max_bytes,
-    pdf_max_pages = pdf_max_pages,
-    pdf_max_text_chars = pdf_max_text_chars,
-    user_agent = user_agent
-  )
-
-  has_requested <- vapply(requested, function(value) !is.null(value), logical(1))
   needs_update <- TRUE
   if (!is.null(previous)) {
-    if (!any(has_requested)) {
-      needs_update <- FALSE
-    } else {
-      requested_names <- names(requested)[has_requested]
-      current_requested <- previous[requested_names]
-      requested_values <- requested[requested_names]
-      needs_update <- !.config_values_equal(current_requested, requested_values)
-    }
+    current_requested <- previous[names(requested)]
+    needs_update <- !.config_values_equal(current_requested, requested)
   }
 
   result <- tryCatch(
@@ -1206,72 +1140,14 @@ configure_temporal <- function(time_filter = NULL) {
             previous
           },
           restore_fn = function(previous) {
-            asa_env$webpage_tool$configure_webpage_reader(
-              allow_read_webpages = previous$allow_read_webpages,
-              relevance_mode = previous$relevance_mode,
-              heuristic_profile = previous$heuristic_profile,
-              embedding_provider = previous$embedding_provider,
-              embedding_model = previous$embedding_model,
-              timeout = previous$timeout,
-              max_bytes = previous$max_bytes,
-              max_chars = previous$max_chars,
-              max_chunks = previous$max_chunks,
-              chunk_chars = previous$chunk_chars,
-              embedding_api_base = previous$embedding_api_base,
-              prefilter_k = previous$prefilter_k,
-              use_mmr = previous$use_mmr,
-              mmr_lambda = previous$mmr_lambda,
-              cache_enabled = previous$cache_enabled,
-              cache_max_entries = previous$cache_max_entries,
-              cache_max_text_chars = previous$cache_max_text_chars,
-              blocked_cache_ttl_sec = previous$blocked_cache_ttl_sec,
-              blocked_cache_max_entries = previous$blocked_cache_max_entries,
-              blocked_probe_bytes = previous$blocked_probe_bytes,
-              blocked_detect_on_200 = previous$blocked_detect_on_200,
-              blocked_body_scan_bytes = previous$blocked_body_scan_bytes,
-              pdf_enabled = previous$pdf_enabled,
-              pdf_timeout = previous$pdf_timeout,
-              pdf_max_bytes = previous$pdf_max_bytes,
-              pdf_max_pages = previous$pdf_max_pages,
-              pdf_max_text_chars = previous$pdf_max_text_chars,
-              user_agent = previous$user_agent
-            )
+            apply_snapshot(previous)
           },
           should_restore = function(previous) {
-            !is.null(previous) && !is.null(previous$allow_read_webpages)
+            !is.null(previous) && length(previous) > 0L
           },
           fn = function() {
             tryCatch(
-              asa_env$webpage_tool$configure_webpage_reader(
-                allow_read_webpages = allow_arg,
-                relevance_mode = relevance_mode,
-                heuristic_profile = heuristic_profile,
-                embedding_provider = embedding_provider,
-                embedding_model = embedding_model,
-                timeout = timeout,
-                max_bytes = max_bytes,
-                max_chars = max_chars,
-                max_chunks = max_chunks,
-                chunk_chars = chunk_chars,
-                embedding_api_base = embedding_api_base,
-                prefilter_k = prefilter_k,
-                use_mmr = use_mmr,
-                mmr_lambda = mmr_lambda,
-                cache_enabled = cache_enabled,
-                cache_max_entries = cache_max_entries,
-                cache_max_text_chars = cache_max_text_chars,
-                blocked_cache_ttl_sec = blocked_cache_ttl_sec,
-                blocked_cache_max_entries = blocked_cache_max_entries,
-                blocked_probe_bytes = blocked_probe_bytes,
-                blocked_detect_on_200 = blocked_detect_on_200,
-                blocked_body_scan_bytes = blocked_body_scan_bytes,
-                pdf_enabled = pdf_enabled,
-                pdf_timeout = pdf_timeout,
-                pdf_max_bytes = pdf_max_bytes,
-                pdf_max_pages = pdf_max_pages,
-                pdf_max_text_chars = pdf_max_text_chars,
-                user_agent = user_agent
-              ),
+              apply_snapshot(requested),
               error = function(e) NULL
             )
             fn()

@@ -252,6 +252,46 @@ test_that(".with_search_config applies and restores when requested settings diff
   expect_equal(mock$state$current, fixture)
 })
 
+test_that(".with_search_config restore keeps extra snapshot fields isolated", {
+  asa_ns_env <- get("asa_env", envir = asNamespace("asa"))
+  old_tools <- asa_ns_env$tools
+  on.exit({
+    asa_ns_env$tools <- old_tools
+  }, add = TRUE)
+  asa_ns_env$tools <- NULL
+
+  fixture <- .make_search_fixture()
+  fixture$allow_direct_fallback <- TRUE
+  mock <- .mock_configure_search_factory(fixture)
+
+  testthat::local_mocked_bindings(
+    configure_search = mock$fn,
+    .get_default_conda_env = function() "asa_env",
+    .package = "asa"
+  )
+
+  changed <- fixture
+  changed$timeout <- 45
+
+  search <- asa::search_options(
+    max_results = changed$max_results,
+    timeout = changed$timeout,
+    max_retries = changed$max_retries,
+    retry_delay = changed$retry_delay,
+    backoff_multiplier = changed$backoff_multiplier,
+    inter_search_delay = changed$inter_search_delay
+  )
+
+  out <- asa:::.with_search_config(
+    search = search,
+    conda_env = "asa_env",
+    fn = function() "ok"
+  )
+
+  expect_identical(out, "ok")
+  expect_true(isTRUE(mock$state$current$allow_direct_fallback))
+})
+
 test_that(".with_search_config prefers wrapper-scoped SearchConfig when agent wrapper is available", {
   asa_ns_env <- get("asa_env", envir = asNamespace("asa"))
   old_tools <- asa_ns_env$tools
@@ -394,4 +434,39 @@ test_that(".with_webpage_reader_config applies and restores when requested setti
   expect_length(mock$state$configure_calls, 3L)
   expect_equal(mock$state$clear_calls, 2L)
   expect_equal(mock$state$current, fixture)
+})
+
+test_that(".with_webpage_reader_config keeps unspecified settings isolated", {
+  asa_ns_env <- get("asa_env", envir = asNamespace("asa"))
+  old_tool <- asa_ns_env$webpage_tool
+  on.exit({
+    asa_ns_env$webpage_tool <- old_tool
+  }, add = TRUE)
+
+  fixture <- .make_webpage_fixture(allow_read_webpages = FALSE, max_chars = 28000L)
+  fixture$pdf_timeout <- 42
+  mock <- .mock_webpage_tool_factory(fixture)
+  asa_ns_env$webpage_tool <- mock$tool
+
+  testthat::local_mocked_bindings(
+    use_condaenv = function(conda_env, required = TRUE) invisible(NULL),
+    .package = "reticulate"
+  )
+
+  inside <- NULL
+  out <- asa:::.with_webpage_reader_config(
+    allow_read_webpages = TRUE,
+    max_chars = 12000L,
+    conda_env = "asa_env",
+    fn = function() {
+      inside <<- mock$state$current
+      "ok"
+    }
+  )
+
+  expect_identical(out, "ok")
+  expect_true(isTRUE(inside$allow_read_webpages))
+  expect_equal(inside$max_chars, 12000L)
+  expect_equal(inside$pdf_timeout, fixture$pdf_timeout)
+  expect_equal(mock$state$current$pdf_timeout, fixture$pdf_timeout)
 })

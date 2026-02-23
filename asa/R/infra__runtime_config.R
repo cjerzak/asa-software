@@ -293,7 +293,52 @@
   if (is.null(lhs) || is.null(rhs)) {
     return(FALSE)
   }
-  isTRUE(all.equal(lhs, rhs, check.attributes = FALSE))
+  comparison <- tryCatch(
+    all.equal(lhs, rhs, check.attributes = FALSE),
+    error = function(e) FALSE
+  )
+  isTRUE(comparison)
+}
+
+#' Serialize Runtime Config Snapshot to Native R List
+#'
+#' Internal helper for converting Python/R config objects into plain
+#' list snapshots suitable for comparison and restore.
+#'
+#' @param value Runtime config object/value
+#' @return Named list snapshot or NULL when unavailable
+#' @keywords internal
+.serialize_runtime_config_snapshot <- function(value) {
+  converted <- .try_or(reticulate::py_to_r(value), value)
+  if (is.null(converted)) {
+    return(NULL)
+  }
+  if (is.list(converted)) {
+    return(converted)
+  }
+  list(value = converted)
+}
+
+#' Remove NULL Entries from Snapshot Arguments
+#' @keywords internal
+.compact_runtime_snapshot_args <- function(values) {
+  if (is.null(values) || !is.list(values)) {
+    return(list())
+  }
+  values[!vapply(values, is.null, logical(1))]
+}
+
+#' Apply Search Snapshot via configure_search
+#' @keywords internal
+.apply_search_snapshot <- function(snapshot, conda_env = NULL) {
+  if (is.null(snapshot) || !is.list(snapshot)) {
+    return(invisible(NULL))
+  }
+  allowed <- setdiff(names(formals(configure_search)), "conda_env")
+  args <- .compact_runtime_snapshot_args(snapshot)
+  args <- args[intersect(names(args), allowed)]
+  args$conda_env <- conda_env
+  do.call(configure_search, args)
 }
 
 
@@ -398,30 +443,16 @@
     configure_search(conda_env = conda_env),
     error = function(e) NULL
   )
+  previous <- .serialize_runtime_config_snapshot(previous_cfg)
 
-  previous <- if (!is.null(previous_cfg)) {
-    list(
-      max_results = previous_cfg$max_results,
-      timeout = previous_cfg$timeout,
-      max_retries = previous_cfg$max_retries,
-      retry_delay = previous_cfg$retry_delay,
-      backoff_multiplier = previous_cfg$backoff_multiplier,
-      captcha_backoff_base = previous_cfg$captcha_backoff_base,
-      page_load_wait = previous_cfg$page_load_wait,
-      inter_search_delay = previous_cfg$inter_search_delay
-    )
-  } else {
-    NULL
-  }
-
-  requested <- list(
+  requested <- .compact_runtime_snapshot_args(list(
     max_results = search$max_results,
     timeout = search$timeout,
     max_retries = search$max_retries,
     retry_delay = search$retry_delay,
     backoff_multiplier = search$backoff_multiplier,
     inter_search_delay = search$inter_search_delay
-  )
+  ))
 
   if (!is.null(previous)) {
     current_requested <- previous[names(requested)]
@@ -435,32 +466,14 @@
       previous
     },
     restore_fn = function(previous) {
-      configure_search(
-        max_results = previous$max_results,
-        timeout = previous$timeout,
-        max_retries = previous$max_retries,
-        retry_delay = previous$retry_delay,
-        backoff_multiplier = previous$backoff_multiplier,
-        captcha_backoff_base = previous$captcha_backoff_base,
-        page_load_wait = previous$page_load_wait,
-        inter_search_delay = previous$inter_search_delay,
-        conda_env = conda_env
-      )
+      .apply_search_snapshot(previous, conda_env = conda_env)
     },
     should_restore = function(previous) {
       !is.null(previous)
     },
     fn = function() {
       tryCatch(
-        configure_search(
-          max_results = search$max_results,
-          timeout = search$timeout,
-          max_retries = search$max_retries,
-          retry_delay = search$retry_delay,
-          backoff_multiplier = search$backoff_multiplier,
-          inter_search_delay = search$inter_search_delay,
-          conda_env = conda_env
-        ),
+        .apply_search_snapshot(requested, conda_env = conda_env),
         error = function(e) NULL
       )
       fn()

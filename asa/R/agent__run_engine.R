@@ -155,13 +155,18 @@
     structure(list(error = e$message, thread_id = resolved_thread_id), class = "asa_error")
   })
   timing_marks$invoke_with_retry_finished <- Sys.time()
+  backend_contract <- NULL
   raw_response <- if (inherits(invoke_output, "asa_error")) invoke_output else invoke_output$response
-  backend_phase_timings <- if (!inherits(invoke_output, "asa_error")) {
-    invoke_output$phase_timings %||% list()
-  } else {
-    list()
-  }
+  backend_phase_timings <- list()
   if (!inherits(invoke_output, "asa_error")) {
+    backend_contract <- .parse_backend_contract_payload(
+      payload = invoke_output$payload
+    )
+    raw_response <- backend_contract$response
+    backend_phase_timings <- utils::modifyList(
+      .as_bridge_list(invoke_output$phase_timings, default = list()),
+      backend_contract$phase_timings %||% list()
+    )
     resolved_thread_id <- invoke_output$thread_id %||% resolved_thread_id
   }
 
@@ -229,21 +234,20 @@
 
   # Handle rate limiting and timeouts
   .handle_response_issues(trace, verbose)
-  stop_reason <- .extract_stop_reason(raw_response)
-  budget_state_out <- .coerce_py_list(raw_response$budget_state)
-  field_status_out <- .coerce_py_list(raw_response$field_status)
-  diagnostics_out <- .coerce_py_list(raw_response$diagnostics)
-  json_repair <- .coerce_py_list(raw_response$json_repair)
-  completion_gate <- .coerce_py_list(raw_response$completion_gate)
-  retrieval_metrics_out <- .coerce_py_list(raw_response$retrieval_metrics)
-  tool_quality_events_out <- .coerce_py_list(raw_response$tool_quality_events)
-  candidate_resolution_out <- .coerce_py_list(raw_response$candidate_resolution)
-  finalization_status_out <- .coerce_py_list(raw_response$finalization_status)
-  orchestration_options_out <- .coerce_py_list(raw_response$orchestration_options)
-  artifact_status_out <- .coerce_py_list(raw_response$artifact_status)
-  policy_version <- .try_or(as.character(raw_response$policy_version), character(0))
-  policy_version <- policy_version[!is.na(policy_version) & nzchar(policy_version)]
-  policy_version <- if (length(policy_version) > 0L) policy_version[[1]] else NA_character_
+  bridge_sections <- backend_contract$sections %||% list()
+  stop_reason <- backend_contract$stop_reason %||% .extract_stop_reason(raw_response)
+  budget_state_out <- bridge_sections$budget_state %||% list()
+  field_status_out <- bridge_sections$field_status %||% list()
+  diagnostics_out <- bridge_sections$diagnostics %||% list()
+  json_repair <- bridge_sections$json_repair %||% list()
+  completion_gate <- bridge_sections$completion_gate %||% list()
+  retrieval_metrics_out <- bridge_sections$retrieval_metrics %||% list()
+  tool_quality_events_out <- bridge_sections$tool_quality_events %||% list()
+  candidate_resolution_out <- bridge_sections$candidate_resolution %||% list()
+  finalization_status_out <- bridge_sections$finalization_status %||% list()
+  orchestration_options_out <- bridge_sections$orchestration_options %||% list()
+  artifact_status_out <- bridge_sections$artifact_status %||% list()
+  policy_version <- backend_contract$policy_version %||% NA_character_
   payload_integrity <- .build_payload_integrity(
     released_text = response_text,
     released_from = response_release_source,
@@ -257,10 +261,10 @@
   # Extract memory folding stats (fold_count lives inside fold_stats)
   fold_stats <- list()
   if (use_memory_folding) {
-    fold_stats <- .try_or({
-      raw_stats <- raw_response$fold_stats
-      if (!is.null(raw_stats)) as.list(raw_stats) else list()
-    }, list())
+    fold_stats <- bridge_sections$fold_stats %||% list()
+    if (!is.list(fold_stats)) {
+      fold_stats <- list()
+    }
     # Ensure fold_count is present as integer
     if (is.null(fold_stats$fold_count)) {
       fold_stats$fold_count <- 0L
@@ -272,17 +276,17 @@
   }
 
   # Extract token usage from Python state
-  tokens_used <- .as_scalar_int(.try_or(raw_response$tokens_used, NA_integer_))
-  input_tokens <- .as_scalar_int(.try_or(raw_response$input_tokens, NA_integer_))
-  output_tokens <- .as_scalar_int(.try_or(raw_response$output_tokens, NA_integer_))
-  token_trace <- .try_or(as.list(raw_response$token_trace), list())
+  tokens_used <- .as_scalar_int(backend_contract$tokens_used %||% NA_integer_)
+  input_tokens <- .as_scalar_int(backend_contract$input_tokens %||% NA_integer_)
+  output_tokens <- .as_scalar_int(backend_contract$output_tokens %||% NA_integer_)
+  token_trace <- bridge_sections$token_trace %||% list()
 
   # Extract plan fields from Python state
-  plan <- .try_or(reticulate::py_to_r(raw_response$plan), list())
-  plan_history <- .try_or(reticulate::py_to_r(raw_response$plan_history), list())
-  om_stats <- .try_or(reticulate::py_to_r(raw_response$om_stats), list())
-  observations <- .try_or(reticulate::py_to_r(raw_response$observations), list())
-  reflections <- .try_or(reticulate::py_to_r(raw_response$reflections), list())
+  plan <- bridge_sections$plan %||% list()
+  plan_history <- bridge_sections$plan_history %||% list()
+  om_stats <- bridge_sections$om_stats %||% list()
+  observations <- bridge_sections$observations %||% list()
+  reflections <- bridge_sections$reflections %||% list()
   timing_marks$postprocess_finished <- Sys.time()
 
   phase_timings <- list(
@@ -343,6 +347,8 @@
   resp$orchestration_options <- orchestration_options_out
   resp$artifact_status <- artifact_status_out
   resp$policy_version <- policy_version
+  resp$bridge_schema_version <- backend_contract$schema_version %||% NA_character_
+  resp$config_snapshot <- backend_contract$config_snapshot %||% list()
   resp
 }
 
@@ -360,20 +366,180 @@
   paste0("asa_", substr(rlang::hash(list(Sys.time(), runif(1))), 1, 16))
 }
 
-#' Coerce Python Dict/List to Native R List
+.ASA_BACKEND_BRIDGE_SCHEMA_VERSION <- "asa_bridge_contract_v1"
+.ASA_SUPPORTED_BACKEND_BRIDGE_SCHEMA_VERSIONS <- c(.ASA_BACKEND_BRIDGE_SCHEMA_VERSION)
+.ASA_BACKEND_BRIDGE_SECTION_FIELDS <- c(
+  "budget_state",
+  "field_status",
+  "diagnostics",
+  "json_repair",
+  "completion_gate",
+  "retrieval_metrics",
+  "tool_quality_events",
+  "candidate_resolution",
+  "finalization_status",
+  "orchestration_options",
+  "artifact_status",
+  "fold_stats",
+  "plan",
+  "plan_history",
+  "om_stats",
+  "observations",
+  "reflections",
+  "token_trace"
+)
+
+#' Get a field from backend payload/state object
 #' @keywords internal
-.coerce_py_list <- function(value) {
-  if (is.null(value)) {
-    return(list())
+.bridge_get_field <- function(source, field, default = NULL) {
+  if (is.null(source) || !is.character(field) || length(field) != 1L || !nzchar(field)) {
+    return(default)
   }
+  value <- .try_or(source[[field]], NULL)
+  if (!is.null(value)) {
+    return(value)
+  }
+  value <- .try_or(reticulate::py_get_attr(source, field), NULL)
+  if (is.null(value)) default else value
+}
+
+#' Get a field from primary source, then fallback source
+#' @keywords internal
+.bridge_get_field_with_fallback <- function(primary, fallback = NULL, field, default = NULL) {
+  value <- .bridge_get_field(primary, field, default = NULL)
+  if (!is.null(value)) {
+    return(value)
+  }
+  if (!is.null(fallback)) {
+    return(.bridge_get_field(fallback, field, default = default))
+  }
+  default
+}
+
+#' Coerce backend payload section to native R list
+#' @keywords internal
+.as_bridge_list <- function(value, default = list()) {
   converted <- .try_or(reticulate::py_to_r(value), value)
   if (is.null(converted)) {
-    return(list())
+    return(default)
   }
   if (is.list(converted)) {
     return(converted)
   }
+  if (length(converted) == 0L) {
+    return(default)
+  }
   list(value = converted)
+}
+
+#' Coerce backend payload scalar to character
+#' @keywords internal
+.as_bridge_character <- function(value, default = NA_character_, allow_empty = FALSE) {
+  converted <- .try_or(reticulate::py_to_r(value), value)
+  chars <- .try_or(as.character(converted), character(0))
+  chars <- chars[!is.na(chars)]
+  if (length(chars) == 0L) {
+    return(default)
+  }
+  if (!isTRUE(allow_empty)) {
+    chars <- chars[nzchar(chars)]
+    if (length(chars) == 0L) {
+      return(default)
+    }
+  }
+  chars[[1]]
+}
+
+#' Coerce backend payload scalar to integer
+#' @keywords internal
+.as_bridge_int <- function(value, default = NA_integer_) {
+  converted <- .try_or(reticulate::py_to_r(value), value)
+  out <- suppressWarnings(as.integer(converted))
+  out <- out[!is.na(out)]
+  if (length(out) == 0L) {
+    return(default)
+  }
+  out[[1]]
+}
+
+#' Extract bridge sections from payload/state
+#' @keywords internal
+.extract_backend_bridge_sections <- function(primary_source, fallback_source = NULL) {
+  sections <- vector("list", length(.ASA_BACKEND_BRIDGE_SECTION_FIELDS))
+  names(sections) <- .ASA_BACKEND_BRIDGE_SECTION_FIELDS
+  for (field in .ASA_BACKEND_BRIDGE_SECTION_FIELDS) {
+    value <- .bridge_get_field_with_fallback(
+      primary = primary_source,
+      fallback = fallback_source,
+      field = field,
+      default = NULL
+    )
+    sections[[field]] <- .as_bridge_list(value, default = list())
+  }
+  sections
+}
+
+#' Parse versioned backend bridge payload
+#' @keywords internal
+.parse_backend_contract_payload <- function(payload) {
+  if (is.null(payload)) {
+    stop("Backend bridge payload is missing. Expected a contract payload from `invoke_graph_with_payload`.", call. = FALSE)
+  }
+
+  schema_version <- .as_bridge_character(
+    .bridge_get_field(payload, "schema_version", default = NULL),
+    default = NA_character_
+  )
+
+  if (is.na(schema_version) || !nzchar(schema_version)) {
+    stop("Backend bridge payload is missing required field `schema_version`.", call. = FALSE)
+  }
+
+  if (!(schema_version %in% .ASA_SUPPORTED_BACKEND_BRIDGE_SCHEMA_VERSIONS)) {
+    stop(
+      sprintf(
+        "Unsupported backend bridge schema_version '%s'. Supported versions: %s",
+        schema_version,
+        paste(.ASA_SUPPORTED_BACKEND_BRIDGE_SCHEMA_VERSIONS, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+
+  response <- .bridge_get_field(payload, "response", default = NULL)
+  if (is.null(response)) {
+    stop("Backend bridge payload is missing required field `response`.", call. = FALSE)
+  }
+
+  stop_reason <- .as_bridge_character(
+    .bridge_get_field_with_fallback(payload, response, "stop_reason", default = NULL),
+    default = .extract_stop_reason(response)
+  )
+  if (is.na(stop_reason) || !nzchar(stop_reason)) {
+    stop_reason <- .extract_stop_reason(response)
+  }
+
+  list(
+    schema_version = schema_version,
+    response = response,
+    sections = .extract_backend_bridge_sections(payload, fallback_source = response),
+    phase_timings = .as_bridge_list(.bridge_get_field(payload, "phase_timings", default = list()), default = list()),
+    config_snapshot = .as_bridge_list(.bridge_get_field(payload, "config_snapshot", default = list()), default = list()),
+    stop_reason = stop_reason,
+    policy_version = .as_bridge_character(
+      .bridge_get_field_with_fallback(payload, response, "policy_version", default = NULL),
+      default = NA_character_
+    ),
+    tokens_used = .as_bridge_int(
+      .bridge_get_field_with_fallback(payload, response, "tokens_used", default = NULL)
+    ),
+    input_tokens = .as_bridge_int(
+      .bridge_get_field_with_fallback(payload, response, "input_tokens", default = NULL)
+    ),
+    output_tokens = .as_bridge_int(
+      .bridge_get_field_with_fallback(payload, response, "output_tokens", default = NULL)
+    )
+  )
 }
 
 #' Extract terminal final-payload metadata from raw Python response state
@@ -814,19 +980,37 @@
   state_build_finished <- Sys.time()
 
   ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
+  invoke_config <- list(
+    configurable = list(thread_id = resolved_thread_id),
+    recursion_limit = as.integer(recursion_limit)
+  )
   graph_invoke_started <- Sys.time()
-  response <- ddg_module$invoke_graph_safely(
+  has_contract_invoke <- .try_or(is.function(ddg_module$invoke_graph_with_payload), FALSE)
+  if (!isTRUE(has_contract_invoke)) {
+    stop(
+      "Backend API does not expose `invoke_graph_with_payload`; bridge contract is required.",
+      call. = FALSE
+    )
+  }
+  payload <- ddg_module$invoke_graph_with_payload(
     python_agent,
     initial_state,
-    config = list(
-      configurable = list(thread_id = resolved_thread_id),
-      recursion_limit = as.integer(recursion_limit)
+    config = invoke_config,
+    config_snapshot = list(
+      thread_id = resolved_thread_id,
+      recursion_limit = as.integer(recursion_limit),
+      mode = "memory_folding"
     )
   )
+  response <- .bridge_get_field(payload, "response", default = NULL)
+  if (is.null(response)) {
+    stop("Backend bridge payload is missing required field `response`.", call. = FALSE)
+  }
   graph_invoke_finished <- Sys.time()
   invoke_phase_finished <- Sys.time()
   list(
     response = response,
+    payload = payload,
     thread_id = resolved_thread_id,
     phase_timings = list(
       total_minutes = as.numeric(difftime(invoke_phase_finished, invoke_phase_started, units = "mins")),
@@ -918,19 +1102,37 @@
   state_build_finished <- Sys.time()
 
   ddg_module <- asa_env$backend_api %||% .import_backend_api(required = TRUE)
+  invoke_config <- list(
+    configurable = list(thread_id = resolved_thread_id),
+    recursion_limit = as.integer(recursion_limit)
+  )
   graph_invoke_started <- Sys.time()
-  response <- ddg_module$invoke_graph_safely(
+  has_contract_invoke <- .try_or(is.function(ddg_module$invoke_graph_with_payload), FALSE)
+  if (!isTRUE(has_contract_invoke)) {
+    stop(
+      "Backend API does not expose `invoke_graph_with_payload`; bridge contract is required.",
+      call. = FALSE
+    )
+  }
+  payload <- ddg_module$invoke_graph_with_payload(
     python_agent,
     initial_state,
-    config = list(
-      configurable = list(thread_id = resolved_thread_id),
-      recursion_limit = as.integer(recursion_limit)
+    config = invoke_config,
+    config_snapshot = list(
+      thread_id = resolved_thread_id,
+      recursion_limit = as.integer(recursion_limit),
+      mode = "standard"
     )
   )
+  response <- .bridge_get_field(payload, "response", default = NULL)
+  if (is.null(response)) {
+    stop("Backend bridge payload is missing required field `response`.", call. = FALSE)
+  }
   graph_invoke_finished <- Sys.time()
   invoke_phase_finished <- Sys.time()
   list(
     response = response,
+    payload = payload,
     thread_id = resolved_thread_id,
     phase_timings = list(
       total_minutes = as.numeric(difftime(invoke_phase_finished, invoke_phase_started, units = "mins")),

@@ -13,7 +13,7 @@ from __future__ import annotations
 import os
 import re
 import time
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from langgraph.errors import GraphRecursionError
 from shared.state_graph_utils import repair_json_output_to_schema as repair_json_output_to_schema
@@ -39,6 +39,33 @@ from ..search import (
 )
 
 _HEARTBEAT_STATE_ENV = "ASA_PROGRESS_STATE_FILE"
+ASA_BRIDGE_SCHEMA_VERSION = "asa_bridge_contract_v1"
+
+_CONTRACT_DEFAULTS: Dict[str, Any] = {
+    "budget_state": {},
+    "field_status": {},
+    "diagnostics": {},
+    "json_repair": [],
+    "completion_gate": {},
+    "retrieval_metrics": {},
+    "tool_quality_events": [],
+    "candidate_resolution": {},
+    "finalization_status": {},
+    "orchestration_options": {},
+    "artifact_status": {},
+    "fold_stats": {},
+    "plan": {},
+    "plan_history": [],
+    "om_stats": {},
+    "observations": [],
+    "reflections": [],
+    "token_trace": [],
+    "tokens_used": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "stop_reason": None,
+    "policy_version": None,
+}
 
 
 def _state_get(state: Any, key: str, default: Any = None) -> Any:
@@ -339,9 +366,68 @@ def invoke_graph_safely(
         raise
 
 
+def _collect_contract_fields(state: Any) -> Dict[str, Any]:
+    fields: Dict[str, Any] = {}
+    for key, default in _CONTRACT_DEFAULTS.items():
+        value = _state_get(state, key, default)
+        if value is None and default is not None:
+            value = default
+        fields[key] = value
+    return fields
+
+
+def _safe_config_snapshot(config_snapshot: Any, config: Optional[dict]) -> Dict[str, Any]:
+    snapshot: Dict[str, Any] = {}
+    if isinstance(config_snapshot, dict):
+        snapshot.update(config_snapshot)
+    elif config_snapshot is not None:
+        snapshot["value"] = str(config_snapshot)
+
+    if isinstance(config, dict):
+        snapshot.setdefault("invoke_config", config)
+    return snapshot
+
+
+def invoke_graph_with_payload(
+    graph: Any,
+    initial_state: Any,
+    config: Optional[dict] = None,
+    *,
+    stream_mode: str = "values",
+    max_error_chars: int = 500,
+    config_snapshot: Optional[dict] = None,
+) -> Dict[str, Any]:
+    """Invoke a graph and return a versioned bridge payload for R callers."""
+    invoke_started = time.time()
+    state = invoke_graph_safely(
+        graph,
+        initial_state,
+        config=config,
+        stream_mode=stream_mode,
+        max_error_chars=max_error_chars,
+    )
+    invoke_finished = time.time()
+    duration_s = max(0.0, float(invoke_finished - invoke_started))
+
+    payload: Dict[str, Any] = {
+        "schema_version": ASA_BRIDGE_SCHEMA_VERSION,
+        "response": state,
+        "diagnostics": _state_get(state, "diagnostics", {}) or {},
+        "phase_timings": {
+            "invoke_graph_seconds": duration_s,
+            "invoke_graph_minutes": duration_s / 60.0,
+        },
+        "config_snapshot": _safe_config_snapshot(config_snapshot, config),
+    }
+    payload.update(_collect_contract_fields(state))
+    return payload
+
+
 __all__ = [
     # Runtime guards
     "invoke_graph_safely",
+    "invoke_graph_with_payload",
+    "ASA_BRIDGE_SCHEMA_VERSION",
     # Graph constructors (used by R)
     "create_memory_folding_agent",
     "create_standard_agent",
