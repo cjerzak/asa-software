@@ -3,18 +3,18 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "La primer diputada plurinominal titular",
+  "prior_occupation": "Unknown",
   "class_background": "Unknown",
-  "prior_occupation_source": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
+  "prior_occupation_source": null,
   "disability_status": "Unknown",
   "disability_source": null,
-  "birth_place": "Beni",
-  "birth_place_source": "https://sisin.oep.org.bo/medios_digitales/12843/detalle",
+  "birth_place": "Unknown",
+  "birth_place_source": null,
   "birth_year": "Unknown",
   "birth_year_source": null,
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Low",
-  "justification": "Source-backed searches resolved 5 fields (including prior_occupation, prior_occupation_source, birth_place), while 13 fields remain unknown due to limited verifiable evidence."
+  "justification": "Searches did not find reliable, source-backed evidence for the required core fields."
 }

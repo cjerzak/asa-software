@@ -192,3 +192,107 @@ test_that("langextract bridge returns unsupported backend without importing prov
   expect_false(isTRUE(result$ok))
   expect_match(as.character(result$error), "unsupported_backend", fixed = TRUE)
 })
+
+
+test_that("fuzzy key normalization resolves prefix/substring matches", {
+  bridge <- asa_test_import_module(
+    "asa_backend.extraction.langextract_bridge",
+    required_file = "asa_backend/extraction/langextract_bridge.py",
+    required_modules = character(0)
+  )
+
+  reticulate::py_run_string(paste0(
+    "class _ASAExtraction:\n",
+    "    def __init__(self, extraction_class, extraction_text, attributes=None):\n",
+    "        self.extraction_class = extraction_class\n",
+    "        self.extraction_text = extraction_text\n",
+    "        self.attributes = attributes or {}\n",
+    "_asa_fuzzy_1 = _ASAExtraction('education', 'Law degree')\n",
+    "_asa_fuzzy_2 = _ASAExtraction('occupation', 'Attorney')\n",
+    "_asa_fuzzy_3 = _ASAExtraction('birth_date', '1975-03-15')\n",
+    "_asa_fuzzy_4 = _ASAExtraction('party', 'MAS')\n"
+  ))
+
+  out <- reticulate::py_to_r(bridge$normalize_langextract_output_to_allowed_keys(
+    extractions = list(
+      reticulate::py$`_asa_fuzzy_1`,
+      reticulate::py$`_asa_fuzzy_2`,
+      reticulate::py$`_asa_fuzzy_3`,
+      reticulate::py$`_asa_fuzzy_4`
+    ),
+    allowed_keys = list(
+      "birth_date", "birth_date_source",
+      "education_level", "education_level_source",
+      "prior_occupation", "prior_occupation_source",
+      "party", "party_source"
+    ),
+    page_url = "https://example.com/profile"
+  ))
+
+  # "education" should fuzzy-match to "education_level"
+  expect_equal(as.character(out$education_level), "Law degree")
+  # "occupation" should fuzzy-match to "prior_occupation"
+  expect_equal(as.character(out$prior_occupation), "Attorney")
+  # Exact matches should still work
+  expect_equal(as.character(out$birth_date), "1975-03-15")
+  expect_equal(as.character(out$party), "MAS")
+})
+
+
+test_that("entity_hint parameter enriches extraction prompt description", {
+  bridge <- asa_test_import_module(
+    "asa_backend.extraction.langextract_bridge",
+    required_file = "asa_backend/extraction/langextract_bridge.py",
+    required_modules = character(0)
+  )
+
+  # entity_hint parameter should be accepted without error
+  reticulate::py_run_string(paste0(
+    "class _ASADummyModel:\n",
+    "    pass\n",
+    "_asa_dummy_model2 = _ASADummyModel()\n"
+  ))
+
+  result <- reticulate::py_to_r(bridge$extract_schema_from_openwebpage_text(
+    page_url = "https://example.com/profile",
+    page_text = "name: Ada Lovelace",
+    allowed_keys = list("full_name"),
+    schema_keys = list("full_name"),
+    selector_model = reticulate::py$`_asa_dummy_model2`,
+    backend_hint = "anthropic",
+    entity_hint = "Ada Lovelace"
+  ))
+
+  # The function should return (even if unsupported backend)
+  expect_false(isTRUE(result$ok))
+  expect_match(as.character(result$error), "unsupported_backend", fixed = TRUE)
+})
+
+
+test_that("provider fallback function exists and accepts entity_hint", {
+  bridge <- asa_test_import_module(
+    "asa_backend.extraction.langextract_bridge",
+    required_file = "asa_backend/extraction/langextract_bridge.py",
+    required_modules = character(0)
+  )
+
+  expect_true(is.function(bridge$extract_schema_with_provider_fallback))
+
+  reticulate::py_run_string(paste0(
+    "class _ASADummyModel:\n",
+    "    pass\n",
+    "_asa_dummy_model3 = _ASADummyModel()\n"
+  ))
+
+  result <- reticulate::py_to_r(bridge$extract_schema_with_provider_fallback(
+    page_url = "https://example.com/profile",
+    page_text = "name: Ada Lovelace",
+    allowed_keys = list("full_name"),
+    schema_keys = list("full_name"),
+    selector_model = reticulate::py$`_asa_dummy_model3`,
+    backend_hint = "anthropic",
+    entity_hint = "Ada Lovelace"
+  ))
+
+  expect_false(isTRUE(result$ok))
+})

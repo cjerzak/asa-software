@@ -5,10 +5,14 @@ This module keeps langextract optional at runtime by importing it lazily.
 
 from __future__ import annotations
 
+import logging
+import os
 import re
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib.parse import urlparse
+
+logger = logging.getLogger(__name__)
 
 
 _UNKNOWN_MARKERS = {
@@ -238,7 +242,23 @@ def normalize_langextract_output_to_allowed_keys(
                     break
 
         candidate_field = raw_class or field_hint
-        canonical = allowed_key_map.get(_normalize_match_text(candidate_field))
+        norm_candidate = _normalize_match_text(candidate_field)
+        canonical = allowed_key_map.get(norm_candidate)
+        if not canonical and norm_candidate and len(norm_candidate) >= 4:
+            # Fuzzy fallback: prefix / suffix / substring matching.
+            # Only accept when exactly one allowed key matches unambiguously.
+            fuzzy_matches = [
+                v for k, v in allowed_key_map.items()
+                if (
+                    k.startswith(norm_candidate)
+                    or norm_candidate.startswith(k)
+                    or k.endswith(norm_candidate)
+                    or norm_candidate.endswith(k)
+                )
+                and not k.endswith("source")
+            ]
+            if len(fuzzy_matches) == 1:
+                canonical = fuzzy_matches[0]
         if not canonical:
             continue
         if not raw_text or _is_unknown_marker(raw_text):
@@ -280,6 +300,7 @@ def extract_schema_from_openwebpage_text(
     max_char_buffer: int = 1000,
     prompt_validation_level: str = "warning",
     max_chars: int = 6000,
+    entity_hint: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run langextract and return normalized ASA payload result.
 
@@ -336,8 +357,17 @@ def extract_schema_from_openwebpage_text(
         keys_preview = ", ".join(sorted(str(k) for k in list(schema_keys or [])[:24]))
         allowed_preview = ", ".join(sorted(str(k) for k in list(allowed_keys or [])[:24]))
 
+        entity_clause = ""
+        if entity_hint and str(entity_hint).strip():
+            entity_clause = (
+                f"Focus ONLY on information about {str(entity_hint).strip()}. "
+                "If the page mentions multiple entities, extract values ONLY for the target entity. "
+                "Ignore information about other individuals. "
+            )
+
         prompt_description = (
             "Extract structured field values from webpage text. "
+            f"{entity_clause}"
             "For each extraction, set extraction_class EXACTLY to one field key from the allowed list. "
             "Use exact evidence text for extraction_text; do not guess or emit unknown placeholders. "
             "If no explicit value exists for a field, omit it. "
@@ -354,11 +384,27 @@ def extract_schema_from_openwebpage_text(
             f"PAGE_TEXT:\n{clipped_text}"
         )
 
+        # Resolve API key: langextract uses LANGEXTRACT_API_KEY by default,
+        # but ASA sets GOOGLE_API_KEY / OPENAI_API_KEY instead.
+        lx_api_key = None
+        if route.backend == "gemini":
+            lx_api_key = (
+                os.environ.get("LANGEXTRACT_API_KEY")
+                or os.environ.get("GOOGLE_API_KEY")
+                or os.environ.get("GEMINI_API_KEY")
+            )
+        elif route.backend == "openai":
+            lx_api_key = (
+                os.environ.get("LANGEXTRACT_API_KEY")
+                or os.environ.get("OPENAI_API_KEY")
+            )
+
         result = lx.extract(
             text_or_documents=extraction_doc,
             prompt_description=prompt_description,
             examples=examples,
             model_id=route.model_id,
+            api_key=lx_api_key,
             extraction_passes=max(1, int(extraction_passes or 1)),
             max_char_buffer=max(200, int(max_char_buffer or 1000)),
             prompt_validation_level=pv_level,
@@ -389,3 +435,84 @@ def extract_schema_from_openwebpage_text(
             "model_id": route.model_id,
             "error": f"langextract_error:{exc}",
         }
+
+
+def _alternative_backend(primary_backend: str) -> Optional[Tuple[str, str]]:
+    """Return (backend, env_var) for the best alternative provider, or None."""
+    if primary_backend == "gemini":
+        if os.environ.get("OPENAI_API_KEY"):
+            return ("openai", "gpt-4.1-mini")
+    elif primary_backend == "openai":
+        if os.environ.get("GOOGLE_API_KEY"):
+            return ("gemini", "gemini-2.5-flash")
+    return None
+
+
+def extract_schema_with_provider_fallback(
+    *,
+    page_url: str,
+    page_text: str,
+    allowed_keys: Iterable[str],
+    schema_keys: Iterable[str],
+    selector_model: Any,
+    backend_hint: Optional[str] = None,
+    model_id_override: Optional[str] = None,
+    extraction_passes: int = 1,
+    max_char_buffer: int = 1000,
+    prompt_validation_level: str = "warning",
+    max_chars: int = 6000,
+    entity_hint: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Try primary provider; fall back to alternative if no_payload."""
+    primary = extract_schema_from_openwebpage_text(
+        page_url=page_url,
+        page_text=page_text,
+        allowed_keys=allowed_keys,
+        schema_keys=schema_keys,
+        selector_model=selector_model,
+        backend_hint=backend_hint,
+        model_id_override=model_id_override,
+        extraction_passes=extraction_passes,
+        max_char_buffer=max_char_buffer,
+        prompt_validation_level=prompt_validation_level,
+        max_chars=max_chars,
+        entity_hint=entity_hint,
+    )
+
+    if primary.get("ok"):
+        return primary
+
+    primary_backend = str(primary.get("provider") or "").strip().lower()
+    if not primary_backend:
+        route, _ = _resolve_route(selector_model, backend_hint=backend_hint)
+        primary_backend = route.backend if route else ""
+
+    alt = _alternative_backend(primary_backend)
+    if alt is None:
+        return primary
+
+    alt_backend, alt_model_id = alt
+    fallback = extract_schema_from_openwebpage_text(
+        page_url=page_url,
+        page_text=page_text,
+        allowed_keys=allowed_keys,
+        schema_keys=schema_keys,
+        selector_model=selector_model,
+        backend_hint=alt_backend,
+        model_id_override=alt_model_id,
+        extraction_passes=extraction_passes,
+        max_char_buffer=max_char_buffer,
+        prompt_validation_level=prompt_validation_level,
+        max_chars=max_chars,
+        entity_hint=entity_hint,
+    )
+
+    fallback["fallback_provider_used"] = alt_backend
+    fallback["fallback_provider_result"] = "ok" if fallback.get("ok") else str(fallback.get("error") or "")
+    if fallback.get("ok"):
+        return fallback
+
+    # Both failed — return primary with fallback metadata attached.
+    primary["fallback_provider_used"] = alt_backend
+    primary["fallback_provider_result"] = str(fallback.get("error") or "no_payload")
+    return primary

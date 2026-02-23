@@ -52,6 +52,7 @@ from asa_backend.search.transport import (
 )
 from asa_backend.extraction.langextract_bridge import (
     extract_schema_from_openwebpage_text as _langextract_extract_schema_from_openwebpage_text,
+    extract_schema_with_provider_fallback as _langextract_extract_schema_with_fallback,
 )
 from state_utils import (
     build_node_trace_entry,
@@ -5129,6 +5130,8 @@ def _normalize_target_anchor(
         "tokens": [],
         "phrases": [],
         "id_signals": [],
+        "context_tokens": [],
+        "context_labels": [],
         "confidence": 0.0,
         "strength": "none",
         "provenance": [],
@@ -5152,6 +5155,24 @@ def _normalize_target_anchor(
             if len(values) >= 24:
                 break
         out[key] = values
+
+    # Preserve context_tokens and context_labels if already present.
+    for ctx_key in ("context_tokens", "context_labels"):
+        ctx_values: List[str] = []
+        for raw_value in list(raw.get(ctx_key) or []):
+            token = str(raw_value or "").strip()
+            if not token:
+                continue
+            if ctx_key == "context_tokens":
+                token = _normalize_match_text(token)
+                if len(token) < 3:
+                    continue
+            if token in ctx_values:
+                continue
+            ctx_values.append(token)
+            if len(ctx_values) >= 24:
+                break
+        out[ctx_key] = ctx_values
 
     legacy_tokens: List[str] = []
     for raw_token in list(entity_tokens or []):
@@ -5195,6 +5216,7 @@ def _normalize_target_anchor(
         heuristic += min(0.45, 0.06 * float(len(out["tokens"])))
         heuristic += min(0.30, 0.08 * float(len(out["phrases"])))
         heuristic += min(0.35, 0.12 * float(len(out["id_signals"])))
+        heuristic += min(0.20, 0.04 * float(len(out["context_tokens"])))
         out["confidence"] = _clamp01(heuristic, default=0.0)
         out["strength"] = _anchor_strength_from_confidence(out["confidence"])
     return out
@@ -5240,6 +5262,133 @@ def _target_anchor_present(target_anchor: Any) -> bool:
         or normalized.get("phrases")
         or normalized.get("id_signals")
     )
+
+
+# Lightweight ISO-based country reference for context-contradiction checks.
+# Maps normalized country name → {demonyms, TLDs, aliases}.
+_COUNTRY_REFERENCE: Dict[str, Dict[str, Any]] = {
+    "bolivia": {"tlds": {".bo"}, "aliases": {"bolivian", "boliviana", "boliviano"}},
+    "chile": {"tlds": {".cl"}, "aliases": {"chilean", "chilena", "chileno"}},
+    "peru": {"tlds": {".pe"}, "aliases": {"peruvian", "peruana", "peruano"}},
+    "colombia": {"tlds": {".co"}, "aliases": {"colombian", "colombiana", "colombiano"}},
+    "argentina": {"tlds": {".ar"}, "aliases": {"argentine", "argentinian", "argentina", "argentino"}},
+    "brazil": {"tlds": {".br"}, "aliases": {"brazilian", "brasileira", "brasileiro"}},
+    "mexico": {"tlds": {".mx"}, "aliases": {"mexican", "mexicana", "mexicano"}},
+    "venezuela": {"tlds": {".ve"}, "aliases": {"venezuelan", "venezolana", "venezolano"}},
+    "ecuador": {"tlds": {".ec"}, "aliases": {"ecuadorian", "ecuatoriana", "ecuatoriano"}},
+    "paraguay": {"tlds": {".py"}, "aliases": {"paraguayan", "paraguaya", "paraguayo"}},
+    "uruguay": {"tlds": {".uy"}, "aliases": {"uruguayan", "uruguaya", "uruguayo"}},
+    "united states": {"tlds": {".us"}, "aliases": {"american", "usa", "us"}},
+    "united kingdom": {"tlds": {".uk", ".co.uk"}, "aliases": {"british", "uk"}},
+    "canada": {"tlds": {".ca"}, "aliases": {"canadian"}},
+    "france": {"tlds": {".fr"}, "aliases": {"french", "français", "francais"}},
+    "germany": {"tlds": {".de"}, "aliases": {"german", "deutsch"}},
+    "spain": {"tlds": {".es"}, "aliases": {"spanish", "español", "espanol"}},
+    "italy": {"tlds": {".it"}, "aliases": {"italian", "italiano", "italiana"}},
+    "portugal": {"tlds": {".pt"}, "aliases": {"portuguese", "português", "portugues"}},
+    "japan": {"tlds": {".jp"}, "aliases": {"japanese"}},
+    "china": {"tlds": {".cn"}, "aliases": {"chinese"}},
+    "india": {"tlds": {".in"}, "aliases": {"indian"}},
+    "australia": {"tlds": {".au"}, "aliases": {"australian"}},
+    "south korea": {"tlds": {".kr"}, "aliases": {"korean", "south korean"}},
+    "russia": {"tlds": {".ru"}, "aliases": {"russian"}},
+    "south africa": {"tlds": {".za"}, "aliases": {"south african"}},
+    "nigeria": {"tlds": {".ng"}, "aliases": {"nigerian"}},
+    "kenya": {"tlds": {".ke"}, "aliases": {"kenyan"}},
+    "egypt": {"tlds": {".eg"}, "aliases": {"egyptian"}},
+    "guatemala": {"tlds": {".gt"}, "aliases": {"guatemalan", "guatemalteca", "guatemalteco"}},
+    "honduras": {"tlds": {".hn"}, "aliases": {"honduran", "hondureña", "hondureño"}},
+    "el salvador": {"tlds": {".sv"}, "aliases": {"salvadoran", "salvadoreña", "salvadoreño"}},
+    "nicaragua": {"tlds": {".ni"}, "aliases": {"nicaraguan", "nicaragüense"}},
+    "costa rica": {"tlds": {".cr"}, "aliases": {"costa rican", "costarricense"}},
+    "panama": {"tlds": {".pa"}, "aliases": {"panamanian", "panameña", "panameño"}},
+    "cuba": {"tlds": {".cu"}, "aliases": {"cuban", "cubana", "cubano"}},
+    "dominican republic": {"tlds": {".do"}, "aliases": {"dominican", "dominicana", "dominicano"}},
+    "haiti": {"tlds": {".ht"}, "aliases": {"haitian"}},
+    "jamaica": {"tlds": {".jm"}, "aliases": {"jamaican"}},
+    "trinidad and tobago": {"tlds": {".tt"}, "aliases": {"trinidadian"}},
+    "philippines": {"tlds": {".ph"}, "aliases": {"filipino", "filipina", "philippine"}},
+    "indonesia": {"tlds": {".id"}, "aliases": {"indonesian"}},
+    "thailand": {"tlds": {".th"}, "aliases": {"thai"}},
+    "vietnam": {"tlds": {".vn"}, "aliases": {"vietnamese"}},
+    "malaysia": {"tlds": {".my"}, "aliases": {"malaysian"}},
+    "turkey": {"tlds": {".tr"}, "aliases": {"turkish"}},
+    "iran": {"tlds": {".ir"}, "aliases": {"iranian"}},
+    "iraq": {"tlds": {".iq"}, "aliases": {"iraqi"}},
+    "israel": {"tlds": {".il"}, "aliases": {"israeli"}},
+    "poland": {"tlds": {".pl"}, "aliases": {"polish"}},
+    "netherlands": {"tlds": {".nl"}, "aliases": {"dutch"}},
+    "belgium": {"tlds": {".be"}, "aliases": {"belgian"}},
+    "switzerland": {"tlds": {".ch"}, "aliases": {"swiss"}},
+    "sweden": {"tlds": {".se"}, "aliases": {"swedish"}},
+    "norway": {"tlds": {".no"}, "aliases": {"norwegian"}},
+    "denmark": {"tlds": {".dk"}, "aliases": {"danish"}},
+    "finland": {"tlds": {".fi"}, "aliases": {"finnish"}},
+}
+
+# Build reverse lookup: alias/country name → canonical country name.
+_COUNTRY_ALIAS_TO_CANONICAL: Dict[str, str] = {}
+for _cname, _cinfo in _COUNTRY_REFERENCE.items():
+    _COUNTRY_ALIAS_TO_CANONICAL[_cname] = _cname
+    for _alias in _cinfo.get("aliases", set()):
+        _COUNTRY_ALIAS_TO_CANONICAL[_alias] = _cname
+
+_COUNTRY_LABEL_RE = re.compile(r"^(?:country|nation|pa[ií]s|nación|nacion)\s*:", re.IGNORECASE)
+
+
+def _extract_anchor_country(context_labels: List[str]) -> Optional[str]:
+    """Extract normalized country from anchor context_labels, if present."""
+    for label_line in (context_labels or []):
+        if not _COUNTRY_LABEL_RE.match(str(label_line or "")):
+            continue
+        value = str(label_line).split(":", 1)[1].strip().lower()
+        canonical = _COUNTRY_ALIAS_TO_CANONICAL.get(value)
+        if canonical:
+            return canonical
+        # Try partial match: check if any canonical country name is in the value.
+        for cname in _COUNTRY_REFERENCE:
+            if cname in value:
+                return cname
+    return None
+
+
+def _check_context_country_contradiction(
+    *,
+    anchor_country: str,
+    candidate_url: str,
+    candidate_text: str,
+) -> bool:
+    """Return True if candidate clearly contradicts the anchor's country."""
+    if not anchor_country:
+        return False
+    ref = _COUNTRY_REFERENCE.get(anchor_country)
+    if ref is None:
+        return False
+
+    url_lower = str(candidate_url or "").lower()
+    text_lower = str(candidate_text or "").lower()
+    combined = f"{url_lower} {text_lower}"
+
+    # Check if candidate has any signal matching the anchor's country.
+    anchor_signals = {anchor_country} | ref.get("aliases", set())
+    has_matching = any(sig in combined for sig in anchor_signals)
+    if has_matching:
+        return False  # Not a contradiction.
+
+    # Check if candidate has signals for a DIFFERENT country.
+    for other_country, other_ref in _COUNTRY_REFERENCE.items():
+        if other_country == anchor_country:
+            continue
+        other_signals = {other_country} | other_ref.get("aliases", set())
+        # Check URL TLD.
+        for tld in other_ref.get("tlds", set()):
+            if tld in url_lower:
+                return True
+        # Check text for other country name or demonym.
+        if any(sig in combined for sig in other_signals if len(sig) >= 4):
+            return True
+
+    return False
 
 
 def _anchor_mode_for_policy(target_anchor: Any, finalization_policy: Any = None) -> str:
@@ -5295,6 +5444,16 @@ def _anchor_overlap_for_candidate(
         if signal and signal in lowered:
             id_hits += 1
 
+    # Context token overlap (weighted lower than name tokens).
+    context_tokens_list = list(anchor.get("context_tokens") or [])
+    context_hits = 0
+    context_ratio = 0.0
+    if context_tokens_list:
+        for ctx_tok in context_tokens_list:
+            if ctx_tok and ctx_tok in text_norm:
+                context_hits += 1
+        context_ratio = float(context_hits) / max(1, len(context_tokens_list))
+
     score = 0.0
     score = max(score, _clamp01(token_ratio, default=0.0))
     if phrase_hits > 0:
@@ -5303,6 +5462,10 @@ def _anchor_overlap_for_candidate(
     if id_hits > 0:
         score = max(score, _clamp01(0.55 + (0.20 * id_hits), default=0.0))
         checked = True
+    # Context hits provide a small boost (weighted lower than name/phrase/id).
+    if context_hits > 0:
+        score = max(score, _clamp01(score + min(0.15, 0.05 * float(context_hits)), default=0.0))
+        checked = True
 
     return {
         "checked": bool(checked),
@@ -5310,6 +5473,8 @@ def _anchor_overlap_for_candidate(
         "ratio": float(token_ratio),
         "phrase_hits": int(phrase_hits),
         "id_hits": int(id_hits),
+        "context_hits": int(context_hits),
+        "context_ratio": float(context_ratio),
         "score": _clamp01(score, default=0.0),
         "token_count": int(len(tokens)),
     }
@@ -5373,12 +5538,32 @@ def _anchor_mismatch_state(
     )
     mismatch = not strong_match
 
+    # Context-contradiction hard block (Step 9): if anchor has a country
+    # and the candidate clearly contradicts it, block regardless of mode.
+    # Fire when the candidate does not have full name coverage (e.g., only
+    # a first name matches but last name does not).  A full phrase match
+    # (phrase_hits > 0) or all tokens matching suppresses the check.
+    context_contradiction = False
+    anchor_country = _extract_anchor_country(list(anchor.get("context_labels") or []))
+    all_tokens_matched = bool(token_count >= 2 and token_ratio >= 0.99)
+    if anchor_country and phrase_hits == 0 and not all_tokens_matched:
+        context_contradiction = _check_context_country_contradiction(
+            anchor_country=anchor_country,
+            candidate_url=str(candidate_url or ""),
+            candidate_text=str(candidate_text or ""),
+        )
+
     hard_block = False
     penalty = 0.0
     passed = True
     reason = "anchor_match"
     tolerated = False
-    if mode == "strict" and mismatch:
+
+    if context_contradiction:
+        hard_block = True
+        passed = False
+        reason = "anchor_context_contradiction_hard_block"
+    elif mode == "strict" and mismatch:
         if bool(policy.get("field_recovery_entity_tolerance_enabled", True)):
             try:
                 hit_slack = max(0, int(policy.get("field_recovery_entity_tolerance_hit_slack", 1)))
@@ -5409,7 +5594,14 @@ def _anchor_mismatch_state(
                 penalty = float(penalty_default)
                 reason = "anchor_mismatch_soft_penalty"
     elif mismatch:
-        penalty = float(penalty_default)
+        # Scale soft penalty inversely with anchor confidence (Step 10).
+        strength = str(anchor.get("strength") or "none").strip().lower()
+        if strength == "weak":
+            penalty = min(0.30, float(penalty_default) * 1.5)
+        elif strength == "none":
+            penalty = min(0.35, float(penalty_default) * 2.0)
+        else:
+            penalty = float(penalty_default)
         reason = "anchor_mismatch_soft_penalty"
 
     return {
@@ -5424,9 +5616,12 @@ def _anchor_mismatch_state(
         "ratio": float(token_ratio),
         "phrase_hits": int(phrase_hits),
         "id_hits": int(id_hits),
+        "context_hits": int(overlap.get("context_hits", 0) or 0),
+        "context_ratio": float(overlap.get("context_ratio", 0.0) or 0.0),
         "min_hits": int(min_hits),
         "min_ratio": float(min_ratio),
         "tolerated": bool(tolerated or (mismatch and not hard_block and penalty > 0.0)),
+        "context_contradiction": bool(context_contradiction),
     }
 
 
@@ -5504,6 +5699,23 @@ def _task_target_anchor_from_messages(
         if len(id_signals) >= 8:
             break
 
+    # Build context_tokens and context_labels from profile hints.
+    context_toks: List[str] = []
+    context_labels: List[str] = []
+    for raw_tok in list(hints.get("context_tokens") or set()):
+        tok = _normalize_match_text(raw_tok)
+        if tok and len(tok) >= 3 and tok not in context_toks:
+            context_toks.append(tok)
+    _NAME_LABEL_RE = re.compile(r"(?:name|nombre|nom)\b", re.IGNORECASE)
+    for raw_line in list(hints.get("raw_hint_lines") or []):
+        line_s = str(raw_line or "").strip()
+        if not line_s:
+            continue
+        # context_labels are non-name hint lines (e.g. "country:Bolivia")
+        label_part = line_s.split(":", 1)[0].strip().lower() if ":" in line_s else ""
+        if label_part and not _NAME_LABEL_RE.search(label_part):
+            context_labels.append(line_s)
+
     confidence = 0.0
     confidence += min(0.45, 0.06 * float(len(tokens)))
     confidence += min(0.30, 0.08 * float(len(phrases)))
@@ -5511,12 +5723,18 @@ def _task_target_anchor_from_messages(
     if hints.get("raw_hint_lines"):
         confidence += 0.10
         provenance = _append_limited_unique(provenance, "labeled_hint", max_items=12)
+    # Context tokens contribute to confidence (capped to prevent dominance).
+    if context_toks:
+        confidence += min(0.20, 0.04 * float(len(context_toks)))
+        provenance = _append_limited_unique(provenance, "context_tokens", max_items=12)
     confidence = _clamp01(confidence, default=0.0)
 
     return _normalize_target_anchor({
         "tokens": tokens,
         "phrases": phrases,
         "id_signals": id_signals,
+        "context_tokens": context_toks,
+        "context_labels": context_labels,
         "confidence": confidence,
         "strength": _anchor_strength_from_confidence(confidence),
         "provenance": provenance,
@@ -10977,7 +11195,8 @@ def _llm_extract_schema_payloads_from_openwebpages(
 
         if engine == "langextract":
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
-            langextract_result = _langextract_extract_schema_from_openwebpage_text(
+            _entity_hint = " ".join(anchor_tokens) if anchor_tokens else None
+            langextract_result = _langextract_extract_schema_with_fallback(
                 page_url=page_url,
                 page_text=page_text,
                 allowed_keys=sorted(allowed_keys),
@@ -10989,10 +11208,15 @@ def _llm_extract_schema_payloads_from_openwebpages(
                 max_char_buffer=max(200, int(langextract_max_char_buffer or 2000)),
                 prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
                 max_chars=max(512, int(max_chars)),
+                entity_hint=_entity_hint,
             )
             provider = str(langextract_result.get("provider") or "").strip()
             if provider:
                 metadata["langextract_provider"] = provider
+            if langextract_result.get("fallback_provider_used"):
+                metadata["langextract_fallback_provider_used"] = str(
+                    langextract_result.get("fallback_provider_used") or ""
+                )
             extracted_payload = langextract_result.get("payload") if isinstance(langextract_result, dict) else {}
             if isinstance(extracted_payload, dict) and extracted_payload:
                 _emit_payload(extracted_payload)
@@ -11129,6 +11353,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
         return [], [], metadata
 
     target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_tokens)
+    anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
 
     unresolved_fields = _collect_resolvable_unknown_fields(field_status)
     if not unresolved_fields:
@@ -11290,7 +11515,8 @@ def _llm_extract_schema_payloads_from_search_snippets(
 
         if engine == "langextract":
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
-            langextract_result = _langextract_extract_schema_from_openwebpage_text(
+            _entity_hint = " ".join(anchor_tokens) if anchor_tokens else None
+            langextract_result = _langextract_extract_schema_with_fallback(
                 page_url=page_url,
                 page_text=page_text,
                 allowed_keys=sorted(allowed_keys),
@@ -11302,10 +11528,15 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 max_char_buffer=max(200, int(langextract_max_char_buffer or 2000)),
                 prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
                 max_chars=max_chars_int,
+                entity_hint=_entity_hint,
             )
             provider = str(langextract_result.get("provider") or "").strip()
             if provider:
                 metadata["langextract_provider"] = provider
+            if langextract_result.get("fallback_provider_used"):
+                metadata["langextract_fallback_provider_used"] = str(
+                    langextract_result.get("fallback_provider_used") or ""
+                )
             extracted_payload = langextract_result.get("payload") if isinstance(langextract_result, dict) else {}
             if isinstance(extracted_payload, dict) and extracted_payload:
                 _emit_payload(extracted_payload)

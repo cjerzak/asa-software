@@ -255,3 +255,186 @@ test_that("field-status extraction rejects candidates with entity/value mismatch
     "grounding_blocked_entity_value_mismatch"
   )
 })
+
+
+# --- Context-aware anchoring tests ---
+
+test_that("anchor confidence increases with context tokens from structured prompts", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import HumanMessage\n",
+    "_asa_msg_name_only = [HumanMessage(content='",
+      'Find info about \"Ramona Moye Camaconi\".',
+    "')]\n",
+    "_asa_msg_with_ctx = [HumanMessage(content='",
+      'Find info about \"Ramona Moye Camaconi\".\\ncountry: Bolivia\\nparty: MAS\\nregion: Beni',
+    "')]\n"
+  ))
+
+  anchor_name <- reticulate::py_to_r(
+    core$`_task_target_anchor_from_messages`(reticulate::py$`_asa_msg_name_only`)
+  )
+  anchor_ctx <- reticulate::py_to_r(
+    core$`_task_target_anchor_from_messages`(reticulate::py$`_asa_msg_with_ctx`)
+  )
+
+  # Context-rich prompt should have higher confidence.
+  expect_true(anchor_ctx$confidence > anchor_name$confidence)
+  # Context tokens should be populated.
+  expect_true(length(anchor_ctx$context_tokens) > 0L)
+  # Context labels should be populated (non-name hint lines).
+  expect_true(length(anchor_ctx$context_labels) > 0L)
+})
+
+
+test_that("anchor overlap includes context_hits and context_ratio", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  anchor <- list(
+    tokens = list("ramona", "moye", "camaconi"),
+    phrases = list("ramona moye camaconi"),
+    id_signals = list(),
+    context_tokens = list("bolivia", "beni"),
+    context_labels = list("country:Bolivia", "region:Beni"),
+    confidence = 0.6,
+    strength = "moderate",
+    provenance = list("profile_hints"),
+    mode = "adaptive"
+  )
+
+  overlap_match <- reticulate::py_to_r(core$`_anchor_overlap_for_candidate`(
+    target_anchor = anchor,
+    candidate_url = "https://example.bo/ramona-moye",
+    candidate_text = "Ramona Moye Camaconi es diputada en Beni, Bolivia."
+  ))
+
+  expect_true(overlap_match$context_hits > 0L)
+  expect_true(overlap_match$context_ratio > 0)
+
+  overlap_no_ctx <- reticulate::py_to_r(core$`_anchor_overlap_for_candidate`(
+    target_anchor = anchor,
+    candidate_url = "https://example.com/generic",
+    candidate_text = "Some unrelated content about politics."
+  ))
+
+  expect_equal(as.integer(overlap_no_ctx$context_hits), 0L)
+})
+
+
+test_that("context-contradiction hard blocks candidates from wrong country", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  anchor <- list(
+    tokens = list("ramona"),
+    phrases = list(),
+    id_signals = list(),
+    context_tokens = list("bolivia", "beni"),
+    context_labels = list("country:Bolivia", "region:Beni"),
+    confidence = 0.5,
+    strength = "moderate",
+    provenance = list("profile_hints"),
+    mode = "adaptive"
+  )
+
+  # Candidate from Chile (contradicts Bolivia) with no name overlap
+  mismatch <- reticulate::py_to_r(core$`_anchor_mismatch_state`(
+    target_anchor = anchor,
+    candidate_url = "https://www.example.cl/ramona-parra",
+    candidate_text = "Ramona Parra fue una militante chilena."
+  ))
+
+  expect_true(mismatch$hard_block)
+  expect_false(mismatch$pass)
+  expect_equal(as.character(mismatch$reason), "anchor_context_contradiction_hard_block")
+  expect_true(mismatch$context_contradiction)
+})
+
+
+test_that("context-contradiction does not fire when candidate matches anchor country", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  anchor <- list(
+    tokens = list("ramona", "moye"),
+    phrases = list("ramona moye"),
+    id_signals = list(),
+    context_tokens = list("bolivia"),
+    context_labels = list("country:Bolivia"),
+    confidence = 0.5,
+    strength = "moderate",
+    provenance = list("profile_hints"),
+    mode = "adaptive"
+  )
+
+  # Candidate from Bolivia (matches anchor country)
+  result <- reticulate::py_to_r(core$`_anchor_mismatch_state`(
+    target_anchor = anchor,
+    candidate_url = "https://www.example.bo/ramona-moye",
+    candidate_text = "Ramona Moye es diputada de Bolivia."
+  ))
+
+  expect_false(result$context_contradiction)
+  expect_true(result$pass)
+})
+
+
+test_that("soft penalty scales inversely with anchor strength when in soft mode", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.core",
+    required_files = "asa_backend/graph/core.py"
+  )
+
+  # Weak anchor (low confidence, soft mode)
+  anchor_weak <- list(
+    tokens = list("john"),
+    phrases = list(),
+    id_signals = list(),
+    context_tokens = list(),
+    context_labels = list(),
+    confidence = 0.15,
+    strength = "weak",
+    provenance = list(),
+    mode = "adaptive"
+  )
+
+  # Strong anchor (high confidence)
+  anchor_strong <- list(
+    tokens = list("john", "smith", "jones"),
+    phrases = list("john smith jones"),
+    id_signals = list(),
+    context_tokens = list(),
+    context_labels = list(),
+    confidence = 0.85,
+    strength = "strong",
+    provenance = list(),
+    mode = "adaptive"
+  )
+
+  # Both should produce mismatch (candidate text has no entity overlap)
+  result_weak <- reticulate::py_to_r(core$`_anchor_mismatch_state`(
+    target_anchor = anchor_weak,
+    candidate_url = "https://example.com/page",
+    candidate_text = "This page has no relevant names."
+  ))
+
+  result_strong <- reticulate::py_to_r(core$`_anchor_mismatch_state`(
+    target_anchor = anchor_strong,
+    candidate_url = "https://example.com/page",
+    candidate_text = "This page has no relevant names."
+  ))
+
+  # Weak anchor should get higher penalty than strong anchor.
+  expect_true(result_weak$penalty > result_strong$penalty)
+})

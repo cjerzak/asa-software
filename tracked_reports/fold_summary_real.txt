@@ -1,15 +1,7 @@
 {
-  "version": 1,
-  "facts": [],
-  "decisions": [],
-  "open_questions": [],
-  "sources": [
-    {
-      "tool": "OpenWebpage",
-      "url": "https://radiopatuju.blogspot.com/2014/10/bancadas-de-ud-y-del-mas-en-el-beni.html",
-      "title": "Radio Patujú 95.2 FM: BANCADAS DE UD Y DEL MAS EN EL BENI",
-      "note": null
-    }
-  ],
-  "warnings": []
+  "status": "empty",
+  "artifact": "fold_summary",
+  "reason": "fold_summary_not_available",
+  "run_id": "trace_real_20260222T194803",
+  "generated_at": "2026-02-23T01:48:03Z"
 }
