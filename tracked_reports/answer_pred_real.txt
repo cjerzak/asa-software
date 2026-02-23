@@ -3,18 +3,18 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "President of the Women's Organization - Sub Central Sécure",
+  "prior_occupation": "Unknown",
   "class_background": "Unknown",
-  "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "prior_occupation_source": null,
   "disability_status": "Unknown",
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
   "birth_year": 1982,
-  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "birth_year_source": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "Medium",
-  "justification": "Ramona Moye Camaconi was born in 1982 and served as the President of the Women's Organization - Sub Central Sécure (Organización de Mujeres - Sub Central Sécure) before her election to the Chamber of Deputies in 2014. As an indigenous leader from the TIPNIS region (Moxeño Trinitario), her background as a community leader in a rural indigenous territory aligns with the working class/peasantry category. No specific educational degrees or disability/LGBTQ status are publicly documented in official parliamentary or electoral records."
+  "confidence": "Low",
+  "justification": "Source-backed searches resolved 1 core fields (including birth_year), while 9 core fields remain unknown due to limited verifiable evidence."
 }

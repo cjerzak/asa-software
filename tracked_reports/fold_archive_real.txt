@@ -2,6 +2,6 @@
   "status": "empty",
   "artifact": "fold_archive",
   "reason": "fold_archive_not_available",
-  "run_id": "trace_real_20260223T110628",
-  "generated_at": "2026-02-23T17:06:28Z"
+  "run_id": "trace_real_20260223T141013",
+  "generated_at": "2026-02-23T20:10:13Z"
 }
