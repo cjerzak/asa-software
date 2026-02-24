@@ -162,69 +162,152 @@ def _extract_json_substring(content: str) -> Optional[str]:
     return None
 
 
-def parse_llm_json(content: str) -> Any:
-    """Parse JSON from LLM response, handling markdown code blocks.
+def _compact_text_preview(value: Any, max_chars: int = 180) -> str:
+    """Return a compact single-line preview suitable for diagnostics."""
+    if value is None:
+        return ""
+    text = value if isinstance(value, str) else str(value)
+    compact = re.sub(r"\s+", " ", text).strip()
+    if len(compact) <= max_chars:
+        return compact
+    return compact[:max_chars] + "..."
 
-    Handles common LLM output patterns:
+
+def _exception_summary(exc: Exception, *, max_chars: int = 240) -> Tuple[str, str]:
+    """Return compact exception type/message for diagnostics."""
+    exc_type = type(exc).__name__
+    exc_msg = str(exc or "").strip()
+    if len(exc_msg) > max_chars:
+        exc_msg = exc_msg[:max_chars] + "..."
+    return exc_type, exc_msg
+
+
+def parse_llm_json(content: str, *, return_diagnostics: bool = False) -> Any:
+    """Parse JSON from LLM output with optional structured diagnostics.
+
+    Handles common output patterns:
     - Raw JSON
-    - JSON wrapped in ```json ... ``` blocks
-    - JSON wrapped in ``` ... ``` blocks
-    - JSON embedded in text
+    - JSON wrapped in fenced code blocks
+    - JSON embedded in surrounding text
 
     Args:
         content: Raw LLM response text
+        return_diagnostics: When True, return a diagnostics dict that includes
+            parse success/failure metadata and parsed payload.
 
     Returns:
-        Parsed object (dict or list), or empty dict if parsing fails
+        By default: parsed object, or `{}` on failure (backward compatibility).
+        When `return_diagnostics=True`: diagnostics dict with keys:
+          - ok (bool)
+          - parsed (Any)
+          - error_reason (str|None)
+          - exception_type (str|None)
+          - exception_message (str|None)
+          - strategy (str|None)
+          - context (dict)
     """
-    if not content:
-        return {}
+    diagnostics: Dict[str, Any] = {
+        "ok": False,
+        "parsed": {},
+        "error_reason": None,
+        "exception_type": None,
+        "exception_message": None,
+        "strategy": None,
+        "context": {
+            "content_length": len(content) if isinstance(content, str) else None,
+            "content_preview": _compact_text_preview(content),
+            "code_fence_removed": False,
+            "attempt_count": 0,
+        },
+    }
 
-    content = content.strip()
+    if not isinstance(content, str):
+        diagnostics["error_reason"] = "invalid_input_type"
+        diagnostics["context"]["input_type"] = type(content).__name__
+        return diagnostics if return_diagnostics else {}
+
+    if not content.strip():
+        diagnostics["error_reason"] = "empty_content"
+        diagnostics["context"]["normalized_length"] = 0
+        return diagnostics if return_diagnostics else {}
+
+    normalized = content.strip()
 
     # Remove markdown code blocks
-    if content.startswith("```"):
-        parts = content.split("```")
+    if normalized.startswith("```"):
+        parts = normalized.split("```")
         if len(parts) >= 2:
-            content = parts[1]
+            normalized = parts[1]
+            diagnostics["context"]["code_fence_removed"] = True
             # Remove language identifier if present
-            if content.startswith("json"):
-                content = content[4:]
-            elif content.startswith("\n"):
-                content = content[1:]
+            if normalized.startswith("json"):
+                normalized = normalized[4:]
+            elif normalized.startswith("\n"):
+                normalized = normalized[1:]
+    normalized = normalized.strip()
+    diagnostics["context"]["normalized_length"] = len(normalized)
 
-    content = content.strip()
+    last_error_type: Optional[str] = None
+    last_error_message: Optional[str] = None
+    attempts = 0
+
+    def _attempt(candidate: str, strategy: str) -> Optional[Any]:
+        nonlocal last_error_type, last_error_message, attempts
+        attempts += 1
+        try:
+            parsed = json.loads(candidate)
+            diagnostics["ok"] = True
+            diagnostics["parsed"] = parsed
+            diagnostics["strategy"] = strategy
+            diagnostics["error_reason"] = None
+            diagnostics["exception_type"] = None
+            diagnostics["exception_message"] = None
+            return parsed
+        except Exception as exc:
+            etype, emsg = _exception_summary(exc)
+            last_error_type = etype
+            last_error_message = emsg
+            return None
 
     # Try direct parse first
-    try:
-        return json.loads(content)
-    except json.JSONDecodeError:
-        pass
+    parsed_direct = _attempt(normalized, "direct_json")
+    if parsed_direct is not None:
+        diagnostics["context"]["attempt_count"] = attempts
+        return diagnostics if return_diagnostics else parsed_direct
 
     # Try scanning for a JSON object or array in text
-    extracted = _extract_json_substring(content)
+    extracted = _extract_json_substring(normalized)
     if extracted:
-        try:
-            return json.loads(extracted)
-        except json.JSONDecodeError:
-            pass
+        diagnostics["context"]["extracted_json_length"] = len(extracted)
+        parsed_extracted = _attempt(extracted, "scan_substring")
+        if parsed_extracted is not None:
+            diagnostics["context"]["attempt_count"] = attempts
+            return diagnostics if return_diagnostics else parsed_extracted
 
     # Try to find JSON object in text (legacy patterns)
     json_patterns = [
-        r'```json\s*(.*?)\s*```',
-        r'```\s*(.*?)\s*```',
-        r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+        ("fenced_json", r"```json\s*(.*?)\s*```"),
+        ("fenced_generic", r"```\s*(.*?)\s*```"),
+        ("legacy_brace_extract", r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}"),
     ]
 
-    for pattern in json_patterns:
-        matches = re.findall(pattern, content, re.DOTALL)
+    for strategy, pattern in json_patterns:
+        matches = re.findall(pattern, normalized, re.DOTALL)
         for match in matches:
-            try:
-                return json.loads(match)
-            except json.JSONDecodeError:
-                continue
+            parsed_match = _attempt(match, strategy)
+            if parsed_match is not None:
+                diagnostics["context"]["attempt_count"] = attempts
+                return diagnostics if return_diagnostics else parsed_match
 
-    return {}
+    diagnostics["context"]["attempt_count"] = attempts
+    diagnostics["error_reason"] = (
+        "json_decode_failed" if attempts > 0 else "no_json_candidate_found"
+    )
+    diagnostics["exception_type"] = last_error_type
+    diagnostics["exception_message"] = last_error_message
+    diagnostics["strategy"] = None
+    diagnostics["parsed"] = {}
+    return diagnostics if return_diagnostics else {}
 
 
 def _tokenize_jsonish_schema(text: str) -> List[Tuple[str, str]]:
@@ -702,37 +785,114 @@ def repair_json_output_to_schema(
     schema: Any,
     *,
     fallback_on_failure: bool = False,
-) -> Optional[str]:
-    """Repair an LLM JSON output so required schema keys exist.
+    return_diagnostics: bool = False,
+) -> Any:
+    """Repair LLM JSON output so required schema keys exist.
 
     When fallback_on_failure is True, returns a deterministic best-effort JSON
     output matching the schema's top-level shape even when parsing fails.
+
+    Args:
+        output_text: Raw JSON-ish output string
+        schema: Expected schema tree
+        fallback_on_failure: Coerce top-level shape when parsing/type checks fail
+        return_diagnostics: When True, return structured diagnostics dict
+
+    Returns:
+        By default: repaired JSON string or None.
+        When `return_diagnostics=True`: diagnostics dict containing:
+          - ok (bool)
+          - repaired_text (str|None)
+          - error_reason (str|None)
+          - exception_type (str|None)
+          - exception_message (str|None)
+          - parse_diagnostics (dict)
+          - context (dict)
     """
-    if not output_text or not isinstance(output_text, str):
-        return None
+    diagnostics: Dict[str, Any] = {
+        "ok": False,
+        "repaired_text": None,
+        "error_reason": None,
+        "exception_type": None,
+        "exception_message": None,
+        "parse_diagnostics": None,
+        "context": {
+            "output_length": len(output_text) if isinstance(output_text, str) else None,
+            "output_preview": _compact_text_preview(output_text),
+            "schema_type": type(schema).__name__ if schema is not None else "none",
+            "fallback_on_failure": bool(fallback_on_failure),
+            "coerced_input_shape": False,
+        },
+    }
+
+    if not isinstance(output_text, str) or not output_text.strip():
+        diagnostics["error_reason"] = "invalid_output_text"
+        diagnostics["context"]["input_type"] = type(output_text).__name__
+        return diagnostics if return_diagnostics else None
     if schema is None:
-        return None
+        diagnostics["error_reason"] = "schema_missing"
+        return diagnostics if return_diagnostics else None
 
-    parsed = parse_llm_json(output_text)
+    parse_diag = parse_llm_json(output_text, return_diagnostics=True)
+    diagnostics["parse_diagnostics"] = {
+        "ok": bool(parse_diag.get("ok", False)) if isinstance(parse_diag, dict) else False,
+        "error_reason": parse_diag.get("error_reason") if isinstance(parse_diag, dict) else "parse_diagnostics_missing",
+        "exception_type": parse_diag.get("exception_type") if isinstance(parse_diag, dict) else None,
+        "exception_message": parse_diag.get("exception_message") if isinstance(parse_diag, dict) else None,
+        "context": parse_diag.get("context", {}) if isinstance(parse_diag, dict) else {},
+    }
+    parsed = parse_diag.get("parsed", {}) if isinstance(parse_diag, dict) else {}
 
+    expected_shape = None
     if isinstance(schema, dict):
+        expected_shape = "dict"
         if not isinstance(parsed, dict):
+            diagnostics["context"]["parsed_type"] = type(parsed).__name__
             if not fallback_on_failure:
-                return None
+                diagnostics["error_reason"] = "type_mismatch"
+                return diagnostics if return_diagnostics else None
+            diagnostics["context"]["coerced_input_shape"] = True
             parsed = {}
     elif isinstance(schema, list):
+        expected_shape = "list"
         if not isinstance(parsed, list):
+            diagnostics["context"]["parsed_type"] = type(parsed).__name__
             if not fallback_on_failure:
-                return None
+                diagnostics["error_reason"] = "type_mismatch"
+                return diagnostics if return_diagnostics else None
+            diagnostics["context"]["coerced_input_shape"] = True
             parsed = []
     else:
-        return None
+        diagnostics["error_reason"] = "unsupported_schema_type"
+        diagnostics["context"]["schema_type"] = type(schema).__name__
+        return diagnostics if return_diagnostics else None
+    diagnostics["context"]["expected_shape"] = expected_shape
+    diagnostics["context"]["parsed_type"] = type(parsed).__name__
 
-    repaired = populate_required_fields(parsed, schema)
     try:
-        return json.dumps(repaired, ensure_ascii=False)
-    except Exception:
-        return None
+        repaired = populate_required_fields(parsed, schema)
+    except Exception as exc:
+        exc_type, exc_msg = _exception_summary(exc)
+        diagnostics["error_reason"] = "repair_exception"
+        diagnostics["exception_type"] = exc_type
+        diagnostics["exception_message"] = exc_msg
+        return diagnostics if return_diagnostics else None
+
+    try:
+        repaired_text = json.dumps(repaired, ensure_ascii=False)
+    except Exception as exc:
+        exc_type, exc_msg = _exception_summary(exc)
+        diagnostics["error_reason"] = "json_serialize_failed"
+        diagnostics["exception_type"] = exc_type
+        diagnostics["exception_message"] = exc_msg
+        return diagnostics if return_diagnostics else None
+
+    diagnostics["ok"] = True
+    diagnostics["repaired_text"] = repaired_text
+    diagnostics["error_reason"] = None
+    diagnostics["exception_type"] = None
+    diagnostics["exception_message"] = None
+    return diagnostics if return_diagnostics else repaired_text
 
 
 def repair_json_output_to_required_schema(output_text: str, prompt: str) -> Optional[str]:

@@ -2,6 +2,7 @@
 
 import os
 import copy
+import inspect
 import json
 import hashlib
 import logging
@@ -9612,6 +9613,46 @@ def _repair_best_effort_json(
     appending to state["json_repair"] for observability.
     """
     try:
+        def _diag_subset(raw: Any) -> Dict[str, Any]:
+            if not isinstance(raw, dict):
+                return {
+                    "ok": False,
+                    "error_reason": "diagnostics_unavailable",
+                    "exception_type": None,
+                    "exception_message": None,
+                    "context": {},
+                }
+            context = raw.get("context")
+            compact_context: Dict[str, Any] = {}
+            if isinstance(context, dict):
+                for key in (
+                    "content_length",
+                    "normalized_length",
+                    "attempt_count",
+                    "output_length",
+                    "schema_type",
+                    "expected_shape",
+                    "parsed_type",
+                    "coerced_input_shape",
+                    "fallback_on_failure",
+                ):
+                    if key in context:
+                        compact_context[key] = context.get(key)
+            return {
+                "ok": bool(raw.get("ok", False)),
+                "error_reason": raw.get("error_reason"),
+                "exception_type": raw.get("exception_type"),
+                "exception_message": raw.get("exception_message"),
+                "context": compact_context,
+            }
+
+        def _fn_supports_return_diagnostics(fn: Any) -> bool:
+            try:
+                sig = inspect.signature(fn)
+            except Exception:
+                return False
+            return "return_diagnostics" in sig.parameters
+
         if expected_schema is None:
             return response, None
 
@@ -9620,7 +9661,9 @@ def _repair_best_effort_json(
         if not text:
             return response, None
 
-        parsed = parse_llm_json(text)
+        parse_result = parse_llm_json(text, return_diagnostics=True)
+        parsed = parse_result.get("parsed", {}) if isinstance(parse_result, dict) else {}
+        parse_diag = _diag_subset(parse_result)
         missing = _normalize_missing_key_paths(
             list_missing_required_keys(parsed, expected_schema, max_items=50),
             max_items=50,
@@ -9646,14 +9689,88 @@ def _repair_best_effort_json(
         if not callable(repair_fn):
             repair_fn = repair_json_output_to_schema
 
-        repaired = repair_fn(text, expected_schema, fallback_on_failure=fallback_on_failure)
+        supports_diag = _fn_supports_return_diagnostics(repair_fn)
+
+        def _call_repair_once() -> Tuple[Optional[str], Dict[str, Any]]:
+            if supports_diag:
+                result = repair_fn(
+                    text,
+                    expected_schema,
+                    fallback_on_failure=fallback_on_failure,
+                    return_diagnostics=True,
+                )
+                if isinstance(result, dict):
+                    repaired_text = _message_content_to_text(result.get("repaired_text"))
+                    return repaired_text or None, _diag_subset(result)
+                repaired_text = _message_content_to_text(result)
+                return repaired_text or None, {
+                    "ok": bool(repaired_text),
+                    "error_reason": None if repaired_text else "empty_repair_output",
+                    "exception_type": None,
+                    "exception_message": None,
+                    "context": {"fallback_on_failure": bool(fallback_on_failure)},
+                }
+
+            result = repair_fn(
+                text,
+                expected_schema,
+                fallback_on_failure=fallback_on_failure,
+            )
+            repaired_text = _message_content_to_text(result)
+            return repaired_text or None, {
+                "ok": bool(repaired_text),
+                "error_reason": None if repaired_text else "empty_repair_output",
+                "exception_type": None,
+                "exception_message": None,
+                "context": {"fallback_on_failure": bool(fallback_on_failure)},
+            }
+
+        try:
+            repaired, repair_diag = _call_repair_once()
+        except Exception as exc:
+            repaired = None
+            repair_diag = {
+                "ok": False,
+                "error_reason": "repair_exception",
+                "exception_type": type(exc).__name__,
+                "exception_message": str(exc)[:240],
+                "context": {"fallback_on_failure": bool(fallback_on_failure)},
+            }
+
         if not repaired:
             # Best-effort retry: schema repair is intentionally defensive and may
             # return None on transient parsing failures. Retrying once keeps the
             # finalize path resilient without adding significant overhead.
-            repaired = repair_fn(text, expected_schema, fallback_on_failure=fallback_on_failure)
+            try:
+                repaired, repair_diag_retry = _call_repair_once()
+                # Prefer richer failure details from the retry if both fail.
+                if not repaired:
+                    repair_diag = repair_diag_retry
+            except Exception as exc:
+                repaired = None
+                repair_diag = {
+                    "ok": False,
+                    "error_reason": "repair_exception_retry",
+                    "exception_type": type(exc).__name__,
+                    "exception_message": str(exc)[:240],
+                    "context": {"fallback_on_failure": bool(fallback_on_failure)},
+                }
         if not repaired:
-            return response, None
+            failure_event = {
+                "repair_applied": False,
+                "repair_reason": "repair_failed",
+                "repair_severity": "structural",
+                "missing_keys_count": len(missing),
+                "missing_keys_sample": missing[:20],
+                "fallback_on_failure": bool(fallback_on_failure),
+                "schema_source": schema_source,
+                "context": context,
+                "parse_diagnostics": parse_diag,
+                "repair_diagnostics": repair_diag,
+            }
+            if debug or str(os.environ.get("ASA_LOG_JSON_REPAIR", "")).lower() in {"1", "true", "yes"}:
+                logger.info("json_repair=%s", failure_event)
+            return response, failure_event
 
         repair_applied = bool(missing) or (type_mismatch and fallback_on_failure)
         reason = "missing_keys" if missing else ("type_mismatch" if type_mismatch else "ok")
@@ -9670,6 +9787,8 @@ def _repair_best_effort_json(
                 "fallback_on_failure": bool(fallback_on_failure),
                 "schema_source": schema_source,
                 "context": context,
+                "parse_diagnostics": parse_diag,
+                "repair_diagnostics": repair_diag,
             }
             if debug or str(os.environ.get("ASA_LOG_JSON_REPAIR", "")).lower() in {"1", "true", "yes"}:
                 logger.info("json_repair=%s", event)

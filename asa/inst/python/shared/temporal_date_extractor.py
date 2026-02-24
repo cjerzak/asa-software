@@ -4,14 +4,25 @@
 # Extracts publication dates from metadata, structured data, and URL patterns.
 #
 import logging
+import pathlib
 import re
-from dataclasses import dataclass, field
+import sys
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
+
+try:
+    from shared.http_retry_utils import make_request
+except ImportError:
+    _module_dir = pathlib.Path(__file__).resolve().parent
+    _root_dir = _module_dir.parent
+    for _candidate in (str(_root_dir), str(_module_dir)):
+        if _candidate not in sys.path:
+            sys.path.insert(0, _candidate)
+    from shared.http_retry_utils import make_request
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +34,9 @@ class DateExtractionConfig:
     """Configuration for date extraction."""
     timeout: float = 10.0
     max_retries: int = 2
+    retry_delay: float = 1.0
     user_agent: str = "ASA-Research-Agent/1.0"
+    proxy: Optional[str] = None
     # Minimum confidence threshold to accept a date
     min_confidence: float = 0.3
 
@@ -289,9 +302,15 @@ def extract_publication_date(
     # Fetch content if not provided
     if html_content is None:
         try:
-            headers = {"User-Agent": config.user_agent}
-            response = requests.get(url, headers=headers, timeout=config.timeout)
-            response.raise_for_status()
+            response = make_request(
+                url=url,
+                method="GET",
+                timeout=float(config.timeout),
+                max_retries=max(1, int(config.max_retries)),
+                retry_delay=max(0.0, float(config.retry_delay)),
+                proxy=config.proxy,
+                user_agent=config.user_agent,
+            )
             html_content = response.text
         except requests.RequestException as e:
             logger.warning(f"Failed to fetch {url}: {e}")

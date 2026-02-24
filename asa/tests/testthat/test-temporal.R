@@ -400,6 +400,96 @@ test_that("DateExtractionConfig has correct defaults", {
   expect_equal(config$min_confidence, 0.3)
 })
 
+test_that("extract_publication_date delegates fetch to shared make_request settings", {
+  date_extractor <- asa_test_date_extractor()
+
+  py <- reticulate::py
+  py$td_mod <- date_extractor
+  reticulate::py_run_string(paste0(
+    "_old_make_request_temporal = td_mod.make_request\n",
+    "_temporal_make_request_calls = []\n",
+    "def _stub_make_request(url, method='GET', params=None, data=None, headers=None,\n",
+    "                       timeout=30.0, max_retries=3, retry_delay=2.0,\n",
+    "                       proxy=None, user_agent=None):\n",
+    "    _temporal_make_request_calls.append({\n",
+    "        'url': url,\n",
+    "        'method': method,\n",
+    "        'timeout': timeout,\n",
+    "        'max_retries': max_retries,\n",
+    "        'retry_delay': retry_delay,\n",
+    "        'proxy': proxy,\n",
+    "        'user_agent': user_agent,\n",
+    "    })\n",
+    "    class _Resp:\n",
+    "        text = '<html><head><meta property=\"article:published_time\" content=\"2024-02-20\" /></head></html>'\n",
+    "    return _Resp()\n",
+    "td_mod.make_request = _stub_make_request\n"
+  ))
+  on.exit(
+    reticulate::py_run_string(
+      "if '_old_make_request_temporal' in globals():\n    td_mod.make_request = _old_make_request_temporal\n"
+    ),
+    add = TRUE
+  )
+
+  config <- date_extractor$DateExtractionConfig(
+    timeout = 3.5,
+    max_retries = 4L,
+    retry_delay = 1.25,
+    user_agent = "ASA-Test-Agent/1.0",
+    proxy = "http://127.0.0.1:8080"
+  )
+  extracted <- date_extractor$extract_publication_date(
+    url = "https://example.com/article",
+    config = config
+  )
+
+  calls <- reticulate::py_to_r(py$`_temporal_make_request_calls`)
+  expect_equal(length(calls), 1L)
+  expect_equal(as.character(calls[[1]]$method), "GET")
+  expect_equal(as.character(calls[[1]]$url), "https://example.com/article")
+  expect_equal(as.numeric(calls[[1]]$timeout), 3.5)
+  expect_equal(as.integer(calls[[1]]$max_retries), 4L)
+  expect_equal(as.numeric(calls[[1]]$retry_delay), 1.25)
+  expect_equal(as.character(calls[[1]]$proxy), "http://127.0.0.1:8080")
+  expect_equal(as.character(calls[[1]]$user_agent), "ASA-Test-Agent/1.0")
+
+  expect_equal(as.character(extracted$date), "2024-02-20")
+  expect_match(as.character(extracted$source), "^meta\\.")
+})
+
+test_that("extract_publication_date handles shared make_request failure paths", {
+  date_extractor <- asa_test_date_extractor()
+
+  py <- reticulate::py
+  py$td_mod <- date_extractor
+  reticulate::py_run_string(paste0(
+    "import requests\n",
+    "_old_make_request_temporal_fail = td_mod.make_request\n",
+    "def _failing_make_request(*args, **kwargs):\n",
+    "    raise requests.exceptions.RequestException('forced fetch failure')\n",
+    "td_mod.make_request = _failing_make_request\n"
+  ))
+  on.exit(
+    reticulate::py_run_string(
+      "if '_old_make_request_temporal_fail' in globals():\n    td_mod.make_request = _old_make_request_temporal_fail\n"
+    ),
+    add = TRUE
+  )
+
+  no_url_date <- date_extractor$extract_publication_date(
+    url = "https://example.com/article-no-date"
+  )
+  expect_true(is.null(no_url_date$date) || is.na(no_url_date$date))
+  expect_equal(as.character(no_url_date$source), "fetch_failed")
+
+  url_date_fallback <- date_extractor$extract_publication_date(
+    url = "https://example.com/2024/01/15/story"
+  )
+  expect_equal(as.character(url_date_fallback$date), "2024-01-15")
+  expect_equal(as.character(url_date_fallback$source), "url_pattern_ymd")
+})
+
 test_that("filter_results_by_date handles empty list", {
   date_extractor <- asa_test_date_extractor()
 

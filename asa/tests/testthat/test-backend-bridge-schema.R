@@ -4,7 +4,19 @@ test_that(".parse_backend_contract_payload parses schema-versioned payload", {
     budget_state = list(tool_calls_used = 2L),
     field_status = list(name = "resolved"),
     diagnostics = list(unknown_fields_count = 0L),
-    json_repair = list(list(repair_reason = "schema_normalization")),
+    json_repair = list(list(
+      repair_reason = "repair_failed",
+      parse_diagnostics = list(
+        ok = FALSE,
+        error_reason = "json_decode_failed",
+        exception_type = "JSONDecodeError"
+      ),
+      repair_diagnostics = list(
+        ok = FALSE,
+        error_reason = "type_mismatch",
+        exception_type = NULL
+      )
+    )),
     completion_gate = list(status = "complete"),
     retrieval_metrics = list(hits = 3L),
     tool_quality_events = list(list(is_off_target = FALSE)),
@@ -42,6 +54,11 @@ test_that(".parse_backend_contract_payload parses schema-versioned payload", {
   expect_equal(parsed$sections$budget_state$tool_calls_used, 2L)
   expect_equal(parsed$sections$field_status$name, "resolved")
   expect_equal(parsed$sections$diagnostics$unknown_fields_count, 0L)
+  expect_equal(parsed$sections$json_repair[[1]]$repair_reason, "repair_failed")
+  expect_false(isTRUE(parsed$sections$json_repair[[1]]$parse_diagnostics$ok))
+  expect_equal(parsed$sections$json_repair[[1]]$parse_diagnostics$error_reason, "json_decode_failed")
+  expect_false(isTRUE(parsed$sections$json_repair[[1]]$repair_diagnostics$ok))
+  expect_equal(parsed$sections$json_repair[[1]]$repair_diagnostics$error_reason, "type_mismatch")
   expect_equal(parsed$stop_reason, "complete")
   expect_equal(parsed$policy_version, "2026-02-20")
   expect_equal(parsed$tokens_used, 11L)
