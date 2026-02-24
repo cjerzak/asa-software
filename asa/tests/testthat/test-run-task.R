@@ -480,6 +480,9 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
       orchestration_options = list(retrieval_controller = list(mode = "observe")),
       policy_version = "2026-02-20",
       artifact_status = list(trace = list(status = "written")),
+      trace_metadata = list(schema_version = "trace_metadata_v1"),
+      bridge_schema_version = "asa_bridge_contract_v1",
+      config_snapshot = list(invoke_config = list(backend = "gemini")),
       token_stats = list(tokens_used = 12L),
       plan = list(step = "x"),
       plan_history = list(),
@@ -513,6 +516,9 @@ test_that(".attach_result_aliases keeps top-level aliases synchronized with exec
   expect_true(is.list(aliased$finalization_status))
   expect_true(is.list(aliased$orchestration_options))
   expect_true(is.list(aliased$artifact_status))
+  expect_true(is.list(aliased$trace_metadata))
+  expect_equal(aliased$bridge_schema_version, "asa_bridge_contract_v1")
+  expect_true(is.list(aliased$config_snapshot))
   expect_equal(aliased$token_stats$tokens_used, 12L)
   expect_equal(aliased$action_ascii, "ascii")
   expect_true(is.list(aliased$phase_timings))
@@ -575,6 +581,43 @@ test_that(".build_payload_integrity reports byte-vs-semantic mismatch classes", 
   expect_false(isTRUE(integrity$byte_hash_matches))
   expect_true(isTRUE(integrity$semantic_hash_matches))
   expect_equal(integrity$hash_mismatch_type, "byte_only")
+})
+
+test_that(".build_payload_integrity includes trace metadata context fields", {
+  integrity <- asa:::.build_payload_integrity(
+    released_text = "{\"a\":1}",
+    released_from = "message_text",
+    final_payload_info = list(
+      available = TRUE,
+      payload_json = "{\"a\":1}",
+      terminal_payload_hash = "x"
+    ),
+    trace = "",
+    trace_json = "",
+    json_repair = list(),
+    trace_metadata = list(
+      schema_version = "trace_metadata_v1",
+      generated_at_utc = "2026-02-24T03:43:11Z",
+      policy_version = "2026-02-21",
+      backend = "gemini",
+      model = "gemini-3-flash-preview"
+    ),
+    config_snapshot = list(
+      invoke_config = list(
+        backend = "openai",
+        model = "gpt-5-mini"
+      )
+    ),
+    message_sanitized = FALSE,
+    run_id = "thread-456",
+    generated_at_utc = "2026-02-24T00:00:00Z"
+  )
+
+  expect_equal(as.character(integrity$trace_schema_version), "trace_metadata_v1")
+  expect_equal(as.character(integrity$trace_generated_at_utc), "2026-02-24T03:43:11Z")
+  expect_equal(as.character(integrity$policy_version), "2026-02-21")
+  expect_equal(as.character(integrity$backend), "gemini")
+  expect_equal(as.character(integrity$model), "gemini-3-flash-preview")
 })
 
 test_that("run_task_batch data frame output preserves metadata and unions parsed fields", {

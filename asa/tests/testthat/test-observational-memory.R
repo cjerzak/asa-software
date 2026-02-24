@@ -970,6 +970,48 @@ test_that("retrieval metrics expose diminishing-returns signals", {
   expect_equal(as.integer(metrics$diminishing_returns_streak), 2L)
 })
 
+test_that("retrieval metrics track duplicate-query and empty-round guardrails", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  build_metrics <- reticulate::py_get_attr(prod, "_build_retrieval_metrics")
+  metrics <- reticulate::py_to_r(build_metrics(
+    state = list(
+      retrieval_metrics = list(
+        duplicate_query_rounds = 0L,
+        empty_round_streak = 0L
+      ),
+      expected_schema = list(name = "string"),
+      orchestration_options = list(
+        retrieval_controller = list(
+          enabled = TRUE,
+          mode = "enforce",
+          dedupe_queries = TRUE,
+          max_empty_round_streak = 2L
+        )
+      )
+    ),
+    search_queries = list("duplicate query", "duplicate query"),
+    tool_messages = list(
+      list(role = "tool", name = "Search", content = "No good DuckDuckGo search result was found")
+    ),
+    prior_field_status = list(),
+    field_status = list(),
+    prior_evidence_ledger = list(),
+    evidence_ledger = list(),
+    diagnostics = list()
+  ))
+
+  expect_equal(as.integer(metrics$last_round_query_dedupe_hits), 1L)
+  expect_equal(as.integer(metrics$duplicate_query_rounds), 1L)
+  expect_equal(as.integer(metrics$empty_rounds), 1L)
+  expect_equal(as.integer(metrics$empty_round_streak), 1L)
+  expect_true(isTRUE(metrics$last_round_empty))
+})
+
 test_that("diagnostics normalization keeps performance telemetry bucket", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",

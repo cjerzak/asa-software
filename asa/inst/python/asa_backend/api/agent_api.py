@@ -13,6 +13,7 @@ from __future__ import annotations
 import os
 import re
 import time
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from langgraph.errors import GraphRecursionError
@@ -42,6 +43,7 @@ _HEARTBEAT_STATE_ENV = "ASA_PROGRESS_STATE_FILE"
 ASA_BRIDGE_SCHEMA_VERSION = "asa_bridge_contract_v1"
 
 _CONTRACT_DEFAULTS: Dict[str, Any] = {
+    "trace_metadata": {},
     "budget_state": {},
     "field_status": {},
     "diagnostics": {},
@@ -388,6 +390,89 @@ def _safe_config_snapshot(config_snapshot: Any, config: Optional[dict]) -> Dict[
     return snapshot
 
 
+def _iso_utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _build_trace_metadata(
+    state: Any,
+    *,
+    config: Optional[dict] = None,
+    config_snapshot: Optional[dict] = None,
+) -> Dict[str, Any]:
+    diagnostics = _state_get(state, "diagnostics", {}) or {}
+    if not isinstance(diagnostics, dict):
+        diagnostics = {}
+    retrieval_metrics = _state_get(state, "retrieval_metrics", {}) or {}
+    if not isinstance(retrieval_metrics, dict):
+        retrieval_metrics = {}
+    completion_gate = _state_get(state, "completion_gate", {}) or {}
+    if not isinstance(completion_gate, dict):
+        completion_gate = {}
+    budget_state = _state_get(state, "budget_state", {}) or {}
+    if not isinstance(budget_state, dict):
+        budget_state = {}
+    orchestration_options = _state_get(state, "orchestration_options", {}) or {}
+    if not isinstance(orchestration_options, dict):
+        orchestration_options = {}
+
+    policy_version = _state_get(state, "policy_version", None)
+    if not policy_version and isinstance(orchestration_options, dict):
+        policy_version = orchestration_options.get("policy_version")
+
+    recovery_reason_counts = diagnostics.get("recovery_reason_counts", {})
+    if not isinstance(recovery_reason_counts, dict):
+        recovery_reason_counts = {}
+
+    safe_snapshot = _safe_config_snapshot(config_snapshot, config)
+    invoke_config = safe_snapshot.get("invoke_config", {})
+    if not isinstance(invoke_config, dict):
+        invoke_config = {}
+
+    model_name = str(
+        invoke_config.get("model")
+        or invoke_config.get("model_name")
+        or invoke_config.get("deployment")
+        or ""
+    ).strip() or None
+    backend_name = str(
+        invoke_config.get("backend")
+        or invoke_config.get("provider")
+        or ""
+    ).strip() or None
+
+    return {
+        "schema_version": "trace_metadata_v1",
+        "generated_at_utc": _iso_utc_now(),
+        "thread_id": _state_get(state, "thread_id", None),
+        "policy_version": policy_version,
+        "backend": backend_name,
+        "model": model_name,
+        "stop_reason": _state_get(state, "stop_reason", None),
+        "completion_status": completion_gate.get("completion_status"),
+        "finalization_invariant_failed": bool(
+            completion_gate.get("finalization_invariant_failed", False)
+        ),
+        "finalization_invariant_reasons": list(
+            completion_gate.get("finalization_invariant_reasons") or []
+        )[:16],
+        "unknown_fields_count_current": _nonneg_int(
+            diagnostics.get("unknown_fields_count_current", diagnostics.get("unknown_fields_count", 0))
+        ),
+        "recovery_blocked_anchor_mismatch_count": _nonneg_int(
+            recovery_reason_counts.get("recovery_blocked_anchor_mismatch", 0)
+        ),
+        "search_calls": _nonneg_int(retrieval_metrics.get("search_calls", 0)),
+        "query_dedupe_hits": _nonneg_int(retrieval_metrics.get("query_dedupe_hits", 0)),
+        "empty_round_streak": _nonneg_int(retrieval_metrics.get("empty_round_streak", 0)),
+        "tool_calls_used": _nonneg_int(budget_state.get("tool_calls_used", 0)),
+        "tool_calls_limit_effective": _nonneg_int(
+            budget_state.get("tool_calls_limit_effective", budget_state.get("tool_calls_limit", 0))
+        ),
+        "tool_calls_remaining": _nonneg_int(budget_state.get("tool_calls_remaining", 0)),
+    }
+
+
 def invoke_graph_with_payload(
     graph: Any,
     initial_state: Any,
@@ -408,18 +493,26 @@ def invoke_graph_with_payload(
     )
     invoke_finished = time.time()
     duration_s = max(0.0, float(invoke_finished - invoke_started))
+    contract_fields = _collect_contract_fields(state)
+    trace_metadata = _build_trace_metadata(
+        state,
+        config=config,
+        config_snapshot=config_snapshot,
+    )
 
     payload: Dict[str, Any] = {
         "schema_version": ASA_BRIDGE_SCHEMA_VERSION,
         "response": state,
         "diagnostics": _state_get(state, "diagnostics", {}) or {},
+        "trace_metadata": trace_metadata,
         "phase_timings": {
             "invoke_graph_seconds": duration_s,
             "invoke_graph_minutes": duration_s / 60.0,
         },
         "config_snapshot": _safe_config_snapshot(config_snapshot, config),
     }
-    payload.update(_collect_contract_fields(state))
+    payload.update(contract_fields)
+    payload["trace_metadata"] = trace_metadata
     return payload
 
 

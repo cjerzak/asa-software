@@ -214,6 +214,7 @@
     err_resp$finalization_status <- list()
     err_resp$orchestration_options <- list()
     err_resp$artifact_status <- list()
+    err_resp$trace_metadata <- list()
     err_resp$policy_version <- NA_character_
     return(err_resp)
   }
@@ -247,6 +248,7 @@
   finalization_status_out <- bridge_sections$finalization_status %||% list()
   orchestration_options_out <- bridge_sections$orchestration_options %||% list()
   artifact_status_out <- bridge_sections$artifact_status %||% list()
+  trace_metadata_out <- bridge_sections$trace_metadata %||% list()
   policy_version <- backend_contract$policy_version %||% NA_character_
   payload_integrity <- .build_payload_integrity(
     released_text = response_text,
@@ -255,6 +257,8 @@
     trace = trace,
     trace_json = trace_json,
     json_repair = json_repair,
+    trace_metadata = trace_metadata_out,
+    config_snapshot = backend_contract$config_snapshot %||% list(),
     message_sanitized = response_sanitized,
     run_id = resolved_thread_id %||% NA_character_,
     generated_at_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
@@ -350,6 +354,7 @@
   resp$finalization_status <- finalization_status_out
   resp$orchestration_options <- orchestration_options_out
   resp$artifact_status <- artifact_status_out
+  resp$trace_metadata <- trace_metadata_out
   resp$policy_version <- policy_version
   resp$bridge_schema_version <- backend_contract$schema_version %||% NA_character_
   resp$config_snapshot <- backend_contract$config_snapshot %||% list()
@@ -373,6 +378,7 @@
 .ASA_BACKEND_BRIDGE_SCHEMA_VERSION <- "asa_bridge_contract_v1"
 .ASA_SUPPORTED_BACKEND_BRIDGE_SCHEMA_VERSIONS <- c(.ASA_BACKEND_BRIDGE_SCHEMA_VERSION)
 .ASA_BACKEND_BRIDGE_SECTION_FIELDS <- c(
+  "trace_metadata",
   "budget_state",
   "field_status",
   "diagnostics",
@@ -688,6 +694,8 @@
                                      trace = "",
                                      trace_json = "",
                                      json_repair = list(),
+                                     trace_metadata = list(),
+                                     config_snapshot = list(),
                                      message_sanitized = FALSE,
                                      run_id = NA_character_,
                                      generated_at_utc = NA_character_,
@@ -789,6 +797,21 @@
     released_artifact_id_out <- released_byte_hash
   }
 
+  metadata <- trace_metadata %||% list()
+  if (!is.list(metadata)) {
+    metadata <- list()
+  }
+  snapshot <- config_snapshot %||% list()
+  if (!is.list(snapshot)) {
+    snapshot <- list()
+  }
+  invoke_cfg <- snapshot$invoke_config %||% list()
+  if (!is.list(invoke_cfg)) {
+    invoke_cfg <- list()
+  }
+  backend_name <- metadata$backend %||% invoke_cfg$backend %||% invoke_cfg$provider %||% NA_character_
+  model_name <- metadata$model %||% invoke_cfg$model %||% invoke_cfg$model_name %||% NA_character_
+
   list(
     run_id = run_id_out,
     generated_at_utc = generated_at_out,
@@ -810,6 +833,11 @@
       trace = trace,
       trace_json = trace_json
     ),
+    trace_schema_version = metadata$schema_version %||% NA_character_,
+    trace_generated_at_utc = metadata$generated_at_utc %||% NA_character_,
+    policy_version = metadata$policy_version %||% NA_character_,
+    backend = backend_name,
+    model = model_name,
     json_repair_reasons = .json_repair_reasons(json_repair),
     terminal_payload_hash = final_payload_info$terminal_payload_hash %||% NA_character_
   )

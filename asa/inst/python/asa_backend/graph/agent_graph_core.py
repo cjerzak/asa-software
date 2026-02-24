@@ -2,6 +2,7 @@
 
 import os
 import copy
+import difflib
 import inspect
 import json
 import hashlib
@@ -1202,6 +1203,7 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "quality_gate_enforce": True,
     "quality_gate_unknown_ratio_max": 0.75,
     "quality_gate_min_resolvable_fields": 3,
+    "diagnostics_auto_recovery_enabled": True,
     "semantic_validation_enabled": True,
     "unsourced_allowlist_patterns": [
         "^confidence$",
@@ -1231,6 +1233,9 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "mode": "observe",
         "dedupe_queries": True,
         "dedupe_urls": True,
+        "dedupe_retry_throttle": True,
+        "max_query_dedupe_hits": 8,
+        "max_empty_round_streak": 2,
         # Optional anchor-aware reranker (task-agnostic) applied to evidence
         # candidate scores after base ranking.
         "anchor_aware_rerank_enabled": False,
@@ -1369,6 +1374,15 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
     rc = options["retrieval_controller"]
     rc["dedupe_queries"] = bool(rc.get("dedupe_queries", True))
     rc["dedupe_urls"] = bool(rc.get("dedupe_urls", True))
+    rc["dedupe_retry_throttle"] = bool(rc.get("dedupe_retry_throttle", True))
+    try:
+        rc["max_query_dedupe_hits"] = max(1, int(rc.get("max_query_dedupe_hits", 8)))
+    except Exception:
+        rc["max_query_dedupe_hits"] = 8
+    try:
+        rc["max_empty_round_streak"] = max(1, int(rc.get("max_empty_round_streak", 2)))
+    except Exception:
+        rc["max_empty_round_streak"] = 2
     rc["anchor_aware_rerank_enabled"] = bool(rc.get("anchor_aware_rerank_enabled", False))
     rc["anchor_aware_rerank_weight"] = _clamp01(
         rc.get("anchor_aware_rerank_weight"),
@@ -1922,6 +1936,12 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
         ),
         "quality_gate_unknown_ratio_max": float(quality_gate_unknown_ratio_max),
         "quality_gate_min_resolvable_fields": int(quality_gate_min_resolvable_fields),
+        "diagnostics_auto_recovery_enabled": bool(
+            policy.get(
+                "diagnostics_auto_recovery_enabled",
+                _DEFAULT_FINALIZATION_POLICY["diagnostics_auto_recovery_enabled"],
+            )
+        ),
         "semantic_validation_enabled": bool(
             policy.get(
                 "semantic_validation_enabled",
@@ -6768,11 +6788,15 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "low_signal_rewrite_elapsed_ms_total",
         "low_signal_stop_elapsed_ms_total",
         "retry_threshold_crossings",
+        "query_dedupe_escalation_events",
+        "empty_round_suppression_events",
         "adaptive_budget_events",
         "adaptive_budget_reduced_calls_total",
         "structural_repair_events",
         "structural_repair_retry_events",
         "finalization_invariant_failures",
+        "diagnostics_recovery_checkpoint_events",
+        "diagnostics_recovery_retry_events",
         "anchor_hard_blocks_count",
         "anchor_soft_penalties_count",
     )
@@ -6894,6 +6918,20 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         if len(blocking_fields) >= 64:
             break
     out["finalization_blocking_fields"] = blocking_fields
+    recovery_checkpoints: List[Dict[str, Any]] = []
+    for raw in list(existing.get("finalization_recovery_checkpoints") or [])[:64]:
+        if not isinstance(raw, dict):
+            continue
+        recovery_checkpoints.append({
+            "context": str(raw.get("context") or "").strip() or None,
+            "reason": str(raw.get("reason") or "").strip() or None,
+            "reasons": [str(v).strip() for v in list(raw.get("reasons") or [])[:8] if str(v).strip()],
+            "priority": str(raw.get("priority") or "").strip() or None,
+            "action": str(raw.get("action") or "").strip() or None,
+            "blocking_fields_sample": [str(v).strip() for v in list(raw.get("blocking_fields_sample") or [])[:12] if str(v).strip()],
+            "ts_utc": str(raw.get("ts_utc") or "").strip() or None,
+        })
+    out["finalization_recovery_checkpoints"] = recovery_checkpoints
     anchor_mismatch_samples: List[Dict[str, Any]] = []
     for raw in list(existing.get("anchor_mismatch_samples") or [])[:64]:
         if not isinstance(raw, dict):
@@ -7332,11 +7370,16 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
         "tool_rounds",
         "search_calls",
         "query_dedupe_hits",
+        "last_round_query_dedupe_hits",
+        "duplicate_query_rounds",
         "url_dedupe_hits",
         "round_url_dedupe_hits",
         "last_round_url_dedupe_hits",
         "new_sources",
         "new_required_fields",
+        "empty_rounds",
+        "empty_round_streak",
+        "empty_round_suppressed",
         "low_novelty_streak",
         "diminishing_returns_streak",
         "adaptive_budget_triggers",
@@ -7358,6 +7401,7 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
     out["early_stop_patience_steps"] = max(1, int(existing.get("early_stop_patience_steps", 2) or 2))
     out["early_stop_eligible"] = bool(existing.get("early_stop_eligible", False))
     out["early_stop_reason"] = str(existing.get("early_stop_reason") or "").strip() or None
+    out["last_round_empty"] = bool(existing.get("last_round_empty", False))
     out["seen_queries"] = [str(v) for v in list(existing.get("seen_queries") or [])[:512]]
     out["seen_urls"] = [str(v) for v in list(existing.get("seen_urls") or [])[:512]]
     per_field = existing.get("per_required_field_novelty") or {}
@@ -7579,17 +7623,22 @@ def _build_retrieval_metrics(
     seen_queries = list(out.get("seen_queries") or [])
     seen_query_set = set(seen_queries)
     query_dedupe_hits = int(out.get("query_dedupe_hits", 0))
+    last_round_query_dedupe_hits = 0
     for query in list(search_queries or []):
         key = _query_dedupe_key(query)
         if not key:
             continue
         if dedupe_queries and key in seen_query_set:
             query_dedupe_hits += 1
+            last_round_query_dedupe_hits += 1
             continue
         if key not in seen_query_set:
             seen_query_set.add(key)
             seen_queries.append(key)
     out["query_dedupe_hits"] = query_dedupe_hits
+    out["last_round_query_dedupe_hits"] = int(last_round_query_dedupe_hits)
+    if int(len(search_queries or [])) > 0 and int(last_round_query_dedupe_hits) > 0:
+        out["duplicate_query_rounds"] = int(out.get("duplicate_query_rounds", 0) or 0) + 1
     out["seen_queries"] = seen_queries[-512:]
 
     seen_urls = list(out.get("seen_urls") or [])
@@ -7648,6 +7697,18 @@ def _build_retrieval_metrics(
     out["global_novelty"] = global_novelty
 
     search_calls_this_round = max(0, int(len(search_queries or [])))
+    round_empty = bool(
+        search_calls_this_round > 0
+        and len(round_seen_urls) == 0
+        and int(new_sources_count) == 0
+        and int(len(new_found_fields)) == 0
+    )
+    if round_empty:
+        out["empty_rounds"] = int(out.get("empty_rounds", 0) or 0) + 1
+        out["empty_round_streak"] = int(out.get("empty_round_streak", 0) or 0) + 1
+    elif search_calls_this_round > 0:
+        out["empty_round_streak"] = 0
+    out["last_round_empty"] = bool(round_empty)
     # A generic marginal-value signal for search calls this round.
     raw_round_value = (1.5 * float(len(new_found_fields))) + (0.5 * float(new_sources_count))
     value_per_search_call = 0.0
@@ -7704,6 +7765,10 @@ def _build_retrieval_metrics(
     if mode == "enforce" and off_target_counter >= max_offtopic:
         early_stop_eligible = True
         early_stop_reason = "offtopic_threshold"
+    max_empty_round_streak = max(1, int(controller.get("max_empty_round_streak", 2) or 2))
+    if mode == "enforce" and int(out.get("empty_round_streak", 0) or 0) >= max_empty_round_streak:
+        early_stop_eligible = True
+        early_stop_reason = "empty_round_streak"
     adaptive_patience = max(1, int(controller.get("adaptive_patience_steps", patience) or patience))
     if (
         mode == "enforce"
@@ -8161,6 +8226,7 @@ def _normalize_confidence_label(value: Any) -> Optional[str]:
 def _derive_justification_from_field_status(normalized_field_status: Dict[str, Dict[str, Any]]) -> str:
     found_fields: List[str] = []
     unknown_fields: List[str] = []
+    unknown_reason_counts: Dict[str, int] = {}
     for key in _collect_resolvable_field_keys(normalized_field_status):
         entry = (normalized_field_status or {}).get(key)
         if not isinstance(entry, dict):
@@ -8171,14 +8237,70 @@ def _derive_justification_from_field_status(normalized_field_status: Dict[str, D
             found_fields.append(str(key))
         elif status in {_FIELD_STATUS_UNKNOWN, _FIELD_STATUS_PENDING}:
             unknown_fields.append(str(key))
+            reason = _field_unknown_reason(entry)
+            if reason:
+                unknown_reason_counts[reason] = int(unknown_reason_counts.get(reason, 0)) + 1
+
+    reason_suffix = ""
+    if unknown_reason_counts:
+        ranked_reasons = sorted(
+            unknown_reason_counts.items(),
+            key=lambda item: (-int(item[1]), str(item[0])),
+        )
+        reason_bits = [
+            f"{reason}({count})"
+            for reason, count in ranked_reasons[:3]
+        ]
+        if reason_bits:
+            reason_suffix = " Top unresolved reasons: " + ", ".join(reason_bits) + "."
 
     if found_fields:
         sample = ", ".join(found_fields[:3])
         return (
             f"Source-backed searches resolved {len(found_fields)} core fields (including {sample}), "
             f"while {len(unknown_fields)} core fields remain unknown due to limited verifiable evidence."
+            f"{reason_suffix}"
         )
-    return "Searches did not find reliable, source-backed evidence for the required core fields."
+    return (
+        "Searches did not find reliable, source-backed evidence for the required core fields."
+        f"{reason_suffix}"
+    )
+
+
+def _normalize_field_label_token(value: Any) -> str:
+    token = str(value or "").strip().lower()
+    if not token:
+        return ""
+    token = token.replace("_", " ")
+    token = re.sub(r"[^a-z0-9\s]", " ", token)
+    token = re.sub(r"\s+", " ", token).strip()
+    return token
+
+
+def _justification_including_fields(text: Any) -> List[str]:
+    raw = str(text or "").strip()
+    if not raw:
+        return []
+    match = re.search(
+        r"including\s+(.+?)(?:\)\s*,?\s*while|\s*,\s*while|\s+while)",
+        raw,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return []
+    segment = str(match.group(1) or "").strip()
+    segment = segment.strip("() ")
+    if not segment:
+        return []
+    parts = re.split(r",|\band\b", segment, flags=re.IGNORECASE)
+    out: List[str] = []
+    for part in parts:
+        normalized = _normalize_field_label_token(part)
+        if not normalized:
+            continue
+        if normalized not in out:
+            out.append(normalized)
+    return out[:12]
 
 
 def _justification_counts_from_text(text: Any) -> Dict[str, Optional[int]]:
@@ -8211,20 +8333,31 @@ def _justification_counts_match_field_status(
     normalized_field_status: Dict[str, Dict[str, Any]],
 ) -> bool:
     counts = _justification_counts_from_text(text)
-    if counts.get("resolved") is None or counts.get("unknown") is None:
-        return True
+    found_keys = set()
+    field_label_to_key: Dict[str, str] = {}
     found = 0
     unknown = 0
     for key in _collect_resolvable_field_keys(normalized_field_status):
         entry = (normalized_field_status or {}).get(key)
         if not isinstance(entry, dict):
             continue
+        key_str = str(key)
+        field_label_to_key[_normalize_field_label_token(key_str)] = key_str
         status = str(entry.get("status") or "").lower()
         value = entry.get("value")
         if status == _FIELD_STATUS_FOUND and not _is_empty_like(value) and not _is_unknown_marker(value):
+            found_keys.add(key_str)
             found += 1
         elif status in {_FIELD_STATUS_UNKNOWN, _FIELD_STATUS_PENDING}:
             unknown += 1
+
+    for mention in _justification_including_fields(text):
+        key = field_label_to_key.get(mention)
+        if key and key not in found_keys:
+            return False
+
+    if counts.get("resolved") is None or counts.get("unknown") is None:
+        return True
     return int(counts.get("resolved")) == int(found) and int(counts.get("unknown")) == int(unknown)
 
 
@@ -9773,6 +9906,60 @@ def _normalize_missing_key_paths(missing: Any, *, max_items: int = 50) -> List[s
     return out
 
 
+def _text_sha256(value: Any) -> Optional[str]:
+    text = _message_content_to_text(value)
+    if not text:
+        return None
+    try:
+        return hashlib.sha256(text.encode("utf-8")).hexdigest()
+    except Exception:
+        return None
+
+
+def _short_text_preview(value: Any, *, max_chars: int = 320) -> Optional[str]:
+    text = _message_content_to_text(value)
+    if not text:
+        return None
+    text = re.sub(r"\s+", " ", text).strip()
+    if not text:
+        return None
+    if len(text) > max(24, int(max_chars)):
+        return text[: max(24, int(max_chars))].rstrip() + "..."
+    return text
+
+
+def _json_repair_diff_summary(
+    before_text: Any,
+    after_text: Any,
+    *,
+    max_lines: int = 40,
+    max_chars: int = 3000,
+) -> Optional[str]:
+    before = _message_content_to_text(before_text) or ""
+    after = _message_content_to_text(after_text) or ""
+    if not before and not after:
+        return None
+    if before == after:
+        return "no_change"
+    before_lines = before.splitlines()
+    after_lines = after.splitlines()
+    diff_iter = difflib.unified_diff(
+        before_lines,
+        after_lines,
+        fromfile="before",
+        tofile="after",
+        lineterm="",
+        n=1,
+    )
+    lines = [line for _, line in zip(range(max(1, int(max_lines))), diff_iter)]
+    if not lines:
+        return "changed"
+    summary = "\n".join(lines).strip()
+    if len(summary) > max(256, int(max_chars)):
+        summary = summary[: max(256, int(max_chars))].rstrip() + "\n...[diff truncated]"
+    return summary
+
+
 def _repair_event_is_structural(event: Any) -> bool:
     if not isinstance(event, dict):
         return False
@@ -9808,6 +9995,8 @@ def _annotate_json_repair_event(
         out["event_id"] = uuid.uuid4().hex
     if not str(out.get("ts_utc") or "").strip():
         out["ts_utc"] = _iso_utc_now()
+    if not str(out.get("event_schema_version") or "").strip():
+        out["event_schema_version"] = "json_repair_event_v2"
     ctx = str(trigger_context or out.get("context") or "agent").strip() or "agent"
     out["trigger_context"] = ctx
     if not str(out.get("outcome_status") or "").strip():
@@ -9817,6 +10006,17 @@ def _annotate_json_repair_event(
             out["outcome_status"] = "noop"
         else:
             out["outcome_status"] = "failed"
+    if "repair_attempt_count" not in out:
+        out["repair_attempt_count"] = 0
+    try:
+        out["repair_attempt_count"] = max(0, int(out.get("repair_attempt_count", 0) or 0))
+    except Exception:
+        out["repair_attempt_count"] = 0
+    if "repair_retry_used" not in out:
+        out["repair_retry_used"] = bool(out.get("repair_attempt_count", 0) > 1)
+    if "payload_diff_available" not in out:
+        diff_text = str(out.get("payload_diff_summary") or "").strip().lower()
+        out["payload_diff_available"] = bool(diff_text and diff_text not in {"no_change", "none"})
     return out
 
 
@@ -9895,6 +10095,8 @@ def _repair_best_effort_json(
         text = _message_content_to_text(content)
         if not text:
             return response, None
+        original_text = text
+        repair_attempt_count = 0
 
         parse_result = parse_llm_json(text, return_diagnostics=True)
         parsed = parse_result.get("parsed", {}) if isinstance(parse_result, dict) else {}
@@ -9961,6 +10163,7 @@ def _repair_best_effort_json(
             }
 
         try:
+            repair_attempt_count = 1
             repaired, repair_diag = _call_repair_once()
         except Exception as exc:
             repaired = None
@@ -9977,6 +10180,7 @@ def _repair_best_effort_json(
             # return None on transient parsing failures. Retrying once keeps the
             # finalize path resilient without adding significant overhead.
             try:
+                repair_attempt_count = 2
                 repaired, repair_diag_retry = _call_repair_once()
                 # Prefer richer failure details from the retry if both fail.
                 if not repaired:
@@ -9991,6 +10195,7 @@ def _repair_best_effort_json(
                     "context": {"fallback_on_failure": bool(fallback_on_failure)},
                 }
         if not repaired:
+            before_hash = _text_sha256(original_text)
             failure_event = {
                 "repair_applied": False,
                 "repair_reason": "repair_failed",
@@ -10002,6 +10207,15 @@ def _repair_best_effort_json(
                 "context": context,
                 "parse_diagnostics": parse_diag,
                 "repair_diagnostics": repair_diag,
+                "repair_attempt_count": int(max(0, repair_attempt_count)),
+                "repair_retry_used": bool(repair_attempt_count > 1),
+                "input_text_hash": before_hash,
+                "output_text_hash": None,
+                "input_text_length": len(original_text),
+                "output_text_length": None,
+                "input_text_preview": _short_text_preview(original_text, max_chars=320),
+                "output_text_preview": None,
+                "payload_diff_summary": None,
             }
             if debug or str(os.environ.get("ASA_LOG_JSON_REPAIR", "")).lower() in {"1", "true", "yes"}:
                 logger.info("json_repair=%s", failure_event)
@@ -10010,6 +10224,14 @@ def _repair_best_effort_json(
         repair_applied = bool(missing) or (type_mismatch and fallback_on_failure)
         reason = "missing_keys" if missing else ("type_mismatch" if type_mismatch else "ok")
         severity = "structural" if reason in {"missing_keys", "type_mismatch"} else "none"
+        before_hash = _text_sha256(original_text)
+        after_hash = _text_sha256(repaired)
+        payload_diff_summary = _json_repair_diff_summary(
+            original_text,
+            repaired,
+            max_lines=40,
+            max_chars=3000,
+        )
 
         event = None
         if repair_applied:
@@ -10024,6 +10246,15 @@ def _repair_best_effort_json(
                 "context": context,
                 "parse_diagnostics": parse_diag,
                 "repair_diagnostics": repair_diag,
+                "repair_attempt_count": int(max(0, repair_attempt_count)),
+                "repair_retry_used": bool(repair_attempt_count > 1),
+                "input_text_hash": before_hash,
+                "output_text_hash": after_hash,
+                "input_text_length": len(original_text),
+                "output_text_length": len(repaired),
+                "input_text_preview": _short_text_preview(original_text, max_chars=320),
+                "output_text_preview": _short_text_preview(repaired, max_chars=320),
+                "payload_diff_summary": payload_diff_summary,
             }
             if debug or str(os.environ.get("ASA_LOG_JSON_REPAIR", "")).lower() in {"1", "true", "yes"}:
                 logger.info("json_repair=%s", event)
@@ -10714,6 +10945,106 @@ def _finalization_invariant_report(
     }
 
 
+def _finalization_recovery_priority(diagnostics: Any, reasons: Any) -> str:
+    reason_set = {str(v).strip().lower() for v in list(reasons or []) if str(v).strip()}
+    if not reason_set:
+        return "invariant_reconciliation"
+    if "diagnostics_unknown_count_mismatch" in reason_set:
+        recovery_reason_counts = {}
+        if isinstance(diagnostics, dict):
+            recovery_reason_counts = diagnostics.get("recovery_reason_counts") or {}
+        anchor_mismatch_hits = 0
+        if isinstance(recovery_reason_counts, dict):
+            anchor_mismatch_hits = int(
+                recovery_reason_counts.get("recovery_blocked_anchor_mismatch", 0) or 0
+            )
+        if anchor_mismatch_hits > 0:
+            return "anchor_mismatch_recovery"
+        return "diagnostics_reconciliation"
+    if "diagnostics_unknown_fields_mismatch" in reason_set:
+        return "diagnostics_field_reconciliation"
+    if "terminal_justification_count_mismatch" in reason_set:
+        return "justification_reconciliation"
+    return "invariant_reconciliation"
+
+
+def _record_finalization_recovery_checkpoint(
+    diagnostics: Any,
+    completion_gate: Any,
+    budget_state: Any,
+    *,
+    context: str = "agent",
+    max_items: int = 64,
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    out_diagnostics = _normalize_diagnostics(diagnostics)
+    out_budget = dict(budget_state) if isinstance(budget_state, dict) else {}
+    gate = completion_gate if isinstance(completion_gate, dict) else {}
+    if not bool(gate.get("finalization_invariant_failed", False)):
+        return out_diagnostics, out_budget
+
+    reasons = [
+        str(reason).strip()
+        for reason in list(gate.get("finalization_invariant_reasons") or [])
+        if str(reason).strip()
+    ]
+    if not reasons:
+        reasons = ["finalization_invariant_failed"]
+    recovery_priority = str(
+        gate.get("auto_recovery_priority")
+        or _finalization_recovery_priority(out_diagnostics, reasons)
+        or "invariant_reconciliation"
+    ).strip() or "invariant_reconciliation"
+    recovery_action = str(gate.get("auto_recovery_action") or "emit_checkpoint").strip() or "emit_checkpoint"
+
+    blocking_fields = []
+    for detail in list(gate.get("missing_required_field_details") or []):
+        if not isinstance(detail, dict):
+            continue
+        field_name = str(detail.get("field") or "").strip()
+        if not field_name:
+            continue
+        if field_name not in blocking_fields:
+            blocking_fields.append(field_name)
+        if len(blocking_fields) >= 12:
+            break
+
+    checkpoint = {
+        "context": str(context or "agent").strip() or "agent",
+        "reason": reasons[0],
+        "reasons": reasons[:8],
+        "priority": recovery_priority,
+        "action": recovery_action,
+        "blocking_fields_sample": blocking_fields,
+        "ts_utc": _iso_utc_now(),
+    }
+    checkpoints = list(out_diagnostics.get("finalization_recovery_checkpoints") or [])
+    checkpoints.append(checkpoint)
+    if len(checkpoints) > max(1, int(max_items)):
+        checkpoints = checkpoints[-int(max_items):]
+    out_diagnostics["finalization_recovery_checkpoints"] = checkpoints
+    out_diagnostics["diagnostics_recovery_checkpoint_events"] = int(
+        out_diagnostics.get("diagnostics_recovery_checkpoint_events", 0) or 0
+    ) + 1
+
+    auto_recovery_needed = bool(gate.get("auto_recovery_checkpoint_needed", False))
+    budget_exhausted = bool(out_budget.get("budget_exhausted", False))
+    if auto_recovery_needed and not budget_exhausted:
+        out_budget["replan_requested"] = True
+        priority_reason = str(out_budget.get("priority_retry_reason") or "").strip().lower()
+        if priority_reason != "structural_repair":
+            out_budget["priority_retry_reason"] = "diagnostics_recovery_checkpoint"
+        out_diagnostics["diagnostics_recovery_retry_events"] = int(
+            out_diagnostics.get("diagnostics_recovery_retry_events", 0) or 0
+        ) + 1
+        out_diagnostics["retrieval_interventions"] = _append_limited_unique(
+            out_diagnostics.get("retrieval_interventions"),
+            f"diagnostics_recovery_checkpoint:{recovery_priority}",
+            max_items=max_items,
+        )
+
+    return out_diagnostics, out_budget
+
+
 def _schema_outcome_gate_report(
     state: Any,
     *,
@@ -10808,6 +11139,16 @@ def _schema_outcome_gate_report(
     report["finalization_invariant_reasons"] = list(invariant.get("reasons") or [])[:16]
     report["finalization_invariant_ok"] = bool(invariant.get("ok", True))
     report["finalization_invariant"] = invariant
+    recovery_enabled = bool(finalization_policy.get("diagnostics_auto_recovery_enabled", True))
+    recovery_reasons = list(report.get("finalization_invariant_reasons") or [])[:16]
+    report["auto_recovery_checkpoint_needed"] = bool(
+        recovery_enabled and invariant_failed and not budget_exhausted
+    )
+    report["auto_recovery_reasons"] = recovery_reasons
+    report["auto_recovery_priority"] = _finalization_recovery_priority(diagnostics, recovery_reasons)
+    report["auto_recovery_action"] = (
+        "replan_and_retry" if bool(report["auto_recovery_checkpoint_needed"]) else "none"
+    )
     report["quality_gate_unknown_ratio_max"] = float(
         finalization_policy.get("quality_gate_unknown_ratio_max", 0.75) or 0.75
     )
@@ -12797,6 +13138,56 @@ def _create_tool_node_with_scratchpad(
             )
 
         controller = orchestration_options.get("retrieval_controller", {}) if isinstance(orchestration_options, dict) else {}
+        dedupe_retry_throttle = bool(controller.get("dedupe_retry_throttle", True))
+        max_query_dedupe_hits = max(1, int(controller.get("max_query_dedupe_hits", 8) or 8))
+        max_empty_round_streak = max(1, int(controller.get("max_empty_round_streak", 2) or 2))
+        controller_mode = _normalize_component_mode(controller.get("mode"))
+        if (
+            dedupe_retry_throttle
+            and int(search_calls_delta) > 0
+            and int(retrieval_metrics.get("last_round_query_dedupe_hits", 0) or 0) > 0
+            and int(retrieval_metrics.get("query_dedupe_hits", 0) or 0) >= max_query_dedupe_hits
+            and int(retrieval_metrics.get("new_required_fields", 0) or 0) == 0
+            and int(retrieval_metrics.get("new_sources", 0) or 0) == 0
+            and not bool(budget_state.get("budget_exhausted", False))
+        ):
+            budget_state["replan_requested"] = True
+            budget_state["priority_retry_reason"] = "query_dedupe_escalation"
+            diagnostics["retry_or_replan_events"] = int(diagnostics.get("retry_or_replan_events", 0) or 0) + 1
+            diagnostics["query_dedupe_escalation_events"] = int(
+                diagnostics.get("query_dedupe_escalation_events", 0) or 0
+            ) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                (
+                    "query_dedupe_escalation:"
+                    f"hits={int(retrieval_metrics.get('query_dedupe_hits', 0) or 0)}"
+                ),
+                max_items=64,
+            )
+        if (
+            controller_mode == "enforce"
+            and int(search_calls_delta) > 0
+            and int(retrieval_metrics.get("empty_round_streak", 0) or 0) >= max_empty_round_streak
+            and not bool(budget_state.get("budget_exhausted", False))
+        ):
+            retrieval_metrics["empty_round_suppressed"] = int(
+                retrieval_metrics.get("empty_round_suppressed", 0) or 0
+            ) + 1
+            budget_state["budget_exhausted"] = True
+            budget_state["empty_round_cap_exhausted"] = True
+            budget_state["limit_trigger_reason"] = "empty_round_streak"
+            diagnostics["empty_round_suppression_events"] = int(
+                diagnostics.get("empty_round_suppression_events", 0) or 0
+            ) + 1
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                (
+                    "empty_round_suppression:"
+                    f"streak={int(retrieval_metrics.get('empty_round_streak', 0) or 0)}"
+                ),
+                max_items=64,
+            )
         adaptive_budget_enabled = bool(controller.get("adaptive_budget_enabled", True))
         adaptive_min_remaining_calls = max(0, int(controller.get("adaptive_min_remaining_calls", 1) or 1))
         adaptive_mode = _normalize_component_mode(controller.get("mode"))
@@ -12863,7 +13254,11 @@ def _create_tool_node_with_scratchpad(
         )
         # A tool round has been executed; clear one-shot structural retry marker.
         budget_state["structural_repair_retry_required"] = False
-        if str(budget_state.get("priority_retry_reason") or "").strip().lower() == "structural_repair":
+        if str(budget_state.get("priority_retry_reason") or "").strip().lower() in {
+            "structural_repair",
+            "query_dedupe_escalation",
+            "diagnostics_recovery_checkpoint",
+        }:
             budget_state["priority_retry_reason"] = None
         if (
             _orchestration_component_enabled(state, "retrieval_controller")
@@ -13731,6 +14126,12 @@ def create_memory_folding_agent(
             budget_state=budget_state,
             diagnostics=diagnostics,
         )
+        diagnostics, budget_state = _record_finalization_recovery_checkpoint(
+            diagnostics,
+            completion_gate,
+            budget_state,
+            context="agent",
+        )
         structural_events = list(repair_events or [])
         if repair_event:
             structural_events.append(repair_event)
@@ -13960,6 +14361,12 @@ def create_memory_folding_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 diagnostics=diagnostics,
+            )
+            diagnostics, budget_state = _record_finalization_recovery_checkpoint(
+                diagnostics,
+                completion_gate,
+                budget_state,
+                context="finalize",
             )
             finalization_status = _build_finalization_status(
                 state={**state, "orchestration_options": orchestration_options},
@@ -14230,6 +14637,12 @@ def create_memory_folding_agent(
             field_status=field_status,
             budget_state=budget_state,
             diagnostics=diagnostics,
+        )
+        diagnostics, budget_state = _record_finalization_recovery_checkpoint(
+            diagnostics,
+            completion_gate,
+            budget_state,
+            context="finalize",
         )
         finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
         budget_state["finalize_reason"] = finalize_reason
@@ -16008,6 +16421,12 @@ def create_standard_agent(
             budget_state=budget_state,
             diagnostics=diagnostics,
         )
+        diagnostics, budget_state = _record_finalization_recovery_checkpoint(
+            diagnostics,
+            completion_gate,
+            budget_state,
+            context="agent",
+        )
         structural_events = list(repair_events or [])
         if repair_event:
             structural_events.append(repair_event)
@@ -16229,6 +16648,12 @@ def create_standard_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 diagnostics=diagnostics,
+            )
+            diagnostics, budget_state = _record_finalization_recovery_checkpoint(
+                diagnostics,
+                completion_gate,
+                budget_state,
+                context="finalize",
             )
             finalization_status = _build_finalization_status(
                 state={**state, "orchestration_options": orchestration_options},
@@ -16490,6 +16915,12 @@ def create_standard_agent(
             field_status=field_status,
             budget_state=budget_state,
             diagnostics=diagnostics,
+        )
+        diagnostics, budget_state = _record_finalization_recovery_checkpoint(
+            diagnostics,
+            completion_gate,
+            budget_state,
+            context="finalize",
         )
         finalize_reason = _finalize_reason_for_state(_state_for_gate) or "recursion_limit"
         budget_state["finalize_reason"] = finalize_reason
