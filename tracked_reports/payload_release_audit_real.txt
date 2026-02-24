@@ -2,13 +2,13 @@
   "released_from": "final_payload",
   "canonical_available": true,
   "canonical_matches_message": true,
-  "canonical_byte_hash": "546aad399268501c357f6e5ea091a8b042fd75a81806d24cdcc2158e7c47d922",
-  "released_byte_hash": "546aad399268501c357f6e5ea091a8b042fd75a81806d24cdcc2158e7c47d922",
+  "canonical_byte_hash": "62df23dc6f57f26421106f59294ac1f9e974696fb0c13a95ea372923ffaebdf0",
+  "released_byte_hash": "62df23dc6f57f26421106f59294ac1f9e974696fb0c13a95ea372923ffaebdf0",
   "byte_hash_matches": true,
-  "canonical_semantic_hash": "81f3faaa23ba1028c0afdd8c105a2298c19bac3d8155d9b3c5fbe87d251fdec3",
-  "released_semantic_hash": "81f3faaa23ba1028c0afdd8c105a2298c19bac3d8155d9b3c5fbe87d251fdec3",
+  "canonical_semantic_hash": "a7d492011a1fa8e987062ae2d8dd819d31f03ac5641ebcda865caef91f7fa54f",
+  "released_semantic_hash": "a7d492011a1fa8e987062ae2d8dd819d31f03ac5641ebcda865caef91f7fa54f",
   "semantic_hash_matches": true,
   "hash_mismatch_type": "none",
   "truncation_signals": [],
-  "json_repair_reasons": ["residual_tool_calls_no_content", "field_status_canonical"]
+  "json_repair_reasons": "field_status_canonical"
 }

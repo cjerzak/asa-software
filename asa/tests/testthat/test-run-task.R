@@ -559,10 +559,18 @@ test_that(".build_payload_integrity reports byte-vs-semantic mismatch classes", 
     trace = "",
     trace_json = "",
     json_repair = list(),
-    message_sanitized = FALSE
+    message_sanitized = FALSE,
+    run_id = "thread-123",
+    generated_at_utc = "2026-02-24T00:00:00Z",
+    canonical_artifact_id = "canon-id",
+    released_artifact_id = "released-id"
   )
 
   expect_true(is.list(integrity))
+  expect_equal(as.character(integrity$run_id), "thread-123")
+  expect_equal(as.character(integrity$generated_at_utc), "2026-02-24T00:00:00Z")
+  expect_equal(as.character(integrity$canonical_artifact_id), "canon-id")
+  expect_equal(as.character(integrity$released_artifact_id), "released-id")
   expect_false(isTRUE(integrity$canonical_matches_message))
   expect_false(isTRUE(integrity$byte_hash_matches))
   expect_true(isTRUE(integrity$semantic_hash_matches))

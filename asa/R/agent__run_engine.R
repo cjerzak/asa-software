@@ -255,7 +255,11 @@
     trace = trace,
     trace_json = trace_json,
     json_repair = json_repair,
-    message_sanitized = response_sanitized
+    message_sanitized = response_sanitized,
+    run_id = resolved_thread_id %||% NA_character_,
+    generated_at_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+    canonical_artifact_id = final_payload_info$terminal_payload_hash %||% NA_character_,
+    released_artifact_id = .text_sha256(response_text)
   )
 
   # Extract memory folding stats (fold_count lives inside fold_stats)
@@ -684,7 +688,11 @@
                                      trace = "",
                                      trace_json = "",
                                      json_repair = list(),
-                                     message_sanitized = FALSE) {
+                                     message_sanitized = FALSE,
+                                     run_id = NA_character_,
+                                     generated_at_utc = NA_character_,
+                                     canonical_artifact_id = NA_character_,
+                                     released_artifact_id = NA_character_) {
   canonical_available <- isTRUE(final_payload_info$available)
   canonical_text <- final_payload_info$payload_json %||% NA_character_
   canonical_matches <- FALSE
@@ -749,7 +757,43 @@
     }
   }
 
+  run_id_out <- as.character(run_id %||% NA_character_)
+  run_id_out <- run_id_out[!is.na(run_id_out) & nzchar(run_id_out)]
+  run_id_out <- if (length(run_id_out) > 0L) run_id_out[[1]] else NA_character_
+
+  generated_at_out <- as.character(generated_at_utc %||% NA_character_)
+  generated_at_out <- generated_at_out[!is.na(generated_at_out) & nzchar(generated_at_out)]
+  if (length(generated_at_out) > 0L) {
+    generated_at_out <- generated_at_out[[1]]
+  } else {
+    generated_at_out <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+  }
+
+  canonical_artifact_id_out <- as.character(canonical_artifact_id %||% NA_character_)
+  canonical_artifact_id_out <- canonical_artifact_id_out[
+    !is.na(canonical_artifact_id_out) & nzchar(canonical_artifact_id_out)
+  ]
+  if (length(canonical_artifact_id_out) > 0L) {
+    canonical_artifact_id_out <- canonical_artifact_id_out[[1]]
+  } else {
+    canonical_artifact_id_out <- canonical_byte_hash
+  }
+
+  released_artifact_id_out <- as.character(released_artifact_id %||% NA_character_)
+  released_artifact_id_out <- released_artifact_id_out[
+    !is.na(released_artifact_id_out) & nzchar(released_artifact_id_out)
+  ]
+  if (length(released_artifact_id_out) > 0L) {
+    released_artifact_id_out <- released_artifact_id_out[[1]]
+  } else {
+    released_artifact_id_out <- released_byte_hash
+  }
+
   list(
+    run_id = run_id_out,
+    generated_at_utc = generated_at_out,
+    canonical_artifact_id = canonical_artifact_id_out,
+    released_artifact_id = released_artifact_id_out,
     released_from = source,
     canonical_available = canonical_available,
     canonical_matches_message = canonical_matches,

@@ -1,15 +1,6 @@
 [
   {
     "repair_applied": true,
-    "repair_reason": "residual_tool_calls_no_content",
-    "missing_keys_count": 0,
-    "missing_keys_sample": [],
-    "fallback_on_failure": true,
-    "schema_source": "explicit",
-    "context": "finalize"
-  },
-  {
-    "repair_applied": true,
     "repair_reason": "field_status_canonical",
     "missing_keys_count": 0,
     "missing_keys_sample": [],

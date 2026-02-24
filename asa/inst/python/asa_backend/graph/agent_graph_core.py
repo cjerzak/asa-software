@@ -13,6 +13,7 @@ import sys
 import threading
 import time
 import uuid
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 # ────────────────────────────────────────────────────────────────────────
@@ -1230,6 +1231,12 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "mode": "observe",
         "dedupe_queries": True,
         "dedupe_urls": True,
+        # Optional anchor-aware reranker (task-agnostic) applied to evidence
+        # candidate scores after base ranking.
+        "anchor_aware_rerank_enabled": False,
+        "anchor_aware_rerank_weight": 0.25,
+        "offtarget_penalty_weight": 0.20,
+        "min_anchor_overlap_tokens": 1,
         "early_stop_min_gain": 0.10,
         "early_stop_patience_steps": 2,
         "max_repeat_offtopic": 8,
@@ -1362,6 +1369,19 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
     rc = options["retrieval_controller"]
     rc["dedupe_queries"] = bool(rc.get("dedupe_queries", True))
     rc["dedupe_urls"] = bool(rc.get("dedupe_urls", True))
+    rc["anchor_aware_rerank_enabled"] = bool(rc.get("anchor_aware_rerank_enabled", False))
+    rc["anchor_aware_rerank_weight"] = _clamp01(
+        rc.get("anchor_aware_rerank_weight"),
+        default=0.25,
+    )
+    rc["offtarget_penalty_weight"] = _clamp01(
+        rc.get("offtarget_penalty_weight"),
+        default=0.20,
+    )
+    try:
+        rc["min_anchor_overlap_tokens"] = max(0, int(rc.get("min_anchor_overlap_tokens", 1)))
+    except Exception:
+        rc["min_anchor_overlap_tokens"] = 1
     rc["early_stop_min_gain"] = _clamp01(rc.get("early_stop_min_gain"), default=0.10)
     try:
         rc["early_stop_patience_steps"] = max(1, int(rc.get("early_stop_patience_steps", 2)))
@@ -4238,6 +4258,7 @@ def _extract_field_status_updates(
     source_policy: Any = None,
     source_tier_provider: Any = None,
     finalization_policy: Any = None,
+    retrieval_controller: Any = None,
 ) -> tuple[Dict[str, Dict[str, Any]], Dict[str, List[Dict[str, Any]]], Dict[str, Any]]:
     """Update canonical field_status based on recent tool outputs."""
     field_status = _normalize_field_status_map(existing_field_status, expected_schema)
@@ -4258,6 +4279,25 @@ def _extract_field_status_updates(
         if evidence_require_second_source is None
         else bool(evidence_require_second_source)
     )
+    retrieval_controller_options = dict(_DEFAULT_ORCHESTRATION_OPTIONS.get("retrieval_controller") or {})
+    if isinstance(retrieval_controller, dict):
+        retrieval_controller_options.update(retrieval_controller)
+    anchor_aware_rerank_enabled = bool(retrieval_controller_options.get("anchor_aware_rerank_enabled", False))
+    anchor_aware_rerank_weight = _clamp01(
+        retrieval_controller_options.get("anchor_aware_rerank_weight"),
+        default=0.25,
+    )
+    offtarget_penalty_weight = _clamp01(
+        retrieval_controller_options.get("offtarget_penalty_weight"),
+        default=0.20,
+    )
+    try:
+        min_anchor_overlap_tokens = max(
+            0,
+            int(retrieval_controller_options.get("min_anchor_overlap_tokens", 1)),
+        )
+    except Exception:
+        min_anchor_overlap_tokens = 1
     normalized_source_policy = _normalize_source_policy(source_policy)
     if not field_status:
         return field_status, ledger, stats
@@ -4416,6 +4456,42 @@ def _extract_field_status_updates(
             stats["fields_with_candidates"] = int(stats.get("fields_with_candidates", 0)) + 1
             stats["candidates_seen"] = int(stats.get("candidates_seen", 0)) + int(len(candidate_pool))
             new_scored = _score_evidence_candidates(candidate_pool, mode=mode)
+            if anchor_aware_rerank_enabled and anchor_tokens:
+                max_anchor_tokens = max(1, len(anchor_tokens))
+                for candidate in new_scored:
+                    excerpt_norm = _normalize_match_text(str(candidate.get("evidence_excerpt") or ""))
+                    hit_count = 0
+                    for token in anchor_tokens:
+                        if token and token in excerpt_norm:
+                            hit_count += 1
+                    overlap_ratio = _clamp01(float(hit_count) / float(max_anchor_tokens), default=0.0)
+                    overlap_gate_pass = bool(hit_count >= int(min_anchor_overlap_tokens))
+                    boost = (
+                        float(anchor_aware_rerank_weight) * float(overlap_ratio)
+                        if overlap_gate_pass
+                        else 0.0
+                    )
+                    rejection_reason = str(candidate.get("rejection_reason") or "").strip().lower()
+                    off_target_signal = bool(
+                        rejection_reason.startswith("grounding_blocked_anchor")
+                        or rejection_reason.startswith("grounding_blocked_entity")
+                        or (
+                            len(anchor_tokens) >= 2
+                            and float(candidate.get("entity_overlap", 0.0)) < 0.10
+                        )
+                    )
+                    penalty = float(offtarget_penalty_weight) if off_target_signal else 0.0
+                    rerank_delta = float(boost) - float(penalty)
+                    candidate["anchor_hit_count"] = int(hit_count)
+                    candidate["anchor_overlap_ratio"] = float(overlap_ratio)
+                    candidate["anchor_overlap_gate_pass"] = bool(overlap_gate_pass)
+                    candidate["offtarget_signal"] = bool(off_target_signal)
+                    candidate["rerank_delta"] = round(float(rerank_delta), 4)
+                    candidate["score"] = _clamp01(
+                        float(candidate.get("score", 0.0)) + float(rerank_delta),
+                        default=0.0,
+                    )
+                new_scored.sort(key=lambda c: float(c.get("score", 0.0)), reverse=True)
             for candidate in new_scored:
                 if not isinstance(candidate, dict):
                     continue
@@ -4589,14 +4665,26 @@ def _extract_field_status_updates(
         if rejected_evidence:
             entry["evidence"] = rejected_evidence
             entry["evidence_reason"] = rejected_evidence
-            top_score = next(
+            top_candidate = next(
                 (
-                    float(candidate.get("score", 0.0))
+                    candidate
                     for candidate in list(ledger.get(key) or [])
                     if isinstance(candidate, dict)
                 ),
-                0.0,
+                None,
             )
+            top_score = 0.0
+            if isinstance(top_candidate, dict):
+                try:
+                    top_score = float(top_candidate.get("score", 0.0))
+                except Exception:
+                    top_score = 0.0
+                top_source_url = _normalize_url_match(top_candidate.get("source_url"))
+                if top_source_url:
+                    entry["evidence_source_url"] = top_source_url
+                entry["candidate_score"] = round(float(top_score), 4)
+            entry["anchor_mode"] = str(anchor_mode or "adaptive").strip().lower() or "adaptive"
+            entry["anchor_strength"] = str(target_anchor_state.get("strength") or "none").strip().lower() or "none"
             entry["evidence_score"] = round(float(top_score), 4)
             field_status[key] = entry
 
@@ -6766,6 +6854,18 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
             except Exception:
                 unknown_reason_counts[reason] = 0
     out["unknown_reason_counts"] = unknown_reason_counts
+    finalization_reason_counts_raw = existing.get("finalization_invariant_failures_by_reason") or {}
+    finalization_reason_counts: Dict[str, int] = {}
+    if isinstance(finalization_reason_counts_raw, dict):
+        for raw_reason, raw_count in finalization_reason_counts_raw.items():
+            reason = str(raw_reason or "").strip()
+            if not reason:
+                continue
+            try:
+                finalization_reason_counts[reason] = max(0, int(raw_count))
+            except Exception:
+                finalization_reason_counts[reason] = 0
+    out["finalization_invariant_failures_by_reason"] = finalization_reason_counts
     unknown_fields_by_reason_raw = existing.get("unknown_fields_by_reason") or {}
     unknown_fields_by_reason: Dict[str, List[str]] = {}
     if isinstance(unknown_fields_by_reason_raw, dict):
@@ -6784,6 +6884,50 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
                     break
             unknown_fields_by_reason[reason] = bucket
     out["unknown_fields_by_reason"] = unknown_fields_by_reason
+    blocking_fields: List[str] = []
+    for raw_field in list(existing.get("finalization_blocking_fields") or []):
+        field_name = str(raw_field or "").strip()
+        if not field_name:
+            continue
+        if field_name not in blocking_fields:
+            blocking_fields.append(field_name)
+        if len(blocking_fields) >= 64:
+            break
+    out["finalization_blocking_fields"] = blocking_fields
+    anchor_mismatch_samples: List[Dict[str, Any]] = []
+    for raw in list(existing.get("anchor_mismatch_samples") or [])[:64]:
+        if not isinstance(raw, dict):
+            continue
+        score = 0.0
+        try:
+            score = float(raw.get("candidate_score", 0.0) or 0.0)
+        except Exception:
+            score = 0.0
+        anchor_mismatch_samples.append({
+            "field": str(raw.get("field") or "").strip() or None,
+            "reason": str(raw.get("reason") or "").strip() or None,
+            "source_url": _normalize_url_match(raw.get("source_url")),
+            "anchor_mode": str(raw.get("anchor_mode") or "").strip().lower() or None,
+            "anchor_strength": str(raw.get("anchor_strength") or "").strip().lower() or None,
+            "candidate_score": round(float(score), 4),
+        })
+    out["anchor_mismatch_samples"] = anchor_mismatch_samples
+    empty_tool_results_details: List[Dict[str, Any]] = []
+    for raw in list(existing.get("empty_tool_results_details") or [])[:64]:
+        if not isinstance(raw, dict):
+            continue
+        round_index = 0
+        try:
+            round_index = max(0, int(raw.get("round_index", 0) or 0))
+        except Exception:
+            round_index = 0
+        empty_tool_results_details.append({
+            "tool_name": _normalize_match_text(raw.get("tool_name")) or "unknown",
+            "query_digest": str(raw.get("query_digest") or "").strip() or None,
+            "error_type": str(raw.get("error_type") or "").strip() or None,
+            "round_index": int(round_index),
+        })
+    out["empty_tool_results_details"] = empty_tool_results_details
     out["retrieval_interventions"] = list(existing.get("retrieval_interventions") or [])[:64]
     out["webpage_openwebpage_skip_reasons"] = list(existing.get("webpage_openwebpage_skip_reasons") or [])[:32]
     out["webpage_langextract_provider"] = str(existing.get("webpage_langextract_provider") or "")
@@ -6938,6 +7082,7 @@ def _field_unknown_reason(entry: Any) -> str:
 
 
 def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
+    raw_status = field_status if isinstance(field_status, dict) else {}
     normalized = _normalize_field_status_map(field_status, expected_schema=None)
     blocked_fields: List[str] = []
     consistency_fixes: List[str] = []
@@ -6949,10 +7094,13 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     unknown_fields: List[str] = []
     unknown_reason_counts: Dict[str, int] = {}
     unknown_fields_by_reason: Dict[str, List[str]] = {}
+    anchor_mismatch_samples: List[Dict[str, Any]] = []
     for key, entry in (normalized or {}).items():
         if not isinstance(entry, dict):
             continue
+        raw_entry = raw_status.get(key) if isinstance(raw_status.get(key), dict) else {}
         evidence = str(entry.get("evidence") or "").strip().lower()
+        evidence_reason = str(entry.get("evidence_reason") or evidence).strip().lower()
         status = str(entry.get("status") or "").strip().lower()
         if evidence.startswith("grounding_blocked"):
             blocked_fields.append(str(key))
@@ -6967,6 +7115,40 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         if evidence.startswith("recovery_blocked"):
             recovery_rejected_fields.append(str(key))
             recovery_reason_counts[evidence] = int(recovery_reason_counts.get(evidence, 0)) + 1
+        if (
+            evidence_reason in {"recovery_blocked_anchor_mismatch", "grounding_blocked_anchor_mismatch"}
+            or evidence in {"recovery_blocked_anchor_mismatch", "grounding_blocked_anchor_mismatch"}
+        ):
+            candidate_score = 0.0
+            try:
+                candidate_score = float(entry.get("candidate_score", entry.get("evidence_score", 0.0)) or 0.0)
+            except Exception:
+                candidate_score = 0.0
+            sample = {
+                "field": str(key),
+                "reason": evidence_reason or evidence or "recovery_blocked_anchor_mismatch",
+                "source_url": _normalize_url_match(
+                    raw_entry.get("evidence_source_url")
+                    or entry.get("evidence_source_url")
+                    or raw_entry.get("source_url")
+                    or entry.get("source_url")
+                ),
+                "anchor_mode": str(
+                    raw_entry.get("anchor_mode")
+                    or entry.get("anchor_mode")
+                    or ""
+                ).strip().lower() or None,
+                "anchor_strength": str(
+                    raw_entry.get("anchor_strength")
+                    or entry.get("anchor_strength")
+                    or ""
+                ).strip().lower() or None,
+                "candidate_score": round(float(candidate_score), 4),
+            }
+            if sample not in anchor_mismatch_samples:
+                anchor_mismatch_samples.append(sample)
+            if len(anchor_mismatch_samples) >= 64:
+                anchor_mismatch_samples = anchor_mismatch_samples[:64]
         if status == _FIELD_STATUS_UNKNOWN:
             key_str = str(key)
             unknown_fields.append(key_str)
@@ -6996,6 +7178,7 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         "unknown_fields": unknown_fields[:64],
         "unknown_reason_counts": unknown_reason_counts,
         "unknown_fields_by_reason": unknown_fields_by_reason,
+        "anchor_mismatch_samples": anchor_mismatch_samples[:64],
     }
 
 
@@ -7130,6 +7313,15 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
                 existing.append(token)
         unknown_fields_by_reason[reason] = existing[:64]
     out["unknown_fields_by_reason"] = unknown_fields_by_reason
+    existing_samples = list(out.get("anchor_mismatch_samples") or [])
+    for raw_sample in list(field_diag.get("anchor_mismatch_samples") or []):
+        if not isinstance(raw_sample, dict):
+            continue
+        if raw_sample not in existing_samples:
+            existing_samples.append(raw_sample)
+        if len(existing_samples) >= 64:
+            break
+    out["anchor_mismatch_samples"] = existing_samples[:64]
     return out
 
 
@@ -9596,6 +9788,49 @@ def _repair_events_require_structural_retry(events: Any) -> bool:
         if _repair_event_is_structural(event):
             return True
     return False
+
+
+def _iso_utc_now() -> str:
+    """Return current UTC timestamp in compact ISO-8601 form."""
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _annotate_json_repair_event(
+    event: Any,
+    *,
+    trigger_context: Optional[str] = None,
+) -> Any:
+    """Attach stable observability metadata to a repair event."""
+    if not isinstance(event, dict):
+        return event
+    out = dict(event)
+    if not str(out.get("event_id") or "").strip():
+        out["event_id"] = uuid.uuid4().hex
+    if not str(out.get("ts_utc") or "").strip():
+        out["ts_utc"] = _iso_utc_now()
+    ctx = str(trigger_context or out.get("context") or "agent").strip() or "agent"
+    out["trigger_context"] = ctx
+    if not str(out.get("outcome_status") or "").strip():
+        if bool(out.get("repair_applied", False)):
+            out["outcome_status"] = "applied"
+        elif str(out.get("repair_reason") or "").strip().lower() in {"ok", "noop"}:
+            out["outcome_status"] = "noop"
+        else:
+            out["outcome_status"] = "failed"
+    return out
+
+
+def _annotate_json_repair_events(
+    events: Any,
+    *,
+    trigger_context: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    for raw in list(events or []):
+        item = _annotate_json_repair_event(raw, trigger_context=trigger_context)
+        if isinstance(item, dict):
+            out.append(item)
+    return out
 
 
 def _repair_best_effort_json(
@@ -12240,6 +12475,7 @@ def _create_tool_node_with_scratchpad(
             source_policy=source_policy,
             source_tier_provider=source_tier_provider,
             finalization_policy=finalization_policy,
+            retrieval_controller=(orchestration_options.get("retrieval_controller") or {}),
         )
         diagnostics["anchor_hard_blocks_count"] = int(
             diagnostics.get("anchor_hard_blocks_count", 0) or 0
@@ -12457,6 +12693,34 @@ def _create_tool_node_with_scratchpad(
         off_target_hits = sum(1 for q in tool_quality_events if q.get("is_off_target"))
         diagnostics["empty_tool_results_count"] = int(diagnostics.get("empty_tool_results_count", 0)) + int(empty_hits)
         diagnostics["off_target_tool_results_count"] = int(diagnostics.get("off_target_tool_results_count", 0)) + int(off_target_hits)
+        query_digest = None
+        query_seed = " | ".join(
+            str(q).strip()
+            for q in list(search_queries or [])
+            if str(q).strip()
+        )
+        if query_seed:
+            query_digest = hashlib.sha256(query_seed.encode("utf-8")).hexdigest()[:16]
+        round_index = 1
+        try:
+            round_index = max(1, int((state.get("retrieval_metrics") or {}).get("tool_rounds", 0) or 0) + 1)
+        except Exception:
+            round_index = 1
+        empty_details = list(diagnostics.get("empty_tool_results_details") or [])
+        for q in external_tool_events:
+            if not bool(q.get("is_empty", False)):
+                continue
+            detail = {
+                "tool_name": str(q.get("tool_name") or "unknown").strip().lower() or "unknown",
+                "query_digest": query_digest,
+                "error_type": str(q.get("error_type") or "").strip() or None,
+                "round_index": int(round_index),
+            }
+            if detail not in empty_details:
+                empty_details.append(detail)
+            if len(empty_details) >= 64:
+                break
+        diagnostics["empty_tool_results_details"] = empty_details[:64]
 
         retrieval_metrics = _build_retrieval_metrics(
             state=state,
@@ -12812,7 +13076,37 @@ def _create_tool_node_with_scratchpad(
         existing_trace = result.get("token_trace")
         if not isinstance(existing_trace, list):
             existing_trace = []
-        existing_trace.append(build_node_trace_entry("tools", started_at=node_started_at))
+        tool_status = "ok"
+        tool_error_type = None
+        if any(bool(q.get("is_error", False)) for q in external_tool_events):
+            tool_status = "error"
+            tool_error_type = next(
+                (
+                    str(q.get("error_type") or "").strip()
+                    for q in external_tool_events
+                    if bool(q.get("is_error", False)) and str(q.get("error_type") or "").strip()
+                ),
+                None,
+            )
+        tool_names = sorted({
+            str(q.get("tool_name") or "").strip().lower()
+            for q in external_tool_events
+            if str(q.get("tool_name") or "").strip()
+        })
+        tool_name = None
+        if len(tool_names) == 1:
+            tool_name = tool_names[0]
+        elif len(tool_names) > 1:
+            tool_name = "mixed"
+        existing_trace.append(
+            build_node_trace_entry(
+                "tools",
+                started_at=node_started_at,
+                status=tool_status,
+                error_type=tool_error_type,
+                tool_name=tool_name,
+            )
+        )
         result["token_trace"] = existing_trace
         return result
     return tool_node_with_scratchpad
@@ -13453,6 +13747,34 @@ def create_memory_folding_agent(
             diagnostics["finalization_invariant_failures"] = int(
                 diagnostics.get("finalization_invariant_failures", 0) or 0
             ) + 1
+            reason_counts = diagnostics.get("finalization_invariant_failures_by_reason") or {}
+            if not isinstance(reason_counts, dict):
+                reason_counts = {}
+            reasons = [
+                str(reason).strip()
+                for reason in list(completion_gate.get("finalization_invariant_reasons") or [])
+                if str(reason).strip()
+            ]
+            if not reasons:
+                reasons = ["finalization_invariant_failed"]
+            for reason in reasons:
+                try:
+                    reason_counts[reason] = max(0, int(reason_counts.get(reason, 0) or 0)) + 1
+                except Exception:
+                    reason_counts[reason] = 1
+            diagnostics["finalization_invariant_failures_by_reason"] = reason_counts
+            blocking_fields = list(diagnostics.get("finalization_blocking_fields") or [])
+            for detail in list(completion_gate.get("missing_required_field_details") or []):
+                if not isinstance(detail, dict):
+                    continue
+                field_name = str(detail.get("field") or "").strip()
+                if not field_name:
+                    continue
+                if field_name not in blocking_fields:
+                    blocking_fields.append(field_name)
+                if len(blocking_fields) >= 64:
+                    break
+            diagnostics["finalization_blocking_fields"] = blocking_fields[:64]
         if structural_repair_event_count > 0 and not bool(budget_state.get("budget_exhausted", False)):
             budget_state["structural_repair_retry_required"] = True
             budget_state["replan_requested"] = True
@@ -13552,7 +13874,10 @@ def create_memory_folding_agent(
         if canonical_event:
             repair_events.append(canonical_event)
         if repair_events:
-            out["json_repair"] = repair_events
+            out["json_repair"] = _annotate_json_repair_events(
+                repair_events,
+                trigger_context="agent",
+            )
         if not plan_mode_enabled:
             out["plan"] = None
         # Set stop_reason when agent_node itself ran in finalize mode,
@@ -13986,7 +14311,10 @@ def create_memory_folding_agent(
         if canonical_event:
             repair_events.append(canonical_event)
         if repair_events:
-            out["json_repair"] = repair_events
+            out["json_repair"] = _annotate_json_repair_events(
+                repair_events,
+                trigger_context="finalize",
+            )
         # Auto-complete plan steps on finalization
         if plan_mode_enabled and plan:
             _auto_plan = plan if isinstance(plan, dict) else {}
@@ -15696,6 +16024,34 @@ def create_standard_agent(
             diagnostics["finalization_invariant_failures"] = int(
                 diagnostics.get("finalization_invariant_failures", 0) or 0
             ) + 1
+            reason_counts = diagnostics.get("finalization_invariant_failures_by_reason") or {}
+            if not isinstance(reason_counts, dict):
+                reason_counts = {}
+            reasons = [
+                str(reason).strip()
+                for reason in list(completion_gate.get("finalization_invariant_reasons") or [])
+                if str(reason).strip()
+            ]
+            if not reasons:
+                reasons = ["finalization_invariant_failed"]
+            for reason in reasons:
+                try:
+                    reason_counts[reason] = max(0, int(reason_counts.get(reason, 0) or 0)) + 1
+                except Exception:
+                    reason_counts[reason] = 1
+            diagnostics["finalization_invariant_failures_by_reason"] = reason_counts
+            blocking_fields = list(diagnostics.get("finalization_blocking_fields") or [])
+            for detail in list(completion_gate.get("missing_required_field_details") or []):
+                if not isinstance(detail, dict):
+                    continue
+                field_name = str(detail.get("field") or "").strip()
+                if not field_name:
+                    continue
+                if field_name not in blocking_fields:
+                    blocking_fields.append(field_name)
+                if len(blocking_fields) >= 64:
+                    break
+            diagnostics["finalization_blocking_fields"] = blocking_fields[:64]
         if structural_repair_event_count > 0 and not bool(budget_state.get("budget_exhausted", False)):
             budget_state["structural_repair_retry_required"] = True
             budget_state["replan_requested"] = True
@@ -15793,7 +16149,10 @@ def create_standard_agent(
         if canonical_event:
             repair_events.append(canonical_event)
         if repair_events:
-            out["json_repair"] = repair_events
+            out["json_repair"] = _annotate_json_repair_events(
+                repair_events,
+                trigger_context="agent",
+            )
         if not plan_mode_enabled:
             out["plan"] = None
         # Set stop_reason when agent_node itself ran in finalize mode,
@@ -16210,7 +16569,10 @@ def create_standard_agent(
         if canonical_event:
             repair_events.append(canonical_event)
         if repair_events:
-            out["json_repair"] = repair_events
+            out["json_repair"] = _annotate_json_repair_events(
+                repair_events,
+                trigger_context="finalize",
+            )
         # Auto-complete plan steps on finalization
         if plan_mode_enabled and plan:
             _auto_plan = plan if isinstance(plan, dict) else {}

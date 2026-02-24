@@ -27,11 +27,44 @@ devtools::load_all('~/Documents/asa-software/asa')
 trace_run_timestamp <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 trace_run_id <- paste0("trace_real_", format(Sys.time(), "%Y%m%dT%H%M%S"))
 
-artifact_sentinel <- function(artifact, reason = "artifact_not_available") {
+artifact_sentinel <- function(artifact,
+                              reason = "artifact_not_available",
+                              mode = NA_character_,
+                              upstream_dependency = NA_character_) {
+  resolved_mode <- as.character(mode %||% NA_character_)
+  if (length(resolved_mode) == 0L || is.na(resolved_mode[[1]]) || !nzchar(resolved_mode[[1]])) {
+    if (identical(reason, "plan_mode_disabled")) {
+      resolved_mode <- "plan_disabled"
+    } else if (grepl("not_available|absent|disabled", reason)) {
+      resolved_mode <- "not_generated"
+    } else {
+      resolved_mode <- "error"
+    }
+  } else {
+    resolved_mode <- resolved_mode[[1]]
+  }
+
+  resolved_dependency <- as.character(upstream_dependency %||% NA_character_)
+  if (length(resolved_dependency) == 0L || is.na(resolved_dependency[[1]]) || !nzchar(resolved_dependency[[1]])) {
+    resolved_dependency <- switch(
+      artifact,
+      plan_output = "plan_mode",
+      fold_summary = "raw_response$summary",
+      fold_archive = "raw_response$archive",
+      invoke_error = "execution$json_repair",
+      "upstream_pipeline_state"
+    )
+  } else {
+    resolved_dependency <- resolved_dependency[[1]]
+  }
+
   list(
     status = "empty",
     artifact = artifact,
     reason = reason,
+    expected_empty = TRUE,
+    mode = resolved_mode,
+    upstream_dependency = resolved_dependency,
     run_id = trace_run_id,
     generated_at = trace_run_timestamp
   )
@@ -271,9 +304,6 @@ stop_heartbeat <- function(hb) {
   if (!is.na(hb_pid) && hb_pid > 0L) {
     suppressWarnings(try(tools::pskill(hb_pid), silent = TRUE))
   }
-  if (is.character(stopfile) && length(stopfile) == 1L && nzchar(stopfile)) {
-    suppressWarnings(try(unlink(stopfile, force = TRUE), silent = TRUE))
-  }
   phasefile <- hb$phasefile
   if (is.character(phasefile) && length(phasefile) == 1L && nzchar(phasefile)) {
     suppressWarnings(try(unlink(phasefile, force = TRUE), silent = TRUE))
@@ -281,6 +311,9 @@ stop_heartbeat <- function(hb) {
   progress_file <- hb$progress_file
   if (is.character(progress_file) && length(progress_file) == 1L && nzchar(progress_file)) {
     suppressWarnings(try(unlink(progress_file, force = TRUE), silent = TRUE))
+  }
+  if (is.character(stopfile) && length(stopfile) == 1L && nzchar(stopfile)) {
+    suppressWarnings(try(unlink(stopfile, force = TRUE), silent = TRUE))
   }
   invisible(NULL)
 }
@@ -407,13 +440,22 @@ hb <- start_heartbeat(
 set_heartbeat_phase(hb, phase = "backend_invoke", detail = "run_task")
 old_progress_file <- Sys.getenv("ASA_PROGRESS_STATE_FILE", unset = "")
 set_progress_state_file(hb$progress_file)
-on.exit({
+heartbeat_cleaned <- FALSE
+cleanup_heartbeat <- function() {
+  if (isTRUE(heartbeat_cleaned)) {
+    return(invisible(NULL))
+  }
   if (is.character(old_progress_file) && length(old_progress_file) == 1L && nzchar(old_progress_file)) {
     set_progress_state_file(old_progress_file)
   } else {
     set_progress_state_file("")
   }
   stop_heartbeat(hb)
+  heartbeat_cleaned <<- TRUE
+  invisible(NULL)
+}
+on.exit({
+  cleanup_heartbeat()
 }, add = TRUE)
 
 attempt <- run_task(
@@ -476,9 +518,9 @@ attempt <- run_task(
   )
 )
 set_heartbeat_phase(hb, phase = "backend_complete", detail = "run_task_returned")
+cleanup_heartbeat()
 
 # write to disk for further investigations.
-set_heartbeat_phase(hb, phase = "artifact_write", detail = "persist_outputs")
 readr::write_file(prompt, "~/Documents/asa-software/tracked_reports/prompt_example_real.txt")
 
 # Structured trace (asa_trace_v1 format — each message is a distinct JSON object)
@@ -644,7 +686,6 @@ cat("  elapsed_time:", attempt$elapsed_time, "\n")
 cat("  fold_stats:", jsonlite::toJSON(attempt$fold_stats, auto_unbox = TRUE), "\n")
 
 # save final answer (extract from structured trace on disk)
-set_heartbeat_phase(hb, phase = "finalize_output", detail = "extract_answer")
 tmp <- readr::read_file("~/Documents/asa-software/tracked_reports/trace_real.txt")
 extracted <- extract_agent_results(tmp)
 final_answer <- extracted[["json_data_canonical"]] %||% extracted[["json_data"]]
@@ -654,7 +695,6 @@ if (is.null(final_answer) && is.character(attempt$message) && length(attempt$mes
     error = function(e) NULL
   )
 }
-set_heartbeat_phase(hb, phase = "done", detail = "trace_complete")
 message("Trace test complete")
 
 jsonlite::write_json(
@@ -720,6 +760,10 @@ if (
 }
 
 payload_release_audit <- list(
+  run_id = payload_integrity$run_id %||% trace_run_id,
+  generated_at_utc = payload_integrity$generated_at_utc %||% trace_run_timestamp,
+  canonical_artifact_id = payload_integrity$canonical_artifact_id %||% canonical_byte_hash,
+  released_artifact_id = payload_integrity$released_artifact_id %||% released_byte_hash,
   released_from = payload_integrity$released_from %||% NA_character_,
   canonical_available = isTRUE(payload_integrity$canonical_available),
   canonical_matches_message = isTRUE(payload_integrity$canonical_matches_message),

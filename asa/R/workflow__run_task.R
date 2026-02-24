@@ -475,6 +475,20 @@ run_task <- function(prompt,
   } else {
     NA_character_
   }
+  finalization_invariant_reasons <- .try_or(
+    as.character(completion_gate$finalization_invariant_reasons %||% character(0)),
+    character(0)
+  )
+  finalization_invariant_reasons <- unique(
+    finalization_invariant_reasons[!is.na(finalization_invariant_reasons) & nzchar(finalization_invariant_reasons)]
+  )
+  finalization_blocking_fields <- .try_or(
+    as.character((response$diagnostics %||% list())$finalization_blocking_fields %||% character(0)),
+    character(0)
+  )
+  finalization_blocking_fields <- unique(
+    finalization_blocking_fields[!is.na(finalization_blocking_fields) & nzchar(finalization_blocking_fields)]
+  )
   tokens_used <- .as_scalar_int(response$tokens_used)
   token_stats <- .build_token_stats(
     tokens_used = tokens_used,
@@ -669,6 +683,8 @@ run_task <- function(prompt,
     payload_integrity = payload_integrity,
     completion_gate = completion_gate,
     verification_status = verification_status,
+    finalization_invariant_reasons = finalization_invariant_reasons,
+    finalization_blocking_fields = finalization_blocking_fields,
     token_stats = token_stats,
     om_stats = response$om_stats %||% list(),
     observations = response$observations %||% list(),
@@ -702,6 +718,37 @@ run_task <- function(prompt,
       execution$action_investigator_summary,
       "Payload integrity warning: canonical payload differs from released message."
     ))
+  }
+  if (isTRUE(completion_gate$finalization_invariant_failed)) {
+    execution$action_investigator_summary <- unique(c(
+      execution$action_investigator_summary,
+      paste0(
+        "Finalization invariant failure",
+        if (length(finalization_invariant_reasons) > 0) {
+          paste0(": ", paste(finalization_invariant_reasons, collapse = ", "))
+        } else {
+          "."
+        }
+      )
+    ))
+    if (isTRUE(verbose)) {
+      warning(
+        paste0(
+          "Finalization invariant failed",
+          if (length(finalization_invariant_reasons) > 0) {
+            paste0(": ", paste(finalization_invariant_reasons, collapse = ", "))
+          } else {
+            "."
+          },
+          if (length(finalization_blocking_fields) > 0) {
+            paste0(" Blocking fields: ", paste(finalization_blocking_fields, collapse = ", "))
+          } else {
+            ""
+          }
+        ),
+        call. = FALSE
+      )
+    }
   }
   if (identical(output_format, "raw")) {
     execution$raw_response <- response$raw_response

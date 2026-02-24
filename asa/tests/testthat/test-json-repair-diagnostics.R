@@ -95,3 +95,29 @@ test_that("_repair_best_effort_json emits bridge-visible parse/repair diagnostic
   expect_false(isTRUE(event$parse_diagnostics$ok))
   expect_false(isTRUE(event$repair_diagnostics$ok))
 })
+
+test_that("json repair event annotation adds ids, timestamps, and outcome", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  annotate <- reticulate::py_get_attr(prod, "_annotate_json_repair_event")
+  event <- .as_r_value(annotate(
+    list(
+      repair_applied = FALSE,
+      repair_reason = "repair_failed",
+      context = "finalize"
+    ),
+    trigger_context = "finalize"
+  ))
+
+  expect_true(is.list(event))
+  expect_true(is.character(event$event_id))
+  expect_true(nzchar(event$event_id))
+  expect_true(is.character(event$ts_utc))
+  expect_true(grepl("Z$", as.character(event$ts_utc), fixed = FALSE))
+  expect_equal(as.character(event$trigger_context), "finalize")
+  expect_equal(as.character(event$outcome_status), "failed")
+})

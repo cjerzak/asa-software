@@ -9,6 +9,7 @@ import pathlib
 import re
 import sys
 import time
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
@@ -1058,6 +1059,21 @@ def elapsed_minutes_from_perf_counter(
     return elapsed_seconds / 60.0
 
 
+def _iso_utc_from_epoch_seconds(epoch_seconds: Any) -> str:
+    """Best-effort conversion of epoch seconds to ISO-8601 UTC text."""
+    try:
+        ts = float(epoch_seconds)
+    except Exception:
+        ts = time.time()
+    if ts < 0:
+        ts = 0.0
+    try:
+        dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+    except Exception:
+        dt = datetime.now(timezone.utc)
+    return dt.isoformat().replace("+00:00", "Z")
+
+
 def build_node_trace_entry(
     node: str,
     usage: Optional[Dict[str, int]] = None,
@@ -1065,6 +1081,11 @@ def build_node_trace_entry(
     started_at: Optional[float] = None,
     ended_at: Optional[float] = None,
     elapsed_minutes: Optional[float] = None,
+    status: Optional[str] = "ok",
+    error_type: Optional[str] = None,
+    tool_name: Optional[str] = None,
+    started_at_utc: Optional[str] = None,
+    ended_at_utc: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Build a normalized per-node trace entry with token and timing data."""
     parsed_usage = _usage_from_mapping(usage if isinstance(usage, dict) else {}) or {
@@ -1087,12 +1108,34 @@ def build_node_trace_entry(
     if not node_name:
         node_name = "unknown"
 
+    status_token = str(status or "ok").strip().lower()
+    if status_token not in {"ok", "error", "skipped"}:
+        status_token = "ok"
+
+    error_type_token = str(error_type or "").strip() or None
+    tool_name_token = str(tool_name or "").strip() or None
+
+    ended_at_iso = str(ended_at_utc or "").strip() or None
+    if not ended_at_iso:
+        ended_at_iso = _iso_utc_from_epoch_seconds(time.time())
+
+    started_at_iso = str(started_at_utc or "").strip() or None
+    if not started_at_iso:
+        elapsed_seconds = max(0.0, float(elapsed_val) * 60.0)
+        started_epoch = max(0.0, float(time.time()) - elapsed_seconds)
+        started_at_iso = _iso_utc_from_epoch_seconds(started_epoch)
+
     return {
         "node": node_name,
         "input_tokens": int(parsed_usage.get("input_tokens", 0) or 0),
         "output_tokens": int(parsed_usage.get("output_tokens", 0) or 0),
         "total_tokens": int(parsed_usage.get("total_tokens", 0) or 0),
         "elapsed_minutes": elapsed_val,
+        "started_at_utc": started_at_iso,
+        "ended_at_utc": ended_at_iso,
+        "status": status_token,
+        "error_type": error_type_token,
+        "tool_name": tool_name_token,
     }
 
 
