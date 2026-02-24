@@ -556,7 +556,6 @@ payload_release_audit <- list(
   truncation_signals = payload_integrity$truncation_signals %||% character(0),
   json_repair_reasons = payload_integrity$json_repair_reasons %||% character(0)
 )
-
 readr::write_file(
   jsonlite::toJSON(payload_release_audit, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   "~/Documents/asa-software/tracked_reports/payload_release_audit_real.txt"
