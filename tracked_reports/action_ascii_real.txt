@@ -16,22 +16,22 @@ WHAT HAPPENED OVERALL
   +-- Summary
       Human prompts: 1
       AI turns: 12 tool-call turn(s), 1 answer turn(s)
-      Tool results: 12 total (Tool Search=10, Tool OpenWebpage=2)
+      Tool results: 12 total (Tool Search=12)
       Structured terminal answer emitted
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 4.7588m (tok=0, n=12)
-      agent: 0.6634m (tok=87279, n=12)
-      finalize: 0.1647m (tok=12925, n=1)
+      tools: 4.3540m (tok=0, n=12)
+      agent: 0.6147m (tok=88288, n=12)
+      finalize: 0.1724m (tok=11106, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #12 tools: 1.2136m (tok=0)
-      #22 tools: 1.1005m (tok=0)
-      #16 tools: 0.8234m (tok=0)
-      #10 tools: 0.7327m (tok=0)
-      #24 tools: 0.6445m (tok=0)
-  +-- [TIMING] wall=5.5891m nodes=5.5869m delta=+0.0022m (overhead)
+      #18 tools: 0.8777m (tok=0)
+      #22 tools: 0.8379m (tok=0)
+      #20 tools: 0.7647m (tok=0)
+      #12 tools: 0.6435m (tok=0)
+      #16 tools: 0.6089m (tok=0)
+  +-- [TIMING] wall=5.1432m nodes=5.1412m delta=+0.0021m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -39,127 +39,127 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=1489 out=226 total=1715
-      min: 0.0961m
+      tok: in=1489 out=246 total=1735
+      min: 0.0972m
       detail: Search(query=Ramona Moye Camaconi Bolivia MAS Beni bio...)
   +-- [03] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...rio </URL> __END_OF_SOURC...
-  +-- [04] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...tml </URL> __END_OF_SOURC...
+  +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=2439 out=134 total=2573
-      min: 0.0280m
-      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
+      tok: in=2495 out=123 total=2618
+      min: 0.0293m
+      detail: Search(query=Ramona Moye Camaconi biografía hoja de vida)
   +-- [05] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
-  +-- [06] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=3118 out=131 total=3249
-      min: 0.0246m
-      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
-  +-- [07] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
-  +-- [08] Requested 1 tool call (Search)
-      by: AI
-      tok: in=3770 out=238 total=4008
-      min: 0.0442m
-      detail: Search(query=Ramona Moye Camaconi biografía educación ...)
-  +-- [09] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...le </URL> __END_OF_SOURCE...
+  +-- [06] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3646 out=244 total=3890
+      min: 0.0416m
+      detail: Search(query="Ramona Moye Camaconi" biografía diputado...)
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...lle </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4819 out=251 total=5070
+      min: 0.0397m
+      detail: Search(query="Ramona Moye Camaconi" fecha de nacimient...)
+  +-- [09] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...956 </URL> __END_OF_SOURC...
   +-- [10] Requested 1 tool call (Search)
       by: AI
-      tok: in=5036 out=275 total=5311
-      min: 0.0454m
-      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient...)
+      tok: in=5719 out=403 total=6122
+      min: 0.0509m
+      detail: Search(query="Ramona Moye Camaconi" 1982-01-07)
   +-- [11] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Pese a las pugna...116 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Looking for Ramona Moye...oye </URL> __END_OF_SOURC...
   +-- [12] Requested 1 tool call (Search)
       by: AI
-      tok: in=6377 out=342 total=6719
-      min: 0.0475m
-      detail: Search(query=Directorio Legislativo Bolivia 2014-2020 ...)
+      tok: in=6211 out=257 total=6468
+      min: 0.0422m
+      detail: Search(query="Ramona Moye Camaconi" Directorio Legisla...)
   +-- [13] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Directorio legis...56 </URL> __END_OF_SOURCE...
   +-- [14] Requested 1 tool call (Search)
       by: AI
-      tok: in=6730 out=367 total=7097
-      min: 0.0535m
-      detail: Search(query="Ramona Moye Camaconi" biografía TIPNIS n...)
+      tok: in=7666 out=328 total=7994
+      min: 0.0491m
+      detail: Search(query="Ramona Moye Camaconi" site:oep.org.bo OR...)
   +-- [15] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...956 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
   +-- [16] Requested 1 tool call (Search)
       by: AI
-      tok: in=8156 out=446 total=8602
-      min: 0.0683m
-      detail: Search(query="Ramona Moye Camaconi" formación académic...)
+      tok: in=8110 out=211 total=8321
+      min: 0.0471m
+      detail: Search(query="Ramona Moye Camaconi" biografía PDF Boli...)
   +-- [17] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Bachillerato Téc...16 </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona , San Die...16 </URL> __END_OF_SOURCE...
   +-- [18] Requested 1 tool call (Search)
       by: AI
-      tok: in=10199 out=264 total=10463
-      min: 0.0494m
-      detail: Search(query="Ramona Moye Camaconi" biografía diputado...)
+      tok: in=9451 out=417 total=9868
+      min: 0.0650m
+      detail: Search(query="Directorio Legislativo" Bolivia 2015-202...)
   +-- [19] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...lle </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Parlamento del M...ml </URL> __END_OF_SOURCE...
   +-- [20] Requested 1 tool call (Search)
       by: AI
-      tok: in=11565 out=476 total=12041
-      min: 0.0686m
-      detail: Search(query=filetype:pdf "Ramona Moye Camaconi")
+      tok: in=11120 out=290 total=11410
+      min: 0.0539m
+      detail: Search(query="Ramona Moye Camaconi" nació en OR lugar ...)
   +-- [21] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ms.Ramona Moye Camaconi...pdf </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...116 </URL> __END_OF_SOURC...
   +-- [22] Requested 1 tool call (Search)
       by: AI
-      tok: in=12170 out=228 total=12398
-      min: 0.0488m
-      detail: Search(query="Quién es quién" "Ramona Moye Camaconi")
+      tok: in=11958 out=334 total=12292
+      min: 0.0560m
+      detail: Search(query="Ramona Moye Camaconi" "Carlos Fabricano"...)
   +-- [23] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...via </URL> __END_OF_SOURC...
   +-- [24] Requested 1 tool call (Search)
       by: AI
-      tok: in=12550 out=553 total=13103
-      min: 0.0889m
-      detail: Search(query="Ramona Moye Camaconi" bachiller secundar...)
+      tok: in=12303 out=197 total=12500
+      min: 0.0428m
+      detail: Search(query="Ramona Moye Camaconi" OEP candidatos 2014)
   +-- [25] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...116 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...as= </URL> __END_OF_SOURC...
   +-- [26] Produced structured answer
       by: AI
-      tok: in=11604 out=1321 total=12925
-      min: 0.1647m
+      tok: in=9903 out=1203 total=11106
+      min: 0.1724m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_institution":"U...sentatives from that regi...
+      detail: {"education_level":"Unknown","education_institution":"U...y-based labor in the regi...
 END

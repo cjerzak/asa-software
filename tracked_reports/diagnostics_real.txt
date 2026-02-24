@@ -97,7 +97,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:17:54.933233Z"
+      "ts_utc": "2026-02-24T19:28:34.253403Z"
     },
     {
       "context": "agent",
@@ -106,7 +106,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:18:00.152786Z"
+      "ts_utc": "2026-02-24T19:28:40.878945Z"
     },
     {
       "context": "agent",
@@ -115,7 +115,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:18:03.524938Z"
+      "ts_utc": "2026-02-24T19:28:45.294221Z"
     },
     {
       "context": "agent",
@@ -124,7 +124,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:18:07.871453Z"
+      "ts_utc": "2026-02-24T19:29:01.471658Z"
     },
     {
       "context": "agent",
@@ -133,7 +133,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:18:13.202714Z"
+      "ts_utc": "2026-02-24T19:29:06.366675Z"
     },
     {
       "context": "agent",
@@ -142,7 +142,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:19:00.019034Z"
+      "ts_utc": "2026-02-24T19:29:20.026803Z"
     },
     {
       "context": "agent",
@@ -151,7 +151,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:20:16.051520Z"
+      "ts_utc": "2026-02-24T19:30:01.593182Z"
     },
     {
       "context": "agent",
@@ -160,7 +160,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:20:21.988954Z"
+      "ts_utc": "2026-02-24T19:30:06.000094Z"
     },
     {
       "context": "agent",
@@ -169,7 +169,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:21:14.366068Z"
+      "ts_utc": "2026-02-24T19:30:46.439698Z"
     },
     {
       "context": "agent",
@@ -178,7 +178,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:21:20.106944Z"
+      "ts_utc": "2026-02-24T19:31:42.343194Z"
     },
     {
       "context": "agent",
@@ -187,7 +187,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:21:24.525872Z"
+      "ts_utc": "2026-02-24T19:32:31.595754Z"
     },
     {
       "context": "agent",
@@ -196,7 +196,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T19:22:35.901515Z"
+      "ts_utc": "2026-02-24T19:33:24.438657Z"
     },
     {
       "context": "finalize",
@@ -205,7 +205,7 @@
       "priority": "anchor_mismatch_recovery",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
-      "ts_utc": "2026-02-24T19:23:24.459684Z"
+      "ts_utc": "2026-02-24T19:33:36.966884Z"
     }
   ],
   "anchor_mismatch_samples": [
@@ -277,9 +277,9 @@
   "empty_tool_results_details": [
     {
       "tool_name": "search",
-      "query_digest": "d296c3a3d77bbab9",
+      "query_digest": "c32ea45d186e8f08",
       "error_type": null,
-      "round_index": 6
+      "round_index": 11
     }
   ],
   "retrieval_interventions": "diagnostics_recovery_checkpoint:diagnostics_reconciliation",
@@ -294,19 +294,19 @@
   "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
   "performance": {
     "tool_round_count": 12,
-    "tool_round_elapsed_ms_total": 285450,
-    "tool_round_elapsed_ms_last": 38660,
-    "tool_round_elapsed_ms_max": 72811,
-    "search_tool_calls": 10,
-    "openwebpage_tool_calls": 2,
+    "tool_round_elapsed_ms_total": 261161,
+    "tool_round_elapsed_ms_last": 2172,
+    "tool_round_elapsed_ms_max": 52648,
+    "search_tool_calls": 12,
+    "openwebpage_tool_calls": 0,
     "other_tool_calls": 0,
-    "search_tool_elapsed_ms_est_total": 281880,
-    "openwebpage_tool_elapsed_ms_est_total": 3570,
+    "search_tool_elapsed_ms_est_total": 261161,
+    "openwebpage_tool_elapsed_ms_est_total": 0,
     "other_tool_elapsed_ms_est_total": 0,
     "provider_error_count": 0,
     "provider_error_elapsed_ms_total": 0,
     "low_signal_streak_peak": 1,
-    "diminishing_returns_streak_peak": 10,
+    "diminishing_returns_streak_peak": 12,
     "adaptive_budget_events": 0,
     "adaptive_budget_reduced_calls_total": 0,
     "fold_event_count": 0,

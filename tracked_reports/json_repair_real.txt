@@ -1,64 +1,14 @@
 [
   {
     "repair_applied": true,
-    "repair_reason": "missing_keys",
-    "repair_severity": "structural",
-    "missing_keys_count": 1,
-    "missing_keys_sample": "education_level",
-    "fallback_on_failure": true,
-    "schema_source": "explicit",
-    "context": "finalize",
-    "parse_diagnostics": {
-      "ok": true,
-      "error_reason": null,
-      "exception_type": null,
-      "exception_message": null,
-      "context": {
-        "content_length": 1647,
-        "normalized_length": 1635,
-        "attempt_count": 1
-      }
-    },
-    "repair_diagnostics": {
-      "ok": true,
-      "error_reason": null,
-      "exception_type": null,
-      "exception_message": null,
-      "context": {
-        "output_length": 1647,
-        "schema_type": "dict",
-        "expected_shape": "dict",
-        "parsed_type": "dict",
-        "coerced_input_shape": false,
-        "fallback_on_failure": true
-      }
-    },
-    "repair_attempt_count": 1,
-    "repair_retry_used": false,
-    "input_text_hash": "7ab8fa9590df8aeb920b75f8a112cee2afd4a52b7b5f8a05d99edbea2eb4b0c6",
-    "output_text_hash": "255cd23016cdf6cf56027a3bef85dae1f4b9d734a3ef22d8d6af3d175e0f0440",
-    "input_text_length": 1647,
-    "output_text_length": 1627,
-    "input_text_preview": "```json { \"educational_attainment\": \"Unknown\", \"education_field\": \"Unknown\", \"education_institution\": \"Unknown\", \"education_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"prior_occupation\": \"President of the Women's Organization of the Sub-Central Sécure (TIPNIS)\", \"pri...",
-    "output_text_preview": "{\"educational_attainment\": \"Unknown\", \"education_field\": \"Unknown\", \"education_institution\": \"Unknown\", \"education_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"prior_occupation\": \"President of the Women's Organization of the Sub-Central Sécure (TIPNIS)\", \"prior_occupa...",
-    "payload_diff_summary": "--- before\n+++ after\n@@ -1,22 +1 @@\n-```json\n-{\n-  \"educational_attainment\": \"Unknown\",\n-  \"education_field\": \"Unknown\",\n-  \"education_institution\": \"Unknown\",\n-  \"education_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"prior_occupation\": \"President of the Women's Organization of the Sub-Central Sécure (TIPNIS)\",\n-  \"prior_occupation_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"class_background\": \"Working class\",\n-  \"birth_year\": 1982,\n-  \"birth_year_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"birth_place\": \"TIPNIS, Beni, Bolivia\",\n-  \"birth_place_source\": \"https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia\",\n-  \"disability_status\": \"Unknown\",\n-  \"disability_source\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_details\": \"Unknown\",\n-  \"lgbtq_source\": null,\n-  \"confidence\": \"high\",\n-  \"justification\": \"Ramona Moye Camaconi was elected as a deputy for the Special Indigenous Constituency of Beni in 2014. Official records from the Vicepresidency of Bolivia confirm her birth date as January 7, 1982. Her background is rooted in the indigenous social movements of the TIPNIS (Isiboro Sécure National Park and Indigenous Territory), where she served as the leader of the Women's Organization of the Sub-Central Sécure. This leadership role in a rural indigenous territory, combined with the lack of recorded professional or higher education, aligns with a working-class/peasant background typical of MAS indigenous representatives from that region.\"\n-}\n-```\n+{\"educational_attainment\": \"Unknown\", \"education_field\": \"Unknown\", \"education_institution\": \"Unknown\", \"education_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"prior_occupation\": \"President of the Women's Organization of the Sub-Central Sécure (TIPNIS)\", \"prior_occupation_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"class_background\": \"Working class\", \"birth_year\": 1982, \"birth_year_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"birth_place\": \"TIPNIS, Beni, Bolivia\", \"birth_place_source\": \"https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia\", \"disability_status\": \"Unknown\", \"disability_source\": null, \"lgbtq_status\": \"Unknown\", \"lgbtq_details\": \"Unknown\", \"lgbtq_source\": null, \"confidence\": \"high\", \"justification\": \"Ramona Moye Camaconi was elected as a deputy for the Special Indigenous Constituency of Beni in 2014. Official records from the Vicepresidency of Bolivia confirm her birth date as January 7, 1982. Her background is rooted in the indigenous social movements of the TIPNIS (Isiboro Sécure National Park and Indigenous Territory), where she ser\n...[diff truncated]",
-    "event_id": "ed250535df414a61a49aa4834697837f",
-    "ts_utc": "2026-02-24T19:23:24.470383Z",
-    "event_schema_version": "json_repair_event_v2",
-    "trigger_context": "finalize",
-    "outcome_status": "applied",
-    "payload_diff_available": true
-  },
-  {
-    "repair_applied": true,
     "repair_reason": "field_status_canonical",
     "missing_keys_count": 0,
     "missing_keys_sample": [],
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "event_id": "c84736210139433fafceff7abb166059",
-    "ts_utc": "2026-02-24T19:23:24.470409Z",
+    "event_id": "d80258d5945b42408f24693d39a22551",
+    "ts_utc": "2026-02-24T19:33:36.976910Z",
     "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
     "outcome_status": "applied",
