@@ -5,6 +5,6 @@
   "expected_empty": true,
   "mode": "not_generated",
   "upstream_dependency": "execution$json_repair",
-  "run_id": "trace_real_20260224T050331",
-  "generated_at": "2026-02-24T11:03:31Z"
+  "run_id": "trace_real_20260224T055417",
+  "generated_at": "2026-02-24T11:54:17Z"
 }

@@ -10,11 +10,11 @@
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
-  "birth_year": 1982,
-  "birth_year_source": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+  "birth_year": "Unknown",
+  "birth_year_source": null,
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Medium",
-  "justification": "Ramona Moye Camaconi was elected as a titular deputy for the Beni special indigenous constituency in 2014. Official records from the Vicepresidency of Bolivia confirm her birth date as January 7, 1982, and her ethnic self-identification as Moxeño Trinitario. While she is widely identified as an indigenous leader from the TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure) region, specific details regarding her formal education and professional career prior to entering the Plurinational Legislative Assembly are not publicly documented in standard biographical databases or official government profiles. Her public profile is primarily defined by her role as a representative of indigenous organizations and her involvement in regional land rights and infrastructure debates."
+  "justification": "Ramona Moye Camaconi is an indigenous Mojeño-Trinitario leader from the TIPNIS (Isiboro Sécure National Park and Indigenous Territory) in Beni, Bolivia. She was elected as a titular deputy for the Special Indigenous Constituency of Beni for the 2015-2020 term under the MAS party. Her background as an indigenous community leader from a rural protected territory aligns with a working-class/manual labor background typical of indigenous agrarian leaders in the region. While her political activity is well-documented, specific biographical details such as her exact birth date and educational history are not publicly available in official parliamentary records."
 }

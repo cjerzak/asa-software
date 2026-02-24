@@ -100,6 +100,7 @@ plan_mode_enabled <- FALSE
 # Keep emulation on (humanized timing) while avoiding long stalls.
 # Switch to "full" to restore slower, maximum-stealth pacing.
 emulation_profile <- "fast"
+#emulation_profile <- "full"
 use_fast_emulation <- identical(emulation_profile, "fast")
 
 search_budget_limit <- if (use_fast_emulation) 8L else 14L

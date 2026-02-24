@@ -6,8 +6,8 @@ LangGraph timed steps: 25
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
-      Source-backed found values: 2 (across 18 tracked fields)
+      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
+      Source-backed found values: 0 (across 18 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
@@ -18,20 +18,20 @@ WHAT HAPPENED OVERALL
       AI turns: 12 tool-call turn(s), 1 answer turn(s)
       Tool results: 12 total (Tool Search=12)
       Structured terminal answer emitted
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDE..._RESULT=2, OFF_TOPIC_RESULT=1)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 6.2380m (tok=0, n=12)
-      agent: 0.7451m (tok=112034, n=12)
-      finalize: 0.1499m (tok=15068, n=1)
+      tools: 5.5368m (tok=0, n=12)
+      agent: 0.5928m (tok=78561, n=12)
+      finalize: 0.1373m (tok=13568, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #20 tools: 0.8758m (tok=0)
-      #24 tools: 0.8428m (tok=0)
-      #08 tools: 0.7539m (tok=0)
-      #14 tools: 0.7405m (tok=0)
-      #10 tools: 0.6752m (tok=0)
-  +-- [TIMING] wall=7.1347m nodes=7.1330m delta=+0.0017m (overhead)
+      #16 tools: 0.9604m (tok=0)
+      #22 tools: 0.9445m (tok=0)
+      #06 tools: 0.8957m (tok=0)
+      #12 tools: 0.7710m (tok=0)
+      #24 tools: 0.6422m (tok=0)
+  +-- [TIMING] wall=6.2687m nodes=6.2669m delta=+0.0018m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -39,8 +39,8 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=1489 out=227 total=1716
-      min: 0.2459m
+      tok: in=1489 out=256 total=1745
+      min: 0.1202m
       detail: Search(query=Ramona Moye Camaconi Bolivia MAS Beni bio...)
   +-- [03] Returned result
       by: Tool Search
@@ -49,117 +49,117 @@ START
       detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...rio </URL> __END_OF_SOURC...
   +-- [04] Requested 1 tool call (Search)
       by: AI
-      tok: in=2440 out=170 total=2610
-      min: 0.0324m
-      detail: Search(query=Ramona Moye Camaconi biografía curriculum...)
+      tok: in=2469 out=190 total=2659
+      min: 0.0309m
+      detail: Search(query=Ramona Moye Camaconi biografía hoja de vida)
   +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...ia </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...28 </URL> __END_OF_SOURCE...
   +-- [06] Requested 1 tool call (Search)
       by: AI
-      tok: in=3714 out=250 total=3964
-      min: 0.0468m
-      detail: Search(query="Ramona Moye Camaconi" biografia estudios...)
+      tok: in=3765 out=229 total=3994
+      min: 0.0449m
+      detail: Search(query=Ramona Moye Camaconi "fecha de nacimiento...)
   +-- [07] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona Parra (19...ml </URL> __END_OF_SOURCE...
   +-- [08] Requested 1 tool call (Search)
       by: AI
-      tok: in=5242 out=198 total=5440
-      min: 0.0359m
-      detail: Search(query="Ramona Moye Camaconi" biografia "Cámara ...)
+      tok: in=4005 out=135 total=4140
+      min: 0.0327m
+      detail: Search(query=Ramona Moye Camaconi TIPNIS líder biografía)
   +-- [09] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Cámara de Diputa...df </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Diputada del #MAS y rep...28 </URL> __END_OF_SOURCE...
   +-- [10] Requested 1 tool call (Search)
       by: AI
-      tok: in=6915 out=179 total=7094
-      min: 0.0408m
-      detail: Search(query="Ramona Moye Camaconi" nacimiento fecha l...)
+      tok: in=5585 out=158 total=5743
+      min: 0.0306m
+      detail: Search(query=Ramona Moye Camaconi Directorio Legislati...)
   +-- [11] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...16 </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> ElDirectorioLegislativo...org </URL> __END_OF_SOURC...
   +-- [12] Requested 1 tool call (Search)
       by: AI
-      tok: in=8220 out=181 total=8401
-      min: 0.0408m
-      detail: Search(query="Ramona Moye Camaconi" MAS Beni diputada ...)
+      tok: in=6139 out=208 total=6347
+      min: 0.0535m
+      detail: Search(query=Ramona Moye Camaconi "nació en" OR "estud...)
   +-- [13] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - AUTORID...81 </URL> __END_OF_SOURCE...
   +-- [14] Requested 1 tool call (Search)
       by: AI
-      tok: in=9842 out=300 total=10142
-      min: 0.0515m
-      detail: Search(query="Ramona Moye Camaconi" site:vicepresidenc...)
+      tok: in=5516 out=471 total=5987
+      min: 0.0771m
+      detail: Search(query=site:oep.org.bo "Ramona Moye Camaconi" OR...)
   +-- [15] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...df </URL> __END_OF_SOURCE...
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
   +-- [16] Requested 1 tool call (Search)
       by: AI
-      tok: in=11514 out=359 total=11873
-      min: 0.0637m
-      detail: Search(query="Ramona Moye Camaconi" biografia estudios...)
+      tok: in=7069 out=175 total=7244
+      min: 0.0358m
+      detail: Search(query=Ramona Moye Camaconi "nació en" OR "estud...)
   +-- [17] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...na </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Consulta y Certi...dos </URL> __END_OF_SOURC...
   +-- [18] Requested 1 tool call (Search)
       by: AI
-      tok: in=13008 out=257 total=13265
-      min: 0.0472m
-      detail: Search(query="Ramona Moye Camaconi" biografia "Moxeño ...)
+      tok: in=8048 out=173 total=8221
+      min: 0.0350m
+      detail: Search(query="Ramona Moye Camaconi" filetype:pdf OR "R...)
   +-- [19] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...na </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ver archivo en f...24 </URL> __END_OF_SOURCE...
   +-- [20] Requested 1 tool call (Search)
       by: AI
-      tok: in=14400 out=226 total=14626
-      min: 0.0433m
-      detail: Search(query="Ramona Moye Camaconi" biografia "Directo...)
+      tok: in=9458 out=192 total=9650
+      min: 0.0469m
+      detail: Search(query=Bolivia "Directorio Legislativo" 2015 202...)
   +-- [21] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Fundación Cultur...df </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Bolivia - Wikipe...07 </URL> __END_OF_SOURCE...
   +-- [22] Requested 1 tool call (Search)
       by: AI
-      tok: in=15969 out=232 total=16201
-      min: 0.0502m
-      detail: Search(query="Ramona Moye Camaconi" site:oep.org.bo)
+      tok: in=10773 out=221 total=10994
+      min: 0.0423m
+      detail: Search(query=site:diputados.bo "Ramona Moye Camaconi" ...)
   +-- [23] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Diputados. Enter...nio </URL> __END_OF_SOURC...
   +-- [24] Requested 1 tool call (Search)
       by: AI
-      tok: in=16441 out=261 total=16702
-      min: 0.0467m
-      detail: Search(query="Ramona Moye Camaconi" "Directorio Legisl...)
+      tok: in=11622 out=215 total=11837
+      min: 0.0431m
+      detail: Search(query="Directorio Legislativo 2015-2020" Bolivi...)
   +-- [25] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Asamblea Legisla...df </URL> __END_OF_SOURCE...
   +-- [26] Produced structured answer
       by: AI
-      tok: in=13842 out=1226 total=15068
-      min: 0.1499m
+      tok: in=12482 out=1086 total=13568
+      min: 0.1373m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_institution":"U... and infrastructure debat...
+      detail: {"education_level":"Unknown","education_institution":"Unknown","education_field":"U...
 END
