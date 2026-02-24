@@ -2,6 +2,9 @@
   "status": "empty",
   "artifact": "plan_output",
   "reason": "plan_mode_disabled",
-  "run_id": "trace_real_20260223T210943",
-  "generated_at": "2026-02-24T03:09:43Z"
+  "expected_empty": true,
+  "mode": "plan_disabled",
+  "upstream_dependency": "plan_mode",
+  "run_id": "trace_real_20260223T214311",
+  "generated_at": "2026-02-24T03:43:11Z"
 }

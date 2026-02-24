@@ -1,211 +1,308 @@
 {
-  "tokens_used": 126027,
-  "input_tokens": 119484,
-  "output_tokens": 6543,
+  "tokens_used": 82365,
+  "input_tokens": 77709,
+  "output_tokens": 4656,
   "fold_tokens": 0,
   "token_trace": [
     {
       "node": "agent",
       "input_tokens": 1489,
-      "output_tokens": 219,
-      "total_tokens": 1708,
-      "elapsed_minutes": 0.0913
+      "output_tokens": 211,
+      "total_tokens": 1700,
+      "elapsed_minutes": 0.0923,
+      "started_at_utc": "2026-02-24T03:43:17.407450Z",
+      "ended_at_utc": "2026-02-24T03:43:22.945395Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0434
+      "elapsed_minutes": 0.0408,
+      "started_at_utc": "2026-02-24T03:43:22.949196Z",
+      "ended_at_utc": "2026-02-24T03:43:25.394531Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 2631,
-      "output_tokens": 175,
-      "total_tokens": 2806,
-      "elapsed_minutes": 0.0315
+      "input_tokens": 2424,
+      "output_tokens": 155,
+      "total_tokens": 2579,
+      "elapsed_minutes": 0.0331,
+      "started_at_utc": "2026-02-24T03:43:25.396583Z",
+      "ended_at_utc": "2026-02-24T03:43:27.379598Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0302
+      "elapsed_minutes": 0.0258,
+      "started_at_utc": "2026-02-24T03:43:27.383676Z",
+      "ended_at_utc": "2026-02-24T03:43:28.930100Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "openwebpage"
     },
     {
       "node": "agent",
-      "input_tokens": 3351,
-      "output_tokens": 103,
-      "total_tokens": 3454,
-      "elapsed_minutes": 0.0216
+      "input_tokens": 3124,
+      "output_tokens": 104,
+      "total_tokens": 3228,
+      "elapsed_minutes": 0.026,
+      "started_at_utc": "2026-02-24T03:43:28.933427Z",
+      "ended_at_utc": "2026-02-24T03:43:30.495981Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0256
+      "elapsed_minutes": 0.0261,
+      "started_at_utc": "2026-02-24T03:43:30.499256Z",
+      "ended_at_utc": "2026-02-24T03:43:32.065708Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "openwebpage"
     },
     {
       "node": "agent",
-      "input_tokens": 3975,
-      "output_tokens": 300,
-      "total_tokens": 4275,
-      "elapsed_minutes": 0.0484
+      "input_tokens": 3749,
+      "output_tokens": 200,
+      "total_tokens": 3949,
+      "elapsed_minutes": 0.039,
+      "started_at_utc": "2026-02-24T03:43:32.068527Z",
+      "ended_at_utc": "2026-02-24T03:43:34.408312Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0001
+      "elapsed_minutes": 0.0282,
+      "started_at_utc": "2026-02-24T03:43:34.412184Z",
+      "ended_at_utc": "2026-02-24T03:43:36.104349Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 4546,
-      "output_tokens": 113,
-      "total_tokens": 4659,
-      "elapsed_minutes": 0.0393
+      "input_tokens": 5052,
+      "output_tokens": 222,
+      "total_tokens": 5274,
+      "elapsed_minutes": 0.0392,
+      "started_at_utc": "2026-02-24T03:43:36.105950Z",
+      "ended_at_utc": "2026-02-24T03:43:38.459999Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0001
+      "elapsed_minutes": 0.0283,
+      "started_at_utc": "2026-02-24T03:43:38.464797Z",
+      "ended_at_utc": "2026-02-24T03:43:40.160215Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 4842,
-      "output_tokens": 37,
-      "total_tokens": 4879,
-      "elapsed_minutes": 0.053
+      "input_tokens": 5391,
+      "output_tokens": 315,
+      "total_tokens": 5706,
+      "elapsed_minutes": 0.0467,
+      "started_at_utc": "2026-02-24T03:43:40.162385Z",
+      "ended_at_utc": "2026-02-24T03:43:42.966089Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0283
+      "elapsed_minutes": 0.0278,
+      "started_at_utc": "2026-02-24T03:43:42.970629Z",
+      "ended_at_utc": "2026-02-24T03:43:44.641509Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 5930,
-      "output_tokens": 169,
-      "total_tokens": 6099,
-      "elapsed_minutes": 0.0468
+      "input_tokens": 6635,
+      "output_tokens": 244,
+      "total_tokens": 6879,
+      "elapsed_minutes": 0.0452,
+      "started_at_utc": "2026-02-24T03:43:44.644078Z",
+      "ended_at_utc": "2026-02-24T03:43:47.353749Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.0277
+      "elapsed_minutes": 0.3412,
+      "started_at_utc": "2026-02-24T03:43:47.358043Z",
+      "ended_at_utc": "2026-02-24T03:44:07.831483Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 7084,
-      "output_tokens": 286,
-      "total_tokens": 7370,
-      "elapsed_minutes": 0.0482
+      "input_tokens": 7147,
+      "output_tokens": 238,
+      "total_tokens": 7385,
+      "elapsed_minutes": 0.0461,
+      "started_at_utc": "2026-02-24T03:44:07.834096Z",
+      "ended_at_utc": "2026-02-24T03:44:10.597465Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.9734
+      "elapsed_minutes": 0.6702,
+      "started_at_utc": "2026-02-24T03:44:10.601051Z",
+      "ended_at_utc": "2026-02-24T03:44:50.811266Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 8625,
-      "output_tokens": 368,
-      "total_tokens": 8993,
-      "elapsed_minutes": 0.066
+      "input_tokens": 7396,
+      "output_tokens": 423,
+      "total_tokens": 7819,
+      "elapsed_minutes": 0.0583,
+      "started_at_utc": "2026-02-24T03:44:50.815455Z",
+      "ended_at_utc": "2026-02-24T03:44:54.312055Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.6672
+      "elapsed_minutes": 0.6594,
+      "started_at_utc": "2026-02-24T03:44:54.316002Z",
+      "ended_at_utc": "2026-02-24T03:45:33.879660Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 10565,
-      "output_tokens": 279,
-      "total_tokens": 10844,
-      "elapsed_minutes": 0.0573
+      "input_tokens": 8005,
+      "output_tokens": 421,
+      "total_tokens": 8426,
+      "elapsed_minutes": 0.0536,
+      "started_at_utc": "2026-02-24T03:45:33.883087Z",
+      "ended_at_utc": "2026-02-24T03:45:37.097465Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.5313
+      "elapsed_minutes": 0.6195,
+      "started_at_utc": "2026-02-24T03:45:37.101951Z",
+      "ended_at_utc": "2026-02-24T03:46:14.274781Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 12137,
-      "output_tokens": 329,
-      "total_tokens": 12466,
-      "elapsed_minutes": 0.0567
+      "input_tokens": 8439,
+      "output_tokens": 423,
+      "total_tokens": 8862,
+      "elapsed_minutes": 0.0532,
+      "started_at_utc": "2026-02-24T03:46:14.279757Z",
+      "ended_at_utc": "2026-02-24T03:46:17.473931Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.784
+      "elapsed_minutes": 0.6793,
+      "started_at_utc": "2026-02-24T03:46:17.477904Z",
+      "ended_at_utc": "2026-02-24T03:46:58.236753Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "agent",
-      "input_tokens": 12588,
-      "output_tokens": 479,
-      "total_tokens": 13067,
-      "elapsed_minutes": 0.0774
+      "input_tokens": 10292,
+      "output_tokens": 501,
+      "total_tokens": 10793,
+      "elapsed_minutes": 0.0738,
+      "started_at_utc": "2026-02-24T03:46:58.239575Z",
+      "ended_at_utc": "2026-02-24T03:47:02.666008Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     },
     {
       "node": "tools",
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
-      "elapsed_minutes": 0.5674
-    },
-    {
-      "node": "agent",
-      "input_tokens": 14202,
-      "output_tokens": 726,
-      "total_tokens": 14928,
-      "elapsed_minutes": 0.0939
-    },
-    {
-      "node": "tools",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0,
-      "elapsed_minutes": 0.0269
-    },
-    {
-      "node": "agent",
-      "input_tokens": 15302,
-      "output_tokens": 203,
-      "total_tokens": 15505,
-      "elapsed_minutes": 0.0453
-    },
-    {
-      "node": "tools",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "total_tokens": 0,
-      "elapsed_minutes": 0.7571
+      "elapsed_minutes": 0.9546,
+      "started_at_utc": "2026-02-24T03:47:02.670630Z",
+      "ended_at_utc": "2026-02-24T03:47:59.943690Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
     },
     {
       "node": "finalize",
-      "input_tokens": 12217,
-      "output_tokens": 2757,
-      "total_tokens": 14974,
-      "elapsed_minutes": 0.3197
+      "input_tokens": 8566,
+      "output_tokens": 1199,
+      "total_tokens": 9765,
+      "elapsed_minutes": 0.1509,
+      "started_at_utc": "2026-02-24T03:47:59.948986Z",
+      "ended_at_utc": "2026-02-24T03:48:09.001170Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
     }
   ]
 }

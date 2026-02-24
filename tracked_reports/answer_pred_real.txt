@@ -3,18 +3,18 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "President of the Women's Organization - Sub Central Sécure",
+  "prior_occupation": "Unknown",
   "class_background": "Unknown",
-  "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "prior_occupation_source": null,
   "disability_status": "Unknown",
   "disability_source": null,
-  "birth_place": "TIPNIS, Beni, Bolivia",
-  "birth_place_source": "https://observatorioccdbolivia.wordpress.com/2019/04/25/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
+  "birth_place": "Unknown",
+  "birth_place_source": null,
   "birth_year": 1982,
   "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "High",
-  "justification": "Ramona Moye Camaconi is an indigenous leader from the TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure) in Beni. Her official parliamentary profile confirms her birth year (1982) and her prior role as President of the Women's Organization of the Sub Central Sécure, a community leadership position within the indigenous territory. This role, combined with her background as an inhabitant of the TIPNIS (a region characterized by subsistence agriculture and manual labor), maps to a working-class background. No specific higher education or professional degrees are listed in her official biography or news profiles."
+  "justification": "The official profile from the Vicepresidencia of Bolivia confirms her birth date as January 7, 1982, and her role as a representative for the Beni region (Circunscripción Especial Indígena). Her prior occupation is listed as President of the Women's Organization - Sub Central Sécure, which is a leadership role within the indigenous movement of the TIPNIS territory. This role is categorized as middle class/professional under the provided rules for political/community leaders. No specific educational degree or disability/LGBTQ status is publicly disclosed in official parliamentary records."
 }

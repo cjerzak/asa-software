@@ -6,6 +6,10 @@
     "missing_keys_sample": [],
     "fallback_on_failure": true,
     "schema_source": "explicit",
-    "context": "finalize"
+    "context": "finalize",
+    "event_id": "15aebf86d68a4fc6bca226893981fc63",
+    "ts_utc": "2026-02-24T03:48:09.001206Z",
+    "trigger_context": "finalize",
+    "outcome_status": "applied"
   }
 ]
