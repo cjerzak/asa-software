@@ -7,9 +7,13 @@
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "event_id": "15aebf86d68a4fc6bca226893981fc63",
-    "ts_utc": "2026-02-24T03:48:09.001206Z",
+    "event_id": "5bcaf4e7942b47d6acd408b27a539fac",
+    "ts_utc": "2026-02-24T11:10:45.695155Z",
+    "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
-    "outcome_status": "applied"
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
   }
 ]

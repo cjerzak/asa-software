@@ -5,6 +5,6 @@
   "expected_empty": true,
   "mode": "plan_disabled",
   "upstream_dependency": "plan_mode",
-  "run_id": "trace_real_20260223T214311",
-  "generated_at": "2026-02-24T03:43:11Z"
+  "run_id": "trace_real_20260224T050331",
+  "generated_at": "2026-02-24T11:03:31Z"
 }

@@ -11,10 +11,10 @@
   "birth_place": "Unknown",
   "birth_place_source": null,
   "birth_year": 1982,
-  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "birth_year_source": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "High",
-  "justification": "The official profile from the Vicepresidencia of Bolivia confirms her birth date as January 7, 1982, and her role as a representative for the Beni region (Circunscripción Especial Indígena). Her prior occupation is listed as President of the Women's Organization - Sub Central Sécure, which is a leadership role within the indigenous movement of the TIPNIS territory. This role is categorized as middle class/professional under the provided rules for political/community leaders. No specific educational degree or disability/LGBTQ status is publicly disclosed in official parliamentary records."
+  "confidence": "Medium",
+  "justification": "Ramona Moye Camaconi was elected as a titular deputy for the Beni special indigenous constituency in 2014. Official records from the Vicepresidency of Bolivia confirm her birth date as January 7, 1982, and her ethnic self-identification as Moxeño Trinitario. While she is widely identified as an indigenous leader from the TIPNIS (Territorio Indígena y Parque Nacional Isiboro Sécure) region, specific details regarding her formal education and professional career prior to entering the Plurinational Legislative Assembly are not publicly documented in standard biographical databases or official government profiles. Her public profile is primarily defined by her role as a representative of indigenous organizations and her involvement in regional land rights and infrastructure debates."
 }

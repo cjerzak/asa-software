@@ -274,7 +274,11 @@ start_heartbeat <- function(label = "run_task", interval_sec = 20L, stall_after_
     "  if [ -n \"$DETAIL\" ] && [ \"$DETAIL\" != \"none\" ]; then PHASE_DISPLAY=\"${PHASE}(${DETAIL})\"; fi",
     "  ELAPSED_TXT=$(format_age \"$ELAPSED\")",
     "  IDLE_TXT=$(format_age \"$IDLE_FOR\")",
-    "  printf \"[heartbeat] %s | elapsed=%s | phase=%s | status=%s | idle=%s | node=%s | tools=%s/%s(rem=%s) | fields=%s/%s(unknown=%s) | cpu=%s%% | rss=%sMB | tcp=%s | hosts=%s | reason=%s | cadence=%ss\\n\" \"$LABEL\" \"$ELAPSED_TXT\" \"$PHASE_DISPLAY\" \"$STATUS\" \"$IDLE_TXT\" \"$NODE\" \"$TOOL_USED\" \"$TOOL_LIMIT\" \"$TOOL_REMAINING\" \"$FIELDS_RESOLVED\" \"$FIELDS_TOTAL\" \"$FIELDS_UNKNOWN\" \"$CPU\" \"$RSS_MB\" \"$TCP_COUNT\" \"$HOSTS\" \"$WAIT_REASON\" \"$SLEEP_SECS\"",
+    "  printf \"[heartbeat] %s\\n\" \"$LABEL\"",
+    "  printf \"  runtime  elapsed=%s    idle=%s    cadence=%ss\\n\" \"$ELAPSED_TXT\" \"$IDLE_TXT\" \"$SLEEP_SECS\"",
+    "  printf \"  stage    phase=%s    status=%s    reason=%s    node=%s\\n\" \"$PHASE_DISPLAY\" \"$STATUS\" \"$WAIT_REASON\" \"$NODE\"",
+    "  printf \"  budget   tools=%s/%s(rem=%s)    fields=%s/%s(unknown=%s)\\n\" \"$TOOL_USED\" \"$TOOL_LIMIT\" \"$TOOL_REMAINING\" \"$FIELDS_RESOLVED\" \"$FIELDS_TOTAL\" \"$FIELDS_UNKNOWN\"",
+    "  printf \"  system   cpu=%s%%    rss=%sMB    tcp=%s    hosts=%s\\n\\n\" \"$CPU\" \"$RSS_MB\" \"$TCP_COUNT\" \"$HOSTS\"",
     "  sleep \"$SLEEP_SECS\"",
     "done",
     sep = "\n"
