@@ -1,13 +1,13 @@
 AGENT ACTION MAP
 ================
-Steps captured: 28
-LangGraph timed steps: 27
+Steps captured: 26
+LangGraph timed steps: 25
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
-      Source-backed found values: 2 (across 18 tracked fields)
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 4 (across 18 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, prior_occu...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
@@ -15,23 +15,23 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 13 tool-call turn(s), 1 answer turn(s)
-      Tool results: 13 total (Tool Search=10, Tool OpenWebpage=2, Tool save_finding=1)
+      AI turns: 12 tool-call turn(s), 1 answer turn(s)
+      Tool results: 12 total (Tool Search=10, Tool OpenWebpage=2)
       Structured terminal answer emitted
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 5.0516m (tok=0, n=13)
-      agent: 0.6903m (tok=97098, n=13)
-      finalize: 0.1745m (tok=14005, n=1)
+      tools: 4.7588m (tok=0, n=12)
+      agent: 0.6634m (tok=87279, n=12)
+      finalize: 0.1647m (tok=12925, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #22 tools: 1.0979m (tok=0)
-      #18 tools: 0.9155m (tok=0)
-      #14 tools: 0.8753m (tok=0)
-      #12 tools: 0.7183m (tok=0)
-      #16 tools: 0.6516m (tok=0)
-  +-- [TIMING] wall=5.9198m nodes=5.9164m delta=+0.0034m (overhead)
+      #12 tools: 1.2136m (tok=0)
+      #22 tools: 1.1005m (tok=0)
+      #16 tools: 0.8234m (tok=0)
+      #10 tools: 0.7327m (tok=0)
+      #24 tools: 0.6445m (tok=0)
+  +-- [TIMING] wall=5.5891m nodes=5.5869m delta=+0.0022m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -39,8 +39,8 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=1489 out=220 total=1709
-      min: 0.0932m
+      tok: in=1489 out=226 total=1715
+      min: 0.0961m
       detail: Search(query=Ramona Moye Camaconi Bolivia MAS Beni bio...)
   +-- [03] Returned result
       by: Tool Search
@@ -49,8 +49,8 @@ START
       detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...rio </URL> __END_OF_SOURC...
   +-- [04] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=2433 out=159 total=2592
-      min: 0.0293m
+      tok: in=2439 out=134 total=2573
+      min: 0.0280m
       detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
   +-- [05] Returned result
       by: Tool OpenWebpage
@@ -59,117 +59,107 @@ START
       detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
   +-- [06] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=3137 out=96 total=3233
-      min: 0.0220m
+      tok: in=3118 out=131 total=3249
+      min: 0.0246m
       detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
   +-- [07] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
       detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
-  +-- [08] Requested 1 tool call (save_finding)
+  +-- [08] Requested 1 tool call (Search)
       by: AI
-      tok: in=3754 out=294 total=4048
-      min: 0.0546m
-      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
+      tok: in=3770 out=238 total=4008
+      min: 0.0442m
+      detail: Search(query=Ramona Moye Camaconi biografía educación ...)
   +-- [09] Returned result
-      by: Tool save_finding
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...le </URL> __END_OF_SOURCE...
   +-- [10] Requested 1 tool call (Search)
       by: AI
-      tok: in=4319 out=34 total=4353
-      min: 0.0234m
-      detail: Search(query=Ramona Moye Camaconi biografia estudios l...)
+      tok: in=5036 out=275 total=5311
+      min: 0.0454m
+      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient...)
   +-- [11] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...71 </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Pese a las pugna...116 </URL> __END_OF_SOURC...
   +-- [12] Requested 1 tool call (Search)
       by: AI
-      tok: in=5336 out=193 total=5529
-      min: 0.0500m
-      detail: Search(query="Ramona Moye Camaconi" TIPNIS biografia e...)
+      tok: in=6377 out=342 total=6719
+      min: 0.0475m
+      detail: Search(query=Directorio Legislativo Bolivia 2014-2020 ...)
   +-- [13] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...116 </URL> __END_OF_SOURC...
   +-- [14] Requested 1 tool call (Search)
       by: AI
-      tok: in=6644 out=328 total=6972
-      min: 0.0534m
-      detail: Search(query="Ramona Moye Camaconi" "quien es quien" a...)
+      tok: in=6730 out=367 total=7097
+      min: 0.0535m
+      detail: Search(query="Ramona Moye Camaconi" biografía TIPNIS n...)
   +-- [15] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Asamblea Legisla...os </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...956 </URL> __END_OF_SOURC...
   +-- [16] Requested 1 tool call (Search)
       by: AI
-      tok: in=8217 out=337 total=8554
-      min: 0.0569m
-      detail: Search(query="Ramona Moye Camaconi" educacion estudios...)
+      tok: in=8156 out=446 total=8602
+      min: 0.0683m
+      detail: Search(query="Ramona Moye Camaconi" formación académic...)
   +-- [17] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Consulta de expe...ml </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Bachillerato Téc...16 </URL> __END_OF_SOURCE...
   +-- [18] Requested 1 tool call (Search)
       by: AI
-      tok: in=10040 out=479 total=10519
-      min: 0.0774m
-      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient...)
+      tok: in=10199 out=264 total=10463
+      min: 0.0494m
+      detail: Search(query="Ramona Moye Camaconi" biografía diputado...)
   +-- [19] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...lle </URL> __END_OF_SOURC...
   +-- [20] Requested 1 tool call (Search)
       by: AI
-      tok: in=10530 out=329 total=10859
-      min: 0.0755m
-      detail: Search(query="Ramona Moye Camaconi" comunidad TIPNIS S...)
+      tok: in=11565 out=476 total=12041
+      min: 0.0686m
+      detail: Search(query=filetype:pdf "Ramona Moye Camaconi")
   +-- [21] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> En la ciudad de La Paz,...956 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ms.Ramona Moye Camaconi...pdf </URL> __END_OF_SOURC...
   +-- [22] Requested 1 tool call (Search)
       by: AI
-      tok: in=11777 out=264 total=12041
-      min: 0.0510m
-      detail: Search(query="Directorio Legislativo" 2015-2020 Bolivi...)
+      tok: in=12170 out=228 total=12398
+      min: 0.0488m
+      detail: Search(query="Quién es quién" "Ramona Moye Camaconi")
   +-- [23] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Bolivia – Direct...are </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...via </URL> __END_OF_SOURC...
   +-- [24] Requested 1 tool call (Search)
       by: AI
-      tok: in=12699 out=250 total=12949
-      min: 0.0522m
-      detail: Search(query="Ramona Moye Camaconi" Atlas Electoral Bo...)
+      tok: in=12550 out=553 total=13103
+      min: 0.0889m
+      detail: Search(query="Ramona Moye Camaconi" bachiller secundar...)
   +-- [25] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
-  +-- [26] Requested 1 tool call (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El Tipnis y el M...116 </URL> __END_OF_SOURC...
+  +-- [26] Produced structured answer
       by: AI
-      tok: in=13459 out=281 total=13740
-      min: 0.0517m
-      detail: Search(query="Ramona Moye Camaconi" "hoja de vida")
-  +-- [27] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Historias de vid...df </URL> __END_OF_SOURCE...
-  +-- [28] Produced structured answer
-      by: AI
-      tok: in=12842 out=1163 total=14005
-      min: 0.1745m
+      tok: in=11604 out=1321 total=12925
+      min: 0.1647m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_institution":"U... listed in official recor...
+      detail: {"education_level":"Unknown","education_institution":"U...sentatives from that regi...
 END

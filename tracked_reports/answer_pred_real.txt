@@ -8,13 +8,13 @@
   "class_background": "Unknown",
   "disability_status": "Unknown",
   "disability_source": null,
-  "birth_place": "Unknown",
-  "birth_place_source": null,
+  "birth_place": "TIPNIS, Beni, Bolivia",
+  "birth_place_source": "https://tierraderesistentes.com/es/2019/04/23/el-tipnis-y-el-madidi-las-heridas-que-sangran-en-el-rostro-indigena-de-bolivia",
   "birth_year": 1982,
   "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "High",
-  "justification": "Ramona Moye Camaconi is an indigenous leader from the TIPNIS region (Territorio Indígena y Parque Nacional Isiboro Sécure) in Beni, Bolivia. Her official parliamentary profile confirms her birth year as 1982 and her prior occupation as the President of the Women's Organization - Sub Central Sécure. Given her background as an indigenous activist and leader in a rural territory, her class background is categorized as working class. No specific higher education degree is listed in official records."
+  "justification": "Ramona Moye Camaconi was elected as a deputy for the Special Indigenous Constituency of Beni in 2014. Official records from the Vicepresidency of Bolivia confirm her birth date as January 7, 1982. Her background is rooted in the indigenous social movements of the TIPNIS (Isiboro Sécure National Park and Indigenous Territory), where she served as the leader of the Women's Organization of the Sub-Central Sécure. This leadership role in a rural indigenous territory, combined with the lack of recorded professional or higher education, aligns with a working-class/peasant background typical of MAS indigenous representatives from that region."
 }
