@@ -3,18 +3,18 @@
   "education_institution": "Unknown",
   "education_field": "Unknown",
   "education_source": null,
-  "prior_occupation": "Unknown",
+  "prior_occupation": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
   "class_background": "Unknown",
-  "prior_occupation_source": null,
+  "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "disability_status": "Unknown",
   "disability_source": null,
   "birth_place": "Unknown",
   "birth_place_source": null,
-  "birth_year": "Unknown",
-  "birth_year_source": null,
+  "birth_year": 1982,
+  "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
   "confidence": "Medium",
-  "justification": "Ramona Moye Camaconi is an indigenous Mojeño-Trinitario leader from the TIPNIS (Isiboro Sécure National Park and Indigenous Territory) in Beni, Bolivia. She was elected as a titular deputy for the Special Indigenous Constituency of Beni for the 2015-2020 term under the MAS party. Her background as an indigenous community leader from a rural protected territory aligns with a working-class/manual labor background typical of indigenous agrarian leaders in the region. While her political activity is well-documented, specific biographical details such as her exact birth date and educational history are not publicly available in official parliamentary records."
+  "justification": "Ramona Moye Camaconi was born in 1982 and emerged as a prominent indigenous leader within the TIPNIS territory. Prior to her election to the Chamber of Deputies in 2014, she served as the President of the Women's Organization of the Sub Central Sécure. This role as a grassroots community leader in a rural indigenous territory, coupled with the lack of formal professional or academic titles in official parliamentary records, maps to a working-class background according to the provided criteria."
 }

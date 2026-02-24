@@ -1,19 +1,19 @@
 {
-  "grounding_blocks_count": 3,
-  "source_consistency_fixes_count": 0,
+  "grounding_blocks_count": 0,
+  "source_consistency_fixes_count": 2,
   "field_demotions_count": 3,
   "recovery_promotions_count": 0,
-  "recovery_rejections_count": 10,
-  "unknown_fields_count": 13,
-  "grounding_blocks_count_current": 3,
-  "source_consistency_fixes_count_current": 0,
-  "field_demotions_count_current": 3,
+  "recovery_rejections_count": 8,
+  "unknown_fields_count": 14,
+  "grounding_blocks_count_current": 0,
+  "source_consistency_fixes_count_current": 2,
+  "field_demotions_count_current": 1,
   "recovery_promotions_count_current": 0,
-  "recovery_rejections_count_current": 10,
-  "unknown_fields_count_current": 13,
-  "off_target_tool_results_count": 1,
-  "empty_tool_results_count": 2,
-  "retry_or_replan_events": 1,
+  "recovery_rejections_count_current": 8,
+  "unknown_fields_count_current": 12,
+  "off_target_tool_results_count": 0,
+  "empty_tool_results_count": 0,
+  "retry_or_replan_events": 0,
   "quality_gate_failures": 0,
   "no_payload_extraction_rounds": 0,
   "webpage_no_payload_rounds": 0,
@@ -43,50 +43,52 @@
   "webpage_langextract_error_elapsed_ms_total": 0,
   "search_snippet_langextract_elapsed_ms_total": 0,
   "search_snippet_langextract_error_elapsed_ms_total": 0,
-  "low_signal_rewrite_events": 1,
+  "low_signal_rewrite_events": 0,
   "low_signal_stop_events": 0,
-  "low_signal_rewrite_elapsed_ms_total": 46256,
+  "low_signal_rewrite_elapsed_ms_total": 0,
   "low_signal_stop_elapsed_ms_total": 0,
-  "retry_threshold_crossings": 1,
+  "retry_threshold_crossings": 0,
   "query_dedupe_escalation_events": 0,
   "empty_round_suppression_events": 0,
   "adaptive_budget_events": 0,
   "adaptive_budget_reduced_calls_total": 0,
   "structural_repair_events": 0,
   "structural_repair_retry_events": 0,
-  "finalization_invariant_failures": 12,
-  "diagnostics_recovery_checkpoint_events": 13,
-  "diagnostics_recovery_retry_events": 12,
+  "finalization_invariant_failures": 14,
+  "diagnostics_recovery_checkpoint_events": 15,
+  "diagnostics_recovery_retry_events": 14,
   "anchor_hard_blocks_count": 0,
   "anchor_soft_penalties_count": 0,
-  "grounding_blocked_fields": ["education_source", "disability_source", "lgbtq_source"],
-  "source_consistency_fixes": [],
+  "grounding_blocked_fields": [],
+  "source_consistency_fixes": ["birth_year_source", "prior_occupation_source"],
   "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
   "recovery_promoted_fields": [],
-  "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
-  "unknown_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details"],
-  "grounding_blocked_fields_current": ["education_source", "disability_source", "lgbtq_source"],
-  "source_consistency_fixes_current": [],
-  "field_demotion_fields_current": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
+  "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+  "unknown_fields": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
+  "grounding_blocked_fields_current": [],
+  "source_consistency_fixes_current": ["prior_occupation_source", "birth_year_source"],
+  "field_demotion_fields_current": "birth_place_source",
   "recovery_promoted_fields_current": [],
-  "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
-  "unknown_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details"],
+  "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+  "unknown_fields_current": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
   "field_demotion_reason_counts": {
     "source_consistency_demotion": 3
   },
   "recovery_reason_counts": {
-    "recovery_blocked_anchor_mismatch": 10
+    "recovery_blocked_anchor_mismatch": 8
   },
   "unknown_reason_counts": {
-    "recovery_blocked_anchor_mismatch": 10,
-    "source_consistency_demotion": 3
+    "attempted_no_verified_evidence": 13,
+    "source_consistency_demotion": 1,
+    "recovery_blocked_anchor_mismatch": 8
   },
   "finalization_invariant_failures_by_reason": {
-    "diagnostics_unknown_count_mismatch": 12
+    "diagnostics_unknown_count_mismatch": 14
   },
   "unknown_fields_by_reason": {
-    "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
-    "source_consistency_demotion": ["prior_occupation_source", "birth_place_source", "birth_year_source"]
+    "attempted_no_verified_evidence": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
+    "source_consistency_demotion": "birth_place_source",
+    "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"]
   },
   "finalization_blocking_fields": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
   "finalization_recovery_checkpoints": [
@@ -97,7 +99,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:54:35.432210Z"
+      "ts_utc": "2026-02-24T12:32:04.747725Z"
     },
     {
       "context": "agent",
@@ -106,7 +108,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:54:40.301707Z"
+      "ts_utc": "2026-02-24T12:32:09.633715Z"
     },
     {
       "context": "agent",
@@ -115,7 +117,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:54:44.989028Z"
+      "ts_utc": "2026-02-24T12:32:14.051351Z"
     },
     {
       "context": "agent",
@@ -124,7 +126,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:55:40.705170Z"
+      "ts_utc": "2026-02-24T12:32:18.707778Z"
     },
     {
       "context": "agent",
@@ -132,8 +134,8 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:55:44.520971Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status"],
+      "ts_utc": "2026-02-24T12:32:20.802178Z"
     },
     {
       "context": "agent",
@@ -141,8 +143,8 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:55:49.670972Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:32:24.194920Z"
     },
     {
       "context": "agent",
@@ -150,8 +152,8 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:56:40.564825Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:32:28.567079Z"
     },
     {
       "context": "agent",
@@ -159,8 +161,8 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:56:44.677079Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:33:03.346121Z"
     },
     {
       "context": "agent",
@@ -168,8 +170,8 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:57:44.405702Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:33:39.180942Z"
     },
     {
       "context": "agent",
@@ -177,8 +179,8 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:58:20.479961Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:33:42.874136Z"
     },
     {
       "context": "agent",
@@ -186,8 +188,8 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:58:58.275220Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:34:18.621114Z"
     },
     {
       "context": "agent",
@@ -195,8 +197,26 @@
       "reasons": "diagnostics_unknown_count_mismatch",
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T11:59:57.534905Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:34:32.647147Z"
+    },
+    {
+      "context": "agent",
+      "reason": "diagnostics_unknown_count_mismatch",
+      "reasons": "diagnostics_unknown_count_mismatch",
+      "priority": "diagnostics_reconciliation",
+      "action": "replan_and_retry",
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:35:29.237563Z"
+    },
+    {
+      "context": "agent",
+      "reason": "diagnostics_unknown_count_mismatch",
+      "reasons": "diagnostics_unknown_count_mismatch",
+      "priority": "diagnostics_reconciliation",
+      "action": "replan_and_retry",
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:36:21.409032Z"
     },
     {
       "context": "finalize",
@@ -204,8 +224,8 @@
       "reasons": ["diagnostics_unknown_count_mismatch", "diagnostics_unknown_fields_mismatch"],
       "priority": "anchor_mismatch_recovery",
       "action": "none",
-      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "prior_occupation_source", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-      "ts_utc": "2026-02-24T12:00:44.312188Z"
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source"],
+      "ts_utc": "2026-02-24T12:37:17.083613Z"
     }
   ],
   "anchor_mismatch_samples": [
@@ -227,14 +247,6 @@
     },
     {
       "field": "education_field",
-      "reason": "recovery_blocked_anchor_mismatch",
-      "source_url": null,
-      "anchor_mode": null,
-      "anchor_strength": null,
-      "candidate_score": 0
-    },
-    {
-      "field": "prior_occupation",
       "reason": "recovery_blocked_anchor_mismatch",
       "source_url": null,
       "anchor_mode": null,
@@ -266,14 +278,6 @@
       "candidate_score": 0
     },
     {
-      "field": "birth_year",
-      "reason": "recovery_blocked_anchor_mismatch",
-      "source_url": null,
-      "anchor_mode": null,
-      "anchor_strength": null,
-      "candidate_score": 0
-    },
-    {
       "field": "lgbtq_status",
       "reason": "recovery_blocked_anchor_mismatch",
       "source_url": null,
@@ -290,21 +294,8 @@
       "candidate_score": 0
     }
   ],
-  "empty_tool_results_details": [
-    {
-      "tool_name": "search",
-      "query_digest": "a1929b4ae894d304",
-      "error_type": null,
-      "round_index": 3
-    },
-    {
-      "tool_name": "search",
-      "query_digest": "4fec02f69207684b",
-      "error_type": null,
-      "round_index": 6
-    }
-  ],
-  "retrieval_interventions": ["diagnostics_recovery_checkpoint:diagnostics_reconciliation", "low_signal_streak_rewrite:2", "retry_escalation:low_signal"],
+  "empty_tool_results_details": [],
+  "retrieval_interventions": "diagnostics_recovery_checkpoint:diagnostics_reconciliation",
   "webpage_openwebpage_skip_reasons": [],
   "webpage_langextract_provider": "",
   "webpage_langextract_last_error": "",
@@ -315,20 +306,20 @@
   "anchor_confidence_current": 0.56,
   "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
   "performance": {
-    "tool_round_count": 12,
-    "tool_round_elapsed_ms_total": 332122,
-    "tool_round_elapsed_ms_last": 38521,
-    "tool_round_elapsed_ms_max": 57616,
-    "search_tool_calls": 12,
-    "openwebpage_tool_calls": 0,
+    "tool_round_count": 14,
+    "tool_round_elapsed_ms_total": 257323,
+    "tool_round_elapsed_ms_last": 34946,
+    "tool_round_elapsed_ms_max": 53368,
+    "search_tool_calls": 10,
+    "openwebpage_tool_calls": 2,
     "other_tool_calls": 0,
-    "search_tool_elapsed_ms_est_total": 332122,
-    "openwebpage_tool_elapsed_ms_est_total": 0,
+    "search_tool_elapsed_ms_est_total": 252689,
+    "openwebpage_tool_elapsed_ms_est_total": 4632,
     "other_tool_elapsed_ms_est_total": 0,
     "provider_error_count": 0,
     "provider_error_elapsed_ms_total": 0,
-    "low_signal_streak_peak": 2,
-    "diminishing_returns_streak_peak": 12,
+    "low_signal_streak_peak": 0,
+    "diminishing_returns_streak_peak": 10,
     "adaptive_budget_events": 0,
     "adaptive_budget_reduced_calls_total": 0,
     "fold_event_count": 0,
@@ -338,11 +329,11 @@
     "webpage_langextract_error_elapsed_ms_total": 0,
     "search_snippet_langextract_elapsed_ms_total": 0,
     "search_snippet_langextract_error_elapsed_ms_total": 0,
-    "low_signal_rewrite_events": 1,
+    "low_signal_rewrite_events": 0,
     "low_signal_stop_events": 0,
-    "low_signal_rewrite_elapsed_ms_total": 46256,
+    "low_signal_rewrite_elapsed_ms_total": 0,
     "low_signal_stop_elapsed_ms_total": 0,
-    "retry_threshold_crossings": 1,
+    "retry_threshold_crossings": 0,
     "adaptive_budget_last_reason": null,
     "fold_last_trigger_reason": null,
     "provider_error_last_type": null,

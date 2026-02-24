@@ -192,8 +192,8 @@ EXPECTED_SCHEMA <- list(
   education_source = "string|null",
   
   prior_occupation = "string|Unknown",
-  class_background = "Working class|Middle class/professional|Upper/elite|Unknown",
   prior_occupation_source = "string|null",
+  class_background = "Working class|Middle class/professional|Upper/elite|Unknown",
   
   disability_status = "No disability|Some disability|Unknown",
   disability_source = "string|null",
