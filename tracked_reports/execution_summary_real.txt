@@ -1,5 +1,5 @@
 {
-  "elapsed_time": 4.0938,
+  "elapsed_time": 10.5759,
   "field_status": {
     "education_level": {
       "status": "unknown",
@@ -38,18 +38,18 @@
     },
     "prior_occupation": {
       "status": "found",
-      "value": "Vocal",
-      "source_url": "https://web.archive.org/web/20180214145500/http:/www.diputados.bo:80/prensa/noticias/pese-las-pugnas-en-la-oposición-la-cámara-de-diputados-conformó-sus-12-comisiones-y",
-      "evidence": "Title: Pese a las pugnas en la oposición, la Cámara de Diputados conformó.... 3. Comité de la Hoja de Coca.Secretaria Jimena Costa Benavides UD. Vocal Juan Cala Ortega MAS. Vocal Ramona Moye Camaconi MAS. Comisión de región amazónica, tierr",
-      "attempts": 2,
+      "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "scratchpad_source_backed",
+      "attempts": 3,
       "descriptor": "string|Unknown"
     },
     "prior_occupation_source": {
       "status": "found",
-      "value": "https://web.archive.org/web/20180214145500/http:/www.diputados.bo:80/prensa/noticias/pese-las-pugnas-en-la-oposición-la-cámara-de-diputados-conformó-sus-12-comisiones-y",
-      "source_url": "https://web.archive.org/web/20180214145500/http:/www.diputados.bo:80/prensa/noticias/pese-las-pugnas-en-la-oposición-la-cámara-de-diputados-conformó-sus-12-comisiones-y",
-      "evidence": "derived_from_evidence_candidate",
-      "attempts": 2,
+      "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+      "evidence": "source_consistency_fix",
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "class_background": {
@@ -100,7 +100,7 @@
       "value": 1982,
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": "scratchpad_source_backed",
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "integer|null|Unknown"
     },
     "birth_year_source": {
@@ -108,7 +108,7 @@
       "value": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
       "evidence": "source_consistency_fix",
-      "attempts": 2,
+      "attempts": 3,
       "descriptor": "string|null"
     },
     "lgbtq_status": {
@@ -156,13 +156,13 @@
   },
   "diagnostics": {
     "grounding_blocks_count": 0,
-    "source_consistency_fixes_count": 1,
+    "source_consistency_fixes_count": 2,
     "field_demotions_count": 3,
     "recovery_promotions_count": 0,
     "recovery_rejections_count": 8,
-    "unknown_fields_count": 14,
+    "unknown_fields_count": 18,
     "grounding_blocks_count_current": 0,
-    "source_consistency_fixes_count_current": 1,
+    "source_consistency_fixes_count_current": 2,
     "field_demotions_count_current": 1,
     "recovery_promotions_count_current": 0,
     "recovery_rejections_count_current": 8,
@@ -185,20 +185,20 @@
     "webpage_deterministic_fallback_calls": 0,
     "webpage_deterministic_fallback_payloads": 0,
     "webpage_deterministic_fallback_no_payload": 0,
-    "search_snippet_llm_extraction_calls": 2,
-    "search_snippet_langextract_calls": 4,
+    "search_snippet_llm_extraction_calls": 0,
+    "search_snippet_langextract_calls": 2,
     "search_snippet_langextract_fallback_calls": 2,
     "search_snippet_langextract_errors": 2,
-    "search_snippet_candidates_total": 11,
-    "search_snippet_candidates_selected": 4,
+    "search_snippet_candidates_total": 4,
+    "search_snippet_candidates_selected": 2,
     "search_snippet_skipped_duplicate_urls": 0,
     "search_snippet_deterministic_fallback_calls": 2,
     "search_snippet_deterministic_fallback_payloads": 0,
     "search_snippet_deterministic_fallback_no_payload": 2,
     "webpage_langextract_elapsed_ms_total": 0,
     "webpage_langextract_error_elapsed_ms_total": 0,
-    "search_snippet_langextract_elapsed_ms_total": 143155,
-    "search_snippet_langextract_error_elapsed_ms_total": 65424,
+    "search_snippet_langextract_elapsed_ms_total": 554033,
+    "search_snippet_langextract_error_elapsed_ms_total": 554033,
     "low_signal_rewrite_events": 0,
     "low_signal_stop_events": 0,
     "no_new_evidence_replan_events": 0,
@@ -212,19 +212,19 @@
     "adaptive_budget_reduced_calls_total": 0,
     "structural_repair_events": 0,
     "structural_repair_retry_events": 0,
-    "finalization_invariant_failures": 5,
-    "diagnostics_recovery_checkpoint_events": 5,
+    "finalization_invariant_failures": 3,
+    "diagnostics_recovery_checkpoint_events": 3,
     "diagnostics_recovery_retry_events": 1,
     "anchor_hard_blocks_count": 0,
     "anchor_soft_penalties_count": 0,
     "grounding_blocked_fields": [],
-    "source_consistency_fixes": "birth_year_source",
+    "source_consistency_fixes": ["birth_year_source", "prior_occupation_source"],
     "field_demotion_fields": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
     "recovery_promoted_fields": [],
     "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
-    "unknown_fields": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
+    "unknown_fields": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
     "grounding_blocked_fields_current": [],
-    "source_consistency_fixes_current": "birth_year_source",
+    "source_consistency_fixes_current": ["prior_occupation_source", "birth_year_source"],
     "field_demotion_fields_current": "birth_place_source",
     "recovery_promoted_fields_current": [],
     "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
@@ -236,16 +236,16 @@
       "recovery_blocked_anchor_mismatch": 8
     },
     "unknown_reason_counts": {
-      "attempted_no_verified_evidence": 13,
-      "source_consistency_demotion": 1,
+      "attempted_no_verified_evidence": 15,
+      "source_consistency_demotion": 3,
       "recovery_blocked_anchor_mismatch": 8
     },
     "finalization_invariant_failures_by_reason": {
-      "diagnostics_unknown_count_mismatch": 5
+      "diagnostics_unknown_count_mismatch": 3
     },
     "unknown_fields_by_reason": {
-      "attempted_no_verified_evidence": ["education_level", "education_institution", "education_field", "education_source", "class_background", "disability_status", "disability_source", "birth_place", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
-      "source_consistency_demotion": "birth_place_source",
+      "attempted_no_verified_evidence": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "class_background", "disability_status", "disability_source", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
+      "source_consistency_demotion": ["prior_occupation_source", "birth_place_source", "birth_year_source"],
       "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"]
     },
     "finalization_blocking_fields": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year", "birth_year_source", "lgbtq_status", "lgbtq_details", "lgbtq_source", "confidence", "justification"],
@@ -257,7 +257,7 @@
         "priority": "diagnostics_reconciliation",
         "action": "replan_and_retry",
         "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-        "ts_utc": "2026-02-25T02:43:15.113094Z"
+        "ts_utc": "2026-02-25T13:38:49.960507Z"
       },
       {
         "context": "agent",
@@ -266,7 +266,7 @@
         "priority": "diagnostics_reconciliation",
         "action": "none",
         "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-        "ts_utc": "2026-02-25T02:44:39.789326Z"
+        "ts_utc": "2026-02-25T13:48:43.957568Z"
       },
       {
         "context": "agent",
@@ -275,25 +275,7 @@
         "priority": "diagnostics_reconciliation",
         "action": "none",
         "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-        "ts_utc": "2026-02-25T02:44:46.769186Z"
-      },
-      {
-        "context": "agent",
-        "reason": "diagnostics_unknown_count_mismatch",
-        "reasons": "diagnostics_unknown_count_mismatch",
-        "priority": "diagnostics_reconciliation",
-        "action": "none",
-        "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "birth_year"],
-        "ts_utc": "2026-02-25T02:44:57.620401Z"
-      },
-      {
-        "context": "agent",
-        "reason": "diagnostics_unknown_count_mismatch",
-        "reasons": "diagnostics_unknown_count_mismatch",
-        "priority": "diagnostics_reconciliation",
-        "action": "none",
-        "blocking_fields_sample": ["education_level", "education_institution", "education_field", "education_source", "prior_occupation", "prior_occupation_source", "class_background", "disability_status", "disability_source", "birth_place", "birth_place_source", "lgbtq_status"],
-        "ts_utc": "2026-02-25T02:45:01.351863Z"
+        "ts_utc": "2026-02-25T13:48:50.673955Z"
       }
     ],
     "anchor_mismatch_samples": [
@@ -368,24 +350,24 @@
     "webpage_langextract_provider": "",
     "webpage_langextract_last_error": "",
     "search_snippet_langextract_provider": "gemini",
-    "search_snippet_langextract_last_error": "no_payload",
+    "search_snippet_langextract_last_error": "langextract_error:Failed to parse JSON content: Unterminated string starting at: line 10081 column 18 (char 207659)",
     "anchor_strength_current": "moderate",
     "anchor_mode_current": "soft",
     "anchor_confidence_current": 0.56,
     "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
     "performance": {
       "tool_round_count": 5,
-      "tool_round_elapsed_ms_total": 48671,
-      "tool_round_elapsed_ms_last": 42720,
-      "tool_round_elapsed_ms_max": 42720,
-      "search_tool_calls": 2,
-      "openwebpage_tool_calls": 2,
+      "tool_round_elapsed_ms_total": 28725,
+      "tool_round_elapsed_ms_last": 1,
+      "tool_round_elapsed_ms_max": 25203,
+      "search_tool_calls": 1,
+      "openwebpage_tool_calls": 3,
       "other_tool_calls": 0,
-      "search_tool_elapsed_ms_est_total": 45369,
-      "openwebpage_tool_elapsed_ms_est_total": 3301,
+      "search_tool_elapsed_ms_est_total": 12602,
+      "openwebpage_tool_elapsed_ms_est_total": 16118,
       "other_tool_elapsed_ms_est_total": 0,
       "provider_error_count": 2,
-      "provider_error_elapsed_ms_total": 65424,
+      "provider_error_elapsed_ms_total": 554033,
       "low_signal_streak_peak": 0,
       "diminishing_returns_streak_peak": 1,
       "adaptive_budget_events": 0,
@@ -395,8 +377,8 @@
       "fold_summarizer_latency_m_last": 0,
       "webpage_langextract_elapsed_ms_total": 0,
       "webpage_langextract_error_elapsed_ms_total": 0,
-      "search_snippet_langextract_elapsed_ms_total": 143155,
-      "search_snippet_langextract_error_elapsed_ms_total": 65424,
+      "search_snippet_langextract_elapsed_ms_total": 554033,
+      "search_snippet_langextract_error_elapsed_ms_total": 554033,
       "low_signal_rewrite_events": 0,
       "low_signal_stop_events": 0,
       "no_new_evidence_replan_events": 0,
@@ -406,8 +388,8 @@
       "retry_threshold_crossings": 0,
       "adaptive_budget_last_reason": null,
       "fold_last_trigger_reason": null,
-      "provider_error_last_type": "no_payload",
-      "provider_error_last_message": "no_payload"
+      "provider_error_last_type": "langextract_error",
+      "provider_error_last_message": "langextract_error:Failed to parse JSON content: Unterminated string starting at: line 10081 column 18 (char 207659)"
     }
   }
 }

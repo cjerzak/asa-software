@@ -75,6 +75,133 @@ asa_env$init_count <- 0L
   }
 }
 
+#' Resolve Runtime Control API Module
+#'
+#' @param required If TRUE, throw an error when backend API is unavailable.
+#' @return Python backend API module or NULL.
+#' @keywords internal
+.runtime_control_api <- function(required = FALSE) {
+  backend_api <- asa_env$backend_api %||% NULL
+
+  if (is.null(backend_api) && exists(".import_backend_api", mode = "function")) {
+    backend_api <- tryCatch(
+      .import_backend_api(required = FALSE),
+      error = function(e) NULL
+    )
+  }
+
+  if (required && is.null(backend_api)) {
+    stop("Backend API not available; runtime controls require an initialized Python backend.", call. = FALSE)
+  }
+
+  backend_api
+}
+
+#' Call Python Runtime Control Method
+#'
+#' @param method Runtime method name exported by asa_backend.api.agent_api.
+#' @param ... Arguments forwarded to the runtime method.
+#' @param default Default return value when backend/runtime method is unavailable.
+#' @param required If TRUE, throw when method is unavailable or raises.
+#' @param quiet If FALSE, emit debug diagnostics on runtime call failure.
+#' @return Runtime call result converted to R, or default on soft failure.
+#' @keywords internal
+.runtime_control_call <- function(method, ..., default = NULL, required = FALSE, quiet = TRUE) {
+  backend_api <- .runtime_control_api(required = required)
+  if (is.null(backend_api) || !requireNamespace("reticulate", quietly = TRUE)) {
+    return(default)
+  }
+
+  has_method <- tryCatch(
+    isTRUE(reticulate::py_has_attr(backend_api, method)),
+    error = function(e) FALSE
+  )
+  if (!has_method) {
+    if (required) {
+      stop("Backend runtime method missing: ", method, call. = FALSE)
+    }
+    return(default)
+  }
+
+  method_fn <- tryCatch(
+    reticulate::py_get_attr(backend_api, method),
+    error = function(e) NULL
+  )
+  if (is.null(method_fn) || !is.function(method_fn)) {
+    if (required) {
+      stop("Backend runtime method is not callable: ", method, call. = FALSE)
+    }
+    return(default)
+  }
+
+  out <- tryCatch(
+    method_fn(...),
+    error = function(e) {
+      if (!isTRUE(quiet) && isTRUE(getOption("asa.debug"))) {
+        message("[asa] runtime control call failed (", method, "): ", conditionMessage(e))
+      }
+      if (required) {
+        stop("Backend runtime call failed (", method, "): ", conditionMessage(e), call. = FALSE)
+      }
+      return(default)
+    }
+  )
+
+  if (is.null(out)) {
+    return(default)
+  }
+
+  tryCatch(
+    reticulate::py_to_r(out),
+    error = function(e) out
+  )
+}
+
+#' Initialize Python Runtime Controls
+#'
+#' @param config Optional named list of runtime-control configuration values.
+#' @return Invisibly returns runtime control snapshot (or empty list).
+#' @keywords internal
+.runtime_control_init <- function(config = NULL) {
+  out <- .runtime_control_call(
+    "runtime_control_init",
+    config = config,
+    default = list(),
+    quiet = FALSE
+  )
+  invisible(out)
+}
+
+#' Reset Python Runtime Controls
+#'
+#' @return Invisibly returns runtime control snapshot (or empty list).
+#' @keywords internal
+.runtime_control_reset <- function() {
+  out <- .runtime_control_call(
+    "runtime_control_reset",
+    default = list(),
+    quiet = FALSE
+  )
+  invisible(out)
+}
+
+#' Register HTTP Clients in Python Runtime
+#'
+#' @param direct Direct httpx client for model/provider requests.
+#' @param proxied Proxied httpx client for search requests.
+#' @return Invisibly returns NULL.
+#' @keywords internal
+.runtime_register_http_clients <- function(direct = NULL, proxied = NULL) {
+  .runtime_control_call(
+    "runtime_clients_register",
+    direct = direct,
+    proxied = proxied,
+    default = NULL,
+    quiet = FALSE
+  )
+  invisible(NULL)
+}
+
 #' Close HTTP Clients
 #'
 #' Safely closes the synchronous httpx client to prevent resource leaks.
@@ -86,36 +213,31 @@ asa_env$init_count <- 0L
 #' @return Invisibly returns NULL
 #' @keywords internal
 .close_http_clients <- function() {
-  if (!exists("http_clients", envir = asa_env) || is.null(asa_env$http_clients)) {
-    return(invisible(NULL))
-  }
+  # Primary path: Python runtime owns HTTP client lifecycle.
+  .runtime_control_call("runtime_clients_close", default = NULL, quiet = FALSE)
 
-  # Close direct client (for LLM API calls) if it exists
-  if (!is.null(asa_env$http_clients$direct)) {
-    tryCatch({
-      asa_env$http_clients$direct$close()
-    }, error = function(e) {
-      # LOW FIX: Log cleanup errors in debug mode for diagnostics
-      if (isTRUE(getOption("asa.debug"))) {
-        message("[asa] HTTP direct client cleanup error: ", conditionMessage(e))
-      }
-    })
-  }
+  # Legacy fallback in case clients were created before runtime delegation.
+  if (exists("http_clients", envir = asa_env) && !is.null(asa_env$http_clients)) {
+    if (!is.null(asa_env$http_clients$direct)) {
+      tryCatch({
+        asa_env$http_clients$direct$close()
+      }, error = function(e) {
+        if (isTRUE(getOption("asa.debug"))) {
+          message("[asa] HTTP direct client cleanup error: ", conditionMessage(e))
+        }
+      })
+    }
 
-  # Close proxied client (for search tools) if it exists
-  if (!is.null(asa_env$http_clients$proxied)) {
-    tryCatch({
-      asa_env$http_clients$proxied$close()
-    }, error = function(e) {
-      # LOW FIX: Log cleanup errors in debug mode for diagnostics
-      if (isTRUE(getOption("asa.debug"))) {
-        message("[asa] HTTP proxied client cleanup error: ", conditionMessage(e))
-      }
-    })
+    if (!is.null(asa_env$http_clients$proxied)) {
+      tryCatch({
+        asa_env$http_clients$proxied$close()
+      }, error = function(e) {
+        if (isTRUE(getOption("asa.debug"))) {
+          message("[asa] HTTP proxied client cleanup error: ", conditionMessage(e))
+        }
+      })
+    }
   }
-
-  # Note: async client is intentionally NULL - LangChain manages its own.
-  # This fixes R-CRIT-001 where async cleanup from R was unreliable.
 
   asa_env$http_clients <- NULL
   invisible(NULL)
@@ -203,91 +325,49 @@ asa_env$request_count <- 0L
 #' @return Invisibly returns NULL
 #' @keywords internal
 .rate_limiter_init <- function(rate = NULL, bucket_size = NULL) {
-  rate <- rate %||% ASA_DEFAULT_RATE_LIMIT
-  bucket_size <- bucket_size %||% ASA_RATE_LIMIT_BUCKET_SIZE
-
-  asa_env$rate_limiter <- list(
-    tokens = as.numeric(bucket_size),
-    last_refill = Sys.time(),
-    bucket_size = as.numeric(bucket_size),
-    refill_rate = as.numeric(rate)
-  )
+  resolved_rate <- if (is.null(rate)) ASA_DEFAULT_RATE_LIMIT else rate
+  resolved_bucket <- if (is.null(bucket_size)) ASA_RATE_LIMIT_BUCKET_SIZE else bucket_size
+  .runtime_control_init(config = list(
+    rate_limit = as.numeric(resolved_rate),
+    rate_limit_bucket_size = as.numeric(resolved_bucket)
+  ))
   invisible(NULL)
 }
 
 #' Acquire a Rate Limit Token (Proactive Rate Limiting)
 #'
-#' Acquires a token from the rate limiter bucket before making a request.
+#' Acquires a token from the runtime rate limiter before making a request.
 #' If no tokens are available, waits until one becomes available.
-#' This is called BEFORE making requests to prevent rate limit errors.
-#' Wait times are humanized with random jitter when ASA_HUMANIZE_TIMING is TRUE.
 #'
 #' @param verbose Print waiting message if TRUE
 #' @return The wait time in seconds (0 if no wait was needed)
 #' @keywords internal
 .acquire_rate_limit_token <- function(verbose = FALSE) {
-  # Skip if proactive rate limiting is disabled
   if (!isTRUE(ASA_RATE_LIMIT_PROACTIVE)) {
     return(0)
   }
 
- # Initialize if not already done
-  if (is.null(asa_env$rate_limiter)) {
-    .rate_limiter_init()
+  wait_time <- .runtime_control_call(
+    "runtime_rate_acquire",
+    verbose = isTRUE(verbose),
+    default = 0,
+    quiet = FALSE
+  )
+  wait_time <- suppressWarnings(as.numeric(wait_time)[1])
+  if (!is.finite(wait_time) || wait_time < 0) {
+    wait_time <- 0
   }
-
-  rl <- asa_env$rate_limiter
-  now <- Sys.time()
-
-  # Calculate tokens to add based on elapsed time
-  elapsed <- as.numeric(difftime(now, rl$last_refill, units = "secs"))
-  tokens_to_add <- elapsed * rl$refill_rate
-  rl$tokens <- min(rl$bucket_size, rl$tokens + tokens_to_add)
-  rl$last_refill <- now
-
-  wait_time <- 0
-
-  # If no tokens available, calculate wait time
-  if (rl$tokens < 1) {
-    # How long until we have 1 token?
-    base_wait <- (1 - rl$tokens) / rl$refill_rate
-    # Apply adaptive rate multiplier (increases on CAPTCHA, decreases on success)
-    adaptive_multiplier <- .adaptive_rate_get_multiplier()
-    adjusted_wait <- base_wait * adaptive_multiplier
-    # Apply humanized timing with random jitter
-    wait_time <- .humanize_delay(adjusted_wait)
-    if (verbose) {
-      if (adaptive_multiplier != 1.0) {
-        message(sprintf("  Rate limiter: waiting %.1fs (base=%.1fs, adaptive=%.2fx, humanized)",
-                        wait_time, base_wait, adaptive_multiplier))
-      } else {
-        message(sprintf("  Rate limiter: waiting %.1fs for token (humanized from %.1fs)...",
-                        wait_time, base_wait))
-      }
-    }
-    Sys.sleep(wait_time)
-    rl$tokens <- 1  # After waiting, we have exactly 1 token
-  }
-
-  # Consume one token
-  rl$tokens <- rl$tokens - 1
-  asa_env$rate_limiter <- rl
-
-  return(wait_time)
+  wait_time
 }
 
 #' Reset Rate Limiter
 #'
-#' Resets the rate limiter to full capacity. Useful after errors or
-#' when starting a new batch of requests.
+#' Resets the runtime rate limiter to full capacity.
 #'
 #' @return Invisibly returns NULL
 #' @keywords internal
 .rate_limiter_reset <- function() {
-  if (!is.null(asa_env$rate_limiter)) {
-    asa_env$rate_limiter$tokens <- asa_env$rate_limiter$bucket_size
-    asa_env$rate_limiter$last_refill <- Sys.time()
-  }
+  .runtime_control_call("runtime_rate_reset", default = NULL, quiet = FALSE)
   invisible(NULL)
 }
 
@@ -303,12 +383,7 @@ asa_env$request_count <- 0L
 #' @return Invisibly returns NULL
 #' @keywords internal
 .circuit_breaker_init <- function() {
-  asa_env$circuit_breaker <- list(
-    recent_results = character(0),
-    tripped = FALSE,
-    tripped_at = NULL,
-    trip_count = 0L
-  )
+  .runtime_control_call("runtime_circuit_init", default = list(), quiet = FALSE)
   invisible(NULL)
 }
 
@@ -322,42 +397,14 @@ asa_env$request_count <- 0L
 #' @return Invisibly returns whether breaker is now tripped
 #' @keywords internal
 .circuit_breaker_record <- function(status, verbose = FALSE) {
-  if (is.null(asa_env$circuit_breaker)) {
-    .circuit_breaker_init()
-  }
-
-  cb <- asa_env$circuit_breaker
-
-  # Don't record if already tripped
-  if (cb$tripped) {
-    return(invisible(TRUE))
-  }
-
-  # Add result to window
-  cb$recent_results <- c(cb$recent_results, status)
-
-  # Keep only last N results
-  if (length(cb$recent_results) > ASA_CIRCUIT_BREAKER_WINDOW) {
-    cb$recent_results <- tail(cb$recent_results, ASA_CIRCUIT_BREAKER_WINDOW)
-  }
-
-  # Check error rate only if we have enough samples
-  if (length(cb$recent_results) >= 5) {
-    error_rate <- mean(cb$recent_results == "error")
-    if (error_rate > ASA_CIRCUIT_BREAKER_THRESHOLD) {
-      cb$tripped <- TRUE
-      cb$tripped_at <- Sys.time()
-      cb$trip_count <- cb$trip_count + 1L
-      if (verbose) {
-        warning(sprintf("Circuit breaker TRIPPED! Error rate: %.0f%% (threshold: %.0f%%)",
-                        error_rate * 100, ASA_CIRCUIT_BREAKER_THRESHOLD * 100),
-                call. = FALSE)
-      }
-    }
-  }
-
-  asa_env$circuit_breaker <- cb
-  invisible(cb$tripped)
+  tripped <- .runtime_control_call(
+    "runtime_circuit_record",
+    status = status,
+    verbose = isTRUE(verbose),
+    default = FALSE,
+    quiet = FALSE
+  )
+  invisible(isTRUE(tripped))
 }
 
 #' Check Circuit Breaker State
@@ -369,29 +416,13 @@ asa_env$request_count <- 0L
 #' @return TRUE if requests can proceed, FALSE if breaker is tripped
 #' @keywords internal
 .circuit_breaker_check <- function(verbose = FALSE) {
-  if (is.null(asa_env$circuit_breaker)) {
-    return(TRUE)
-  }
-
-  cb <- asa_env$circuit_breaker
-
-  if (!cb$tripped) {
-    return(TRUE)
-  }
-
-  # Check if cooldown has passed
-  elapsed <- as.numeric(difftime(Sys.time(), cb$tripped_at, units = "secs"))
-  if (elapsed >= ASA_CIRCUIT_BREAKER_COOLDOWN) {
-    cb$tripped <- FALSE
-    cb$recent_results <- character(0)
-    asa_env$circuit_breaker <- cb
-    if (verbose) {
-      message(sprintf("Circuit breaker RESET after %.0fs cooldown", elapsed))
-    }
-    return(TRUE)
-  }
-
-  return(FALSE)
+  can_proceed <- .runtime_control_call(
+    "runtime_circuit_check",
+    verbose = isTRUE(verbose),
+    default = TRUE,
+    quiet = FALSE
+  )
+  isTRUE(can_proceed)
 }
 
 #' Get Circuit Breaker Status
@@ -401,27 +432,32 @@ asa_env$request_count <- 0L
 #' @return List with tripped, error_rate, recent_count, and trip_count
 #' @keywords internal
 .circuit_breaker_status <- function() {
-  if (is.null(asa_env$circuit_breaker)) {
-    return(list(
-      tripped = FALSE,
-      error_rate = 0,
-      recent_count = 0,
-      trip_count = 0L
-    ))
+  status <- .runtime_control_call(
+    "runtime_circuit_status",
+    default = list(),
+    quiet = FALSE
+  )
+  if (!is.list(status)) {
+    status <- list()
   }
-
-  cb <- asa_env$circuit_breaker
-  error_rate <- if (length(cb$recent_results) > 0) {
-    mean(cb$recent_results == "error")
-  } else {
-    0
+  tripped <- isTRUE(status$tripped)
+  error_rate <- suppressWarnings(as.numeric(status$error_rate)[1])
+  if (!is.finite(error_rate) || error_rate < 0) {
+    error_rate <- 0
   }
-
+  recent_count <- suppressWarnings(as.integer(status$recent_count)[1])
+  if (!is.finite(recent_count) || recent_count < 0) {
+    recent_count <- 0L
+  }
+  trip_count <- suppressWarnings(as.integer(status$trip_count)[1])
+  if (!is.finite(trip_count) || trip_count < 0) {
+    trip_count <- 0L
+  }
   list(
-    tripped = cb$tripped,
+    tripped = tripped,
     error_rate = error_rate,
-    recent_count = length(cb$recent_results),
-    trip_count = cb$trip_count
+    recent_count = recent_count,
+    trip_count = trip_count
   )
 }
 
@@ -442,12 +478,7 @@ asa_env$request_count <- 0L
 #' @return Invisibly returns NULL
 #' @keywords internal
 .adaptive_rate_init <- function() {
-  asa_env$adaptive_rate <- list(
-    recent_results = character(0),
-    multiplier = 1.0,
-    window_size = ASA_ADAPTIVE_RATE_WINDOW,
-    success_streak = 0L
-  )
+  .runtime_control_call("runtime_adaptive_reset", default = list(), quiet = FALSE)
   invisible(NULL)
 }
 
@@ -461,53 +492,26 @@ asa_env$request_count <- 0L
 #' @return Invisibly returns the current multiplier
 #' @keywords internal
 .adaptive_rate_record <- function(status, verbose = FALSE) {
-  if (!ASA_ADAPTIVE_RATE_ENABLED) {
+  if (!isTRUE(ASA_ADAPTIVE_RATE_ENABLED)) {
     return(invisible(1.0))
   }
 
-  # Initialize if needed
-  if (is.null(asa_env$adaptive_rate)) {
-    .adaptive_rate_init()
+  status_out <- .runtime_control_call(
+    "runtime_adaptive_record",
+    status = status,
+    verbose = isTRUE(verbose),
+    default = list(multiplier = 1.0),
+    quiet = FALSE
+  )
+  if (!is.list(status_out)) {
+    return(invisible(1.0))
   }
 
-  ar <- asa_env$adaptive_rate
-  ar$recent_results <- c(ar$recent_results, status)
-
-  # Keep sliding window
-  if (length(ar$recent_results) > ar$window_size) {
-    ar$recent_results <- tail(ar$recent_results, ar$window_size)
+  multiplier <- suppressWarnings(as.numeric(status_out$multiplier)[1])
+  if (!is.finite(multiplier) || multiplier <= 0) {
+    multiplier <- 1.0
   }
-
-  # Update success streak
-  if (status == "success") {
-    ar$success_streak <- ar$success_streak + 1L
-  } else {
-    ar$success_streak <- 0L
-  }
-
-  # Adapt multiplier based on results
-  old_multiplier <- ar$multiplier
-
-  if (status %in% c("captcha", "blocked")) {
-    # Increase delay on CAPTCHA/block
-    ar$multiplier <- min(ASA_ADAPTIVE_RATE_MAX, ar$multiplier * ASA_ADAPTIVE_RATE_INCREASE)
-    if (verbose && ar$multiplier != old_multiplier) {
-      message(sprintf("Adaptive rate: INCREASED to %.2fx (was %.2fx) due to %s",
-                      ar$multiplier, old_multiplier, status))
-    }
-  } else if (ar$success_streak >= 10L) {
-    # Decrease delay after 10 consecutive successes
-    ar$multiplier <- max(ASA_ADAPTIVE_RATE_MIN, ar$multiplier * ASA_ADAPTIVE_RATE_DECREASE)
-    if (verbose && ar$multiplier != old_multiplier) {
-      message(sprintf("Adaptive rate: DECREASED to %.2fx (was %.2fx) after %d successes",
-                      ar$multiplier, old_multiplier, ar$success_streak))
-    }
-    # Reset streak to avoid continuous decreases
-    ar$success_streak <- 0L
-  }
-
-  asa_env$adaptive_rate <- ar
-  invisible(ar$multiplier)
+  invisible(multiplier)
 }
 
 #' Get Current Adaptive Rate Multiplier
@@ -517,10 +521,23 @@ asa_env$request_count <- 0L
 #' @return Numeric multiplier (1.0 = normal, >1 = slower, <1 = faster)
 #' @keywords internal
 .adaptive_rate_get_multiplier <- function() {
-  if (!ASA_ADAPTIVE_RATE_ENABLED || is.null(asa_env$adaptive_rate)) {
+  if (!isTRUE(ASA_ADAPTIVE_RATE_ENABLED)) {
     return(1.0)
   }
-  asa_env$adaptive_rate$multiplier %||% 1.0
+
+  status <- .runtime_control_call(
+    "runtime_adaptive_status",
+    default = list(multiplier = 1.0),
+    quiet = FALSE
+  )
+  if (!is.list(status)) {
+    return(1.0)
+  }
+  multiplier <- suppressWarnings(as.numeric(status$multiplier)[1])
+  if (!is.finite(multiplier) || multiplier <= 0) {
+    return(1.0)
+  }
+  multiplier
 }
 
 #' Get Adaptive Rate Status
@@ -530,21 +547,40 @@ asa_env$request_count <- 0L
 #' @return List with multiplier, success_streak, recent_count, and enabled status
 #' @keywords internal
 .adaptive_rate_status <- function() {
-  if (!ASA_ADAPTIVE_RATE_ENABLED || is.null(asa_env$adaptive_rate)) {
+  if (!isTRUE(ASA_ADAPTIVE_RATE_ENABLED)) {
     return(list(
-      enabled = ASA_ADAPTIVE_RATE_ENABLED,
+      enabled = FALSE,
       multiplier = 1.0,
       success_streak = 0L,
       recent_count = 0L
     ))
   }
 
-  ar <- asa_env$adaptive_rate
+  status <- .runtime_control_call(
+    "runtime_adaptive_status",
+    default = list(),
+    quiet = FALSE
+  )
+  if (!is.list(status)) {
+    status <- list()
+  }
+  multiplier <- suppressWarnings(as.numeric(status$multiplier)[1])
+  if (!is.finite(multiplier) || multiplier <= 0) {
+    multiplier <- 1.0
+  }
+  success_streak <- suppressWarnings(as.integer(status$success_streak)[1])
+  if (!is.finite(success_streak) || success_streak < 0) {
+    success_streak <- 0L
+  }
+  recent_count <- suppressWarnings(as.integer(status$recent_count)[1])
+  if (!is.finite(recent_count) || recent_count < 0) {
+    recent_count <- 0L
+  }
   list(
-    enabled = TRUE,
-    multiplier = ar$multiplier,
-    success_streak = ar$success_streak,
-    recent_count = length(ar$recent_results)
+    enabled = isTRUE(status$enabled),
+    multiplier = multiplier,
+    success_streak = as.integer(success_streak),
+    recent_count = as.integer(recent_count)
   )
 }
 
@@ -555,7 +591,8 @@ asa_env$request_count <- 0L
 #' @return Invisibly returns NULL
 #' @keywords internal
 .adaptive_rate_reset <- function() {
-  .adaptive_rate_init()
+  .runtime_control_call("runtime_adaptive_reset", default = list(), quiet = FALSE)
+  invisible(NULL)
 }
 
 
@@ -568,30 +605,7 @@ asa_env$request_count <- 0L
 #' @return Invisibly returns NULL
 #' @keywords internal
 .register_cleanup_finalizer <- function() {
-  # Only register once (on first initialization)
-  if (isTRUE(asa_env$finalizer_registered)) {
-    return(invisible(NULL))
-  }
-
-  # Register finalizer on asa_env - runs when env is garbage collected or session ends
-  reg.finalizer(asa_env, function(e) {
-    tryCatch({
-      # Close HTTP clients if they exist
-      if (exists("http_clients", envir = e) && !is.null(e$http_clients)) {
-        if (!is.null(e$http_clients$direct)) {
-          tryCatch(e$http_clients$direct$close(), error = function(err) NULL)
-        }
-        if (!is.null(e$http_clients$proxied)) {
-          tryCatch(e$http_clients$proxied$close(), error = function(err) NULL)
-        }
-        e$http_clients <- NULL
-      }
-    }, error = function(err) {
-      # Silently ignore cleanup errors during finalization
-      NULL
-    })
-  }, onexit = TRUE)
-
+  # Retained for compatibility; Python runtime now owns client lifecycle.
   asa_env$finalizer_registered <- TRUE
   invisible(NULL)
 }
@@ -600,4 +614,5 @@ asa_env$request_count <- 0L
 .onUnload <- function(libpath) {
   # Clean up HTTP clients when package is unloaded
   .close_http_clients()
+  .runtime_control_reset()
 }

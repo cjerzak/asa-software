@@ -1,7 +1,7 @@
 AGENT ACTION MAP
 ================
-Steps captured: 12
-LangGraph timed steps: 11
+Steps captured: 15
+LangGraph timed steps: 12
 
 INVESTIGATOR SIGNALS
 --------------------
@@ -15,23 +15,23 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 5 tool-call turn(s), 1 answer turn(s)
-      Tool results: 5 total (Tool OpenWebpage=2, Tool Search=2, Tool save_finding=1)
+      AI turns: 7 tool-call turn(s), 1 answer turn(s)
+      Tool results: 6 total (Tool OpenWebpage=3, Tool save_finding=2, Tool Search=1)
       Structured terminal answer emitted
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 3.3988m (tok=0, n=5)
-      agent: 0.4990m (tok=16521, n=5)
-      finalize: 0.1693m (tok=5895, n=1)
+      tools: 9.8814m (tok=0, n=5)
+      agent: 0.5591m (tok=26325, n=6)
+      finalize: 0.1064m (tok=4340, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #10 tools: 2.0078m (tok=0)
-      #02 tools: 1.3356m (tok=0)
-      #11 finalize: 0.1693m (tok=5895)
-      #07 agent: 0.1540m (tok=4278)
-      #01 agent: 0.1198m (tok=1711)
-  +-- [TIMING] wall=4.0679m nodes=4.0671m delta=+0.0008m (overhead)
+      #02 tools: 9.8223m (tok=0)
+      #01 agent: 0.1457m (tok=1799)
+      #07 agent: 0.1147m (tok=5260)
+      #12 finalize: 0.1064m (tok=4340)
+      #09 agent: 0.0900m (tok=5687)
+  +-- [TIMING] wall=10.5480m nodes=10.5469m delta=+0.0011m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -39,58 +39,73 @@ START
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
   +-- [02] Requested 1 tool call (Search)
       by: AI
-      tok: in=1489 out=222 total=1711
-      min: 0.1198m
-      detail: Search(query=Ramona Moye Camaconi Bolivia MAS)
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Ramona Moye Camaconi Bolivia MAS biografia)
   +-- [03] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Diputada del #MASy repr...428 </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...428 </URL> __END_OF_SOURC...
   +-- [04] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=2224 out=267 total=2491
-      min: 0.0755m
-      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
+      tok: in=1489 out=310 total=1799
+      min: 0.1457m
+      detail: OpenWebpage(url=https://radioluisdefuentes...ra-de-diputados)
   +-- [05] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
+      detail: URL: https://radioluisdefuentes.com/nacion/diputada-moy...strador/] · septiembre 5,...
   +-- [06] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=3036 out=250 total=3286
-      min: 0.0877m
-      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
+      tok: in=3017 out=272 total=3289
+      min: 0.0774m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
   +-- [07] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
-  +-- [08] Requested 1 tool call (save_finding)
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
+  +-- [08] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=3807 out=471 total=4278
-      min: 0.1540m
-      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
+      tok: in=3834 out=355 total=4189
+      min: 0.0812m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
   +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
+  +-- [10] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=4710 out=550 total=5260
+      min: 0.1147m
+      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
+  +-- [11] Returned result
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
       detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
-  +-- [10] Requested 1 tool call (Search)
+  +-- [12] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=4549 out=206 total=4755
-      min: 0.0620m
-      detail: Search(query="Ramona Moye Camaconi" biografia educacio...)
-  +-- [11] Returned result
-      by: Tool Search
+      tok: in=5531 out=156 total=5687
+      min: 0.0900m
+      detail: save_finding(finding=prior_occupation = Preside...lamentario=609), category=fact)
+  +-- [13] Returned result
+      by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Pese a las pugna...116 </URL> __END_OF_SOURC...
-  +-- [12] Produced structured answer
+      detail: Saved to scratchpad: prior_occupation = Presidenta de l...mentario&id_parlamentario...
+  +-- [14] Requested 1 tool call (Search)
       by: AI
-      tok: in=5068 out=827 total=5895
-      min: 0.1693m
+      tok: in=5945 out=156 total=6101
+      min: 0.0500m
+      detail: Search(query=Ramona Moye Camaconi lugar de nacimiento ...)
+  +-- [15] Produced structured answer
+      by: AI
+      tok: in=3980 out=360 total=4340
+      min: 0.1064m
       flag: LOW_EVIDENCE_FINAL_ANSWER
       detail: {"education_level":"Unknown","education_institution":"U..._blocked_anchor_mismatch(...
 END

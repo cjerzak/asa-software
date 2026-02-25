@@ -257,17 +257,6 @@ initialize_agent <- function(backend = NULL,
     }
   }
 
-  # Register cleanup finalizer on first initialization (belt-and-suspenders with .onUnload)
-  if (asa_env$init_count == 1L) {
-    .register_cleanup_finalizer()
-  }
-
-  # Initialize proactive rate limiter with configured rate
-  .rate_limiter_init(rate = rate_limit)
-
-  # Initialize adaptive rate limiting
-  .adaptive_rate_init()
-
   # Activate conda environment
   if (verbose) message("  Activating conda environment: ", conda_env)
   reticulate::use_condaenv(conda_env, required = TRUE)
@@ -275,6 +264,27 @@ initialize_agent <- function(backend = NULL,
   # Import Python packages
   if (verbose) message("  Importing Python packages...")
   .import_python_packages()
+
+  # Python runtime now owns rate/circuit/adaptive state and cleanup lifecycle.
+  runtime_humanize_timing <- search$humanize_timing %||% ASA_HUMANIZE_TIMING
+  runtime_jitter_factor <- search$jitter_factor %||% ASA_JITTER_FACTOR
+  .runtime_control_init(config = list(
+    rate_limit = as.numeric(rate_limit),
+    rate_limit_bucket_size = as.numeric(ASA_RATE_LIMIT_BUCKET_SIZE),
+    rate_limit_proactive = isTRUE(ASA_RATE_LIMIT_PROACTIVE),
+    humanize_timing = isTRUE(runtime_humanize_timing),
+    jitter_factor = as.numeric(runtime_jitter_factor),
+    adaptive_enabled = isTRUE(ASA_ADAPTIVE_RATE_ENABLED),
+    adaptive_window = as.integer(ASA_ADAPTIVE_RATE_WINDOW),
+    adaptive_increase = as.numeric(ASA_ADAPTIVE_RATE_INCREASE),
+    adaptive_decrease = as.numeric(ASA_ADAPTIVE_RATE_DECREASE),
+    adaptive_max = as.numeric(ASA_ADAPTIVE_RATE_MAX),
+    adaptive_min = as.numeric(ASA_ADAPTIVE_RATE_MIN),
+    circuit_enabled = isTRUE(ASA_CIRCUIT_BREAKER_ENABLED),
+    circuit_threshold = as.numeric(ASA_CIRCUIT_BREAKER_THRESHOLD),
+    circuit_window = as.integer(ASA_CIRCUIT_BREAKER_WINDOW),
+    circuit_cooldown = as.numeric(ASA_CIRCUIT_BREAKER_COOLDOWN)
+  ))
 
   # Configure shared Tor registry (exit health tracking)
   configure_tor_registry(
@@ -320,6 +330,10 @@ initialize_agent <- function(backend = NULL,
     # Store clients in asa_env for cleanup on reset/unload
     asa_env$http_clients <- clients
   }
+  .runtime_register_http_clients(
+    direct = clients$direct %||% NULL,
+    proxied = clients$proxied %||% NULL
+  )
 
   # Create LLM instance
   if (verbose) message("  Creating LLM (", backend, "/", model, ")...")
@@ -859,6 +873,7 @@ get_agent <- function() {
 reset_agent <- function() {
   # Close HTTP clients to prevent resource leak (BUG-007 fix)
   .close_http_clients()
+  .runtime_control_reset()
 
   asa_env$initialized <- FALSE
   asa_env$agent <- NULL

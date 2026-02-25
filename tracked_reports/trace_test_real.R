@@ -155,7 +155,8 @@ search_jitter_factor <- if (use_fast_emulation) 0.25 else 0.5
 search_max_results <- if (use_fast_emulation) 8L else 10L
 
 webpage_timeout_s <- if (use_fast_emulation) 20.0 else 45.0
-auto_openwebpage_policy <- if (use_fast_emulation) "off" else "auto"
+#auto_openwebpage_policy <- if (use_fast_emulation) "off" else "auto"
+auto_openwebpage_policy <- "auto"
 
 orchestration_options_override <- if (use_fast_emulation) {
   list(
@@ -176,19 +177,6 @@ orchestration_options_override <- if (use_fast_emulation) {
     finalizer = list(
       enabled = TRUE,
       mode = "enforce"
-    ),
-    source_tier_provider = list(
-      strategy = "mapping",
-      domain_tiers = list(
-        "vicepresidencia.gob.bo" = "primary",
-        "oep.org.bo" = "primary",
-        "tse.org.bo" = "primary",
-        "boletin.bo" = "secondary",
-        "eldeber.com.bo" = "secondary",
-        "la-razon.com" = "secondary",
-        "idcrawl.com" = "tertiary",
-        "spokeo.com" = "tertiary"
-      )
     ),
     policy_version = "2026-02-24-trace-benchmark-v2"
   )
@@ -243,11 +231,12 @@ finalization_policy_override <- list(
   quality_gate_unknown_ratio_max = 0.85
 )
 
-query_templates_override <- list(
-  focused_field_query = "\"{entity}\" {field} Bolivia MAS Beni 2014",
-  source_constrained_query = "site:{domain} \"{entity}\" {field} Bolivia",
-  disambiguation_query = "\"{entity}\" MAS Beni Bolivia diputado 2014"
-)
+query_templates_override <- NULL
+#query_templates_override <- list(
+#  focused_field_query = "\"{entity}\" {field} Bolivia MAS Beni 2014",
+#  source_constrained_query = "site:{domain} \"{entity}\" {field} Bolivia",
+#  disambiguation_query = "\"{entity}\" MAS Beni Bolivia diputado 2014"
+#)
 
 # Heartbeat lifecycle is managed by package internals:
 # asa:::.heartbeat_start/.heartbeat_set_phase/.heartbeat_stop/.with_heartbeat
