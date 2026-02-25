@@ -600,15 +600,50 @@ def _sanitize_token(value: Any, default: str = "na", max_chars: int = 96) -> str
     return text
 
 
-def _pending_tool_calls(message: Any) -> bool:
+def _tool_calls_from_message(message: Any) -> list:
     if message is None:
-        return False
+        return []
+    tool_calls = None
     if isinstance(message, dict):
-        return bool(message.get("tool_calls"))
-    try:
-        return bool(getattr(message, "tool_calls", None))
-    except Exception:
-        return False
+        tool_calls = message.get("tool_calls")
+    else:
+        try:
+            tool_calls = getattr(message, "tool_calls", None)
+        except Exception:
+            tool_calls = None
+    return tool_calls if isinstance(tool_calls, list) else []
+
+
+def _pending_tool_calls(message: Any) -> bool:
+    return bool(_tool_calls_from_message(message))
+
+
+def _pending_tool_name(message: Any) -> str:
+    tool_calls = _tool_calls_from_message(message)
+    if not tool_calls:
+        return "na"
+
+    first_call = tool_calls[0]
+    name = None
+    if isinstance(first_call, dict):
+        name = first_call.get("name")
+        if not name:
+            function_spec = first_call.get("function")
+            if isinstance(function_spec, dict):
+                name = function_spec.get("name")
+    else:
+        try:
+            name = getattr(first_call, "name", None)
+            if not name:
+                function_spec = getattr(first_call, "function", None)
+                if isinstance(function_spec, dict):
+                    name = function_spec.get("name")
+                elif function_spec is not None:
+                    name = getattr(function_spec, "name", None)
+        except Exception:
+            name = None
+
+    return _sanitize_token(name, default="na", max_chars=64)
 
 
 def _last_node_name(token_trace: Any) -> str:
@@ -633,8 +668,11 @@ def _build_progress_line(
     messages = _state_get(state, "messages", [])
     message_count = len(messages) if isinstance(messages, list) else 0
     pending_calls = False
+    pending_tool = "na"
     if isinstance(messages, list) and message_count > 0:
         pending_calls = _pending_tool_calls(messages[-1])
+        if pending_calls:
+            pending_tool = _pending_tool_name(messages[-1])
 
     budget_state = _state_get(state, "budget_state", {})
     if not isinstance(budget_state, dict):
@@ -674,6 +712,7 @@ def _build_progress_line(
         f"node={node_name}",
         f"messages={_nonneg_int(message_count)}",
         f"pending_tool_calls={1 if pending_calls else 0}",
+        f"pending_tool={pending_tool}",
         f"tool_used={tool_used}",
         f"tool_limit={tool_limit}",
         f"tool_rem={tool_remaining}",

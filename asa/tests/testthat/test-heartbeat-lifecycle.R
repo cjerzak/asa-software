@@ -104,3 +104,82 @@ test_that(".with_heartbeat restores env and cleans temporary files", {
   )
   expect_setequal(after_error_files, before_files)
 })
+
+
+.heartbeat_script_fixture <- function() {
+  asa:::.heartbeat_build_script(
+    stopfile = tempfile("hb_stop_"),
+    phasefile = tempfile("hb_phase_"),
+    progress_file = tempfile("hb_progress_"),
+    pidfile = tempfile("hb_pid_"),
+    label = "heartbeat-test",
+    interval_sec = 20L,
+    stall_after_sec = 180L,
+    r_pid = 12345L
+  )
+}
+
+
+test_that("heartbeat script parses backend progress fields for reason classification", {
+  script <- .heartbeat_script_fixture()
+
+  expect_true(grepl("PROGRESS_PHASE=$(get_kv phase \"$PROGRESS_LINE\")", script, fixed = TRUE))
+  expect_true(grepl("PENDING_TOOL_CALLS=$(get_kv pending_tool_calls \"$PROGRESS_LINE\")", script, fixed = TRUE))
+  expect_true(grepl("PENDING_TOOL=$(get_kv pending_tool \"$PROGRESS_LINE\")", script, fixed = TRUE))
+  expect_true(grepl("STOP_REASON=$(get_kv stop_reason \"$PROGRESS_LINE\")", script, fixed = TRUE))
+  expect_true(grepl("BACKEND_ERROR=$(get_kv error \"$PROGRESS_LINE\")", script, fixed = TRUE))
+  expect_true(
+    grepl(
+      "printf \"  stage    phase=%s    status=%s    reason=%s    node=%s\\n\"",
+      script,
+      fixed = TRUE
+    )
+  )
+})
+
+
+test_that("heartbeat reason ladder prioritizes backend state before telemetry", {
+  script <- .heartbeat_script_fixture()
+
+  priority_markers <- c(
+    "if [ \"$BACKEND_ERROR\" != \"none\" ]; then",
+    "elif [ \"$STOP_REASON\" != \"none\" ]; then",
+    "elif [ \"$PROGRESS_PHASE\" = \"recursion_limit\" ]; then",
+    "elif [ \"$PROGRESS_PHASE\" = \"complete\" ]; then",
+    "elif [ \"$PENDING_TOOL_CALLS\" = \"1\" ]; then",
+    "elif [ \"$TOOL_LIMIT_NUM\" -gt 0 ] && [ \"$TOOL_REMAINING_NUM\" -eq 0 ]; then",
+    "elif [ \"$FIELDS_TOTAL_NUM\" -gt 0 ] && [ \"$FIELDS_RESOLVED_NUM\" -ge \"$FIELDS_TOTAL_NUM\" ]; then",
+    "elif [ \"$TCP_COUNT\" -gt 0 ]; then",
+    "elif [ \"$CPU_ACTIVE\" -eq 1 ]; then"
+  )
+  marker_positions <- vapply(
+    priority_markers,
+    function(marker) {
+      as.integer(regexpr(marker, script, fixed = TRUE)[1])
+    },
+    integer(1)
+  )
+
+  expect_true(all(marker_positions > 0L))
+  expect_true(all(diff(marker_positions) > 0L))
+
+  reason_tokens <- c(
+    "WAIT_REASON=backend_error",
+    "WAIT_REASON=stopping_${STOP_REASON}",
+    "WAIT_REASON=recursion_limit_finalize",
+    "WAIT_REASON=finalizing_output",
+    "WAIT_REASON=waiting_for_tool_results",
+    "WAIT_REASON=\"waiting_for_tool_results[$PENDING_TOOL]\"",
+    "WAIT_REASON=tool_budget_exhausted",
+    "WAIT_REASON=all_fields_resolved",
+    "WAIT_REASON=waiting_on_network",
+    "WAIT_REASON=local_compute",
+    "WAIT_REASON=backend_processing"
+  )
+  reason_present <- vapply(
+    reason_tokens,
+    function(token) grepl(token, script, fixed = TRUE),
+    logical(1)
+  )
+  expect_true(all(reason_present))
+})
