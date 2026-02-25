@@ -27,6 +27,8 @@
                        retry_policy = NULL,
                        finalization_policy = NULL,
                        orchestration_options = NULL,
+                       performance_profile = NULL,
+                       webpage_policy = NULL,
                        query_templates = NULL,
                        use_plan_mode = FALSE,
                        verbose = FALSE) {
@@ -47,6 +49,8 @@
     retry_policy = retry_policy,
     finalization_policy = finalization_policy,
     orchestration_options = orchestration_options,
+    performance_profile = performance_profile,
+    webpage_policy = webpage_policy,
     query_templates = query_templates,
     use_plan_mode = use_plan_mode,
     verbose = verbose,
@@ -88,6 +92,12 @@
   if (is.null(auto_openwebpage_policy)) {
     auto_openwebpage_policy <- config$search$auto_openwebpage_policy %||% NULL
   }
+  if (is.null(performance_profile)) {
+    performance_profile <- config$search$performance_profile %||% NULL
+  }
+  if (is.null(webpage_policy)) {
+    webpage_policy <- config$search$webpage_policy %||% NULL
+  }
 
   # Build initial state and invoke agent
   timing_marks$invoke_with_retry_started <- Sys.time()
@@ -112,6 +122,8 @@
             retry_policy = retry_policy,
             finalization_policy = finalization_policy,
             orchestration_options = orchestration_options,
+            performance_profile = performance_profile,
+            webpage_policy = webpage_policy,
             query_templates = query_templates,
             use_plan_mode = use_plan_mode,
             model_timeout_s = as.numeric(config$timeout %||% 0),
@@ -139,6 +151,8 @@
             retry_policy = retry_policy,
             finalization_policy = finalization_policy,
             orchestration_options = orchestration_options,
+            performance_profile = performance_profile,
+            webpage_policy = webpage_policy,
             query_templates = query_templates,
             use_plan_mode = use_plan_mode,
             model_timeout_s = as.numeric(config$timeout %||% 0)
@@ -962,6 +976,8 @@
                                          retry_policy = NULL,
                                          finalization_policy = NULL,
                                          orchestration_options = NULL,
+                                         performance_profile = NULL,
+                                         webpage_policy = NULL,
                                          query_templates = NULL,
                                          use_plan_mode = FALSE,
                                          om_config = NULL,
@@ -1021,6 +1037,12 @@
   }
   if (!is.null(orchestration_options)) {
     initial_state$orchestration_options <- orchestration_options
+  }
+  if (!is.null(performance_profile) && nzchar(as.character(performance_profile))) {
+    initial_state$performance_profile <- tolower(as.character(performance_profile)[1])
+  }
+  if (!is.null(webpage_policy)) {
+    initial_state$webpage_policy <- webpage_policy
   }
   if (!is.null(query_templates)) {
     initial_state$query_templates <- query_templates
@@ -1106,6 +1128,8 @@
                                    retry_policy = NULL,
                                    finalization_policy = NULL,
                                    orchestration_options = NULL,
+                                   performance_profile = NULL,
+                                   webpage_policy = NULL,
                                    query_templates = NULL,
                                    use_plan_mode = FALSE,
                                    model_timeout_s = NULL) {
@@ -1163,6 +1187,12 @@
   }
   if (!is.null(orchestration_options)) {
     initial_state$orchestration_options <- orchestration_options
+  }
+  if (!is.null(performance_profile) && nzchar(as.character(performance_profile))) {
+    initial_state$performance_profile <- tolower(as.character(performance_profile)[1])
+  }
+  if (!is.null(webpage_policy)) {
+    initial_state$webpage_policy <- webpage_policy
   }
   if (!is.null(query_templates)) {
     initial_state$query_templates <- query_templates

@@ -27,6 +27,22 @@ test_that("field_resolver defaults use langextract engine and compatibility alia
   expect_false(isTRUE(fr_off$llm_webpage_extraction))
 })
 
+test_that("orchestration normalization applies latency profile webpage controls", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  latency <- reticulate::py_to_r(core$`_normalize_orchestration_options`(list(
+    performance_profile = "latency"
+  )))
+
+  expect_equal(as.character(latency$performance_profile), "latency")
+  expect_equal(as.integer(latency$retrieval_controller$max_empty_round_streak), 1L)
+  expect_equal(as.integer(latency$retrieval_controller$webpage_policy$max_open_calls), 2L)
+  expect_equal(as.integer(latency$field_resolver$llm_webpage_extraction_max_total_pages), 1L)
+})
+
 test_that("source URL normalization handles multiline and escaped-final-url tails", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",

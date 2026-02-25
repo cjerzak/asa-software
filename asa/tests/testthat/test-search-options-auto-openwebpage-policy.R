@@ -31,3 +31,24 @@ test_that("print.asa_search suppresses default auto policy and shows explicit of
   off_text <- paste(capture.output(print(off_opt)), collapse = "\n")
   expect_true(grepl("auto_openwebpage_policy=off", off_text, fixed = TRUE))
 })
+
+test_that("search_options stores normalized performance profile and webpage policy", {
+  latency <- asa::search_options(performance_profile = "latency")
+  expect_identical(as.character(latency$performance_profile), "latency")
+  expect_true(is.list(latency$webpage_policy))
+  expect_equal(as.integer(latency$webpage_policy$max_open_calls), 2L)
+  expect_equal(as.integer(latency$webpage_policy$host_cooldown_seconds), 60L)
+  expect_equal(as.integer(latency$webpage_policy$blocked_host_ttl_seconds), 900L)
+
+  expect_error(
+    asa::search_options(performance_profile = "fast"),
+    "performance_profile"
+  )
+
+  expect_error(
+    asa::search_options(
+      webpage_policy = list(max_open_calls = 2L)
+    ),
+    "webpage_policy"
+  )
+})

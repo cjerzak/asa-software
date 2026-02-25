@@ -415,6 +415,12 @@ print.asa_temporal <- function(x, ...) {
 #' @param field_attempt_budget_mode Optional field-attempt budget mode passed to
 #'   orchestration field_resolver. One of \code{"strict_cap"} or
 #'   \code{"soft_cap"}.
+#' @param performance_profile Orchestration profile optimized for one of:
+#'   \code{"latency"}, \code{"balanced"}, or \code{"quality"}.
+#' @param webpage_policy Structured OpenWebpage policy list with keys:
+#'   \code{max_open_calls}, \code{host_cooldown_seconds},
+#'   \code{blocked_host_ttl_seconds}, \code{open_only_if_score_ge}, and
+#'   \code{parallel_open_limit}.
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
@@ -519,6 +525,8 @@ search_options <- function(max_results = NULL,
                            jitter_factor = NULL,
                            allow_direct_fallback = NULL,
                            stability_profile = NULL,
+                           performance_profile = NULL,
+                           webpage_policy = NULL,
                            auto_openwebpage_policy = NULL,
                            langgraph_node_retries = NULL,
                            langgraph_cache_enabled = NULL,
@@ -560,6 +568,109 @@ search_options <- function(max_results = NULL,
   if (!profile %in% c("deterministic", "balanced", "stealth_first")) {
     profile <- "stealth_first"
   }
+  profile_perf <- tolower(trimws(as.character(performance_profile %||% "")))
+  profile_perf <- profile_perf[!is.na(profile_perf) & nzchar(profile_perf)]
+  if (length(profile_perf) == 0L) {
+    profile_perf <- if (identical(profile, "deterministic")) {
+      "latency"
+    } else if (identical(profile, "balanced")) {
+      "balanced"
+    } else {
+      "quality"
+    }
+  } else {
+    profile_perf <- profile_perf[[1]]
+  }
+  if (!profile_perf %in% c("latency", "balanced", "quality")) {
+    stop(
+      "`performance_profile` must be one of: latency, balanced, quality.",
+      call. = FALSE
+    )
+  }
+
+  default_webpage_policy <- switch(
+    profile_perf,
+    latency = list(
+      max_open_calls = 2L,
+      host_cooldown_seconds = 60L,
+      blocked_host_ttl_seconds = 900L,
+      open_only_if_score_ge = 0.55,
+      parallel_open_limit = 1L
+    ),
+    balanced = list(
+      max_open_calls = 3L,
+      host_cooldown_seconds = 45L,
+      blocked_host_ttl_seconds = 900L,
+      open_only_if_score_ge = 0.40,
+      parallel_open_limit = 1L
+    ),
+    quality = list(
+      max_open_calls = 4L,
+      host_cooldown_seconds = 30L,
+      blocked_host_ttl_seconds = 900L,
+      open_only_if_score_ge = 0.25,
+      parallel_open_limit = 1L
+    )
+  )
+  normalized_webpage_policy <- webpage_policy
+  if (is.null(normalized_webpage_policy)) {
+    normalized_webpage_policy <- default_webpage_policy
+  } else {
+    if (!is.list(normalized_webpage_policy) || is.null(names(normalized_webpage_policy))) {
+      stop(
+        "`webpage_policy` must be a named list.",
+        call. = FALSE
+      )
+    }
+    required_policy_keys <- c(
+      "max_open_calls",
+      "host_cooldown_seconds",
+      "blocked_host_ttl_seconds",
+      "open_only_if_score_ge",
+      "parallel_open_limit"
+    )
+    missing_policy_keys <- setdiff(required_policy_keys, names(normalized_webpage_policy))
+    if (length(missing_policy_keys) > 0L) {
+      stop(
+        sprintf(
+          "`webpage_policy` is missing required keys: %s",
+          paste(missing_policy_keys, collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+
+    as_int_ge_one <- function(value, key) {
+      suppressWarnings(num <- as.numeric(value))
+      if (!is.finite(num)) {
+        stop(sprintf("`webpage_policy$%s` must be numeric.", key), call. = FALSE)
+      }
+      as.integer(max(1L, floor(num)))
+    }
+    as_int_ge_zero <- function(value, key) {
+      suppressWarnings(num <- as.numeric(value))
+      if (!is.finite(num)) {
+        stop(sprintf("`webpage_policy$%s` must be numeric.", key), call. = FALSE)
+      }
+      as.integer(max(0L, floor(num)))
+    }
+    as_prob <- function(value, key) {
+      suppressWarnings(num <- as.numeric(value))
+      if (!is.finite(num)) {
+        stop(sprintf("`webpage_policy$%s` must be numeric.", key), call. = FALSE)
+      }
+      max(0, min(1, num))
+    }
+
+    normalized_webpage_policy <- list(
+      max_open_calls = as_int_ge_one(normalized_webpage_policy$max_open_calls, "max_open_calls"),
+      host_cooldown_seconds = as_int_ge_zero(normalized_webpage_policy$host_cooldown_seconds, "host_cooldown_seconds"),
+      blocked_host_ttl_seconds = as_int_ge_zero(normalized_webpage_policy$blocked_host_ttl_seconds, "blocked_host_ttl_seconds"),
+      open_only_if_score_ge = as_prob(normalized_webpage_policy$open_only_if_score_ge, "open_only_if_score_ge"),
+      parallel_open_limit = as_int_ge_one(normalized_webpage_policy$parallel_open_limit, "parallel_open_limit")
+    )
+  }
+
   auto_policy <- tolower(as.character(auto_openwebpage_policy %||% ""))
   if (nzchar(auto_policy)) {
     auto_policy <- if (auto_policy %in% c("off", "none", "disabled", "false", "0")) {
@@ -613,6 +724,8 @@ search_options <- function(max_results = NULL,
       jitter_factor = jitter_factor %||% ASA_JITTER_FACTOR,
       allow_direct_fallback = allow_direct_fallback %||% FALSE,
       stability_profile = profile,
+      performance_profile = profile_perf,
+      webpage_policy = normalized_webpage_policy,
       auto_openwebpage_policy = auto_policy,
       langgraph_node_retries = langgraph_node_retries %||% TRUE,
       langgraph_cache_enabled = langgraph_cache_enabled %||% FALSE,
@@ -676,6 +789,13 @@ print.asa_search <- function(x, ...) {
   if (!is.null(x$auto_openwebpage_policy) &&
       !identical(x$auto_openwebpage_policy, "auto")) {
     cat(", auto_openwebpage_policy=", x$auto_openwebpage_policy, sep = "")
+  }
+  if (!is.null(x$performance_profile) &&
+      !identical(x$performance_profile, "balanced")) {
+    cat(", performance_profile=", x$performance_profile, sep = "")
+  }
+  if (is.list(x$webpage_policy) && !is.null(x$webpage_policy$max_open_calls)) {
+    cat(", webpage_max_open_calls=", x$webpage_policy$max_open_calls, sep = "")
   }
   if (!is.null(x$finalize_when_all_unresolved_exhausted)) {
     cat(", finalize_when_all_unresolved_exhausted=", x$finalize_when_all_unresolved_exhausted, sep = "")

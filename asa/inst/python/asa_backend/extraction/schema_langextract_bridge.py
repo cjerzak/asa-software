@@ -301,6 +301,7 @@ def extract_schema_from_openwebpage_text(
     prompt_validation_level: str = "warning",
     max_chars: int = 6000,
     entity_hint: Optional[str] = None,
+    timeout_s: float = 0.0,
 ) -> Dict[str, Any]:
     """Run langextract and return normalized ASA payload result.
 
@@ -399,18 +400,48 @@ def extract_schema_from_openwebpage_text(
                 or os.environ.get("OPENAI_API_KEY")
             )
 
-        result = lx.extract(
-            text_or_documents=extraction_doc,
-            prompt_description=prompt_description,
-            examples=examples,
-            model_id=route.model_id,
-            api_key=lx_api_key,
-            extraction_passes=max(1, int(extraction_passes or 1)),
-            max_char_buffer=max(200, int(max_char_buffer or 1000)),
-            prompt_validation_level=pv_level,
-            fetch_urls=False,
-            show_progress=False,
-        )
+        def _invoke_langextract() -> Any:
+            return lx.extract(
+                text_or_documents=extraction_doc,
+                prompt_description=prompt_description,
+                examples=examples,
+                model_id=route.model_id,
+                api_key=lx_api_key,
+                extraction_passes=max(1, int(extraction_passes or 1)),
+                max_char_buffer=max(200, int(max_char_buffer or 1000)),
+                prompt_validation_level=pv_level,
+                fetch_urls=False,
+                show_progress=False,
+            )
+
+        timeout_value = 0.0
+        try:
+            timeout_value = float(timeout_s or 0.0)
+        except Exception:
+            timeout_value = 0.0
+
+        if timeout_value > 0.0:
+            try:
+                from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+            except Exception:
+                result = _invoke_langextract()
+            else:
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = executor.submit(_invoke_langextract)
+                try:
+                    result = future.result(timeout=timeout_value)
+                except FuturesTimeoutError:
+                    return {
+                        "ok": False,
+                        "payload": {},
+                        "provider": route.provider,
+                        "model_id": route.model_id,
+                        "error": f"langextract_timeout:{timeout_value:.1f}s",
+                    }
+                finally:
+                    executor.shutdown(wait=False, cancel_futures=True)
+        else:
+            result = _invoke_langextract()
 
         document = result[0] if isinstance(result, list) else result
         payload = normalize_langextract_output_to_allowed_keys(
@@ -462,6 +493,7 @@ def extract_schema_with_provider_fallback(
     prompt_validation_level: str = "warning",
     max_chars: int = 6000,
     entity_hint: Optional[str] = None,
+    timeout_s: float = 0.0,
 ) -> Dict[str, Any]:
     """Try primary provider; fall back to alternative if no_payload."""
     primary = extract_schema_from_openwebpage_text(
@@ -477,6 +509,7 @@ def extract_schema_with_provider_fallback(
         prompt_validation_level=prompt_validation_level,
         max_chars=max_chars,
         entity_hint=entity_hint,
+        timeout_s=timeout_s,
     )
 
     if primary.get("ok"):
@@ -505,6 +538,7 @@ def extract_schema_with_provider_fallback(
         prompt_validation_level=prompt_validation_level,
         max_chars=max_chars,
         entity_hint=entity_hint,
+        timeout_s=timeout_s,
     )
 
     fallback["fallback_provider_used"] = alt_backend

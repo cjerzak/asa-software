@@ -459,6 +459,106 @@
   invisible(TRUE)
 }
 
+#' Validate structured webpage policy argument
+#' @param webpage_policy Value to validate
+#' @param param_name Name for error messages
+#' @keywords internal
+.validate_webpage_policy <- function(webpage_policy, param_name = "webpage_policy") {
+  if (is.null(webpage_policy)) {
+    return(invisible(TRUE))
+  }
+
+  is_py <- FALSE
+  try({
+    is_py <- reticulate::is_py_object(webpage_policy)
+  }, silent = TRUE)
+  policy <- webpage_policy
+  if (is_py) {
+    policy <- tryCatch(reticulate::py_to_r(webpage_policy), error = function(e) webpage_policy)
+  }
+  if (!is.list(policy)) {
+    .stop_validation(
+      param_name,
+      "be a named list (or Python dict) with OpenWebpage policy settings",
+      actual = webpage_policy,
+      fix = sprintf("Pass `%s = list(max_open_calls=..., host_cooldown_seconds=..., blocked_host_ttl_seconds=..., open_only_if_score_ge=..., parallel_open_limit=...)`", param_name)
+    )
+  }
+
+  required_keys <- c(
+    "max_open_calls",
+    "host_cooldown_seconds",
+    "blocked_host_ttl_seconds",
+    "open_only_if_score_ge",
+    "parallel_open_limit"
+  )
+  policy_names <- names(policy)
+  if (is.null(policy_names)) {
+    policy_names <- character(0)
+  }
+  missing_keys <- setdiff(required_keys, policy_names)
+  if (length(missing_keys) > 0L) {
+    .stop_validation(
+      param_name,
+      sprintf("include required keys: %s", paste(required_keys, collapse = ", ")),
+      actual = sprintf("<missing: %s>", paste(missing_keys, collapse = ", ")),
+      fix = "Provide all required keys in webpage_policy"
+    )
+  }
+
+  as_num <- function(value) {
+    suppressWarnings(as.numeric(value)[1])
+  }
+
+  max_open <- as_num(policy$max_open_calls)
+  if (!is.finite(max_open) || max_open < 1) {
+    .stop_validation(
+      sprintf("%s$max_open_calls", param_name),
+      "be a number >= 1",
+      actual = policy$max_open_calls,
+      fix = "Set max_open_calls to an integer >= 1"
+    )
+  }
+  parallel_open <- as_num(policy$parallel_open_limit)
+  if (!is.finite(parallel_open) || parallel_open < 1) {
+    .stop_validation(
+      sprintf("%s$parallel_open_limit", param_name),
+      "be a number >= 1",
+      actual = policy$parallel_open_limit,
+      fix = "Set parallel_open_limit to an integer >= 1"
+    )
+  }
+  host_cooldown <- as_num(policy$host_cooldown_seconds)
+  if (!is.finite(host_cooldown) || host_cooldown < 0) {
+    .stop_validation(
+      sprintf("%s$host_cooldown_seconds", param_name),
+      "be a number >= 0",
+      actual = policy$host_cooldown_seconds,
+      fix = "Set host_cooldown_seconds to a non-negative number"
+    )
+  }
+  blocked_ttl <- as_num(policy$blocked_host_ttl_seconds)
+  if (!is.finite(blocked_ttl) || blocked_ttl < 0) {
+    .stop_validation(
+      sprintf("%s$blocked_host_ttl_seconds", param_name),
+      "be a number >= 0",
+      actual = policy$blocked_host_ttl_seconds,
+      fix = "Set blocked_host_ttl_seconds to a non-negative number"
+    )
+  }
+  min_score <- as_num(policy$open_only_if_score_ge)
+  if (!is.finite(min_score) || min_score < 0 || min_score > 1) {
+    .stop_validation(
+      sprintf("%s$open_only_if_score_ge", param_name),
+      "be a number between 0 and 1",
+      actual = policy$open_only_if_score_ge,
+      fix = "Set open_only_if_score_ge to a value in [0, 1]"
+    )
+  }
+
+  invisible(TRUE)
+}
+
 # ============================================================================
 # FUNCTION-LEVEL VALIDATORS
 # ============================================================================
@@ -538,6 +638,8 @@
                                retry_policy = NULL,
                                finalization_policy = NULL,
                                orchestration_options = NULL,
+                               performance_profile = NULL,
+                               webpage_policy = NULL,
                                query_templates = NULL,
                                allow_read_webpages = NULL,
                                webpage_relevance_mode = NULL,
@@ -617,6 +719,14 @@
     invalid_fix = "Pass a named list or Python dict for orchestration_options, or set orchestration_options = NULL",
     empty_fix = "Pass orchestration_options = NULL or include at least one option"
   )
+  if (!is.null(performance_profile)) {
+    .validate_choice(
+      tolower(as.character(performance_profile)[1]),
+      "performance_profile",
+      c("latency", "balanced", "quality")
+    )
+  }
+  .validate_webpage_policy(webpage_policy, "webpage_policy")
   .validate_expected_schema(
     query_templates,
     param_name = "query_templates",
@@ -719,6 +829,8 @@
                                 retry_policy = NULL,
                                 finalization_policy = NULL,
                                 orchestration_options = NULL,
+                                performance_profile = NULL,
+                                webpage_policy = NULL,
                                 query_templates = NULL,
                                 use_plan_mode = NULL) {
   .validate_string(prompt, "prompt")
@@ -737,6 +849,14 @@
   .validate_expected_schema(retry_policy, param_name = "retry_policy", allow_empty_list = TRUE)
   .validate_expected_schema(finalization_policy, param_name = "finalization_policy", allow_empty_list = TRUE)
   .validate_expected_schema(orchestration_options, param_name = "orchestration_options", allow_empty_list = TRUE)
+  if (!is.null(performance_profile)) {
+    .validate_choice(
+      tolower(as.character(performance_profile)[1]),
+      "performance_profile",
+      c("latency", "balanced", "quality")
+    )
+  }
+  .validate_webpage_policy(webpage_policy, "webpage_policy")
   .validate_expected_schema(query_templates, param_name = "query_templates", allow_empty_list = TRUE)
 
   if (!is.null(search_budget_limit)) {

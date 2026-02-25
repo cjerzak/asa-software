@@ -54,6 +54,12 @@
 #' @param orchestration_options Optional named list/dict of generic orchestration
 #'   controls (component enable/mode and thresholds). This is passed directly to
 #'   the backend state and must remain task-agnostic.
+#' @param performance_profile Optional orchestration profile. One of:
+#'   \code{"latency"}, \code{"balanced"}, or \code{"quality"}.
+#' @param webpage_policy Optional structured OpenWebpage policy list with keys:
+#'   \code{max_open_calls}, \code{host_cooldown_seconds},
+#'   \code{blocked_host_ttl_seconds}, \code{open_only_if_score_ge}, and
+#'   \code{parallel_open_limit}.
 #' @param verbose Print progress messages (default: FALSE)
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
@@ -278,6 +284,8 @@ run_task <- function(prompt,
                      retry_policy = NULL,
                      finalization_policy = NULL,
                      orchestration_options = NULL,
+                     performance_profile = NULL,
+                     webpage_policy = NULL,
                      query_templates = NULL,
                      verbose = FALSE,
                      allow_read_webpages = NULL,
@@ -321,6 +329,8 @@ run_task <- function(prompt,
     retry_policy = retry_policy,
     finalization_policy = finalization_policy,
     orchestration_options = orchestration_options,
+    performance_profile = performance_profile,
+    webpage_policy = webpage_policy,
     query_templates = query_templates,
     allow_read_webpages = allow_read_webpages,
     webpage_relevance_mode = webpage_relevance_mode,
@@ -375,6 +385,17 @@ run_task <- function(prompt,
     orchestration_options = orchestration_options,
     config_search = runtime$config_search
   )
+  resolved_performance_profile <- performance_profile
+  if (is.null(resolved_performance_profile)) {
+    resolved_performance_profile <- runtime$config_search$performance_profile %||% NULL
+  }
+  if (!is.null(resolved_performance_profile)) {
+    resolved_performance_profile <- tolower(trimws(as.character(resolved_performance_profile)[1]))
+  }
+  resolved_webpage_policy <- webpage_policy
+  if (is.null(resolved_webpage_policy)) {
+    resolved_webpage_policy <- runtime$config_search$webpage_policy %||% NULL
+  }
 
   # Augment prompt with temporal hints if dates specified
   augmented_prompt <- .augment_prompt_temporal(prompt, temporal, verbose = verbose)
@@ -415,6 +436,8 @@ run_task <- function(prompt,
       retry_policy = retry_policy,
       finalization_policy = finalization_policy,
       orchestration_options = resolved_orchestration_options,
+      performance_profile = resolved_performance_profile,
+      webpage_policy = resolved_webpage_policy,
       query_templates = query_templates,
       use_plan_mode = use_plan_mode,
       verbose = verbose
@@ -1092,6 +1115,10 @@ build_prompt <- function(template, ...) {
 #'   \code{\link{run_task}}.
 #' @param orchestration_options Optional named list/dict of generic orchestration
 #'   options passed through to \code{\link{run_task}}.
+#' @param performance_profile Optional orchestration profile passed through to
+#'   \code{\link{run_task}}.
+#' @param webpage_policy Optional structured OpenWebpage policy passed through to
+#'   \code{\link{run_task}}.
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.
 #' @param webpage_relevance_mode Relevance selection for opened webpages.
@@ -1151,6 +1178,8 @@ run_task_batch <- function(prompts,
                            unknown_after_searches = NULL,
                            finalize_on_all_fields_resolved = NULL,
                            orchestration_options = NULL,
+                           performance_profile = NULL,
+                           webpage_policy = NULL,
                            allow_read_webpages = NULL,
                            webpage_relevance_mode = NULL,
                            webpage_embedding_provider = NULL,
@@ -1266,6 +1295,8 @@ run_task_batch <- function(prompts,
       unknown_after_searches = unknown_after_searches,
       finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
       orchestration_options = orchestration_options,
+      performance_profile = performance_profile,
+      webpage_policy = webpage_policy,
       allow_read_webpages = allow_read_webpages,
       webpage_relevance_mode = webpage_relevance_mode,
       webpage_embedding_provider = webpage_embedding_provider,

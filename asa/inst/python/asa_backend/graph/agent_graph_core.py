@@ -1244,6 +1244,33 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     ],
 }
 
+_DEFAULT_WEBPAGE_POLICY_BY_PROFILE: Dict[str, Dict[str, Any]] = {
+    "latency": {
+        "enabled": True,
+        "max_open_calls": 2,
+        "host_cooldown_seconds": 60,
+        "blocked_host_ttl_seconds": 900,
+        "open_only_if_score_ge": 0.55,
+        "parallel_open_limit": 1,
+    },
+    "balanced": {
+        "enabled": True,
+        "max_open_calls": 3,
+        "host_cooldown_seconds": 45,
+        "blocked_host_ttl_seconds": 900,
+        "open_only_if_score_ge": 0.40,
+        "parallel_open_limit": 1,
+    },
+    "quality": {
+        "enabled": True,
+        "max_open_calls": 4,
+        "host_cooldown_seconds": 30,
+        "blocked_host_ttl_seconds": 900,
+        "open_only_if_score_ge": 0.25,
+        "parallel_open_limit": 1,
+    },
+}
+
 _DEFAULT_QUERY_TEMPLATES: Dict[str, str] = {
     "focused_field_query": "{entity} {field}",
     "source_constrained_query": "site:{domain} {entity} {field}",
@@ -1252,6 +1279,7 @@ _DEFAULT_QUERY_TEMPLATES: Dict[str, str] = {
 
 _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
     "policy_version": "2026-02-21",
+    "performance_profile": "balanced",
     "candidate_resolver": {
         "enabled": True,
         "mode": "observe",
@@ -1284,6 +1312,7 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "adaptive_min_remaining_calls": 1,
         "adaptive_low_value_threshold": 0.08,
         "adaptive_patience_steps": 2,
+        "webpage_policy": dict(_DEFAULT_WEBPAGE_POLICY_BY_PROFILE["balanced"]),
     },
     "field_resolver": {
         "enabled": True,
@@ -1366,11 +1395,94 @@ def _normalize_source_tier_provider(raw_provider: Any) -> Dict[str, Any]:
     return provider
 
 
-def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
+def _normalize_performance_profile(raw_profile: Any) -> str:
+    token = str(raw_profile or "").strip().lower()
+    if token in {"latency", "balanced", "quality"}:
+        return token
+    return "balanced"
+
+
+def _normalize_webpage_policy(raw_policy: Any, *, profile: str = "balanced") -> Dict[str, Any]:
+    normalized_profile = _normalize_performance_profile(profile)
+    defaults = dict(_DEFAULT_WEBPAGE_POLICY_BY_PROFILE.get(normalized_profile, {}))
+    if not isinstance(raw_policy, dict):
+        return defaults
+
+    out = dict(defaults)
+    out["enabled"] = bool(raw_policy.get("enabled", out.get("enabled", True)))
+    try:
+        out["max_open_calls"] = max(1, int(raw_policy.get("max_open_calls", out.get("max_open_calls", 3)) or 3))
+    except Exception:
+        out["max_open_calls"] = int(defaults.get("max_open_calls", 3))
+    try:
+        out["host_cooldown_seconds"] = max(
+            0,
+            int(raw_policy.get("host_cooldown_seconds", out.get("host_cooldown_seconds", 45)) or 45),
+        )
+    except Exception:
+        out["host_cooldown_seconds"] = int(defaults.get("host_cooldown_seconds", 45))
+    try:
+        out["blocked_host_ttl_seconds"] = max(
+            0,
+            int(raw_policy.get("blocked_host_ttl_seconds", out.get("blocked_host_ttl_seconds", 900)) or 900),
+        )
+    except Exception:
+        out["blocked_host_ttl_seconds"] = int(defaults.get("blocked_host_ttl_seconds", 900))
+    out["open_only_if_score_ge"] = _clamp01(
+        raw_policy.get("open_only_if_score_ge", out.get("open_only_if_score_ge", 0.4)),
+        default=float(out.get("open_only_if_score_ge", 0.4)),
+    )
+    try:
+        out["parallel_open_limit"] = max(
+            1,
+            int(raw_policy.get("parallel_open_limit", out.get("parallel_open_limit", 1)) or 1),
+        )
+    except Exception:
+        out["parallel_open_limit"] = int(defaults.get("parallel_open_limit", 1))
+    return out
+
+
+def _state_performance_profile(state: Any) -> str:
+    raw = None
+    if isinstance(state, dict):
+        raw = state.get("performance_profile")
+        if raw is None and isinstance(state.get("orchestration_options"), dict):
+            raw = state.get("orchestration_options", {}).get("performance_profile")
+    return _normalize_performance_profile(raw)
+
+
+def _state_webpage_policy(state: Any) -> Dict[str, Any]:
+    profile = _state_performance_profile(state)
+    raw_policy = None
+    if isinstance(state, dict):
+        raw_policy = state.get("webpage_policy")
+        if raw_policy is None:
+            raw_opts = state.get("orchestration_options")
+            if isinstance(raw_opts, dict):
+                raw_rc = raw_opts.get("retrieval_controller")
+                if isinstance(raw_rc, dict):
+                    raw_policy = raw_rc.get("webpage_policy")
+    return _normalize_webpage_policy(raw_policy, profile=profile)
+
+
+def _normalize_orchestration_options(
+    raw_options: Any,
+    *,
+    performance_profile: Any = None,
+    webpage_policy: Any = None,
+) -> Dict[str, Any]:
     options = copy.deepcopy(_DEFAULT_ORCHESTRATION_OPTIONS)
     raw_field_resolver = None
+    raw_retrieval_controller = None
+    raw_profile = None
     if isinstance(raw_options, dict):
         raw_field_resolver = raw_options.get("field_resolver") if isinstance(raw_options.get("field_resolver"), dict) else None
+        raw_retrieval_controller = (
+            raw_options.get("retrieval_controller")
+            if isinstance(raw_options.get("retrieval_controller"), dict)
+            else None
+        )
+        raw_profile = raw_options.get("performance_profile")
         for key in (
             "candidate_resolver",
             "retrieval_controller",
@@ -1385,6 +1497,11 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
         options["source_tier_provider"] = _normalize_source_tier_provider(raw_options.get("source_tier_provider"))
     else:
         options["source_tier_provider"] = _normalize_source_tier_provider(options.get("source_tier_provider"))
+
+    profile_token = _normalize_performance_profile(performance_profile)
+    if raw_profile is not None:
+        profile_token = _normalize_performance_profile(raw_profile)
+    options["performance_profile"] = profile_token
 
     for key in ("candidate_resolver", "retrieval_controller", "field_resolver", "finalizer", "artifacts"):
         component = options.get(key)
@@ -1453,6 +1570,12 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
         )
     except Exception:
         rc["adaptive_patience_steps"] = max(1, int(rc.get("early_stop_patience_steps", 2) or 2))
+    raw_webpage_policy = None
+    if isinstance(raw_retrieval_controller, dict):
+        raw_webpage_policy = raw_retrieval_controller.get("webpage_policy")
+    if webpage_policy is None:
+        webpage_policy = raw_webpage_policy
+    rc["webpage_policy"] = _normalize_webpage_policy(webpage_policy, profile=profile_token)
 
     options["source_tier_provider"] = _normalize_source_tier_provider(options.get("source_tier_provider"))
 
@@ -1499,11 +1622,57 @@ def _normalize_orchestration_options(raw_options: Any) -> Dict[str, Any]:
     finalizer["finalize_when_all_unresolved_exhausted"] = bool(
         finalizer.get("finalize_when_all_unresolved_exhausted", True)
     )
+
+    def _safe_int(value: Any, default: int) -> int:
+        try:
+            return int(value)
+        except Exception:
+            return int(default)
+
+    def _safe_float(value: Any, default: float) -> float:
+        try:
+            return float(value)
+        except Exception:
+            return float(default)
+
+    if profile_token == "latency":
+        rc["max_empty_round_streak"] = min(_safe_int(rc.get("max_empty_round_streak", 2), 2), 1)
+        rc["early_stop_patience_steps"] = min(_safe_int(rc.get("early_stop_patience_steps", 2), 2), 1)
+        rc["adaptive_patience_steps"] = min(_safe_int(rc.get("adaptive_patience_steps", 2), 2), 1)
+        fr["llm_webpage_extraction_max_total_pages"] = min(
+            _safe_int(fr.get("llm_webpage_extraction_max_total_pages", 2) or 2, 2),
+            1,
+        )
+        fr["search_snippet_extraction_max_total_sources"] = min(
+            _safe_int(fr.get("search_snippet_extraction_max_total_sources", 8) or 8, 8),
+            4,
+        )
+        fr["llm_webpage_extraction_timeout_s"] = min(
+            _safe_float(fr.get("llm_webpage_extraction_timeout_s", 18.0) or 18.0, 18.0),
+            14.0,
+        )
+    elif profile_token == "quality":
+        rc["max_empty_round_streak"] = max(_safe_int(rc.get("max_empty_round_streak", 2), 2), 3)
+        rc["early_stop_patience_steps"] = max(_safe_int(rc.get("early_stop_patience_steps", 2), 2), 2)
+        rc["adaptive_patience_steps"] = max(_safe_int(rc.get("adaptive_patience_steps", 2), 2), 2)
+        fr["llm_webpage_extraction_max_total_pages"] = max(
+            _safe_int(fr.get("llm_webpage_extraction_max_total_pages", 2) or 2, 2),
+            2,
+        )
+        fr["search_snippet_extraction_max_total_sources"] = max(
+            _safe_int(fr.get("search_snippet_extraction_max_total_sources", 8) or 8, 8),
+            8,
+        )
+
     return options
 
 
 def _state_orchestration_options(state: Any) -> Dict[str, Any]:
-    return _normalize_orchestration_options(state.get("orchestration_options"))
+    return _normalize_orchestration_options(
+        state.get("orchestration_options"),
+        performance_profile=_state_performance_profile(state),
+        webpage_policy=_state_webpage_policy(state),
+    )
 
 
 def _state_field_attempt_budget_mode(state: Any) -> str:
@@ -2486,6 +2655,16 @@ def _extract_url_candidates(text: str, *, max_urls: int = 8) -> list:
         if len(out) >= max_urls:
             break
     return out
+
+
+def _url_host(url: Any) -> str:
+    normalized = _normalize_url_match(url)
+    if not normalized:
+        return ""
+    try:
+        return str(urlparse(normalized).hostname or "").strip().lower()
+    except Exception:
+        return ""
 
 
 _OPENWEBPAGE_HEADER_LINE_RE = re.compile(
@@ -5298,6 +5477,9 @@ def _select_round_openwebpage_candidate(
     *,
     search_queries: Any = None,
     selector_model: Any = None,
+    webpage_policy: Any = None,
+    blocked_hosts: Any = None,
+    now_ts: Optional[float] = None,
     max_candidates: int = 40,
 ) -> Optional[str]:
     """Pick one best Search URL to open for deeper evidence this round."""
@@ -5313,6 +5495,29 @@ def _select_round_openwebpage_candidate(
     previously_opened.update(
         _collect_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
     )
+    policy = _normalize_webpage_policy(webpage_policy, profile="balanced")
+    min_url_score = _clamp01(
+        policy.get("open_only_if_score_ge"),
+        default=float(policy.get("open_only_if_score_ge", 0.0)),
+    )
+    now_value = float(now_ts if now_ts is not None else time.time())
+    blocked_host_map: Dict[str, float] = {}
+    if isinstance(blocked_hosts, dict):
+        for raw_host, raw_until in blocked_hosts.items():
+            host = str(raw_host or "").strip().lower()
+            if not host:
+                continue
+            try:
+                until_ts = float(raw_until)
+            except Exception:
+                continue
+            if until_ts <= now_value:
+                continue
+            blocked_host_map[host] = until_ts
+    try:
+        max_candidates = max(1, int(max_candidates))
+    except Exception:
+        max_candidates = 40
 
     entity_tokens: List[str] = []
     seen_entity = set()
@@ -5360,6 +5565,9 @@ def _select_round_openwebpage_candidate(
                 continue
             if normalized in seen or normalized in previously_opened:
                 continue
+            candidate_host = _url_host(normalized)
+            if candidate_host and float(blocked_host_map.get(candidate_host, 0.0) or 0.0) > now_value:
+                continue
 
             candidate_text = str(row.get("text") or "")
             entity_hits, entity_ratio = _entity_overlap_for_candidate(
@@ -5368,6 +5576,8 @@ def _select_round_openwebpage_candidate(
                 candidate_text=candidate_text,
             )
             url_score = _score_primary_source_url(normalized)
+            if float(url_score) < float(min_url_score):
+                continue
             if entity_tokens and entity_hits <= 0 and entity_ratio <= 0:
                 continue
             if selector_mode == "heuristic":
@@ -5432,7 +5642,7 @@ def _select_round_openwebpage_candidate(
     best_url_score = float(best.get("url_score", 0.0))
     best_hits = int(best.get("entity_hits", 0))
     best_ratio = float(best.get("entity_ratio", 0.0))
-    if not best_url or best_url_score < 0.0:
+    if not best_url or best_url_score < float(min_url_score):
         return None
     if entity_tokens and (best_hits < min_hits or best_ratio < min_ratio):
         return None
@@ -6887,6 +7097,32 @@ def _state_all_resolvable_fields_attempt_exhausted(state: Any) -> bool:
     )
 
 
+def _normalize_blocked_openwebpage_hosts(
+    raw_hosts: Any,
+    *,
+    now_ts: Optional[float] = None,
+    max_hosts: int = 256,
+) -> Dict[str, float]:
+    if not isinstance(raw_hosts, dict):
+        return {}
+    now_value = float(now_ts if now_ts is not None else time.time())
+    normalized: Dict[str, float] = {}
+    for raw_host, raw_until in raw_hosts.items():
+        host = str(raw_host or "").strip().lower()
+        if not host:
+            continue
+        try:
+            until_ts = float(raw_until)
+        except Exception:
+            continue
+        if until_ts <= now_value:
+            continue
+        normalized[host] = until_ts
+        if len(normalized) >= max(1, int(max_hosts)):
+            break
+    return normalized
+
+
 def _normalize_budget_state(
     budget_state: Any,
     *,
@@ -6897,6 +7133,7 @@ def _normalize_budget_state(
 ) -> Dict[str, Any]:
     existing = budget_state if isinstance(budget_state, dict) else {}
     out = dict(existing)
+    now_ts = float(time.time())
     used = 0
     try:
         used = max(0, int(existing.get("tool_calls_used", 0)))
@@ -6973,6 +7210,12 @@ def _normalize_budget_state(
         "replan_requested": bool(existing.get("replan_requested", False)),
         "premature_end_nudge_count": max(0, int(existing.get("premature_end_nudge_count", 0) or 0)),
         "structural_repair_retry_required": bool(existing.get("structural_repair_retry_required", False)),
+        "blocked_openwebpage_hosts": _normalize_blocked_openwebpage_hosts(
+            existing.get("blocked_openwebpage_hosts"),
+            now_ts=now_ts,
+            max_hosts=256,
+        ),
+        "blocked_host_skip_events": max(0, int(existing.get("blocked_host_skip_events", 0) or 0)),
     })
     return out
 
@@ -7049,6 +7292,7 @@ def _nonneg_float(value: Any, default: float = 0.0) -> float:
 def _normalize_performance_diagnostics(performance: Any) -> Dict[str, Any]:
     existing = performance if isinstance(performance, dict) else {}
     out: Dict[str, Any] = {
+        "performance_profile": _normalize_performance_profile(existing.get("performance_profile")),
         "tool_round_count": _nonneg_int(existing.get("tool_round_count", 0)),
         "tool_round_elapsed_ms_total": _nonneg_int(existing.get("tool_round_elapsed_ms_total", 0)),
         "tool_round_elapsed_ms_last": _nonneg_int(existing.get("tool_round_elapsed_ms_last", 0)),
@@ -7095,6 +7339,13 @@ def _normalize_performance_diagnostics(performance: Any) -> Dict[str, Any]:
             existing.get("low_signal_stop_elapsed_ms_total", 0)
         ),
         "retry_threshold_crossings": _nonneg_int(existing.get("retry_threshold_crossings", 0)),
+        "webpage_policy_max_open_calls": _nonneg_int(existing.get("webpage_policy_max_open_calls", 0)),
+        "webpage_policy_open_only_if_score_ge": _clamp01(
+            existing.get("webpage_policy_open_only_if_score_ge"),
+            default=0.0,
+        ),
+        "blocked_host_count_active": _nonneg_int(existing.get("blocked_host_count_active", 0)),
+        "blocked_host_skip_events": _nonneg_int(existing.get("blocked_host_skip_events", 0)),
     }
     out["adaptive_budget_last_reason"] = str(existing.get("adaptive_budget_last_reason") or "").strip() or None
     out["fold_last_trigger_reason"] = str(existing.get("fold_last_trigger_reason") or "").strip() or None
@@ -10800,6 +11051,8 @@ class MemoryFoldingAgentState(TypedDict):
     retry_policy: Optional[Dict[str, Any]]
     finalization_policy: Optional[Dict[str, Any]]
     auto_openwebpage_policy: Optional[str]
+    performance_profile: Optional[str]
+    webpage_policy: Optional[Dict[str, Any]]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
     orchestration_options: Optional[Dict[str, Any]]
@@ -12147,6 +12400,9 @@ def _normalize_auto_openwebpage_policy(raw_policy: Any) -> str:
 
 
 def _state_auto_openwebpage_policy(state: Any) -> str:
+    webpage_policy = _state_webpage_policy(state)
+    if not bool(webpage_policy.get("enabled", True)):
+        return "off"
     explicit = _normalize_auto_openwebpage_policy(state.get("auto_openwebpage_policy"))
     if explicit:
         return explicit
@@ -12164,6 +12420,9 @@ def _should_auto_openwebpage_followup(
     policy = _state_auto_openwebpage_policy(state)
     if policy == "off":
         return False
+    webpage_policy = _state_webpage_policy(state)
+    if not bool(webpage_policy.get("enabled", True)):
+        return False
     if not search_queries:
         return False
     if not tool_messages:
@@ -12172,6 +12431,18 @@ def _should_auto_openwebpage_followup(
     budget = _state_budget(state)
     remaining = int(budget.get("tool_calls_remaining", 0) or 0)
     if remaining < 1:
+        return False
+    try:
+        max_open_calls = max(1, int(webpage_policy.get("max_open_calls", 3) or 3))
+    except Exception:
+        max_open_calls = 3
+    opened_count = len(
+        _collect_openwebpage_urls_from_messages(
+            state.get("messages"),
+            max_urls=max(4, max_open_calls + 2),
+        )
+    )
+    if opened_count >= max_open_calls:
         return False
 
     for msg in tool_messages:
@@ -12509,6 +12780,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
                 prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
                 max_chars=max(512, int(max_chars)),
                 entity_hint=_entity_hint,
+                timeout_s=float(timeout_s or 0.0),
             )
             _langextract_elapsed_ms = max(
                 0,
@@ -12847,6 +13119,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 prompt_validation_level=str(langextract_prompt_validation_level or "warning"),
                 max_chars=max_chars_int,
                 entity_hint=_entity_hint,
+                timeout_s=float(timeout_s or 0.0),
             )
             _langextract_elapsed_ms = max(
                 0,
@@ -13030,12 +13303,22 @@ def _apply_auto_openwebpage_followup(
         return list(tool_messages or [])
     if not _should_auto_openwebpage_followup(state, list(tool_messages or []), list(search_queries or [])):
         return list(tool_messages or [])
+    budget_state = _state_budget(state)
+    blocked_hosts = (
+        budget_state.get("blocked_openwebpage_hosts")
+        if isinstance(budget_state, dict)
+        else {}
+    )
+    webpage_policy = _state_webpage_policy(state)
 
     follow_url = _select_round_openwebpage_candidate(
         state.get("messages") or [],
         list(tool_messages or []),
         search_queries=list(search_queries or []),
         selector_model=selector_model,
+        webpage_policy=webpage_policy,
+        blocked_hosts=blocked_hosts,
+        now_ts=time.time(),
     )
     if not follow_url:
         return list(tool_messages or [])
@@ -13096,6 +13379,8 @@ def _create_tool_node_with_scratchpad(
         prior_evidence_ledger = _normalize_evidence_ledger(state.get("evidence_ledger"))
         prior_evidence_stats = _normalize_evidence_stats(state.get("evidence_stats"))
         orchestration_options = _state_orchestration_options(state)
+        performance_profile = _state_performance_profile(state)
+        webpage_policy = _state_webpage_policy(state)
         source_tier_provider = orchestration_options.get("source_tier_provider")
         source_policy = _normalize_source_policy(state.get("source_policy"))
         retry_policy = _normalize_retry_policy(state.get("retry_policy"))
@@ -13530,13 +13815,26 @@ def _create_tool_node_with_scratchpad(
             if not _message_is_tool(msg):
                 continue
             quality = _classify_tool_message_quality(msg)
+            tool_name_norm = _normalize_match_text(_tool_message_name(msg)) or "unknown"
+            msg_text = _message_content_to_text(_message_content_from_message(msg)).strip()
+            page_url = None
+            page_host = None
+            if tool_name_norm == "openwebpage":
+                for raw_url in _extract_url_candidates(msg_text, max_urls=3):
+                    normalized_url = _normalize_url_match(raw_url)
+                    if normalized_url:
+                        page_url = normalized_url
+                        break
+                page_host = _url_host(page_url) if page_url else None
             tool_quality_events.append({
                 "message_index_in_round": int(idx),
-                "tool_name": _normalize_match_text(_tool_message_name(msg)) or "unknown",
+                "tool_name": tool_name_norm,
                 "is_empty": bool(quality.get("is_empty", False)),
                 "is_off_target": bool(quality.get("is_off_target", False)),
                 "is_error": bool(quality.get("is_error", False)),
                 "error_type": str(quality.get("error_type") or "").strip() or None,
+                "url": page_url,
+                "host": page_host,
                 "quality_version": "v1",
             })
         external_tool_events = [
@@ -13590,6 +13888,40 @@ def _create_tool_node_with_scratchpad(
             if len(empty_details) >= 64:
                 break
         diagnostics["empty_tool_results_details"] = empty_details[:64]
+        now_ts = float(time.time())
+        blocked_hosts = _normalize_blocked_openwebpage_hosts(
+            budget_state.get("blocked_openwebpage_hosts"),
+            now_ts=now_ts,
+            max_hosts=256,
+        )
+        try:
+            host_cooldown_s = max(0, int(webpage_policy.get("host_cooldown_seconds", 0) or 0))
+        except Exception:
+            host_cooldown_s = 0
+        try:
+            blocked_ttl_s = max(0, int(webpage_policy.get("blocked_host_ttl_seconds", 0) or 0))
+        except Exception:
+            blocked_ttl_s = 0
+        for q in external_tool_events:
+            if str(q.get("tool_name") or "").strip().lower() != "openwebpage":
+                continue
+            host = str(q.get("host") or "").strip().lower()
+            if not host:
+                continue
+            cooldown = host_cooldown_s
+            if bool(q.get("is_error")) and str(q.get("error_type") or "").strip().lower() == "blocked":
+                cooldown = max(cooldown, blocked_ttl_s)
+            if cooldown <= 0:
+                continue
+            blocked_hosts[host] = max(
+                float(blocked_hosts.get(host, 0.0) or 0.0),
+                now_ts + float(cooldown),
+            )
+        budget_state["blocked_openwebpage_hosts"] = _normalize_blocked_openwebpage_hosts(
+            blocked_hosts,
+            now_ts=now_ts,
+            max_hosts=256,
+        )
 
         retrieval_metrics = _build_retrieval_metrics(
             state=state,
@@ -13886,6 +14218,20 @@ def _create_tool_node_with_scratchpad(
         )
 
         perf = _normalize_performance_diagnostics(diagnostics.get("performance"))
+        perf["performance_profile"] = _normalize_performance_profile(performance_profile)
+        perf["webpage_policy_max_open_calls"] = int(webpage_policy.get("max_open_calls", 0) or 0)
+        perf["webpage_policy_open_only_if_score_ge"] = _clamp01(
+            webpage_policy.get("open_only_if_score_ge"),
+            default=0.0,
+        )
+        perf["blocked_host_count_active"] = len(
+            _normalize_blocked_openwebpage_hosts(
+                budget_state.get("blocked_openwebpage_hosts"),
+                now_ts=time.time(),
+                max_hosts=256,
+            )
+        )
+        perf["blocked_host_skip_events"] = int(budget_state.get("blocked_host_skip_events", 0) or 0)
         perf["tool_round_count"] = int(perf.get("tool_round_count", 0)) + 1
         perf["tool_round_elapsed_ms_total"] = int(perf.get("tool_round_elapsed_ms_total", 0)) + int(tool_round_elapsed_ms)
         perf["tool_round_elapsed_ms_last"] = int(tool_round_elapsed_ms)
@@ -16768,6 +17114,8 @@ class StandardAgentState(TypedDict):
     retry_policy: Optional[Dict[str, Any]]
     finalization_policy: Optional[Dict[str, Any]]
     auto_openwebpage_policy: Optional[str]
+    performance_profile: Optional[str]
+    webpage_policy: Optional[Dict[str, Any]]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
     orchestration_options: Optional[Dict[str, Any]]

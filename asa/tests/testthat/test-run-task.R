@@ -284,6 +284,45 @@ test_that("run_task validation accepts orchestration_options", {
   )
 })
 
+test_that("run_task validation accepts performance profile and webpage policy", {
+  expect_silent(
+    asa:::.validate_run_task(
+      "prompt",
+      "json",
+      NULL,
+      FALSE,
+      performance_profile = "latency",
+      webpage_policy = list(
+        max_open_calls = 2L,
+        host_cooldown_seconds = 60L,
+        blocked_host_ttl_seconds = 900L,
+        open_only_if_score_ge = 0.55,
+        parallel_open_limit = 1L
+      )
+    )
+  )
+  expect_error(
+    asa:::.validate_run_task(
+      "prompt",
+      "json",
+      NULL,
+      FALSE,
+      performance_profile = "fast"
+    ),
+    "performance_profile"
+  )
+  expect_error(
+    asa:::.validate_run_task(
+      "prompt",
+      "json",
+      NULL,
+      FALSE,
+      webpage_policy = list(max_open_calls = 2L)
+    ),
+    "webpage_policy"
+  )
+})
+
 test_that("search_options stores orchestration override knobs", {
   search <- asa::search_options(
     finalize_when_all_unresolved_exhausted = FALSE,

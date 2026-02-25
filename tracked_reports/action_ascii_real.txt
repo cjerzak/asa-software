@@ -1,7 +1,7 @@
 AGENT ACTION MAP
 ================
-Steps captured: 14
-LangGraph timed steps: 7
+Steps captured: 18
+LangGraph timed steps: 13
 
 INVESTIGATOR SIGNALS
 --------------------
@@ -15,23 +15,23 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 6 tool-call turn(s), 1 answer turn(s)
-      Tool results: 6 total (Tool OpenWebpage=3, Tool Search=3)
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 14 total (Tool Search=11, Tool OpenWebpage=3)
       Structured terminal answer emitted
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=5, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 7.6298m (tok=0, n=3)
-      agent: 0.2252m (tok=11293, n=3)
-      finalize: 0.1506m (tok=6711, n=1)
+      tools: 6.0368m (tok=0, n=6)
+      finalize: 0.3663m (tok=12176, n=1)
+      agent: 0.3435m (tok=28316, n=6)
   +-- [LANGGRAPH] Slowest timed invocations
-      #02 tools: 6.0739m (tok=0)
-      #06 tools: 0.9555m (tok=0)
-      #04 tools: 0.6004m (tok=0)
-      #07 finalize: 0.1506m (tok=6711)
-      #05 agent: 0.0949m (tok=5758)
-  +-- [TIMING] wall=8.0061m nodes=8.0056m delta=+0.0005m (overhead)
+      #08 tools: 1.7314m (tok=0)
+      #12 tools: 1.5083m (tok=0)
+      #06 tools: 1.1771m (tok=0)
+      #02 tools: 1.0172m (tok=0)
+      #04 tools: 0.5698m (tok=0)
+  +-- [TIMING] wall=6.7476m nodes=6.7465m delta=+0.0010m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -59,48 +59,68 @@ START
       detail: URL: https://radiopatuju.blogspot.com/2014/10/bancadas-...lina Zabala de UD. BANCAD...
   +-- [06] Requested 1 tool call (Search)
       by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Search(query=Ramona Moye Camaconi biografía perfil hoj...)
+      tok: in=1489 out=214 total=1703
+      min: 0.0916m
+      detail: Search(query=Ramona Moye Camaconi biografía diputado B...)
   +-- [07] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> La ComandantaRamona(Chi...28 </URL> __END_OF_SOURCE...
-  +-- [08] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> DiputadaRamonaMoyedesde...ome </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (Search)
       by: AI
-      tok: in=1489 out=212 total=1701
-      min: 0.0933m
-      detail: OpenWebpage(url=https://www.instagram.com/ramonamoyecamaconi)
-  +-- [09] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://www.instagram.com/ramonamoyecamaconi Final...SS No readable text extra...
-  +-- [10] Requested 1 tool call (Search)
-      by: AI
-      tok: in=3664 out=170 total=3834
-      min: 0.0370m
+      tok: in=3668 out=82 total=3750
+      min: 0.0315m
       detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
-  +-- [11] Returned result
+  +-- [09] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...ios </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...NM </URL> __END_OF_SOURCE...
+  +-- [10] Requested 4 tool calls (Search)
+      by: AI
+      tok: in=3892 out=273 total=4165
+      min: 0.0443m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ....gob.bo "Ramona Moye Camac...
+  +-- [11] Returned 4 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
   +-- [12] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=4993 out=765 total=5758
-      min: 0.0949m
-      detail: OpenWebpage(url=https://vicepresidencia.go...=parlamentarios)
+      tok: in=5071 out=474 total=5545
+      min: 0.0711m
+      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
   +-- [13] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://vicepresidencia.gob.bo/spip.php?debut_parl...l - Circunscripción 36 No...
-  +-- [14] Produced structured answer
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
+  +-- [14] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=5289 out=1422 total=6711
-      min: 0.1506m
+      tok: in=6467 out=98 total=6565
+      min: 0.0223m
+      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/34363/detalle)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
+  +-- [16] Requested 4 tool calls (Search)
+      by: AI
+      tok: in=5915 out=673 total=6588
+      min: 0.0827m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ....mona Moye Camaconi" biogr...
+  +-- [17] Returned 4 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...ios </URL> __END_OF_SOURC...
+  +-- [18] Produced structured answer
+      by: AI
+      tok: in=9130 out=3046 total=12176
+      min: 0.3663m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_institution":"U..._blocked_anchor_mismatch(...
+      detail: {"education_level":"Unknown","education_institution":"U... (manual labor/agricultur...
 END
