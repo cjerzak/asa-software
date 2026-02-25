@@ -155,7 +155,6 @@ search_jitter_factor <- if (use_fast_emulation) 0.25 else 0.5
 search_max_results <- if (use_fast_emulation) 8L else 10L
 
 webpage_timeout_s <- if (use_fast_emulation) 20.0 else 45.0
-#auto_openwebpage_policy <- if (use_fast_emulation) "off" else "auto"
 auto_openwebpage_policy <- "auto"
 
 orchestration_options_override <- if (use_fast_emulation) {
@@ -169,7 +168,7 @@ orchestration_options_override <- if (use_fast_emulation) {
       adaptive_low_value_threshold = 0.08
     ),
     field_resolver = list(
-      webpage_extraction_enabled = FALSE,
+      webpage_extraction_enabled = TRUE,
       search_snippet_extraction_enabled = TRUE,
       search_snippet_extraction_max_sources_per_round = 2L,
       search_snippet_extraction_max_total_sources = 6L
@@ -359,8 +358,8 @@ attempt <- asa:::.with_heartbeat(
       orchestration_options = orchestration_options_override,
       agent = initialize_agent(
         #backend = "gemini", model = "gemini-2.5-pro",
-        backend = "gemini", model = "gemini-3-pro-preview",
-        #backend = "gemini", model = "gemini-3-flash-preview",
+        #backend = "gemini", model = "gemini-3-pro-preview",
+        backend = "gemini", model = "gemini-3-flash-preview",
         #backend = "openai", model = "gpt-5-mini-2025-08-07",
         #backend = "openai", model = "gpt-5-nano-2025-08-07",
         proxy = "socks5h://127.0.0.1:9050",

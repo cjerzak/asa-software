@@ -1,35 +1,35 @@
 {
-  "run_id": "trace_real_20260225T073834",
-  "generated_at_utc": "2026-02-25T13:49:14Z",
+  "run_id": "trace_real_20260225T082858",
+  "generated_at_utc": "2026-02-25T14:37:05Z",
   "benchmark_mode": "blind",
   "current": {
-    "exact_match": 10,
-    "semantic_match": 10,
+    "exact_match": 5,
+    "semantic_match": 5,
     "total_fields": 18,
-    "evidence_quality": 1,
+    "evidence_quality": 0.7,
     "low_quality_source_urls": null,
     "grounded_fields": 2,
-    "tokens_used": 30665,
-    "tokens_per_grounded_field": 15332.5,
+    "tokens_used": 18004,
+    "tokens_per_grounded_field": 9002,
     "finalization_invariant_failures": 3
   },
   "baseline": {
-    "exact_match": 7,
-    "semantic_match": 7,
+    "exact_match": 5,
+    "semantic_match": 5,
     "total_fields": 18,
-    "evidence_quality": 0.85,
+    "evidence_quality": 0.7,
     "low_quality_source_urls": null,
     "grounded_fields": 2,
-    "tokens_used": 50634,
-    "tokens_per_grounded_field": 25317,
-    "finalization_invariant_failures": 6
+    "tokens_used": 17662,
+    "tokens_per_grounded_field": 8831,
+    "finalization_invariant_failures": 3
   },
   "delta": {
-    "exact_match_delta": 3,
-    "semantic_match_delta": 3,
-    "evidence_quality_delta": 0.15,
-    "tokens_used_delta": -19969,
-    "tokens_per_grounded_field_delta": -9984.5,
-    "invariant_failures_delta": -3
+    "exact_match_delta": 0,
+    "semantic_match_delta": 0,
+    "evidence_quality_delta": 0,
+    "tokens_used_delta": 342,
+    "tokens_per_grounded_field_delta": 171,
+    "invariant_failures_delta": 0
   }
 }
