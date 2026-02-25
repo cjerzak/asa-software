@@ -1,0 +1,39 @@
+{
+  "run_id": "trace_real_20260224T204301",
+  "generated_at_utc": "2026-02-25T02:47:12Z",
+  "benchmark_mode": "blind",
+  "inference_started_at_utc": "2026-02-25T02:43:02Z",
+  "inference_finished_at_utc": "2026-02-25T02:47:12Z",
+  "disallowed_inference_reads": [
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/answer_gold_real.txt"
+  ],
+  "gold_read_post_inference": true,
+  "files_written": [
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/prompt_example_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/token_stats_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/plan_output_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/fold_stats_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/fold_summary_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/fold_archive_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/execution_summary_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/diagnostics_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/json_repair_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/invoke_error_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/action_ascii_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/answer_pred_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/payload_release_audit_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/evaluation_metrics_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/regression_gate_real.txt"
+  ],
+  "tools_called": [
+    "search",
+    "openwebpage",
+    "save_finding"
+  ],
+  "baseline_snapshot_available": {
+    "answer_pred": true,
+    "token_stats": true,
+    "diagnostics": true
+  }
+}

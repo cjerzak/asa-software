@@ -561,12 +561,19 @@ search_options <- function(max_results = NULL,
     profile <- "stealth_first"
   }
   auto_policy <- tolower(as.character(auto_openwebpage_policy %||% ""))
-  if (!auto_policy %in% c("off", "conservative", "aggressive")) {
+  if (nzchar(auto_policy)) {
+    auto_policy <- if (auto_policy %in% c("off", "none", "disabled", "false", "0")) {
+      "off"
+    } else {
+      "auto"
+    }
+  }
+  if (!identical(auto_policy, "off") && !identical(auto_policy, "auto")) {
     auto_policy <- switch(
       profile,
       deterministic = "off",
-      balanced = "conservative",
-      stealth_first = "conservative"
+      balanced = "auto",
+      stealth_first = "auto"
     )
   }
   field_attempt_mode <- field_attempt_budget_mode
@@ -667,7 +674,7 @@ print.asa_search <- function(x, ...) {
       ", search_doc_content_chars_max=", x$search_doc_content_chars_max,
       ", allow_read_webpages=", x$allow_read_webpages, sep = "")
   if (!is.null(x$auto_openwebpage_policy) &&
-      !identical(x$auto_openwebpage_policy, "conservative")) {
+      !identical(x$auto_openwebpage_policy, "auto")) {
     cat(", auto_openwebpage_policy=", x$auto_openwebpage_policy, sep = "")
   }
   if (!is.null(x$finalize_when_all_unresolved_exhausted)) {

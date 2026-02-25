@@ -37,7 +37,6 @@ from asa_backend.schema.state import (
 )
 from asa_backend.search.ddg_transport import (
     _AUTO_OPENWEBPAGE_POLICY,
-    _AUTO_OPENWEBPAGE_PRIMARY_SOURCE,
     _AUTO_OPENWEBPAGE_SELECTOR_MODE,
     _LOW_SIGNAL_HOST_FRAGMENTS,
     _canonicalize_url,
@@ -1130,13 +1129,42 @@ try:
 except Exception:
     _EVIDENCE_MIN_PROMOTE_SCORE = None
 
+_PERSON_AGGREGATOR_HOST_FRAGMENTS = (
+    "idcrawl.",
+    "spokeo.",
+    "truthfinder.",
+    "whitepages.",
+    "fastpeoplesearch.",
+    "radaris.",
+    "peekyou.",
+    "mylife.",
+    "beenverified.",
+    "peoplefinders.",
+    "searchpeoplefree.",
+)
+
 _DEFAULT_SOURCE_POLICY: Dict[str, Any] = {
-    "deny_host_fragments": list(_LOW_SIGNAL_HOST_FRAGMENTS),
+    "deny_host_fragments": sorted(list(set(
+        list(_LOW_SIGNAL_HOST_FRAGMENTS)
+        + list(_PERSON_AGGREGATOR_HOST_FRAGMENTS)
+    ))),
     "allow_host_fragments": [],
     "min_candidate_score": 0.58,
     "min_source_quality": 0.26,
     "min_source_specificity": 0.22,
     "min_source_quality_textual_nonfree": 0.34,
+    "min_source_tier_for_non_unknown": "secondary",
+    "min_source_tier_for_sensitive_fields": "secondary",
+    "allow_tertiary_sources": False,
+    "sensitive_fields_require_explicit_disclosure": True,
+    "sensitive_field_keywords": [
+        "disability",
+        "lgbtq",
+        "lgbt",
+        "sexual_orientation",
+        "sexual orientation",
+    ],
+    "preferred_domains": [],
     "require_source_for_non_unknown": True,
     "require_target_anchor": False,
     "require_entity_anchor": False,
@@ -1167,6 +1195,10 @@ _DEFAULT_RETRY_POLICY: Dict[str, Any] = {
     "max_attempts_per_field": int(_DEFAULT_UNKNOWN_AFTER_SEARCHES),
     "rewrite_after_streak": int(_LOW_SIGNAL_STREAK_REWRITE_THRESHOLD),
     "stop_after_streak": int(_LOW_SIGNAL_STREAK_STOP_THRESHOLD),
+    "no_new_evidence_replan_after_streak": 2,
+    "no_new_evidence_stop_after_streak": 3,
+    "no_new_evidence_high_quality_score": 0.72,
+    "no_new_evidence_min_tier": "secondary",
     "rewrite_strategies": [
         "entity_plus_field_keyword",
         "site_constrained",
@@ -1573,6 +1605,13 @@ def _normalize_regex_pattern_list(raw: Any, *, max_items: int = 64) -> List[str]
     return out
 
 
+def _normalize_source_tier_label(raw_value: Any, *, default: str = "secondary") -> str:
+    token = str(raw_value or "").strip().lower()
+    if token in {"primary", "secondary", "tertiary", "unknown"}:
+        return token
+    return str(default or "secondary").strip().lower() or "secondary"
+
+
 def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
     policy = dict(_DEFAULT_SOURCE_POLICY)
     if isinstance(raw_policy, dict):
@@ -1609,6 +1648,14 @@ def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
     )
     if not authority_weights:
         authority_weights = _normalize_host_weight_map(_DEFAULT_SOURCE_POLICY["authority_host_weights"])
+    sensitive_field_keywords = _normalize_host_fragment_list(
+        policy.get("sensitive_field_keywords", _DEFAULT_SOURCE_POLICY["sensitive_field_keywords"]),
+        max_items=32,
+    )
+    preferred_domains = _normalize_host_fragment_list(
+        policy.get("preferred_domains", _DEFAULT_SOURCE_POLICY["preferred_domains"]),
+        max_items=32,
+    )
     return {
         "deny_host_fragments": _normalize_host_fragment_list(
             policy.get("deny_host_fragments", _DEFAULT_SOURCE_POLICY["deny_host_fragments"])
@@ -1623,6 +1670,31 @@ def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
             min_source_quality_textual_nonfree,
             default=_DEFAULT_SOURCE_POLICY["min_source_quality_textual_nonfree"],
         ),
+        "min_source_tier_for_non_unknown": _normalize_source_tier_label(
+            policy.get(
+                "min_source_tier_for_non_unknown",
+                _DEFAULT_SOURCE_POLICY["min_source_tier_for_non_unknown"],
+            ),
+            default=_DEFAULT_SOURCE_POLICY["min_source_tier_for_non_unknown"],
+        ),
+        "min_source_tier_for_sensitive_fields": _normalize_source_tier_label(
+            policy.get(
+                "min_source_tier_for_sensitive_fields",
+                _DEFAULT_SOURCE_POLICY["min_source_tier_for_sensitive_fields"],
+            ),
+            default=_DEFAULT_SOURCE_POLICY["min_source_tier_for_sensitive_fields"],
+        ),
+        "allow_tertiary_sources": bool(
+            policy.get("allow_tertiary_sources", _DEFAULT_SOURCE_POLICY["allow_tertiary_sources"])
+        ),
+        "sensitive_fields_require_explicit_disclosure": bool(
+            policy.get(
+                "sensitive_fields_require_explicit_disclosure",
+                _DEFAULT_SOURCE_POLICY["sensitive_fields_require_explicit_disclosure"],
+            )
+        ),
+        "sensitive_field_keywords": sensitive_field_keywords,
+        "preferred_domains": preferred_domains,
         "require_source_for_non_unknown": bool(
             policy.get("require_source_for_non_unknown", _DEFAULT_SOURCE_POLICY["require_source_for_non_unknown"])
         ),
@@ -1665,6 +1737,46 @@ def _normalize_retry_policy(raw_policy: Any) -> Dict[str, Any]:
         stop_after = int(policy.get("stop_after_streak", _DEFAULT_RETRY_POLICY["stop_after_streak"]))
     except Exception:
         stop_after = int(_DEFAULT_RETRY_POLICY["stop_after_streak"])
+    try:
+        no_new_evidence_replan_after_streak = int(
+            policy.get(
+                "no_new_evidence_replan_after_streak",
+                _DEFAULT_RETRY_POLICY["no_new_evidence_replan_after_streak"],
+            )
+        )
+    except Exception:
+        no_new_evidence_replan_after_streak = int(
+            _DEFAULT_RETRY_POLICY["no_new_evidence_replan_after_streak"]
+        )
+    try:
+        no_new_evidence_stop_after_streak = int(
+            policy.get(
+                "no_new_evidence_stop_after_streak",
+                _DEFAULT_RETRY_POLICY["no_new_evidence_stop_after_streak"],
+            )
+        )
+    except Exception:
+        no_new_evidence_stop_after_streak = int(
+            _DEFAULT_RETRY_POLICY["no_new_evidence_stop_after_streak"]
+        )
+    try:
+        no_new_evidence_high_quality_score = float(
+            policy.get(
+                "no_new_evidence_high_quality_score",
+                _DEFAULT_RETRY_POLICY["no_new_evidence_high_quality_score"],
+            )
+        )
+    except Exception:
+        no_new_evidence_high_quality_score = float(
+            _DEFAULT_RETRY_POLICY["no_new_evidence_high_quality_score"]
+        )
+    no_new_evidence_min_tier = _normalize_source_tier_label(
+        policy.get(
+            "no_new_evidence_min_tier",
+            _DEFAULT_RETRY_POLICY["no_new_evidence_min_tier"],
+        ),
+        default=_DEFAULT_RETRY_POLICY["no_new_evidence_min_tier"],
+    )
     strategies = list(policy.get("rewrite_strategies") or _DEFAULT_RETRY_POLICY["rewrite_strategies"])
     normalized_strategies: List[str] = []
     for strategy in strategies:
@@ -1675,10 +1787,22 @@ def _normalize_retry_policy(raw_policy: Any) -> Dict[str, Any]:
         normalized_strategies = list(_DEFAULT_RETRY_POLICY["rewrite_strategies"])
     rewrite_after = max(1, rewrite_after)
     stop_after = max(rewrite_after + 1, stop_after)
+    no_new_evidence_replan_after_streak = max(1, int(no_new_evidence_replan_after_streak))
+    no_new_evidence_stop_after_streak = max(
+        int(no_new_evidence_replan_after_streak),
+        int(no_new_evidence_stop_after_streak),
+    )
     return {
         "max_attempts_per_field": max(1, max_attempts),
         "rewrite_after_streak": rewrite_after,
         "stop_after_streak": stop_after,
+        "no_new_evidence_replan_after_streak": int(no_new_evidence_replan_after_streak),
+        "no_new_evidence_stop_after_streak": int(no_new_evidence_stop_after_streak),
+        "no_new_evidence_high_quality_score": _clamp01(
+            no_new_evidence_high_quality_score,
+            default=_DEFAULT_RETRY_POLICY["no_new_evidence_high_quality_score"],
+        ),
+        "no_new_evidence_min_tier": no_new_evidence_min_tier,
         "rewrite_strategies": normalized_strategies,
     }
 
@@ -2165,6 +2289,147 @@ def _source_policy_score_candidate(candidate: Dict[str, Any], source_policy: Dic
     return _clamp01(score, default=0.0)
 
 
+def _is_sensitive_field_key(field_key: Any, source_policy: Optional[Dict[str, Any]] = None) -> bool:
+    token = _normalize_match_text(field_key)
+    if not token:
+        return False
+    default_keywords = list(_DEFAULT_SOURCE_POLICY.get("sensitive_field_keywords") or [])
+    configured_keywords = []
+    if isinstance(source_policy, dict):
+        configured_keywords = list(source_policy.get("sensitive_field_keywords") or [])
+    keywords = _normalize_host_fragment_list(configured_keywords or default_keywords, max_items=32)
+    for keyword in keywords:
+        normalized_keyword = _normalize_match_text(keyword)
+        if normalized_keyword and normalized_keyword in token:
+            return True
+    return any(
+        hint in token
+        for hint in ("disability", "lgbtq", "lgbt", "sexual_orientation", "sexual orientation")
+    )
+
+
+def _sensitive_field_disclosure_state(
+    *,
+    field_key: Any,
+    value: Any,
+    source_text: Any,
+    source_policy: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    normalized_policy = _normalize_source_policy(source_policy)
+    if not bool(normalized_policy.get("sensitive_fields_require_explicit_disclosure", True)):
+        return {"pass": True, "reason": "sensitive_policy_disabled"}
+    if not _is_sensitive_field_key(field_key, normalized_policy):
+        return {"pass": True, "reason": "field_not_sensitive"}
+    if _is_empty_like(value) or _is_unknown_marker(value):
+        return {"pass": True, "reason": "value_unknown_or_empty"}
+
+    text_norm = _normalize_match_text(source_text)
+    if not text_norm:
+        return {"pass": False, "reason": "grounding_blocked_sensitive_disclosure_missing_source_text"}
+
+    value_norm = _normalize_match_text(value)
+    field_norm = _normalize_match_text(field_key)
+
+    def _contains_any(markers: Sequence[str]) -> bool:
+        return any(_normalize_match_text(marker) in text_norm for marker in list(markers or []))
+
+    if "disability" in field_norm:
+        negative_markers = (
+            "no disability",
+            "without disability",
+            "has no disability",
+            "sin discapacidad",
+            "ninguna discapacidad",
+        )
+        positive_markers = (
+            "has a disability",
+            "with disability",
+            "disabled",
+            "disability",
+            "discapacidad",
+        )
+        if re.search(r"\bno\b.*\bdisab", value_norm) or "no disability" in value_norm:
+            if _contains_any(negative_markers):
+                return {"pass": True, "reason": "sensitive_disclosure_explicit_negative"}
+            return {"pass": False, "reason": "grounding_blocked_sensitive_disclosure_not_explicit"}
+        if "some disability" in value_norm or "disability" in value_norm:
+            if _contains_any(positive_markers):
+                return {"pass": True, "reason": "sensitive_disclosure_explicit_positive"}
+            return {"pass": False, "reason": "grounding_blocked_sensitive_disclosure_not_explicit"}
+
+    if "lgbt" in field_norm or "sexual_orientation" in field_norm or "sexual orientation" in field_norm:
+        negative_markers = (
+            "non lgbt",
+            "not lgbt",
+            "heterosexual",
+            "straight",
+            "no es lgbt",
+            "no lgbt",
+        )
+        positive_markers = (
+            "openly lgbt",
+            "lgbtq",
+            "lgbt",
+            "gay",
+            "lesbian",
+            "bisexual",
+            "transgender",
+            "queer",
+            "se identifica como",
+            "identifies as",
+        )
+        if "non lgbt" in value_norm:
+            if _contains_any(negative_markers):
+                return {"pass": True, "reason": "sensitive_disclosure_explicit_negative"}
+            return {"pass": False, "reason": "grounding_blocked_sensitive_disclosure_not_explicit"}
+        if "openly lgbt" in value_norm or "lgbt" in value_norm:
+            if _contains_any(positive_markers):
+                return {"pass": True, "reason": "sensitive_disclosure_explicit_positive"}
+            return {"pass": False, "reason": "grounding_blocked_sensitive_disclosure_not_explicit"}
+
+    # Unknown sensitive enum variant: require at least one sensitive marker.
+    if _contains_any(("disability", "disabled", "discapacidad", "lgbt", "sexual orientation")):
+        return {"pass": True, "reason": "sensitive_disclosure_context_present"}
+    return {"pass": False, "reason": "grounding_blocked_sensitive_disclosure_not_explicit"}
+
+
+def _source_policy_min_tier_for_field(field_key: Any, source_policy: Dict[str, Any]) -> str:
+    if _is_sensitive_field_key(field_key, source_policy):
+        return _normalize_source_tier_label(
+            source_policy.get("min_source_tier_for_sensitive_fields"),
+            default=_DEFAULT_SOURCE_POLICY["min_source_tier_for_sensitive_fields"],
+        )
+    return _normalize_source_tier_label(
+        source_policy.get("min_source_tier_for_non_unknown"),
+        default=_DEFAULT_SOURCE_POLICY["min_source_tier_for_non_unknown"],
+    )
+
+
+def _candidate_meets_source_tier_policy(
+    *,
+    field_key: Any,
+    candidate: Dict[str, Any],
+    source_policy: Dict[str, Any],
+) -> Tuple[bool, Optional[str]]:
+    if not isinstance(candidate, dict):
+        return False, "source_tier_candidate_missing"
+    normalized_source = _normalize_url_match(candidate.get("source_url"))
+    if not normalized_source:
+        return False, "source_tier_missing_source_url"
+    if bool(source_policy.get("allow_tertiary_sources", False)):
+        return True, None
+
+    tier_label = str(candidate.get("source_tier") or _get_source_tier(normalized_source)).strip().lower()
+    tier_rank = _source_tier_rank(tier_label)
+    min_tier = _source_policy_min_tier_for_field(field_key, source_policy)
+    min_rank = _source_tier_rank(min_tier)
+    if tier_rank < min_rank:
+        return False, "source_tier_below_policy_threshold"
+    if tier_label == "tertiary" and not bool(source_policy.get("allow_tertiary_sources", False)):
+        return False, "source_tier_tertiary_disallowed"
+    return True, None
+
+
 def _schema_leaf_paths(schema: Any, prefix: str = "") -> list:
     """Return (path, descriptor) pairs for schema leaf fields."""
     return _shared_schema_leaf_paths(schema, prefix)
@@ -2229,6 +2494,10 @@ _OPENWEBPAGE_HEADER_LINE_RE = re.compile(
 )
 _OPENWEBPAGE_LINK_LINE_RE = re.compile(r"^\[link:\s*https?://", flags=re.IGNORECASE)
 _OPENWEBPAGE_EXCERPT_INDEX_RE = re.compile(r"^\[\d+\]\s*$")
+_SEARCH_SOURCE_BLOCK_RE = re.compile(
+    r"__START_OF_SOURCE\s+(\d+)__\s*(.*?)\s*__END_OF_SOURCE\s+\d+__",
+    re.DOTALL | re.IGNORECASE,
+)
 _OPENWEBPAGE_NAV_NOISE_TOKENS = {
     "menu",
     "menu and widgets",
@@ -2468,13 +2737,8 @@ def _parse_source_blocks(text: str, *, max_blocks: int = 64) -> list:
     """Parse Search-style __START_OF_SOURCE blocks into structured records."""
     if not text:
         return []
-
-    pattern = re.compile(
-        r"__START_OF_SOURCE\s+(\d+)__\s*(.*?)\s*__END_OF_SOURCE\s+\d+__",
-        re.DOTALL | re.IGNORECASE,
-    )
     out: List[Dict[str, Any]] = []
-    for match in pattern.finditer(text):
+    for match in _SEARCH_SOURCE_BLOCK_RE.finditer(text):
         if len(out) >= max(1, int(max_blocks)):
             break
         source_id = match.group(1)
@@ -3287,6 +3551,8 @@ def _normalize_recovery_rejection_reason(reason: Any) -> Optional[str]:
         "grounding_blocked_missing_source_url": "recovery_blocked_missing_source_url",
         "grounding_blocked_missing_source_text": "recovery_blocked_missing_source_text",
         "grounding_blocked_source_value_mismatch": "recovery_blocked_source_value_mismatch",
+        "grounding_blocked_missing_explicit_source_support": "recovery_blocked_missing_explicit_source_support",
+        "grounding_blocked_sensitive_disclosure_not_explicit": "recovery_blocked_sensitive_disclosure_not_explicit",
         "grounding_blocked_anchor_source_mismatch": "recovery_blocked_anchor_mismatch",
         "grounding_blocked_anchor_mismatch": "recovery_blocked_anchor_mismatch",
         "grounding_blocked_entity_source_mismatch": "recovery_blocked_entity_mismatch",
@@ -3294,6 +3560,8 @@ def _normalize_recovery_rejection_reason(reason: Any) -> Optional[str]:
         "grounding_blocked_relation_contamination": "recovery_blocked_relation_contamination",
         "semantic_validation_failed": "recovery_blocked_semantic_validation",
         "source_specificity_demotion": "recovery_blocked_non_specific_source",
+        "source_tier_below_policy_threshold": "recovery_blocked_source_tier_below_policy_threshold",
+        "source_tier_tertiary_disallowed": "recovery_blocked_source_tier_tertiary_disallowed",
     }
     if token in mapping:
         return mapping[token]
@@ -3310,6 +3578,7 @@ def _recover_unknown_fields_from_tool_evidence(
     field_status: Any,
     expected_schema: Any,
     finalization_policy: Any = None,
+    source_policy: Any = None,
     allowed_source_urls: Any = None,
     source_text_index: Any = None,
     entity_name_tokens: Any = None,
@@ -3324,6 +3593,7 @@ def _recover_unknown_fields_from_tool_evidence(
     if not bool(policy.get("field_recovery_enabled", True)):
         return normalized
     recovery_mode = _normalize_field_recovery_mode(policy.get("field_recovery_mode"))
+    normalized_source_policy = _normalize_source_policy(source_policy)
     try:
         min_support_tokens = max(4, int(policy.get("field_recovery_min_support_tokens", 8)))
     except Exception:
@@ -3466,6 +3736,24 @@ def _recover_unknown_fields_from_tool_evidence(
                     candidate["evidence_reason"] = "recovery_anchor_soft_penalty"
                 if requires_source and not normalized_source:
                     candidate["rejection_reason"] = "grounding_blocked_missing_source_url"
+                tier_allowed, tier_reason = _candidate_meets_source_tier_policy(
+                    field_key=key,
+                    candidate=candidate,
+                    source_policy=normalized_source_policy,
+                )
+                if not tier_allowed and not candidate.get("rejection_reason"):
+                    candidate["rejection_reason"] = str(tier_reason or "source_tier_below_policy_threshold")
+                disclosure_state = _sensitive_field_disclosure_state(
+                    field_key=key,
+                    value=recovered_value,
+                    source_text=source_text,
+                    source_policy=normalized_source_policy,
+                )
+                if not bool(disclosure_state.get("pass", False)) and not candidate.get("rejection_reason"):
+                    candidate["rejection_reason"] = str(
+                        disclosure_state.get("reason")
+                        or "grounding_blocked_sensitive_disclosure_not_explicit"
+                    )
                 candidate_pool.append(candidate)
 
         scored = _score_evidence_candidates(candidate_pool, mode=recovery_mode)
@@ -4353,7 +4641,8 @@ def _extract_field_status_updates(
 
         candidate_pool: List[Dict[str, Any]] = []
         rejected_evidence = None
-        requires_source = bool(f"{path}_source" in schema_leaf_set and not key.endswith("_source"))
+        requires_schema_source = bool(f"{path}_source" in schema_leaf_set and not key.endswith("_source"))
+        requires_source = bool(requires_schema_source)
         source_field = bool(key.endswith("_source"))
         if bool(normalized_source_policy.get("require_source_for_non_unknown", True)) and not source_field:
             requires_source = True
@@ -4427,6 +4716,15 @@ def _extract_field_status_updates(
                     allow_non_specific=allow_non_specific,
                     source_field=source_field,
                 )
+                if (
+                    requires_schema_source
+                    and not source_field
+                    and not _is_free_text_field_key(key)
+                    and isinstance(text, str)
+                    and text.strip()
+                    and not _source_supports_value(value, text)
+                ):
+                    candidate["rejection_reason"] = "grounding_blocked_missing_explicit_source_support"
                 anchor_state = _anchor_mismatch_state(
                     target_anchor=target_anchor_state,
                     candidate_url=candidate_source or "",
@@ -4553,6 +4851,13 @@ def _extract_field_status_updates(
                     and not candidate.get("rejection_reason")
                 ):
                     candidate["rejection_reason"] = "source_specificity_below_policy_threshold"
+                tier_allowed, tier_reason = _candidate_meets_source_tier_policy(
+                    field_key=key,
+                    candidate=candidate,
+                    source_policy=normalized_source_policy,
+                )
+                if not tier_allowed and not candidate.get("rejection_reason"):
+                    candidate["rejection_reason"] = str(tier_reason or "source_tier_below_policy_threshold")
                 if (
                     bool(
                         normalized_source_policy.get(
@@ -4567,6 +4872,17 @@ def _extract_field_status_updates(
                     and not candidate.get("rejection_reason")
                 ):
                     candidate["rejection_reason"] = "entity_anchor_below_policy_threshold"
+                if not source_field and not candidate.get("rejection_reason"):
+                    disclosure_state = _sensitive_field_disclosure_state(
+                        field_key=key,
+                        value=candidate.get("value"),
+                        source_text=candidate.get("evidence_excerpt"),
+                        source_policy=normalized_source_policy,
+                    )
+                    if not bool(disclosure_state.get("pass", False)):
+                        candidate["rejection_reason"] = str(
+                            disclosure_state.get("reason") or "grounding_blocked_sensitive_disclosure_not_explicit"
+                        )
             merged = _merge_evidence_candidates(
                 ledger.get(key, []),
                 new_scored,
@@ -6009,6 +6325,7 @@ def _promote_terminal_payload_into_field_status(
     entity_name_tokens: Any = None,
     target_anchor: Any = None,
     finalization_policy: Any = None,
+    source_policy: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Promote source-backed terminal JSON values into canonical field_status."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -6033,6 +6350,7 @@ def _promote_terminal_payload_into_field_status(
     anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
     anchor_mode = _anchor_mode_for_policy(target_anchor_state, finalization_policy)
     strict_anchor = bool(anchor_mode == "strict" and len(anchor_tokens) >= 2)
+    normalized_source_policy = _normalize_source_policy(source_policy)
     schema_leaf_set = {path for path, _ in _schema_leaf_paths(expected_schema)}
 
     for path, _ in _schema_leaf_paths(expected_schema):
@@ -6101,6 +6419,18 @@ def _promote_terminal_payload_into_field_status(
                     entry["evidence"] = "source_specificity_demotion"
                     normalized[key] = entry
                     continue
+            tier_allowed, tier_reason = _candidate_meets_source_tier_policy(
+                field_key=key,
+                candidate={
+                    "source_url": normalized_source,
+                    "source_tier": _get_source_tier(normalized_source),
+                },
+                source_policy=normalized_source_policy,
+            )
+            if not tier_allowed:
+                entry["evidence"] = str(tier_reason or "source_tier_below_policy_threshold")
+                normalized[key] = entry
+                continue
             base_key = key[:-7]
             base_entry = normalized.get(base_key)
             base_found = (
@@ -6134,8 +6464,8 @@ def _promote_terminal_payload_into_field_status(
                     normalized[key] = entry
                     continue
                 source_token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(source_text)))
-                if source_token_count >= 8 and not _source_supports_value(value, source_text):
-                    entry["evidence"] = "grounding_blocked_source_value_mismatch"
+                if not _source_supports_value(value, source_text):
+                    entry["evidence"] = "grounding_blocked_missing_explicit_source_support"
                     normalized[key] = entry
                     continue
                 if source_token_count >= 8:
@@ -6180,6 +6510,31 @@ def _promote_terminal_payload_into_field_status(
                     finalization_policy=finalization_policy,
                 ):
                     entry["evidence"] = "source_specificity_demotion"
+                    normalized[key] = entry
+                    continue
+                tier_allowed, tier_reason = _candidate_meets_source_tier_policy(
+                    field_key=key,
+                    candidate={
+                        "source_url": normalized_source,
+                        "source_tier": _get_source_tier(normalized_source),
+                    },
+                    source_policy=normalized_source_policy,
+                )
+                if not tier_allowed:
+                    entry["evidence"] = str(tier_reason or "source_tier_below_policy_threshold")
+                    normalized[key] = entry
+                    continue
+                disclosure_state = _sensitive_field_disclosure_state(
+                    field_key=key,
+                    value=value,
+                    source_text=source_text,
+                    source_policy=normalized_source_policy,
+                )
+                if not bool(disclosure_state.get("pass", False)):
+                    entry["evidence"] = str(
+                        disclosure_state.get("reason")
+                        or "grounding_blocked_sensitive_disclosure_not_explicit"
+                    )
                     normalized[key] = entry
                     continue
             elif normalized_source is not None and allowed and normalized_source not in allowed:
@@ -6230,6 +6585,7 @@ def _sync_field_status_from_terminal_payload(
     entity_name_tokens: Any = None,
     target_anchor: Any = None,
     finalization_policy: Any = None,
+    source_policy: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Synchronize field_status to the terminal JSON payload (supports demotions)."""
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -6248,6 +6604,7 @@ def _sync_field_status_from_terminal_payload(
         entity_name_tokens=entity_name_tokens,
         target_anchor=target_anchor,
         finalization_policy=finalization_policy,
+        source_policy=source_policy,
     )
 
     content = response.get("content") if isinstance(response, dict) else getattr(response, "content", None)
@@ -6352,6 +6709,7 @@ def _sync_terminal_response_with_field_status(
     summary: Any = None,
     archive: Any = None,
     finalization_policy: Any = None,
+    source_policy: Any = None,
     expected_schema_source: Optional[str] = None,
     context: str = "",
     force_canonical: bool = False,
@@ -6378,11 +6736,13 @@ def _sync_terminal_response_with_field_status(
         source_text_index=source_text_index,
         target_anchor=target_anchor,
         finalization_policy=normalized_finalization_policy,
+        source_policy=source_policy,
     )
     field_status = _recover_unknown_fields_from_tool_evidence(
         field_status=field_status,
         expected_schema=expected_schema,
         finalization_policy=normalized_finalization_policy,
+        source_policy=source_policy,
         allowed_source_urls=allowed_source_urls,
         source_text_index=source_text_index,
         target_anchor=target_anchor,
@@ -6409,11 +6769,13 @@ def _sync_terminal_response_with_field_status(
             source_text_index=source_text_index,
             target_anchor=target_anchor,
             finalization_policy=normalized_finalization_policy,
+            source_policy=source_policy,
         )
         field_status = _recover_unknown_fields_from_tool_evidence(
             field_status=field_status,
             expected_schema=expected_schema,
             finalization_policy=normalized_finalization_policy,
+            source_policy=source_policy,
             allowed_source_urls=allowed_source_urls,
             source_text_index=source_text_index,
             target_anchor=target_anchor,
@@ -6605,6 +6967,9 @@ def _normalize_budget_state(
         "budget_exhausted": budget_exhausted,
         "limit_trigger_reason": limit_trigger_reason or None,
         "no_signal_streak": max(0, int(existing.get("no_signal_streak", 0) or 0)),
+        "no_new_high_quality_evidence_streak": max(
+            0, int(existing.get("no_new_high_quality_evidence_streak", 0) or 0)
+        ),
         "replan_requested": bool(existing.get("replan_requested", False)),
         "premature_end_nudge_count": max(0, int(existing.get("premature_end_nudge_count", 0) or 0)),
         "structural_repair_retry_required": bool(existing.get("structural_repair_retry_required", False)),
@@ -6721,6 +7086,8 @@ def _normalize_performance_diagnostics(performance: Any) -> Dict[str, Any]:
         ),
         "low_signal_rewrite_events": _nonneg_int(existing.get("low_signal_rewrite_events", 0)),
         "low_signal_stop_events": _nonneg_int(existing.get("low_signal_stop_events", 0)),
+        "no_new_evidence_replan_events": _nonneg_int(existing.get("no_new_evidence_replan_events", 0)),
+        "no_new_evidence_stop_events": _nonneg_int(existing.get("no_new_evidence_stop_events", 0)),
         "low_signal_rewrite_elapsed_ms_total": _nonneg_int(
             existing.get("low_signal_rewrite_elapsed_ms_total", 0)
         ),
@@ -6785,6 +7152,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "search_snippet_langextract_error_elapsed_ms_total",
         "low_signal_rewrite_events",
         "low_signal_stop_events",
+        "no_new_evidence_replan_events",
+        "no_new_evidence_stop_events",
         "low_signal_rewrite_elapsed_ms_total",
         "low_signal_stop_elapsed_ms_total",
         "retry_threshold_crossings",
@@ -6983,30 +7352,12 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["performance"] = _normalize_performance_diagnostics(existing.get("performance"))
     # Current-snapshot counters should always reflect latest field_status, while
     # legacy counters keep max/peak behavior for run-level telemetry.
-    out["grounding_blocks_count_current"] = max(
-        int(out.get("grounding_blocks_count_current", 0) or 0),
-        len(out.get("grounding_blocked_fields_current") or []),
-    )
-    out["source_consistency_fixes_count_current"] = max(
-        int(out.get("source_consistency_fixes_count_current", 0) or 0),
-        len(out.get("source_consistency_fixes_current") or []),
-    )
-    out["field_demotions_count_current"] = max(
-        int(out.get("field_demotions_count_current", 0) or 0),
-        len(out.get("field_demotion_fields_current") or []),
-    )
-    out["recovery_promotions_count_current"] = max(
-        int(out.get("recovery_promotions_count_current", 0) or 0),
-        len(out.get("recovery_promoted_fields_current") or []),
-    )
-    out["recovery_rejections_count_current"] = max(
-        int(out.get("recovery_rejections_count_current", 0) or 0),
-        len(out.get("recovery_rejected_fields_current") or []),
-    )
-    out["unknown_fields_count_current"] = max(
-        int(out.get("unknown_fields_count_current", 0) or 0),
-        len(out.get("unknown_fields_current") or []),
-    )
+    out["grounding_blocks_count_current"] = int(len(out.get("grounding_blocked_fields_current") or []))
+    out["source_consistency_fixes_count_current"] = int(len(out.get("source_consistency_fixes_current") or []))
+    out["field_demotions_count_current"] = int(len(out.get("field_demotion_fields_current") or []))
+    out["recovery_promotions_count_current"] = int(len(out.get("recovery_promoted_fields_current") or []))
+    out["recovery_rejections_count_current"] = int(len(out.get("recovery_rejected_fields_current") or []))
+    out["unknown_fields_count_current"] = int(len(out.get("unknown_fields_current") or []))
     return out
 
 
@@ -7377,11 +7728,13 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
         "last_round_url_dedupe_hits",
         "new_sources",
         "new_required_fields",
+        "new_high_quality_evidence",
         "empty_rounds",
         "empty_round_streak",
         "empty_round_suppressed",
         "low_novelty_streak",
         "diminishing_returns_streak",
+        "no_new_high_quality_evidence_streak",
         "adaptive_budget_triggers",
         "offtopic_counter",
     )
@@ -7592,6 +7945,42 @@ def _round_tool_urls(tool_messages: Any) -> List[str]:
     return urls
 
 
+def _ledger_high_quality_fingerprints(
+    ledger: Any,
+    *,
+    min_score: float = 0.72,
+    min_tier_rank: int = 2,
+) -> set:
+    normalized = _normalize_evidence_ledger(ledger)
+    fingerprints = set()
+    score_threshold = _clamp01(min_score, default=0.72)
+    tier_threshold = max(0, int(min_tier_rank))
+    for field_name, candidates in normalized.items():
+        field_key = str(field_name or "").strip()
+        if not field_key:
+            continue
+        for candidate in list(candidates or []):
+            if not isinstance(candidate, dict):
+                continue
+            if str(candidate.get("rejection_reason") or "").strip():
+                continue
+            score = _clamp01(candidate.get("score"), default=0.0)
+            if float(score) < float(score_threshold):
+                continue
+            source_url = _normalize_url_match(candidate.get("source_url"))
+            if not source_url:
+                continue
+            tier_label = str(candidate.get("source_tier") or _get_source_tier(source_url)).strip().lower()
+            if _source_tier_rank(tier_label) < tier_threshold:
+                continue
+            fingerprints.add((
+                field_key,
+                _candidate_value_key(candidate.get("value")),
+                source_url,
+            ))
+    return fingerprints
+
+
 def _build_retrieval_metrics(
     *,
     state: Any,
@@ -7602,12 +7991,16 @@ def _build_retrieval_metrics(
     prior_evidence_ledger: Any,
     evidence_ledger: Any,
     diagnostics: Any,
+    source_policy: Any = None,
+    retry_policy: Any = None,
 ) -> Dict[str, Any]:
     prior = _normalize_retrieval_metrics(state.get("retrieval_metrics"))
     options = _state_orchestration_options(state)
     controller = options.get("retrieval_controller", {})
     mode = _normalize_component_mode(controller.get("mode"))
     enabled = bool(controller.get("enabled", True))
+    normalized_source_policy = _normalize_source_policy(source_policy)
+    normalized_retry_policy = _normalize_retry_policy(retry_policy)
 
     out = dict(prior)
     out["controller_enabled"] = enabled
@@ -7675,6 +8068,28 @@ def _build_retrieval_metrics(
     after_sources = _ledger_source_urls(evidence_ledger)
     new_sources_count = len(after_sources - before_sources)
     out["new_sources"] = int(new_sources_count)
+    high_quality_score_threshold = _clamp01(
+        normalized_retry_policy.get("no_new_evidence_high_quality_score"),
+        default=_DEFAULT_RETRY_POLICY["no_new_evidence_high_quality_score"],
+    )
+    high_quality_min_tier = _normalize_source_tier_label(
+        normalized_retry_policy.get("no_new_evidence_min_tier"),
+        default=_DEFAULT_RETRY_POLICY["no_new_evidence_min_tier"],
+    )
+    if bool(normalized_source_policy.get("allow_tertiary_sources", False)):
+        high_quality_min_tier = "tertiary"
+    before_high_quality = _ledger_high_quality_fingerprints(
+        prior_evidence_ledger,
+        min_score=float(high_quality_score_threshold),
+        min_tier_rank=_source_tier_rank(high_quality_min_tier),
+    )
+    after_high_quality = _ledger_high_quality_fingerprints(
+        evidence_ledger,
+        min_score=float(high_quality_score_threshold),
+        min_tier_rank=_source_tier_rank(high_quality_min_tier),
+    )
+    new_high_quality_evidence = len(after_high_quality - before_high_quality)
+    out["new_high_quality_evidence"] = int(max(0, int(new_high_quality_evidence)))
 
     before_found = _found_field_keys(prior_field_status)
     after_found = _found_field_keys(field_status)
@@ -7715,6 +8130,13 @@ def _build_retrieval_metrics(
     if search_calls_this_round > 0:
         value_per_search_call = min(1.0, raw_round_value / float(max(1, 2 * search_calls_this_round)))
     out["value_per_search_call"] = _clamp01(value_per_search_call, default=0.0)
+    if search_calls_this_round > 0:
+        if int(new_high_quality_evidence) <= 0:
+            out["no_new_high_quality_evidence_streak"] = int(
+                out.get("no_new_high_quality_evidence_streak", 0) or 0
+            ) + 1
+        else:
+            out["no_new_high_quality_evidence_streak"] = 0
 
     if global_novelty < float(out.get("early_stop_min_gain", 0.10)):
         out["low_novelty_streak"] = int(out.get("low_novelty_streak", 0)) + 1
@@ -9779,11 +10201,7 @@ def _compact_tool_output(content_text: str, full_results_limit: int = 8) -> str:
     import re as _re
 
     # Try to parse structured source blocks
-    source_pattern = _re.compile(
-        r'__START_OF_SOURCE\s+(\d+)__\s*(.*?)\s*__END_OF_SOURCE\s+\d+__',
-        _re.DOTALL
-    )
-    matches = list(source_pattern.finditer(content_text))
+    matches = list(_SEARCH_SOURCE_BLOCK_RE.finditer(content_text))
 
     if matches:
         parts = []
@@ -10885,6 +11303,16 @@ def _finalization_invariant_report(
     ]
     status_unknown_count = int(core_counts.get("unknown", 0) or 0)
     status_unknown_fields = [str(v) for v in list(core_counts.get("unknown_keys") or []) if str(v).strip()]
+    resolvable_keys = set(_collect_resolvable_field_keys(field_status))
+    diag_unknown_fields_core = [
+        field_name
+        for field_name in diag_unknown_fields
+        if field_name in resolvable_keys
+    ]
+    diag_unknown_count_core = int(len(diag_unknown_fields_core))
+    if not diag_unknown_fields_core and int(diag_unknown_count) > 0:
+        # Backward compatibility for older diagnostics payloads that only had count.
+        diag_unknown_count_core = int(diag_unknown_count)
     diagnostics_has_current_snapshot = bool(
         isinstance(raw_diagnostics, dict)
         and (
@@ -10892,14 +11320,14 @@ def _finalization_invariant_report(
             or "unknown_fields_current" in raw_diagnostics
         )
     )
-    if diagnostics_has_current_snapshot and diag_unknown_count != status_unknown_count:
+    if diagnostics_has_current_snapshot and diag_unknown_count_core != status_unknown_count:
         reasons.append("diagnostics_unknown_count_mismatch")
         issues.append({
             "code": "diagnostics_unknown_count_mismatch",
-            "diagnostics_unknown_fields_count_current": int(diag_unknown_count),
+            "diagnostics_unknown_fields_count_current": int(diag_unknown_count_core),
             "field_status_core_unknown_fields": int(status_unknown_count),
         })
-    diag_unknown_set = set(diag_unknown_fields)
+    diag_unknown_set = set(diag_unknown_fields_core)
     status_unknown_set = set(status_unknown_fields)
     if (
         diagnostics_has_current_snapshot
@@ -10938,8 +11366,8 @@ def _finalization_invariant_report(
         "core_total_fields": int(core_counts.get("total", 0) or 0),
         "core_found_fields": int(core_counts.get("found", 0) or 0),
         "core_unknown_fields": int(core_counts.get("unknown", 0) or 0),
-        "diagnostics_unknown_fields_count_current": int(diag_unknown_count),
-        "diagnostics_unknown_fields_current_sample": diag_unknown_fields[:16],
+        "diagnostics_unknown_fields_count_current": int(diag_unknown_count_core),
+        "diagnostics_unknown_fields_current_sample": diag_unknown_fields_core[:16],
         "field_status_core_unknown_fields_sample": status_unknown_fields[:16],
         "diagnostics_current_snapshot_present": bool(diagnostics_has_current_snapshot),
     }
@@ -10995,6 +11423,17 @@ def _record_finalization_recovery_checkpoint(
         or "invariant_reconciliation"
     ).strip() or "invariant_reconciliation"
     recovery_action = str(gate.get("auto_recovery_action") or "emit_checkpoint").strip() or "emit_checkpoint"
+    existing_checkpoints = list(out_diagnostics.get("finalization_recovery_checkpoints") or [])
+    prior_same_reason_diagnostics_hits = 0
+    for existing_checkpoint in existing_checkpoints:
+        if not isinstance(existing_checkpoint, dict):
+            continue
+        existing_reason = str(existing_checkpoint.get("reason") or "").strip().lower()
+        existing_priority = str(existing_checkpoint.get("priority") or "").strip().lower()
+        if existing_reason != str(reasons[0]).strip().lower():
+            continue
+        if existing_priority.startswith("diagnostics"):
+            prior_same_reason_diagnostics_hits += 1
 
     blocking_fields = []
     for detail in list(gate.get("missing_required_field_details") or []):
@@ -11017,7 +11456,7 @@ def _record_finalization_recovery_checkpoint(
         "blocking_fields_sample": blocking_fields,
         "ts_utc": _iso_utc_now(),
     }
-    checkpoints = list(out_diagnostics.get("finalization_recovery_checkpoints") or [])
+    checkpoints = list(existing_checkpoints)
     checkpoints.append(checkpoint)
     if len(checkpoints) > max(1, int(max_items)):
         checkpoints = checkpoints[-int(max_items):]
@@ -11027,6 +11466,16 @@ def _record_finalization_recovery_checkpoint(
     ) + 1
 
     auto_recovery_needed = bool(gate.get("auto_recovery_checkpoint_needed", False))
+    if auto_recovery_needed and recovery_priority.startswith("diagnostics") and prior_same_reason_diagnostics_hits >= 1:
+        auto_recovery_needed = False
+        if checkpoints and isinstance(checkpoints[-1], dict):
+            checkpoints[-1]["action"] = "none"
+            out_diagnostics["finalization_recovery_checkpoints"] = checkpoints
+        out_diagnostics["retrieval_interventions"] = _append_limited_unique(
+            out_diagnostics.get("retrieval_interventions"),
+            f"diagnostics_recovery_cap:{recovery_priority}",
+            max_items=max_items,
+        )
     budget_exhausted = bool(out_budget.get("budget_exhausted", False))
     if auto_recovery_needed and not budget_exhausted:
         out_budget["replan_requested"] = True
@@ -11655,11 +12104,24 @@ def _build_retry_rewrite_message(
     """Build a policy-driven rewrite instruction for low-signal retrieval streaks."""
     retry_policy = _state_retry_policy(state)
     templates = _state_query_templates(state)
+    source_policy = _state_source_policy(state)
     strategies = ", ".join(list(retry_policy.get("rewrite_strategies") or []))
     field_hint = ", ".join(list(pending_fields or [])[:6]) if pending_fields else "remaining fields"
     focused_template = str(templates.get("focused_field_query") or "{entity} {field}")
     source_template = str(templates.get("source_constrained_query") or "site:{domain} {entity} {field}")
     disambiguation_template = str(templates.get("disambiguation_query") or "{entity} {field} biography profile")
+    preferred_domains = [
+        str(v).strip()
+        for v in list(source_policy.get("preferred_domains") or [])
+        if str(v).strip()
+    ][:8]
+    preferred_domains_note = ""
+    if preferred_domains:
+        preferred_domains_note = (
+            " Start with site-constrained queries on preferred domains in this order: "
+            + ", ".join(preferred_domains)
+            + ". Do not fall back to broad/tertiary domains until these are exhausted."
+        )
     context_note = f" Context: {query_context}." if query_context else ""
     return (
         "Retrieval quality has been low for multiple rounds."
@@ -11667,8 +12129,10 @@ def _build_retry_rewrite_message(
         f"{context_note}"
         f" Prioritize fields: {field_hint}."
         f" Use one strategy per query ({strategies})."
+        f"{preferred_domains_note}"
         " Follow these templates (fill placeholders, do not copy literally): "
         f"focused='{focused_template}', source='{source_template}', disambiguation='{disambiguation_template}'."
+        " Prefer primary/official sources over secondary media and avoid tertiary/person-aggregator domains."
         " After each search result, immediately save any schema-backed finding with source URL."
     )
 
@@ -11677,10 +12141,8 @@ def _normalize_auto_openwebpage_policy(raw_policy: Any) -> str:
     token = str(raw_policy or "").strip().lower()
     if token in {"off", "none", "disabled", "false", "0"}:
         return "off"
-    if token in {"conservative", "safe", "budgeted"}:
-        return "conservative"
-    if token in {"aggressive", "on", "enabled", "true", "1"}:
-        return "aggressive"
+    if token:
+        return "auto"
     return ""
 
 
@@ -11691,7 +12153,7 @@ def _state_auto_openwebpage_policy(state: Any) -> str:
     default_policy = _normalize_auto_openwebpage_policy(_AUTO_OPENWEBPAGE_POLICY)
     if default_policy:
         return default_policy
-    return "aggressive" if _AUTO_OPENWEBPAGE_PRIMARY_SOURCE else "off"
+    return "auto"
 
 
 def _should_auto_openwebpage_followup(
@@ -11709,12 +12171,8 @@ def _should_auto_openwebpage_followup(
 
     budget = _state_budget(state)
     remaining = int(budget.get("tool_calls_remaining", 0) or 0)
-    min_remaining = 2 if policy == "conservative" else 1
-    if remaining < min_remaining:
+    if remaining < 1:
         return False
-
-    if policy == "aggressive":
-        return True
 
     for msg in tool_messages:
         if not _message_is_tool(msg):
@@ -12489,6 +12947,126 @@ def _llm_extract_schema_payloads_from_search_snippets(
     return out_payloads, extracted, metadata
 
 
+def _extract_tool_round_inputs(last_message: Any) -> Dict[str, Any]:
+    """Collect tool-call metadata needed for one tool-node round."""
+    out = {
+        "tool_calls": [],
+        "search_queries": [],
+        "had_explicit_openwebpage_call": False,
+        "scratchpad_entries": [],
+        "plan_updates": [],
+    }
+    if last_message is None:
+        return out
+
+    for raw_tool_call in getattr(last_message, "tool_calls", []) or []:
+        out["tool_calls"].append(raw_tool_call)
+        if isinstance(raw_tool_call, dict):
+            tool_name = raw_tool_call.get("name")
+            tool_args = raw_tool_call.get("args")
+        else:
+            tool_name = getattr(raw_tool_call, "name", None)
+            tool_args = getattr(raw_tool_call, "args", None)
+        tool_name_norm = _normalize_match_text(tool_name)
+        tool_args = tool_args if isinstance(tool_args, dict) else {}
+
+        if tool_name_norm == "search":
+            query_text = str(tool_args.get("query") or "").strip()
+            if query_text:
+                out["search_queries"].append(query_text)
+        elif tool_name_norm == "openwebpage":
+            out["had_explicit_openwebpage_call"] = True
+
+        if tool_name_norm == "save_finding":
+            finding = str(tool_args.get("finding") or "").strip()
+            if not finding:
+                continue
+            category = str(tool_args.get("category") or "fact").strip().lower()
+            if category not in {"fact", "observation", "todo", "insight"}:
+                category = "fact"
+            out["scratchpad_entries"].append({
+                "finding": finding[:500],
+                "category": category,
+            })
+        elif tool_name_norm == "update_plan":
+            out["plan_updates"].append(dict(tool_args))
+    return out
+
+
+def _invoke_tool_node_with_fallback(
+    base_tool_node: Any,
+    state: Any,
+    *,
+    scratchpad_entries: Any,
+    debug: bool = False,
+) -> Dict[str, Any]:
+    """Run tool node and convert hard failures into tool-friendly error result."""
+    try:
+        result = base_tool_node.invoke(state)
+    except Exception as exc:
+        result = _tool_node_error_result(
+            state,
+            exc,
+            scratchpad_entries=scratchpad_entries if scratchpad_entries else None,
+            debug=debug,
+        )
+    return result if isinstance(result, dict) else {"messages": []}
+
+
+def _apply_auto_openwebpage_followup(
+    *,
+    state: Any,
+    base_tool_node: Any,
+    tool_messages: List[Any],
+    search_queries: List[str],
+    had_explicit_openwebpage_call: bool,
+    selector_model: Any = None,
+    debug: bool = False,
+) -> List[Any]:
+    """Optionally append one automatic OpenWebpage follow-up for Search output."""
+    if had_explicit_openwebpage_call:
+        return list(tool_messages or [])
+    if _is_critical_recursion_step(state, remaining_steps_value(state)):
+        return list(tool_messages or [])
+    if not _should_auto_openwebpage_followup(state, list(tool_messages or []), list(search_queries or [])):
+        return list(tool_messages or [])
+
+    follow_url = _select_round_openwebpage_candidate(
+        state.get("messages") or [],
+        list(tool_messages or []),
+        search_queries=list(search_queries or []),
+        selector_model=selector_model,
+    )
+    if not follow_url:
+        return list(tool_messages or [])
+
+    try:
+        from langchain_core.messages import AIMessage
+
+        follow_ai = AIMessage(content="", tool_calls=[{
+            "name": "OpenWebpage",
+            "args": {"url": follow_url},
+            "id": f"auto_openwebpage_{uuid.uuid4().hex[:12]}",
+            "type": "tool_call",
+        }])
+        follow_state = {
+            **state,
+            "messages": list(state.get("messages", [])) + [follow_ai],
+        }
+        follow_result = base_tool_node.invoke(follow_state)
+        follow_messages = list((follow_result or {}).get("messages") or [])
+        if follow_messages:
+            # Preserve tool-call pairing invariants for models (notably OpenAI):
+            # Tool messages must always follow a preceding AI message that contains
+            # the corresponding tool_calls entry.
+            return list(tool_messages or []) + [follow_ai] + follow_messages
+    except Exception as follow_exc:
+        if debug:
+            logger.warning("Auto OpenWebpage follow-up failed: %s", follow_exc)
+
+    return list(tool_messages or [])
+
+
 def _create_tool_node_with_scratchpad(
     base_tool_node,
     *,
@@ -12501,33 +13079,15 @@ def _create_tool_node_with_scratchpad(
     def tool_node_with_scratchpad(state):
         """Execute tools, extract scratchpad entries and plan updates into state."""
         node_started_at = time.perf_counter()
-        scratchpad_entries = []
-        plan_updates = []
-        tool_calls = []
-        search_queries = []
-        had_explicit_openwebpage_call = False
         last_msg = (state.get("messages") or [None])[-1]
-        for tc in getattr(last_msg, "tool_calls", []) or []:
-            tool_calls.append(tc)
-            tc_name = tc.get("name") if isinstance(tc, dict) else getattr(tc, "name", None)
-            tc_name_norm = _normalize_match_text(tc_name)
-            tc_args = tc.get("args") if isinstance(tc, dict) else getattr(tc, "args", None)
-            if tc_name_norm == "search" and isinstance(tc_args, dict):
-                query_text = str(tc_args.get("query") or "").strip()
-                if query_text:
-                    search_queries.append(query_text)
-            if _normalize_match_text(tc_name) == "openwebpage":
-                had_explicit_openwebpage_call = True
-            if tc.get("name") == "save_finding":
-                finding = (tc.get("args") or {}).get("finding", "")
-                category = (tc.get("args") or {}).get("category", "fact")
-                if finding:
-                    scratchpad_entries.append({
-                        "finding": finding[:500],
-                        "category": category if category in ("fact", "observation", "todo", "insight") else "fact",
-                    })
-            elif tc.get("name") == "update_plan":
-                plan_updates.append(tc.get("args") or {})
+        tool_round_inputs = _extract_tool_round_inputs(last_msg)
+        scratchpad_entries = list(tool_round_inputs.get("scratchpad_entries") or [])
+        plan_updates = list(tool_round_inputs.get("plan_updates") or [])
+        tool_calls = list(tool_round_inputs.get("tool_calls") or [])
+        search_queries = list(tool_round_inputs.get("search_queries") or [])
+        had_explicit_openwebpage_call = bool(
+            tool_round_inputs.get("had_explicit_openwebpage_call", False)
+        )
 
         expected_schema = _state_expected_schema(state)
         field_status = _state_field_status(state)
@@ -12546,54 +13106,22 @@ def _create_tool_node_with_scratchpad(
         )
         tool_round_started_at = time.perf_counter()
 
-        try:
-            result = base_tool_node.invoke(state)
-        except Exception as exc:
-            result = _tool_node_error_result(
-                state,
-                exc,
-                scratchpad_entries=scratchpad_entries if scratchpad_entries else None,
-                debug=debug,
-            )
-
-        tool_messages = list(result.get("messages") or [])
-        if (
-            not had_explicit_openwebpage_call
-            and not _is_critical_recursion_step(state, remaining_steps_value(state))
-            and _should_auto_openwebpage_followup(state, tool_messages, search_queries)
-        ):
-            follow_url = _select_round_openwebpage_candidate(
-                state.get("messages") or [],
-                tool_messages,
-                search_queries=search_queries,
-                selector_model=selector_model,
-            )
-            if follow_url:
-                try:
-                    from langchain_core.messages import AIMessage
-
-                    follow_ai = AIMessage(content="", tool_calls=[{
-                        "name": "OpenWebpage",
-                        "args": {"url": follow_url},
-                        "id": f"auto_openwebpage_{uuid.uuid4().hex[:12]}",
-                        "type": "tool_call",
-                    }])
-                    follow_state = {
-                        **state,
-                        "messages": list(state.get("messages", [])) + [follow_ai],
-                    }
-                    follow_result = base_tool_node.invoke(follow_state)
-                    follow_messages = list((follow_result or {}).get("messages") or [])
-                    if follow_messages:
-                        # Preserve tool-call pairing invariants for models (notably OpenAI):
-                        # Tool messages must always follow a preceding AI message that contains
-                        # the corresponding tool_calls entry.
-                        tool_messages.append(follow_ai)
-                        tool_messages.extend(follow_messages)
-                        result["messages"] = tool_messages
-                except Exception as follow_exc:
-                    if debug:
-                        logger.warning("Auto OpenWebpage follow-up failed: %s", follow_exc)
+        result = _invoke_tool_node_with_fallback(
+            base_tool_node,
+            state,
+            scratchpad_entries=scratchpad_entries,
+            debug=debug,
+        )
+        tool_messages = _apply_auto_openwebpage_followup(
+            state=state,
+            base_tool_node=base_tool_node,
+            tool_messages=list(result.get("messages") or []),
+            search_queries=search_queries,
+            had_explicit_openwebpage_call=had_explicit_openwebpage_call,
+            selector_model=selector_model,
+            debug=debug,
+        )
+        result["messages"] = tool_messages
 
         tool_round_elapsed_ms = max(
             0,
@@ -13072,6 +13600,8 @@ def _create_tool_node_with_scratchpad(
             prior_evidence_ledger=prior_evidence_ledger,
             evidence_ledger=evidence_ledger,
             diagnostics=diagnostics,
+            source_policy=source_policy,
+            retry_policy=retry_policy,
         )
 
         prior_streak = int(prior_budget.get("no_signal_streak", 0) or 0)
@@ -13081,6 +13611,9 @@ def _create_tool_node_with_scratchpad(
         else:
             streak = prior_streak
         budget_state["no_signal_streak"] = max(0, int(streak))
+        prior_no_new_hq_streak = int(prior_budget.get("no_new_high_quality_evidence_streak", 0) or 0)
+        no_new_hq_streak = int(retrieval_metrics.get("no_new_high_quality_evidence_streak", 0) or 0)
+        budget_state["no_new_high_quality_evidence_streak"] = max(0, int(no_new_hq_streak))
         rewrite_threshold = int(retry_policy.get("rewrite_after_streak", _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD))
         stop_threshold = int(retry_policy.get("stop_after_streak", _LOW_SIGNAL_STREAK_STOP_THRESHOLD))
         rewrite_crossed = bool(streak >= rewrite_threshold and prior_streak < rewrite_threshold)
@@ -13117,6 +13650,64 @@ def _create_tool_node_with_scratchpad(
                 f"low_signal_streak_stop:{streak}",
                 max_items=64,
             )
+        no_new_evidence_replan_after = max(
+            1,
+            int(retry_policy.get("no_new_evidence_replan_after_streak", 2) or 2),
+        )
+        no_new_evidence_stop_after = max(
+            int(no_new_evidence_replan_after),
+            int(retry_policy.get("no_new_evidence_stop_after_streak", 3) or 3),
+        )
+        no_new_evidence_replan_crossed = bool(
+            int(search_calls_delta) > 0
+            and no_new_hq_streak >= no_new_evidence_replan_after
+            and prior_no_new_hq_streak < no_new_evidence_replan_after
+        )
+        no_new_evidence_stop_crossed = bool(
+            int(search_calls_delta) > 0
+            and no_new_hq_streak >= no_new_evidence_stop_after
+            and prior_no_new_hq_streak < no_new_evidence_stop_after
+        )
+        if (
+            int(search_calls_delta) > 0
+            and no_new_hq_streak >= no_new_evidence_replan_after
+            and not bool(budget_state.get("budget_exhausted", False))
+        ):
+            budget_state["replan_requested"] = True
+            if str(budget_state.get("priority_retry_reason") or "").strip().lower() != "structural_repair":
+                budget_state["priority_retry_reason"] = "no_new_high_quality_evidence"
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                f"no_new_high_quality_evidence_replan:{no_new_hq_streak}",
+                max_items=64,
+            )
+        if (
+            int(search_calls_delta) > 0
+            and no_new_hq_streak >= no_new_evidence_stop_after
+            and not bool(budget_state.get("budget_exhausted", False))
+        ):
+            budget_state["budget_exhausted"] = True
+            if not budget_state.get("limit_trigger_reason"):
+                budget_state["limit_trigger_reason"] = "no_new_evidence"
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                f"no_new_high_quality_evidence_stop:{no_new_hq_streak}",
+                max_items=64,
+            )
+        if no_new_evidence_replan_crossed:
+            diagnostics["no_new_evidence_replan_events"] = int(
+                diagnostics.get("no_new_evidence_replan_events", 0) or 0
+            ) + 1
+            diagnostics["retry_or_replan_events"] = int(
+                diagnostics.get("retry_or_replan_events", 0) or 0
+            ) + 1
+        if no_new_evidence_stop_crossed:
+            diagnostics["no_new_evidence_stop_events"] = int(
+                diagnostics.get("no_new_evidence_stop_events", 0) or 0
+            ) + 1
+            diagnostics["retry_or_replan_events"] = int(
+                diagnostics.get("retry_or_replan_events", 0) or 0
+            ) + 1
         low_signal_cap_hit = (
             int(diagnostics.get("empty_tool_results_count", 0)) >= int(_LOW_SIGNAL_EMPTY_HARD_CAP)
             or int(diagnostics.get("off_target_tool_results_count", 0)) >= int(_LOW_SIGNAL_OFF_TARGET_HARD_CAP)
@@ -13334,6 +13925,12 @@ def _create_tool_node_with_scratchpad(
         )
         perf["low_signal_rewrite_events"] = int(perf.get("low_signal_rewrite_events", 0)) + int(1 if rewrite_crossed else 0)
         perf["low_signal_stop_events"] = int(perf.get("low_signal_stop_events", 0)) + int(1 if stop_crossed else 0)
+        perf["no_new_evidence_replan_events"] = int(
+            perf.get("no_new_evidence_replan_events", 0)
+        ) + int(1 if no_new_evidence_replan_crossed else 0)
+        perf["no_new_evidence_stop_events"] = int(
+            perf.get("no_new_evidence_stop_events", 0)
+        ) + int(1 if no_new_evidence_stop_crossed else 0)
         perf["low_signal_rewrite_elapsed_ms_total"] = int(
             perf.get("low_signal_rewrite_elapsed_ms_total", 0)
         ) + int(tool_round_elapsed_ms if rewrite_crossed else 0)
@@ -13613,6 +14210,44 @@ def _compile_with_optional_cache(workflow: Any, *, checkpointer: Any = None, cac
     return workflow.compile(checkpointer=checkpointer)
 
 
+def _build_agent_workflow(
+    state_schema: Any,
+    *,
+    nodes: Sequence[Tuple[str, Any]],
+    conditional_edges: Sequence[Tuple[str, Any, Dict[str, Any]]],
+    direct_edges: Sequence[Tuple[str, Any]],
+    native_retry_policy: Any = None,
+    native_cache_policy: Any = None,
+) -> Any:
+    """Construct a LangGraph workflow from declarative node/edge specs."""
+    from langgraph.graph import StateGraph
+
+    workflow = StateGraph(state_schema)
+    for node_name, node_callable in list(nodes):
+        if str(node_name) == "tools":
+            _add_node_with_native_policies(
+                workflow,
+                node_name,
+                node_callable,
+                retry_policy=native_retry_policy,
+                cache_policy=native_cache_policy,
+            )
+            continue
+        _add_node_with_native_policies(
+            workflow,
+            node_name,
+            node_callable,
+        )
+
+    workflow.set_entry_point("agent")
+
+    for source_name, router_fn, route_map in list(conditional_edges):
+        workflow.add_conditional_edges(source_name, router_fn, route_map)
+    for source_name, target_name in list(direct_edges):
+        workflow.add_edge(source_name, target_name)
+    return workflow
+
+
 def create_memory_folding_agent(
     model,
     tools: list,
@@ -13654,7 +14289,7 @@ def create_memory_folding_agent(
     Returns:
         A compiled LangGraph StateGraph that can be invoked with .invoke()
     """
-    from langgraph.graph import StateGraph, END
+    from langgraph.graph import END
     from langchain_core.messages import RemoveMessage, SystemMessage, HumanMessage, AIMessage
 
     # Use main model for summarization if not specified
@@ -14073,6 +14708,7 @@ def create_memory_folding_agent(
                 summary=summary,
                 archive=archive,
                 finalization_policy=finalization_policy,
+                source_policy=source_policy,
                 expected_schema_source=expected_schema_source,
                 context="agent",
                 force_canonical=False,
@@ -14103,6 +14739,7 @@ def create_memory_folding_agent(
                     summary=summary,
                     archive=archive,
                     finalization_policy=finalization_policy,
+                    source_policy=source_policy,
                     expected_schema_source=expected_schema_source,
                     context="agent",
                     force_canonical=False,
@@ -14591,6 +15228,7 @@ def create_memory_folding_agent(
             summary=summary,
             archive=archive,
             finalization_policy=finalization_policy,
+            source_policy=source_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
             force_canonical=False,
@@ -14615,6 +15253,7 @@ def create_memory_folding_agent(
             summary=summary,
             archive=archive,
             finalization_policy=finalization_policy,
+            source_policy=source_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
             force_canonical=False,
@@ -16020,103 +16659,77 @@ def create_memory_folding_agent(
         # Otherwise, we've already produced the final AI response.
         return "end"
 
-    # Build the StateGraph
-    workflow = StateGraph(MemoryFoldingAgentState)
-
-    # Add nodes (retry policy is best-effort and ignored on older LangGraph versions).
-    _add_node_with_native_policies(
-        workflow,
-        "agent",
-        agent_node,
+    workflow = _build_agent_workflow(
+        MemoryFoldingAgentState,
+        nodes=[
+            ("agent", agent_node),
+            ("tools", tool_node_with_scratchpad),
+            ("observe", observe_conversation),
+            ("reflect", summarize_conversation),
+            ("summarize", summarize_conversation),
+            ("finalize", finalize_answer),
+            ("nudge", nudge_node),
+        ],
+        conditional_edges=[
+            (
+                "agent",
+                should_continue,
+                {
+                    "tools": "tools",
+                    "observe": "observe",
+                    "summarize": "summarize",
+                    "finalize": "finalize",
+                    "nudge": "nudge",
+                    "end": END,
+                },
+            ),
+            (
+                "tools",
+                after_tools,
+                {
+                    "observe": "observe",
+                    "summarize": "summarize",
+                    "agent": "agent",
+                    "finalize": "finalize",
+                    "end": END,
+                },
+            ),
+            (
+                "observe",
+                after_observe,
+                {
+                    "reflect": "reflect",
+                    "agent": "agent",
+                    "finalize": "finalize",
+                    "end": END,
+                },
+            ),
+            (
+                "summarize",
+                after_summarize,
+                {
+                    "agent": "agent",
+                    "finalize": "finalize",
+                    "end": END,
+                },
+            ),
+            (
+                "reflect",
+                after_summarize,
+                {
+                    "agent": "agent",
+                    "finalize": "finalize",
+                    "end": END,
+                },
+            ),
+        ],
+        direct_edges=[
+            ("nudge", "agent"),
+            ("finalize", END),
+        ],
+        native_retry_policy=native_retry_policy,
+        native_cache_policy=native_cache_policy,
     )
-    _add_node_with_native_policies(
-        workflow,
-        "tools",
-        tool_node_with_scratchpad,
-        retry_policy=native_retry_policy,
-        cache_policy=native_cache_policy,
-    )
-    _add_node_with_native_policies(workflow, "observe", observe_conversation)
-    _add_node_with_native_policies(workflow, "reflect", summarize_conversation)
-    _add_node_with_native_policies(workflow, "summarize", summarize_conversation)
-    _add_node_with_native_policies(
-        workflow,
-        "finalize",
-        finalize_answer,
-    )
-    _add_node_with_native_policies(
-        workflow,
-        "nudge",
-        nudge_node,
-    )
-
-    workflow.set_entry_point("agent")
-
-    # Add conditional edges from agent
-    workflow.add_conditional_edges(
-        "agent",
-        should_continue,
-        {
-            "tools": "tools",
-            "observe": "observe",
-            "summarize": "summarize",
-            "finalize": "finalize",
-            "nudge": "nudge",
-            "end": END
-        }
-    )
-
-    # Nudge routes back to agent for another attempt
-    workflow.add_edge("nudge", "agent")
-
-    # Tools route back to agent, with optional summarization when too long
-    workflow.add_conditional_edges(
-        "tools",
-        after_tools,
-        {
-            "observe": "observe",
-            "summarize": "summarize",
-            "agent": "agent",
-            "finalize": "finalize",
-            "end": END,
-        },
-    )
-
-    # Observer decides whether to continue, reflect, or finalize.
-    workflow.add_conditional_edges(
-        "observe",
-        after_observe,
-        {
-            "reflect": "reflect",
-            "agent": "agent",
-            "finalize": "finalize",
-            "end": END,
-        },
-    )
-
-    # After summarizing, decide whether to continue or end
-    workflow.add_conditional_edges(
-        "summarize",
-        after_summarize,
-        {
-            "agent": "agent",
-            "finalize": "finalize",
-            "end": END,
-        },
-    )
-
-    # Reflection shares the summarize implementation but runs as an explicit stage.
-    workflow.add_conditional_edges(
-        "reflect",
-        after_summarize,
-        {
-            "agent": "agent",
-            "finalize": "finalize",
-            "end": END,
-        },
-    )
-
-    workflow.add_edge("finalize", END)
 
     # Compile with optional checkpointer/cache and return.
     return _compile_with_optional_cache(
@@ -16193,7 +16806,7 @@ def create_standard_agent(
     """
     Create a standard ReAct-style LangGraph agent with RemainingSteps guard.
     """
-    from langgraph.graph import StateGraph, END
+    from langgraph.graph import END
     from langchain_core.messages import SystemMessage, HumanMessage
     from langgraph.prebuilt import ToolNode
     native_retry_policy = _coerce_langgraph_retry_policy(
@@ -16370,6 +16983,7 @@ def create_standard_agent(
                 expected_schema=expected_schema,
                 messages=messages,
                 finalization_policy=finalization_policy,
+                source_policy=source_policy,
                 expected_schema_source=expected_schema_source,
                 context="agent",
                 force_canonical=False,
@@ -16398,6 +17012,7 @@ def create_standard_agent(
                     expected_schema=expected_schema,
                     messages=messages,
                     finalization_policy=finalization_policy,
+                    source_policy=source_policy,
                     expected_schema_source=expected_schema_source,
                     context="agent",
                     force_canonical=False,
@@ -16872,6 +17487,7 @@ def create_standard_agent(
             expected_schema=expected_schema,
             messages=messages,
             finalization_policy=finalization_policy,
+            source_policy=source_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
             force_canonical=False,
@@ -16894,6 +17510,7 @@ def create_standard_agent(
             expected_schema=expected_schema,
             messages=messages,
             finalization_policy=finalization_policy,
+            source_policy=source_policy,
             expected_schema_source=expected_schema_source,
             context="finalize",
             force_canonical=False,
@@ -17075,56 +17692,42 @@ def create_standard_agent(
             return "finalize"
         return _route_after_tools_step(state)
 
-    workflow = StateGraph(StandardAgentState)
-    _add_node_with_native_policies(
-        workflow,
-        "agent",
-        agent_node,
+    workflow = _build_agent_workflow(
+        StandardAgentState,
+        nodes=[
+            ("agent", agent_node),
+            ("tools", tool_node_with_scratchpad),
+            ("finalize", finalize_answer),
+            ("nudge", nudge_node),
+        ],
+        conditional_edges=[
+            (
+                "agent",
+                should_continue,
+                {
+                    "tools": "tools",
+                    "finalize": "finalize",
+                    "nudge": "nudge",
+                    "end": END,
+                },
+            ),
+            (
+                "tools",
+                after_tools,
+                {
+                    "agent": "agent",
+                    "finalize": "finalize",
+                    "end": END,
+                },
+            ),
+        ],
+        direct_edges=[
+            ("nudge", "agent"),
+            ("finalize", END),
+        ],
+        native_retry_policy=native_retry_policy,
+        native_cache_policy=native_cache_policy,
     )
-    _add_node_with_native_policies(
-        workflow,
-        "tools",
-        tool_node_with_scratchpad,
-        retry_policy=native_retry_policy,
-        cache_policy=native_cache_policy,
-    )
-    _add_node_with_native_policies(
-        workflow,
-        "finalize",
-        finalize_answer,
-    )
-    _add_node_with_native_policies(
-        workflow,
-        "nudge",
-        nudge_node,
-    )
-
-    workflow.set_entry_point("agent")
-
-    workflow.add_conditional_edges(
-        "agent",
-        should_continue,
-        {
-            "tools": "tools",
-            "finalize": "finalize",
-            "nudge": "nudge",
-            "end": END
-        }
-    )
-
-    workflow.add_edge("nudge", "agent")
-
-    workflow.add_conditional_edges(
-        "tools",
-        after_tools,
-        {
-            "agent": "agent",
-            "finalize": "finalize",
-            "end": END
-        }
-    )
-
-    workflow.add_edge("finalize", END)
 
     return _compile_with_optional_cache(
         workflow,

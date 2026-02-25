@@ -26,6 +26,45 @@ devtools::load_all('~/Documents/asa-software/asa')
 
 trace_run_timestamp <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 trace_run_id <- paste0("trace_real_", format(Sys.time(), "%Y%m%dT%H%M%S"))
+trace_inference_started_at <- NA_character_
+trace_inference_finished_at <- NA_character_
+blind_benchmark_mode <- TRUE
+
+artifact_dir <- normalizePath("~/Documents/asa-software/tracked_reports", mustWork = TRUE)
+path_prompt <- file.path(artifact_dir, "prompt_example_real.txt")
+path_trace <- file.path(artifact_dir, "trace_real.txt")
+path_token_stats <- file.path(artifact_dir, "token_stats_real.txt")
+path_plan_output <- file.path(artifact_dir, "plan_output_real.txt")
+path_fold_stats <- file.path(artifact_dir, "fold_stats_real.txt")
+path_fold_summary <- file.path(artifact_dir, "fold_summary_real.txt")
+path_fold_archive <- file.path(artifact_dir, "fold_archive_real.txt")
+path_execution_summary <- file.path(artifact_dir, "execution_summary_real.txt")
+path_diagnostics <- file.path(artifact_dir, "diagnostics_real.txt")
+path_json_repair <- file.path(artifact_dir, "json_repair_real.txt")
+path_invoke_error <- file.path(artifact_dir, "invoke_error_real.txt")
+path_action_ascii <- file.path(artifact_dir, "action_ascii_real.txt")
+path_answer_pred <- file.path(artifact_dir, "answer_pred_real.txt")
+path_answer_gold <- file.path(artifact_dir, "answer_gold_real.txt")
+path_payload_release_audit <- file.path(artifact_dir, "payload_release_audit_real.txt")
+path_run_provenance <- file.path(artifact_dir, "run_provenance_real.txt")
+path_eval_metrics <- file.path(artifact_dir, "evaluation_metrics_real.txt")
+path_regression_gate <- file.path(artifact_dir, "regression_gate_real.txt")
+
+read_json_if_exists <- function(path) {
+  if (!is.character(path) || length(path) != 1L || !file.exists(path)) {
+    return(NULL)
+  }
+  tryCatch(
+    jsonlite::fromJSON(path, simplifyVector = FALSE),
+    error = function(e) NULL
+  )
+}
+
+baseline_snapshot <- list(
+  answer_pred = read_json_if_exists(path_answer_pred),
+  token_stats = read_json_if_exists(path_token_stats),
+  diagnostics = read_json_if_exists(path_diagnostics)
+)
 
 artifact_sentinel <- function(artifact,
                               reason = "artifact_not_available",
@@ -116,18 +155,99 @@ search_jitter_factor <- if (use_fast_emulation) 0.25 else 0.5
 search_max_results <- if (use_fast_emulation) 8L else 10L
 
 webpage_timeout_s <- if (use_fast_emulation) 20.0 else 45.0
-auto_openwebpage_policy <- if (use_fast_emulation) "off" else "conservative"
+auto_openwebpage_policy <- if (use_fast_emulation) "off" else "auto"
 
 orchestration_options_override <- if (use_fast_emulation) {
   list(
+    retrieval_controller = list(
+      enabled = TRUE,
+      mode = "enforce",
+      max_empty_round_streak = 2L,
+      adaptive_budget_enabled = TRUE,
+      adaptive_patience_steps = 2L,
+      adaptive_low_value_threshold = 0.08
+    ),
     field_resolver = list(
       webpage_extraction_enabled = FALSE,
-      search_snippet_extraction_enabled = FALSE
-    )
+      search_snippet_extraction_enabled = TRUE,
+      search_snippet_extraction_max_sources_per_round = 2L,
+      search_snippet_extraction_max_total_sources = 6L
+    ),
+    finalizer = list(
+      enabled = TRUE,
+      mode = "enforce"
+    ),
+    source_tier_provider = list(
+      strategy = "mapping",
+      domain_tiers = list(
+        "vicepresidencia.gob.bo" = "primary",
+        "oep.org.bo" = "primary",
+        "tse.org.bo" = "primary",
+        "boletin.bo" = "secondary",
+        "eldeber.com.bo" = "secondary",
+        "la-razon.com" = "secondary",
+        "idcrawl.com" = "tertiary",
+        "spokeo.com" = "tertiary"
+      )
+    ),
+    policy_version = "2026-02-24-trace-benchmark-v2"
   )
 } else {
   NULL
 }
+
+source_policy_override <- list(
+  min_candidate_score = 0.62,
+  min_source_quality = 0.32,
+  min_source_specificity = 0.28,
+  min_source_quality_textual_nonfree = 0.40,
+  min_source_tier_for_non_unknown = "secondary",
+  min_source_tier_for_sensitive_fields = "secondary",
+  allow_tertiary_sources = FALSE,
+  sensitive_fields_require_explicit_disclosure = TRUE,
+  preferred_domains = c(
+    "vicepresidencia.gob.bo",
+    "oep.org.bo",
+    "tse.org.bo",
+    "bolivia.gob.bo"
+  ),
+  deny_host_fragments = c(
+    "idcrawl.",
+    "spokeo.",
+    "truthfinder.",
+    "whitepages.",
+    "fastpeoplesearch.",
+    "radaris.",
+    "peekyou.",
+    "mylife.",
+    "beenverified.",
+    "peoplefinders.",
+    "searchpeoplefree."
+  )
+)
+
+retry_policy_override <- list(
+  rewrite_after_streak = 2L,
+  stop_after_streak = 3L,
+  no_new_evidence_replan_after_streak = 2L,
+  no_new_evidence_stop_after_streak = 3L,
+  no_new_evidence_high_quality_score = 0.72,
+  no_new_evidence_min_tier = "secondary"
+)
+
+finalization_policy_override <- list(
+  field_recovery_mode = "precision",
+  field_recovery_min_source_quality = 0.34,
+  diagnostics_auto_recovery_enabled = TRUE,
+  quality_gate_enforce = TRUE,
+  quality_gate_unknown_ratio_max = 0.85
+)
+
+query_templates_override <- list(
+  focused_field_query = "\"{entity}\" {field} Bolivia MAS Beni 2014",
+  source_constrained_query = "site:{domain} \"{entity}\" {field} Bolivia",
+  disambiguation_query = "\"{entity}\" MAS Beni Bolivia diputado 2014"
+)
 
 # Heartbeat lifecycle is managed by package internals:
 # asa:::.heartbeat_start/.heartbeat_set_phase/.heartbeat_stop/.with_heartbeat
@@ -213,6 +333,9 @@ EXPECTED_SCHEMA <- list(
 )
 
 system("brew services start tor")
+if (isTRUE(blind_benchmark_mode)) {
+  message("Blind benchmark mode enabled: gold labels are not read during inference.")
+}
 message(sprintf("Starting run_task at %s", format(Sys.time(), "%Y-%m-%d %H:%M:%S")))
 message(sprintf(
   paste0(
@@ -227,6 +350,7 @@ message(sprintf(
   webpage_timeout_s,
   auto_openwebpage_policy
 ))
+trace_inference_started_at <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 attempt <- asa:::.with_heartbeat(
   fn = function() {
     run_task(
@@ -239,15 +363,15 @@ attempt <- asa:::.with_heartbeat(
       use_plan_mode = plan_mode_enabled,
       search_budget_limit = search_budget_limit,
       unknown_after_searches = unknown_after_limit,
-      retry_policy = list(
-        rewrite_after_streak = 2L,
-        stop_after_streak = 3L
-      ),
+      source_policy = source_policy_override,
+      retry_policy = retry_policy_override,
+      finalization_policy = finalization_policy_override,
+      query_templates = query_templates_override,
       orchestration_options = orchestration_options_override,
       agent = initialize_agent(
         #backend = "gemini", model = "gemini-2.5-pro",
-        #backend = "gemini", model = "gemini-3-pro-preview",
-        backend = "gemini", model = "gemini-3-flash-preview",
+        backend = "gemini", model = "gemini-3-pro-preview",
+        #backend = "gemini", model = "gemini-3-flash-preview",
         #backend = "openai", model = "gpt-5-mini-2025-08-07",
         #backend = "openai", model = "gpt-5-nano-2025-08-07",
         proxy = "socks5h://127.0.0.1:9050",
@@ -298,17 +422,21 @@ attempt <- asa:::.with_heartbeat(
   error_phase = "backend_error",
   verbose = TRUE
 )
+trace_inference_finished_at <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 
 # write to disk for further investigations.
-readr::write_file(prompt, "~/Documents/asa-software/tracked_reports/prompt_example_real.txt")
+readr::write_file(prompt, path_prompt)
 
 # Structured trace (asa_trace_v1 format — each message is a distinct JSON object)
 readr::write_file(
   attempt$trace_json,
-  "~/Documents/asa-software/tracked_reports/trace_real.txt"
+  path_trace
 )
 
-readr::write_file(jsonlite::toJSON(attempt$token_stats, auto_unbox = TRUE, pretty = TRUE, null = "null"), "~/Documents/asa-software/tracked_reports/token_stats_real.txt")
+readr::write_file(
+  jsonlite::toJSON(attempt$token_stats, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  path_token_stats
+)
 plan_output <- artifact_or_sentinel(
   attempt$plan,
   artifact = "plan_output",
@@ -316,7 +444,7 @@ plan_output <- artifact_or_sentinel(
 )
 readr::write_file(
   jsonlite::toJSON(plan_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/plan_output_real.txt"
+  path_plan_output
 )
 
 # fold_stats
@@ -327,11 +455,11 @@ fold_stats_output <- artifact_or_sentinel(
 )
 readr::write_file(
   jsonlite::toJSON(fold_stats_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/fold_stats_real.txt"
+  path_fold_stats
 )
 
 # summary/archive from memory folding state (if present)
-archive_state <- ummary_state <- NULL
+archive_state <- summary_state <- NULL
 if (!is.null(attempt$raw_response)) {
   summary_state <- tryCatch(reticulate::py_to_r(attempt$raw_response$summary), error = function(e) NULL)
   archive_state <- tryCatch(reticulate::py_to_r(attempt$raw_response$archive), error = function(e) NULL)
@@ -352,11 +480,11 @@ fold_archive_output <- artifact_or_sentinel(
 
 readr::write_file(
   jsonlite::toJSON(fold_summary_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/fold_summary_real.txt"
+  path_fold_summary
 )
 readr::write_file(
   jsonlite::toJSON(fold_archive_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/fold_archive_real.txt"
+  path_fold_archive
 )
 
 # execution summary (elapsed_time, field_status)
@@ -369,12 +497,12 @@ readr::write_file(
     ),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   ),
-  "~/Documents/asa-software/tracked_reports/execution_summary_real.txt"
+  path_execution_summary
 )
 
 readr::write_file(
   jsonlite::toJSON(attempt$execution$diagnostics, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/diagnostics_real.txt"
+  path_diagnostics
 )
 
 # json repair events (includes invoke_exception_fallback error details when present)
@@ -382,7 +510,7 @@ json_repair <- attempt$execution$json_repair %||% list()
 json_repair <- tryCatch(as.list(json_repair), error = function(e) list())
 readr::write_file(
   jsonlite::toJSON(json_repair, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/json_repair_real.txt"
+  path_json_repair
 )
 
 invoke_error <- NULL
@@ -413,7 +541,7 @@ invoke_error <- artifact_or_sentinel(
 
 readr::write_file(
   jsonlite::toJSON(invoke_error, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/invoke_error_real.txt"
+  path_invoke_error
 )
 
 has_invoke_error <- (
@@ -454,7 +582,7 @@ if (!nzchar(action_ascii_text) &&
 
 readr::write_file(
   action_ascii_text,
-  "~/Documents/asa-software/tracked_reports/action_ascii_real.txt"
+  path_action_ascii
 )
 
 cat("Token stats:\n")
@@ -465,7 +593,7 @@ cat("  elapsed_time:", attempt$elapsed_time, "\n")
 cat("  fold_stats:", jsonlite::toJSON(attempt$fold_stats, auto_unbox = TRUE), "\n")
 
 # save final answer (extract from structured trace on disk)
-tmp <- readr::read_file("~/Documents/asa-software/tracked_reports/trace_real.txt")
+tmp <- readr::read_file(path_trace)
 extracted <- extract_agent_results(tmp)
 final_answer <- extracted[["json_data_canonical"]] %||% extracted[["json_data"]]
 if (is.null(final_answer) && is.character(attempt$message) && length(attempt$message) == 1L && nzchar(attempt$message)) {
@@ -478,7 +606,7 @@ message("Trace test complete")
 
 jsonlite::write_json(
   final_answer,
-  "~/Documents/asa-software/tracked_reports/answer_pred_real.txt",
+  path_answer_pred,
   auto_unbox = TRUE,
   pretty = TRUE,
   null = "null"
@@ -558,6 +686,256 @@ payload_release_audit <- list(
 )
 readr::write_file(
   jsonlite::toJSON(payload_release_audit, auto_unbox = TRUE, pretty = TRUE, null = "null"),
-  "~/Documents/asa-software/tracked_reports/payload_release_audit_real.txt"
+  path_payload_release_audit
+)
+
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
+canonicalize_url <- function(url) {
+  if (!is.character(url) || length(url) != 1L || is.na(url) || !nzchar(url)) {
+    return(NA_character_)
+  }
+  x <- trimws(url)
+  x <- sub("#.*$", "", x)
+  scheme_split <- strsplit(x, "://", fixed = TRUE)[[1]]
+  if (length(scheme_split) != 2L) {
+    return(tolower(x))
+  }
+  scheme <- tolower(scheme_split[[1]])
+  rest <- scheme_split[[2]]
+  path_split <- strsplit(rest, "\\?", perl = TRUE)[[1]]
+  host_path <- path_split[[1]]
+  query <- if (length(path_split) > 1L) paste(path_split[-1], collapse = "?") else ""
+  host <- tolower(sub("/.*$", "", host_path))
+  path <- sub("^[^/]+", "", host_path)
+  if (!nzchar(path)) path <- "/"
+  params <- character(0)
+  if (nzchar(query)) {
+    raw_params <- strsplit(query, "&", fixed = TRUE)[[1]]
+    raw_params <- raw_params[nzchar(raw_params)]
+    if (length(raw_params) > 0L) {
+      params <- sort(raw_params)
+    }
+  }
+  normalized_query <- if (length(params) > 0L) paste(params, collapse = "&") else ""
+  paste0(scheme, "://", host, path, if (nzchar(normalized_query)) paste0("?", normalized_query) else "")
+}
+
+normalize_scalar <- function(x) {
+  if (is.null(x)) return(NULL)
+  if (is.logical(x)) return(as.logical(x[[1]]))
+  if (is.numeric(x)) return(as.numeric(x[[1]]))
+  if (!is.character(x)) return(x)
+  val <- trimws(as.character(x[[1]]))
+  if (!nzchar(val)) return("")
+  if (grepl("^https?://", val, ignore.case = TRUE)) return(canonicalize_url(val))
+  tolower(gsub("\\s+", " ", val))
+}
+
+is_exact_equal <- function(a, b) {
+  if (is.null(a) && is.null(b)) return(TRUE)
+  if (is.null(a) || is.null(b)) return(FALSE)
+  if (is.numeric(a) && is.numeric(b)) return(isTRUE(all.equal(as.numeric(a[[1]]), as.numeric(b[[1]]))))
+  if (is.character(a) && is.character(b)) return(identical(as.character(a[[1]]), as.character(b[[1]])))
+  identical(a, b)
+}
+
+is_semantic_equal <- function(a, b) {
+  if (is.null(a) && is.null(b)) return(TRUE)
+  if (is.null(a) || is.null(b)) return(FALSE)
+  a_norm <- normalize_scalar(a)
+  b_norm <- normalize_scalar(b)
+  identical(a_norm, b_norm)
+}
+
+is_unknown_like <- function(x) {
+  if (is.null(x)) return(TRUE)
+  if (!is.character(x)) return(FALSE)
+  token <- tolower(trimws(x[[1]] %||% ""))
+  token %in% c("", "unknown", "n/a", "na", "none", "null", "not available", "undisclosed")
+}
+
+source_tier_score <- function(url) {
+  if (is.null(url) || !is.character(url) || !nzchar(url[[1]] %||% "")) return(0)
+  host <- tolower(sub("^[a-z]+://", "", canonicalize_url(url[[1]])))
+  host <- sub("/.*$", "", host)
+  if (grepl("\\.gov\\b|\\.gob\\b|\\.edu\\b|parliament|assembly|senate|official|vicepresidencia", host)) return(1.0)
+  if (grepl("wiki|\\.org\\b|news|press|journal|eldeber|la-razon|boletin", host)) return(0.7)
+  0.3
+}
+
+extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, schema_names) {
+  keys <- as.character(schema_names)
+  exact <- 0L
+  semantic <- 0L
+  for (k in keys) {
+    pred_val <- if (is.list(answer_obj) && !is.null(answer_obj[[k]])) answer_obj[[k]] else NULL
+    gold_val <- if (is.list(gold_obj) && !is.null(gold_obj[[k]])) gold_obj[[k]] else NULL
+    if (is_exact_equal(pred_val, gold_val)) exact <- exact + 1L
+    if (is_semantic_equal(pred_val, gold_val)) semantic <- semantic + 1L
+  }
+
+  source_fields <- keys[grepl("_source$", keys)]
+  source_scores <- c()
+  low_quality_domains <- c()
+  for (k in source_fields) {
+    val <- if (is.list(answer_obj) && !is.null(answer_obj[[k]])) answer_obj[[k]] else NULL
+    if (is.null(val) || (is.character(val) && !nzchar(trimws(val[[1]] %||% "")))) next
+    score <- source_tier_score(val)
+    source_scores <- c(source_scores, score)
+    if (score <= 0.3) {
+      low_quality_domains <- unique(c(low_quality_domains, canonicalize_url(val[[1]])))
+    }
+  }
+  evidence_quality <- if (length(source_scores) > 0L) mean(source_scores) else 0
+
+  base_fields <- keys[
+    !grepl("_source$", keys) &
+      !grepl("_details$", keys) &
+      !(keys %in% c("confidence", "justification"))
+  ]
+  grounded <- 0L
+  for (k in base_fields) {
+    val <- if (is.list(answer_obj) && !is.null(answer_obj[[k]])) answer_obj[[k]] else NULL
+    if (!is_unknown_like(val)) grounded <- grounded + 1L
+  }
+  tokens_used <- as.numeric(token_obj$tokens_used %||% NA_real_)
+  tokens_per_grounded <- if (!is.na(tokens_used) && grounded > 0L) tokens_used / grounded else NA_real_
+  invariant_failures <- as.numeric(diagnostics_obj$finalization_invariant_failures %||% NA_real_)
+
+  list(
+    exact_match = exact,
+    semantic_match = semantic,
+    total_fields = length(keys),
+    evidence_quality = evidence_quality,
+    low_quality_source_urls = low_quality_domains,
+    grounded_fields = grounded,
+    tokens_used = tokens_used,
+    tokens_per_grounded_field = tokens_per_grounded,
+    finalization_invariant_failures = invariant_failures
+  )
+}
+
+gold_answer <- read_json_if_exists(path_answer_gold)
+current_answer <- read_json_if_exists(path_answer_pred)
+current_token_stats <- read_json_if_exists(path_token_stats)
+current_diagnostics <- read_json_if_exists(path_diagnostics)
+
+current_metrics <- extract_metrics(
+  answer_obj = current_answer,
+  token_obj = current_token_stats %||% list(),
+  diagnostics_obj = current_diagnostics %||% list(),
+  gold_obj = gold_answer %||% list(),
+  schema_names = names(EXPECTED_SCHEMA)
+)
+baseline_metrics <- NULL
+if (!is.null(baseline_snapshot$answer_pred) && !is.null(baseline_snapshot$token_stats)) {
+  baseline_metrics <- extract_metrics(
+    answer_obj = baseline_snapshot$answer_pred,
+    token_obj = baseline_snapshot$token_stats %||% list(),
+    diagnostics_obj = baseline_snapshot$diagnostics %||% list(),
+    gold_obj = gold_answer %||% list(),
+    schema_names = names(EXPECTED_SCHEMA)
+  )
+}
+
+delta_metrics <- NULL
+regression_gate <- list(
+  baseline_available = !is.null(baseline_metrics),
+  pass = NA
+)
+if (!is.null(baseline_metrics)) {
+  delta_metrics <- list(
+    exact_match_delta = as.numeric(current_metrics$exact_match) - as.numeric(baseline_metrics$exact_match),
+    semantic_match_delta = as.numeric(current_metrics$semantic_match) - as.numeric(baseline_metrics$semantic_match),
+    evidence_quality_delta = as.numeric(current_metrics$evidence_quality) - as.numeric(baseline_metrics$evidence_quality),
+    tokens_used_delta = as.numeric(current_metrics$tokens_used) - as.numeric(baseline_metrics$tokens_used),
+    tokens_per_grounded_field_delta = as.numeric(current_metrics$tokens_per_grounded_field) - as.numeric(baseline_metrics$tokens_per_grounded_field),
+    invariant_failures_delta = as.numeric(current_metrics$finalization_invariant_failures) - as.numeric(baseline_metrics$finalization_invariant_failures)
+  )
+
+  regression_gate$exact_non_decreasing <- isTRUE(delta_metrics$exact_match_delta >= 0)
+  regression_gate$semantic_non_decreasing <- isTRUE(delta_metrics$semantic_match_delta >= 0)
+  regression_gate$evidence_quality_non_decreasing <- isTRUE(delta_metrics$evidence_quality_delta >= 0)
+  regression_gate$tokens_non_increasing <- isTRUE(delta_metrics$tokens_used_delta <= 0)
+  regression_gate$token_efficiency_non_increasing <- isTRUE(delta_metrics$tokens_per_grounded_field_delta <= 0)
+  regression_gate$invariant_failures_non_increasing <- isTRUE(delta_metrics$invariant_failures_delta <= 0)
+  regression_gate$no_low_quality_sources <- length(current_metrics$low_quality_source_urls %||% character(0)) == 0L
+  regression_gate$pass <- isTRUE(
+    regression_gate$exact_non_decreasing &&
+      regression_gate$semantic_non_decreasing &&
+      regression_gate$evidence_quality_non_decreasing &&
+      regression_gate$tokens_non_increasing &&
+      regression_gate$token_efficiency_non_increasing &&
+      regression_gate$invariant_failures_non_increasing &&
+      regression_gate$no_low_quality_sources
+  )
+}
+
+evaluation_metrics <- list(
+  run_id = trace_run_id,
+  generated_at_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+  benchmark_mode = if (isTRUE(blind_benchmark_mode)) "blind" else "standard",
+  current = current_metrics,
+  baseline = baseline_metrics,
+  delta = delta_metrics
+)
+readr::write_file(
+  jsonlite::toJSON(evaluation_metrics, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  path_eval_metrics
+)
+readr::write_file(
+  jsonlite::toJSON(regression_gate, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  path_regression_gate
+)
+
+tool_quality_events <- attempt$execution$tool_quality_events %||% list()
+tool_names <- unique(
+  unlist(
+    lapply(tool_quality_events, function(x) {
+      if (!is.list(x)) return(NA_character_)
+      as.character(x$tool_name %||% NA_character_)
+    }),
+    use.names = FALSE
+  )
+)
+tool_names <- tool_names[!is.na(tool_names) & nzchar(tool_names)]
+
+run_provenance <- list(
+  run_id = trace_run_id,
+  generated_at_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+  benchmark_mode = if (isTRUE(blind_benchmark_mode)) "blind" else "standard",
+  inference_started_at_utc = trace_inference_started_at,
+  inference_finished_at_utc = trace_inference_finished_at,
+  disallowed_inference_reads = list(path_answer_gold),
+  gold_read_post_inference = file.exists(path_answer_gold),
+  files_written = list(
+    path_prompt,
+    path_trace,
+    path_token_stats,
+    path_plan_output,
+    path_fold_stats,
+    path_fold_summary,
+    path_fold_archive,
+    path_execution_summary,
+    path_diagnostics,
+    path_json_repair,
+    path_invoke_error,
+    path_action_ascii,
+    path_answer_pred,
+    path_payload_release_audit,
+    path_eval_metrics,
+    path_regression_gate
+  ),
+  tools_called = as.list(tool_names),
+  baseline_snapshot_available = list(
+    answer_pred = !is.null(baseline_snapshot$answer_pred),
+    token_stats = !is.null(baseline_snapshot$token_stats),
+    diagnostics = !is.null(baseline_snapshot$diagnostics)
+  )
+)
+readr::write_file(
+  jsonlite::toJSON(run_provenance, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  path_run_provenance
 )
 cat(jsonlite::toJSON(final_answer, pretty = TRUE, auto_unbox = TRUE, null = "null"))

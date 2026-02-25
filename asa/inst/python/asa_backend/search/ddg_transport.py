@@ -3767,22 +3767,13 @@ _TRACKING_QUERY_KEYS = {
     "utm_term",
 }
 _PREFER_HTTPS_URLS = _env_flag("ASA_PREFER_HTTPS_URLS", default=True)
-_legacy_auto_openwebpage_flag = _env_flag(
-    "ASA_AUTO_OPENWEBPAGE_PRIMARY_SOURCE",
-    default=True,
-)
 _raw_auto_openwebpage_policy = str(
     os.getenv("ASA_AUTO_OPENWEBPAGE_POLICY", "")
 ).strip().lower()
-if not _raw_auto_openwebpage_policy:
-    _AUTO_OPENWEBPAGE_POLICY = "aggressive" if _legacy_auto_openwebpage_flag else "off"
-elif _raw_auto_openwebpage_policy in {"off", "conservative", "aggressive"}:
-    _AUTO_OPENWEBPAGE_POLICY = _raw_auto_openwebpage_policy
-elif _raw_auto_openwebpage_policy in {"on", "true", "1", "enabled"}:
-    _AUTO_OPENWEBPAGE_POLICY = "aggressive"
+if _raw_auto_openwebpage_policy in {"off", "none", "disabled", "false", "0"}:
+    _AUTO_OPENWEBPAGE_POLICY = "off"
 else:
-    _AUTO_OPENWEBPAGE_POLICY = "aggressive"
-_AUTO_OPENWEBPAGE_PRIMARY_SOURCE = _AUTO_OPENWEBPAGE_POLICY != "off"
+    _AUTO_OPENWEBPAGE_POLICY = "auto"
 _AUTO_OPENWEBPAGE_SELECTOR_MODE = (
     str(os.getenv("ASA_AUTO_OPENWEBPAGE_SELECTOR_MODE", "heuristic") or "heuristic")
     .strip()
