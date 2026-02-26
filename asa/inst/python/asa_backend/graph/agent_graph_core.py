@@ -9473,6 +9473,59 @@ def _normalize_plan_step_id(step_id: Any, fallback: Any = None) -> Any:
     return fallback if fallback is not None else step_id
 
 
+def _finalize_plan_statuses(plan: Any) -> Optional[Dict[str, Any]]:
+    """Finalize plan statuses without fabricating skipped progress."""
+    if not isinstance(plan, dict):
+        return None
+    try:
+        finalized = copy.deepcopy(plan)
+    except Exception:
+        finalized = dict(plan)
+
+    steps = finalized.get("steps")
+    if not isinstance(steps, list):
+        return finalized
+
+    next_pending = None
+    status_changed = False
+    for i, step in enumerate(steps):
+        if not isinstance(step, dict):
+            continue
+        step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+        step["id"] = step_id
+        status = str(step.get("status", "")).strip().lower()
+        if status == "in_progress":
+            step["status"] = "completed"
+            status_changed = True
+        if next_pending is None and str(step.get("status", "")).strip().lower() == "pending":
+            next_pending = step_id
+
+    if status_changed:
+        try:
+            version = int(finalized.get("version", 0) or 0)
+        except Exception:
+            version = 0
+        finalized["version"] = max(1, version + 1)
+    finalized["current_step"] = next_pending
+    return finalized
+
+
+def _finalized_plan_history_entry(plan: Any) -> Optional[Dict[str, Any]]:
+    """Create a finalized plan snapshot for plan_history."""
+    finalized = _finalize_plan_statuses(plan)
+    if not isinstance(finalized, dict):
+        return None
+    try:
+        version = int(finalized.get("version", 1) or 1)
+    except Exception:
+        version = 1
+    return {
+        "version": max(1, version),
+        "plan": finalized,
+        "source": "finalize",
+    }
+
+
 def _extract_step_completion_criteria(step: dict) -> str:
     """Best-effort extraction of completion criteria from planner output."""
     if not isinstance(step, dict):
@@ -15394,17 +15447,10 @@ def create_memory_folding_agent(
             if _is_within_finalization_cutoff(state, remaining) or state.get("stop_reason") == "recursion_limit":
                 out["stop_reason"] = "recursion_limit"
             if plan_mode_enabled and plan:
-                _auto_plan = plan if isinstance(plan, dict) else {}
-                _auto_steps = _auto_plan.get("steps", [])
-                if _auto_steps:
-                    for _s in _auto_steps:
-                        if isinstance(_s, dict):
-                            _st = _s.get("status", "")
-                            if _st == "in_progress":
-                                _s["status"] = "completed"
-                            elif _st == "pending":
-                                _s["status"] = "skipped"
-                    out["plan"] = _auto_plan
+                _finalized_entry = _finalized_plan_history_entry(plan)
+                if isinstance(_finalized_entry, dict):
+                    out["plan"] = _finalized_entry.get("plan")
+                    out["plan_history"] = [_finalized_entry]
             return out
 
         if (
@@ -15715,17 +15761,10 @@ def create_memory_folding_agent(
             )
         # Auto-complete plan steps on finalization
         if plan_mode_enabled and plan:
-            _auto_plan = plan if isinstance(plan, dict) else {}
-            _auto_steps = _auto_plan.get("steps", [])
-            if _auto_steps:
-                for _s in _auto_steps:
-                    if isinstance(_s, dict):
-                        _st = _s.get("status", "")
-                        if _st == "in_progress":
-                            _s["status"] = "completed"
-                        elif _st == "pending":
-                            _s["status"] = "skipped"
-                out["plan"] = _auto_plan
+            _finalized_entry = _finalized_plan_history_entry(plan)
+            if isinstance(_finalized_entry, dict):
+                out["plan"] = _finalized_entry.get("plan")
+                out["plan_history"] = [_finalized_entry]
         return out
 
     def observe_conversation(state: MemoryFoldingAgentState) -> dict:
@@ -17661,17 +17700,10 @@ def create_standard_agent(
             if _is_within_finalization_cutoff(state, remaining) or state.get("stop_reason") == "recursion_limit":
                 out["stop_reason"] = "recursion_limit"
             if plan_mode_enabled and plan:
-                _auto_plan = plan if isinstance(plan, dict) else {}
-                _auto_steps = _auto_plan.get("steps", [])
-                if _auto_steps:
-                    for _s in _auto_steps:
-                        if isinstance(_s, dict):
-                            _st = _s.get("status", "")
-                            if _st == "in_progress":
-                                _s["status"] = "completed"
-                            elif _st == "pending":
-                                _s["status"] = "skipped"
-                    out["plan"] = _auto_plan
+                _finalized_entry = _finalized_plan_history_entry(plan)
+                if isinstance(_finalized_entry, dict):
+                    out["plan"] = _finalized_entry.get("plan")
+                    out["plan_history"] = [_finalized_entry]
             return out
 
         if (
@@ -17971,17 +18003,10 @@ def create_standard_agent(
             )
         # Auto-complete plan steps on finalization
         if plan_mode_enabled and plan:
-            _auto_plan = plan if isinstance(plan, dict) else {}
-            _auto_steps = _auto_plan.get("steps", [])
-            if _auto_steps:
-                for _s in _auto_steps:
-                    if isinstance(_s, dict):
-                        _st = _s.get("status", "")
-                        if _st == "in_progress":
-                            _s["status"] = "completed"
-                        elif _st == "pending":
-                            _s["status"] = "skipped"
-                out["plan"] = _auto_plan
+            _finalized_entry = _finalized_plan_history_entry(plan)
+            if isinstance(_finalized_entry, dict):
+                out["plan"] = _finalized_entry.get("plan")
+                out["plan_history"] = [_finalized_entry]
         return out
 
     def should_continue(state: StandardAgentState) -> str:

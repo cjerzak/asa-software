@@ -10,11 +10,11 @@
   "disability_source": null,
   "birth_place": "Tipnis",
   "birth_place_source": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
-  "birth_year": 1982,
-  "birth_year_source": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+  "birth_year": "Unknown",
+  "birth_year_source": null,
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "lgbtq_source": null,
-  "confidence": "Medium",
-  "justification": "Ramona Moye Camaconi is an indigenous leader from the TIPNIS region of Beni, Bolivia. Official records from the Vicepresidencia confirm her birth year as 1982. She is identified as a Moxeño Trinitario indigenous person, and her background as a community inhabitant and leader in a rural indigenous territory indicates a working-class background (manual labor/agriculture)."
+  "confidence": "Low",
+  "justification": "Ramona Moye Camaconi is an indigenous leader from the TIPNIS region (Territorio Indígena y Parque Nacional Isiboro-Sécure) in Bolivia. She was elected as a deputy for the special indigenous constituency of Beni representing the MAS party in 2014. While her regional origin and indigenous identity are well-documented in electoral and news records, specific biographical details such as her birth year, formal education, and prior professional occupation are not publicly available."
 }

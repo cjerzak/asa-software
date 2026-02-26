@@ -134,8 +134,6 @@ artifact_or_sentinel <- function(value,
   value
 }
 
-plan_mode_enabled <- FALSE
-
 # Keep emulation on (humanized timing) while avoiding long stalls.
 # Switch to "full" to restore slower, maximum-stealth pacing.
 emulation_profile <- "fast"
@@ -348,7 +346,7 @@ attempt <- asa:::.with_heartbeat(
       expected_fields = NULL,
       expected_schema = EXPECTED_SCHEMA,
       verbose = TRUE,
-      use_plan_mode = plan_mode_enabled,
+      use_plan_mode = TRUE,
       search_budget_limit = search_budget_limit,
       unknown_after_searches = unknown_after_limit,
       source_policy = source_policy_override,

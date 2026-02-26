@@ -1,35 +1,35 @@
 {
-  "run_id": "trace_real_20260225T172906",
-  "generated_at_utc": "2026-02-25T23:36:01Z",
+  "run_id": "trace_real_20260225T192257",
+  "generated_at_utc": "2026-02-26T01:27:53Z",
   "benchmark_mode": "blind",
   "current": {
+    "exact_match": 5,
+    "semantic_match": 5,
+    "total_fields": 18,
+    "evidence_quality": 0.7,
+    "low_quality_source_urls": null,
+    "grounded_fields": 1,
+    "tokens_used": 27526,
+    "tokens_per_grounded_field": 27526,
+    "finalization_invariant_failures": 4
+  },
+  "baseline": {
     "exact_match": 7,
     "semantic_match": 7,
     "total_fields": 18,
-    "evidence_quality": 0.85,
+    "evidence_quality": 1,
     "low_quality_source_urls": null,
     "grounded_fields": 2,
-    "tokens_used": 40492,
-    "tokens_per_grounded_field": 20246,
-    "finalization_invariant_failures": 5
-  },
-  "baseline": {
-    "exact_match": 6,
-    "semantic_match": 6,
-    "total_fields": 18,
-    "evidence_quality": 0.8,
-    "low_quality_source_urls": null,
-    "grounded_fields": 3,
-    "tokens_used": 24097,
-    "tokens_per_grounded_field": 8032.3333,
-    "finalization_invariant_failures": 4
+    "tokens_used": 102210,
+    "tokens_per_grounded_field": 51105,
+    "finalization_invariant_failures": 13
   },
   "delta": {
-    "exact_match_delta": 1,
-    "semantic_match_delta": 1,
-    "evidence_quality_delta": 0.05,
-    "tokens_used_delta": 16395,
-    "tokens_per_grounded_field_delta": 12213.6667,
-    "invariant_failures_delta": 1
+    "exact_match_delta": -2,
+    "semantic_match_delta": -2,
+    "evidence_quality_delta": -0.3,
+    "tokens_used_delta": -74684,
+    "tokens_per_grounded_field_delta": -23579,
+    "invariant_failures_delta": -9
   }
 }

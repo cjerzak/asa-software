@@ -448,39 +448,55 @@
   if (!is.list(plan_state)) {
     return(NULL)
   }
-  steps <- plan_state$steps %||% plan_state$plan %||% NULL
+  steps <- plan_state$steps %||% NULL
+  if (is.null(steps)) {
+    plan_obj <- plan_state$plan %||% NULL
+    if (is.list(plan_obj)) {
+      steps <- plan_obj$steps %||% NULL
+    }
+  }
   if (is.null(steps) || !is.list(steps) || length(steps) == 0L) {
     return(NULL)
   }
   steps
 }
 
-#' Summarize plan history for action timelines
+#' Build comparable plan candidate metadata
 #' @keywords internal
-.summarize_plan_history <- function(plan_history, plan = list(), max_chars = 88L) {
-  steps <- NULL
-
-  if (is.list(plan_history) && length(plan_history) > 0L) {
-    for (idx in seq(length(plan_history), 1L)) {
-      candidate <- .extract_plan_steps(plan_history[[idx]])
-      if (!is.null(candidate)) {
-        steps <- candidate
-        break
+.plan_candidate <- function(plan_state, source = "plan") {
+  steps <- .extract_plan_steps(plan_state)
+  if (is.null(steps)) {
+    return(NULL)
+  }
+  version_raw <- NULL
+  if (is.list(plan_state)) {
+    version_raw <- plan_state$version %||% NULL
+    if (is.null(version_raw)) {
+      plan_obj <- plan_state$plan %||% NULL
+      if (is.list(plan_obj)) {
+        version_raw <- plan_obj$version %||% NULL
       }
     }
   }
-
-  if (is.null(steps)) {
-    steps <- .extract_plan_steps(plan)
+  version_val <- NA_integer_
+  if (!is.null(version_raw) && length(version_raw) > 0L) {
+    version_val <- suppressWarnings(as.integer(version_raw[[1]]))
   }
-  if (is.null(steps)) {
-    return(character(0))
+  if (!is.finite(version_val)) {
+    version_val <- NA_integer_
   }
+  list(
+    steps = steps,
+    version = version_val,
+    source = source
+  )
+}
 
+#' Compute plan status counts for candidate ranking
+#' @keywords internal
+.plan_status_counts <- function(steps) {
   statuses <- vapply(steps, function(step) {
-    if (!is.list(step)) {
-      return("unspecified")
-    }
+    if (!is.list(step)) return("unspecified")
     status <- as.character(step$status %||% "unspecified")
     if (length(status) == 0L || !nzchar(status[[1]])) {
       "unspecified"
@@ -488,11 +504,71 @@
       .normalize_progress_status(status[[1]])
     }
   }, character(1))
+  list(
+    completed = sum(statuses == "completed"),
+    in_progress = sum(statuses == "in_progress"),
+    pending = sum(statuses == "pending"),
+    unspecified = length(statuses) - sum(statuses %in% c("completed", "in_progress", "pending"))
+  )
+}
 
-  completed <- sum(statuses == "completed")
-  in_progress <- sum(statuses == "in_progress")
-  pending <- sum(statuses == "pending")
-  unspecified <- length(statuses) - completed - in_progress - pending
+#' Choose the best plan candidate for summary
+#' @keywords internal
+.select_plan_candidate <- function(history_candidate = NULL, plan_candidate = NULL) {
+  if (is.null(history_candidate)) return(plan_candidate)
+  if (is.null(plan_candidate)) return(history_candidate)
+
+  hv <- history_candidate$version %||% NA_integer_
+  pv <- plan_candidate$version %||% NA_integer_
+  if (is.finite(hv) && is.finite(pv) && hv != pv) {
+    return(if (pv > hv) plan_candidate else history_candidate)
+  }
+
+  h_counts <- .plan_status_counts(history_candidate$steps)
+  p_counts <- .plan_status_counts(plan_candidate$steps)
+  if (p_counts$in_progress != h_counts$in_progress) {
+    return(if (p_counts$in_progress < h_counts$in_progress) plan_candidate else history_candidate)
+  }
+  if (p_counts$completed != h_counts$completed) {
+    return(if (p_counts$completed > h_counts$completed) plan_candidate else history_candidate)
+  }
+  if (p_counts$unspecified != h_counts$unspecified) {
+    return(if (p_counts$unspecified < h_counts$unspecified) plan_candidate else history_candidate)
+  }
+
+  # On ties, prefer current plan because it reflects terminal state after finalize.
+  plan_candidate
+}
+
+#' Summarize plan history for action timelines
+#' @keywords internal
+.summarize_plan_history <- function(plan_history, plan = list(), max_chars = 88L) {
+  history_candidate <- NULL
+
+  if (is.list(plan_history) && length(plan_history) > 0L) {
+    for (idx in seq(length(plan_history), 1L)) {
+      candidate <- .plan_candidate(plan_history[[idx]], source = "plan_history")
+      if (!is.null(candidate)) {
+        history_candidate <- candidate
+        break
+      }
+    }
+  }
+
+  selected <- .select_plan_candidate(
+    history_candidate = history_candidate,
+    plan_candidate = .plan_candidate(plan, source = "plan")
+  )
+  if (is.null(selected)) {
+    return(character(0))
+  }
+  steps <- selected$steps
+
+  counts <- .plan_status_counts(steps)
+  completed <- counts$completed
+  in_progress <- counts$in_progress
+  pending <- counts$pending
+  unspecified <- counts$unspecified
 
   if (completed == 0L && in_progress == 0L && pending == 0L && unspecified > 0L) {
     summary_line <- sprintf(

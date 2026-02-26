@@ -204,6 +204,54 @@ test_that(".summarize_plan_history falls back to current plan when history is em
   expect_match(summary[[1]], "2 total \\(1 completed, 0 in_progress, 1 pending\\)")
 })
 
+test_that(".summarize_plan_history prefers newer current plan over stale history", {
+  summary <- asa:::.summarize_plan_history(
+    plan_history = list(
+      list(
+        version = 1L,
+        plan = list(
+          steps = list(
+            list(step = "Locate profile", status = "in_progress")
+          )
+        )
+      )
+    ),
+    plan = list(
+      version = 2L,
+      steps = list(
+        list(step = "Locate profile", status = "completed")
+      )
+    )
+  )
+
+  expect_true(length(summary) >= 1L)
+  expect_match(summary[[1]], "1 total \\(1 completed, 0 in_progress, 0 pending\\)")
+})
+
+test_that(".summarize_plan_history keeps newer history over older current plan", {
+  summary <- asa:::.summarize_plan_history(
+    plan_history = list(
+      list(
+        version = 4L,
+        plan = list(
+          steps = list(
+            list(step = "Locate profile", status = "in_progress")
+          )
+        )
+      )
+    ),
+    plan = list(
+      version = 3L,
+      steps = list(
+        list(step = "Locate profile", status = "completed")
+      )
+    )
+  )
+
+  expect_true(length(summary) >= 1L)
+  expect_match(summary[[1]], "1 total \\(0 completed, 1 in_progress, 0 pending\\)")
+})
+
 test_that(".summarize_action_overall returns a compact header summary", {
   raw_steps <- list(
     list(type = "human", actor = "Human", summary = "Submitted task prompt", preview = "Prompt"),

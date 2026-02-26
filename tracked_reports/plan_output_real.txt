@@ -1,10 +1,14 @@
 {
-  "status": "empty",
-  "artifact": "plan_output",
-  "reason": "plan_mode_disabled",
-  "expected_empty": true,
-  "mode": "plan_disabled",
-  "upstream_dependency": "plan_mode",
-  "run_id": "trace_real_20260225T172906",
-  "generated_at": "2026-02-25T23:29:06Z"
+  "goal": "Complete the task",
+  "steps": [
+    {
+      "id": 1,
+      "description": "Analyze task requirements and produce the requested output",
+      "completion_criteria": "Final output satisfies the requested format and cites supporting evidence when applicable.",
+      "status": "pending",
+      "findings": ""
+    }
+  ],
+  "version": 1,
+  "current_step": 1
 }
