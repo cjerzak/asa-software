@@ -295,24 +295,18 @@ EXPECTED_SCHEMA <- list(
   education_level = "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown",
   education_institution = "string|Unknown",
   education_field = "string|Unknown",
-  education_source = "string|null",
   
   prior_occupation = "string|Unknown",
-  prior_occupation_source = "string|null",
   class_background = "Working class|Middle class/professional|Upper/elite|Unknown",
   
   disability_status = "No disability|Some disability|Unknown",
-  disability_source = "string|null",
   
   birth_place = "string|Unknown",
-  birth_place_source = "string|null",
   
   birth_year = "integer|null|Unknown",
-  birth_year_source = "string|null",
   
   lgbtq_status = "Non-LGBTQ|Openly LGBTQ|Unknown",
   lgbtq_details = "string|null",
-  lgbtq_source = "string|null",
   
   confidence = "Low|Medium|High",
   justification = "string"
@@ -337,6 +331,7 @@ message(sprintf(
   auto_openwebpage_policy
 ))
 trace_inference_started_at <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+plan_mode_enabled <- FALSE
 attempt <- asa:::.with_heartbeat(
   fn = function() {
     run_task(
@@ -346,7 +341,7 @@ attempt <- asa:::.with_heartbeat(
       expected_fields = NULL,
       expected_schema = EXPECTED_SCHEMA,
       verbose = TRUE,
-      use_plan_mode = TRUE,
+      use_plan_mode = plan_mode_enabled,
       search_budget_limit = search_budget_limit,
       unknown_after_searches = unknown_after_limit,
       source_policy = source_policy_override,

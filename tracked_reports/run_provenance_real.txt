@@ -1,9 +1,9 @@
 {
-  "run_id": "trace_real_20260225T192257",
-  "generated_at_utc": "2026-02-26T01:27:53Z",
+  "run_id": "trace_real_20260226T113829",
+  "generated_at_utc": "2026-02-26T17:41:13Z",
   "benchmark_mode": "blind",
-  "inference_started_at_utc": "2026-02-26T01:22:58Z",
-  "inference_finished_at_utc": "2026-02-26T01:27:53Z",
+  "inference_started_at_utc": "2026-02-26T17:38:30Z",
+  "inference_finished_at_utc": "2026-02-26T17:41:13Z",
   "disallowed_inference_reads": [
     "/Users/cjerzak/Documents/asa-software/tracked_reports/answer_gold_real.txt"
   ],

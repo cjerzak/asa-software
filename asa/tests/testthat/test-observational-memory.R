@@ -448,6 +448,67 @@ test_that("canonical payload derivations normalize confidence casing", {
   expect_equal(as.character(normalized_r$confidence), "Low")
 })
 
+test_that("canonical payload derivations auto-add source/confidence siblings", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  deriv_fn <- reticulate::py_get_attr(prod, "_apply_canonical_payload_derivations")
+  payload <- list(
+    prior_occupation = "teacher"
+  )
+  field_status <- list(
+    prior_occupation = list(
+      status = "found",
+      value = "teacher",
+      source_url = "https://example.com/profile",
+      evidence_score = 0.82
+    ),
+    prior_occupation_source = list(
+      status = "found",
+      value = "https://example.com/profile",
+      source_url = "https://example.com/profile"
+    )
+  )
+
+  normalized <- deriv_fn(payload, field_status)
+  normalized_r <- reticulate::py_to_r(normalized)
+
+  expect_equal(as.character(normalized_r$prior_occupation_source), "https://example.com/profile")
+  expect_equal(as.numeric(normalized_r$prior_occupation_confidence), 0.82)
+})
+
+test_that("canonical payload derivations emit null sibling metadata for unknown fields", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  deriv_fn <- reticulate::py_get_attr(prod, "_apply_canonical_payload_derivations")
+  payload <- list(
+    education_level = "Unknown"
+  )
+  field_status <- list(
+    education_level = list(
+      status = "unknown",
+      value = "Unknown",
+      source_url = NULL,
+      descriptor = "string|Unknown"
+    )
+  )
+
+  normalized <- deriv_fn(payload, field_status)
+  normalized_r <- reticulate::py_to_r(normalized)
+
+  expect_true("education_level_source" %in% names(normalized_r))
+  expect_true("education_level_confidence" %in% names(normalized_r))
+  expect_true(is.null(normalized_r$education_level_source))
+  expect_true(is.null(normalized_r$education_level_confidence))
+})
+
 test_that("terminal canonicalization re-syncs derived fields into field_status", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",

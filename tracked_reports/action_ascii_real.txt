@@ -1,40 +1,37 @@
 AGENT ACTION MAP
 ================
-Steps captured: 16
-LangGraph timed steps: 10
+Steps captured: 10
+LangGraph timed steps: 7
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
-      Source-backed found values: 2 (across 18 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 7 tool-call turn(s), 1 answer turn(s)
-      Tool results: 13 total (Tool Search=10, Tool OpenWebpage=3)
+      AI turns: 4 tool-call turn(s), 1 answer turn(s)
+      Tool results: 4 total (Tool OpenWebpage=3, Tool Search=1)
       Structured terminal answer emitted
-      Plan status: Plan steps: 1 total (0 completed, 0 in_progress, 1 pending)
-      Anomalies: 3 flagged step(s) (EMPTY_RESULT=2, LOW_EVIDE..._RESULT=4, OFF_TOPIC_RESULT=1)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
 
 START
-  +-- [PLAN] Plan steps: 1 total (0 completed, 0 in_progress, 1 pending)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 4.2637m (tok=0, n=4)
-      agent: 0.3947m (tok=15904, n=4)
-      planner: 0.1868m (tok=1827, n=1)
-      finalize: 0.1684m (tok=7968, n=1)
+      tools: 2.2806m (tok=0, n=3)
+      agent: 0.1899m (tok=8962, n=3)
+      finalize: 0.0978m (tok=4659, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #09 tools: 1.4280m (tok=0)
-      #03 tools: 1.2117m (tok=0)
-      #07 tools: 1.2112m (tok=0)
-      #05 tools: 0.4128m (tok=0)
-      #02 agent: 0.2183m (tok=1792)
-  +-- [TIMING] wall=4.8274m nodes=5.0136m delta=-0.1862m (overlap likely)
+      #02 tools: 1.6553m (tok=0)
+      #04 tools: 0.4197m (tok=0)
+      #06 tools: 0.2056m (tok=0)
+      #01 agent: 0.1027m (tok=1761)
+      #07 finalize: 0.0978m (tok=4659)
+  +-- [TIMING] wall=2.5689m nodes=2.5684m delta=+0.0005m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -44,78 +41,46 @@ START
       by: AI
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Search(query=Ramona Moye Camaconi biografía Bolivia MA...)
+      detail: Search(query=Ramona Moye Camaconi Bolivia MAS Beni bio...)
   +-- [03] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> BIOGRAFÍACOLECTIVABENIV...ven </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> La siguiente lista mues...rio </URL> __END_OF_SOURC...
   +-- [04] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: OpenWebpage(url=https://radiopatuju.blogsp...en-el-beni.html)
+      tok: in=1483 out=278 total=1761
+      min: 0.1027m
+      detail: OpenWebpage(url=https://tipnisboliviaorg.w...ra-y-territorio)
   +-- [05] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://radiopatuju.blogspot.com/2014/10/bancadas-...lina Zabala de UD. BANCAD...
-  +-- [06] Requested 1 tool call (Search)
+      detail: URL: https://tipnisboliviaorg.wordpress.com/category/te...ctivismo/] Carretera y ca...
+  +-- [06] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Search(query=Ramona Moye Camaconi biografia "lugar de ...)
+      tok: in=2981 out=282 total=3263
+      min: 0.0521m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
   +-- [07] Returned result
-      by: Tool Search
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> El informe puede inclui...ina </URL> __END_OF_SOURC...
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
   +-- [08] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=1595 out=197 total=1792
-      min: 0.2183m
-      detail: OpenWebpage(url=https://www.dateas.com/es/...acion/argentina)
+      tok: in=3808 out=130 total=3938
+      min: 0.0351m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
   +-- [09] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.dateas.com/es/servicio/filiacion/argen..., captcha, cloudflare, bl...
-  +-- [10] Requested 4 tool calls (Search)
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
+  +-- [10] Produced structured answer
       by: AI
-      tok: in=3260 out=262 total=3522
-      min: 0.0551m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ....dos.bo "Ramona Moye Camac...
-  +-- [11] Returned 4 results
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      flag: EMPTY_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...33 </URL> __END_OF_SOURCE...
-  +-- [12] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=3559 out=557 total=4116
-      min: 0.0682m
-      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
-  +-- [13] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
-  +-- [14] Requested 4 tool calls (Search)
-      by: AI
-      tok: in=6109 out=365 total=6474
-      min: 0.0532m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ....org.bo "Ramona Moye Camac...
-  +-- [15] Returned 4 results
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      flag: EMPTY_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...lle </URL> __END_OF_SOURC...
-  +-- [16] Produced structured answer
-      by: AI
-      tok: in=6268 out=1700 total=7968
-      min: 0.1684m
+      tok: in=3943 out=716 total=4659
+      min: 0.0978m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_institution":"U... are not publicly availab...
+      detail: {"education_level":"Unknown","education_institution":"Unknown","education_field":"U...
 END

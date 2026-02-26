@@ -1239,6 +1239,7 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "semantic_validation_enabled": True,
     "unsourced_allowlist_patterns": [
         "^confidence$",
+        "^.+_confidence$",
         "^justification$",
         "^notes?$",
     ],
@@ -3816,7 +3817,7 @@ def _recover_unknown_fields_from_tool_evidence(
             continue
         aliases = _field_key_aliases(path)
         key = next((a for a in aliases if a in normalized), path.replace("[]", ""))
-        if key.endswith("_source") or key in {"confidence", "justification"}:
+        if key.endswith("_source") or key.endswith("_confidence") or key in {"confidence", "justification"}:
             continue
         entry = normalized.get(key)
         if not isinstance(entry, dict):
@@ -7031,7 +7032,7 @@ def _collect_resolvable_field_keys(field_status: Any) -> List[str]:
     for key, entry in normalized.items():
         if not isinstance(entry, dict):
             continue
-        if key.endswith("_source") or key in {"confidence", "justification"}:
+        if key.endswith("_source") or key.endswith("_confidence") or key in {"confidence", "justification"}:
             continue
         keys.append(str(key))
     keys.sort()
@@ -8662,6 +8663,7 @@ def _format_field_status_for_prompt(field_status: Any, max_entries: int = 80) ->
         if (
             str(status).lower() in {_FIELD_STATUS_PENDING, _FIELD_STATUS_UNKNOWN}
             and not str(key).endswith("_source")
+            and not str(key).endswith("_confidence")
             and str(key) not in {"confidence", "justification"}
         ):
             unresolved.append(str(key))
@@ -8896,6 +8898,110 @@ def _normalize_confidence_label(value: Any) -> Optional[str]:
     return None
 
 
+def _confidence_label_to_score(value: Any) -> Optional[float]:
+    """Map Low/Medium/High labels to deterministic numeric scores."""
+    normalized = _normalize_confidence_label(value)
+    if normalized == "Low":
+        return 0.33
+    if normalized == "Medium":
+        return 0.66
+    if normalized == "High":
+        return 0.90
+    return None
+
+
+def _normalize_confidence_score(value: Any) -> Optional[float]:
+    """Coerce confidence-like values into a numeric score in [0,1]."""
+    if value is None or isinstance(value, bool):
+        return None
+
+    numeric: Optional[float] = None
+    if isinstance(value, (int, float)):
+        try:
+            numeric = float(value)
+        except Exception:
+            numeric = None
+    else:
+        text = str(value).strip()
+        if not text or _is_unknown_marker(text):
+            return None
+        mapped_label = _confidence_label_to_score(text)
+        if mapped_label is not None:
+            return round(float(mapped_label), 4)
+        try:
+            numeric = float(text)
+        except Exception:
+            numeric = None
+
+    if numeric is None:
+        return None
+
+    if 0.0 <= numeric <= 1.0:
+        return round(_clamp01(numeric, default=0.0), 4)
+    if 1.0 < numeric <= 3.0:
+        mapped = _confidence_label_to_score(numeric)
+        return round(float(mapped), 4) if mapped is not None else None
+    if 3.0 < numeric <= 100.0:
+        return round(_clamp01(numeric / 100.0, default=0.0), 4)
+    return None
+
+
+def _field_status_source_url(
+    base_entry: Optional[Dict[str, Any]],
+    source_entry: Optional[Dict[str, Any]],
+) -> Optional[str]:
+    """Resolve best available source URL from field-status entries."""
+    for entry, key in (
+        (base_entry, "source_url"),
+        (source_entry, "value"),
+        (source_entry, "source_url"),
+    ):
+        if not isinstance(entry, dict):
+            continue
+        normalized = _normalize_url_match(entry.get(key))
+        if normalized:
+            return normalized
+    return None
+
+
+def _field_confidence_score(
+    *,
+    field_key: str,
+    field_value: Any,
+    base_entry: Optional[Dict[str, Any]],
+    source_entry: Optional[Dict[str, Any]],
+) -> Optional[float]:
+    """Derive per-field numeric confidence for concrete payload values."""
+    if _is_empty_like(field_value) or _is_unknown_marker(field_value):
+        return None
+
+    if isinstance(base_entry, dict):
+        status = str(base_entry.get("status") or "").lower()
+        status_value = base_entry.get("value")
+        if status == _FIELD_STATUS_FOUND and (
+            _is_empty_like(status_value) or _is_unknown_marker(status_value)
+        ):
+            return None
+
+    score_candidates: List[float] = []
+    for entry in (base_entry, source_entry):
+        if not isinstance(entry, dict):
+            continue
+        score_value = _normalize_confidence_score(entry.get("evidence_score"))
+        if score_value is not None:
+            score_candidates.append(score_value)
+        hint_value = _normalize_confidence_score(entry.get("confidence_hint"))
+        if hint_value is not None:
+            score_candidates.append(hint_value)
+
+    if score_candidates:
+        return round(float(max(score_candidates)), 4)
+
+    source_url = _field_status_source_url(base_entry, source_entry)
+    fallback = 0.70 if source_url else 0.50
+    return round(float(_clamp01(fallback, default=0.50)), 4)
+
+
 def _derive_justification_from_field_status(normalized_field_status: Dict[str, Dict[str, Any]]) -> str:
     found_fields: List[str] = []
     unknown_fields: List[str] = []
@@ -9057,6 +9163,44 @@ def _apply_canonical_payload_derivations(
             or not _justification_counts_match_field_status(justification, normalized_field_status)
         ):
             payload["justification"] = _derive_justification_from_field_status(normalized_field_status)
+
+    payload_keys = [
+        str(raw_key)
+        for raw_key in list(payload.keys())
+        if isinstance(raw_key, str)
+    ]
+    for key in payload_keys:
+        if key in {"confidence", "justification"}:
+            continue
+        if key.endswith("_source") or key.endswith("_confidence"):
+            continue
+
+        source_key = f"{key}_source"
+        confidence_key = f"{key}_confidence"
+        field_value = payload.get(key)
+        value_is_concrete = not _is_empty_like(field_value) and not _is_unknown_marker(field_value)
+
+        base_entry = _field_status_entry_for_path(normalized_field_status, key)
+        source_entry = _field_status_entry_for_path(normalized_field_status, source_key)
+
+        source_value = None
+        if value_is_concrete:
+            source_value = _normalize_url_match(payload.get(source_key))
+            if source_value is None:
+                source_value = _field_status_source_url(base_entry, source_entry)
+        payload[source_key] = source_value
+
+        confidence_value = None
+        if value_is_concrete:
+            confidence_value = _normalize_confidence_score(payload.get(confidence_key))
+            if confidence_value is None:
+                confidence_value = _field_confidence_score(
+                    field_key=key,
+                    field_value=field_value,
+                    base_entry=base_entry,
+                    source_entry=source_entry,
+                )
+        payload[confidence_key] = confidence_value
 
     return payload
 
@@ -9764,10 +9908,12 @@ def _base_system_prompt(
         "Example: After finding a concrete value on a webpage, call "
         "save_finding(finding='field_name = value (source: https://example.com/source)', category='fact')\n\n"
         "Canonical extraction rule: when a FIELD STATUS ledger is present, treat it as authoritative. "
-        "Use scratchpad as optional working notes only.\n\n"
+        "Use scratchpad as optional working notes only.\n"
+        "When returning structured JSON, include per-field metadata siblings for every concrete field: "
+        "'<field>_source' (URL or null) and '<field>_confidence' (numeric 0-1 or null).\n\n"
         f"Tool-call budget: {budget['tool_calls_used']}/{budget['tool_calls_limit']} used. "
         f"Model-call budget: {budget['model_calls_used']}/{budget['model_calls_limit']} used. "
-        f"Stop searching when budget is exhausted. "
+        "Stop searching when budget is exhausted. "
         "After EVERY search result, save any discovered field values using save_finding before continuing.\n\n"
         "When Search returns a likely primary-source URL for the target entity, call OpenWebpage on it "
         "before concluding Unknown.\n\n"
@@ -9821,6 +9967,8 @@ def _final_system_prompt(
         "1. Output ONLY the format required by the conversation.\n"
         "2. If a JSON schema/skeleton was provided: output strict JSON (no fences, no prose).\n"
         "   - Include ALL required keys. Use null for unknown scalars, [] for arrays, {{}} for objects.\n"
+        "   - For each concrete field '<field>', also include '<field>_source' (URL or null) "
+        "and '<field>_confidence' (numeric 0-1 or null).\n"
         "   - Do NOT invent facts.\n"
         "3. If no JSON required: return best-effort answer in the requested format.\n"
         "4. MANDATORY: The FIELD STATUS section below is the authoritative record of resolved values.\n"
@@ -12888,6 +13036,8 @@ def _llm_extract_schema_payloads_from_openwebpages(
             "- Do NOT output placeholders like Unknown/null/none/N/A.\n"
             "- If you output a base field and the corresponding '<field>_source' key is allowed, "
             "set '<field>_source' to page_url.\n"
+            "- If you output a base field and the corresponding '<field>_confidence' key is allowed, "
+            "set '<field>_confidence' to a numeric confidence in [0,1].\n"
             "- Never guess.\n"
         ))
         human_msg = HumanMessage(content=(
@@ -13219,6 +13369,8 @@ def _llm_extract_schema_payloads_from_search_snippets(
             "- Do NOT output placeholders like Unknown/null/none/N/A.\n"
             "- If you output a base field and the corresponding '<field>_source' key is allowed, "
             "set '<field>_source' to page_url.\n"
+            "- If you output a base field and the corresponding '<field>_confidence' key is allowed, "
+            "set '<field>_confidence' to a numeric confidence in [0,1].\n"
             "- Never guess.\n"
         ))
         human_msg = HumanMessage(content=(
