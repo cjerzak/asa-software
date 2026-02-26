@@ -1,8 +1,19 @@
 {
-  "run_id": "trace_real_20260226T141020",
-  "generated_at_utc": "2026-02-26T20:20:42Z",
+  "run_id": "trace_real_20260226T144054",
+  "generated_at_utc": "2026-02-26T20:47:10Z",
   "benchmark_mode": "blind",
   "current": {
+    "exact_match": 5,
+    "semantic_match": 5,
+    "total_fields": 12,
+    "evidence_quality": 0,
+    "low_quality_source_urls": null,
+    "grounded_fields": 2,
+    "tokens_used": 21033,
+    "tokens_per_grounded_field": 10516.5,
+    "finalization_invariant_failures": 5
+  },
+  "baseline": {
     "exact_match": 5,
     "semantic_match": 5,
     "total_fields": 12,
@@ -13,23 +24,12 @@
     "tokens_per_grounded_field": 32520,
     "finalization_invariant_failures": 10
   },
-  "baseline": {
-    "exact_match": 5,
-    "semantic_match": 5,
-    "total_fields": 12,
-    "evidence_quality": 0,
-    "low_quality_source_urls": null,
-    "grounded_fields": 0,
-    "tokens_used": 33625,
-    "tokens_per_grounded_field": "NA",
-    "finalization_invariant_failures": 5
-  },
   "delta": {
     "exact_match_delta": 0,
     "semantic_match_delta": 0,
     "evidence_quality_delta": 0,
-    "tokens_used_delta": 31415,
-    "tokens_per_grounded_field_delta": "NA",
-    "invariant_failures_delta": 5
+    "tokens_used_delta": -44007,
+    "tokens_per_grounded_field_delta": -22003.5,
+    "invariant_failures_delta": -5
   }
 }

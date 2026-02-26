@@ -114,3 +114,19 @@ test_that(".extract_json_from_trace ignores ToolMessage envelope payloads", {
   parsed <- asa:::.extract_json_from_trace(legacy_trace)
   expect_null(parsed)
 })
+
+test_that(".count_unknown_ratio ignores sibling confidence fields", {
+  parsed <- list(
+    birth_place = "Unknown",
+    birth_place_source = NULL,
+    birth_place_confidence = NULL,
+    education_level = "Bachelor's",
+    education_level_source = "https://example.com/profile",
+    education_level_confidence = NULL,
+    confidence = "Low",
+    justification = "limited evidence"
+  )
+
+  ratio <- asa:::.count_unknown_ratio(parsed)
+  expect_equal(as.numeric(ratio), 0.5)
+})

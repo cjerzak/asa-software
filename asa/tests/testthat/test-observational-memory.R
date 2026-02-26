@@ -509,6 +509,105 @@ test_that("canonical payload derivations emit null sibling metadata for unknown 
   expect_true(is.null(normalized_r$education_level_confidence))
 })
 
+test_that("canonical array merge preserves derived sibling metadata outside schema", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  merge_fn <- reticulate::py_get_attr(prod, "_merge_canonical_payload_with_model_arrays")
+  canonical_payload <- list(
+    birth_place = "Beni",
+    birth_year = "Unknown",
+    birth_place_source = "https://example.com/profile",
+    birth_place_confidence = 0.91,
+    birth_year_source = NULL,
+    birth_year_confidence = NULL,
+    extra_debug = "drop_me"
+  )
+  model_payload <- list(
+    birth_place = "Unknown",
+    extra_debug = "model_value"
+  )
+  expected_schema <- list(
+    birth_place = "string|Unknown",
+    birth_year = "integer|null|Unknown"
+  )
+
+  merged <- merge_fn(canonical_payload, model_payload, expected_schema)
+  merged_r <- reticulate::py_to_r(merged)
+
+  expect_equal(as.character(merged_r$birth_place), "Beni")
+  expect_equal(as.character(merged_r$birth_place_source), "https://example.com/profile")
+  expect_equal(as.numeric(merged_r$birth_place_confidence), 0.91)
+  expect_true("birth_year_source" %in% names(merged_r))
+  expect_true("birth_year_confidence" %in% names(merged_r))
+  expect_true(is.null(merged_r$birth_year_source))
+  expect_true(is.null(merged_r$birth_year_confidence))
+  expect_false("extra_debug" %in% names(merged_r))
+})
+
+test_that("terminal guard emits sibling metadata when no fields are resolved", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  guard_fn <- reticulate::py_get_attr(prod, "_apply_field_status_terminal_guard")
+  expected_schema <- list(
+    prior_occupation = "string|Unknown",
+    education_level = "string|Unknown",
+    confidence = "Low|Medium|High",
+    justification = "string"
+  )
+  field_status <- list(
+    prior_occupation = list(
+      status = "unknown",
+      value = "Unknown",
+      source_url = NULL,
+      descriptor = "string|Unknown"
+    ),
+    education_level = list(
+      status = "unknown",
+      value = "Unknown",
+      source_url = NULL,
+      descriptor = "string|Unknown"
+    )
+  )
+  response <- reticulate::dict(
+    content = "{\"prior_occupation\":\"Unknown\",\"education_level\":\"Unknown\",\"confidence\":\"low\",\"justification\":\"none\"}"
+  )
+
+  guarded <- guard_fn(
+    response = response,
+    expected_schema = expected_schema,
+    field_status = field_status,
+    schema_source = "explicit",
+    context = "finalize",
+    debug = FALSE
+  )
+  guarded_r <- reticulate::py_to_r(guarded)
+  guarded_response <- guarded_r[[1]]
+  guarded_text <- if (!is.null(guarded_response$content)) {
+    as.character(guarded_response$content)
+  } else {
+    as.character(guarded_response[["content"]])
+  }
+  parsed <- jsonlite::fromJSON(guarded_text, simplifyVector = FALSE)
+
+  expect_true("prior_occupation_source" %in% names(parsed))
+  expect_true("prior_occupation_confidence" %in% names(parsed))
+  expect_true(is.null(parsed$prior_occupation_source))
+  expect_true(is.null(parsed$prior_occupation_confidence))
+  expect_true("education_level_source" %in% names(parsed))
+  expect_true("education_level_confidence" %in% names(parsed))
+  expect_true(is.null(parsed$education_level_source))
+  expect_true(is.null(parsed$education_level_confidence))
+  expect_equal(as.character(parsed$confidence), "Low")
+})
+
 test_that("terminal canonicalization re-syncs derived fields into field_status", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",

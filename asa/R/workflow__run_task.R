@@ -37,8 +37,9 @@
 #'   this bypasses prompt-based schema inference. Structured terminal payloads
 #'   automatically include sibling metadata keys \code{<field>_source} (URL or
 #'   \code{NULL}) and \code{<field>_confidence} (numeric score in
-#'   \code{[0,1]} or \code{NULL}) for each concrete base field, even when those
-#'   sibling keys are not listed in \code{expected_schema}.
+#'   \code{[0,1]} or \code{NULL}) for top-level schema fields, including
+#'   unresolved fields where sibling values are emitted as \code{NULL}, even
+#'   when those sibling keys are not listed in \code{expected_schema}.
 #' @param thread_id Optional stable identifier for memory folding sessions.
 #'   When provided, the same thread ID is reused so folded summaries persist
 #'   across invocations. Defaults to NULL (new thread each call).

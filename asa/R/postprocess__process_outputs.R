@@ -749,7 +749,8 @@
   statuses[statuses == "in_progress"] <- "pending"
 
   is_source_field <- nzchar(field_names) & grepl("_source$", field_names, ignore.case = TRUE)
-  is_meta_field <- field_names %in% c("confidence", "justification")
+  is_field_confidence <- nzchar(field_names) & grepl("_confidence$", field_names, ignore.case = TRUE)
+  is_meta_field <- field_names %in% c("confidence", "justification") | is_field_confidence
   is_core_field <- !(is_source_field | is_meta_field)
   if (!any(is_core_field)) {
     is_core_field <- rep(TRUE, length(field_status))
@@ -2086,7 +2087,7 @@ extract_search_tiers <- function(text) {
   unknown <- 0L
   for (nm in names(parsed)) {
     # Skip source/meta fields for this count
-    if (endsWith(nm, "_source") || nm %in% c("confidence", "justification")) next
+    if (endsWith(nm, "_source") || endsWith(nm, "_confidence") || nm %in% c("confidence", "justification")) next
     total <- total + 1L
     val <- parsed[[nm]]
     if (is.null(val) || (is.character(val) && (tolower(val) == "unknown" || val == ""))) {

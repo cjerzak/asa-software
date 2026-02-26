@@ -9259,12 +9259,29 @@ def _value_schema_compatible(value: Any, schema: Any) -> bool:
     return _terminal_leaf_type_compatible(value, schema)
 
 
+def _metadata_base_field_key(key: Any) -> Optional[str]:
+    """Return base field key when `key` is a metadata sibling key."""
+    if not isinstance(key, str):
+        return None
+    if key.endswith("_source"):
+        base_key = key[:-7]
+    elif key.endswith("_confidence"):
+        base_key = key[:-11]
+    else:
+        return None
+    if not base_key:
+        return None
+    if base_key.endswith("_source") or base_key.endswith("_confidence"):
+        return None
+    return base_key
+
+
 def _merge_canonical_payload_with_model_arrays(
     canonical_payload: Any,
     model_payload: Any,
     schema: Any,
 ) -> Any:
-    """Preserve schema-compatible model arrays when canonical payload has placeholders."""
+    """Preserve schema arrays while retaining canonical sibling metadata keys."""
     if schema is None:
         return canonical_payload
 
@@ -9279,6 +9296,16 @@ def _merge_canonical_payload_with_model_arrays(
                 model_dict.get(key),
                 child_schema,
             )
+        for raw_key, raw_value in canonical_payload.items():
+            key = str(raw_key)
+            if key in merged:
+                continue
+            base_key = _metadata_base_field_key(key)
+            if base_key is None:
+                continue
+            if base_key not in merged:
+                continue
+            merged[key] = _json_safe_value(raw_value)
         return merged
 
     if isinstance(schema, list):
