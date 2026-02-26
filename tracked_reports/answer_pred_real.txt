@@ -2,13 +2,13 @@
   "education_level": "Unknown",
   "education_institution": "Unknown",
   "education_field": "Unknown",
-  "prior_occupation": "Presidenta de la Organización de Mujeres - Sub Central Sécure.",
+  "prior_occupation": "Unknown",
   "class_background": "Unknown",
   "disability_status": "Unknown",
-  "birth_place": "Unknown",
+  "birth_place": "Beni",
   "birth_year": 1982,
   "lgbtq_status": "Unknown",
   "lgbtq_details": null,
   "confidence": "Low",
-  "justification": "Source-backed searches resolved 2 core fields (including birth_year, prior_occupation), while 8 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_anchor_mismatch(8)."
+  "justification": "Source-backed searches resolved 2 core fields (including birth_place, birth_year), while 8 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_anchor_mismatch(8)."
 }

@@ -5,6 +5,6 @@
   "expected_empty": true,
   "mode": "not_generated",
   "upstream_dependency": "raw_response$archive",
-  "run_id": "trace_real_20260226T113829",
-  "generated_at": "2026-02-26T17:38:29Z"
+  "run_id": "trace_real_20260226T141020",
+  "generated_at": "2026-02-26T20:10:20Z"
 }
