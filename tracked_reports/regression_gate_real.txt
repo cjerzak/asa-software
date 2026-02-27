@@ -1,11 +1,11 @@
 {
   "baseline_available": true,
   "pass": false,
-  "exact_non_decreasing": true,
-  "semantic_non_decreasing": true,
+  "exact_non_decreasing": false,
+  "semantic_non_decreasing": false,
   "evidence_quality_non_decreasing": true,
   "tokens_non_increasing": true,
-  "token_efficiency_non_increasing": true,
-  "invariant_failures_non_increasing": false,
+  "token_efficiency_non_increasing": false,
+  "invariant_failures_non_increasing": true,
   "no_low_quality_sources": true
 }

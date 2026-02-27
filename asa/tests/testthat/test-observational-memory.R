@@ -546,6 +546,11 @@ test_that("canonical array merge preserves derived sibling metadata outside sche
   expect_true(is.null(merged_r$birth_year_source))
   expect_true(is.null(merged_r$birth_year_confidence))
   expect_false("extra_debug" %in% names(merged_r))
+  merged_names <- names(merged_r)
+  expect_equal(which(merged_names == "birth_place_source"), which(merged_names == "birth_place") + 1L)
+  expect_equal(which(merged_names == "birth_place_confidence"), which(merged_names == "birth_place") + 2L)
+  expect_equal(which(merged_names == "birth_year_source"), which(merged_names == "birth_year") + 1L)
+  expect_equal(which(merged_names == "birth_year_confidence"), which(merged_names == "birth_year") + 2L)
 })
 
 test_that("terminal guard emits sibling metadata when no fields are resolved", {
@@ -606,6 +611,11 @@ test_that("terminal guard emits sibling metadata when no fields are resolved", {
   expect_true(is.null(parsed$education_level_source))
   expect_true(is.null(parsed$education_level_confidence))
   expect_equal(as.character(parsed$confidence), "Low")
+  parsed_names <- names(parsed)
+  expect_equal(which(parsed_names == "prior_occupation_source"), which(parsed_names == "prior_occupation") + 1L)
+  expect_equal(which(parsed_names == "prior_occupation_confidence"), which(parsed_names == "prior_occupation") + 2L)
+  expect_equal(which(parsed_names == "education_level_source"), which(parsed_names == "education_level") + 1L)
+  expect_equal(which(parsed_names == "education_level_confidence"), which(parsed_names == "education_level") + 2L)
 })
 
 test_that("terminal canonicalization re-syncs derived fields into field_status", {

@@ -9202,7 +9202,42 @@ def _apply_canonical_payload_derivations(
                 )
         payload[confidence_key] = confidence_value
 
-    return payload
+    ordered_payload: Dict[str, Any] = {}
+    seen_keys: set = set()
+
+    for key in payload_keys:
+        if key in seen_keys:
+            continue
+        if key.endswith("_source") or key.endswith("_confidence"):
+            continue
+
+        ordered_payload[key] = payload.get(key)
+        seen_keys.add(key)
+
+        source_key = f"{key}_source"
+        if source_key in payload and source_key not in seen_keys:
+            ordered_payload[source_key] = payload.get(source_key)
+            seen_keys.add(source_key)
+
+        confidence_key = f"{key}_confidence"
+        if confidence_key in payload and confidence_key not in seen_keys:
+            ordered_payload[confidence_key] = payload.get(confidence_key)
+            seen_keys.add(confidence_key)
+
+    for key in payload_keys:
+        if key in seen_keys:
+            continue
+        ordered_payload[key] = payload.get(key)
+        seen_keys.add(key)
+
+    for raw_key in list(payload.keys()):
+        key = str(raw_key)
+        if key in seen_keys:
+            continue
+        ordered_payload[key] = payload.get(raw_key)
+        seen_keys.add(key)
+
+    return ordered_payload
 
 
 def _field_status_entry_for_path(
@@ -9289,6 +9324,8 @@ def _merge_canonical_payload_with_model_arrays(
         if not isinstance(canonical_payload, dict):
             return canonical_payload
         model_dict = model_payload if isinstance(model_payload, dict) else {}
+        schema_keys = [str(key) for key in list(schema.keys())]
+        schema_key_set = set(schema_keys)
         merged: Dict[str, Any] = {}
         for key, child_schema in schema.items():
             merged[key] = _merge_canonical_payload_with_model_arrays(
@@ -9296,9 +9333,21 @@ def _merge_canonical_payload_with_model_arrays(
                 model_dict.get(key),
                 child_schema,
             )
+
+            if not isinstance(key, str):
+                continue
+            source_key = f"{key}_source"
+            confidence_key = f"{key}_confidence"
+            if source_key in canonical_payload and source_key not in schema_key_set:
+                merged[source_key] = _json_safe_value(canonical_payload.get(source_key))
+            if confidence_key in canonical_payload and confidence_key not in schema_key_set:
+                merged[confidence_key] = _json_safe_value(canonical_payload.get(confidence_key))
+
         for raw_key, raw_value in canonical_payload.items():
             key = str(raw_key)
             if key in merged:
+                continue
+            if key in schema_key_set:
                 continue
             base_key = _metadata_base_field_key(key)
             if base_key is None:

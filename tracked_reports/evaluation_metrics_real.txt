@@ -1,8 +1,19 @@
 {
-  "run_id": "trace_real_20260226T180003",
-  "generated_at_utc": "2026-02-27T00:09:35Z",
+  "run_id": "trace_real_20260226T181539",
+  "generated_at_utc": "2026-02-27T00:22:10Z",
   "benchmark_mode": "blind",
   "current": {
+    "exact_match": 4,
+    "semantic_match": 4,
+    "total_fields": 12,
+    "evidence_quality": 0,
+    "low_quality_source_urls": null,
+    "grounded_fields": 1,
+    "tokens_used": 36651,
+    "tokens_per_grounded_field": 36651,
+    "finalization_invariant_failures": 6
+  },
+  "baseline": {
     "exact_match": 6,
     "semantic_match": 6,
     "total_fields": 12,
@@ -13,23 +24,12 @@
     "tokens_per_grounded_field": 17670,
     "finalization_invariant_failures": 10
   },
-  "baseline": {
-    "exact_match": 6,
-    "semantic_match": 6,
-    "total_fields": 12,
-    "evidence_quality": 0,
-    "low_quality_source_urls": null,
-    "grounded_fields": 1,
-    "tokens_used": 78866,
-    "tokens_per_grounded_field": 78866,
-    "finalization_invariant_failures": 8
-  },
   "delta": {
-    "exact_match_delta": 0,
-    "semantic_match_delta": 0,
+    "exact_match_delta": -2,
+    "semantic_match_delta": -2,
     "evidence_quality_delta": 0,
-    "tokens_used_delta": -8186,
-    "tokens_per_grounded_field_delta": -61196,
-    "invariant_failures_delta": 2
+    "tokens_used_delta": -34029,
+    "tokens_per_grounded_field_delta": 18981,
+    "invariant_failures_delta": -4
   }
 }
