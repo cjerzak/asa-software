@@ -13,9 +13,7 @@
 The wait time in seconds (0 if no wait was needed)
 }
 \description{
-Acquires a token from the rate limiter bucket before making a request.
+Acquires a token from the runtime rate limiter before making a request.
 If no tokens are available, waits until one becomes available.
-This is called BEFORE making requests to prevent rate limit errors.
-Wait times are humanized with random jitter when ASA_HUMANIZE_TIMING is TRUE.
 }
 \keyword{internal}

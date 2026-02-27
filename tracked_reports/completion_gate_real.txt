@@ -1,0 +1,160 @@
+{
+  "done": true,
+  "completion_status": "complete",
+  "resolved_fields": 12,
+  "unknown_fields": 10,
+  "unresolved_fields": 0,
+  "total_fields": 12,
+  "missing_fields": [],
+  "budget_exhausted": true,
+  "reason": "all_required_fields_resolved",
+  "finalize_on_all_fields_resolved": false,
+  "missing_required_field_count": 10,
+  "missing_required_field_details": [
+    {
+      "field": "education_level",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown"
+    },
+    {
+      "field": "education_institution",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "string|Unknown"
+    },
+    {
+      "field": "education_field",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "string|Unknown"
+    },
+    {
+      "field": "prior_occupation",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "string|Unknown"
+    },
+    {
+      "field": "class_background",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown"
+    },
+    {
+      "field": "disability_status",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "No disability|Some disability|Unknown"
+    },
+    {
+      "field": "birth_place",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "string|Unknown"
+    },
+    {
+      "field": "birth_year",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "integer|null|Unknown"
+    },
+    {
+      "field": "lgbtq_status",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown"
+    },
+    {
+      "field": "lgbtq_details",
+      "status": "unknown",
+      "attempts": 2,
+      "unknown_reason": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_anchor_mismatch",
+      "requires_source": false,
+      "descriptor": "string|null"
+    }
+  ],
+  "resolvable_fields_count": 10,
+  "resolvable_found_fields_count": 0,
+  "resolvable_unknown_fields_count": 10,
+  "unknown_field_ratio": 1,
+  "global_confidence_score": 0,
+  "confidence_components": {
+    "coverage": 0,
+    "mean_field_confidence": 0,
+    "mean_source_quality": 0,
+    "consistency_penalty": 0.1,
+    "anchor_mismatch_pressure": 1,
+    "global_confidence_score": 0,
+    "found_fields_count": 0,
+    "unknown_fields_count": 10,
+    "total_fields_count": 10
+  },
+  "gate_component_coverage": 0,
+  "gate_component_evidence_quality": 0,
+  "gate_component_field_confidence": 0,
+  "gate_component_consistency_penalty": 0.1,
+  "quality_gate_failed": false,
+  "quality_gate_reason": null,
+  "quality_gate_reasons": [],
+  "quality_gate_checks": {
+    "unknown_ratio_exceeds_limit": false,
+    "global_confidence_below_min": false,
+    "found_fields_below_min": false,
+    "invariant_not_ok": false
+  },
+  "finalization_invariant_failed": false,
+  "finalization_invariant_reasons": [],
+  "finalization_invariant_ok": true,
+  "finalization_invariant": {
+    "ok": true,
+    "failed": false,
+    "reasons": [],
+    "issues": [],
+    "core_total_fields": 10,
+    "core_found_fields": 0,
+    "core_unknown_fields": 10,
+    "diagnostics_unknown_fields_count_current": 10,
+    "diagnostics_unknown_fields_current_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
+    "field_status_core_unknown_fields_sample": ["birth_place", "birth_year", "class_background", "disability_status", "education_field", "education_institution", "education_level", "lgbtq_details", "lgbtq_status", "prior_occupation"],
+    "diagnostics_current_snapshot_present": true
+  },
+  "auto_recovery_checkpoint_needed": false,
+  "auto_recovery_reasons": [],
+  "auto_recovery_priority": "invariant_reconciliation",
+  "auto_recovery_action": "none",
+  "quality_gate_unknown_ratio_max": 0.85,
+  "quality_gate_min_resolvable_fields": 3,
+  "quality_gate_min_global_confidence": 0.55,
+  "quality_gate_min_found_fields": 2,
+  "quality_gate_require_invariant_ok": true,
+  "artifact_markers": ["completion_gate", "field_status", "plan_mode_disabled", "invoke_error_absent"]
+}

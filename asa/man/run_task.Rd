@@ -23,6 +23,8 @@ run_task(
   retry_policy = NULL,
   finalization_policy = NULL,
   orchestration_options = NULL,
+  performance_profile = NULL,
+  webpage_policy = NULL,
   query_templates = NULL,
   verbose = FALSE,
   allow_read_webpages = NULL,
@@ -70,7 +72,12 @@ when the agent output is missing required keys (especially when
 \code{recursion_limit} is reached). This should be a nested list describing
 the required JSON object/array shape, following the conventions used in
 \code{asa/tests/testthat/test-langgraph-remainingsteps.R}. When provided,
-this bypasses prompt-based schema inference.}
+this bypasses prompt-based schema inference. Structured terminal payloads
+automatically include sibling metadata keys \code{<field>_source} (URL or
+\code{NULL}) and \code{<field>_confidence} (numeric score in
+\code{[0,1]} or \code{NULL}) for top-level schema fields, including
+unresolved fields where sibling values are emitted as \code{NULL}, even
+when those sibling keys are not listed in \code{expected_schema}.}
 
 \item{thread_id}{Optional stable identifier for memory folding sessions.
 When provided, the same thread ID is reused so folded summaries persist
@@ -93,6 +100,14 @@ agent finalizes once all required fields are resolved.}
 \item{orchestration_options}{Optional named list/dict of generic orchestration
 controls (component enable/mode and thresholds). This is passed directly to
 the backend state and must remain task-agnostic.}
+
+\item{performance_profile}{Optional orchestration profile. One of:
+\code{"latency"}, \code{"balanced"}, or \code{"quality"}.}
+
+\item{webpage_policy}{Optional structured OpenWebpage policy list with keys:
+\code{max_open_calls}, \code{host_cooldown_seconds},
+\code{blocked_host_ttl_seconds}, \code{open_only_if_score_ge}, and
+\code{parallel_open_limit}.}
 
 \item{verbose}{Print progress messages (default: FALSE)}
 

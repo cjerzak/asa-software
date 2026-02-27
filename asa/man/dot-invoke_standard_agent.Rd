@@ -21,6 +21,8 @@
   retry_policy = NULL,
   finalization_policy = NULL,
   orchestration_options = NULL,
+  performance_profile = NULL,
+  webpage_policy = NULL,
   query_templates = NULL,
   use_plan_mode = FALSE,
   model_timeout_s = NULL

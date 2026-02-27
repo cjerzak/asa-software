@@ -21,6 +21,8 @@ run_task_batch(
   unknown_after_searches = NULL,
   finalize_on_all_fields_resolved = NULL,
   orchestration_options = NULL,
+  performance_profile = NULL,
+  webpage_policy = NULL,
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,
   webpage_embedding_provider = NULL,
@@ -77,6 +79,12 @@ immediately when all schema fields are resolved. Passed through to
 
 \item{orchestration_options}{Optional named list/dict of generic orchestration
 options passed through to \code{\link{run_task}}.}
+
+\item{performance_profile}{Optional orchestration profile passed through to
+\code{\link{run_task}}.}
+
+\item{webpage_policy}{Optional structured OpenWebpage policy passed through to
+\code{\link{run_task}}.}
 
 \item{allow_read_webpages}{If TRUE, allows the agent to open and read full
 webpages (HTML/text) via the OpenWebpage tool. Disabled by default.}

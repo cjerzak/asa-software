@@ -10,7 +10,6 @@
 Invisibly returns NULL
 }
 \description{
-Resets the rate limiter to full capacity. Useful after errors or
-when starting a new batch of requests.
+Resets the runtime rate limiter to full capacity.
 }
 \keyword{internal}

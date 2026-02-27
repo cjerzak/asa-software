@@ -22,6 +22,8 @@
   retry_policy = NULL,
   finalization_policy = NULL,
   orchestration_options = NULL,
+  performance_profile = NULL,
+  webpage_policy = NULL,
   query_templates = NULL,
   allow_read_webpages = NULL,
   webpage_relevance_mode = NULL,

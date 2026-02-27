@@ -15,6 +15,8 @@ search_options(
   jitter_factor = NULL,
   allow_direct_fallback = NULL,
   stability_profile = NULL,
+  performance_profile = NULL,
+  webpage_policy = NULL,
   auto_openwebpage_policy = NULL,
   langgraph_node_retries = NULL,
   langgraph_cache_enabled = NULL,
@@ -72,6 +74,14 @@ E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1
 
 \item{inter_search_delay}{Minimum delay in seconds between consecutive searches.
 Helps avoid rate limiting from search providers. Default: 1.5.}
+
+\item{performance_profile}{Orchestration profile optimized for one of:
+\code{"latency"}, \code{"balanced"}, or \code{"quality"}.}
+
+\item{webpage_policy}{Structured OpenWebpage policy list with keys:
+\code{max_open_calls}, \code{host_cooldown_seconds},
+\code{blocked_host_ttl_seconds}, \code{open_only_if_score_ge}, and
+\code{parallel_open_limit}.}
 
 \item{finalize_when_all_unresolved_exhausted}{Optional override for
 orchestration finalizer behavior. When TRUE, finalize once all unresolved

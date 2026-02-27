@@ -11,7 +11,13 @@
   trace = "",
   trace_json = "",
   json_repair = list(),
-  message_sanitized = FALSE
+  trace_metadata = list(),
+  config_snapshot = list(),
+  message_sanitized = FALSE,
+  run_id = NA_character_,
+  generated_at_utc = NA_character_,
+  canonical_artifact_id = NA_character_,
+  released_artifact_id = NA_character_
 )
 }
 \description{
