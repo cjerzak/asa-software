@@ -8,8 +8,8 @@
   "education_field": "Unknown",
   "education_field_source": null,
   "education_field_confidence": null,
-  "prior_occupation": "diputada electa por el partido de Evo Morales",
-  "prior_occupation_source": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio",
+  "prior_occupation": "Ex Capitán Grande de TCO",
+  "prior_occupation_source": "https://vicepresidencia.gob.bo/spip.php?id_parlamentario=428&page=parlamentario",
   "prior_occupation_confidence": 0.7,
   "class_background": "Unknown",
   "class_background_source": null,
@@ -17,8 +17,8 @@
   "disability_status": "Unknown",
   "disability_status_source": null,
   "disability_status_confidence": null,
-  "birth_place": "Beni",
-  "birth_place_source": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
+  "birth_place": "Tipnis",
+  "birth_place_source": "https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio",
   "birth_place_confidence": 0.7,
   "birth_year": 1982,
   "birth_year_source": "https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios",
@@ -30,5 +30,5 @@
   "lgbtq_details_source": null,
   "lgbtq_details_confidence": null,
   "confidence": 0.5567,
-  "justification": "Ramona Moye Camaconi is an indigenous Moxeño Trinitario politician from the TIPNIS region in Beni, Bolivia. Official parliamentary records confirm her birth year as 1982 and her origin in Beni. While she is identified as an indigenous leader and representative of the TIPNIS territory, specific details regarding her formal education level, institution, or pre-political professional occupation are not documented in the available public records beyond her role as an elected deputy and indigenous activist. No public information exists regarding her disability status or sexual orientation."
+  "justification": "Source-backed searches resolved 3 core fields (including birth_place, birth_year, prior_occupation), while 7 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_anchor_mismatch(7)."
 }

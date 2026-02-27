@@ -120,9 +120,9 @@
     "field_status_core_unknown_fields_sample": ["class_background", "disability_status", "education_field", "education_institution", "education_level", "lgbtq_details", "lgbtq_status"],
     "diagnostics_current_snapshot_present": true,
     "tool_call_pairing": {
-      "issued_tool_calls_count": 9,
-      "tool_message_count": 9,
-      "paired_tool_calls_count": 9,
+      "issued_tool_calls_count": 10,
+      "tool_message_count": 10,
+      "paired_tool_calls_count": 10,
       "unpaired_tool_calls_count": 0,
       "unpaired_tool_call_ids": [],
       "unpaired_tool_call_names": [],
