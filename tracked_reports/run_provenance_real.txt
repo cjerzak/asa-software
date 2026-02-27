@@ -1,9 +1,9 @@
 {
-  "run_id": "trace_real_20260226T224620",
-  "generated_at_utc": "2026-02-27T04:56:30Z",
+  "run_id": "trace_real_20260227T055255",
+  "generated_at_utc": "2026-02-27T11:55:28Z",
   "benchmark_mode": "blind",
-  "inference_started_at_utc": "2026-02-27T04:46:21Z",
-  "inference_finished_at_utc": "2026-02-27T04:56:30Z",
+  "inference_started_at_utc": "2026-02-27T11:52:56Z",
+  "inference_finished_at_utc": "2026-02-27T11:55:28Z",
   "disallowed_inference_reads": [
     "/Users/cjerzak/Documents/asa-software/tracked_reports/answer_gold_real.txt"
   ],
@@ -28,9 +28,11 @@
     "/Users/cjerzak/Documents/asa-software/tracked_reports/regression_gate_real.txt"
   ],
   "tools_called": [
+    "wikipedia",
     "search",
     "openwebpage",
-    "save_finding"
+    "save_finding",
+    "update_plan"
   ],
   "baseline_snapshot_available": {
     "answer_pred": true,

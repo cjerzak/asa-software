@@ -244,6 +244,20 @@ query_templates_override <- NULL
 # Heartbeat lifecycle is managed by package internals:
 # asa:::.heartbeat_start/.heartbeat_set_phase/.heartbeat_stop/.with_heartbeat
 
+"
+TARGET INDIVIDUAL:
+  - Name: Ramona Moye Camaconi
+- Country: Bolivia
+- Election Year: 2014
+- Political Party: Movimiento Al Socialismo - MAS
+- Region/Constituency: Beni
+- Known Birthday: Not available
+- Known Gender: Female
+- Known Ethnicity: Indigenous
+"
+
+
+
 prompt <- r"(TASK OVERVIEW:
 You are a search-enabled research agent specializing in biographical information about political elites.
 
@@ -276,22 +290,18 @@ CLASS BACKGROUND RULES:
   * Unknown = insufficient information.
 
 TARGET INDIVIDUAL:
-- Name: Ramona Moye Camaconi
-- Country: Bolivia
-- Election Year: 2014
-- Political Party: Movimiento Al Socialismo - MAS
-- Region/Constituency: Beni
-- Known Birthday: Not available
-- Known Gender: Female
-- Known Ethnicity: Indigenous
+* **Name:** Cresent Hardy
+* **Country:** United States
+* **Election Year:** 2014
+* **Political Party:** Republican Party
+* **Region/Constituency:** Nevada's 4th Congressional District
+* **Known Birthday:** June 23, 1957
+* **Known Gender:** Male
+* **Known Ethnicity:** White
 
 DISAMBIGUATION:
-If multiple people share the same name, identify the correct person by matching:
-- Country: Bolivia
-- Political party: Movimiento Al Socialismo - MAS
-- Time period: Active around 2014
-- Gender: Female
-- Region: Beni
+If multiple people share the same name, identify the correct person by matching (where possible):
+- Country, Political party, Time period, Gender, Region
 
 OUTPUT:
 - Return strict JSON only.
