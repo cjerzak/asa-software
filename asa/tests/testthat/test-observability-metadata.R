@@ -99,7 +99,7 @@ test_that("field-status diagnostics surface anchor mismatch samples", {
   expect_true(length(normalized$anchor_mismatch_samples) >= 1)
 })
 
-test_that("schema outcome gate emits auto-recovery checkpoint hints", {
+test_that("schema outcome gate reconciles stale diagnostics snapshots", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",
     required_files = "custom_ddg_production.py",
@@ -140,10 +140,81 @@ test_that("schema outcome gate emits auto-recovery checkpoint hints", {
     diagnostics = state$diagnostics
   ))
 
+  reasons <- as.character(if (is.null(report$finalization_invariant_reasons)) character(0) else report$finalization_invariant_reasons)
+  expect_false(isTRUE(report$finalization_invariant_failed))
+  expect_false(isTRUE(report$auto_recovery_checkpoint_needed))
+  expect_equal(as.character(report$auto_recovery_action), "none")
+  expect_equal(as.character(report$auto_recovery_priority), "invariant_reconciliation")
+  expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
+})
+
+test_that("schema outcome gate emits auto-recovery checkpoint hints for justification mismatch", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  gate_report <- reticulate::py_get_attr(prod, "_schema_outcome_gate_report")
+  state <- list(
+    expected_schema = list(
+      prior_occupation = "string|Unknown",
+      birth_place = "string|Unknown",
+      justification = "string"
+    ),
+    field_status = list(
+      prior_occupation = list(
+        status = "found",
+        value = "Teacher",
+        source_url = "https://example.org/profile",
+        evidence_score = 0.95
+      ),
+      birth_place = list(
+        status = "found",
+        value = "Beni",
+        source_url = "https://example.org/profile",
+        evidence_score = 0.95
+      ),
+      justification = list(
+        status = "found",
+        value = "Source-backed searches resolved 2 core fields while 0 core fields remain unknown.",
+        source_url = NULL
+      )
+    ),
+    diagnostics = list(
+      unknown_fields_count_current = 0L,
+      unknown_fields_current = list()
+    ),
+    budget_state = list(budget_exhausted = FALSE),
+    finalization_policy = list(
+      diagnostics_auto_recovery_enabled = TRUE
+    ),
+    messages = list(list(
+      role = "assistant",
+      content = paste0(
+        "{\"prior_occupation\":\"Teacher\",",
+        "\"birth_place\":\"Beni\",",
+        "\"justification\":\"Source-backed searches resolved 1 core fields while 1 core fields remain unknown.\"}"
+      )
+    )),
+    use_plan_mode = FALSE,
+    json_repair = list()
+  )
+
+  report <- reticulate::py_to_r(gate_report(
+    state = state,
+    expected_schema = state$expected_schema,
+    field_status = state$field_status,
+    budget_state = state$budget_state,
+    diagnostics = state$diagnostics
+  ))
+
+  reasons <- as.character(if (is.null(report$finalization_invariant_reasons)) character(0) else report$finalization_invariant_reasons)
   expect_true(isTRUE(report$finalization_invariant_failed))
+  expect_true("terminal_justification_count_mismatch" %in% reasons)
   expect_true(isTRUE(report$auto_recovery_checkpoint_needed))
   expect_equal(as.character(report$auto_recovery_action), "replan_and_retry")
-  expect_equal(as.character(report$auto_recovery_priority), "anchor_mismatch_recovery")
+  expect_equal(as.character(report$auto_recovery_priority), "justification_reconciliation")
 })
 
 test_that("justification guard rejects mismatched included fields", {
