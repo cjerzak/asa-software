@@ -48,6 +48,55 @@ test_that("source policy blocks person-aggregator domains", {
   )
 })
 
+test_that("default source policy promotes secondary-tier synthetic fixture domains", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  schema <- list(
+    prior_occupation = "string|Unknown",
+    prior_occupation_source = "string|null"
+  )
+  field_status <- list(
+    prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  payload <- list(
+    prior_occupation = "teacher",
+    prior_occupation_source = "https://example.org/profile"
+  )
+  extra_payloads <- list(list(
+    tool_name = "search_snippet_extract",
+    text = "Primary occupation before politics: teacher.",
+    payload = payload,
+    source_blocks = list(),
+    source_payloads = list(payload),
+    has_structured_payload = TRUE,
+    urls = list("https://example.org/profile")
+  ))
+
+  updates <- core$`_extract_field_status_updates`(
+    existing_field_status = field_status,
+    expected_schema = schema,
+    tool_messages = list(),
+    extra_payloads = extra_payloads,
+    tool_calls_delta = 1L,
+    unknown_after_searches = 3L,
+    evidence_enabled = TRUE
+  )
+  updates_r <- reticulate::py_to_r(updates)
+  updated_fs <- updates_r[[1]]
+
+  expect_identical(as.character(updated_fs$prior_occupation$status), "found")
+  expect_identical(as.character(updated_fs$prior_occupation$value), "teacher")
+  expect_identical(as.character(updated_fs$prior_occupation_source$status), "found")
+  expect_identical(
+    as.character(updated_fs$prior_occupation_source$value),
+    "https://example.org/profile"
+  )
+})
+
 test_that("sensitive-field disclosure helper requires explicit disclosure markers", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",

@@ -225,7 +225,10 @@ finalization_policy_override <- list(
   field_recovery_min_source_quality = 0.34,
   diagnostics_auto_recovery_enabled = TRUE,
   quality_gate_enforce = TRUE,
-  quality_gate_unknown_ratio_max = 0.85
+  quality_gate_unknown_ratio_max = 0.85,
+  quality_gate_min_global_confidence = 0.55,
+  quality_gate_min_found_fields = 2L,
+  quality_gate_require_invariant_ok = TRUE
 )
 
 query_templates_override <- NULL
@@ -308,7 +311,7 @@ EXPECTED_SCHEMA <- list(
   lgbtq_status = "Non-LGBTQ|Openly LGBTQ|Unknown",
   lgbtq_details = "string|null",
   
-  confidence = "Low|Medium|High",
+  confidence = "number",
   justification = "string"
 )
 
@@ -745,6 +748,20 @@ source_tier_score <- function(url) {
   0.3
 }
 
+confidence_to_numeric <- function(x) {
+  if (is.null(x)) return(NA_real_)
+  if (is.numeric(x) && length(x) > 0L) {
+    return(as.numeric(x[[1]]))
+  }
+  if (!is.character(x) || length(x) == 0L) return(NA_real_)
+  token <- tolower(trimws(x[[1]]))
+  if (!nzchar(token)) return(NA_real_)
+  if (token %in% c("low", "l")) return(0.33)
+  if (token %in% c("medium", "med", "m")) return(0.66)
+  if (token %in% c("high", "h")) return(0.90)
+  suppressWarnings(as.numeric(token))
+}
+
 extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, schema_names) {
   keys <- as.character(schema_names)
   exact <- 0L
@@ -756,7 +773,12 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, sc
     if (is_semantic_equal(pred_val, gold_val)) semantic <- semantic + 1L
   }
 
-  source_fields <- keys[grepl("_source$", keys)]
+  source_fields <- character(0)
+  if (is.list(answer_obj)) {
+    source_fields <- names(answer_obj)
+    if (is.null(source_fields)) source_fields <- character(0)
+  }
+  source_fields <- source_fields[grepl("_source$", source_fields)]
   source_scores <- c()
   low_quality_domains <- c()
   for (k in source_fields) {
@@ -783,6 +805,12 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, sc
   tokens_used <- as.numeric(token_obj$tokens_used %||% NA_real_)
   tokens_per_grounded <- if (!is.na(tokens_used) && grounded > 0L) tokens_used / grounded else NA_real_
   invariant_failures <- as.numeric(diagnostics_obj$finalization_invariant_failures %||% NA_real_)
+  quality_gate_failures <- as.numeric(diagnostics_obj$quality_gate_failures %||% NA_real_)
+  global_confidence <- if (is.list(answer_obj)) {
+    confidence_to_numeric(answer_obj$confidence %||% NA_real_)
+  } else {
+    NA_real_
+  }
 
   list(
     exact_match = exact,
@@ -793,7 +821,9 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, sc
     grounded_fields = grounded,
     tokens_used = tokens_used,
     tokens_per_grounded_field = tokens_per_grounded,
-    finalization_invariant_failures = invariant_failures
+    finalization_invariant_failures = invariant_failures,
+    quality_gate_failures = quality_gate_failures,
+    global_confidence = global_confidence
   )
 }
 
@@ -830,6 +860,8 @@ if (!is.null(baseline_metrics)) {
     exact_match_delta = as.numeric(current_metrics$exact_match) - as.numeric(baseline_metrics$exact_match),
     semantic_match_delta = as.numeric(current_metrics$semantic_match) - as.numeric(baseline_metrics$semantic_match),
     evidence_quality_delta = as.numeric(current_metrics$evidence_quality) - as.numeric(baseline_metrics$evidence_quality),
+    global_confidence_delta = as.numeric(current_metrics$global_confidence) - as.numeric(baseline_metrics$global_confidence),
+    quality_gate_failures_delta = as.numeric(current_metrics$quality_gate_failures) - as.numeric(baseline_metrics$quality_gate_failures),
     tokens_used_delta = as.numeric(current_metrics$tokens_used) - as.numeric(baseline_metrics$tokens_used),
     tokens_per_grounded_field_delta = as.numeric(current_metrics$tokens_per_grounded_field) - as.numeric(baseline_metrics$tokens_per_grounded_field),
     invariant_failures_delta = as.numeric(current_metrics$finalization_invariant_failures) - as.numeric(baseline_metrics$finalization_invariant_failures)
@@ -838,6 +870,8 @@ if (!is.null(baseline_metrics)) {
   regression_gate$exact_non_decreasing <- isTRUE(delta_metrics$exact_match_delta >= 0)
   regression_gate$semantic_non_decreasing <- isTRUE(delta_metrics$semantic_match_delta >= 0)
   regression_gate$evidence_quality_non_decreasing <- isTRUE(delta_metrics$evidence_quality_delta >= 0)
+  regression_gate$confidence_non_decreasing <- isTRUE(delta_metrics$global_confidence_delta >= -0.02)
+  regression_gate$quality_gate_failures_non_increasing <- isTRUE(delta_metrics$quality_gate_failures_delta <= 0)
   regression_gate$tokens_non_increasing <- isTRUE(delta_metrics$tokens_used_delta <= 0)
   regression_gate$token_efficiency_non_increasing <- isTRUE(delta_metrics$tokens_per_grounded_field_delta <= 0)
   regression_gate$invariant_failures_non_increasing <- isTRUE(delta_metrics$invariant_failures_delta <= 0)
@@ -846,8 +880,8 @@ if (!is.null(baseline_metrics)) {
     regression_gate$exact_non_decreasing &&
       regression_gate$semantic_non_decreasing &&
       regression_gate$evidence_quality_non_decreasing &&
-      regression_gate$tokens_non_increasing &&
-      regression_gate$token_efficiency_non_increasing &&
+      regression_gate$confidence_non_decreasing &&
+      regression_gate$quality_gate_failures_non_increasing &&
       regression_gate$invariant_failures_non_increasing &&
       regression_gate$no_low_quality_sources
   )

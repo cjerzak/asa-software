@@ -2003,7 +2003,7 @@ test_that("recursion-limit finalize preserves earlier tool-derived facts (standa
       "from langchain_core.messages import AIMessage\n",
       "from langchain_core.tools import Tool\n\n",
       "def _fact_search_", agent_type, "(query: str) -> str:\n",
-      "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+      "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.org/profile\"}'\n\n",
       tool_var, " = Tool(\n",
       "    name='Search',\n",
       "    description='Deterministic fact search tool',\n",
@@ -2080,7 +2080,7 @@ test_that("recursion-limit finalize preserves earlier tool-derived facts (standa
     expect_equal(final_state$stop_reason, "recursion_limit")
     expect_true(is.list(parsed))
     expect_equal(as.character(parsed$prior_occupation), "teacher")
-    expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+    expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
 
     field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
     expect_true(is.list(field_status))
@@ -2096,7 +2096,7 @@ test_that("field_status is canonical vs scratchpad and is injected into finalize
     "from langchain_core.messages import AIMessage\n",
     "from langchain_core.tools import Tool\n\n",
     "def _canonical_fact_tool(query: str) -> str:\n",
-    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.org/profile\"}'\n\n",
     "canonical_fact_tool = Tool(\n",
     "    name='Search',\n",
     "    description='Deterministic fact tool for field_status canonical tests',\n",
@@ -2152,7 +2152,7 @@ test_that("field_status is canonical vs scratchpad and is injected into finalize
   response_text <- invoke$response_text
   parsed <- invoke$parsed
   expect_equal(as.character(parsed$prior_occupation), "teacher")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
 
   field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
   expect_true(is.list(field_status))
@@ -2348,7 +2348,7 @@ test_that("field_status parses Search source blocks with embedded JSON facts", {
     "from langchain_core.messages import AIMessage\n",
     "from langchain_core.tools import Tool\n\n",
     "def _source_block_json_tool(query: str) -> str:\n",
-    "    return '__START_OF_SOURCE 1__ <CONTENT> {\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"} </CONTENT> <URL> https://example.com/profile </URL> __END_OF_SOURCE 1__'\n\n",
+    "    return '__START_OF_SOURCE 1__ <CONTENT> {\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.org/profile\"} </CONTENT> <URL> https://example.org/profile </URL> __END_OF_SOURCE 1__'\n\n",
     "source_block_json_tool = Tool(\n",
     "    name='Search',\n",
     "    description='Search tool emitting source block JSON facts',\n",
@@ -2400,14 +2400,14 @@ test_that("field_status parses Search source blocks with embedded JSON facts", {
   parsed <- invoke$parsed
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "teacher")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
 
   final_state <- invoke$final_state
   field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
   expect_true(is.list(field_status))
   expect_equal(as.character(field_status$prior_occupation$status), "found")
   expect_equal(as.character(field_status$prior_occupation$value), "teacher")
-  expect_equal(as.character(field_status$prior_occupation$source_url), "https://example.com/profile")
+  expect_equal(as.character(field_status$prior_occupation$source_url), "https://example.org/profile")
 })
 
 test_that("source-block-only search does not prematurely force unknown before terminal source-backed JSON", {
@@ -2417,7 +2417,7 @@ test_that("source-block-only search does not prematurely force unknown before te
     "from langchain_core.messages import AIMessage\n",
     "from langchain_core.tools import Tool\n\n",
     "def _source_block_text_tool(query: str) -> str:\n",
-    "    return '__START_OF_SOURCE 1__ <CONTENT> Candidate profile summary with role details. </CONTENT> <URL> https://example.com/profile </URL> __END_OF_SOURCE 1__'\n\n",
+    "    return '__START_OF_SOURCE 1__ <CONTENT> Candidate profile summary: prior occupation teacher with role details. </CONTENT> <URL> https://example.org/profile </URL> __END_OF_SOURCE 1__'\n\n",
     "source_block_text_tool = Tool(\n",
     "    name='Search',\n",
     "    description='Search tool emitting source block snippets only',\n",
@@ -2432,7 +2432,7 @@ test_that("source-block-only search does not prematurely force unknown before te
     "        self.calls += 1\n",
     "        if self.calls <= 2:\n",
     "            return AIMessage(content='search more', tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_' + str(self.calls)}])\n",
-    "        return AIMessage(content='{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}')\n\n",
+    "        return AIMessage(content='{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.org/profile\"}')\n\n",
     "source_block_text_llm = _SourceBlockTextLLM()\n"
   ))
 
@@ -2469,7 +2469,7 @@ test_that("source-block-only search does not prematurely force unknown before te
   parsed <- invoke$parsed
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "teacher")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
 
   final_state <- invoke$final_state
   field_status <- tryCatch(reticulate::py_to_r(final_state$field_status), error = function(e) final_state$field_status)
@@ -2625,7 +2625,7 @@ test_that("canonical payload remains schema-constrained and fills confidence/jus
     "from langchain_core.messages import AIMessage\n",
     "from langchain_core.tools import Tool\n\n",
     "def _class_derivation_tool(query: str) -> str:\n",
-    "    return '__START_OF_SOURCE 1__ <CONTENT> {\"prior_occupation\":\"Indigenous community member\",\"prior_occupation_source\":\"https://example.com/profile/\"} </CONTENT> <URL> https://example.com/profile/ </URL> __END_OF_SOURCE 1__'\n\n",
+    "    return '__START_OF_SOURCE 1__ <CONTENT> {\"prior_occupation\":\"Indigenous community member\",\"prior_occupation_source\":\"https://example.org/profile/\"} </CONTENT> <URL> https://example.org/profile/ </URL> __END_OF_SOURCE 1__'\n\n",
     "class_derivation_tool = Tool(\n",
     "    name='Search',\n",
     "    description='Returns source-backed prior occupation facts',\n",
@@ -2648,7 +2648,7 @@ test_that("canonical payload remains schema-constrained and fills confidence/jus
     prior_occupation = "string|Unknown",
     class_background = "Working class|Middle class/professional|Upper/elite|Unknown",
     prior_occupation_source = "string|null",
-    confidence = "Low|Medium|High",
+    confidence = "number",
     justification = "string"
   )
 
@@ -2681,8 +2681,10 @@ test_that("canonical payload remains schema-constrained and fills confidence/jus
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "Indigenous community member")
   expect_equal(as.character(parsed$class_background), "Unknown")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
-  expect_true(as.character(parsed$confidence) %in% c("Low", "Medium", "High"))
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
+  expect_true(is.finite(as.numeric(parsed$confidence)))
+  expect_gte(as.numeric(parsed$confidence), 0.0)
+  expect_lte(as.numeric(parsed$confidence), 1.0)
   expect_true(nchar(as.character(parsed$justification)) > 10L)
 
   final_state <- invoke$final_state
@@ -2698,7 +2700,7 @@ test_that("terminal promotion requires source text support for non-source values
     "from langchain_core.messages import AIMessage\n",
     "from langchain_core.tools import Tool\n\n",
     "def _source_support_gate_tool(query: str) -> str:\n",
-    "    return '__START_OF_SOURCE 1__ <CONTENT> {\"birth_place\":\"TIPNIS, Beni\",\"birth_place_source\":\"https://example.com/place\"} </CONTENT> <URL> https://example.com/place </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Candidate profile lists constituency and election results only. </CONTENT> <URL> https://example.com/profile </URL> __END_OF_SOURCE 2__'\n\n",
+    "    return '__START_OF_SOURCE 1__ <CONTENT> {\"birth_place\":\"TIPNIS, Beni\",\"birth_place_source\":\"https://example.org/place\"} </CONTENT> <URL> https://example.org/place </URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Candidate profile lists constituency and election results only. </CONTENT> <URL> https://example.org/profile </URL> __END_OF_SOURCE 2__'\n\n",
     "source_support_gate_tool = Tool(\n",
     "    name='Search',\n",
     "    description='Returns one structured fact and one unrelated source block',\n",
@@ -2713,7 +2715,7 @@ test_that("terminal promotion requires source text support for non-source values
     "        self.calls += 1\n",
     "        if self.calls == 1:\n",
     "            return AIMessage(content='search', tool_calls=[{'name':'Search','args':{'query':'person'},'id':'call_1'}])\n",
-    "        return AIMessage(content='{\"prior_occupation\":\"astronaut\",\"prior_occupation_source\":\"https://example.com/profile\",\"birth_place\":\"Unknown\",\"birth_place_source\":null}')\n\n",
+    "        return AIMessage(content='{\"prior_occupation\":\"astronaut\",\"prior_occupation_source\":\"https://example.org/profile\",\"birth_place\":\"Unknown\",\"birth_place_source\":null}')\n\n",
     "source_support_gate_llm = _SourceSupportGateLLM()\n"
   ))
 
@@ -2752,7 +2754,7 @@ test_that("terminal promotion requires source text support for non-source values
   parsed <- invoke$parsed
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$birth_place), "TIPNIS, Beni")
-  expect_equal(as.character(parsed$birth_place_source), "https://example.com/place")
+  expect_equal(as.character(parsed$birth_place_source), "https://example.org/place")
   expect_equal(as.character(parsed$prior_occupation), "Unknown")
   expect_true(is.null(parsed$prior_occupation_source) || is.na(parsed$prior_occupation_source))
 })
@@ -2878,7 +2880,7 @@ test_that("large-prompt recursion-limit finalize preserves earlier tool facts ac
     "    tool_call_counter_large['n'] += 1\n",
     "    n = tool_call_counter_large['n']\n",
     "    if n == 1:\n",
-    "        return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n",
+    "        return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.org/profile\"}'\n",
     "    return '{\"note\":\"irrelevant\",\"n\":' + str(n) + '}'\n\n",
     "fact_search_tool_large = Tool(\n",
     "    name='Search',\n",
@@ -2945,7 +2947,7 @@ test_that("large-prompt recursion-limit finalize preserves earlier tool facts ac
   expect_gt(as.integer(reticulate::py$tool_call_counter_large[["n"]]), 6L)
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "teacher")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
 })
 
 test_that("invoke-exception fallback at recursion edge preserves earlier tool facts (standard)", {
@@ -2955,7 +2957,7 @@ test_that("invoke-exception fallback at recursion edge preserves earlier tool fa
     "from langchain_core.messages import AIMessage\n",
     "from langchain_core.tools import Tool\n\n",
     "def _fact_search_exception(query: str) -> str:\n",
-    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.com/profile\"}'\n\n",
+    "    return '{\"prior_occupation\":\"teacher\",\"prior_occupation_source\":\"https://example.org/profile\"}'\n\n",
     "fact_search_tool_exception = Tool(\n",
     "    name='Search',\n",
     "    description='Deterministic fact search tool for exception fallback tests',\n",
@@ -3008,7 +3010,7 @@ test_that("invoke-exception fallback at recursion edge preserves earlier tool fa
   expect_equal(final_state$stop_reason, "recursion_limit")
   expect_true(is.list(parsed))
   expect_equal(as.character(parsed$prior_occupation), "teacher")
-  expect_equal(as.character(parsed$prior_occupation_source), "https://example.com/profile")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
 
   repair_events <- tryCatch(reticulate::py_to_r(final_state$json_repair), error = function(e) NULL)
   expect_true(is.list(repair_events) && length(repair_events) >= 1L)
@@ -4128,9 +4130,9 @@ test_that("finalization policy keeps allowlisted unsourced meta fields while dem
   field_status <- list(
     confidence = list(
       status = "found",
-      value = "Low",
+      value = 0.33,
       source_url = NULL,
-      descriptor = "Low|Medium|High",
+      descriptor = "number",
       evidence = "terminal_payload_source_backed"
     ),
     justification = list(

@@ -67,7 +67,7 @@ test_that(".extract_json_from_trace parses structured traces with terminal AI JS
   terminal <- list(
     birth_year = 1982L,
     birth_place = "Beni",
-    confidence = "Low"
+    confidence = 0.33
   )
   trace_json <- jsonlite::toJSON(
     list(
@@ -96,7 +96,7 @@ test_that(".extract_json_from_trace parses structured traces with terminal AI JS
   expect_true(is.list(parsed) && length(parsed) > 0)
   expect_equal(as.integer(parsed$birth_year), 1982L)
   expect_equal(as.character(parsed$birth_place), "Beni")
-  expect_equal(as.character(parsed$confidence), "Low")
+  expect_equal(as.numeric(parsed$confidence), 0.33)
 
   extracted <- extract_agent_results(trace_json)
   expect_true(is.list(extracted$json_data_canonical))
@@ -123,7 +123,7 @@ test_that(".count_unknown_ratio ignores sibling confidence fields", {
     education_level = "Bachelor's",
     education_level_source = "https://example.com/profile",
     education_level_confidence = NULL,
-    confidence = "Low",
+    confidence = 0.33,
     justification = "limited evidence"
   )
 

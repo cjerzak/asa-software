@@ -212,7 +212,7 @@ test_that("fold summary chars uses delta magnitude when summary shrinks", {
     facts = as.list(paste0("fact_", seq_len(80))),
     decisions = as.list(paste0("decision_", seq_len(25))),
     open_questions = as.list(paste0("question_", seq_len(25))),
-    sources = as.list(paste0("https://example.com/", seq_len(20))),
+    sources = as.list(paste0("https://example.org/", seq_len(20))),
     warnings = as.list(paste0("warning_", seq_len(20)))
   )
 
@@ -383,7 +383,7 @@ test_that("scratchpad promotions require provenance when schema has sibling sour
   # Source-backed finding should promote.
   sourced <- sync_fn(
     scratchpad = list(list(
-      finding = "prior_occupation = teacher (source: https://example.com/profile)",
+      finding = "prior_occupation = teacher (source: https://example.org/profile)",
       category = "fact"
     )),
     field_status = field_status
@@ -391,7 +391,7 @@ test_that("scratchpad promotions require provenance when schema has sibling sour
   sourced_r <- reticulate::py_to_r(sourced)
   expect_equal(as.character(sourced_r$prior_occupation$status), "found")
   expect_equal(as.character(sourced_r$prior_occupation$value), "teacher")
-  expect_equal(as.character(sourced_r$prior_occupation$source_url), "https://example.com/profile")
+  expect_equal(as.character(sourced_r$prior_occupation$source_url), "https://example.org/profile")
 })
 
 test_that("summary fact promotions ignore ungrounded entries and require source URLs", {
@@ -414,7 +414,7 @@ test_that("summary fact promotions ignore ungrounded entries and require source 
 
   blocked <- sync_fn(
     summary = list(facts = list(
-      "UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://example.com)",
+      "UNGROUNDED: FIELD_EXTRACT: birth_year = 1982 (source: https://example.org)",
       "FIELD_EXTRACT: birth_year = 1982"
     )),
     field_status = field_status
@@ -424,17 +424,17 @@ test_that("summary fact promotions ignore ungrounded entries and require source 
 
   promoted <- sync_fn(
     summary = list(facts = list(
-      "FIELD_EXTRACT: birth_year = 1982 (source: https://example.com/profile)"
+      "FIELD_EXTRACT: birth_year = 1982 (source: https://example.org/profile)"
     )),
     field_status = field_status
   )
   promoted_r <- reticulate::py_to_r(promoted)
   expect_equal(as.character(promoted_r$birth_year$status), "found")
   expect_equal(as.character(promoted_r$birth_year$value), "1982")
-  expect_equal(as.character(promoted_r$birth_year$source_url), "https://example.com/profile")
+  expect_equal(as.character(promoted_r$birth_year$source_url), "https://example.org/profile")
 })
 
-test_that("canonical payload derivations normalize confidence casing", {
+test_that("canonical payload derivations normalize confidence to numeric score", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",
     required_files = "custom_ddg_production.py",
@@ -445,7 +445,7 @@ test_that("canonical payload derivations normalize confidence casing", {
   payload <- list(confidence = "low", justification = "ok")
   normalized <- deriv_fn(payload, list())
   normalized_r <- reticulate::py_to_r(normalized)
-  expect_equal(as.character(normalized_r$confidence), "Low")
+  expect_equal(as.numeric(normalized_r$confidence), 0.33)
 })
 
 test_that("canonical payload derivations auto-add source/confidence siblings", {
@@ -463,20 +463,20 @@ test_that("canonical payload derivations auto-add source/confidence siblings", {
     prior_occupation = list(
       status = "found",
       value = "teacher",
-      source_url = "https://example.com/profile",
+      source_url = "https://example.org/profile",
       evidence_score = 0.82
     ),
     prior_occupation_source = list(
       status = "found",
-      value = "https://example.com/profile",
-      source_url = "https://example.com/profile"
+      value = "https://example.org/profile",
+      source_url = "https://example.org/profile"
     )
   )
 
   normalized <- deriv_fn(payload, field_status)
   normalized_r <- reticulate::py_to_r(normalized)
 
-  expect_equal(as.character(normalized_r$prior_occupation_source), "https://example.com/profile")
+  expect_equal(as.character(normalized_r$prior_occupation_source), "https://example.org/profile")
   expect_equal(as.numeric(normalized_r$prior_occupation_confidence), 0.82)
 })
 
@@ -520,7 +520,7 @@ test_that("canonical array merge preserves derived sibling metadata outside sche
   canonical_payload <- list(
     birth_place = "Beni",
     birth_year = "Unknown",
-    birth_place_source = "https://example.com/profile",
+    birth_place_source = "https://example.org/profile",
     birth_place_confidence = 0.91,
     birth_year_source = NULL,
     birth_year_confidence = NULL,
@@ -539,7 +539,7 @@ test_that("canonical array merge preserves derived sibling metadata outside sche
   merged_r <- reticulate::py_to_r(merged)
 
   expect_equal(as.character(merged_r$birth_place), "Beni")
-  expect_equal(as.character(merged_r$birth_place_source), "https://example.com/profile")
+  expect_equal(as.character(merged_r$birth_place_source), "https://example.org/profile")
   expect_equal(as.numeric(merged_r$birth_place_confidence), 0.91)
   expect_true("birth_year_source" %in% names(merged_r))
   expect_true("birth_year_confidence" %in% names(merged_r))
@@ -564,7 +564,7 @@ test_that("terminal guard emits sibling metadata when no fields are resolved", {
   expected_schema <- list(
     prior_occupation = "string|Unknown",
     education_level = "string|Unknown",
-    confidence = "Low|Medium|High",
+    confidence = "number",
     justification = "string"
   )
   field_status <- list(
@@ -610,7 +610,7 @@ test_that("terminal guard emits sibling metadata when no fields are resolved", {
   expect_true("education_level_confidence" %in% names(parsed))
   expect_true(is.null(parsed$education_level_source))
   expect_true(is.null(parsed$education_level_confidence))
-  expect_equal(as.character(parsed$confidence), "Low")
+  expect_equal(as.numeric(parsed$confidence), 0.0)
   parsed_names <- names(parsed)
   expect_equal(which(parsed_names == "prior_occupation_source"), which(parsed_names == "prior_occupation") + 1L)
   expect_equal(which(parsed_names == "prior_occupation_confidence"), which(parsed_names == "prior_occupation") + 2L)
@@ -627,7 +627,7 @@ test_that("terminal canonicalization re-syncs derived fields into field_status",
 
   expected_schema <- list(
     prior_occupation = "string|Unknown",
-    confidence = "Low|Medium|High",
+    confidence = "number",
     justification = "string"
   )
 
@@ -642,7 +642,7 @@ test_that("terminal canonicalization re-syncs derived fields into field_status",
       status = "pending",
       value = NULL,
       source_url = NULL,
-      descriptor = "Low|Medium|High"
+      descriptor = "number"
     ),
     justification = list(
       status = "pending",
@@ -669,24 +669,24 @@ test_that("terminal canonicalization re-syncs derived fields into field_status",
   synced_field_status <- synced_r[[2]]
 
   expect_equal(as.character(synced_field_status$confidence$status), "found")
-  expect_equal(as.character(synced_field_status$confidence$value), "Low")
+  expect_equal(as.numeric(synced_field_status$confidence$value), 0.33)
   expect_equal(as.character(synced_field_status$justification$status), "found")
   expect_true(nzchar(as.character(synced_field_status$justification$value)))
 })
 
-test_that("confidence normalization accepts numeric-like values", {
+test_that("confidence score normalization accepts numeric-like values", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",
     required_files = "custom_ddg_production.py",
     required_modules = ASA_TEST_LANGGRAPH_MODULES
   )
 
-  normalize_conf <- reticulate::py_get_attr(prod, "_normalize_confidence_label")
+  normalize_conf <- reticulate::py_get_attr(prod, "_normalize_confidence_score")
 
-  expect_equal(as.character(normalize_conf("1")), "Low")
-  expect_equal(as.character(normalize_conf("2")), "Medium")
-  expect_equal(as.character(normalize_conf("3")), "High")
-  expect_equal(as.character(normalize_conf("0.85")), "High")
+  expect_equal(as.numeric(normalize_conf("1")), 1.0)
+  expect_equal(as.numeric(normalize_conf("2")), 0.66)
+  expect_equal(as.numeric(normalize_conf("3")), 0.90)
+  expect_equal(as.numeric(normalize_conf("0.85")), 0.85)
 })
 
 test_that("source specificity helper prefers profile-like URLs over listing pages", {
@@ -699,11 +699,11 @@ test_that("source specificity helper prefers profile-like URLs over listing page
   is_specific <- reticulate::py_get_attr(prod, "_is_source_specific_url")
   score_specificity <- reticulate::py_get_attr(prod, "_source_specificity_score")
 
-  expect_false(isTRUE(reticulate::py_to_r(is_specific("https://example.com/search?q=ramona+moye"))))
-  expect_true(isTRUE(reticulate::py_to_r(is_specific("https://example.com/people/ramona-moye-camaconi"))))
+  expect_false(isTRUE(reticulate::py_to_r(is_specific("https://example.org/search?q=ramona+moye"))))
+  expect_true(isTRUE(reticulate::py_to_r(is_specific("https://example.org/people/ramona-moye-camaconi"))))
   expect_true(
-    as.numeric(reticulate::py_to_r(score_specificity("https://example.com/people/ramona-moye-camaconi"))) >
-      as.numeric(reticulate::py_to_r(score_specificity("https://example.com/search?q=ramona+moye")))
+    as.numeric(reticulate::py_to_r(score_specificity("https://example.org/people/ramona-moye-camaconi"))) >
+      as.numeric(reticulate::py_to_r(score_specificity("https://example.org/search?q=ramona+moye")))
   )
 })
 
@@ -1006,6 +1006,108 @@ test_that("schema outcome quality gate blocks completion when unknown ratio is h
   expect_equal(as.integer(report$missing_required_field_count), 2L)
   expect_true("plan_mode_disabled" %in% as.character(report$artifact_markers))
   expect_true("invoke_error_absent" %in% as.character(report$artifact_markers))
+})
+
+test_that("schema outcome quality gate blocks completion when global confidence is too low", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  gate_fn <- reticulate::py_get_attr(prod, "_schema_outcome_gate_report")
+  state <- list(
+    expected_schema = list(
+      education_level = "string|Unknown",
+      prior_occupation = "string|Unknown",
+      birth_place = "string|Unknown"
+    ),
+    field_status = list(
+      education_level = list(status = "found", value = "Bachelor's", attempts = 1L),
+      prior_occupation = list(status = "found", value = "Teacher", attempts = 1L),
+      birth_place = list(status = "unknown", value = "Unknown", attempts = 1L)
+    ),
+    budget_state = list(budget_exhausted = FALSE),
+    finalization_policy = list(
+      quality_gate_enforce = TRUE,
+      quality_gate_unknown_ratio_max = 0.95,
+      quality_gate_min_resolvable_fields = 2L,
+      quality_gate_min_global_confidence = 0.80,
+      quality_gate_min_found_fields = 1L
+    ),
+    use_plan_mode = FALSE,
+    json_repair = list()
+  )
+
+  report <- reticulate::py_to_r(gate_fn(
+    state = state,
+    expected_schema = state$expected_schema,
+    field_status = state$field_status,
+    budget_state = state$budget_state
+  ))
+
+  expect_true(isTRUE(report$quality_gate_failed))
+  expect_equal(as.character(report$quality_gate_reason), "global_confidence_below_min")
+  expect_true(isTRUE(report$quality_gate_checks$global_confidence_below_min))
+  expect_true(as.numeric(report$global_confidence_score) < 0.80)
+})
+
+test_that("schema outcome quality gate can ignore invariant failure when policy disables invariant requirement", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  gate_fn <- reticulate::py_get_attr(prod, "_schema_outcome_gate_report")
+  diagnostics <- list(
+    unknown_fields_count_current = 1L,
+    unknown_fields_current = list("ghost_field")
+  )
+  state <- list(
+    expected_schema = list(
+      prior_occupation = "string|Unknown",
+      birth_place = "string|Unknown"
+    ),
+    field_status = list(
+      prior_occupation = list(
+        status = "found",
+        value = "Teacher",
+        source_url = "https://example.org/profile",
+        evidence_score = 0.95
+      ),
+      birth_place = list(
+        status = "found",
+        value = "Beni",
+        source_url = "https://example.org/profile",
+        evidence_score = 0.95
+      )
+    ),
+    diagnostics = diagnostics,
+    budget_state = list(budget_exhausted = FALSE),
+    finalization_policy = list(
+      quality_gate_enforce = TRUE,
+      quality_gate_unknown_ratio_max = 0.95,
+      quality_gate_min_resolvable_fields = 1L,
+      quality_gate_min_global_confidence = 0.40,
+      quality_gate_min_found_fields = 1L,
+      quality_gate_require_invariant_ok = FALSE
+    ),
+    use_plan_mode = FALSE,
+    json_repair = list()
+  )
+
+  report <- reticulate::py_to_r(gate_fn(
+    state = state,
+    expected_schema = state$expected_schema,
+    field_status = state$field_status,
+    budget_state = state$budget_state,
+    diagnostics = diagnostics
+  ))
+
+  expect_true(isTRUE(report$finalization_invariant_failed))
+  expect_false(isTRUE(report$quality_gate_failed))
+  expect_false(isTRUE(report$quality_gate_checks$invariant_not_ok))
 })
 
 test_that("summarize fallback records parse retry history", {

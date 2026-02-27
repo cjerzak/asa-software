@@ -1235,6 +1235,9 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "quality_gate_enforce": True,
     "quality_gate_unknown_ratio_max": 0.75,
     "quality_gate_min_resolvable_fields": 3,
+    "quality_gate_min_global_confidence": 0.55,
+    "quality_gate_min_found_fields": 2,
+    "quality_gate_require_invariant_ok": True,
     "diagnostics_auto_recovery_enabled": True,
     "semantic_validation_enabled": True,
     "unsourced_allowlist_patterns": [
@@ -2134,6 +2137,22 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
     )
 
     try:
+        quality_gate_min_global_confidence = float(
+            policy.get(
+                "quality_gate_min_global_confidence",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_min_global_confidence"],
+            )
+        )
+    except Exception:
+        quality_gate_min_global_confidence = float(
+            _DEFAULT_FINALIZATION_POLICY["quality_gate_min_global_confidence"]
+        )
+    quality_gate_min_global_confidence = _clamp01(
+        quality_gate_min_global_confidence,
+        default=_DEFAULT_FINALIZATION_POLICY["quality_gate_min_global_confidence"],
+    )
+
+    try:
         quality_gate_min_resolvable_fields = int(
             policy.get(
                 "quality_gate_min_resolvable_fields",
@@ -2145,6 +2164,20 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
             _DEFAULT_FINALIZATION_POLICY["quality_gate_min_resolvable_fields"]
         )
     quality_gate_min_resolvable_fields = max(1, min(200, quality_gate_min_resolvable_fields))
+
+    try:
+        quality_gate_min_found_fields = int(
+            policy.get(
+                "quality_gate_min_found_fields",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_min_found_fields"],
+            )
+        )
+    except Exception:
+        quality_gate_min_found_fields = int(
+            _DEFAULT_FINALIZATION_POLICY["quality_gate_min_found_fields"]
+        )
+    quality_gate_min_found_fields = max(0, min(200, quality_gate_min_found_fields))
+
     try:
         field_recovery_min_source_quality = float(
             policy.get(
@@ -2230,6 +2263,14 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
         ),
         "quality_gate_unknown_ratio_max": float(quality_gate_unknown_ratio_max),
         "quality_gate_min_resolvable_fields": int(quality_gate_min_resolvable_fields),
+        "quality_gate_min_global_confidence": float(quality_gate_min_global_confidence),
+        "quality_gate_min_found_fields": int(quality_gate_min_found_fields),
+        "quality_gate_require_invariant_ok": bool(
+            policy.get(
+                "quality_gate_require_invariant_ok",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_require_invariant_ok"],
+            )
+        ),
         "diagnostics_auto_recovery_enabled": bool(
             policy.get(
                 "diagnostics_auto_recovery_enabled",
@@ -4100,7 +4141,7 @@ def _apply_field_status_derivations(field_status: Dict[str, Dict[str, Any]]) -> 
                     source_url = None
                 else:
                     if key == "confidence":
-                        normalized_confidence = _normalize_confidence_label(coerced)
+                        normalized_confidence = _normalize_confidence_score(coerced)
                         if normalized_confidence is not None:
                             coerced = normalized_confidence
                     semantic_state = _field_value_semantic_state(
@@ -7725,6 +7766,7 @@ def _field_unknown_reason(entry: Any) -> str:
 def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     raw_status = field_status if isinstance(field_status, dict) else {}
     normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    resolvable_key_set = set(_collect_resolvable_field_keys(normalized))
     blocked_fields: List[str] = []
     consistency_fixes: List[str] = []
     demotion_fields: List[str] = []
@@ -7792,6 +7834,8 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
                 anchor_mismatch_samples = anchor_mismatch_samples[:64]
         if status == _FIELD_STATUS_UNKNOWN:
             key_str = str(key)
+            if key_str not in resolvable_key_set:
+                continue
             unknown_fields.append(key_str)
             reason = _field_unknown_reason(entry)
             if reason:
@@ -8805,6 +8849,20 @@ def _coerce_found_value_for_descriptor(value: Any, descriptor: Any) -> Any:
                 except Exception:
                     return value
 
+    if any(token in descriptor_lower for token in ("number", "float")) and "integer" not in descriptor_lower and not isinstance(value, bool):
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            mapped = _normalize_confidence_score(value)
+            if mapped is not None:
+                return float(mapped)
+            text = value.strip()
+            if re.fullmatch(r"-?\d+(?:\.\d+)?", text):
+                try:
+                    return float(text)
+                except Exception:
+                    return value
+
     # Enum coercion for pipe-separated descriptors
     options = [o.strip() for o in descriptor.split("|")]
     type_keywords = {"string", "integer", "null", "number", "boolean", "float"}
@@ -8835,36 +8893,130 @@ def _coerce_found_value_for_descriptor(value: Any, descriptor: Any) -> Any:
     return value
 
 
-def _derive_confidence_from_field_status(normalized_field_status: Dict[str, Dict[str, Any]]) -> str:
-    progress = _field_status_progress(normalized_field_status)
-    resolved = int(progress.get("resolved_fields", 0) or 0)
-    unknown = int(progress.get("unknown_fields", 0) or 0)
-    found = max(0, resolved - unknown)
-    evidence_scores: List[float] = []
-    for entry in (normalized_field_status or {}).values():
-        if not isinstance(entry, dict):
+def _source_quality_score_from_url(source_url: Any) -> float:
+    normalized_source = _normalize_url_match(source_url)
+    if not normalized_source:
+        return 0.0
+    return _clamp01(
+        (float(_score_primary_source_url(normalized_source)) + 2.5) / 6.0,
+        default=0.0,
+    )
+
+
+def _global_confidence_components(
+    normalized_field_status: Dict[str, Dict[str, Any]],
+    *,
+    diagnostics: Any = None,
+    invariant_failed: bool = False,
+) -> Dict[str, float]:
+    normalized = _normalize_field_status_map(normalized_field_status, expected_schema=None)
+    core_counts = _core_field_resolution_counts(normalized)
+    total = int(core_counts.get("total", 0) or 0)
+    found = int(core_counts.get("found", 0) or 0)
+    unknown = int(core_counts.get("unknown", 0) or 0)
+    coverage = _clamp01(float(found) / float(max(1, total)), default=0.0) if total > 0 else 0.0
+
+    field_confidences: List[float] = []
+    source_qualities: List[float] = []
+    for key in _collect_resolvable_field_keys(normalized):
+        base_entry = normalized.get(key)
+        if not isinstance(base_entry, dict):
             continue
-        status = str(entry.get("status") or "").lower()
-        if status != _FIELD_STATUS_FOUND:
+        status = str(base_entry.get("status") or "").strip().lower()
+        field_value = base_entry.get("value")
+        if status != _FIELD_STATUS_FOUND or _is_empty_like(field_value) or _is_unknown_marker(field_value):
             continue
-        try:
-            score = float(entry.get("evidence_score"))
-        except Exception:
-            continue
-        if 0.0 <= score <= 1.0:
-            evidence_scores.append(score)
-    if evidence_scores:
-        avg_score = sum(evidence_scores) / float(max(1, len(evidence_scores)))
-        if avg_score >= 0.78 and found >= 4 and unknown <= 3:
-            return "High"
-        if avg_score >= 0.58 and found >= 2:
-            return "Medium"
-        return "Low"
-    if found >= 9 and unknown <= 3:
-        return "High"
-    if found >= 3:
-        return "Medium"
-    return "Low"
+        source_key = f"{key}_source"
+        source_entry = normalized.get(source_key) if isinstance(normalized.get(source_key), dict) else None
+        field_confidence = _field_confidence_score(
+            field_key=key,
+            field_value=field_value,
+            base_entry=base_entry,
+            source_entry=source_entry,
+        )
+        if field_confidence is not None:
+            field_confidences.append(_clamp01(field_confidence, default=0.0))
+        source_url = _field_status_source_url(base_entry, source_entry)
+        if source_url:
+            source_qualities.append(_source_quality_score_from_url(source_url))
+
+    mean_field_confidence = (
+        sum(field_confidences) / float(max(1, len(field_confidences)))
+        if field_confidences
+        else 0.0
+    )
+    mean_source_quality = (
+        sum(source_qualities) / float(max(1, len(source_qualities)))
+        if source_qualities
+        else 0.0
+    )
+
+    diag = diagnostics if isinstance(diagnostics, dict) else {}
+    source_conflict_hits = 0
+    try:
+        source_conflict_hits = int(
+            diag.get(
+                "source_consistency_fixes_count_current",
+                diag.get("source_consistency_fixes_count", 0),
+            )
+            or 0
+        )
+    except Exception:
+        source_conflict_hits = 0
+
+    recovery_reason_counts = (
+        diag.get("recovery_reason_counts")
+        if isinstance(diag.get("recovery_reason_counts"), dict)
+        else {}
+    )
+    anchor_mismatch_hits = 0
+    try:
+        anchor_mismatch_hits = int(
+            recovery_reason_counts.get("recovery_blocked_anchor_mismatch", 0) or 0
+        )
+    except Exception:
+        anchor_mismatch_hits = 0
+    anchor_mismatch_pressure = _clamp01(
+        float(anchor_mismatch_hits) / float(max(1, total)),
+        default=0.0,
+    )
+    consistency_penalty = min(
+        0.40,
+        (0.20 if bool(invariant_failed) else 0.0)
+        + (0.10 if source_conflict_hits > 0 else 0.0)
+        + (0.10 * float(anchor_mismatch_pressure)),
+    )
+
+    global_confidence_score = _clamp01(
+        0.40 * float(coverage)
+        + 0.35 * float(mean_field_confidence)
+        + 0.25 * float(mean_source_quality)
+        - float(consistency_penalty),
+        default=0.0,
+    )
+    return {
+        "coverage": round(float(coverage), 4),
+        "mean_field_confidence": round(float(mean_field_confidence), 4),
+        "mean_source_quality": round(float(mean_source_quality), 4),
+        "consistency_penalty": round(float(consistency_penalty), 4),
+        "anchor_mismatch_pressure": round(float(anchor_mismatch_pressure), 4),
+        "global_confidence_score": round(float(global_confidence_score), 4),
+        "found_fields_count": int(found),
+        "unknown_fields_count": int(unknown),
+        "total_fields_count": int(total),
+    }
+
+
+def _derive_confidence_from_field_status(normalized_field_status: Dict[str, Dict[str, Any]]) -> float:
+    components = _global_confidence_components(
+        normalized_field_status,
+        diagnostics=None,
+        invariant_failed=False,
+    )
+    return round(
+        float(_clamp01(components.get("global_confidence_score"), default=0.0)),
+        4,
+    )
 
 
 def _normalize_confidence_label(value: Any) -> Optional[str]:
@@ -8925,13 +9077,14 @@ def _normalize_confidence_score(value: Any) -> Optional[float]:
         text = str(value).strip()
         if not text or _is_unknown_marker(text):
             return None
-        mapped_label = _confidence_label_to_score(text)
-        if mapped_label is not None:
-            return round(float(mapped_label), 4)
         try:
             numeric = float(text)
         except Exception:
             numeric = None
+        if numeric is None:
+            mapped_label = _confidence_label_to_score(text)
+            if mapped_label is not None:
+                return round(float(mapped_label), 4)
 
     if numeric is None:
         return None
@@ -9149,11 +9302,13 @@ def _apply_canonical_payload_derivations(
 
     if "confidence" in payload:
         confidence = payload.get("confidence")
-        normalized_confidence = _normalize_confidence_label(confidence)
-        if normalized_confidence is not None:
-            payload["confidence"] = normalized_confidence
-        else:
-            payload["confidence"] = _derive_confidence_from_field_status(normalized_field_status)
+        normalized_confidence = _normalize_confidence_score(confidence)
+        if normalized_confidence is None:
+            normalized_confidence = _derive_confidence_from_field_status(normalized_field_status)
+        payload["confidence"] = round(
+            float(_clamp01(normalized_confidence, default=0.0)),
+            4,
+        )
 
     if "justification" in payload:
         justification = payload.get("justification")
@@ -12052,24 +12207,33 @@ def _schema_outcome_gate_report(
     if not isinstance(report, dict):
         report = {}
     finalization_policy = _state_finalization_policy(state)
+    diagnostics_snapshot = diagnostics if diagnostics is not None else state.get("diagnostics")
     missing_details = _missing_required_field_details(
         expected_schema=expected_schema,
         field_status=field_status,
         max_items=64,
     )
     resolvable_keys = _collect_resolvable_field_keys(field_status)
-    resolvable_unknown = _collect_resolvable_unknown_fields(field_status)
+    core_counts = _core_field_resolution_counts(field_status)
+    found_resolvable = int(core_counts.get("found", 0) or 0)
+    unknown_resolvable = int(core_counts.get("unknown", 0) or 0)
     unknown_ratio = 0.0
     if resolvable_keys:
-        unknown_ratio = float(len(resolvable_unknown)) / float(len(resolvable_keys))
+        unknown_ratio = float(unknown_resolvable) / float(len(resolvable_keys))
     invariant = _finalization_invariant_report(
         state,
         expected_schema=expected_schema,
         field_status=field_status,
-        diagnostics=diagnostics if diagnostics is not None else state.get("diagnostics"),
+        diagnostics=diagnostics_snapshot,
         terminal_payload=_terminal_payload_for_invariants(state, expected_schema=expected_schema),
     )
     invariant_failed = bool(invariant.get("failed", False))
+    confidence_components = _global_confidence_components(
+        field_status,
+        diagnostics=diagnostics_snapshot,
+        invariant_failed=invariant_failed,
+    )
+    global_confidence_score = float(confidence_components.get("global_confidence_score", 0.0) or 0.0)
     budget_exhausted = bool((budget_state or {}).get("budget_exhausted", False))
     if invariant_failed and not budget_exhausted:
         report["done"] = False
@@ -12077,14 +12241,45 @@ def _schema_outcome_gate_report(
         report["reason"] = "finalization_invariant_failed"
     quality_gate_failed = False
     quality_gate_reason = None
-    if (
+    quality_gate_reasons: List[str] = []
+    min_resolvable_fields = int(finalization_policy.get("quality_gate_min_resolvable_fields", 3) or 3)
+    unknown_ratio_max = float(finalization_policy.get("quality_gate_unknown_ratio_max", 0.75) or 0.75)
+    min_global_confidence = float(
+        finalization_policy.get("quality_gate_min_global_confidence", 0.55) or 0.55
+    )
+    min_found_fields = int(finalization_policy.get("quality_gate_min_found_fields", 2) or 2)
+    require_invariant_ok = bool(finalization_policy.get("quality_gate_require_invariant_ok", True))
+    gate_eligible = (
         bool(finalization_policy.get("quality_gate_enforce", True))
-        and len(resolvable_keys) >= int(finalization_policy.get("quality_gate_min_resolvable_fields", 3) or 3)
-        and float(unknown_ratio) > float(finalization_policy.get("quality_gate_unknown_ratio_max", 0.75) or 0.75)
+        and len(resolvable_keys) >= int(min_resolvable_fields)
+        and int(unknown_resolvable) > 0
         and not budget_exhausted
+    )
+    quality_gate_checks = {
+        "unknown_ratio_exceeds_limit": bool(
+            gate_eligible and float(unknown_ratio) > float(unknown_ratio_max)
+        ),
+        "global_confidence_below_min": bool(
+            gate_eligible and float(global_confidence_score) < float(min_global_confidence)
+        ),
+        "found_fields_below_min": bool(
+            gate_eligible and int(found_resolvable) < int(min_found_fields)
+        ),
+        "invariant_not_ok": bool(
+            gate_eligible and bool(require_invariant_ok) and bool(invariant_failed)
+        ),
+    }
+    for reason in (
+        "invariant_not_ok",
+        "unknown_ratio_exceeds_limit",
+        "global_confidence_below_min",
+        "found_fields_below_min",
     ):
+        if bool(quality_gate_checks.get(reason, False)):
+            quality_gate_reasons.append(reason)
+    if quality_gate_reasons:
         quality_gate_failed = True
-        quality_gate_reason = "unknown_ratio_exceeds_limit"
+        quality_gate_reason = str(quality_gate_reasons[0])
         report["done"] = False
         report["completion_status"] = "in_progress"
         report["reason"] = "quality_gate_failed"
@@ -12110,10 +12305,28 @@ def _schema_outcome_gate_report(
     report["missing_required_field_count"] = int(len(missing_details))
     report["missing_required_field_details"] = missing_details
     report["resolvable_fields_count"] = int(len(resolvable_keys))
-    report["resolvable_unknown_fields_count"] = int(len(resolvable_unknown))
+    report["resolvable_found_fields_count"] = int(found_resolvable)
+    report["resolvable_unknown_fields_count"] = int(unknown_resolvable)
     report["unknown_field_ratio"] = round(float(unknown_ratio), 4)
+    report["global_confidence_score"] = round(float(global_confidence_score), 4)
+    report["confidence_components"] = confidence_components
+    report["gate_component_coverage"] = round(float(confidence_components.get("coverage", 0.0) or 0.0), 4)
+    report["gate_component_evidence_quality"] = round(
+        float(confidence_components.get("mean_source_quality", 0.0) or 0.0),
+        4,
+    )
+    report["gate_component_field_confidence"] = round(
+        float(confidence_components.get("mean_field_confidence", 0.0) or 0.0),
+        4,
+    )
+    report["gate_component_consistency_penalty"] = round(
+        float(confidence_components.get("consistency_penalty", 0.0) or 0.0),
+        4,
+    )
     report["quality_gate_failed"] = bool(quality_gate_failed)
     report["quality_gate_reason"] = quality_gate_reason
+    report["quality_gate_reasons"] = quality_gate_reasons[:16]
+    report["quality_gate_checks"] = quality_gate_checks
     report["finalization_invariant_failed"] = bool(invariant_failed)
     report["finalization_invariant_reasons"] = list(invariant.get("reasons") or [])[:16]
     report["finalization_invariant_ok"] = bool(invariant.get("ok", True))
@@ -12129,11 +12342,14 @@ def _schema_outcome_gate_report(
         "replan_and_retry" if bool(report["auto_recovery_checkpoint_needed"]) else "none"
     )
     report["quality_gate_unknown_ratio_max"] = float(
-        finalization_policy.get("quality_gate_unknown_ratio_max", 0.75) or 0.75
+        unknown_ratio_max
     )
     report["quality_gate_min_resolvable_fields"] = int(
-        finalization_policy.get("quality_gate_min_resolvable_fields", 3) or 3
+        min_resolvable_fields
     )
+    report["quality_gate_min_global_confidence"] = float(min_global_confidence)
+    report["quality_gate_min_found_fields"] = int(min_found_fields)
+    report["quality_gate_require_invariant_ok"] = bool(require_invariant_ok)
     report["artifact_markers"] = artifact_markers
     return report
 
@@ -12155,13 +12371,10 @@ def _quality_gate_finalize_block(
         budget_state=budget_state,
     )
     quality_gate_failed = bool(report.get("quality_gate_failed", False))
-    invariant_failed = bool(report.get("finalization_invariant_failed", False))
     budget_exhausted = bool((budget_state or {}).get("budget_exhausted", False))
     reason = str(report.get("quality_gate_reason") or "").strip() or None
-    if not reason and invariant_failed:
-        reason = "finalization_invariant_failed"
     return {
-        "blocked": bool((quality_gate_failed or invariant_failed) and not budget_exhausted),
+        "blocked": bool(quality_gate_failed and not budget_exhausted),
         "reason": reason,
         "report": report,
     }
@@ -15390,6 +15603,10 @@ def create_memory_folding_agent(
             budget_state=budget_state,
             diagnostics=diagnostics,
         )
+        if bool(completion_gate.get("quality_gate_failed", False)):
+            diagnostics["quality_gate_failures"] = int(
+                diagnostics.get("quality_gate_failures", 0) or 0
+            ) + 1
         diagnostics, budget_state = _record_finalization_recovery_checkpoint(
             diagnostics,
             completion_gate,
@@ -17651,6 +17868,10 @@ def create_standard_agent(
             budget_state=budget_state,
             diagnostics=diagnostics,
         )
+        if bool(completion_gate.get("quality_gate_failed", False)):
+            diagnostics["quality_gate_failures"] = int(
+                diagnostics.get("quality_gate_failures", 0) or 0
+            ) + 1
         diagnostics, budget_state = _record_finalization_recovery_checkpoint(
             diagnostics,
             completion_gate,
