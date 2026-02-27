@@ -64,6 +64,124 @@ jobs:
           pip install ddgs selenium primp beautifulsoup4 requests fake_headers
           pip install httpx pysocks socksio python-dotenv arxiv wikipedia
 
+      - name: Install Tor (Ubuntu)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tor
+          tor --version
+
+      - name: Install Tor (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          brew install tor
+          tor --version
+
+      - name: Install Tor (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install tor -y
+          tor --version
+
+      - name: Start Tor test instance (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOR_DIR="${RUNNER_TEMP}/asa_tor"
+          TOR_DATA_DIR="${TOR_DIR}/data"
+          TOR_LOG_PATH="${TOR_DIR}/tor.log"
+          TOR_RC="${TOR_DIR}/torrc"
+          TOR_PID_PATH="${TOR_DIR}/tor.pid"
+          mkdir -p "${TOR_DATA_DIR}"
+          printf '%s\n' \
+            "SocksPort 9050" \
+            "ControlPort 9051" \
+            "CookieAuthentication 1" \
+            "DataDirectory ${TOR_DATA_DIR}" \
+            "Log notice file ${TOR_LOG_PATH}" \
+            > "${TOR_RC}"
+          tor -f "${TOR_RC}" &
+          TOR_PID=$!
+          echo "${TOR_PID}" > "${TOR_PID_PATH}"
+
+          deadline=$((SECONDS + 90))
+          while [ "${SECONDS}" -lt "${deadline}" ]; do
+            if grep -q "Bootstrapped 100%" "${TOR_LOG_PATH}" 2>/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          if ! grep -q "Bootstrapped 100%" "${TOR_LOG_PATH}" 2>/dev/null; then
+            echo "Tor failed to bootstrap on Unix runner."
+            tail -n 120 "${TOR_LOG_PATH}" || true
+            exit 1
+          fi
+
+          echo "ASA_RUN_TOR_TESTS=true" >> "${GITHUB_ENV}"
+          echo "ASA_TOR_TEST_PROXY=socks5h://127.0.0.1:9050" >> "${GITHUB_ENV}"
+          echo "ASA_TOR_TEST_CONTROL_PORT=9051" >> "${GITHUB_ENV}"
+          echo "TOR_CONTROL_PORT=9051" >> "${GITHUB_ENV}"
+          echo "ASA_TOR_CONTROL_COOKIE=${TOR_DATA_DIR}/control_auth_cookie" >> "${GITHUB_ENV}"
+          echo "ASA_TOR_LOG_PATH=${TOR_LOG_PATH}" >> "${GITHUB_ENV}"
+          echo "ASA_TOR_PID_PATH=${TOR_PID_PATH}" >> "${GITHUB_ENV}"
+
+      - name: Start Tor test instance (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $TorDir = Join-Path $env:RUNNER_TEMP "asa_tor"
+          $TorDataDir = Join-Path $TorDir "data"
+          $TorLogPath = Join-Path $TorDir "tor.log"
+          $TorRc = Join-Path $TorDir "torrc"
+          $TorPidPath = Join-Path $TorDir "tor.pid"
+          New-Item -ItemType Directory -Path $TorDataDir -Force | Out-Null
+          @(
+            "SocksPort 9050",
+            "ControlPort 9051",
+            "CookieAuthentication 1",
+            "DataDirectory `"$TorDataDir`"",
+            "Log notice file `"$TorLogPath`""
+          ) | Set-Content -Path $TorRc
+
+          $TorExe = (Get-Command tor.exe -ErrorAction Stop).Source
+          $proc = Start-Process -FilePath $TorExe -ArgumentList "-f `"$TorRc`"" -PassThru -WindowStyle Hidden
+          Set-Content -Path $TorPidPath -Value $proc.Id
+
+          $deadline = (Get-Date).AddSeconds(120)
+          while ((Get-Date) -lt $deadline) {
+            if (Test-Path $TorLogPath) {
+              $content = Get-Content -Path $TorLogPath -Raw
+              if ($content -match "Bootstrapped 100%") { break }
+            }
+            Start-Sleep -Seconds 1
+          }
+
+          if (-not (Test-Path $TorLogPath) -or -not ((Get-Content -Path $TorLogPath -Raw) -match "Bootstrapped 100%")) {
+            Write-Host "Tor failed to bootstrap on Windows runner."
+            if (Test-Path $TorLogPath) { Get-Content -Path $TorLogPath -Tail 120 }
+            throw "Tor bootstrap failed."
+          }
+
+          "ASA_RUN_TOR_TESTS=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "ASA_TOR_TEST_PROXY=socks5h://127.0.0.1:9050" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "ASA_TOR_TEST_CONTROL_PORT=9051" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "TOR_CONTROL_PORT=9051" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "ASA_TOR_CONTROL_COOKIE=$TorDataDir/control_auth_cookie" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "ASA_TOR_LOG_PATH=$TorLogPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "ASA_TOR_PID_PATH=$TorPidPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Tor preflight (required)
+        shell: bash -el {0}
+        run: |
+          conda activate asa_env
+          python -c $'import json, os, socket, requests\nproxy = os.environ.get("ASA_TOR_TEST_PROXY", "socks5h://127.0.0.1:9050")\ncontrol_port = int(os.environ.get("ASA_TOR_TEST_CONTROL_PORT", "9051"))\nsocks_port = int(proxy.rsplit(":", 1)[1]) if ":" in proxy else 9050\nfor port, label in ((socks_port, "Tor SOCKS"), (control_port, "Tor control")):\n    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    sock.settimeout(2.0)\n    try:\n        sock.connect(("127.0.0.1", port))\n    except Exception as exc:\n        raise SystemExit(f"{label} port {port} unreachable: {exc}")\n    finally:\n        sock.close()\ncookie = os.environ.get("ASA_TOR_CONTROL_COOKIE", "")\nif cookie and not os.path.exists(cookie):\n    raise SystemExit(f"Tor control cookie path missing: {cookie}")\nresp = requests.get("https://check.torproject.org/api/ip", proxies={"http": proxy, "https": proxy}, timeout=30)\nresp.raise_for_status()\npayload = resp.json()\nprint("Tor preflight payload:", json.dumps(payload, sort_keys=True))\nif not bool(payload.get("IsTor")):\n    raise SystemExit(f"Expected IsTor=true via {proxy}, got payload: {payload}")'
+
       - name: Install R package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -88,7 +206,8 @@ jobs:
             "s3-classes",
             "temporal",
             "audit",
-            "research"
+            "research",
+            "tor-proxy-integration"
           )
 
           # Build filter pattern (e.g., "validate|helpers|s3-classes")
@@ -132,3 +251,29 @@ jobs:
             filter = filter_pattern,
             stop_on_failure = TRUE
           )
+
+      - name: Stop Tor test instance (Unix)
+        if: always() && runner.os != 'Windows'
+        shell: bash
+        run: |
+          set +e
+          if [ -n "${ASA_TOR_PID_PATH:-}" ] && [ -f "${ASA_TOR_PID_PATH}" ]; then
+            kill "$(cat "${ASA_TOR_PID_PATH}")" 2>/dev/null || true
+          fi
+          if [ -n "${ASA_TOR_LOG_PATH:-}" ] && [ -f "${ASA_TOR_LOG_PATH}" ]; then
+            echo "--- Tor log tail (Unix) ---"
+            tail -n 120 "${ASA_TOR_LOG_PATH}" || true
+          fi
+
+      - name: Stop Tor test instance (Windows)
+        if: always() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if ($env:ASA_TOR_PID_PATH -and (Test-Path $env:ASA_TOR_PID_PATH)) {
+            $pid = Get-Content -Path $env:ASA_TOR_PID_PATH -ErrorAction SilentlyContinue
+            if ($pid) { Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue }
+          }
+          if ($env:ASA_TOR_LOG_PATH -and (Test-Path $env:ASA_TOR_LOG_PATH)) {
+            Write-Host "--- Tor log tail (Windows) ---"
+            Get-Content -Path $env:ASA_TOR_LOG_PATH -Tail 120
+          }

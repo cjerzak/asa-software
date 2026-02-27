@@ -319,6 +319,169 @@ asa_test_skip_if_no_selenium <- function() {
 }
 
 # ---------------------------------------------------------------------------
+# Tor integration test helpers
+# ---------------------------------------------------------------------------
+
+asa_test_skip_if_no_tor_tests_enabled <- function() {
+  skip_on_cran()
+  run_tor <- tolower(Sys.getenv("ASA_RUN_TOR_TESTS")) %in% c("true", "1", "yes")
+  skip_if(!run_tor, "Set ASA_RUN_TOR_TESTS=true to run Tor integration tests")
+}
+
+asa_test_tor_proxy <- function() {
+  proxy <- Sys.getenv("ASA_TOR_TEST_PROXY", unset = "socks5h://127.0.0.1:9050")
+  if (!is.character(proxy) || length(proxy) != 1L || !nzchar(proxy)) {
+    proxy <- "socks5h://127.0.0.1:9050"
+  }
+  proxy
+}
+
+asa_test_tor_control_port <- function() {
+  port_raw <- Sys.getenv("ASA_TOR_TEST_CONTROL_PORT", unset = "9051")
+  port <- suppressWarnings(as.integer(port_raw))
+  if (is.na(port) || port <= 0L) {
+    port <- 9051L
+  }
+  as.integer(port)
+}
+
+.asa_test_parse_proxy_port <- function(proxy, default = 9050L) {
+  proxy_chr <- if (is.character(proxy) && length(proxy) == 1L) proxy else ""
+  match <- regexec(":(\\d+)$", proxy_chr)
+  tokens <- regmatches(proxy_chr, match)[[1]]
+  if (length(tokens) >= 2L) {
+    out <- suppressWarnings(as.integer(tokens[[2]]))
+    if (!is.na(out) && out > 0L) {
+      return(as.integer(out))
+    }
+  }
+  as.integer(default)
+}
+
+.asa_test_is_port_open <- function(port, timeout = 2) {
+  con <- NULL
+  tryCatch({
+    con <- socketConnection(host = "127.0.0.1", port = as.integer(port), timeout = timeout)
+    TRUE
+  }, error = function(e) {
+    FALSE
+  }, finally = {
+    if (!is.null(con)) {
+      try(close(con), silent = TRUE)
+    }
+  })
+}
+
+asa_test_require_tor_ready <- function() {
+  asa_test_skip_if_no_tor_tests_enabled()
+
+  proxy <- asa_test_tor_proxy()
+  proxy_port <- .asa_test_parse_proxy_port(proxy, default = 9050L)
+  control_port <- asa_test_tor_control_port()
+
+  curl_path <- Sys.which("curl")
+  if (!nzchar(curl_path)) {
+    stop("Tor integration tests require `curl` on PATH.", call. = FALSE)
+  }
+
+  if (!isTRUE(asa::is_tor_running(port = proxy_port))) {
+    stop(
+      sprintf(
+        "Tor SOCKS proxy is unreachable on 127.0.0.1:%d (proxy=%s).",
+        proxy_port, proxy
+      ),
+      call. = FALSE
+    )
+  }
+
+  if (!isTRUE(.asa_test_is_port_open(control_port))) {
+    stop(
+      sprintf("Tor control port is unreachable on 127.0.0.1:%d.", control_port),
+      call. = FALSE
+    )
+  }
+
+  cookie_path <- Sys.getenv("ASA_TOR_CONTROL_COOKIE", unset = "")
+  if (nzchar(cookie_path) && !file.exists(cookie_path)) {
+    stop(
+      sprintf("Configured Tor control cookie does not exist: %s", cookie_path),
+      call. = FALSE
+    )
+  }
+
+  list(
+    proxy = proxy,
+    proxy_port = as.integer(proxy_port),
+    control_port = as.integer(control_port),
+    cookie_path = if (nzchar(cookie_path)) cookie_path else NULL
+  )
+}
+
+asa_test_tor_probe <- function(proxy = asa_test_tor_proxy(), timeout = 30L) {
+  curl_path <- Sys.which("curl")
+  if (!nzchar(curl_path)) {
+    stop("Tor probe requires `curl` on PATH.", call. = FALSE)
+  }
+
+  stdout_file <- tempfile(pattern = "asa_tor_probe_stdout_")
+  stderr_file <- tempfile(pattern = "asa_tor_probe_stderr_")
+  on.exit(unlink(c(stdout_file, stderr_file), force = TRUE), add = TRUE)
+
+  status <- suppressWarnings(system2(
+    command = curl_path,
+    args = c(
+      "-sS",
+      "--proxy", proxy,
+      "https://check.torproject.org/api/ip"
+    ),
+    stdout = stdout_file,
+    stderr = stderr_file,
+    timeout = as.integer(timeout)
+  ))
+
+  stdout_txt <- paste(readLines(stdout_file, warn = FALSE), collapse = "\n")
+  stderr_txt <- paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
+  status_int <- suppressWarnings(as.integer(status %||% 0L))
+  if (is.na(status_int)) status_int <- 0L
+
+  if (status_int != 0L) {
+    stop(
+      sprintf(
+        "Tor probe failed (status=%d, proxy=%s). stderr: %s",
+        status_int, proxy, stderr_txt
+      ),
+      call. = FALSE
+    )
+  }
+
+  parsed <- tryCatch(
+    jsonlite::fromJSON(stdout_txt),
+    error = function(e) {
+      stop(
+        sprintf("Tor probe returned non-JSON response: %s", stdout_txt),
+        call. = FALSE
+      )
+    }
+  )
+
+  is_tor_raw <- if (!is.null(parsed$IsTor)) parsed$IsTor else parsed$is_tor
+  is_tor <- if (is.logical(is_tor_raw)) {
+    isTRUE(is_tor_raw)
+  } else {
+    tolower(as.character(is_tor_raw %||% "")) %in% c("true", "1", "yes")
+  }
+  ip_raw <- if (!is.null(parsed$IP)) parsed$IP else parsed$ip
+  ip <- if (length(ip_raw) > 0L) as.character(ip_raw[[1]]) else ""
+
+  list(
+    is_tor = isTRUE(is_tor),
+    ip = ip,
+    payload = parsed,
+    raw = stdout_txt
+  )
+}
+
+# ---------------------------------------------------------------------------
 # Agent-init-or-skip helper
 # ---------------------------------------------------------------------------
 

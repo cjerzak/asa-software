@@ -660,6 +660,25 @@ Sys.setenv(OPENAI_API_KEY = "sk-...")
 asa::build_backend(conda_env = "asa_env", python_version = "3.12", force = TRUE)
 ```
 
+### Running Tor integration tests
+
+Tor integration tests are opt-in outside CI and verify:
+- egress is routed through Tor (`IsTor=true`),
+- Tor SOCKS/control ports are reachable,
+- control-port rotation sanity (`NEWNYM` path) works.
+
+```bash
+export ASA_RUN_TOR_TESTS=true
+export ASA_TOR_TEST_PROXY="socks5h://127.0.0.1:9050"
+export ASA_TOR_TEST_CONTROL_PORT="9051"
+# Optional when using cookie auth from a custom Tor instance:
+export ASA_TOR_CONTROL_COOKIE="/path/to/control_auth_cookie"
+
+R -q -e 'devtools::test("asa", filter = "tor-proxy-integration")'
+```
+
+If `ASA_RUN_TOR_TESTS=true` and Tor is not reachable, these tests fail fast by design.
+
 **Cost considerations:**
 - Web search (DuckDuckGo, Wikipedia): Free
 - LLM costs vary by backend: OpenAI ~$0.01-0.10/task, Groq ~$0.001/task
@@ -667,14 +686,14 @@ asa::build_backend(conda_env = "asa_env", python_version = "3.12", force = TRUE)
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2026-02-23 14:18:42 CST | **Status:** PASS
+**Last Run:** 2026-02-27 12:40:14 CST | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.088s | 0.09s | 0.98x | PASS |
-| `helper_funcs` | 0.053s | 0.07s | 0.76x | PASS |
-| `combined` | 0.078s | 0.09s | 0.86x | PASS |
-| `agent_search` | 31.2s | 18s | 1.77x | PASS |
+| `build_prompt` | 0.122s | 0.09s | 1.36x | PASS |
+| `helper_funcs` | 0.066s | 0.07s | 0.94x | PASS |
+| `combined` | 0.105s | 0.09s | 1.15x | PASS |
+| `agent_search` | 31.7s | 18s | 1.80x | PASS |
 
 Tests fail if time exceeds 4.00x baseline. 
 See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
