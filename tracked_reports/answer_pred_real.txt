@@ -8,9 +8,9 @@
   "education_field": "Unknown",
   "education_field_source": null,
   "education_field_confidence": null,
-  "prior_occupation": "Vocal Ramona Moye Camaconi MAS",
-  "prior_occupation_source": "https://web.archive.org/web/20180214145500/http:/www.diputados.bo:80/prensa/noticias/pese-las-pugnas-en-la-oposición-la-cámara-de-diputados-conformó-sus-12-comisiones-y",
-  "prior_occupation_confidence": 0.9,
+  "prior_occupation": "Unknown",
+  "prior_occupation_source": null,
+  "prior_occupation_confidence": null,
   "class_background": "Unknown",
   "class_background_source": null,
   "class_background_confidence": null,
@@ -30,5 +30,5 @@
   "lgbtq_details_source": null,
   "lgbtq_details_confidence": null,
   "confidence": 0.9,
-  "justification": "Ramona Moye Camaconi is an indigenous Moxeño Trinitario politician from the Beni department of Bolivia, elected to the Chamber of Deputies in 2014. Official government records confirm her birth year as 1982 and her origin in Beni. While she is widely recognized as an indigenous leader from the TIPNIS territory, specific details regarding her formal education level and precise occupation prior to entering the legislature are not documented in available public records."
+  "justification": "Ramona Moye Camaconi is an indigenous politician from the TIPNIS region of Beni, Bolivia. While her birth year (1982) and birth place (Beni) are documented in official parliamentary records, specific details regarding her formal education level, institution, and prior professional occupation are not publicly available in standard biographical databases or official government profiles. As an indigenous leader from the Moxeño Trinitario community, her background is rooted in community leadership, but specific class-defining occupations or educational degrees are not disclosed."
 }
