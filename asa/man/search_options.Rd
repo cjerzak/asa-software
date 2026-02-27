@@ -14,6 +14,7 @@ search_options(
   humanize_timing = NULL,
   jitter_factor = NULL,
   allow_direct_fallback = NULL,
+  selenium_browser_preference = NULL,
   stability_profile = NULL,
   performance_profile = NULL,
   webpage_policy = NULL,
@@ -74,6 +75,9 @@ E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1
 
 \item{inter_search_delay}{Minimum delay in seconds between consecutive searches.
 Helps avoid rate limiting from search providers. Default: 1.5.}
+
+\item{selenium_browser_preference}{Selenium browser engine preference order.
+One of \code{"firefox_first"} (default) or \code{"chrome_first"}.}
 
 \item{performance_profile}{Orchestration profile optimized for one of:
 \code{"latency"}, \code{"balanced"}, or \code{"quality"}.}
@@ -200,6 +204,8 @@ The search system uses a 4-tier fallback architecture:
 
 The retry/backoff settings apply within each tier. If all retries
 are exhausted, the system automatically falls back to the next tier.
+Selenium browser initialization defaults to \code{"firefox_first"} and
+falls back to Chrome engines when Firefox is unavailable.
 }
 \examples{
 \dontrun{

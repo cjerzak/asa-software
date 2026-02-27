@@ -1180,6 +1180,8 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param captcha_backoff_base Base multiplier for CAPTCHA backoff (default: 3)
 #' @param page_load_wait Wait time after page load in seconds (default: 2)
 #' @param inter_search_delay Delay between consecutive searches in seconds (default: 1.5)
+#' @param selenium_browser_preference Selenium browser engine preference order.
+#'   One of \code{"firefox_first"} (default) or \code{"chrome_first"}.
 #' @param conda_env Name of the conda environment. Defaults to the package
 #'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
 #'
@@ -1206,7 +1208,8 @@ configure_search <- function(max_results = NULL,
                              captcha_backoff_base = NULL,
                              page_load_wait = NULL,
                              inter_search_delay = NULL,
-                             conda_env = NULL) {
+                             conda_env = NULL,
+                             selenium_browser_preference = NULL) {
   conda_env <- conda_env %||% .get_default_conda_env()
   # Validate inputs
   .validate_configure_search(
@@ -1218,6 +1221,7 @@ configure_search <- function(max_results = NULL,
     captcha_backoff_base = captcha_backoff_base,
     page_load_wait = page_load_wait,
     inter_search_delay = inter_search_delay,
+    selenium_browser_preference = selenium_browser_preference,
     conda_env = conda_env
   )
 
@@ -1235,7 +1239,8 @@ configure_search <- function(max_results = NULL,
       backoff_multiplier = backoff_multiplier,
       captcha_backoff_base = captcha_backoff_base,
       page_load_wait = page_load_wait,
-      inter_search_delay = inter_search_delay
+      inter_search_delay = inter_search_delay,
+      selenium_browser_preference = selenium_browser_preference
     )
 
     # Build message showing which values were set
@@ -1245,6 +1250,9 @@ configure_search <- function(max_results = NULL,
     if (!is.null(max_retries)) set_values <- c(set_values, paste0("max_retries=", max_retries))
     if (!is.null(retry_delay)) set_values <- c(set_values, paste0("retry_delay=", retry_delay))
     if (!is.null(inter_search_delay)) set_values <- c(set_values, paste0("inter_search_delay=", inter_search_delay))
+    if (!is.null(selenium_browser_preference)) {
+      set_values <- c(set_values, paste0("selenium_browser_preference=", selenium_browser_preference))
+    }
 
     if (length(set_values) > 0) {
       message("Search configuration updated: ", paste(set_values, collapse = ", "))

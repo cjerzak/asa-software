@@ -673,6 +673,7 @@ initialize_agent <- function(backend = NULL,
   search_humanize_timing <- ASA_HUMANIZE_TIMING
   search_jitter_factor <- ASA_JITTER_FACTOR
   search_allow_direct_fallback <- FALSE
+  search_selenium_browser_preference <- ASA_DEFAULT_SELENIUM_BROWSER_PREFERENCE
 
   if (!is.null(search) && inherits(search, "asa_search")) {
     wiki_top_k_results <- search$wiki_top_k_results %||% wiki_top_k_results
@@ -682,6 +683,7 @@ initialize_agent <- function(backend = NULL,
     search_humanize_timing <- search$humanize_timing %||% search_humanize_timing
     search_jitter_factor <- search$jitter_factor %||% search_jitter_factor
     search_allow_direct_fallback <- search$allow_direct_fallback %||% search_allow_direct_fallback
+    search_selenium_browser_preference <- search$selenium_browser_preference %||% search_selenium_browser_preference
   }
 
   wiki_top_k_results <- as.integer(wiki_top_k_results)
@@ -697,7 +699,8 @@ initialize_agent <- function(backend = NULL,
     inter_search_delay = as.numeric(search$inter_search_delay %||% ASA_DEFAULT_INTER_SEARCH_DELAY),
     humanize_timing = isTRUE(search_humanize_timing),
     jitter_factor = as.numeric(search_jitter_factor),
-    allow_direct_fallback = isTRUE(search_allow_direct_fallback)
+    allow_direct_fallback = isTRUE(search_allow_direct_fallback),
+    selenium_browser_preference = as.character(search_selenium_browser_preference)
   )
 
   # Configure baseline OpenWebpage timeouts (Tor-friendly). Per-run overrides can

@@ -1,37 +1,37 @@
 AGENT ACTION MAP
 ================
-Steps captured: 20
-LangGraph timed steps: 15
+Steps captured: 22
+LangGraph timed steps: 19
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
-      Source-backed found values: 0 (across 12 tracked fields)
-      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 3 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 9 tool-call turn(s), 1 answer turn(s)
-      Tool results: 9 total (Tool Search=7, Tool OpenWebpage=2)
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 10 total (Tool Search=9, Tool OpenWebpage=1)
       Structured terminal answer emitted
-      Anomalies: 5 flagged step(s) (EMPTY_RESULT=4, LOW_EVIDE..._RESULT=5, OFF_TOPIC_RESULT=0)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=2, OFF_TOPIC_RESULT=0)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 7.0531m (tok=0, n=7)
-      agent: 0.5017m (tok=33542, n=7)
-      finalize: 0.0756m (tok=7060, n=1)
+      tools: 8.4783m (tok=0, n=9)
+      agent: 0.4955m (tok=50760, n=9)
+      finalize: 0.1427m (tok=10494, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #02 tools: 1.6442m (tok=0)
-      #10 tools: 1.1318m (tok=0)
-      #06 tools: 0.9561m (tok=0)
-      #08 tools: 0.9190m (tok=0)
-      #12 tools: 0.8586m (tok=0)
-  +-- [TIMING] wall=7.6315m nodes=7.6305m delta=+0.0010m (overhead)
+      #02 tools: 1.7173m (tok=0)
+      #18 tools: 1.2554m (tok=0)
+      #14 tools: 1.1578m (tok=0)
+      #10 tools: 0.8861m (tok=0)
+      #08 tools: 0.8646m (tok=0)
+  +-- [TIMING] wall=9.1180m nodes=9.1165m delta=+0.0016m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -49,41 +49,38 @@ START
       detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...tml </URL> __END_OF_SOURC...
   +-- [04] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
+      tok: in=1483 out=268 total=1751
+      min: 0.0983m
       detail: OpenWebpage(url=https://radioluisdefuentes...ra-de-diputados)
   +-- [05] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
-      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+      detail: URL: https://radioluisdefuentes.com/nacion/diputada-moy...strador/] · septiembre 5,...
   +-- [06] Requested 1 tool call (Search)
       by: AI
-      tok: in=1483 out=222 total=1705
-      min: 0.1247m
-      detail: Search(query=Ramona Moye Camaconi biografía hoja de vi...)
+      tok: in=3221 out=163 total=3384
+      min: 0.0415m
+      detail: Search(query=Ramona Moye Camaconi biografía Cámara de ...)
   +-- [07] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> La secretaria del comit...lle </URL> __END_OF_SOURC...
-  +-- [08] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Página oficialdelaCámar...tml </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (Search)
       by: AI
-      tok: in=2782 out=261 total=3043
-      min: 0.0498m
-      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
+      tok: in=3778 out=300 total=4078
+      min: 0.0595m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
   +-- [09] Returned result
-      by: Tool OpenWebpage
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
-      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
   +-- [10] Requested 1 tool call (Search)
       by: AI
-      tok: in=3529 out=354 total=3883
-      min: 0.0544m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
+      tok: in=3820 out=408 total=4228
+      min: 0.0550m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye")
   +-- [11] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
@@ -91,19 +88,18 @@ START
       detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...na </URL> __END_OF_SOURCE...
   +-- [12] Requested 1 tool call (Search)
       by: AI
-      tok: in=4727 out=348 total=5075
-      min: 0.0579m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
+      tok: in=5053 out=401 total=5454
+      min: 0.0514m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye")
   +-- [13] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
       detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona - Wikiped...na </URL> __END_OF_SOURCE...
   +-- [14] Requested 1 tool call (Search)
       by: AI
-      tok: in=5970 out=418 total=6388
-      min: 0.0491m
+      tok: in=6286 out=288 total=6574
+      min: 0.0395m
       detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
   +-- [15] Returned result
       by: Tool Search
@@ -111,27 +107,38 @@ START
       min: n/a
   +-- [16] Requested 1 tool call (Search)
       by: AI
-      tok: in=6012 out=805 total=6817
-      min: 0.0943m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye")
+      tok: in=6328 out=341 total=6669
+      min: 0.0510m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
   +-- [17] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...ios </URL> __END_OF_SOURC...
   +-- [18] Requested 1 tool call (Search)
       by: AI
-      tok: in=6051 out=580 total=6631
-      min: 0.0716m
-      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye")
+      tok: in=8494 out=278 total=8772
+      min: 0.0454m
+      detail: Search(query="Ramona Moye Camaconi" biografía estudios...)
   +-- [19] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-  +-- [20] Produced structured answer
+      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...lle </URL> __END_OF_SOURC...
+  +-- [20] Requested 1 tool call (Search)
       by: AI
-      tok: in=6436 out=624 total=7060
-      min: 0.0756m
+      tok: in=9569 out=281 total=9850
+      min: 0.0538m
+      detail: Search(query="Ramona Moye Camaconi" Directorio Legisla...)
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: 1720476. Mr. Pem...pdf </URL> __END_OF_SOURC...
+  +-- [22] Produced structured answer
+      by: AI
+      tok: in=9244 out=1250 total=10494
+      min: 0.1427m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_level_source":null,"education_level_confide...
+      detail: {"education_level":"Unknown","education_level_source":n...in available public recor...
 END

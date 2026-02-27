@@ -440,6 +440,31 @@ test_that(".validate_configure_search validates numeric parameters", {
     captcha_backoff_base = NULL, page_load_wait = NULL,
     inter_search_delay = NULL, conda_env = "asa_env"
   ), "backoff_multiplier.*be <= 5")
+
+  # Selenium browser preference values
+  expect_silent(.validate_configure_search(
+    max_results = NULL, timeout = NULL, max_retries = NULL,
+    retry_delay = NULL, backoff_multiplier = NULL,
+    captcha_backoff_base = NULL, page_load_wait = NULL,
+    inter_search_delay = NULL, conda_env = "asa_env",
+    selenium_browser_preference = "firefox_first"
+  ))
+
+  expect_silent(.validate_configure_search(
+    max_results = NULL, timeout = NULL, max_retries = NULL,
+    retry_delay = NULL, backoff_multiplier = NULL,
+    captcha_backoff_base = NULL, page_load_wait = NULL,
+    inter_search_delay = NULL, conda_env = "asa_env",
+    selenium_browser_preference = "chrome_first"
+  ))
+
+  expect_error(.validate_configure_search(
+    max_results = NULL, timeout = NULL, max_retries = NULL,
+    retry_delay = NULL, backoff_multiplier = NULL,
+    captcha_backoff_base = NULL, page_load_wait = NULL,
+    inter_search_delay = NULL, conda_env = "asa_env",
+    selenium_browser_preference = "firefox_only"
+  ), "selenium_browser_preference")
 })
 
 test_that(".validate_process_outputs validates inputs", {

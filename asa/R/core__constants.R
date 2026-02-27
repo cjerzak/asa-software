@@ -224,6 +224,12 @@ ASA_HUMANIZE_TIMING <- TRUE
 #' @keywords internal
 ASA_JITTER_FACTOR <- 0.5
 
+#' Default Selenium Browser Preference
+#' @description Controls Selenium engine order in browser tier.
+#'   "firefox_first" uses Firefox before Chrome fallbacks.
+#' @keywords internal
+ASA_DEFAULT_SELENIUM_BROWSER_PREFERENCE <- "firefox_first"
+
 # ============================================================================
 # CIRCUIT BREAKER (for parallel batch execution)
 # ============================================================================

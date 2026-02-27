@@ -9,7 +9,8 @@
     backoff_multiplier = 1.5,
     captcha_backoff_base = 5,
     page_load_wait = 2,
-    inter_search_delay = 1.5
+    inter_search_delay = 1.5,
+    selenium_browser_preference = "firefox_first"
   )
 }
 
@@ -26,7 +27,8 @@
                  captcha_backoff_base = NULL,
                  page_load_wait = NULL,
                  inter_search_delay = NULL,
-                 conda_env = NULL) {
+                 conda_env = NULL,
+                 selenium_browser_preference = NULL) {
     call <- list(
       max_results = max_results,
       timeout = timeout,
@@ -36,7 +38,8 @@
       captcha_backoff_base = captcha_backoff_base,
       page_load_wait = page_load_wait,
       inter_search_delay = inter_search_delay,
-      conda_env = conda_env
+      conda_env = conda_env,
+      selenium_browser_preference = selenium_browser_preference
     )
     state$calls[[length(state$calls) + 1L]] <- call
 
@@ -351,6 +354,7 @@ test_that(".with_search_config prefers wrapper-scoped SearchConfig when agent wr
   expect_identical(out, "ok")
   expect_equal(inside_cfg$max_results, 12L)
   expect_equal(inside_cfg$timeout, 11)
+  expect_identical(inside_cfg$selenium_browser_preference, "firefox_first")
   expect_identical(wrapper$search_config$max_results, 9L)
 })
 

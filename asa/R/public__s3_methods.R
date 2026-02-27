@@ -401,6 +401,8 @@ print.asa_temporal <- function(x, ...) {
 #'   E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1.5.
 #' @param inter_search_delay Minimum delay in seconds between consecutive searches.
 #'   Helps avoid rate limiting from search providers. Default: 1.5.
+#' @param selenium_browser_preference Selenium browser engine preference order.
+#'   One of \code{"firefox_first"} (default) or \code{"chrome_first"}.
 #' @param wiki_top_k_results Number of Wikipedia search results to fetch per
 #'   query (default: 5). Higher values may provide more coverage at the cost of
 #'   latency/noise.
@@ -485,6 +487,8 @@ print.asa_temporal <- function(x, ...) {
 #'
 #' The retry/backoff settings apply within each tier. If all retries
 #' are exhausted, the system automatically falls back to the next tier.
+#' Selenium browser initialization defaults to \code{"firefox_first"} and
+#' falls back to Chrome engines when Firefox is unavailable.
 #'
 #' @examples
 #' \dontrun{
@@ -524,6 +528,7 @@ search_options <- function(max_results = NULL,
                            humanize_timing = NULL,
                            jitter_factor = NULL,
                            allow_direct_fallback = NULL,
+                           selenium_browser_preference = NULL,
                            stability_profile = NULL,
                            performance_profile = NULL,
                            webpage_policy = NULL,
@@ -564,6 +569,22 @@ search_options <- function(max_results = NULL,
                            wiki_top_k_results = NULL,
                            wiki_doc_content_chars_max = NULL,
                            search_doc_content_chars_max = NULL) {
+  browser_preference <- tolower(trimws(as.character(
+    selenium_browser_preference %||% ASA_DEFAULT_SELENIUM_BROWSER_PREFERENCE
+  )))
+  browser_preference <- browser_preference[!is.na(browser_preference) & nzchar(browser_preference)]
+  browser_preference <- if (length(browser_preference) == 0L) {
+    ASA_DEFAULT_SELENIUM_BROWSER_PREFERENCE
+  } else {
+    browser_preference[[1]]
+  }
+  if (!browser_preference %in% c("firefox_first", "chrome_first")) {
+    stop(
+      "`selenium_browser_preference` must be one of: firefox_first, chrome_first.",
+      call. = FALSE
+    )
+  }
+
   profile <- tolower(as.character(stability_profile %||% "stealth_first"))
   if (!profile %in% c("deterministic", "balanced", "stealth_first")) {
     profile <- "stealth_first"
@@ -723,6 +744,7 @@ search_options <- function(max_results = NULL,
       humanize_timing = humanize_timing %||% ASA_HUMANIZE_TIMING,
       jitter_factor = jitter_factor %||% ASA_JITTER_FACTOR,
       allow_direct_fallback = allow_direct_fallback %||% FALSE,
+      selenium_browser_preference = browser_preference,
       stability_profile = profile,
       performance_profile = profile_perf,
       webpage_policy = normalized_webpage_policy,
@@ -793,6 +815,10 @@ print.asa_search <- function(x, ...) {
   if (!is.null(x$performance_profile) &&
       !identical(x$performance_profile, "balanced")) {
     cat(", performance_profile=", x$performance_profile, sep = "")
+  }
+  if (!is.null(x$selenium_browser_preference) &&
+      !identical(x$selenium_browser_preference, ASA_DEFAULT_SELENIUM_BROWSER_PREFERENCE)) {
+    cat(", selenium_browser_preference=", x$selenium_browser_preference, sep = "")
   }
   if (is.list(x$webpage_policy) && !is.null(x$webpage_policy$max_open_calls)) {
     cat(", webpage_max_open_calls=", x$webpage_policy$max_open_calls, sep = "")

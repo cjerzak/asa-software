@@ -1,8 +1,27 @@
 {
-  "run_id": "trace_real_20260226T213204",
-  "generated_at_utc": "2026-02-27T03:40:04Z",
+  "run_id": "trace_real_20260226T214145",
+  "generated_at_utc": "2026-02-27T03:50:59Z",
   "benchmark_mode": "blind",
   "current": {
+    "exact_match": 5,
+    "semantic_match": 5,
+    "total_fields": 12,
+    "evidence_quality": 0.9,
+    "low_quality_source_urls": null,
+    "grounded_fields": 3,
+    "tokens_used": 61254,
+    "tokens_per_grounded_field": 20418,
+    "finalization_invariant_failures": 9,
+    "quality_gate_failures": 9,
+    "quality_gate_failed_current": true,
+    "quality_gate_reason_current": "global_confidence_below_min",
+    "confidence_min_threshold_current": 0.55,
+    "global_confidence_payload": 0.9,
+    "global_confidence_gate_score": 0.4936,
+    "global_confidence_source": "completion_gate",
+    "global_confidence": 0.4936
+  },
+  "baseline": {
     "exact_match": 5,
     "semantic_match": 5,
     "total_fields": 12,
@@ -21,33 +40,14 @@
     "global_confidence_source": "completion_gate",
     "global_confidence": 0
   },
-  "baseline": {
-    "exact_match": 5,
-    "semantic_match": 5,
-    "total_fields": 12,
-    "evidence_quality": 0.9,
-    "low_quality_source_urls": null,
-    "grounded_fields": 3,
-    "tokens_used": 48575,
-    "tokens_per_grounded_field": 16191.6667,
-    "finalization_invariant_failures": 7,
-    "quality_gate_failures": 8,
-    "quality_gate_failed_current": true,
-    "quality_gate_reason_current": "global_confidence_below_min",
-    "confidence_min_threshold_current": 0.55,
-    "global_confidence_payload": 0.5594,
-    "global_confidence_gate_score": 0.4894,
-    "global_confidence_source": "completion_gate",
-    "global_confidence": 0.4894
-  },
   "delta": {
     "exact_match_delta": 0,
     "semantic_match_delta": 0,
-    "evidence_quality_delta": -0.9,
-    "global_confidence_delta": -0.4894,
-    "quality_gate_failures_delta": -1,
-    "tokens_used_delta": -7973,
+    "evidence_quality_delta": 0.9,
+    "global_confidence_delta": 0.4936,
+    "quality_gate_failures_delta": 2,
+    "tokens_used_delta": 20652,
     "tokens_per_grounded_field_delta": "NA",
-    "invariant_failures_delta": 0
+    "invariant_failures_delta": 2
   }
 }

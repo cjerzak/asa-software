@@ -3,7 +3,7 @@
 # custom_duckduckgo.py
 #
 # LangChain‑compatible DuckDuckGo search wrapper with:
-#   • optional real Chrome/Chromium via Selenium
+#   • optional real Selenium browser tier (Firefox-first or Chrome-first)
 #   • proxy + arbitrary headers on every tier
 #   • automatic proxy‑bypass for Chromedriver handshake
 #   • smart retries and a final pure‑Requests HTML fallback
@@ -88,6 +88,8 @@ class SearchConfig:
         jitter_factor: Jitter range as fraction of base delay (default: 0.5 = ±50%)
         allow_direct_fallback: Allow fallback to direct IP (no proxy) on final retry (default: False)
             WARNING: Enabling this defeats anonymity - only use if you don't need Tor protection
+        selenium_browser_preference: Browser engine preference order for Selenium tier.
+            One of: "firefox_first" (default), "chrome_first"
     """
     max_results: int = 10
     timeout: float = 30.0
@@ -100,6 +102,39 @@ class SearchConfig:
     humanize_timing: bool = True
     jitter_factor: float = 0.5
     allow_direct_fallback: bool = False  # CRITICAL: Default OFF to preserve anonymity
+    selenium_browser_preference: str = "firefox_first"
+
+
+_SELENIUM_BROWSER_PREFERENCES = ("firefox_first", "chrome_first")
+
+
+def _normalize_selenium_browser_preference(value: Any) -> str:
+    """Normalize browser preference to a supported enum value."""
+    if value is None:
+        return "firefox_first"
+    try:
+        normalized = str(value).strip().lower()
+    except Exception:
+        return "firefox_first"
+    if normalized in _SELENIUM_BROWSER_PREFERENCES:
+        return normalized
+    return "firefox_first"
+
+
+def _resolve_browser_engine_order(
+    preference: str,
+    *,
+    disable_uc: bool = False,
+) -> List[str]:
+    """Return concrete engine attempt order for driver initialization."""
+    normalized = _normalize_selenium_browser_preference(preference)
+    if normalized == "chrome_first":
+        order = ["uc_chrome", "chrome", "firefox"]
+    else:
+        order = ["firefox", "uc_chrome", "chrome"]
+    if disable_uc:
+        order = [engine for engine in order if engine != "uc_chrome"]
+    return order
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -276,6 +311,7 @@ def configure_search(
     inter_search_delay: float = None,
     humanize_timing: bool = None,
     jitter_factor: float = None,
+    selenium_browser_preference: str = None,
 ) -> SearchConfig:
     """Configure global search defaults. Call from R via reticulate.
 
@@ -285,6 +321,8 @@ def configure_search(
     Args:
         humanize_timing: Enable/disable human-like random jitter on delays
         jitter_factor: Jitter range as fraction of base delay (0.5 = ±50%)
+        selenium_browser_preference: Browser initialization preference order.
+            One of "firefox_first" (default) or "chrome_first".
     """
     global _default_config
     with _config_lock:
@@ -308,6 +346,10 @@ def configure_search(
             _default_config.humanize_timing = humanize_timing
         if jitter_factor is not None:
             _default_config.jitter_factor = jitter_factor
+        if selenium_browser_preference is not None:
+            _default_config.selenium_browser_preference = _normalize_selenium_browser_preference(
+                selenium_browser_preference
+            )
         return _default_config
 
 
@@ -327,6 +369,9 @@ def _copy_search_config(config: Optional[SearchConfig] = None) -> SearchConfig:
             humanize_timing=bool(src.humanize_timing),
             jitter_factor=float(src.jitter_factor),
             allow_direct_fallback=bool(src.allow_direct_fallback),
+            selenium_browser_preference=_normalize_selenium_browser_preference(
+                getattr(src, "selenium_browser_preference", "firefox_first")
+            ),
         )
     except Exception:
         # Last-resort: avoid sharing mutable global config instance.
@@ -1967,13 +2012,13 @@ def _new_driver(
     headless: bool,
     bypass_proxy_for_driver: bool,
     use_proxy_for_browser: bool = True,
-) -> Any:  # Returns UC Chrome, Firefox, or standard Chrome
+    config: SearchConfig | None = None,
+) -> Any:  # Returns a Selenium WebDriver instance
     """Create a WebDriver instance with maximum stealth measures.
 
-    Priority order (best stealth first):
-    1. undetected-chromedriver (UC) - best anti-detection, handles most bot checks
-    2. Firefox with stealth options - good fallback, different fingerprint
-    3. Standard Chrome with manual stealth - last resort
+    Driver engine order is configured through SearchConfig:
+    - firefox_first: Firefox -> UC Chrome -> standard Chrome
+    - chrome_first: UC Chrome -> standard Chrome -> Firefox
 
     Args:
         proxy: SOCKS or HTTP proxy URL
@@ -1981,9 +2026,10 @@ def _new_driver(
         headless: Run in headless mode
         bypass_proxy_for_driver: Temporarily clear proxy for driver download
         use_proxy_for_browser: Whether to use proxy for actual browsing
+        config: Optional SearchConfig carrying browser preference overrides
 
     Returns:
-        WebDriver instance (UC Chrome, Firefox, or standard Chrome)
+        WebDriver instance
     """
     # Selenium Manager writes metadata/drivers into a cache directory.
     # In locked-down environments (containers, sandboxes, some CI runners),
@@ -2018,66 +2064,57 @@ def _new_driver(
     random_viewport = random.choice(_STEALTH_VIEWPORTS)
     random_lang = random.choice(_STEALTH_LANGUAGES)
 
-    driver = None
     ignore_path = str(os.environ.get("ASA_IGNORE_PATH_CHROMEDRIVER", "")).lower() in ("1", "true", "yes")
     disable_uc = str(os.environ.get("ASA_DISABLE_UC", "")).lower() in ("1", "true", "yes") or ignore_path
     chrome_major = _detect_chrome_major()
-    try:
-        # ════════════════════════════════════════════════════════════════════
-        # TIER 1: undetected-chromedriver (UC) - BEST STEALTH
-        # ════════════════════════════════════════════════════════════════════
-        # UC patches ChromeDriver to evade detection by anti-bot services.
-        # It handles: webdriver flag, CDP detection, headless detection, etc.
+    cfg = config if isinstance(config, SearchConfig) else _default_config
+    browser_preference = _normalize_selenium_browser_preference(
+        getattr(cfg, "selenium_browser_preference", "firefox_first")
+    )
+    engine_order = _resolve_browser_engine_order(browser_preference, disable_uc=disable_uc)
+    driver_errors: List[str] = []
+
+    def _create_uc_driver() -> Any:
+        driver = None
+        import undetected_chromedriver as uc
+
+        logger.info("Attempting undetected-chromedriver (UC)")
+
+        # UC options - it handles most stealth automatically
+        uc_options = uc.ChromeOptions()
+
+        # Headless mode - UC supports headless but it's more detectable
+        if headless:
+            uc_options.add_argument("--headless=new")
+
+        # Window size
+        uc_options.add_argument(f"--window-size={random_viewport[0]},{random_viewport[1]}")
+
+        # Disable GPU (reduces fingerprinting surface)
+        uc_options.add_argument("--disable-gpu")
+        uc_options.add_argument("--disable-dev-shm-usage")
+        uc_options.add_argument("--no-sandbox")
+
+        # Language
+        uc_options.add_argument(f"--lang={random_lang.split(',')[0]}")
+
+        # Proxy handling for UC
+        if proxy and use_proxy_for_browser:
+            if "socks" in (proxy or "").lower():
+                logger.debug("UC: SOCKS proxy detected, using proxy-server arg")
+            uc_options.add_argument(f"--proxy-server={proxy}")
+
         try:
-            if disable_uc:
-                raise ImportError("UC disabled via ASA_DISABLE_UC/ASA_IGNORE_PATH_CHROMEDRIVER")
-
-            import undetected_chromedriver as uc
-
-            logger.info("Attempting undetected-chromedriver (UC) for maximum stealth")
-
-            # UC options - it handles most stealth automatically
-            uc_options = uc.ChromeOptions()
-
-            # Headless mode - UC supports headless but it's more detectable
-            if headless:
-                uc_options.add_argument("--headless=new")
-
-            # Window size
-            uc_options.add_argument(f"--window-size={random_viewport[0]},{random_viewport[1]}")
-
-            # Disable GPU (reduces fingerprinting surface)
-            uc_options.add_argument("--disable-gpu")
-            uc_options.add_argument("--disable-dev-shm-usage")
-            uc_options.add_argument("--no-sandbox")
-
-            # Language
-            uc_options.add_argument(f"--lang={random_lang.split(',')[0]}")
-
-            # Proxy handling for UC
-            if proxy and use_proxy_for_browser:
-                # UC can handle SOCKS proxies but needs special handling
-                if "socks" in (proxy or "").lower():
-                    # For SOCKS proxy, we need to use a proxy extension or bypass
-                    # UC doesn't natively support SOCKS well in headless
-                    logger.debug("UC: SOCKS proxy detected, using proxy-server arg")
-                    uc_options.add_argument(f"--proxy-server={proxy}")
-                else:
-                    uc_options.add_argument(f"--proxy-server={proxy}")
-
-            # Create UC driver
             # use_subprocess=True helps with cleanup in parallel environments
             driver = uc.Chrome(
                 options=uc_options,
                 use_subprocess=True,
                 version_main=chrome_major,  # Prefer installed Chrome major when available
             )
-
             logger.info("Using undetected-chromedriver (UC) - maximum stealth mode")
 
             # UC handles most stealth automatically, but we can add extras
             try:
-                # Set custom user agent if needed
                 platform_override = "Win32"
                 if "mac" in random_ua.lower() or "safari" in random_ua.lower():
                     platform_override = "MacIntel"
@@ -2098,95 +2135,78 @@ def _new_driver(
                     logger.debug("UC header injection failed (non-fatal): %s", e)
 
             return driver
-
-        except ImportError as ie:
-            if disable_uc:
-                logger.info("Skipping undetected-chromedriver (%s), trying Firefox", ie)
-            else:
-                logger.debug("undetected-chromedriver not installed, trying Firefox")
-        except Exception as uc_err:
-            logger.warning("UC Chrome failed (%s), trying Firefox fallback", uc_err)
-            if driver:
-                try:
+        except Exception:
+            if driver is not None:
+                with contextlib.suppress(Exception):
                     driver.quit()
-                except Exception:
-                    pass
-                driver = None
+            raise
 
-        # ════════════════════════════════════════════════════════════════════
-        # TIER 2: Firefox with stealth options
-        # ════════════════════════════════════════════════════════════════════
-        firefox_bin = None
+    def _detect_firefox_binary() -> str | None:
         try:
             firefox_bin = shutil.which("firefox") or shutil.which("firefox-bin")
             if not firefox_bin and os.path.exists("/Applications/Firefox.app/Contents/MacOS/firefox"):
                 firefox_bin = "/Applications/Firefox.app/Contents/MacOS/firefox"
+            return firefox_bin
         except Exception:
-            firefox_bin = None
+            return None
 
-        if firefox_bin:
-            try:
-                firefox_opts = FirefoxOptions()
-                if headless:
-                    firefox_opts.add_argument("--headless")
-                firefox_opts.add_argument("--disable-gpu")
-                firefox_opts.add_argument("--no-sandbox")
-                firefox_opts.add_argument(f"--width={random_viewport[0]}")
-                firefox_opts.add_argument(f"--height={random_viewport[1]}")
-                try:
-                    firefox_opts.binary_location = firefox_bin
-                except Exception:
-                    pass
+    def _create_firefox_driver() -> Any:
+        firefox_bin = _detect_firefox_binary()
+        if not firefox_bin:
+            raise FileNotFoundError("Firefox binary not found")
 
-                # Firefox stealth preferences
-                firefox_opts.set_preference("general.useragent.override", random_ua)
-                firefox_opts.set_preference("intl.accept_languages", random_lang)
-                firefox_opts.set_preference("dom.webdriver.enabled", False)
-                firefox_opts.set_preference("useAutomationExtension", False)
-                firefox_opts.set_preference("privacy.trackingprotection.enabled", False)
-                firefox_opts.set_preference("network.http.sendRefererHeader", 2)
-                firefox_opts.set_preference("general.platform.override", "Win32")
+        firefox_opts = FirefoxOptions()
+        if headless:
+            firefox_opts.add_argument("--headless")
+        firefox_opts.add_argument("--disable-gpu")
+        firefox_opts.add_argument("--no-sandbox")
+        firefox_opts.add_argument(f"--width={random_viewport[0]}")
+        firefox_opts.add_argument(f"--height={random_viewport[1]}")
+        with contextlib.suppress(Exception):
+            firefox_opts.binary_location = firefox_bin
 
-                # Disable telemetry and crash reporting
-                firefox_opts.set_preference("toolkit.telemetry.enabled", False)
-                firefox_opts.set_preference("datareporting.healthreport.uploadEnabled", False)
-                firefox_opts.set_preference("browser.crashReports.unsubmittedCheck.autoSubmit2", False)
+        # Firefox stealth preferences
+        firefox_opts.set_preference("general.useragent.override", random_ua)
+        firefox_opts.set_preference("intl.accept_languages", random_lang)
+        firefox_opts.set_preference("dom.webdriver.enabled", False)
+        firefox_opts.set_preference("useAutomationExtension", False)
+        firefox_opts.set_preference("privacy.trackingprotection.enabled", False)
+        firefox_opts.set_preference("network.http.sendRefererHeader", 2)
+        firefox_opts.set_preference("general.platform.override", "Win32")
 
-                if proxy and use_proxy_for_browser:
-                    firefox_opts.set_preference("network.proxy.type", 1)
-                    if "socks" in (proxy or "").lower():
-                        import re
-                        match = re.match(r"socks\d*h?://([^:]+):(\d+)", proxy)
-                        if match:
-                            firefox_opts.set_preference("network.proxy.socks", match.group(1))
-                            firefox_opts.set_preference("network.proxy.socks_port", int(match.group(2)))
-                            firefox_opts.set_preference("network.proxy.socks_remote_dns", True)
+        # Disable telemetry and crash reporting
+        firefox_opts.set_preference("toolkit.telemetry.enabled", False)
+        firefox_opts.set_preference("datareporting.healthreport.uploadEnabled", False)
+        firefox_opts.set_preference("browser.crashReports.unsubmittedCheck.autoSubmit2", False)
 
-                driver = webdriver.Firefox(options=firefox_opts)
-                logger.info("Using Firefox WebDriver (stealth mode)")
+        if proxy and use_proxy_for_browser:
+            firefox_opts.set_preference("network.proxy.type", 1)
+            if "socks" in (proxy or "").lower():
+                match = re.match(r"socks\d*h?://([^:]+):(\d+)", proxy)
+                if match:
+                    firefox_opts.set_preference("network.proxy.socks", match.group(1))
+                    firefox_opts.set_preference("network.proxy.socks_port", int(match.group(2)))
+                    firefox_opts.set_preference("network.proxy.socks_remote_dns", True)
 
-                # Additional stealth via JavaScript
-                try:
-                    driver.execute_script("""
-                        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-                        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
-                        Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
-                    """)
-                except Exception as e:
-                    logger.debug("Firefox stealth script injection failed: %s", e)
+        driver = webdriver.Firefox(options=firefox_opts)
+        logger.info("Using Firefox WebDriver (stealth mode)")
 
-                return driver
+        # Additional stealth via JavaScript
+        try:
+            driver.execute_script("""
+                Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+                Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
+            """)
+        except Exception as e:
+            logger.debug("Firefox stealth script injection failed: %s", e)
 
-            except Exception as firefox_err:
-                logger.debug("Firefox unavailable (%s), trying standard Chrome", firefox_err)
-        else:
-            logger.debug("Firefox binary not found, skipping Firefox tier")
+        return driver
 
-        # ════════════════════════════════════════════════════════════════════
-        # TIER 3: Standard Chrome with manual stealth (last resort)
-        # ════════════════════════════════════════════════════════════════════
+    def _create_chrome_driver() -> Any:
         from selenium.webdriver.chrome.options import Options as ChromeOptions
         from selenium.webdriver.chrome.service import Service as ChromeService
+
         chrome_opts = ChromeOptions()
         if headless:
             chrome_opts.add_argument("--headless=new")
@@ -2208,9 +2228,9 @@ def _new_driver(
             chrome_opts.add_argument(f"--proxy-server={proxy}")
 
         driver_path = os.environ.get("ASA_CHROMEDRIVER_BIN") or os.environ.get("CHROMEDRIVER_BIN")
-        ignore_path = str(os.environ.get("ASA_IGNORE_PATH_CHROMEDRIVER", "")).lower() in ("1", "true", "yes")
+        ignore_path_local = str(os.environ.get("ASA_IGNORE_PATH_CHROMEDRIVER", "")).lower() in ("1", "true", "yes")
         restored_path = None
-        if ignore_path and not driver_path:
+        if ignore_path_local and not driver_path:
             restored_path = os.environ.get("PATH", "")
             os.environ["PATH"] = _strip_chromedriver_from_path(restored_path)
             logger.info("Ignoring PATH chromedriver entries (ASA_IGNORE_PATH_CHROMEDRIVER=1)")
@@ -2222,6 +2242,7 @@ def _new_driver(
         finally:
             if restored_path is not None:
                 os.environ["PATH"] = restored_path
+
         logger.info("Using standard Chrome WebDriver (manual stealth mode)")
 
         # Manual stealth via CDP
@@ -2244,6 +2265,47 @@ def _new_driver(
                 logger.debug("CDP header injection failed: %s", e)
 
         return driver
+
+    try:
+        logger.debug(
+            "Selenium browser preference '%s' resolved to order: %s",
+            browser_preference,
+            " -> ".join(engine_order),
+        )
+        for engine in engine_order:
+            try:
+                if engine == "uc_chrome":
+                    if disable_uc:
+                        logger.info(
+                            "Skipping undetected-chromedriver (disabled via ASA_DISABLE_UC/ASA_IGNORE_PATH_CHROMEDRIVER)"
+                        )
+                        continue
+                    return _create_uc_driver()
+                if engine == "firefox":
+                    logger.info("Attempting Firefox WebDriver")
+                    return _create_firefox_driver()
+                if engine == "chrome":
+                    logger.info("Attempting standard Chrome WebDriver")
+                    return _create_chrome_driver()
+            except ImportError as ie:
+                if engine == "uc_chrome":
+                    logger.info("Skipping undetected-chromedriver (%s)", ie)
+                else:
+                    logger.debug("Browser engine %s import failed: %s", engine, ie)
+                driver_errors.append(f"{engine}: {type(ie).__name__}: {ie}")
+            except Exception as engine_err:
+                driver_errors.append(f"{engine}: {type(engine_err).__name__}: {engine_err}")
+                if engine == "uc_chrome":
+                    logger.warning("UC Chrome failed (%s), trying next engine", engine_err)
+                elif engine == "firefox":
+                    logger.debug("Firefox unavailable (%s), trying next engine", engine_err)
+                else:
+                    logger.warning("Standard Chrome failed (%s)", engine_err)
+
+        details = "; ".join(driver_errors[:3]) if driver_errors else "no driver engines attempted"
+        raise WebDriverException(
+            f"Unable to initialize Selenium WebDriver (browser_preference={browser_preference}): {details}"
+        )
 
     finally:
         # MEDIUM FIX: Use lock to make env var restoration thread-safe
@@ -2295,6 +2357,7 @@ def _browser_search(
                 headless=headless,
                 bypass_proxy_for_driver=bypass_proxy_for_driver,
                 use_proxy_for_browser=use_proxy,
+                config=cfg,
             )
             # Use html.duckduckgo.com which is the lite/HTML version
             # url_override exists for deterministic testing (e.g., file:// fixtures)

@@ -43,4 +43,11 @@ test_that("asa_backend.search aligns with agent_api public search surface", {
 
   expect_true(isTRUE(reticulate::py_to_r(py$`_asa_same_run`)))
   expect_true(isTRUE(reticulate::py_to_r(py$`_asa_same_cfg`)))
+
+  cfg <- search_pkg$SearchConfig()
+  expect_true(reticulate::py_has_attr(cfg, "selenium_browser_preference"))
+  expect_identical(
+    reticulate::py_to_r(cfg$selenium_browser_preference),
+    "firefox_first"
+  )
 })

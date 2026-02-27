@@ -893,7 +893,8 @@
 .validate_configure_search <- function(max_results, timeout, max_retries,
                                         retry_delay, backoff_multiplier,
                                         captcha_backoff_base, page_load_wait,
-                                        inter_search_delay, conda_env) {
+                                        inter_search_delay, conda_env,
+                                        selenium_browser_preference = NULL) {
   # All parameters are optional (NULL allowed), but if provided must be valid
   if (!is.null(max_results)) {
     .validate_positive(max_results, "max_results", integer_only = TRUE)
@@ -929,6 +930,17 @@
 
   if (!is.null(inter_search_delay)) {
     .validate_positive(inter_search_delay, "inter_search_delay", allow_zero = TRUE)
+  }
+
+  if (!is.null(selenium_browser_preference)) {
+    .validate_string(selenium_browser_preference, "selenium_browser_preference")
+    browser_pref <- tolower(trimws(as.character(selenium_browser_preference)))
+    if (!browser_pref %in% c("firefox_first", "chrome_first")) {
+      stop(
+        "`selenium_browser_preference` must be one of: firefox_first, chrome_first.",
+        call. = FALSE
+      )
+    }
   }
 
   .validate_conda_env(conda_env, "conda_env")

@@ -3,61 +3,61 @@
   "source_consistency_fixes_count": 0,
   "field_demotions_count": 0,
   "recovery_promotions_count": 0,
-  "recovery_rejections_count": 10,
-  "unknown_fields_count": 10,
+  "recovery_rejections_count": 7,
+  "unknown_fields_count": 7,
   "grounding_blocks_count_current": 0,
   "source_consistency_fixes_count_current": 0,
   "field_demotions_count_current": 0,
   "recovery_promotions_count_current": 0,
-  "recovery_rejections_count_current": 10,
-  "unknown_fields_count_current": 10,
+  "recovery_rejections_count_current": 7,
+  "unknown_fields_count_current": 7,
   "off_target_tool_results_count": 0,
-  "empty_tool_results_count": 5,
-  "retry_or_replan_events": 5,
-  "quality_gate_failures": 7,
+  "empty_tool_results_count": 2,
+  "retry_or_replan_events": 2,
+  "quality_gate_failures": 9,
   "no_payload_extraction_rounds": 0,
   "webpage_no_payload_rounds": 0,
   "search_snippet_no_payload_rounds": 0,
   "webpage_llm_extraction_calls": 0,
-  "webpage_langextract_calls": 0,
-  "webpage_langextract_fallback_calls": 0,
-  "webpage_langextract_errors": 0,
-  "webpage_openwebpage_candidates_total": 2,
-  "webpage_openwebpage_candidates_selected": 0,
-  "webpage_openwebpage_skipped_hard_failures": 2,
+  "webpage_langextract_calls": 1,
+  "webpage_langextract_fallback_calls": 1,
+  "webpage_langextract_errors": 1,
+  "webpage_openwebpage_candidates_total": 1,
+  "webpage_openwebpage_candidates_selected": 1,
+  "webpage_openwebpage_skipped_hard_failures": 0,
   "webpage_openwebpage_skipped_empty": 0,
-  "webpage_deterministic_fallback_calls": 0,
+  "webpage_deterministic_fallback_calls": 1,
   "webpage_deterministic_fallback_payloads": 0,
-  "webpage_deterministic_fallback_no_payload": 0,
-  "search_snippet_llm_extraction_calls": 0,
-  "search_snippet_langextract_calls": 8,
-  "search_snippet_langextract_fallback_calls": 8,
-  "search_snippet_langextract_errors": 8,
-  "search_snippet_candidates_total": 30,
-  "search_snippet_candidates_selected": 8,
+  "webpage_deterministic_fallback_no_payload": 1,
+  "search_snippet_llm_extraction_calls": 3,
+  "search_snippet_langextract_calls": 13,
+  "search_snippet_langextract_fallback_calls": 10,
+  "search_snippet_langextract_errors": 10,
+  "search_snippet_candidates_total": 48,
+  "search_snippet_candidates_selected": 13,
   "search_snippet_skipped_duplicate_urls": 0,
-  "search_snippet_deterministic_fallback_calls": 8,
+  "search_snippet_deterministic_fallback_calls": 10,
   "search_snippet_deterministic_fallback_payloads": 0,
-  "search_snippet_deterministic_fallback_no_payload": 8,
-  "webpage_langextract_elapsed_ms_total": 0,
-  "webpage_langextract_error_elapsed_ms_total": 0,
-  "search_snippet_langextract_elapsed_ms_total": 101097,
-  "search_snippet_langextract_error_elapsed_ms_total": 101097,
-  "low_signal_rewrite_events": 2,
-  "low_signal_stop_events": 1,
+  "search_snippet_deterministic_fallback_no_payload": 10,
+  "webpage_langextract_elapsed_ms_total": 19437,
+  "webpage_langextract_error_elapsed_ms_total": 19437,
+  "search_snippet_langextract_elapsed_ms_total": 180680,
+  "search_snippet_langextract_error_elapsed_ms_total": 130516,
+  "low_signal_rewrite_events": 0,
+  "low_signal_stop_events": 0,
   "no_new_evidence_replan_events": 1,
   "no_new_evidence_stop_events": 1,
-  "low_signal_rewrite_elapsed_ms_total": 55872,
-  "low_signal_stop_elapsed_ms_total": 48714,
-  "retry_threshold_crossings": 3,
+  "low_signal_rewrite_elapsed_ms_total": 0,
+  "low_signal_stop_elapsed_ms_total": 0,
+  "retry_threshold_crossings": 0,
   "query_dedupe_escalation_events": 0,
   "empty_round_suppression_events": 0,
   "adaptive_budget_events": 1,
-  "adaptive_budget_reduced_calls_total": 7,
+  "adaptive_budget_reduced_calls_total": 8,
   "structural_repair_events": 0,
   "structural_repair_retry_events": 0,
-  "finalization_invariant_failures": 7,
-  "diagnostics_recovery_checkpoint_events": 7,
+  "finalization_invariant_failures": 9,
+  "diagnostics_recovery_checkpoint_events": 9,
   "diagnostics_recovery_retry_events": 1,
   "anchor_hard_blocks_count": 0,
   "anchor_soft_penalties_count": 0,
@@ -65,26 +65,28 @@
   "source_consistency_fixes": [],
   "field_demotion_fields": [],
   "recovery_promoted_fields": [],
-  "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
-  "unknown_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
+  "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
+  "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
   "grounding_blocked_fields_current": [],
   "source_consistency_fixes_current": [],
   "field_demotion_fields_current": [],
   "recovery_promoted_fields_current": [],
-  "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
-  "unknown_fields_current": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
+  "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
+  "unknown_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
   "field_demotion_reason_counts": {},
   "recovery_reason_counts": {
-    "recovery_blocked_anchor_mismatch": 10
+    "recovery_blocked_anchor_mismatch": 7
   },
   "unknown_reason_counts": {
-    "recovery_blocked_anchor_mismatch": 10
+    "attempted_no_verified_evidence": 7,
+    "recovery_blocked_anchor_mismatch": 7
   },
   "finalization_invariant_failures_by_reason": {
-    "diagnostics_unknown_count_mismatch": 7
+    "diagnostics_unknown_count_mismatch": 9
   },
   "unknown_fields_by_reason": {
-    "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"]
+    "attempted_no_verified_evidence": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
+    "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"]
   },
   "finalization_blocking_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
   "finalization_recovery_checkpoints": [
@@ -95,7 +97,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-02-27T03:32:18.177227Z"
+      "ts_utc": "2026-02-27T03:41:57.806567Z"
     },
     {
       "context": "agent",
@@ -104,7 +106,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-02-27T03:33:59.822757Z"
+      "ts_utc": "2026-02-27T03:43:43.342767Z"
     },
     {
       "context": "agent",
@@ -113,7 +115,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-02-27T03:34:46.979761Z"
+      "ts_utc": "2026-02-27T03:44:22.653609Z"
     },
     {
       "context": "agent",
@@ -122,7 +124,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-02-27T03:35:47.830959Z"
+      "ts_utc": "2026-02-27T03:45:03.081590Z"
     },
     {
       "context": "agent",
@@ -131,7 +133,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-02-27T03:36:45.918236Z"
+      "ts_utc": "2026-02-27T03:45:58.051164Z"
     },
     {
       "context": "agent",
@@ -140,7 +142,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-02-27T03:37:59.494155Z"
+      "ts_utc": "2026-02-27T03:46:53.596410Z"
     },
     {
       "context": "agent",
@@ -149,7 +151,25 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-02-27T03:38:55.316419Z"
+      "ts_utc": "2026-02-27T03:47:33.634931Z"
+    },
+    {
+      "context": "agent",
+      "reason": "diagnostics_unknown_count_mismatch",
+      "reasons": "diagnostics_unknown_count_mismatch",
+      "priority": "diagnostics_reconciliation",
+      "action": "none",
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
+      "ts_utc": "2026-02-27T03:48:45.833140Z"
+    },
+    {
+      "context": "agent",
+      "reason": "diagnostics_unknown_count_mismatch",
+      "reasons": "diagnostics_unknown_count_mismatch",
+      "priority": "diagnostics_reconciliation",
+      "action": "none",
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
+      "ts_utc": "2026-02-27T03:49:35.080264Z"
     }
   ],
   "anchor_mismatch_samples": [
@@ -178,14 +198,6 @@
       "candidate_score": 0
     },
     {
-      "field": "prior_occupation",
-      "reason": "recovery_blocked_anchor_mismatch",
-      "source_url": null,
-      "anchor_mode": null,
-      "anchor_strength": null,
-      "candidate_score": 0
-    },
-    {
       "field": "class_background",
       "reason": "recovery_blocked_anchor_mismatch",
       "source_url": null,
@@ -195,22 +207,6 @@
     },
     {
       "field": "disability_status",
-      "reason": "recovery_blocked_anchor_mismatch",
-      "source_url": null,
-      "anchor_mode": null,
-      "anchor_strength": null,
-      "candidate_score": 0
-    },
-    {
-      "field": "birth_place",
-      "reason": "recovery_blocked_anchor_mismatch",
-      "source_url": null,
-      "anchor_mode": null,
-      "anchor_strength": null,
-      "candidate_score": 0
-    },
-    {
-      "field": "birth_year",
       "reason": "recovery_blocked_anchor_mismatch",
       "source_url": null,
       "anchor_mode": null,
@@ -236,85 +232,67 @@
   ],
   "empty_tool_results_details": [
     {
-      "tool_name": "openwebpage",
-      "query_digest": "4f0e489dbb3691ee",
-      "error_type": "timeout",
-      "round_index": 1
-    },
-    {
-      "tool_name": "openwebpage",
-      "query_digest": "9e5b310dcc839724",
-      "error_type": "request_exception",
-      "round_index": 2
+      "tool_name": "search",
+      "query_digest": "5d5167a87b8e71b0",
+      "error_type": null,
+      "round_index": 3
     },
     {
       "tool_name": "search",
       "query_digest": "5d5167a87b8e71b0",
       "error_type": null,
-      "round_index": 5
-    },
-    {
-      "tool_name": "search",
-      "query_digest": "8fadb12eb9284f61",
-      "error_type": null,
       "round_index": 6
-    },
-    {
-      "tool_name": "search",
-      "query_digest": "8fadb12eb9284f61",
-      "error_type": null,
-      "round_index": 7
     }
   ],
-  "retrieval_interventions": ["diagnostics_recovery_checkpoint:diagnostics_reconciliation", "diagnostics_recovery_cap:diagnostics_reconciliation", "low_signal_streak_rewrite:2", "retry_escalation:low_signal", "no_new_high_quality_evidence_replan:2", "adaptive_budget_tighten:reason=diminishing_returns_budget_tighten,reduced=7", "no_new_high_quality_evidence_replan:3", "no_new_high_quality_evidence_stop:3", "no_new_high_quality_evidence_replan:4", "no_new_high_quality_evidence_stop:4", "no_new_high_quality_evidence_replan:5", "no_new_high_quality_evidence_stop:5", "no_new_high_quality_evidence_replan:6", "no_new_high_quality_evidence_stop:6", "low_signal_streak_stop:3", "no_new_high_quality_evidence_replan:7", "no_new_high_quality_evidence_stop:7"],
-  "webpage_openwebpage_skip_reasons": ["tool_error:timeout", "tool_error:request_exception"],
-  "webpage_langextract_provider": "",
-  "webpage_langextract_last_error": "",
+  "retrieval_interventions": ["diagnostics_recovery_checkpoint:diagnostics_reconciliation", "diagnostics_recovery_cap:diagnostics_reconciliation", "no_new_high_quality_evidence_replan:2", "adaptive_budget_tighten:reason=diminishing_returns_budget_tighten,reduced=8", "no_new_high_quality_evidence_replan:3", "no_new_high_quality_evidence_stop:3", "no_new_high_quality_evidence_replan:4", "no_new_high_quality_evidence_stop:4", "no_new_high_quality_evidence_replan:5", "no_new_high_quality_evidence_stop:5", "no_new_high_quality_evidence_replan:6", "no_new_high_quality_evidence_stop:6"],
+  "webpage_openwebpage_skip_reasons": [],
+  "webpage_langextract_provider": "gemini",
+  "webpage_langextract_last_error": "langextract_timeout:18.0s",
   "search_snippet_langextract_provider": "gemini",
-  "search_snippet_langextract_last_error": "no_payload",
+  "search_snippet_langextract_last_error": "langextract_timeout:18.0s",
   "anchor_strength_current": "moderate",
   "anchor_mode_current": "soft",
   "anchor_confidence_current": 0.56,
   "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
   "performance": {
     "performance_profile": "quality",
-    "tool_round_count": 7,
-    "tool_round_elapsed_ms_total": 298724,
-    "tool_round_elapsed_ms_last": 48714,
-    "tool_round_elapsed_ms_max": 67906,
-    "search_tool_calls": 7,
-    "openwebpage_tool_calls": 2,
+    "tool_round_count": 9,
+    "tool_round_elapsed_ms_total": 272375,
+    "tool_round_elapsed_ms_last": 46286,
+    "tool_round_elapsed_ms_max": 48276,
+    "search_tool_calls": 9,
+    "openwebpage_tool_calls": 1,
     "other_tool_calls": 0,
-    "search_tool_elapsed_ms_est_total": 270037,
-    "openwebpage_tool_elapsed_ms_est_total": 28687,
+    "search_tool_elapsed_ms_est_total": 254496,
+    "openwebpage_tool_elapsed_ms_est_total": 17879,
     "other_tool_elapsed_ms_est_total": 0,
-    "provider_error_count": 8,
-    "provider_error_elapsed_ms_total": 101097,
-    "low_signal_streak_peak": 3,
-    "diminishing_returns_streak_peak": 7,
+    "provider_error_count": 11,
+    "provider_error_elapsed_ms_total": 149953,
+    "low_signal_streak_peak": 1,
+    "diminishing_returns_streak_peak": 6,
     "adaptive_budget_events": 1,
-    "adaptive_budget_reduced_calls_total": 7,
+    "adaptive_budget_reduced_calls_total": 8,
     "fold_event_count": 0,
     "fold_summarizer_latency_m_total": 0,
     "fold_summarizer_latency_m_last": 0,
-    "webpage_langextract_elapsed_ms_total": 0,
-    "webpage_langextract_error_elapsed_ms_total": 0,
-    "search_snippet_langextract_elapsed_ms_total": 101097,
-    "search_snippet_langextract_error_elapsed_ms_total": 101097,
-    "low_signal_rewrite_events": 2,
-    "low_signal_stop_events": 1,
+    "webpage_langextract_elapsed_ms_total": 19437,
+    "webpage_langextract_error_elapsed_ms_total": 19437,
+    "search_snippet_langextract_elapsed_ms_total": 180680,
+    "search_snippet_langextract_error_elapsed_ms_total": 130516,
+    "low_signal_rewrite_events": 0,
+    "low_signal_stop_events": 0,
     "no_new_evidence_replan_events": 1,
     "no_new_evidence_stop_events": 1,
-    "low_signal_rewrite_elapsed_ms_total": 55872,
-    "low_signal_stop_elapsed_ms_total": 48714,
-    "retry_threshold_crossings": 3,
+    "low_signal_rewrite_elapsed_ms_total": 0,
+    "low_signal_stop_elapsed_ms_total": 0,
+    "retry_threshold_crossings": 0,
     "webpage_policy_max_open_calls": 4,
     "webpage_policy_open_only_if_score_ge": 0.25,
     "blocked_host_count_active": 0,
     "blocked_host_skip_events": 0,
     "adaptive_budget_last_reason": "diminishing_returns_budget_tighten",
     "fold_last_trigger_reason": null,
-    "provider_error_last_type": "no_payload",
-    "provider_error_last_message": "no_payload"
+    "provider_error_last_type": "langextract_timeout",
+    "provider_error_last_message": "langextract_timeout:18.0s"
   }
 }

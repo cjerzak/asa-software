@@ -412,7 +412,10 @@
         inter_search_delay = as.numeric(search$inter_search_delay),
         humanize_timing = isTRUE(search$humanize_timing %||% ASA_HUMANIZE_TIMING),
         jitter_factor = as.numeric(search$jitter_factor %||% ASA_JITTER_FACTOR),
-        allow_direct_fallback = isTRUE(search$allow_direct_fallback %||% FALSE)
+        allow_direct_fallback = isTRUE(search$allow_direct_fallback %||% FALSE),
+        selenium_browser_preference = as.character(
+          search$selenium_browser_preference %||% ASA_DEFAULT_SELENIUM_BROWSER_PREFERENCE
+        )
       )
 
       .with_config_snapshot(
@@ -451,7 +454,8 @@
     max_retries = search$max_retries,
     retry_delay = search$retry_delay,
     backoff_multiplier = search$backoff_multiplier,
-    inter_search_delay = search$inter_search_delay
+    inter_search_delay = search$inter_search_delay,
+    selenium_browser_preference = search$selenium_browser_preference
   ))
 
   if (!is.null(previous)) {

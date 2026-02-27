@@ -13,7 +13,8 @@
   captcha_backoff_base,
   page_load_wait,
   inter_search_delay,
-  conda_env
+  conda_env,
+  selenium_browser_preference = NULL
 )
 }
 \description{
