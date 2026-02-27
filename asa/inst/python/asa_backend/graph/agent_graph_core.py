@@ -1316,6 +1316,11 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "adaptive_min_remaining_calls": 1,
         "adaptive_low_value_threshold": 0.08,
         "adaptive_patience_steps": 2,
+        # Token-efficiency controller: compare evidence gain vs token spend.
+        "low_efficiency_guard_enabled": True,
+        "low_efficiency_min_gain_per_1k_tokens": 0.25,
+        "low_efficiency_replan_after_streak": 2,
+        "low_efficiency_stop_after_streak": 4,
         "webpage_policy": dict(_DEFAULT_WEBPAGE_POLICY_BY_PROFILE["balanced"]),
     },
     "field_resolver": {
@@ -1574,6 +1579,29 @@ def _normalize_orchestration_options(
         )
     except Exception:
         rc["adaptive_patience_steps"] = max(1, int(rc.get("early_stop_patience_steps", 2) or 2))
+    rc["low_efficiency_guard_enabled"] = bool(
+        rc.get("low_efficiency_guard_enabled", True)
+    )
+    rc["low_efficiency_min_gain_per_1k_tokens"] = _clamp01(
+        rc.get("low_efficiency_min_gain_per_1k_tokens"),
+        default=0.25,
+    )
+    try:
+        rc["low_efficiency_replan_after_streak"] = max(
+            1, int(rc.get("low_efficiency_replan_after_streak", 2) or 2)
+        )
+    except Exception:
+        rc["low_efficiency_replan_after_streak"] = 2
+    try:
+        rc["low_efficiency_stop_after_streak"] = max(
+            int(rc.get("low_efficiency_replan_after_streak", 2) or 2),
+            int(rc.get("low_efficiency_stop_after_streak", 4) or 4),
+        )
+    except Exception:
+        rc["low_efficiency_stop_after_streak"] = max(
+            int(rc.get("low_efficiency_replan_after_streak", 2) or 2),
+            4,
+        )
     raw_webpage_policy = None
     if isinstance(raw_retrieval_controller, dict):
         raw_webpage_policy = raw_retrieval_controller.get("webpage_policy")
@@ -5691,6 +5719,54 @@ def _select_round_openwebpage_candidate(
     return best_url
 
 
+def _select_round_openwebpage_candidates(
+    state_messages: Any,
+    round_tool_messages: Any,
+    *,
+    search_queries: Any = None,
+    selector_model: Any = None,
+    webpage_policy: Any = None,
+    blocked_hosts: Any = None,
+    now_ts: Optional[float] = None,
+    max_candidates: int = 40,
+    max_return: int = 4,
+) -> List[str]:
+    """Return ordered OpenWebpage candidates for in-round fallback attempts."""
+    try:
+        max_return = max(1, int(max_return))
+    except Exception:
+        max_return = 1
+    chosen: List[str] = []
+    augmented_state_messages = list(state_messages or [])
+    for _ in range(max_return):
+        next_url = _select_round_openwebpage_candidate(
+            augmented_state_messages,
+            round_tool_messages,
+            search_queries=search_queries,
+            selector_model=selector_model,
+            webpage_policy=webpage_policy,
+            blocked_hosts=blocked_hosts,
+            now_ts=now_ts,
+            max_candidates=max_candidates,
+        )
+        if not next_url:
+            break
+        normalized = _normalize_url_match(next_url)
+        if not normalized or normalized in chosen:
+            break
+        chosen.append(normalized)
+        # Mark candidate as already opened for next selection pass.
+        augmented_state_messages = augmented_state_messages + [
+            {
+                "role": "tool",
+                "type": "tool",
+                "name": "OpenWebpage",
+                "content": f"URL: {normalized}\nFinal URL: {normalized}",
+            }
+        ]
+    return chosen
+
+
 def _collect_tool_source_text_index(
     messages: Any,
     *,
@@ -7372,8 +7448,17 @@ def _normalize_performance_diagnostics(performance: Any) -> Dict[str, Any]:
         ),
         "low_signal_rewrite_events": _nonneg_int(existing.get("low_signal_rewrite_events", 0)),
         "low_signal_stop_events": _nonneg_int(existing.get("low_signal_stop_events", 0)),
+        "low_efficiency_replan_events": _nonneg_int(existing.get("low_efficiency_replan_events", 0)),
+        "low_efficiency_stop_events": _nonneg_int(existing.get("low_efficiency_stop_events", 0)),
         "no_new_evidence_replan_events": _nonneg_int(existing.get("no_new_evidence_replan_events", 0)),
         "no_new_evidence_stop_events": _nonneg_int(existing.get("no_new_evidence_stop_events", 0)),
+        "tokens_used_cumulative": _nonneg_int(existing.get("tokens_used_cumulative", 0)),
+        "tokens_delta_since_last_round": _nonneg_int(existing.get("tokens_delta_since_last_round", 0)),
+        "low_efficiency_streak": _nonneg_int(existing.get("low_efficiency_streak", 0)),
+        "evidence_gain_units": _nonneg_float(existing.get("evidence_gain_units", 0.0)),
+        "evidence_gain_per_1k_tokens": _nonneg_float(
+            existing.get("evidence_gain_per_1k_tokens", 0.0)
+        ),
         "low_signal_rewrite_elapsed_ms_total": _nonneg_int(
             existing.get("low_signal_rewrite_elapsed_ms_total", 0)
         ),
@@ -7445,6 +7530,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "search_snippet_langextract_error_elapsed_ms_total",
         "low_signal_rewrite_events",
         "low_signal_stop_events",
+        "low_efficiency_replan_events",
+        "low_efficiency_stop_events",
         "no_new_evidence_replan_events",
         "no_new_evidence_stop_events",
         "low_signal_rewrite_elapsed_ms_total",
@@ -7457,6 +7544,7 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "structural_repair_events",
         "structural_repair_retry_events",
         "finalization_invariant_failures",
+        "tool_call_pairing_mismatches",
         "diagnostics_recovery_checkpoint_events",
         "diagnostics_recovery_retry_events",
         "anchor_hard_blocks_count",
@@ -7642,6 +7730,7 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         out["anchor_mode_current"] = "soft"
     out["anchor_confidence_current"] = _clamp01(existing.get("anchor_confidence_current"), default=0.0)
     out["anchor_reasons_current"] = list(existing.get("anchor_reasons_current") or [])[:8]
+    out["tool_call_pairing"] = _tool_call_pairing_snapshot(existing.get("tool_call_pairing"))
     out["performance"] = _normalize_performance_diagnostics(existing.get("performance"))
     # Current-snapshot counters should always reflect latest field_status, while
     # legacy counters keep max/peak behavior for run-level telemetry.
@@ -7651,6 +7740,42 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["recovery_promotions_count_current"] = int(len(out.get("recovery_promoted_fields_current") or []))
     out["recovery_rejections_count_current"] = int(len(out.get("recovery_rejected_fields_current") or []))
     out["unknown_fields_count_current"] = int(len(out.get("unknown_fields_current") or []))
+    out["current_snapshot"] = {
+        "grounding_blocks_count": int(out.get("grounding_blocks_count_current", 0) or 0),
+        "source_consistency_fixes_count": int(out.get("source_consistency_fixes_count_current", 0) or 0),
+        "field_demotions_count": int(out.get("field_demotions_count_current", 0) or 0),
+        "recovery_promotions_count": int(out.get("recovery_promotions_count_current", 0) or 0),
+        "recovery_rejections_count": int(out.get("recovery_rejections_count_current", 0) or 0),
+        "unknown_fields_count": int(out.get("unknown_fields_count_current", 0) or 0),
+        "unknown_fields": list(out.get("unknown_fields_current") or [])[:64],
+    }
+    out["historical_snapshot"] = {
+        "grounding_blocks_count": int(out.get("grounding_blocks_count", 0) or 0),
+        "source_consistency_fixes_count": int(out.get("source_consistency_fixes_count", 0) or 0),
+        "field_demotions_count": int(out.get("field_demotions_count", 0) or 0),
+        "recovery_promotions_count": int(out.get("recovery_promotions_count", 0) or 0),
+        "recovery_rejections_count": int(out.get("recovery_rejections_count", 0) or 0),
+        "unknown_fields_count": int(out.get("unknown_fields_count", 0) or 0),
+        "unknown_fields": list(out.get("unknown_fields") or [])[:64],
+    }
+    return out
+
+
+def _apply_tool_call_pairing_diagnostics(
+    diagnostics: Any,
+    pairing_report: Any,
+) -> Dict[str, Any]:
+    out = _normalize_diagnostics(diagnostics)
+    snapshot = _tool_call_pairing_snapshot(pairing_report)
+    out["tool_call_pairing"] = snapshot
+    has_unpaired = (
+        int(snapshot.get("unpaired_tool_calls_count", 0) or 0) > 0
+        and not bool(snapshot.get("pending_on_last_message", False))
+    )
+    if has_unpaired:
+        out["tool_call_pairing_mismatches"] = int(
+            out.get("tool_call_pairing_mismatches", 0) or 0
+        ) + 1
     return out
 
 
@@ -8033,6 +8158,9 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
         "no_new_high_quality_evidence_streak",
         "adaptive_budget_triggers",
         "offtopic_counter",
+        "tokens_used_cumulative",
+        "tokens_delta_since_last_round",
+        "low_efficiency_streak",
     )
     for key in int_keys:
         try:
@@ -8045,6 +8173,16 @@ def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
             out[key] = _clamp01(existing.get(key, 0.0), default=0.0)
         except Exception:
             out[key] = 0.0
+    try:
+        out["evidence_gain_units"] = max(0.0, float(existing.get("evidence_gain_units", 0.0) or 0.0))
+    except Exception:
+        out["evidence_gain_units"] = 0.0
+    try:
+        out["evidence_gain_per_1k_tokens"] = max(
+            0.0, float(existing.get("evidence_gain_per_1k_tokens", 0.0) or 0.0)
+        )
+    except Exception:
+        out["evidence_gain_per_1k_tokens"] = 0.0
     out["controller_enabled"] = bool(existing.get("controller_enabled", True))
     out["mode"] = _normalize_component_mode(existing.get("mode"))
     out["early_stop_patience_steps"] = max(1, int(existing.get("early_stop_patience_steps", 2) or 2))
@@ -8277,6 +8415,26 @@ def _ledger_high_quality_fingerprints(
     return fingerprints
 
 
+def _state_tokens_used_total(state: Any) -> int:
+    """Best-effort cumulative token usage from state totals or token trace."""
+    try:
+        direct_total = max(0, int(state.get("tokens_used", 0) or 0))
+    except Exception:
+        direct_total = 0
+    trace_total = 0
+    for raw_entry in list(state.get("token_trace") or []):
+        if not isinstance(raw_entry, dict):
+            continue
+        usage = raw_entry.get("usage")
+        if not isinstance(usage, dict):
+            continue
+        try:
+            trace_total += max(0, int(usage.get("total_tokens", 0) or 0))
+        except Exception:
+            continue
+    return max(int(direct_total), int(trace_total))
+
+
 def _build_retrieval_metrics(
     *,
     state: Any,
@@ -8392,6 +8550,22 @@ def _build_retrieval_metrics(
     new_found_fields = sorted(list(after_found - before_found))
     out["new_required_fields"] = int(len(new_found_fields))
 
+    tokens_used_total = _state_tokens_used_total(state)
+    prior_tokens_total = int(out.get("tokens_used_cumulative", 0) or 0)
+    tokens_delta = max(0, int(tokens_used_total) - int(prior_tokens_total))
+    out["tokens_used_cumulative"] = max(int(tokens_used_total), int(prior_tokens_total))
+    out["tokens_delta_since_last_round"] = int(tokens_delta)
+    evidence_gain_units = (
+        (2.0 * float(len(new_found_fields)))
+        + (1.0 * float(new_high_quality_evidence))
+        + (0.5 * float(new_sources_count))
+    )
+    out["evidence_gain_units"] = round(max(0.0, float(evidence_gain_units)), 4)
+    out["evidence_gain_per_1k_tokens"] = round(
+        1000.0 * float(out["evidence_gain_units"]) / float(max(1, int(tokens_delta))),
+        4,
+    )
+
     required_fields = _required_field_keys(_state_expected_schema(state), field_status)
     unresolved_fields = [field for field in required_fields if field not in after_found]
     per_field = dict(out.get("per_required_field_novelty") or {})
@@ -8453,6 +8627,25 @@ def _build_retrieval_metrics(
         else:
             diminishing_streak = 0
     out["diminishing_returns_streak"] = int(max(0, diminishing_streak))
+
+    low_efficiency_enabled = bool(controller.get("low_efficiency_guard_enabled", True))
+    low_efficiency_min_gain = _clamp01(
+        controller.get("low_efficiency_min_gain_per_1k_tokens"),
+        default=0.25,
+    )
+    low_efficiency_streak = int(out.get("low_efficiency_streak", 0) or 0)
+    if search_calls_this_round > 0:
+        if (
+            low_efficiency_enabled
+            and int(tokens_delta) > 0
+            and float(out.get("evidence_gain_per_1k_tokens", 0.0) or 0.0) < float(low_efficiency_min_gain)
+            and int(new_high_quality_evidence) <= 0
+            and int(len(new_found_fields)) <= 0
+        ):
+            low_efficiency_streak = int(low_efficiency_streak) + 1
+        else:
+            low_efficiency_streak = 0
+    out["low_efficiency_streak"] = int(max(0, int(low_efficiency_streak)))
 
     off_target_counter = int((diagnostics or {}).get("off_target_tool_results_count", 0) or 0)
     out["offtopic_counter"] = off_target_counter
@@ -11896,9 +12089,215 @@ def _tool_node_error_result(
     return result
 
 
+def _message_tool_calls(message: Any) -> List[Any]:
+    """Best-effort normalized tool-call list for one assistant message."""
+    calls = _extract_response_tool_calls(message)
+    if not calls:
+        return []
+    return list(calls)
+
+
+def _tool_call_name(raw_call: Any) -> str:
+    name: Optional[str] = None
+    if isinstance(raw_call, dict):
+        name = raw_call.get("name")
+        if not name and isinstance(raw_call.get("function"), dict):
+            name = raw_call.get("function", {}).get("name")
+    else:
+        try:
+            name = getattr(raw_call, "name", None)
+            if not name:
+                fn_spec = getattr(raw_call, "function", None)
+                if isinstance(fn_spec, dict):
+                    name = fn_spec.get("name")
+                elif fn_spec is not None:
+                    name = getattr(fn_spec, "name", None)
+        except Exception:
+            name = None
+    return str(name or "").strip()
+
+
+def _tool_call_id(raw_call: Any) -> Optional[str]:
+    token = None
+    if isinstance(raw_call, dict):
+        token = raw_call.get("id") or raw_call.get("tool_call_id")
+    else:
+        try:
+            token = getattr(raw_call, "id", None) or getattr(raw_call, "tool_call_id", None)
+        except Exception:
+            token = None
+    token = str(token or "").strip()
+    return token or None
+
+
+def _tool_message_call_id(message: Any) -> Optional[str]:
+    token = None
+    if isinstance(message, dict):
+        token = message.get("tool_call_id")
+    else:
+        try:
+            token = getattr(message, "tool_call_id", None)
+        except Exception:
+            token = None
+    token = str(token or "").strip()
+    return token or None
+
+
+def _tool_call_pairing_report(
+    messages: Any,
+    *,
+    max_items: int = 64,
+) -> Dict[str, Any]:
+    """Pair assistant tool calls to tool responses and report unresolved calls."""
+    try:
+        msg_list = list(messages or [])
+    except Exception:
+        msg_list = []
+
+    issued: List[Dict[str, Any]] = []
+    tool_message_count = 0
+    unmatched_tool_messages = 0
+    max_items = max(1, int(max_items))
+
+    for msg_index, msg in enumerate(msg_list):
+        if _message_is_assistant(msg):
+            calls = _message_tool_calls(msg)
+            for call_index, raw_call in enumerate(calls):
+                raw_name = _tool_call_name(raw_call)
+                issued.append(
+                    {
+                        "id": _tool_call_id(raw_call),
+                        "name": _normalize_match_text(raw_name),
+                        "raw_name": raw_name,
+                        "message_index": int(msg_index),
+                        "call_index": int(call_index),
+                    }
+                )
+        if _message_is_tool(msg):
+            tool_message_count += 1
+
+    unresolved_indexes = list(range(len(issued)))
+    for msg in msg_list:
+        if not _message_is_tool(msg):
+            continue
+        tool_call_id = _tool_message_call_id(msg)
+        tool_name = _normalize_match_text(_tool_message_name(msg))
+        match_index = None
+        if tool_call_id:
+            for idx in unresolved_indexes:
+                issued_id = issued[idx].get("id")
+                if issued_id and str(issued_id) == str(tool_call_id):
+                    match_index = idx
+                    break
+        if match_index is None and tool_name:
+            for idx in unresolved_indexes:
+                issued_name = issued[idx].get("name")
+                if issued_name and str(issued_name) == str(tool_name):
+                    match_index = idx
+                    break
+        if match_index is None and not tool_call_id and not tool_name and unresolved_indexes:
+            match_index = unresolved_indexes[0]
+        if match_index is None:
+            unmatched_tool_messages += 1
+            continue
+        unresolved_indexes = [idx for idx in unresolved_indexes if idx != match_index]
+
+    unresolved_calls = [issued[idx] for idx in unresolved_indexes][:max_items]
+    unresolved_ids: List[str] = []
+    unresolved_names: List[str] = []
+    for item in unresolved_calls:
+        call_id = str(item.get("id") or "").strip()
+        call_name = str(item.get("raw_name") or item.get("name") or "").strip()
+        if call_id and call_id not in unresolved_ids:
+            unresolved_ids.append(call_id)
+        if call_name and call_name not in unresolved_names:
+            unresolved_names.append(call_name)
+    pending_on_last_message = bool(
+        msg_list and _has_pending_tool_calls(msg_list[-1])
+    )
+    return {
+        "issued_tool_calls_count": int(len(issued)),
+        "tool_message_count": int(tool_message_count),
+        "paired_tool_calls_count": int(max(0, len(issued) - len(unresolved_indexes))),
+        "unpaired_tool_calls_count": int(len(unresolved_indexes)),
+        "unpaired_tool_call_ids": unresolved_ids[:max_items],
+        "unpaired_tool_call_names": unresolved_names[:max_items],
+        "unpaired_calls": unresolved_calls[:max_items],
+        "unmatched_tool_messages_count": int(unmatched_tool_messages),
+        "pending_on_last_message": bool(pending_on_last_message),
+    }
+
+
+def _tool_call_pairing_snapshot(report: Any) -> Dict[str, Any]:
+    parsed = report if isinstance(report, dict) else {}
+    return {
+        "issued_tool_calls_count": max(0, int(parsed.get("issued_tool_calls_count", 0) or 0)),
+        "tool_message_count": max(0, int(parsed.get("tool_message_count", 0) or 0)),
+        "paired_tool_calls_count": max(0, int(parsed.get("paired_tool_calls_count", 0) or 0)),
+        "unpaired_tool_calls_count": max(0, int(parsed.get("unpaired_tool_calls_count", 0) or 0)),
+        "unpaired_tool_call_ids": [
+            str(v).strip()
+            for v in list(parsed.get("unpaired_tool_call_ids") or [])[:32]
+            if str(v).strip()
+        ],
+        "unpaired_tool_call_names": [
+            str(v).strip()
+            for v in list(parsed.get("unpaired_tool_call_names") or [])[:32]
+            if str(v).strip()
+        ],
+        "unmatched_tool_messages_count": max(
+            0, int(parsed.get("unmatched_tool_messages_count", 0) or 0)
+        ),
+        "pending_on_last_message": bool(parsed.get("pending_on_last_message", False)),
+    }
+
+
+def _build_synthetic_tool_skip_messages(
+    messages: Any,
+    *,
+    max_items: int = 8,
+) -> List[Any]:
+    """Emit synthetic tool responses for unresolved tool calls before final JSON."""
+    report = _tool_call_pairing_report(messages, max_items=max_items)
+    unresolved_calls = list(report.get("unpaired_calls") or [])
+    if not unresolved_calls:
+        return []
+
+    synthetic_messages: List[Any] = []
+    for idx, call in enumerate(unresolved_calls):
+        if len(synthetic_messages) >= max(1, int(max_items)):
+            break
+        call_id = str(call.get("id") or "").strip() or f"synthetic_tool_call_{idx + 1}"
+        tool_name = str(call.get("raw_name") or call.get("name") or "tool").strip() or "tool"
+        payload = {
+            "ok": False,
+            "tool": tool_name,
+            "error_type": "synthetic_skip_on_finalize",
+            "reason": "finalization_with_pending_tool_call",
+            "tool_call_id": call_id,
+        }
+        payload_text = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+        try:
+            from langchain_core.messages import ToolMessage
+
+            synthetic_messages.append(
+                ToolMessage(content=payload_text, tool_call_id=call_id, name=tool_name)
+            )
+        except Exception:
+            synthetic_messages.append(
+                {
+                    "role": "tool",
+                    "name": tool_name,
+                    "content": payload_text,
+                    "tool_call_id": call_id,
+                }
+            )
+    return synthetic_messages
+
+
 def _has_pending_tool_calls(message: Any) -> bool:
     """Return True when a message still carries pending tool calls."""
-    return bool(_extract_response_tool_calls(message))
+    return bool(_message_tool_calls(message))
 
 
 def _is_active_recursion_stop(state: Any, remaining: Optional[int] = None) -> bool:
@@ -12012,6 +12411,7 @@ def _finalization_invariant_report(
     core_counts = _core_field_resolution_counts(field_status)
     issues: List[Dict[str, Any]] = []
     reasons: List[str] = []
+    tool_pairing = _tool_call_pairing_report(state.get("messages") or [])
 
     diag_unknown_count = int(diagnostics.get("unknown_fields_count_current", 0) or 0)
     diag_unknown_fields = [
@@ -12058,6 +12458,26 @@ def _finalization_invariant_report(
             "field_status_core_unknown_fields_sample": sorted(list(status_unknown_set))[:16],
         })
 
+    if (
+        int(tool_pairing.get("unpaired_tool_calls_count", 0) or 0) > 0
+        and not bool(tool_pairing.get("pending_on_last_message", False))
+    ):
+        reasons.append("tool_call_pairing_mismatch")
+        issues.append(
+            {
+                "code": "tool_call_pairing_mismatch",
+                "unpaired_tool_calls_count": int(
+                    tool_pairing.get("unpaired_tool_calls_count", 0) or 0
+                ),
+                "unpaired_tool_call_ids_sample": list(
+                    tool_pairing.get("unpaired_tool_call_ids") or []
+                )[:8],
+                "unpaired_tool_call_names_sample": list(
+                    tool_pairing.get("unpaired_tool_call_names") or []
+                )[:8],
+            }
+        )
+
     if isinstance(terminal_payload, dict) and "justification" in terminal_payload:
         justification = terminal_payload.get("justification")
         parsed_counts = _justification_counts_from_text(justification)
@@ -12086,6 +12506,7 @@ def _finalization_invariant_report(
         "diagnostics_unknown_fields_current_sample": diag_unknown_fields_core[:16],
         "field_status_core_unknown_fields_sample": status_unknown_fields[:16],
         "diagnostics_current_snapshot_present": bool(diagnostics_has_current_snapshot),
+        "tool_call_pairing": _tool_call_pairing_snapshot(tool_pairing),
     }
 
 
@@ -13825,7 +14246,7 @@ def _apply_auto_openwebpage_followup(
     selector_model: Any = None,
     debug: bool = False,
 ) -> List[Any]:
-    """Optionally append one automatic OpenWebpage follow-up for Search output."""
+    """Optionally append automatic OpenWebpage follow-ups for Search output."""
     if had_explicit_openwebpage_call:
         return list(tool_messages or [])
     if _is_critical_recursion_step(state, remaining_steps_value(state)):
@@ -13833,49 +14254,116 @@ def _apply_auto_openwebpage_followup(
     if not _should_auto_openwebpage_followup(state, list(tool_messages or []), list(search_queries or [])):
         return list(tool_messages or [])
     budget_state = _state_budget(state)
+    now_ts = float(time.time())
     blocked_hosts = (
         budget_state.get("blocked_openwebpage_hosts")
         if isinstance(budget_state, dict)
         else {}
     )
     webpage_policy = _state_webpage_policy(state)
+    remaining_tool_budget = max(0, int(budget_state.get("tool_calls_remaining", 0) or 0))
+    opened_urls = _collect_openwebpage_urls_from_messages(
+        state.get("messages"),
+        max_urls=2048,
+    )
+    try:
+        max_open_calls = max(1, int(webpage_policy.get("max_open_calls", 3) or 3))
+    except Exception:
+        max_open_calls = 3
+    remaining_open_quota = max(0, int(max_open_calls) - int(len(opened_urls)))
+    try:
+        parallel_open_limit = max(1, int(webpage_policy.get("parallel_open_limit", 1) or 1))
+    except Exception:
+        parallel_open_limit = 1
+    follow_attempt_limit = max(
+        0,
+        min(int(remaining_tool_budget), int(remaining_open_quota), int(parallel_open_limit)),
+    )
+    if follow_attempt_limit <= 0:
+        return list(tool_messages or [])
 
-    follow_url = _select_round_openwebpage_candidate(
+    candidate_urls = _select_round_openwebpage_candidates(
         state.get("messages") or [],
         list(tool_messages or []),
         search_queries=list(search_queries or []),
         selector_model=selector_model,
         webpage_policy=webpage_policy,
         blocked_hosts=blocked_hosts,
-        now_ts=time.time(),
+        now_ts=now_ts,
+        max_return=max(1, int(follow_attempt_limit)),
     )
-    if not follow_url:
+    if not candidate_urls:
         return list(tool_messages or [])
+
+    appended_messages: List[Any] = []
+    blocked_hosts_for_round = set()
+    attempted_hosts = set()
 
     try:
         from langchain_core.messages import AIMessage
 
-        follow_ai = AIMessage(content="", tool_calls=[{
-            "name": "OpenWebpage",
-            "args": {"url": follow_url},
-            "id": f"auto_openwebpage_{uuid.uuid4().hex[:12]}",
-            "type": "tool_call",
-        }])
-        follow_state = {
-            **state,
-            "messages": list(state.get("messages", [])) + [follow_ai],
-        }
-        follow_result = base_tool_node.invoke(follow_state)
-        follow_messages = list((follow_result or {}).get("messages") or [])
-        if follow_messages:
+        for follow_url in list(candidate_urls or []):
+            if len(appended_messages) >= int(follow_attempt_limit) * 2:
+                break
+            normalized_url = _normalize_url_match(follow_url)
+            if not normalized_url:
+                continue
+            host = _url_host(normalized_url)
+            if host and host in blocked_hosts_for_round:
+                continue
+            if host and host in attempted_hosts:
+                continue
+            if host:
+                attempted_hosts.add(host)
+
+            follow_ai = AIMessage(content="", tool_calls=[{
+                "name": "OpenWebpage",
+                "args": {"url": normalized_url},
+                "id": f"auto_openwebpage_{uuid.uuid4().hex[:12]}",
+                "type": "tool_call",
+            }])
+            follow_state = {
+                **state,
+                "messages": list(state.get("messages", [])) + [follow_ai],
+            }
+            follow_result = base_tool_node.invoke(follow_state)
+            follow_messages = list((follow_result or {}).get("messages") or [])
+            if not follow_messages:
+                continue
             # Preserve tool-call pairing invariants for models (notably OpenAI):
             # Tool messages must always follow a preceding AI message that contains
             # the corresponding tool_calls entry.
-            return list(tool_messages or []) + [follow_ai] + follow_messages
+            appended_messages.extend([follow_ai] + follow_messages)
+
+            hard_failure_reasons: List[str] = []
+            for follow_msg in follow_messages:
+                if not _message_is_tool(follow_msg):
+                    continue
+                failure_reason = _openwebpage_hard_failure_reason(
+                    _message_content_to_text(_message_content_from_message(follow_msg))
+                )
+                if failure_reason:
+                    hard_failure_reasons.append(str(failure_reason))
+
+            if not hard_failure_reasons:
+                # First successful response wins; avoid redundant follow-ups.
+                break
+
+            if host and any(
+                reason in {"blocked_fetch", "bot_wall"}
+                or reason.startswith("tool_error:blocked")
+                for reason in hard_failure_reasons
+            ):
+                blocked_hosts_for_round.add(host)
+
+            # Continue to alternate candidates after hard failures.
+            continue
     except Exception as follow_exc:
         if debug:
             logger.warning("Auto OpenWebpage follow-up failed: %s", follow_exc)
 
+    if appended_messages:
+        return list(tool_messages or []) + list(appended_messages)
     return list(tool_messages or [])
 
 
@@ -14474,6 +14962,8 @@ def _create_tool_node_with_scratchpad(
         budget_state["no_signal_streak"] = max(0, int(streak))
         prior_no_new_hq_streak = int(prior_budget.get("no_new_high_quality_evidence_streak", 0) or 0)
         no_new_hq_streak = int(retrieval_metrics.get("no_new_high_quality_evidence_streak", 0) or 0)
+        prior_low_eff_streak = int((state.get("retrieval_metrics") or {}).get("low_efficiency_streak", 0) or 0)
+        low_eff_streak = int(retrieval_metrics.get("low_efficiency_streak", 0) or 0)
         budget_state["no_new_high_quality_evidence_streak"] = max(0, int(no_new_hq_streak))
         rewrite_threshold = int(retry_policy.get("rewrite_after_streak", _LOW_SIGNAL_STREAK_REWRITE_THRESHOLD))
         stop_threshold = int(retry_policy.get("stop_after_streak", _LOW_SIGNAL_STREAK_STOP_THRESHOLD))
@@ -14594,6 +15084,69 @@ def _create_tool_node_with_scratchpad(
         max_query_dedupe_hits = max(1, int(controller.get("max_query_dedupe_hits", 8) or 8))
         max_empty_round_streak = max(1, int(controller.get("max_empty_round_streak", 2) or 2))
         controller_mode = _normalize_component_mode(controller.get("mode"))
+        low_efficiency_guard_enabled = bool(controller.get("low_efficiency_guard_enabled", True))
+        low_efficiency_replan_after = max(
+            1, int(controller.get("low_efficiency_replan_after_streak", 2) or 2)
+        )
+        low_efficiency_stop_after = max(
+            int(low_efficiency_replan_after),
+            int(controller.get("low_efficiency_stop_after_streak", 4) or 4),
+        )
+        low_efficiency_replan_crossed = bool(
+            int(search_calls_delta) > 0
+            and low_efficiency_guard_enabled
+            and int(low_eff_streak) >= int(low_efficiency_replan_after)
+            and int(prior_low_eff_streak) < int(low_efficiency_replan_after)
+        )
+        low_efficiency_stop_crossed = bool(
+            int(search_calls_delta) > 0
+            and low_efficiency_guard_enabled
+            and int(low_eff_streak) >= int(low_efficiency_stop_after)
+            and int(prior_low_eff_streak) < int(low_efficiency_stop_after)
+        )
+        if (
+            int(search_calls_delta) > 0
+            and low_efficiency_guard_enabled
+            and int(low_eff_streak) >= int(low_efficiency_replan_after)
+            and not bool(budget_state.get("budget_exhausted", False))
+        ):
+            budget_state["replan_requested"] = True
+            if str(budget_state.get("priority_retry_reason") or "").strip().lower() != "structural_repair":
+                budget_state["priority_retry_reason"] = "low_efficiency"
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                f"low_efficiency_replan:{int(low_eff_streak)}",
+                max_items=64,
+            )
+        if (
+            controller_mode == "enforce"
+            and int(search_calls_delta) > 0
+            and low_efficiency_guard_enabled
+            and int(low_eff_streak) >= int(low_efficiency_stop_after)
+            and not bool(budget_state.get("budget_exhausted", False))
+        ):
+            budget_state["budget_exhausted"] = True
+            if not budget_state.get("limit_trigger_reason"):
+                budget_state["limit_trigger_reason"] = "low_efficiency"
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                f"low_efficiency_stop:{int(low_eff_streak)}",
+                max_items=64,
+            )
+        if low_efficiency_replan_crossed:
+            diagnostics["low_efficiency_replan_events"] = int(
+                diagnostics.get("low_efficiency_replan_events", 0) or 0
+            ) + 1
+            diagnostics["retry_or_replan_events"] = int(
+                diagnostics.get("retry_or_replan_events", 0) or 0
+            ) + 1
+        if low_efficiency_stop_crossed:
+            diagnostics["low_efficiency_stop_events"] = int(
+                diagnostics.get("low_efficiency_stop_events", 0) or 0
+            ) + 1
+            diagnostics["retry_or_replan_events"] = int(
+                diagnostics.get("retry_or_replan_events", 0) or 0
+            ) + 1
         if (
             dedupe_retry_throttle
             and int(search_calls_delta) > 0
@@ -14798,8 +15351,31 @@ def _create_tool_node_with_scratchpad(
             int(perf.get("diminishing_returns_streak_peak", 0)),
             int(retrieval_metrics.get("diminishing_returns_streak", 0) or 0),
         )
+        perf["tokens_used_cumulative"] = int(
+            retrieval_metrics.get("tokens_used_cumulative", 0) or 0
+        )
+        perf["tokens_delta_since_last_round"] = int(
+            retrieval_metrics.get("tokens_delta_since_last_round", 0) or 0
+        )
+        perf["low_efficiency_streak"] = int(
+            retrieval_metrics.get("low_efficiency_streak", 0) or 0
+        )
+        perf["evidence_gain_units"] = round(
+            float(retrieval_metrics.get("evidence_gain_units", 0.0) or 0.0),
+            4,
+        )
+        perf["evidence_gain_per_1k_tokens"] = round(
+            float(retrieval_metrics.get("evidence_gain_per_1k_tokens", 0.0) or 0.0),
+            4,
+        )
         perf["low_signal_rewrite_events"] = int(perf.get("low_signal_rewrite_events", 0)) + int(1 if rewrite_crossed else 0)
         perf["low_signal_stop_events"] = int(perf.get("low_signal_stop_events", 0)) + int(1 if stop_crossed else 0)
+        perf["low_efficiency_replan_events"] = int(
+            perf.get("low_efficiency_replan_events", 0)
+        ) + int(1 if low_efficiency_replan_crossed else 0)
+        perf["low_efficiency_stop_events"] = int(
+            perf.get("low_efficiency_stop_events", 0)
+        ) + int(1 if low_efficiency_stop_crossed else 0)
         perf["no_new_evidence_replan_events"] = int(
             perf.get("no_new_evidence_replan_events", 0)
         ) + int(1 if no_new_evidence_replan_crossed else 0)
@@ -14814,6 +15390,10 @@ def _create_tool_node_with_scratchpad(
         ) + int(tool_round_elapsed_ms if stop_crossed else 0)
         perf["retry_threshold_crossings"] = int(perf.get("retry_threshold_crossings", 0)) + int(
             int(1 if rewrite_crossed else 0) + int(1 if stop_crossed else 0)
+        )
+        perf["retry_threshold_crossings"] = int(perf.get("retry_threshold_crossings", 0)) + int(
+            int(1 if low_efficiency_replan_crossed else 0)
+            + int(1 if low_efficiency_stop_crossed else 0)
         )
         if adaptive_reason:
             perf["adaptive_budget_events"] = int(perf.get("adaptive_budget_events", 0)) + 1
@@ -15638,6 +16218,10 @@ def create_memory_folding_agent(
             budget_state=budget_state,
             diagnostics=diagnostics,
         )
+        diagnostics = _apply_tool_call_pairing_diagnostics(
+            diagnostics,
+            ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
+        )
         if bool(completion_gate.get("quality_gate_failed", False)):
             diagnostics["quality_gate_failures"] = int(
                 diagnostics.get("quality_gate_failures", 0) or 0
@@ -15877,6 +16461,10 @@ def create_memory_folding_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 diagnostics=diagnostics,
+            )
+            diagnostics = _apply_tool_call_pairing_diagnostics(
+                diagnostics,
+                ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
             )
             diagnostics, budget_state = _record_finalization_recovery_checkpoint(
                 diagnostics,
@@ -16135,9 +16723,27 @@ def create_memory_folding_agent(
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
         _usage = _token_usage_dict_from_message(response)
+        synthetic_tool_messages = _build_synthetic_tool_skip_messages(messages, max_items=8)
+        if synthetic_tool_messages:
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                "synthetic_tool_skip_on_finalize",
+                max_items=64,
+            )
+            repair_events.append(
+                {
+                    "repair_applied": True,
+                    "repair_reason": "synthetic_tool_skip_on_finalize",
+                    "missing_keys_count": 0,
+                    "missing_keys_sample": [],
+                    "fallback_on_failure": False,
+                    "schema_source": expected_schema_source,
+                    "context": "finalize",
+                }
+            )
         _state_for_gate = {
             **state,
-            "messages": list(messages or []) + [response],
+            "messages": list(messages or []) + list(synthetic_tool_messages or []) + [response],
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
@@ -16148,6 +16754,10 @@ def create_memory_folding_agent(
             field_status=field_status,
             budget_state=budget_state,
             diagnostics=diagnostics,
+        )
+        diagnostics = _apply_tool_call_pairing_diagnostics(
+            diagnostics,
+            ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
         )
         diagnostics, budget_state = _record_finalization_recovery_checkpoint(
             diagnostics,
@@ -16184,11 +16794,12 @@ def create_memory_folding_agent(
                 continue
             derived_values[str(key)] = entry.get("value")
 
-        out_messages = _terminal_message_update(
+        terminal_messages = _terminal_message_update(
             previous_message=messages[-1] if messages else None,
             candidate_message=response,
             emit_candidate=emit_final_message,
         )
+        out_messages = list(synthetic_tool_messages or []) + list(terminal_messages or [])
         out = {
             "messages": out_messages,
             "stop_reason": "recursion_limit",
@@ -17903,6 +18514,10 @@ def create_standard_agent(
             budget_state=budget_state,
             diagnostics=diagnostics,
         )
+        diagnostics = _apply_tool_call_pairing_diagnostics(
+            diagnostics,
+            ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
+        )
         if bool(completion_gate.get("quality_gate_failed", False)):
             diagnostics["quality_gate_failures"] = int(
                 diagnostics.get("quality_gate_failures", 0) or 0
@@ -18134,6 +18749,10 @@ def create_standard_agent(
                 field_status=field_status,
                 budget_state=budget_state,
                 diagnostics=diagnostics,
+            )
+            diagnostics = _apply_tool_call_pairing_diagnostics(
+                diagnostics,
+                ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
             )
             diagnostics, budget_state = _record_finalization_recovery_checkpoint(
                 diagnostics,
@@ -18383,9 +19002,27 @@ def create_standard_agent(
         budget_state.update(_field_status_progress(field_status))
         diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
         _usage = _token_usage_dict_from_message(response)
+        synthetic_tool_messages = _build_synthetic_tool_skip_messages(messages, max_items=8)
+        if synthetic_tool_messages:
+            diagnostics["retrieval_interventions"] = _append_limited_unique(
+                diagnostics.get("retrieval_interventions"),
+                "synthetic_tool_skip_on_finalize",
+                max_items=64,
+            )
+            repair_events.append(
+                {
+                    "repair_applied": True,
+                    "repair_reason": "synthetic_tool_skip_on_finalize",
+                    "missing_keys_count": 0,
+                    "missing_keys_sample": [],
+                    "fallback_on_failure": False,
+                    "schema_source": expected_schema_source,
+                    "context": "finalize",
+                }
+            )
         _state_for_gate = {
             **state,
-            "messages": list(messages or []) + [response],
+            "messages": list(messages or []) + list(synthetic_tool_messages or []) + [response],
             "field_status": field_status,
             "budget_state": budget_state,
             "diagnostics": diagnostics,
@@ -18396,6 +19033,10 @@ def create_standard_agent(
             field_status=field_status,
             budget_state=budget_state,
             diagnostics=diagnostics,
+        )
+        diagnostics = _apply_tool_call_pairing_diagnostics(
+            diagnostics,
+            ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
         )
         diagnostics, budget_state = _record_finalization_recovery_checkpoint(
             diagnostics,
@@ -18430,11 +19071,12 @@ def create_standard_agent(
             if str(entry.get("evidence") or "") != "derived_from_field_rule":
                 continue
             derived_values[str(key)] = entry.get("value")
-        out_messages = _terminal_message_update(
+        terminal_messages = _terminal_message_update(
             previous_message=messages[-1] if messages else None,
             candidate_message=response,
             emit_candidate=emit_final_message,
         )
+        out_messages = list(synthetic_tool_messages or []) + list(terminal_messages or [])
         out = {
             "messages": out_messages,
             "stop_reason": "recursion_limit",

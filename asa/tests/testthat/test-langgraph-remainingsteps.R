@@ -1837,6 +1837,29 @@ test_that("sanitize_finalize_response strips invalid tool calls and legacy funct
   expect_equal(as.character(event$repair_reason), "residual_tool_calls_no_content_no_schema")
 })
 
+test_that("synthetic finalize tool-skip messages preserve tool-call pairing", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+  build_synthetic <- reticulate::py_get_attr(prod, "_build_synthetic_tool_skip_messages")
+
+  pending_ai <- msgs$AIMessage(
+    content = "",
+    tool_calls = list(list(name = "Search", args = list(query = "q"), id = "call_syn_1"))
+  )
+  synthetic <- build_synthetic(list(pending_ai), max_items = 4L)
+  synthetic_msgs <- as.list(synthetic)
+
+  expect_true(length(synthetic_msgs) >= 1L)
+  first <- synthetic_msgs[[1]]
+  expect_equal(as.character(first$name), "Search")
+  expect_equal(as.character(first$tool_call_id), "call_syn_1")
+  expect_match(as.character(first$content), "synthetic_skip_on_finalize")
+})
+
 test_that("finalize_answer node sanitizes residual tool calls after tools (standard)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 

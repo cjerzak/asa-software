@@ -1,134 +1,134 @@
 AGENT ACTION MAP
 ================
-Steps captured: 19
-LangGraph timed steps: 10
+Steps captured: 20
+LangGraph timed steps: 17
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 4 found, 6 unknown, 0 pending (10 core fields)
-      Source-backed found values: 4 (across 12 tracked fields)
-      Unresolved focus: education_level, education_field, class_background, disability_stat...
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 3 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
 WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 8 tool-call turn(s), 1 answer turn(s)
-      Tool results: 12 total (Tool save_finding=4, Tool OpenW...date_plan=1, Tool wikipedia=1)
+      AI turns: 9 tool-call turn(s), 1 answer turn(s)
+      Tool results: 9 total (Tool Search=6, Tool OpenWebpage=2, Tool save_finding=1)
       Structured terminal answer emitted
-      Anomalies: 4 flagged step(s) (EMPTY_RESULT=3, LOW_EVIDE..._RESULT=2, OFF_TOPIC_RESULT=0)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=3, OFF_TOPIC_RESULT=1)
 
 START
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 1.9110m (tok=0, n=4)
-      agent: 0.4372m (tok=22803, n=5)
-      finalize: 0.0769m (tok=7486, n=1)
+      tools: 5.9536m (tok=0, n=8)
+      agent: 0.4532m (tok=32683, n=8)
+      finalize: 0.0755m (tok=4470, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #04 tools: 0.9515m (tok=0)
-      #06 tools: 0.4841m (tok=0)
-      #08 tools: 0.4572m (tok=0)
-      #09 agent: 0.1412m (tok=8919)
-      #07 agent: 0.1145m (tok=6009)
-  +-- [TIMING] wall=2.4257m nodes=2.4250m delta=+0.0007m (overhead)
+      #08 tools: 1.3745m (tok=0)
+      #02 tools: 1.2042m (tok=0)
+      #06 tools: 0.9830m (tok=0)
+      #12 tools: 0.9149m (tok=0)
+      #14 tools: 0.7775m (tok=0)
+  +-- [TIMING] wall=6.4838m nodes=6.4822m delta=+0.0016m (overhead)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
       min: n/a
       detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
-  +-- [02] Requested 1 tool call (wikipedia)
+  +-- [02] Requested 1 tool call (Search)
       by: AI
       tok: in=0 out=0 total=0
       min: n/a
-      detail: wikipedia(query=Cresent Hardy)
+      detail: Search(query=Ramona Moye Camaconi Bolivia MAS Beni bio...)
   +-- [03] Returned result
-      by: Tool wikipedia
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Page: Cresent Hardy Summary: Cresent Leo Hardy (born June 23, 1957) is an American ...
-  +-- [04] Requested 1 tool call (Search)
-      by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: Search(query=Cresent Hardy biography education birth p...)
-  +-- [05] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> CresentLeoHardy(born Ju...70 </URL> __END_OF_SOURCE...
-  +-- [06] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...rio </URL> __END_OF_SOURC...
+  +-- [04] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: OpenWebpage(url=https://history.house.gov/...Y,-Cresent-Leo-)
-  +-- [07] Returned result
+      tok: in=1460 out=216 total=1676
+      min: 0.0914m
+      detail: OpenWebpage(url=https://tipnisboliviaorg.w...ra-y-territorio)
+  +-- [05] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: {"ok":false,"tool":"OpenWebpage","error_type":"http_err...null,"attempt":1,"attempt...
+      detail: URL: https://tipnisboliviaorg.wordpress.com/category/te...ctivismo/] Carretera y ca...
+  +-- [06] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3094 out=269 total=3363
+      min: 0.0486m
+      detail: Search(query=Ramona Moye Camaconi biografía hoja de vi...)
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Sitio oficialdeTelemund...fMm </URL> __END_OF_SOURC...
   +-- [08] Requested 1 tool call (Search)
       by: AI
-      tok: in=1476 out=205 total=1681
-      min: 0.0917m
-      detail: Search(query=Cresent Hardy education degree Dixie Stat...)
+      tok: in=3565 out=204 total=3769
+      min: 0.0450m
+      detail: Search(query="Ramona Moye Camaconi" biografía "lugar d...)
   +-- [09] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
-      detail: __START_OF_SOURCE 1__ <CONTENT> CresentLeoHardy(born Ju...070 </URL> __END_OF_SOURC...
-  +-- [10] Requested 1 tool call (OpenWebpage)
+  +-- [10] Requested 1 tool call (Search)
       by: AI
-      tok: in=2022 out=126 total=2148
-      min: 0.0304m
-      detail: OpenWebpage(url=https://bioguideretro.cong...emIndex=H001070)
+      tok: in=3351 out=370 total=3721
+      min: 0.0476m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
   +-- [11] Returned result
-      by: Tool OpenWebpage
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://bioguideretro.congress.gov/Home/MemberDeta...d cookies, title:just a m...
-  +-- [12] Requested 6 tool calls (save_finding, update_plan, Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Vicepresidencia ...ios </URL> __END_OF_SOURC...
+  +-- [12] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=3576 out=470 total=4046
-      min: 0.0593m
-      detail: save_finding(finding=birth_year = 1957 (source:.../Cres...ixie State College degree...
-  +-- [13] Returned 4 results
+      tok: in=4465 out=327 total=4792
+      min: 0.0451m
+      detail: save_finding(finding=birth_year = 1982 (source:...parlamentarios), category=fact)
+  +-- [13] Returned result
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
-      flag: EMPTY_RESULT
-      detail: Saved to scratchpad: birth_year = 1957 (source: https:/...ipedia.org/wiki/Cresent_H...
-  +-- [14] Returned result
-      by: Tool update_plan
-      tok: in=0 out=0 total=0
-      min: n/a
-      flag: EMPTY_RESULT
-      detail: Plan step 1 updated to 'in_progress'
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...pestana=2&page=parlamenta...
+  +-- [14] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4971 out=185 total=5156
+      min: 0.0471m
+      detail: Search(query="Ramona Moye Camaconi" biografía estudios...)
   +-- [15] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> CresentLeoHardy(born Ju...70 </URL> __END_OF_SOURCE...
-  +-- [16] Requested 1 tool call (OpenWebpage)
+  +-- [16] Requested 1 tool call (Search)
       by: AI
-      tok: in=4981 out=1028 total=6009
-      min: 0.1145m
-      detail: OpenWebpage(url=https://www.factsnippet.co...sent-hardy.html)
+      tok: in=5167 out=310 total=5477
+      min: 0.0517m
+      detail: Search(query=site:vicepresidencia.gob.bo "Ramona Moye ...)
   +-- [17] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: No good DuckDuckGo Search Result was found
+  +-- [18] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4074 out=655 total=4729
+      min: 0.0767m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
+  +-- [19] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.factsnippet.com/site/facts-about-crese...about-stavros-anthony.htm...
-  +-- [18] Requested 1 tool call (Search)
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
+  +-- [20] Produced structured answer
       by: AI
-      tok: in=7731 out=1188 total=8919
-      min: 0.1412m
-      detail: Search(query=Cresent Hardy "Dixie State College" degre...)
-  +-- [19] Produced structured answer
-      by: AI
-      tok: in=6916 out=570 total=7486
-      min: 0.0769m
+      tok: in=3828 out=642 total=4470
+      min: 0.0755m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_level_source":n...ed_score_below_threshold(...
+      detail: {"education_level":"Unknown","education_level_source":n...tatus or sexual orientati...
 END

@@ -115,6 +115,37 @@ test_that(".extract_json_from_trace ignores ToolMessage envelope payloads", {
   expect_null(parsed)
 })
 
+test_that(".build_trace_json serializes tool_call_id for tool messages", {
+  raw_response <- list(
+    messages = list(
+      list(
+        type = "ai",
+        content = "",
+        tool_calls = list(list(name = "Search", args = list(query = "person"), id = "call_1"))
+      ),
+      list(
+        type = "tool",
+        name = "Search",
+        content = "__START_OF_SOURCE 1__ ...",
+        tool_call_id = "call_1"
+      ),
+      list(
+        type = "ai",
+        content = "{\"ok\":true}",
+        tool_calls = list()
+      )
+    )
+  )
+
+  trace_json <- asa:::.build_trace_json(raw_response)
+  expect_true(is.character(trace_json) && nzchar(trace_json))
+
+  parsed <- jsonlite::fromJSON(trace_json, simplifyVector = FALSE)
+  expect_equal(as.character(parsed$format), "asa_trace_v1")
+  expect_equal(as.character(parsed$messages[[2]]$message_type), "tool")
+  expect_equal(as.character(parsed$messages[[2]]$tool_call_id), "call_1")
+})
+
 test_that(".count_unknown_ratio ignores sibling confidence fields", {
   parsed <- list(
     birth_place = "Unknown",

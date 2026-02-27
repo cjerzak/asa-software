@@ -245,8 +245,18 @@ query_templates_override <- NULL
 # asa:::.heartbeat_start/.heartbeat_set_phase/.heartbeat_stop/.with_heartbeat
 
 "
-TARGET INDIVIDUAL:
-  - Name: Ramona Moye Camaconi
+* **Name:** Cresent Hardy
+* **Country:** United States
+* **Election Year:** 2014
+* **Political Party:** Republican Party
+* **Region/Constituency:** Nevada's 4th Congressional District
+* **Known Birthday:** June 23, 1957
+* **Known Gender:** Male
+* **Known Ethnicity:** White
+"
+
+"
+- Name: Ramona Moye Camaconi
 - Country: Bolivia
 - Election Year: 2014
 - Political Party: Movimiento Al Socialismo - MAS
@@ -255,7 +265,6 @@ TARGET INDIVIDUAL:
 - Known Gender: Female
 - Known Ethnicity: Indigenous
 "
-
 
 
 prompt <- r"(TASK OVERVIEW:
@@ -290,14 +299,14 @@ CLASS BACKGROUND RULES:
   * Unknown = insufficient information.
 
 TARGET INDIVIDUAL:
-* **Name:** Cresent Hardy
-* **Country:** United States
-* **Election Year:** 2014
-* **Political Party:** Republican Party
-* **Region/Constituency:** Nevada's 4th Congressional District
-* **Known Birthday:** June 23, 1957
-* **Known Gender:** Male
-* **Known Ethnicity:** White
+- Name: Ramona Moye Camaconi
+- Country: Bolivia
+- Election Year: 2014
+- Political Party: Movimiento Al Socialismo - MAS
+- Region/Constituency: Beni
+- Known Birthday: Not available
+- Known Gender: Female
+- Known Ethnicity: Indigenous
 
 DISAMBIGUATION:
 If multiple people share the same name, identify the correct person by matching (where possible):
@@ -828,6 +837,21 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, completion_g
   }
   tokens_used <- as.numeric(token_obj$tokens_used %||% NA_real_)
   tokens_per_grounded <- if (!is.na(tokens_used) && grounded > 0L) tokens_used / grounded else NA_real_
+  runtime_efficiency <- suppressWarnings(as.numeric(
+    diagnostics_obj$performance$evidence_gain_per_1k_tokens %||% NA_real_
+  ))
+  runtime_efficiency <- if (is.finite(runtime_efficiency)) runtime_efficiency else NA_real_
+  token_efficiency_metric <- if (!is.na(runtime_efficiency)) runtime_efficiency else tokens_per_grounded
+  token_efficiency_direction <- if (!is.na(runtime_efficiency)) {
+    "higher_is_better"
+  } else {
+    "lower_is_better"
+  }
+  token_efficiency_source <- if (!is.na(runtime_efficiency)) {
+    "diagnostics.performance.evidence_gain_per_1k_tokens"
+  } else {
+    "tokens_per_grounded_field"
+  }
   invariant_failures <- as.numeric(diagnostics_obj$finalization_invariant_failures %||% NA_real_)
   quality_gate_failures <- as.numeric(diagnostics_obj$quality_gate_failures %||% NA_real_)
   global_confidence_payload <- if (is.list(answer_obj)) {
@@ -878,6 +902,10 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, completion_g
     grounded_fields = grounded,
     tokens_used = tokens_used,
     tokens_per_grounded_field = tokens_per_grounded,
+    runtime_evidence_gain_per_1k_tokens = runtime_efficiency,
+    token_efficiency_metric = token_efficiency_metric,
+    token_efficiency_direction = token_efficiency_direction,
+    token_efficiency_source = token_efficiency_source,
     finalization_invariant_failures = invariant_failures,
     quality_gate_failures = quality_gate_failures,
     quality_gate_failed_current = quality_gate_failed_current,
@@ -939,6 +967,7 @@ if (!is.null(baseline_metrics)) {
     quality_gate_failures_delta = as.numeric(current_metrics$quality_gate_failures) - as.numeric(baseline_metrics$quality_gate_failures),
     tokens_used_delta = as.numeric(current_metrics$tokens_used) - as.numeric(baseline_metrics$tokens_used),
     tokens_per_grounded_field_delta = as.numeric(current_metrics$tokens_per_grounded_field) - as.numeric(baseline_metrics$tokens_per_grounded_field),
+    token_efficiency_metric_delta = as.numeric(current_metrics$token_efficiency_metric) - as.numeric(baseline_metrics$token_efficiency_metric),
     invariant_failures_delta = as.numeric(current_metrics$finalization_invariant_failures) - as.numeric(baseline_metrics$finalization_invariant_failures)
   )
 
@@ -948,7 +977,13 @@ if (!is.null(baseline_metrics)) {
   regression_gate$confidence_non_decreasing <- isTRUE(delta_metrics$global_confidence_delta >= -0.02)
   regression_gate$quality_gate_failures_non_increasing <- isTRUE(delta_metrics$quality_gate_failures_delta <= 0)
   regression_gate$tokens_non_increasing <- isTRUE(delta_metrics$tokens_used_delta <= 0)
-  regression_gate$token_efficiency_non_increasing <- isTRUE(delta_metrics$tokens_per_grounded_field_delta <= 0)
+  if (identical(current_metrics$token_efficiency_direction, "higher_is_better") &&
+      identical(baseline_metrics$token_efficiency_direction, "higher_is_better")) {
+    regression_gate$token_efficiency_non_increasing <- isTRUE(delta_metrics$token_efficiency_metric_delta >= 0)
+  } else {
+    regression_gate$token_efficiency_non_increasing <- isTRUE(delta_metrics$tokens_per_grounded_field_delta <= 0)
+  }
+  regression_gate$token_efficiency_source <- as.character(current_metrics$token_efficiency_source %||% "tokens_per_grounded_field")
   regression_gate$invariant_failures_non_increasing <- isTRUE(delta_metrics$invariant_failures_delta <= 0)
   regression_gate$no_low_quality_sources <- length(current_metrics$low_quality_source_urls %||% character(0)) == 0L
   regression_gate$pass <- isTRUE(

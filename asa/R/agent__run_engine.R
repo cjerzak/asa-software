@@ -1635,12 +1635,21 @@
       .try_or(reticulate::py_to_r(tool_calls))
     }
 
+    msg_tool_call_id <- function(msg) {
+      value <- .try_or(msg$tool_call_id, NULL)
+      if (is.null(value)) return(NULL)
+      text <- first_non_empty(value, default = NULL)
+      if (is.null(text)) return(NULL)
+      text
+    }
+
     out_messages <- lapply(messages, function(msg) {
       list(
         message_type = msg_type(msg),
         name = msg_name(msg),
         content = msg_content(msg),
-        tool_calls = msg_tool_calls(msg)
+        tool_calls = msg_tool_calls(msg),
+        tool_call_id = msg_tool_call_id(msg)
       )
     })
 

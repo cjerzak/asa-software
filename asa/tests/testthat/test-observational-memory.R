@@ -1364,6 +1364,84 @@ test_that("diagnostics normalization keeps performance telemetry bucket", {
   expect_match(as.character(diagnostics$performance$provider_error_last_message), "TimeoutError")
 })
 
+test_that("diagnostics normalization keeps snapshot and pairing telemetry", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  normalize_diag <- reticulate::py_get_attr(prod, "_normalize_diagnostics")
+  diagnostics <- reticulate::py_to_r(normalize_diag(list(
+    unknown_fields_count = 4L,
+    unknown_fields = list("birth_place", "birth_year"),
+    unknown_fields_current = list("birth_place"),
+    grounding_blocks_count = 3L,
+    grounding_blocked_fields = list("birth_place"),
+    grounding_blocked_fields_current = list("birth_place"),
+    tool_call_pairing = list(
+      issued_tool_calls_count = 2L,
+      tool_message_count = 1L,
+      paired_tool_calls_count = 1L,
+      unpaired_tool_calls_count = 1L,
+      unpaired_tool_call_ids = list("call_9"),
+      unpaired_tool_call_names = list("Search"),
+      pending_on_last_message = FALSE
+    ),
+    performance = list(
+      tokens_used_cumulative = 1700L,
+      tokens_delta_since_last_round = 350L,
+      low_efficiency_streak = 2L,
+      evidence_gain_units = 0.5,
+      evidence_gain_per_1k_tokens = 1.4286
+    )
+  )))
+
+  expect_true(is.list(diagnostics$current_snapshot))
+  expect_true(is.list(diagnostics$historical_snapshot))
+  expect_equal(as.integer(diagnostics$current_snapshot$unknown_fields_count), 1L)
+  expect_equal(as.integer(diagnostics$historical_snapshot$unknown_fields_count), 4L)
+
+  expect_true(is.list(diagnostics$tool_call_pairing))
+  expect_equal(as.integer(diagnostics$tool_call_pairing$unpaired_tool_calls_count), 1L)
+  expect_equal(as.character(diagnostics$tool_call_pairing$unpaired_tool_call_ids[[1]]), "call_9")
+
+  expect_true(is.list(diagnostics$performance))
+  expect_equal(as.integer(diagnostics$performance$tokens_used_cumulative), 1700L)
+  expect_equal(as.integer(diagnostics$performance$tokens_delta_since_last_round), 350L)
+  expect_equal(as.integer(diagnostics$performance$low_efficiency_streak), 2L)
+  expect_equal(as.numeric(diagnostics$performance$evidence_gain_per_1k_tokens), 1.4286, tolerance = 1e-4)
+})
+
+test_that("pairing diagnostics increments mismatch counter only for real mismatches", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  apply_pairing_diag <- reticulate::py_get_attr(prod, "_apply_tool_call_pairing_diagnostics")
+  mismatch_diag <- reticulate::py_to_r(apply_pairing_diag(
+    list(tool_call_pairing_mismatches = 1L),
+    list(
+      unpaired_tool_calls_count = 1L,
+      pending_on_last_message = FALSE,
+      unpaired_tool_call_ids = list("call_1")
+    )
+  ))
+  expect_equal(as.integer(mismatch_diag$tool_call_pairing_mismatches), 2L)
+
+  pending_diag <- reticulate::py_to_r(apply_pairing_diag(
+    mismatch_diag,
+    list(
+      unpaired_tool_calls_count = 1L,
+      pending_on_last_message = TRUE,
+      unpaired_tool_call_ids = list("call_1")
+    )
+  ))
+  expect_equal(as.integer(pending_diag$tool_call_pairing_mismatches), 2L)
+})
+
 test_that("quality gate blocks terminal short-circuit when budget remains", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",

@@ -1,20 +1,53 @@
 [
   {
     "repair_applied": true,
-    "repair_reason": "residual_tool_calls_no_content",
-    "missing_keys_count": 0,
-    "missing_keys_sample": [],
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 10,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence"],
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "event_id": "78d9535743c048bf8a998a5d46fb874d",
-    "ts_utc": "2026-02-27T11:55:27.792225Z",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2131,
+        "normalized_length": 2131,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2131,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "bb4b62e564a9e26ee41add99a2451932b124568bf435d5646c4c94caa8c67fef",
+    "output_text_hash": "d05482a24501af72ceeabc5ca6c489be9528f977c684dad8609a894c5eac12b7",
+    "input_text_length": 2131,
+    "output_text_length": 2269,
+    "input_text_preview": "{ \"educational_attainment\": { \"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\":...",
+    "output_text_preview": "{\"educational_attainment\": {\"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\": n...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,39 +1 @@\n-{\n-  \"educational_attainment\": {\n-    \"education_level\": null,\n-    \"education_level_source\": null,\n-    \"education_level_confidence\": null,\n-    \"education_field\": null,\n-    \"education_field_source\": null,\n-    \"education_field_confidence\": null,\n-    \"education_institution\": null,\n-    \"education_institution_source\": null,\n-    \"education_institution_confidence\": null\n-  },\n-  \"class_background\": {\n-    \"prior_occupation\": \"diputada electa por el partido de Evo Morales\",\n-    \"prior_occupation_source\": \"https://tipnisboliviaorg.wordpress.com/category/temas/movimiento-indigena/tierra-y-territorio\",\n-    \"prior_occupation_confidence\": 0.8,\n-    \"class_background\": null,\n-    \"class_background_source\": null,\n-    \"class_background_confidence\": null\n-  },\n-  \"demographics\": {\n-    \"birth_year\": 1982,\n-    \"birth_year_source\": \"https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios\",\n-    \"birth_year_confidence\": 1.0,\n-    \"birth_place\": \"Beni\",\n-    \"birth_place_source\": \"https://vicepresidencia.gob.bo/spip.php?debut_parlamentarios_04=12&id_gestion=1&id_parlamentario=0&id_pestana=2&page=parlamentarios\",\n-    \"birth_place_confidence\": 1.0,\n-    \"disability_status\": null,\n-    \"disability_status_source\": null,\n-    \"disability_status_confidence\": null,\n-    \"lgbtq_status\": null,\n-    \"lgbtq_status_source\": null,\n-    \"lgbtq_status_confidence\": null,\n-    \"lgbtq_details\": null,\n-    \"lgbtq_details_source\": null,\n-    \"lgbtq_details_confidence\": null\n-  },",
+    "event_id": "2cdbcbb9ed7c4c1c9a730a6fd0d0edc0",
+    "ts_utc": "2026-02-27T13:48:43.432339Z",
     "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
     "outcome_status": "applied",
-    "repair_attempt_count": 0,
-    "repair_retry_used": false,
-    "payload_diff_available": false
+    "payload_diff_available": true
   },
   {
     "repair_applied": true,
@@ -24,8 +57,8 @@
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "event_id": "95e8a2a98aec41cea5deaeff5e19ee31",
-    "ts_utc": "2026-02-27T11:55:27.792233Z",
+    "event_id": "b81cf20ed81742c491fe5fcb63741fe9",
+    "ts_utc": "2026-02-27T13:48:43.432348Z",
     "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
     "outcome_status": "applied",
