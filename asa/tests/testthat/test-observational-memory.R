@@ -553,6 +553,48 @@ test_that("canonical array merge preserves derived sibling metadata outside sche
   expect_equal(which(merged_names == "birth_year_confidence"), which(merged_names == "birth_year") + 2L)
 })
 
+test_that("canonical array merge preserves aligned model confidence and rejects mismatches", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  merge_fn <- reticulate::py_get_attr(prod, "_merge_canonical_payload_with_model_arrays")
+  expected_schema <- list(
+    prior_occupation = "string|Unknown"
+  )
+  canonical_payload <- list(
+    prior_occupation = "Teacher",
+    prior_occupation_source = "https://example.org/profile",
+    prior_occupation_confidence = 0.7
+  )
+
+  aligned_model <- list(
+    prior_occupation = "teacher",
+    prior_occupation_source = "https://example.org/profile",
+    prior_occupation_confidence = 0.93
+  )
+  aligned <- reticulate::py_to_r(merge_fn(canonical_payload, aligned_model, expected_schema))
+  expect_equal(as.numeric(aligned$prior_occupation_confidence), 0.93)
+
+  source_mismatch_model <- list(
+    prior_occupation = "teacher",
+    prior_occupation_source = "https://other.example.org/profile",
+    prior_occupation_confidence = 0.99
+  )
+  source_mismatch <- reticulate::py_to_r(merge_fn(canonical_payload, source_mismatch_model, expected_schema))
+  expect_equal(as.numeric(source_mismatch$prior_occupation_confidence), 0.7)
+
+  value_mismatch_model <- list(
+    prior_occupation = "lawyer",
+    prior_occupation_source = "https://example.org/profile",
+    prior_occupation_confidence = 0.95
+  )
+  value_mismatch <- reticulate::py_to_r(merge_fn(canonical_payload, value_mismatch_model, expected_schema))
+  expect_equal(as.numeric(value_mismatch$prior_occupation_confidence), 0.7)
+})
+
 test_that("terminal guard emits sibling metadata when no fields are resolved", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",
@@ -1060,14 +1102,11 @@ test_that("schema outcome quality gate can ignore invariant failure when policy 
   )
 
   gate_fn <- reticulate::py_get_attr(prod, "_schema_outcome_gate_report")
-  diagnostics <- list(
-    unknown_fields_count_current = 1L,
-    unknown_fields_current = list("ghost_field")
-  )
   state <- list(
     expected_schema = list(
       prior_occupation = "string|Unknown",
-      birth_place = "string|Unknown"
+      birth_place = "string|Unknown",
+      justification = "string"
     ),
     field_status = list(
       prior_occupation = list(
@@ -1081,9 +1120,17 @@ test_that("schema outcome quality gate can ignore invariant failure when policy 
         value = "Beni",
         source_url = "https://example.org/profile",
         evidence_score = 0.95
+      ),
+      justification = list(
+        status = "found",
+        value = "Source-backed searches resolved 2 core fields while 0 core fields remain unknown.",
+        source_url = NULL
       )
     ),
-    diagnostics = diagnostics,
+    diagnostics = list(
+      unknown_fields_count_current = 0L,
+      unknown_fields_current = list()
+    ),
     budget_state = list(budget_exhausted = FALSE),
     finalization_policy = list(
       quality_gate_enforce = TRUE,
@@ -1093,6 +1140,14 @@ test_that("schema outcome quality gate can ignore invariant failure when policy 
       quality_gate_min_found_fields = 1L,
       quality_gate_require_invariant_ok = FALSE
     ),
+    messages = list(list(
+      role = "assistant",
+      content = paste0(
+        "{\"prior_occupation\":\"Teacher\",",
+        "\"birth_place\":\"Beni\",",
+        "\"justification\":\"Source-backed searches resolved 1 core fields while 1 core fields remain unknown.\"}"
+      )
+    )),
     use_plan_mode = FALSE,
     json_repair = list()
   )
@@ -1102,10 +1157,11 @@ test_that("schema outcome quality gate can ignore invariant failure when policy 
     expected_schema = state$expected_schema,
     field_status = state$field_status,
     budget_state = state$budget_state,
-    diagnostics = diagnostics
+    diagnostics = state$diagnostics
   ))
 
   expect_true(isTRUE(report$finalization_invariant_failed))
+  expect_true("terminal_justification_count_mismatch" %in% as.character(report$finalization_invariant_reasons))
   expect_false(isTRUE(report$quality_gate_failed))
   expect_false(isTRUE(report$quality_gate_checks$invariant_not_ok))
 })

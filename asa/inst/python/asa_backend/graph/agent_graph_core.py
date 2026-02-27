@@ -9482,6 +9482,24 @@ def _merge_canonical_payload_with_model_arrays(
         schema_keys = [str(key) for key in list(schema.keys())]
         schema_key_set = set(schema_keys)
         merged: Dict[str, Any] = {}
+
+        def _semantic_scalar(value: Any) -> Any:
+            if _is_empty_like(value) or _is_unknown_marker(value):
+                return None
+            if isinstance(value, bool):
+                return ("bool", bool(value))
+            if isinstance(value, (int, float)):
+                try:
+                    return ("number", round(float(value), 8))
+                except Exception:
+                    return None
+            if isinstance(value, str):
+                normalized_url = _normalize_url_match(value)
+                if normalized_url:
+                    return ("url", normalized_url)
+                return ("text", _normalize_match_text(value))
+            return ("raw", _json_safe_value(value))
+
         for key, child_schema in schema.items():
             merged[key] = _merge_canonical_payload_with_model_arrays(
                 canonical_payload.get(key),
@@ -9497,6 +9515,19 @@ def _merge_canonical_payload_with_model_arrays(
                 merged[source_key] = _json_safe_value(canonical_payload.get(source_key))
             if confidence_key in canonical_payload and confidence_key not in schema_key_set:
                 merged[confidence_key] = _json_safe_value(canonical_payload.get(confidence_key))
+                model_confidence = _normalize_confidence_score(model_dict.get(confidence_key))
+                if model_confidence is None:
+                    continue
+                canonical_base = _semantic_scalar(merged.get(key))
+                model_base = _semantic_scalar(model_dict.get(key))
+                if canonical_base is None or model_base is None or canonical_base != model_base:
+                    continue
+                canonical_source = _normalize_url_match(merged.get(source_key))
+                if canonical_source:
+                    model_source = _normalize_url_match(model_dict.get(source_key))
+                    if model_source != canonical_source:
+                        continue
+                merged[confidence_key] = round(float(model_confidence), 4)
 
         for raw_key, raw_value in canonical_payload.items():
             key = str(raw_key)
@@ -12208,6 +12239,7 @@ def _schema_outcome_gate_report(
         report = {}
     finalization_policy = _state_finalization_policy(state)
     diagnostics_snapshot = diagnostics if diagnostics is not None else state.get("diagnostics")
+    diagnostics_snapshot = _merge_field_status_diagnostics(diagnostics_snapshot, field_status)
     missing_details = _missing_required_field_details(
         expected_schema=expected_schema,
         field_status=field_status,
@@ -12337,7 +12369,10 @@ def _schema_outcome_gate_report(
         recovery_enabled and invariant_failed and not budget_exhausted
     )
     report["auto_recovery_reasons"] = recovery_reasons
-    report["auto_recovery_priority"] = _finalization_recovery_priority(diagnostics, recovery_reasons)
+    report["auto_recovery_priority"] = _finalization_recovery_priority(
+        diagnostics_snapshot,
+        recovery_reasons,
+    )
     report["auto_recovery_action"] = (
         "replan_and_retry" if bool(report["auto_recovery_checkpoint_needed"]) else "none"
     )

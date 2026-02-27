@@ -10,6 +10,7 @@
 #./asa-software/tracked_reports/fold_archive_real.txt
 #./asa-software/tracked_reports/execution_summary_real.txt
 #./asa-software/tracked_reports/diagnostics_real.txt
+#./asa-software/tracked_reports/completion_gate_real.txt
 #./asa-software/tracked_reports/json_repair_real.txt
 #./asa-software/tracked_reports/invoke_error_real.txt
 #./asa-software/tracked_reports/action_ascii_real.txt
@@ -40,6 +41,7 @@ path_fold_summary <- file.path(artifact_dir, "fold_summary_real.txt")
 path_fold_archive <- file.path(artifact_dir, "fold_archive_real.txt")
 path_execution_summary <- file.path(artifact_dir, "execution_summary_real.txt")
 path_diagnostics <- file.path(artifact_dir, "diagnostics_real.txt")
+path_completion_gate <- file.path(artifact_dir, "completion_gate_real.txt")
 path_json_repair <- file.path(artifact_dir, "json_repair_real.txt")
 path_invoke_error <- file.path(artifact_dir, "invoke_error_real.txt")
 path_action_ascii <- file.path(artifact_dir, "action_ascii_real.txt")
@@ -63,7 +65,8 @@ read_json_if_exists <- function(path) {
 baseline_snapshot <- list(
   answer_pred = read_json_if_exists(path_answer_pred),
   token_stats = read_json_if_exists(path_token_stats),
-  diagnostics = read_json_if_exists(path_diagnostics)
+  diagnostics = read_json_if_exists(path_diagnostics),
+  completion_gate = read_json_if_exists(path_completion_gate)
 )
 
 artifact_sentinel <- function(artifact,
@@ -477,7 +480,8 @@ readr::write_file(
     list(
       elapsed_time = attempt$elapsed_time,
       field_status = attempt$execution$field_status,
-      diagnostics = attempt$execution$diagnostics
+      diagnostics = attempt$execution$diagnostics,
+      completion_gate = attempt$execution$completion_gate
     ),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   ),
@@ -487,6 +491,16 @@ readr::write_file(
 readr::write_file(
   jsonlite::toJSON(attempt$execution$diagnostics, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   path_diagnostics
+)
+
+completion_gate_output <- artifact_or_sentinel(
+  attempt$execution$completion_gate %||% list(),
+  artifact = "completion_gate",
+  reason = "completion_gate_not_available"
+)
+readr::write_file(
+  jsonlite::toJSON(completion_gate_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  path_completion_gate
 )
 
 # json repair events (includes invoke_exception_fallback error details when present)
@@ -762,7 +776,7 @@ confidence_to_numeric <- function(x) {
   suppressWarnings(as.numeric(token))
 }
 
-extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, schema_names) {
+extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, completion_gate_obj, gold_obj, schema_names) {
   keys <- as.character(schema_names)
   exact <- 0L
   semantic <- 0L
@@ -806,11 +820,44 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, sc
   tokens_per_grounded <- if (!is.na(tokens_used) && grounded > 0L) tokens_used / grounded else NA_real_
   invariant_failures <- as.numeric(diagnostics_obj$finalization_invariant_failures %||% NA_real_)
   quality_gate_failures <- as.numeric(diagnostics_obj$quality_gate_failures %||% NA_real_)
-  global_confidence <- if (is.list(answer_obj)) {
+  global_confidence_payload <- if (is.list(answer_obj)) {
     confidence_to_numeric(answer_obj$confidence %||% NA_real_)
   } else {
     NA_real_
   }
+  global_confidence_gate_score <- as.numeric(completion_gate_obj$global_confidence_score %||% NA_real_)
+  if (!is.finite(global_confidence_gate_score)) global_confidence_gate_score <- NA_real_
+  global_confidence <- if (!is.na(global_confidence_gate_score)) {
+    global_confidence_gate_score
+  } else {
+    global_confidence_payload
+  }
+  global_confidence_source <- if (!is.na(global_confidence_gate_score)) {
+    "completion_gate"
+  } else if (!is.na(global_confidence_payload)) {
+    "payload_fallback"
+  } else {
+    "missing"
+  }
+  quality_gate_failed_current <- as.logical(completion_gate_obj$quality_gate_failed %||% NA)
+  if (length(quality_gate_failed_current) == 0L) quality_gate_failed_current <- NA
+  quality_gate_failed_current <- if (is.na(quality_gate_failed_current[[1]] %||% NA)) {
+    NA
+  } else {
+    isTRUE(quality_gate_failed_current[[1]])
+  }
+  quality_gate_reason_current <- as.character(completion_gate_obj$quality_gate_reason %||% NA_character_)
+  if (length(quality_gate_reason_current) == 0L) quality_gate_reason_current <- NA_character_
+  quality_gate_reason_current <- quality_gate_reason_current[[1]]
+  if (is.na(quality_gate_reason_current) || !nzchar(trimws(quality_gate_reason_current))) {
+    quality_gate_reason_current <- NA_character_
+  }
+  confidence_min_threshold_current <- as.numeric(
+    completion_gate_obj$quality_gate_min_global_confidence %||%
+      finalization_policy_override$quality_gate_min_global_confidence %||%
+      NA_real_
+  )
+  if (!is.finite(confidence_min_threshold_current)) confidence_min_threshold_current <- NA_real_
 
   list(
     exact_match = exact,
@@ -823,6 +870,12 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, gold_obj, sc
     tokens_per_grounded_field = tokens_per_grounded,
     finalization_invariant_failures = invariant_failures,
     quality_gate_failures = quality_gate_failures,
+    quality_gate_failed_current = quality_gate_failed_current,
+    quality_gate_reason_current = quality_gate_reason_current,
+    confidence_min_threshold_current = confidence_min_threshold_current,
+    global_confidence_payload = global_confidence_payload,
+    global_confidence_gate_score = global_confidence_gate_score,
+    global_confidence_source = global_confidence_source,
     global_confidence = global_confidence
   )
 }
@@ -831,11 +884,13 @@ gold_answer <- read_json_if_exists(path_answer_gold)
 current_answer <- read_json_if_exists(path_answer_pred)
 current_token_stats <- read_json_if_exists(path_token_stats)
 current_diagnostics <- read_json_if_exists(path_diagnostics)
+current_completion_gate <- read_json_if_exists(path_completion_gate)
 
 current_metrics <- extract_metrics(
   answer_obj = current_answer,
   token_obj = current_token_stats %||% list(),
   diagnostics_obj = current_diagnostics %||% list(),
+  completion_gate_obj = current_completion_gate %||% list(),
   gold_obj = gold_answer %||% list(),
   schema_names = names(EXPECTED_SCHEMA)
 )
@@ -845,6 +900,7 @@ if (!is.null(baseline_snapshot$answer_pred) && !is.null(baseline_snapshot$token_
     answer_obj = baseline_snapshot$answer_pred,
     token_obj = baseline_snapshot$token_stats %||% list(),
     diagnostics_obj = baseline_snapshot$diagnostics %||% list(),
+    completion_gate_obj = baseline_snapshot$completion_gate %||% list(),
     gold_obj = gold_answer %||% list(),
     schema_names = names(EXPECTED_SCHEMA)
   )
@@ -854,6 +910,15 @@ delta_metrics <- NULL
 regression_gate <- list(
   baseline_available = !is.null(baseline_metrics),
   pass = NA
+)
+regression_gate$confidence_meets_minimum <- isTRUE(
+  !is.na(current_metrics$global_confidence) &&
+    !is.na(current_metrics$confidence_min_threshold_current) &&
+    as.numeric(current_metrics$global_confidence) >= as.numeric(current_metrics$confidence_min_threshold_current)
+)
+regression_gate$quality_gate_not_failed_current <- isTRUE(
+  !is.na(current_metrics$quality_gate_failed_current) &&
+    !as.logical(current_metrics$quality_gate_failed_current)
 )
 if (!is.null(baseline_metrics)) {
   delta_metrics <- list(
@@ -881,7 +946,11 @@ if (!is.null(baseline_metrics)) {
       regression_gate$semantic_non_decreasing &&
       regression_gate$evidence_quality_non_decreasing &&
       regression_gate$confidence_non_decreasing &&
+      regression_gate$confidence_meets_minimum &&
+      regression_gate$quality_gate_not_failed_current &&
       regression_gate$quality_gate_failures_non_increasing &&
+      regression_gate$tokens_non_increasing &&
+      regression_gate$token_efficiency_non_increasing &&
       regression_gate$invariant_failures_non_increasing &&
       regression_gate$no_low_quality_sources
   )
@@ -934,6 +1003,7 @@ run_provenance <- list(
     path_fold_archive,
     path_execution_summary,
     path_diagnostics,
+    path_completion_gate,
     path_json_repair,
     path_invoke_error,
     path_action_ascii,
@@ -946,7 +1016,8 @@ run_provenance <- list(
   baseline_snapshot_available = list(
     answer_pred = !is.null(baseline_snapshot$answer_pred),
     token_stats = !is.null(baseline_snapshot$token_stats),
-    diagnostics = !is.null(baseline_snapshot$diagnostics)
+    diagnostics = !is.null(baseline_snapshot$diagnostics),
+    completion_gate = !is.null(baseline_snapshot$completion_gate)
   )
 )
 readr::write_file(

@@ -156,6 +156,46 @@ test_that("finalization invariant ignores non-core unknown source fields in diag
   expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
 })
 
+test_that("schema outcome gate reconciles stale diagnostics counts with current field_status", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  expected_schema <- list(
+    prior_occupation = "string|Unknown"
+  )
+  field_status <- list(
+    prior_occupation = list(status = "unknown", value = "Unknown", attempts = 1L)
+  )
+  stale_diagnostics <- list(
+    unknown_fields_count_current = 0L,
+    unknown_fields_current = list()
+  )
+  state <- list(
+    expected_schema = expected_schema,
+    field_status = field_status,
+    diagnostics = stale_diagnostics,
+    budget_state = list(
+      tool_calls_used = 0L,
+      tool_calls_limit = 4L,
+      budget_exhausted = FALSE
+    )
+  )
+
+  report <- reticulate::py_to_r(core$`_schema_outcome_gate_report`(
+    state = state,
+    expected_schema = expected_schema,
+    field_status = field_status,
+    budget_state = state$budget_state,
+    diagnostics = stale_diagnostics
+  ))
+
+  expect_false(isTRUE(report$finalization_invariant_failed))
+  reasons <- as.character(if (is.null(report$finalization_invariant_reasons)) character(0) else report$finalization_invariant_reasons)
+  expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
+})
+
 test_that("retrieval metrics track no-new-high-quality-evidence streak", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",
