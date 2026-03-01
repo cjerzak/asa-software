@@ -334,6 +334,13 @@ test_that(".validate_run_task validates orchestration_options", {
   )
 })
 
+test_that(".validate_run_task validates use_plan_mode", {
+  expect_silent(.validate_run_task("prompt", "text", NULL, FALSE, use_plan_mode = TRUE))
+  expect_silent(.validate_run_task("prompt", "text", NULL, FALSE, use_plan_mode = FALSE))
+  expect_error(.validate_run_task("prompt", "text", NULL, FALSE, use_plan_mode = "yes"), "use_plan_mode")
+  expect_error(.validate_run_task("prompt", "text", NULL, FALSE, use_plan_mode = 1), "use_plan_mode")
+})
+
 test_that(".validate_run_task_batch validates prompts vector", {
   expect_silent(.validate_run_task_batch(c("a", "b"), "text", NULL, FALSE, 4L, TRUE))
   expect_error(.validate_run_task_batch(c(), "text", NULL, FALSE, 4L, TRUE), "at least 1")
@@ -366,6 +373,13 @@ test_that(".validate_run_agent validates recursion_limit", {
   expect_error(.validate_run_agent("prompt", NULL, 3L, FALSE), ">= 4")
   expect_error(.validate_run_agent("prompt", NULL, 600L, FALSE), "be <= 500")
   expect_error(.validate_run_agent("prompt", NULL, -5L, FALSE), "be positive")
+})
+
+test_that(".validate_run_agent validates use_plan_mode", {
+  expect_silent(.validate_run_agent("prompt", NULL, NULL, FALSE, use_plan_mode = TRUE))
+  expect_silent(.validate_run_agent("prompt", NULL, NULL, FALSE, use_plan_mode = FALSE))
+  expect_error(.validate_run_agent("prompt", NULL, NULL, FALSE, use_plan_mode = "yes"), "use_plan_mode")
+  expect_error(.validate_run_agent("prompt", NULL, NULL, FALSE, use_plan_mode = 1), "use_plan_mode")
 })
 
 test_that(".validate_run_agent validates orchestration_options", {

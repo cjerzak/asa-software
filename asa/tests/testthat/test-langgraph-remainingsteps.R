@@ -3849,6 +3849,282 @@ test_that("update_plan no-op does not increment plan version", {
   expect_equal(plan$steps[[1]]$status, "pending")
 })
 
+test_that("_apply_plan_updates_to_plan returns applied/rejected update diagnostics", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "pending", findings = ""),
+      list(id = 2L, description = "S2", status = "pending", findings = "")
+    ),
+    version = 1L,
+    current_step = 1L
+  )
+  updates <- list(
+    list(step_id = 1L, status = "in_progress", findings = "started"),
+    list(step_id = 99L, status = "completed", findings = "missing"),
+    list(step_id = 1L, status = "skipped", findings = "not needed")
+  )
+
+  result <- reticulate::py_to_r(
+    custom_ddg$`_apply_plan_updates_to_plan`(
+      plan = plan,
+      plan_updates = updates,
+      plan_mode_enabled = TRUE
+    )
+  )
+
+  expect_equal(as.integer(result$attempted), 3L)
+  expect_equal(as.integer(result$applied), 2L)
+  expect_equal(as.integer(result$rejected), 1L)
+  expect_true(isTRUE(result$changed))
+  expect_true("step_not_found" %in% as.character(result$rejection_reasons))
+  expect_true(is.list(result$plan))
+  expect_equal(result$plan$steps[[1]]$status, "skipped")
+  expect_equal(result$plan$steps[[1]]$findings, "not needed")
+  expect_true(is.list(result$plan_history))
+  expect_equal(result$plan_history[[1]]$source, "update_plan")
+})
+
+test_that("_apply_plan_updates_to_plan keeps a single active step and sets current_step to active step", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "pending", findings = ""),
+      list(id = 2L, description = "S2", status = "pending", findings = ""),
+      list(id = 3L, description = "S3", status = "pending", findings = "")
+    ),
+    version = 1L,
+    current_step = 1L
+  )
+  updates <- list(
+    list(step_id = 1L, status = "in_progress", findings = "started step 1"),
+    list(step_id = 2L, status = "in_progress", findings = "started step 2")
+  )
+
+  result <- reticulate::py_to_r(
+    custom_ddg$`_apply_plan_updates_to_plan`(
+      plan = plan,
+      plan_updates = updates,
+      plan_mode_enabled = TRUE
+    )
+  )
+
+  expect_true(isTRUE(result$changed))
+  expect_true(is.list(result$plan))
+  expect_equal(as.character(result$plan$steps[[1]]$status), "completed")
+  expect_equal(as.character(result$plan$steps[[2]]$status), "in_progress")
+  expect_equal(as.character(result$plan$steps[[3]]$status), "pending")
+  expect_equal(as.integer(result$plan$current_step), 2L)
+})
+
+test_that("_apply_plan_updates_to_plan rejects updates when plan mode is off", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  result <- reticulate::py_to_r(
+    custom_ddg$`_apply_plan_updates_to_plan`(
+      plan = list(),
+      plan_updates = list(
+        list(step_id = 1L, status = "completed", findings = "x")
+      ),
+      plan_mode_enabled = FALSE
+    )
+  )
+
+  expect_equal(as.integer(result$attempted), 1L)
+  expect_equal(as.integer(result$applied), 0L)
+  expect_equal(as.integer(result$rejected), 1L)
+  expect_true("plan_mode_disabled" %in% as.character(result$rejection_reasons))
+})
+
+test_that("_attach_finalized_plan_snapshot appends source=finalize plan history entry", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  out <- list(messages = list())
+  plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "in_progress", findings = "working"),
+      list(id = 2L, description = "S2", status = "pending", findings = "")
+    ),
+    version = 2L,
+    current_step = 1L
+  )
+
+  attached <- reticulate::py_to_r(
+    custom_ddg$`_attach_finalized_plan_snapshot`(
+      out = out,
+      plan_mode_enabled = TRUE,
+      plan = plan
+    )
+  )
+
+  expect_true(is.list(attached$plan_history))
+  expect_equal(attached$plan_history[[1]]$source, "finalize")
+  expect_equal(attached$plan$steps[[1]]$status, "completed")
+})
+
+test_that("_attach_finalized_plan_snapshot dedupes identical trailing finalize entries", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "completed", findings = "done"),
+      list(id = 2L, description = "S2", status = "skipped", findings = "")
+    ),
+    version = 3L,
+    current_step = NULL
+  )
+  existing_history <- list(
+    list(
+      version = 3L,
+      source = "finalize",
+      plan = plan
+    )
+  )
+
+  attached <- reticulate::py_to_r(
+    custom_ddg$`_attach_finalized_plan_snapshot`(
+      out = list(messages = list()),
+      plan_mode_enabled = TRUE,
+      plan = plan,
+      existing_plan_history = existing_history
+    )
+  )
+
+  expect_true(is.list(attached$plan))
+  expect_equal(length(attached$plan_history), 0L)
+})
+
+test_that("_build_auto_progress_plan_updates emits deterministic in_progress updates", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "pending", findings = ""),
+      list(id = 2L, description = "S2", status = "pending", findings = "")
+    ),
+    version = 1L,
+    current_step = 1L
+  )
+
+  updates <- reticulate::py_to_r(
+    custom_ddg$`_build_auto_progress_plan_updates`(
+      plan_mode_enabled = TRUE,
+      plan = plan,
+      existing_updates = list(),
+      external_tool_count = 2L
+    )
+  )
+  expect_equal(length(updates), 1L)
+  expect_equal(updates[[1]]$step_id, 1L)
+  expect_equal(updates[[1]]$status, "in_progress")
+  expect_equal(updates[[1]]$`_source`, "auto_progress")
+  expect_match(updates[[1]]$findings, "executed 2 external tool call\\(s\\)")
+
+  result <- reticulate::py_to_r(
+    custom_ddg$`_apply_plan_updates_to_plan`(
+      plan = plan,
+      plan_updates = updates,
+      plan_mode_enabled = TRUE
+    )
+  )
+  expect_true(isTRUE(result$changed))
+  expect_equal(result$plan$steps[[1]]$status, "in_progress")
+  expect_equal(result$plan_history[[1]]$source, "auto_progress")
+
+  diagnostics <- reticulate::py_to_r(
+    custom_ddg$`_merge_plan_update_diagnostics`(
+      diagnostics = list(),
+      plan_update_result = result
+    )
+  )
+  expect_true(is.list(diagnostics$plan_progress_source_counts))
+  expect_equal(as.integer(diagnostics$plan_progress_source_counts$auto_progress), 1L)
+})
+
+test_that("_normalize_diagnostics retains plan update telemetry fields", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  normalized <- reticulate::py_to_r(
+    custom_ddg$`_normalize_diagnostics`(list(
+      plan_update_attempted = 3L,
+      plan_update_applied = 2L,
+      plan_update_rejected = 1L,
+      plan_update_diagnostics = list(
+        attempted = 3L,
+        applied = 2L,
+        rejected = 1L,
+        last_changed = TRUE,
+        rejections_by_reason = list(no_op = 1L),
+        recent_rejections = list("no_op")
+      ),
+      plan_progress_source_counts = list(auto_progress = 2L, update_plan = 1L)
+    ))
+  )
+
+  expect_equal(as.integer(normalized$plan_update_attempted), 3L)
+  expect_equal(as.integer(normalized$plan_update_applied), 2L)
+  expect_equal(as.integer(normalized$plan_update_rejected), 1L)
+  expect_true(is.list(normalized$plan_update_diagnostics))
+  expect_equal(as.integer(normalized$plan_update_diagnostics$attempted), 3L)
+  expect_equal(as.integer(normalized$plan_update_diagnostics$applied), 2L)
+  expect_equal(as.integer(normalized$plan_update_diagnostics$rejected), 1L)
+  expect_true(is.list(normalized$plan_progress_source_counts))
+  expect_equal(as.integer(normalized$plan_progress_source_counts$auto_progress), 2L)
+  expect_equal(as.integer(normalized$plan_progress_source_counts$update_plan), 1L)
+})
+
+test_that("_schema_outcome_gate_report marks terminal unknowns and merges plan progress source counts", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  expected_schema <- list(
+    birth_year = "integer",
+    birth_place = "string"
+  )
+  field_status <- list(
+    birth_year = list(status = "unknown", value = NULL, descriptor = "integer"),
+    birth_place = list(status = "found", value = "Tipnis", descriptor = "string")
+  )
+  state <- list(
+    use_plan_mode = TRUE,
+    plan = list(
+      goal = "G",
+      steps = list(
+        list(id = 1L, description = "S1", status = "completed", findings = "done"),
+        list(id = 2L, description = "S2", status = "in_progress", findings = "working")
+      ),
+      version = 3L,
+      current_step = 2L
+    ),
+    final_emitted = TRUE,
+    final_payload = list(dummy = TRUE),
+    budget_state = list(budget_exhausted = TRUE),
+    diagnostics = list(
+      plan_progress_source_counts = list(auto_progress = 1L)
+    )
+  )
+  report <- reticulate::py_to_r(
+    custom_ddg$`_schema_outcome_gate_report`(
+      state = state,
+      expected_schema = expected_schema,
+      field_status = field_status,
+      budget_state = list(budget_exhausted = TRUE),
+      diagnostics = list(
+        plan_progress_source_counts = list(update_plan = 2L)
+      )
+    )
+  )
+
+  expect_true(isTRUE(report$done))
+  expect_equal(as.character(report$completion_status), "complete_with_unknowns")
+  expect_equal(as.character(report$reason), "terminal_budget_exhausted_with_unknowns")
+  expect_false(isTRUE(report$required_fields_fully_resolved))
+  expect_true(isTRUE(report$terminal_with_unknowns))
+  expect_equal(as.integer(report$terminal_unknown_fields_count), 1L)
+  expect_true(isTRUE(report$plan_state_aligned))
+  expect_true(is.list(report$plan_progress_source_counts))
+  expect_equal(as.integer(report$plan_progress_source_counts$auto_progress), 1L)
+  expect_equal(as.integer(report$plan_progress_source_counts$update_plan), 2L)
+})
+
 test_that("_format_plan_for_prompt returns None for empty plan", {
   custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
   result <- custom_ddg$`_format_plan_for_prompt`(NULL)
@@ -3896,7 +4172,8 @@ test_that("_parse_plan_response returns fallback for invalid JSON", {
   result <- custom_ddg$`_parse_plan_response`("not json at all")
   result_r <- reticulate::py_to_r(result)
   expect_true(!is.null(result_r$goal))
-  expect_true(length(result_r$steps) >= 1L)
+  expect_true(length(result_r$steps) >= 4L)
+  expect_equal(result_r$steps[[1]]$status, "pending")
 })
 
 test_that("_sanitize_memory_dict preserves full URLs in long facts", {

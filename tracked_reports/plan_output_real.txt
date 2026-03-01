@@ -1,10 +1,35 @@
 {
-  "status": "empty",
-  "artifact": "plan_output",
-  "reason": "plan_mode_disabled",
-  "expected_empty": true,
-  "mode": "plan_disabled",
-  "upstream_dependency": "plan_mode",
-  "run_id": "trace_real_20260227T163043",
-  "generated_at": "2026-02-27T22:30:43Z"
+  "goal": "Complete the task",
+  "steps": [
+    {
+      "id": 1,
+      "description": "Clarify scope and constraints: Clarify task objective",
+      "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+      "status": "completed",
+      "findings": "Auto-progress: executed 2 external tool call(s)."
+    },
+    {
+      "id": 2,
+      "description": "Collect high-signal evidence from relevant tools/sources",
+      "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+      "status": "completed",
+      "findings": "Auto-progress: executed 1 external tool call(s)."
+    },
+    {
+      "id": 3,
+      "description": "Validate consistency and resolve conflicts/gaps",
+      "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+      "status": "completed",
+      "findings": "Auto-progress: executed 1 external tool call(s)."
+    },
+    {
+      "id": 4,
+      "description": "Produce final structured output with traceable justification",
+      "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+      "status": "completed",
+      "findings": "Auto-progress: executed 1 external tool call(s)."
+    }
+  ],
+  "version": 6,
+  "current_step": null
 }

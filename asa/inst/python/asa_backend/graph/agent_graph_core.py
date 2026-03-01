@@ -7549,6 +7549,9 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "diagnostics_recovery_retry_events",
         "anchor_hard_blocks_count",
         "anchor_soft_penalties_count",
+        "plan_update_attempted",
+        "plan_update_applied",
+        "plan_update_rejected",
     )
     out: Dict[str, Any] = {}
     for key in counters:
@@ -7732,6 +7735,46 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["anchor_reasons_current"] = list(existing.get("anchor_reasons_current") or [])[:8]
     out["tool_call_pairing"] = _tool_call_pairing_snapshot(existing.get("tool_call_pairing"))
     out["performance"] = _normalize_performance_diagnostics(existing.get("performance"))
+    plan_update_diag_raw = existing.get("plan_update_diagnostics") or {}
+    if not isinstance(plan_update_diag_raw, dict):
+        plan_update_diag_raw = {}
+    plan_update_diag: Dict[str, Any] = {
+        "attempted": max(0, int(plan_update_diag_raw.get("attempted", out.get("plan_update_attempted", 0)) or 0)),
+        "applied": max(0, int(plan_update_diag_raw.get("applied", out.get("plan_update_applied", 0)) or 0)),
+        "rejected": max(0, int(plan_update_diag_raw.get("rejected", out.get("plan_update_rejected", 0)) or 0)),
+        "last_changed": bool(plan_update_diag_raw.get("last_changed", False)),
+    }
+    rejections_by_reason_raw = plan_update_diag_raw.get("rejections_by_reason") or {}
+    rejections_by_reason: Dict[str, int] = {}
+    if isinstance(rejections_by_reason_raw, dict):
+        for raw_reason, raw_count in rejections_by_reason_raw.items():
+            reason = str(raw_reason or "").strip()
+            if not reason:
+                continue
+            try:
+                rejections_by_reason[reason] = max(0, int(raw_count))
+            except Exception:
+                rejections_by_reason[reason] = 0
+    plan_update_diag["rejections_by_reason"] = rejections_by_reason
+    plan_update_diag["recent_rejections"] = [
+        str(reason).strip()
+        for reason in list(plan_update_diag_raw.get("recent_rejections") or [])[:64]
+        if str(reason).strip()
+    ]
+    out["plan_update_diagnostics"] = plan_update_diag
+
+    progress_source_counts_raw = existing.get("plan_progress_source_counts") or {}
+    progress_source_counts: Dict[str, int] = {}
+    if isinstance(progress_source_counts_raw, dict):
+        for raw_source, raw_count in progress_source_counts_raw.items():
+            source = str(raw_source or "").strip().lower()
+            if not source:
+                continue
+            try:
+                progress_source_counts[source] = max(0, int(raw_count))
+            except Exception:
+                progress_source_counts[source] = 0
+    out["plan_progress_source_counts"] = progress_source_counts
     # Current-snapshot counters should always reflect latest field_status, while
     # legacy counters keep max/peak behavior for run-level telemetry.
     out["grounding_blocks_count_current"] = int(len(out.get("grounding_blocked_fields_current") or []))
@@ -10072,8 +10115,13 @@ def _normalize_plan_step_id(step_id: Any, fallback: Any = None) -> Any:
     return fallback if fallback is not None else step_id
 
 
-def _finalize_plan_statuses(plan: Any) -> Optional[Dict[str, Any]]:
-    """Finalize plan statuses without fabricating skipped progress."""
+def _finalize_plan_statuses(plan: Any, *, close_pending: bool = False) -> Optional[Dict[str, Any]]:
+    """Finalize plan statuses.
+
+    By default, preserve pending steps. When ``close_pending`` is True, convert
+    remaining pending steps to ``skipped`` so terminal plan snapshots are fully
+    closed.
+    """
     if not isinstance(plan, dict):
         return None
     try:
@@ -10096,6 +10144,9 @@ def _finalize_plan_statuses(plan: Any) -> Optional[Dict[str, Any]]:
         if status == "in_progress":
             step["status"] = "completed"
             status_changed = True
+        elif close_pending and status == "pending":
+            step["status"] = "skipped"
+            status_changed = True
         if next_pending is None and str(step.get("status", "")).strip().lower() == "pending":
             next_pending = step_id
 
@@ -10105,13 +10156,18 @@ def _finalize_plan_statuses(plan: Any) -> Optional[Dict[str, Any]]:
         except Exception:
             version = 0
         finalized["version"] = max(1, version + 1)
-    finalized["current_step"] = next_pending
+    finalized["current_step"] = None if close_pending else next_pending
     return finalized
 
 
-def _finalized_plan_history_entry(plan: Any) -> Optional[Dict[str, Any]]:
+def _finalized_plan_history_entry(
+    plan: Any,
+    *,
+    source: str = "finalize",
+    close_pending: bool = True,
+) -> Optional[Dict[str, Any]]:
     """Create a finalized plan snapshot for plan_history."""
-    finalized = _finalize_plan_statuses(plan)
+    finalized = _finalize_plan_statuses(plan, close_pending=close_pending)
     if not isinstance(finalized, dict):
         return None
     try:
@@ -10121,8 +10177,393 @@ def _finalized_plan_history_entry(plan: Any) -> Optional[Dict[str, Any]]:
     return {
         "version": max(1, version),
         "plan": finalized,
-        "source": "finalize",
+        "source": str(source or "finalize"),
     }
+
+
+def _compose_internal_scratchpad_tools(tools: Sequence[Any]) -> Tuple[List[Any], List[Any]]:
+    """Return user tools and the augmented list with internal scratchpad tools."""
+    primary_tools = list(tools or [])
+    save_finding = _make_save_finding_tool()
+    update_plan = _make_update_plan_tool()
+    return primary_tools, primary_tools + [save_finding, update_plan]
+
+
+def _merge_plan_generation_updates(out: Dict[str, Any], plan_updates: Any) -> Dict[str, Any]:
+    """Apply planner bootstrap updates onto an agent-node output payload."""
+    if not isinstance(out, dict):
+        return out
+    if not isinstance(plan_updates, dict) or not plan_updates:
+        return out
+
+    if "plan" in plan_updates:
+        out["plan"] = plan_updates["plan"]
+    if "plan_history" in plan_updates:
+        out["plan_history"] = plan_updates["plan_history"]
+    if "token_trace" in plan_updates:
+        out["token_trace"] = list(plan_updates["token_trace"] or []) + list(out.get("token_trace") or [])
+    out["tokens_used"] = int(out.get("tokens_used", 0) or 0) + int(plan_updates.get("tokens_used", 0) or 0)
+    out["input_tokens"] = int(out.get("input_tokens", 0) or 0) + int(plan_updates.get("input_tokens", 0) or 0)
+    out["output_tokens"] = int(out.get("output_tokens", 0) or 0) + int(plan_updates.get("output_tokens", 0) or 0)
+    return out
+
+
+def _normalize_plan_mode_output(out: Dict[str, Any], plan_mode_enabled: bool) -> Dict[str, Any]:
+    """Normalize optional plan fields on outgoing state payloads."""
+    if not isinstance(out, dict):
+        return out
+    if not bool(plan_mode_enabled):
+        out["plan"] = None
+    return out
+
+
+def _attach_finalized_plan_snapshot(
+    out: Dict[str, Any],
+    *,
+    plan_mode_enabled: bool,
+    plan: Any,
+    existing_plan_history: Any = None,
+    source: str = "finalize",
+) -> Dict[str, Any]:
+    """Attach final plan snapshot/history delta when finalization completes."""
+    if not isinstance(out, dict):
+        return out
+    if not bool(plan_mode_enabled) or not plan:
+        return out
+    finalized_entry = _finalized_plan_history_entry(
+        plan,
+        source=source,
+        close_pending=True,
+    )
+    if isinstance(finalized_entry, dict):
+        out["plan"] = finalized_entry.get("plan")
+
+        prior_history = list(existing_plan_history or [])
+        prior_history.extend(list(out.get("plan_history") or []))
+
+        emit_entry = True
+        if prior_history:
+            last_entry = prior_history[-1]
+            if isinstance(last_entry, dict):
+                last_version = int(last_entry.get("version", -1) or -1)
+                next_version = int(finalized_entry.get("version", -2) or -2)
+                last_source = str(last_entry.get("source") or "").strip().lower()
+                next_source = str(finalized_entry.get("source") or "").strip().lower()
+                last_plan = last_entry.get("plan")
+                next_plan = finalized_entry.get("plan")
+                if (
+                    last_version == next_version
+                    and last_source == next_source
+                    and isinstance(last_plan, dict)
+                    and isinstance(next_plan, dict)
+                    and last_plan == next_plan
+                ):
+                    emit_entry = False
+
+        out["plan_history"] = [finalized_entry] if emit_entry else []
+    return out
+
+
+def _collect_plan_update_rejection(reasons: List[str], reason: str, *, max_items: int = 64) -> None:
+    reason_text = str(reason or "").strip()
+    if not reason_text:
+        return
+    reasons.append(reason_text)
+    if len(reasons) > int(max_items):
+        del reasons[: len(reasons) - int(max_items)]
+
+
+def _apply_plan_updates_to_plan(
+    plan: Any,
+    plan_updates: Any,
+    *,
+    plan_mode_enabled: bool,
+) -> Dict[str, Any]:
+    """Apply update_plan tool calls and return mutation/rejection diagnostics."""
+    updates = list(plan_updates or [])
+    result = {
+        "attempted": int(len(updates)),
+        "applied": 0,
+        "rejected": 0,
+        "rejection_reasons": [],
+        "source_counts": {},
+        "changed": False,
+        "plan": None,
+        "plan_history": [],
+    }
+    if not updates:
+        return result
+
+    if not bool(plan_mode_enabled):
+        for _ in updates:
+            _collect_plan_update_rejection(result["rejection_reasons"], "plan_mode_disabled")
+        result["rejected"] = int(result["attempted"])
+        return result
+
+    if not isinstance(plan, dict):
+        for _ in updates:
+            _collect_plan_update_rejection(result["rejection_reasons"], "plan_missing")
+        result["rejected"] = int(result["attempted"])
+        return result
+
+    try:
+        current_plan = copy.deepcopy(plan)
+    except Exception:
+        current_plan = dict(plan)
+
+    steps = current_plan.get("steps", [])
+    if not isinstance(steps, list):
+        for _ in updates:
+            _collect_plan_update_rejection(result["rejection_reasons"], "plan_steps_missing")
+        result["rejected"] = int(result["attempted"])
+        return result
+
+    for update in updates:
+        if not isinstance(update, dict):
+            _collect_plan_update_rejection(result["rejection_reasons"], "invalid_update_payload")
+            continue
+
+        step_id = _normalize_plan_step_id(update.get("step_id"))
+        if step_id is None or (isinstance(step_id, str) and not step_id.strip()):
+            _collect_plan_update_rejection(result["rejection_reasons"], "invalid_step_id")
+            continue
+
+        new_status = str(update.get("status", "")).strip().lower()
+        if new_status not in {"in_progress", "completed", "skipped"}:
+            _collect_plan_update_rejection(result["rejection_reasons"], "invalid_status")
+            continue
+        source_name = str(update.get("_source") or "update_plan").strip().lower() or "update_plan"
+
+        matched_step = None
+        for i, step in enumerate(steps):
+            if not isinstance(step, dict):
+                continue
+            current_step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+            if current_step_id == step_id:
+                step["id"] = current_step_id
+                matched_step = step
+                break
+        if not isinstance(matched_step, dict):
+            _collect_plan_update_rejection(result["rejection_reasons"], "step_not_found")
+            continue
+
+        changed_this_update = False
+        if matched_step.get("status") != new_status:
+            matched_step["status"] = new_status
+            changed_this_update = True
+
+        if update.get("findings"):
+            findings_text = str(update["findings"])[:500]
+            if matched_step.get("findings") != findings_text:
+                matched_step["findings"] = findings_text
+                changed_this_update = True
+
+        if changed_this_update:
+            result["applied"] = int(result["applied"]) + 1
+            result["changed"] = True
+            source_counts = result.get("source_counts")
+            if not isinstance(source_counts, dict):
+                source_counts = {}
+            source_counts[source_name] = int(source_counts.get(source_name, 0) or 0) + 1
+            result["source_counts"] = source_counts
+        else:
+            _collect_plan_update_rejection(result["rejection_reasons"], "no_op")
+
+    if result["changed"]:
+        # Strict-linear plan mode: keep at most one active step.
+        # If multiple steps are in progress, retain the latest one and
+        # auto-complete earlier in-progress steps.
+        in_progress_indexes: List[int] = []
+        for i, step in enumerate(steps):
+            if not isinstance(step, dict):
+                continue
+            if str(step.get("status", "")).strip().lower() == "in_progress":
+                in_progress_indexes.append(i)
+        if len(in_progress_indexes) > 1:
+            keep_index = in_progress_indexes[-1]
+            for i in in_progress_indexes[:-1]:
+                step = steps[i]
+                if isinstance(step, dict) and str(step.get("status", "")).strip().lower() == "in_progress":
+                    step["status"] = "completed"
+
+        try:
+            current_plan_version = int(current_plan.get("version", 0) or 0)
+        except Exception:
+            current_plan_version = 0
+        current_plan["version"] = max(1, current_plan_version + 1)
+
+        active_step = None
+        for i, step in enumerate(steps):
+            if not isinstance(step, dict):
+                continue
+            if str(step.get("status", "")).strip().lower() == "in_progress":
+                active_step = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+                break
+        next_pending = None
+        for i, step in enumerate(steps):
+            if isinstance(step, dict) and str(step.get("status", "")).strip().lower() == "pending":
+                next_pending = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+                break
+        current_plan["current_step"] = active_step if active_step is not None else next_pending
+        result["plan"] = current_plan
+        source_counts = result.get("source_counts")
+        source_token = "update_plan"
+        if isinstance(source_counts, dict) and source_counts:
+            applied_sources = [k for k, v in source_counts.items() if int(v or 0) > 0]
+            if len(applied_sources) == 1:
+                source_token = str(applied_sources[0] or "update_plan")
+            elif len(applied_sources) > 1:
+                source_token = "mixed_update"
+        result["plan_history"] = [{
+            "version": current_plan["version"],
+            "plan": current_plan,
+            "source": source_token,
+        }]
+
+    result["rejected"] = max(0, int(result["attempted"]) - int(result["applied"]))
+    return result
+
+
+def _merge_plan_update_diagnostics(diagnostics: Any, plan_update_result: Any) -> Dict[str, Any]:
+    """Attach additive plan-update diagnostics for observability."""
+    if isinstance(diagnostics, dict):
+        out = diagnostics
+    else:
+        out = {}
+    if not isinstance(plan_update_result, dict):
+        return out
+
+    attempted = int(plan_update_result.get("attempted", 0) or 0)
+    applied = int(plan_update_result.get("applied", 0) or 0)
+    rejected = int(plan_update_result.get("rejected", 0) or 0)
+    rejection_reasons = [
+        str(reason).strip()
+        for reason in list(plan_update_result.get("rejection_reasons") or [])
+        if str(reason).strip()
+    ]
+
+    if attempted <= 0 and applied <= 0 and rejected <= 0 and not rejection_reasons:
+        return out
+
+    out["plan_update_attempted"] = int(out.get("plan_update_attempted", 0) or 0) + attempted
+    out["plan_update_applied"] = int(out.get("plan_update_applied", 0) or 0) + applied
+    out["plan_update_rejected"] = int(out.get("plan_update_rejected", 0) or 0) + rejected
+
+    plan_diag = out.get("plan_update_diagnostics")
+    if not isinstance(plan_diag, dict):
+        plan_diag = {}
+    plan_diag["attempted"] = int(plan_diag.get("attempted", 0) or 0) + attempted
+    plan_diag["applied"] = int(plan_diag.get("applied", 0) or 0) + applied
+    plan_diag["rejected"] = int(plan_diag.get("rejected", 0) or 0) + rejected
+    plan_diag["last_changed"] = bool(plan_update_result.get("changed", False))
+
+    reason_counts = plan_diag.get("rejections_by_reason")
+    if not isinstance(reason_counts, dict):
+        reason_counts = {}
+    recent_rejections = list(plan_diag.get("recent_rejections") or [])
+    for reason in rejection_reasons:
+        reason_counts[reason] = int(reason_counts.get(reason, 0) or 0) + 1
+        recent_rejections.append(reason)
+    if len(recent_rejections) > 64:
+        recent_rejections = recent_rejections[-64:]
+    plan_diag["rejections_by_reason"] = reason_counts
+    plan_diag["recent_rejections"] = recent_rejections
+    out["plan_update_diagnostics"] = plan_diag
+
+    source_counts = plan_update_result.get("source_counts")
+    if isinstance(source_counts, dict) and source_counts:
+        progress_source_counts = out.get("plan_progress_source_counts")
+        if not isinstance(progress_source_counts, dict):
+            progress_source_counts = {}
+        for source_name, raw_count in source_counts.items():
+            key = str(source_name or "").strip().lower()
+            if not key:
+                continue
+            progress_source_counts[key] = int(progress_source_counts.get(key, 0) or 0) + int(raw_count or 0)
+        out["plan_progress_source_counts"] = progress_source_counts
+    return out
+
+
+def _next_pending_plan_step_id(plan: Any) -> Optional[Any]:
+    if not isinstance(plan, dict):
+        return None
+    steps = plan.get("steps")
+    if not isinstance(steps, list):
+        return None
+
+    requested_current = _normalize_plan_step_id(plan.get("current_step"))
+    if requested_current is not None:
+        for i, step in enumerate(steps):
+            if not isinstance(step, dict):
+                continue
+            step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+            status = str(step.get("status", "")).strip().lower()
+            if step_id == requested_current and status == "pending":
+                return step_id
+
+    for i, step in enumerate(steps):
+        if not isinstance(step, dict):
+            continue
+        step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+        status = str(step.get("status", "")).strip().lower()
+        if status == "pending":
+            return step_id
+    return None
+
+
+def _build_auto_progress_plan_updates(
+    *,
+    plan_mode_enabled: bool,
+    plan: Any,
+    existing_updates: Any,
+    external_tool_count: int,
+) -> List[Dict[str, Any]]:
+    """Create deterministic in-progress updates when explicit update_plan is absent."""
+    if not bool(plan_mode_enabled):
+        return []
+    updates = list(existing_updates or [])
+    if updates:
+        return []
+    if int(external_tool_count or 0) <= 0:
+        return []
+
+    next_step_id = _next_pending_plan_step_id(plan)
+    if next_step_id is None:
+        return []
+
+    findings = f"Auto-progress: executed {int(external_tool_count)} external tool call(s)."
+    return [{
+        "step_id": next_step_id,
+        "status": "in_progress",
+        "findings": findings[:500],
+        "_source": "auto_progress",
+    }]
+
+
+def _plan_status_counts(plan: Any) -> Dict[str, int]:
+    counts = {
+        "total": 0,
+        "completed": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "skipped": 0,
+        "unspecified": 0,
+    }
+    if not isinstance(plan, dict):
+        return counts
+    steps = plan.get("steps")
+    if not isinstance(steps, list):
+        return counts
+    for step in steps:
+        if not isinstance(step, dict):
+            continue
+        counts["total"] += 1
+        status = str(step.get("status", "")).strip().lower()
+        if status in {"completed", "in_progress", "pending", "skipped"}:
+            counts[status] += 1
+        else:
+            counts["unspecified"] += 1
+    return counts
 
 
 def _extract_step_completion_criteria(step: dict) -> str:
@@ -10148,18 +10589,47 @@ def _default_step_completion_criteria(description: str) -> str:
     )[:300]
 
 
+def _canonical_plan_steps_template(*, starter_desc: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Task-agnostic 4-step plan template used for planner fallbacks/expansion."""
+    lead = str(starter_desc or "").strip() or "Clarify task objective"
+    return [
+        {
+            "id": 1,
+            "description": f"Clarify scope and constraints: {lead}",
+            "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+            "status": "pending",
+            "findings": "",
+        },
+        {
+            "id": 2,
+            "description": "Collect high-signal evidence from relevant tools/sources",
+            "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+            "status": "pending",
+            "findings": "",
+        },
+        {
+            "id": 3,
+            "description": "Validate consistency and resolve conflicts/gaps",
+            "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+            "status": "pending",
+            "findings": "",
+        },
+        {
+            "id": 4,
+            "description": "Produce final structured output with traceable justification",
+            "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+            "status": "pending",
+            "findings": "",
+        },
+    ]
+
+
 def _parse_plan_response(content: str) -> Dict[str, Any]:
     """Parse LLM plan response into a structured plan dict."""
     import json as _json
     fallback = {
         "goal": "Complete the task",
-        "steps": [{
-            "id": 1,
-            "description": "Analyze task requirements and produce the requested output",
-            "completion_criteria": "Final output satisfies the requested format and cites supporting evidence when applicable.",
-            "status": "pending",
-            "findings": "",
-        }],
+        "steps": _canonical_plan_steps_template(),
         "version": 1,
         "current_step": 1,
     }
@@ -10230,36 +10700,7 @@ def _parse_plan_response(content: str) -> Dict[str, Any]:
     # Ensure the plan is always actionable and multi-stage (task-agnostic template).
     if len(normalized_steps) < 4:
         starter_desc = normalized_steps[0]["description"] if normalized_steps else "Clarify task objective"
-        normalized_steps = [
-            {
-                "id": 1,
-                "description": f"Clarify scope and constraints: {starter_desc}",
-                "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
-                "status": "pending",
-                "findings": "",
-            },
-            {
-                "id": 2,
-                "description": "Collect high-signal evidence from relevant tools/sources",
-                "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
-                "status": "pending",
-                "findings": "",
-            },
-            {
-                "id": 3,
-                "description": "Validate consistency and resolve conflicts/gaps",
-                "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
-                "status": "pending",
-                "findings": "",
-            },
-            {
-                "id": 4,
-                "description": "Produce final structured output with traceable justification",
-                "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
-                "status": "pending",
-                "findings": "",
-            },
-        ]
+        normalized_steps = _canonical_plan_steps_template(starter_desc=starter_desc)
     plan["steps"] = normalized_steps
     plan.setdefault("version", 1)
     plan.setdefault("current_step", 1)
@@ -12673,6 +13114,7 @@ def _schema_outcome_gate_report(
     unknown_ratio = 0.0
     if resolvable_keys:
         unknown_ratio = float(unknown_resolvable) / float(len(resolvable_keys))
+    required_fields_fully_resolved = bool(len(missing_details) == 0)
     invariant = _finalization_invariant_report(
         state,
         expected_schema=expected_schema,
@@ -12744,10 +13186,78 @@ def _schema_outcome_gate_report(
         if str(event.get("repair_reason") or "").strip() == "invoke_exception_fallback":
             invoke_error_present = True
             break
+
+    plan_mode_enabled = bool(state.get("use_plan_mode", False))
+    completion_status_value = str(report.get("completion_status") or "").strip().lower()
+    completion_done = bool(report.get("done")) or completion_status_value in {
+        "complete",
+        "complete_with_unknowns",
+        "completed",
+        "done",
+        "final",
+    }
+    completion_terminal = bool(
+        completion_done
+        or bool(state.get("final_emitted", False))
+        or bool(state.get("terminal_valid", False))
+        or state.get("final_payload") is not None
+    )
+    terminal_with_unknowns = bool(completion_terminal and not required_fields_fully_resolved)
+    if terminal_with_unknowns:
+        report["done"] = True
+        report["completion_status"] = "complete_with_unknowns"
+        if budget_exhausted:
+            report["reason"] = "terminal_budget_exhausted_with_unknowns"
+        else:
+            report["reason"] = "terminal_with_unknowns"
+
+    plan_for_gate = state.get("plan") if plan_mode_enabled else None
+    if plan_mode_enabled and completion_terminal:
+        finalized_plan = _finalize_plan_statuses(plan_for_gate, close_pending=True)
+        if isinstance(finalized_plan, dict):
+            plan_for_gate = finalized_plan
+    plan_counts = _plan_status_counts(plan_for_gate)
+    plan_alignment_required = bool(plan_mode_enabled and completion_terminal)
+    plan_state_aligned = True
+    plan_state_alignment_reason = "not_applicable"
+    if plan_mode_enabled:
+        if not plan_alignment_required:
+            plan_state_alignment_reason = "in_progress_alignment"
+        elif not isinstance(plan_for_gate, dict):
+            plan_state_aligned = False
+            plan_state_alignment_reason = "plan_missing_on_completion"
+        elif int(plan_counts.get("in_progress", 0) or 0) > 0 or int(plan_counts.get("pending", 0) or 0) > 0:
+            plan_state_aligned = False
+            plan_state_alignment_reason = "incomplete_steps_on_completion"
+        else:
+            plan_state_alignment_reason = "terminal_alignment"
+
+    plan_progress_source_counts: Dict[str, int] = {}
+    source_count_candidates: List[Any] = []
+    state_diagnostics = state.get("diagnostics")
+    if isinstance(state_diagnostics, dict):
+        source_count_candidates.append(state_diagnostics.get("plan_progress_source_counts"))
+    if isinstance(diagnostics, dict):
+        source_count_candidates.append(diagnostics.get("plan_progress_source_counts"))
+    if isinstance(diagnostics_snapshot, dict):
+        source_count_candidates.append(diagnostics_snapshot.get("plan_progress_source_counts"))
+    for source_counts in source_count_candidates:
+        if not isinstance(source_counts, dict):
+            continue
+        for raw_source, raw_count in source_counts.items():
+            source_key = str(raw_source or "").strip().lower()
+            if not source_key:
+                continue
+            plan_progress_source_counts[source_key] = max(
+                int(plan_progress_source_counts.get(source_key, 0) or 0),
+                int(raw_count or 0),
+            )
+
     artifact_markers = ["completion_gate", "field_status"]
-    if bool(state.get("use_plan_mode", False)):
+    if plan_mode_enabled:
         artifact_markers.append("plan_enabled")
         artifact_markers.append("plan_present" if state.get("plan") is not None else "plan_missing")
+        artifact_markers.append("plan_state_aligned" if plan_state_aligned else "plan_state_unaligned")
     else:
         artifact_markers.append("plan_mode_disabled")
     artifact_markers.append("invoke_error_present" if invoke_error_present else "invoke_error_absent")
@@ -12806,6 +13316,19 @@ def _schema_outcome_gate_report(
     report["quality_gate_min_global_confidence"] = float(min_global_confidence)
     report["quality_gate_min_found_fields"] = int(min_found_fields)
     report["quality_gate_require_invariant_ok"] = bool(require_invariant_ok)
+    report["required_fields_fully_resolved"] = bool(required_fields_fully_resolved)
+    report["terminal_with_unknowns"] = bool(terminal_with_unknowns)
+    report["terminal_unknown_fields_count"] = int(unknown_resolvable if terminal_with_unknowns else 0)
+    report["plan_steps_total"] = int(plan_counts.get("total", 0) or 0)
+    report["plan_steps_completed"] = int(plan_counts.get("completed", 0) or 0)
+    report["plan_steps_in_progress"] = int(plan_counts.get("in_progress", 0) or 0)
+    report["plan_steps_pending"] = int(plan_counts.get("pending", 0) or 0)
+    report["plan_steps_skipped"] = int(plan_counts.get("skipped", 0) or 0)
+    report["plan_steps_unspecified"] = int(plan_counts.get("unspecified", 0) or 0)
+    report["plan_terminal_alignment_required"] = bool(plan_alignment_required)
+    report["plan_state_aligned"] = bool(plan_state_aligned)
+    report["plan_state_alignment_reason"] = str(plan_state_alignment_reason)
+    report["plan_progress_source_counts"] = plan_progress_source_counts
     report["artifact_markers"] = artifact_markers
     return report
 
@@ -14212,7 +14735,9 @@ def _extract_tool_round_inputs(last_message: Any) -> Dict[str, Any]:
                 "category": category,
             })
         elif tool_name_norm == "update_plan":
-            out["plan_updates"].append(dict(tool_args))
+            payload = dict(tool_args)
+            payload["_source"] = "update_plan"
+            out["plan_updates"].append(payload)
     return out
 
 
@@ -15461,44 +15986,38 @@ def _create_tool_node_with_scratchpad(
             diagnostics=diagnostics,
         )
 
-        # Apply plan updates if plan mode is enabled and the agent called update_plan.
+        # Apply update_plan calls and emit diagnostics for accepted/rejected updates.
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
-        if plan_updates and plan_mode_enabled and state.get("plan"):
-            import copy as _copy
-            current_plan = _copy.deepcopy(state["plan"])
-            steps = current_plan.get("steps", []) if isinstance(current_plan, dict) else []
-            changed = False
-            for update in plan_updates:
-                step_id = _normalize_plan_step_id(update.get("step_id"))
-                if step_id is None:
-                    continue
-                for i, step in enumerate(steps):
-                    if not isinstance(step, dict):
-                        continue
-                    current_step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
-                    if current_step_id == step_id:
-                        step["id"] = current_step_id
-                        new_status = update.get("status", "")
-                        if new_status in ("in_progress", "completed", "skipped"):
-                            if step.get("status") != new_status:
-                                step["status"] = new_status
-                                changed = True
-                        if update.get("findings"):
-                            findings_text = str(update["findings"])[:500]
-                            if step.get("findings") != findings_text:
-                                step["findings"] = findings_text
-                                changed = True
-            if changed:
-                current_plan["version"] = current_plan.get("version", 0) + 1
-                # Advance current_step to next pending, else clear when all steps are done.
-                next_pending = None
-                for i, step in enumerate(steps):
-                    if isinstance(step, dict) and step.get("status") == "pending":
-                        next_pending = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
-                        break
-                current_plan["current_step"] = next_pending
-                result["plan"] = current_plan
-                result["plan_history"] = [{"version": current_plan["version"], "plan": current_plan}]
+        auto_plan_updates = _build_auto_progress_plan_updates(
+            plan_mode_enabled=plan_mode_enabled,
+            plan=state.get("plan"),
+            existing_updates=plan_updates,
+            external_tool_count=int(external_tool_count),
+        )
+        if auto_plan_updates:
+            plan_updates = list(plan_updates or []) + list(auto_plan_updates or [])
+        plan_update_result = _apply_plan_updates_to_plan(
+            state.get("plan"),
+            plan_updates,
+            plan_mode_enabled=plan_mode_enabled,
+        )
+        diagnostics = _merge_plan_update_diagnostics(diagnostics, plan_update_result)
+        result["diagnostics"] = diagnostics
+        if bool(plan_update_result.get("changed", False)):
+            result["plan"] = plan_update_result.get("plan")
+            result["plan_history"] = list(plan_update_result.get("plan_history") or [])
+        gate_state = {
+            **state,
+            "plan": result.get("plan", state.get("plan")),
+            "diagnostics": diagnostics,
+        }
+        result["completion_gate"] = _schema_outcome_gate_report(
+            gate_state,
+            expected_schema=expected_schema,
+            field_status=field_status,
+            budget_state=budget_state,
+            diagnostics=diagnostics,
+        )
 
         # Opportunistic OM prebuffering: prepare observation payload before hard trigger.
         om_cfg = _state_om_config(state)
@@ -15780,11 +16299,8 @@ def create_memory_folding_agent(
     # For tests    (threshold=5):  effective = min(6, 2) = 2
     min_fold_batch = min(min_fold_batch, max(1, message_threshold // 2))
 
-    # Create save_finding and update_plan tools, combine with user-provided tools
-    save_finding = _make_save_finding_tool()
-    update_plan = _make_update_plan_tool()
-    primary_tools = list(tools)
-    tools_with_scratchpad = primary_tools + [save_finding, update_plan]
+    # Combine user-provided tools with internal scratchpad helpers.
+    primary_tools, tools_with_scratchpad = _compose_internal_scratchpad_tools(tools)
 
     # Bind tools to model for the agent node
     model_with_tools = model.bind_tools(tools_with_scratchpad)
@@ -16379,23 +16895,19 @@ def create_memory_folding_agent(
                 repair_events,
                 trigger_context="agent",
             )
-        if not plan_mode_enabled:
-            out["plan"] = None
+        out = _normalize_plan_mode_output(out, plan_mode_enabled=plan_mode_enabled)
         # Set stop_reason when agent_node itself ran in finalize mode,
         # so routing can skip the redundant finalize_answer node.
         if _is_within_finalization_cutoff(state, remaining):
             out["stop_reason"] = "recursion_limit"
-        # Merge plan generation updates (plan, plan_history, extra token trace).
-        if _plan_updates:
-            if "plan" in _plan_updates:
-                out["plan"] = _plan_updates["plan"]
-            if "plan_history" in _plan_updates:
-                out["plan_history"] = _plan_updates["plan_history"]
-            if "token_trace" in _plan_updates:
-                out["token_trace"] = _plan_updates["token_trace"] + out.get("token_trace", [])
-            out["tokens_used"] = out.get("tokens_used", 0) + _plan_updates.get("tokens_used", 0)
-            out["input_tokens"] = out.get("input_tokens", 0) + _plan_updates.get("input_tokens", 0)
-            out["output_tokens"] = out.get("output_tokens", 0) + _plan_updates.get("output_tokens", 0)
+        out = _merge_plan_generation_updates(out, _plan_updates)
+        if bool(plan_mode_enabled) and bool(out.get("final_emitted", False)):
+            out = _attach_finalized_plan_snapshot(
+                out,
+                plan_mode_enabled=plan_mode_enabled,
+                plan=out.get("plan", plan),
+                existing_plan_history=state.get("plan_history"),
+            )
         return out
 
     def finalize_answer(state: MemoryFoldingAgentState) -> dict:
@@ -16514,11 +17026,12 @@ def create_memory_folding_agent(
             }
             if _is_within_finalization_cutoff(state, remaining) or state.get("stop_reason") == "recursion_limit":
                 out["stop_reason"] = "recursion_limit"
-            if plan_mode_enabled and plan:
-                _finalized_entry = _finalized_plan_history_entry(plan)
-                if isinstance(_finalized_entry, dict):
-                    out["plan"] = _finalized_entry.get("plan")
-                    out["plan_history"] = [_finalized_entry]
+            out = _attach_finalized_plan_snapshot(
+                out,
+                plan_mode_enabled=plan_mode_enabled,
+                plan=plan,
+                existing_plan_history=state.get("plan_history"),
+            )
             return out
 
         if (
@@ -16569,7 +17082,7 @@ def create_memory_folding_agent(
                 candidate_message=cached_response,
                 emit_candidate=emit_cached_message,
             )
-            return {
+            out = {
                 "messages": cached_messages,
                 "stop_reason": "recursion_limit",
                 "field_status": field_status,
@@ -16613,6 +17126,13 @@ def create_memory_folding_agent(
                 "finalize_trigger_reasons": finalize_trigger_reasons,
                 "token_trace": [build_node_trace_entry("finalize", started_at=node_started_at)],
             }
+            out = _attach_finalized_plan_snapshot(
+                out,
+                plan_mode_enabled=plan_mode_enabled,
+                plan=plan,
+                existing_plan_history=state.get("plan_history"),
+            )
+            return out
 
         response = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
         if response is None:
@@ -16851,11 +17371,12 @@ def create_memory_folding_agent(
                 trigger_context="finalize",
             )
         # Auto-complete plan steps on finalization
-        if plan_mode_enabled and plan:
-            _finalized_entry = _finalized_plan_history_entry(plan)
-            if isinstance(_finalized_entry, dict):
-                out["plan"] = _finalized_entry.get("plan")
-                out["plan_history"] = [_finalized_entry]
+        out = _attach_finalized_plan_snapshot(
+            out,
+            plan_mode_enabled=plan_mode_enabled,
+            plan=plan,
+            existing_plan_history=state.get("plan_history"),
+        )
         return out
 
     def observe_conversation(state: MemoryFoldingAgentState) -> dict:
@@ -18292,10 +18813,8 @@ def create_standard_agent(
     )
     native_cache_policy, cache_backend = _resolve_langgraph_cache(bool(cache_enabled))
 
-    # Create save_finding and update_plan tools, combine with user-provided tools
-    save_finding = _make_save_finding_tool()
-    update_plan = _make_update_plan_tool()
-    tools_with_scratchpad = list(tools) + [save_finding, update_plan]
+    # Combine user-provided tools with internal scratchpad helpers.
+    _, tools_with_scratchpad = _compose_internal_scratchpad_tools(tools)
 
     model_with_tools = model.bind_tools(tools_with_scratchpad)
     base_tool_node = ToolNode(tools_with_scratchpad)
@@ -18673,23 +19192,19 @@ def create_standard_agent(
                 repair_events,
                 trigger_context="agent",
             )
-        if not plan_mode_enabled:
-            out["plan"] = None
+        out = _normalize_plan_mode_output(out, plan_mode_enabled=plan_mode_enabled)
         # Set stop_reason when agent_node itself ran in finalize mode,
         # so routing can skip the redundant finalize_answer node.
         if _is_within_finalization_cutoff(state, remaining):
             out["stop_reason"] = "recursion_limit"
-        # Merge plan generation updates (plan, plan_history, extra token trace).
-        if _plan_updates:
-            if "plan" in _plan_updates:
-                out["plan"] = _plan_updates["plan"]
-            if "plan_history" in _plan_updates:
-                out["plan_history"] = _plan_updates["plan_history"]
-            if "token_trace" in _plan_updates:
-                out["token_trace"] = _plan_updates["token_trace"] + out.get("token_trace", [])
-            out["tokens_used"] = out.get("tokens_used", 0) + _plan_updates.get("tokens_used", 0)
-            out["input_tokens"] = out.get("input_tokens", 0) + _plan_updates.get("input_tokens", 0)
-            out["output_tokens"] = out.get("output_tokens", 0) + _plan_updates.get("output_tokens", 0)
+        out = _merge_plan_generation_updates(out, _plan_updates)
+        if bool(plan_mode_enabled) and bool(out.get("final_emitted", False)):
+            out = _attach_finalized_plan_snapshot(
+                out,
+                plan_mode_enabled=plan_mode_enabled,
+                plan=out.get("plan", plan),
+                existing_plan_history=state.get("plan_history"),
+            )
         return out
 
     def finalize_answer(state: StandardAgentState) -> dict:
@@ -18802,11 +19317,12 @@ def create_standard_agent(
             }
             if _is_within_finalization_cutoff(state, remaining) or state.get("stop_reason") == "recursion_limit":
                 out["stop_reason"] = "recursion_limit"
-            if plan_mode_enabled and plan:
-                _finalized_entry = _finalized_plan_history_entry(plan)
-                if isinstance(_finalized_entry, dict):
-                    out["plan"] = _finalized_entry.get("plan")
-                    out["plan_history"] = [_finalized_entry]
+            out = _attach_finalized_plan_snapshot(
+                out,
+                plan_mode_enabled=plan_mode_enabled,
+                plan=plan,
+                existing_plan_history=state.get("plan_history"),
+            )
             return out
 
         if (
@@ -18857,7 +19373,7 @@ def create_standard_agent(
                 candidate_message=cached_response,
                 emit_candidate=emit_cached_message,
             )
-            return {
+            out = {
                 "messages": cached_messages,
                 "stop_reason": "recursion_limit",
                 "field_status": field_status,
@@ -18901,6 +19417,13 @@ def create_standard_agent(
                 "finalize_trigger_reasons": finalize_trigger_reasons,
                 "token_trace": [build_node_trace_entry("finalize", started_at=node_started_at)],
             }
+            out = _attach_finalized_plan_snapshot(
+                out,
+                plan_mode_enabled=plan_mode_enabled,
+                plan=plan,
+                existing_plan_history=state.get("plan_history"),
+            )
+            return out
         response = _reusable_terminal_finalize_response(messages, expected_schema=expected_schema)
         if response is None:
             # Build tool output digest for context when re-invoking
@@ -19128,11 +19651,12 @@ def create_standard_agent(
                 trigger_context="finalize",
             )
         # Auto-complete plan steps on finalization
-        if plan_mode_enabled and plan:
-            _finalized_entry = _finalized_plan_history_entry(plan)
-            if isinstance(_finalized_entry, dict):
-                out["plan"] = _finalized_entry.get("plan")
-                out["plan_history"] = [_finalized_entry]
+        out = _attach_finalized_plan_snapshot(
+            out,
+            plan_mode_enabled=plan_mode_enabled,
+            plan=plan,
+            existing_plan_history=state.get("plan_history"),
+        )
         return out
 
     def should_continue(state: StandardAgentState) -> str:

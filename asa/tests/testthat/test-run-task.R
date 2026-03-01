@@ -284,6 +284,162 @@ test_that("run_task validation accepts orchestration_options", {
   )
 })
 
+test_that("run_task forwards use_plan_mode and returns canonical plan artifacts", {
+  observed_use_plan_mode <- NULL
+  mocked_agent <- asa_test_mock_agent()
+
+  testthat::local_mocked_bindings(
+    .resolve_runtime_inputs = function(config, agent, temporal, allow_read_webpages,
+                                       webpage_relevance_mode, webpage_embedding_provider,
+                                       webpage_embedding_model) {
+      list(
+        runtime = list(config_search = list()),
+        temporal = temporal,
+        allow_rw = FALSE
+      )
+    },
+    .with_runtime_wrappers = function(runtime, agent, fn) fn(),
+    .acquire_rate_limit_token = function(verbose = FALSE) invisible(TRUE),
+    .adaptive_rate_record = function(status, verbose = FALSE) invisible(NULL),
+    .extract_search_tier = function(trace) "none",
+    .extract_action_trace = function(...) {
+      list(
+        steps = list(),
+        ascii = "",
+        step_count = 0L,
+        omitted_steps = 0L,
+        plan_summary = character(0),
+        investigator_summary = character(0),
+        overall_summary = character(0),
+        langgraph_step_timings = list()
+      )
+    },
+    .run_agent = function(...) {
+      args <- list(...)
+      observed_use_plan_mode <<- args$use_plan_mode
+      list(
+        message = "{\"status\":\"ok\"}",
+        status_code = 200L,
+        trace = "",
+        trace_json = "",
+        thread_id = "thread-plan-true",
+        stop_reason = "done",
+        tokens_used = 5L,
+        input_tokens = 3L,
+        output_tokens = 2L,
+        token_trace = list(),
+        budget_state = list(tool_calls_used = 0L, tool_calls_limit = 10L, tool_calls_remaining = 10L),
+        fold_stats = list(fold_count = 0L),
+        field_status = list(),
+        diagnostics = list(),
+        tool_quality_events = list(),
+        completion_gate = list(completion_status = "complete"),
+        payload_integrity = list(),
+        plan = list(
+          goal = "g",
+          steps = list(list(id = 1L, description = "step", status = "pending", findings = "")),
+          version = 1L,
+          current_step = 1L
+        ),
+        plan_history = list(
+          list(
+            version = 1L,
+            source = "auto",
+            plan = list(goal = "g", steps = list(), version = 1L, current_step = 1L)
+          )
+        )
+      )
+    },
+    .package = "asa"
+  )
+
+  result <- run_task(
+    prompt = "test plan forwarding",
+    output_format = "raw",
+    agent = mocked_agent,
+    use_plan_mode = TRUE
+  )
+
+  expect_true(isTRUE(observed_use_plan_mode))
+  expect_true(is.list(result$execution$plan))
+  expect_true(is.list(result$execution$plan_history))
+  expect_true(is.list(result$plan))
+  expect_true(is.list(result$plan_history))
+  expect_equal(result$execution$plan$goal, "g")
+})
+
+test_that("run_task with use_plan_mode FALSE keeps plan artifacts empty", {
+  observed_use_plan_mode <- NULL
+  mocked_agent <- asa_test_mock_agent()
+
+  testthat::local_mocked_bindings(
+    .resolve_runtime_inputs = function(config, agent, temporal, allow_read_webpages,
+                                       webpage_relevance_mode, webpage_embedding_provider,
+                                       webpage_embedding_model) {
+      list(
+        runtime = list(config_search = list()),
+        temporal = temporal,
+        allow_rw = FALSE
+      )
+    },
+    .with_runtime_wrappers = function(runtime, agent, fn) fn(),
+    .acquire_rate_limit_token = function(verbose = FALSE) invisible(TRUE),
+    .adaptive_rate_record = function(status, verbose = FALSE) invisible(NULL),
+    .extract_search_tier = function(trace) "none",
+    .extract_action_trace = function(...) {
+      list(
+        steps = list(),
+        ascii = "",
+        step_count = 0L,
+        omitted_steps = 0L,
+        plan_summary = character(0),
+        investigator_summary = character(0),
+        overall_summary = character(0),
+        langgraph_step_timings = list()
+      )
+    },
+    .run_agent = function(...) {
+      args <- list(...)
+      observed_use_plan_mode <<- args$use_plan_mode
+      list(
+        message = "{\"status\":\"ok\"}",
+        status_code = 200L,
+        trace = "",
+        trace_json = "",
+        thread_id = "thread-plan-false",
+        stop_reason = "done",
+        tokens_used = 2L,
+        input_tokens = 1L,
+        output_tokens = 1L,
+        token_trace = list(),
+        budget_state = list(tool_calls_used = 0L, tool_calls_limit = 10L, tool_calls_remaining = 10L),
+        fold_stats = list(fold_count = 0L),
+        field_status = list(),
+        diagnostics = list(),
+        tool_quality_events = list(),
+        completion_gate = list(completion_status = "complete"),
+        payload_integrity = list(),
+        plan = list(),
+        plan_history = list()
+      )
+    },
+    .package = "asa"
+  )
+
+  result <- run_task(
+    prompt = "test plan mode off",
+    output_format = "raw",
+    agent = mocked_agent,
+    use_plan_mode = FALSE
+  )
+
+  expect_false(isTRUE(observed_use_plan_mode))
+  expect_equal(length(result$execution$plan), 0L)
+  expect_equal(length(result$execution$plan_history), 0L)
+  expect_equal(length(result$plan), 0L)
+  expect_equal(length(result$plan_history), 0L)
+})
+
 test_that("run_task validation accepts performance profile and webpage policy", {
   expect_silent(
     asa:::.validate_run_task(

@@ -5,6 +5,7 @@
 #./asa-software/tracked_reports/trace_real.txt        
 #./asa-software/tracked_reports/token_stats_real.txt
 #./asa-software/tracked_reports/plan_output_real.txt
+#./asa-software/tracked_reports/plan_history_output_real.txt
 #./asa-software/tracked_reports/fold_stats_real.txt
 #./asa-software/tracked_reports/fold_summary_real.txt
 #./asa-software/tracked_reports/fold_archive_real.txt
@@ -31,11 +32,14 @@ trace_inference_started_at <- NA_character_
 trace_inference_finished_at <- NA_character_
 blind_benchmark_mode <- TRUE
 
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
 artifact_dir <- normalizePath("~/Documents/asa-software/tracked_reports", mustWork = TRUE)
 path_prompt <- file.path(artifact_dir, "prompt_example_real.txt")
 path_trace <- file.path(artifact_dir, "trace_real.txt")
 path_token_stats <- file.path(artifact_dir, "token_stats_real.txt")
 path_plan_output <- file.path(artifact_dir, "plan_output_real.txt")
+path_plan_history_output <- file.path(artifact_dir, "plan_history_output_real.txt")
 path_fold_stats <- file.path(artifact_dir, "fold_stats_real.txt")
 path_fold_summary <- file.path(artifact_dir, "fold_summary_real.txt")
 path_fold_archive <- file.path(artifact_dir, "fold_archive_real.txt")
@@ -135,6 +139,73 @@ artifact_or_sentinel <- function(value,
     return(artifact_sentinel(artifact = artifact, reason = reason))
   }
   value
+}
+
+is_empty_artifact_value <- function(value) {
+  if (is.null(value)) {
+    return(TRUE)
+  }
+  if (is.list(value) && length(value) == 0L) {
+    return(TRUE)
+  }
+  if (is.atomic(value) && length(value) == 0L) {
+    return(TRUE)
+  }
+  if (
+    is.character(value) &&
+      length(value) == 1L &&
+      !is.na(value[[1]]) &&
+      !nzchar(value[[1]])
+  ) {
+    return(TRUE)
+  }
+  FALSE
+}
+
+extract_plan_from_history_entry <- function(entry) {
+  if (!is.list(entry)) {
+    return(list())
+  }
+  if (is.list(entry$plan)) {
+    return(entry$plan)
+  }
+  if (is.list(entry$payload) && is.list(entry$payload$plan)) {
+    return(entry$payload$plan)
+  }
+  if (is.list(entry$data) && is.list(entry$data$plan)) {
+    return(entry$data$plan)
+  }
+  if (is.list(entry$steps)) {
+    return(entry)
+  }
+  list()
+}
+
+count_step_statuses <- function(steps) {
+  counts <- list(
+    completed = 0L,
+    in_progress = 0L,
+    pending = 0L,
+    skipped = 0L,
+    unspecified = 0L
+  )
+  if (!is.list(steps) || length(steps) == 0L) {
+    return(counts)
+  }
+  for (step in steps) {
+    status <- if (is.list(step)) {
+      tolower(trimws(as.character(step$status %||% "")))
+    } else {
+      ""
+    }
+    key <- if (status %in% c("completed", "in_progress", "pending", "skipped")) {
+      status
+    } else {
+      "unspecified"
+    }
+    counts[[key]] <- as.integer(counts[[key]]) + 1L
+  }
+  counts
 }
 
 # Keep emulation on (humanized timing) while avoiding long stalls.
@@ -356,7 +427,7 @@ message(sprintf(
   auto_openwebpage_policy
 ))
 trace_inference_started_at <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
-plan_mode_enabled <- FALSE
+plan_mode_enabled <- TRUE
 attempt <- asa:::.with_heartbeat(
   fn = function() {
     run_task(
@@ -430,6 +501,99 @@ attempt <- asa:::.with_heartbeat(
 )
 trace_inference_finished_at <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 
+execution <- attempt$execution %||% list()
+execution_plan <- execution$plan %||% list()
+execution_plan_history <- execution$plan_history %||% list()
+attempt_status <- tolower(trimws(as.character(attempt$status %||% "")))
+if (
+  isTRUE(plan_mode_enabled) &&
+    identical(attempt_status, "success") &&
+    (is_empty_artifact_value(execution_plan) || is_empty_artifact_value(execution_plan_history))
+) {
+  artifact_markers <- as.character(execution$completion_gate$artifact_markers %||% character(0))
+  artifact_markers <- artifact_markers[!is.na(artifact_markers) & nzchar(artifact_markers)]
+  stop(
+    sprintf(
+      paste0(
+        "Plan-mode invariant failed: successful run returned missing plan artifacts. ",
+        "thread_id=%s status=%s plan_missing=%s plan_history_missing=%s artifact_markers=%s"
+      ),
+      as.character(execution$thread_id %||% attempt$thread_id %||% NA_character_),
+      as.character(attempt$status %||% NA_character_),
+      is_empty_artifact_value(execution_plan),
+      is_empty_artifact_value(execution_plan_history),
+      if (length(artifact_markers) > 0L) paste(artifact_markers, collapse = ",") else "none"
+    ),
+    call. = FALSE
+  )
+}
+if (isTRUE(plan_mode_enabled) && identical(attempt_status, "success")) {
+  history_entries <- if (is.list(execution_plan_history)) execution_plan_history else list()
+  history_sources <- character(0)
+  for (entry in history_entries) {
+    src <- if (is.list(entry)) as.character(entry$source %||% NA_character_) else NA_character_
+    if (length(src) >= 1L && !is.na(src[[1]]) && nzchar(src[[1]])) {
+      history_sources <- c(history_sources, tolower(trimws(src[[1]])))
+    }
+  }
+  diag_progress_sources <- names(execution$diagnostics$plan_progress_source_counts %||% list())
+  diag_progress_sources <- tolower(trimws(as.character(diag_progress_sources)))
+  diag_progress_sources <- diag_progress_sources[!is.na(diag_progress_sources) & nzchar(diag_progress_sources)]
+  has_plan_progress_evidence <- (
+    any(history_sources %in% c("update_plan", "auto_progress", "mixed_update", "finalize")) ||
+      length(diag_progress_sources) > 0L
+  )
+  if (!isTRUE(has_plan_progress_evidence)) {
+    stop(
+      sprintf(
+        paste0(
+          "Plan-mode invariant failed: successful run has no plan progression evidence. ",
+          "thread_id=%s history_sources=%s diagnostics_sources=%s"
+        ),
+        as.character(execution$thread_id %||% attempt$thread_id %||% NA_character_),
+        if (length(history_sources) > 0L) paste(unique(history_sources), collapse = ",") else "none",
+        if (length(diag_progress_sources) > 0L) paste(unique(diag_progress_sources), collapse = ",") else "none"
+      ),
+      call. = FALSE
+    )
+  }
+
+  latest_plan_for_check <- execution_plan
+  if (is_empty_artifact_value(latest_plan_for_check) && length(history_entries) > 0L) {
+    latest_plan_for_check <- extract_plan_from_history_entry(history_entries[[length(history_entries)]])
+  }
+  latest_steps_for_check <- if (is.list(latest_plan_for_check)) latest_plan_for_check$steps %||% list() else list()
+  latest_status_counts <- count_step_statuses(latest_steps_for_check)
+
+  completion_gate <- execution$completion_gate %||% list()
+  completion_status <- tolower(trimws(as.character(completion_gate$completion_status %||% "")))
+  completion_done <- (
+    isTRUE(completion_gate$done) ||
+      completion_status %in% c("complete", "complete_with_unknowns", "completed", "done", "final")
+  )
+  if (
+    isTRUE(completion_done) &&
+      (
+        as.integer(latest_status_counts$pending %||% 0L) > 0L ||
+          as.integer(latest_status_counts$in_progress %||% 0L) > 0L
+      )
+  ) {
+    stop(
+      sprintf(
+        paste0(
+          "Plan-mode invariant failed: completion marked done with open steps. ",
+          "thread_id=%s completion_status=%s pending=%d in_progress=%d"
+        ),
+        as.character(execution$thread_id %||% attempt$thread_id %||% NA_character_),
+        completion_status %||% "",
+        as.integer(latest_status_counts$pending %||% 0L),
+        as.integer(latest_status_counts$in_progress %||% 0L)
+      ),
+      call. = FALSE
+    )
+  }
+}
+
 # write to disk for further investigations.
 readr::write_file(prompt, path_prompt)
 
@@ -444,13 +608,50 @@ readr::write_file(
   path_token_stats
 )
 plan_output <- artifact_or_sentinel(
-  attempt$plan,
+  execution_plan,
   artifact = "plan_output",
   reason = if (isTRUE(plan_mode_enabled)) "plan_not_generated" else "plan_mode_disabled"
 )
 readr::write_file(
   jsonlite::toJSON(plan_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   path_plan_output
+)
+plan_history_enriched <- execution_plan_history
+if (!is_empty_artifact_value(execution_plan_history)) {
+  latest_entry <- execution_plan_history[[length(execution_plan_history)]]
+  latest_plan <- extract_plan_from_history_entry(latest_entry)
+  latest_steps <- if (is.list(latest_plan)) latest_plan$steps %||% list() else list()
+  latest_version <- NA_integer_
+  if (is.list(latest_entry) && !is.null(latest_entry$version)) {
+    latest_version <- suppressWarnings(as.integer(latest_entry$version))
+  }
+  if (is.na(latest_version) && is.list(latest_plan) && !is.null(latest_plan$version)) {
+    latest_version <- suppressWarnings(as.integer(latest_plan$version))
+  }
+  latest_source <- as.character(
+    if (is.list(latest_entry)) latest_entry$source %||% NA_character_ else NA_character_
+  )
+  if (length(latest_source) == 0L || is.na(latest_source[[1]]) || !nzchar(latest_source[[1]])) {
+    latest_source <- NA_character_
+  } else {
+    latest_source <- latest_source[[1]]
+  }
+  plan_history_enriched <- list(
+    entries = execution_plan_history,
+    entry_count = as.integer(length(execution_plan_history)),
+    latest_version = latest_version,
+    latest_source = latest_source,
+    latest_step_status_counts = count_step_statuses(latest_steps)
+  )
+}
+plan_history_output <- artifact_or_sentinel(
+  plan_history_enriched,
+  artifact = "plan_history_output",
+  reason = if (isTRUE(plan_mode_enabled)) "plan_history_not_generated" else "plan_mode_disabled"
+)
+readr::write_file(
+  jsonlite::toJSON(plan_history_output, auto_unbox = TRUE, pretty = TRUE, null = "null"),
+  path_plan_history_output
 )
 
 # fold_stats
@@ -587,7 +788,8 @@ if (!nzchar(action_ascii_text) &&
     asa:::.extract_action_trace(
       trace_json = attempt$trace_json,
       raw_trace = attempt$trace %||% "",
-      plan_history = attempt$plan_history %||% list(),
+      plan_history = execution_plan_history,
+      plan = execution_plan,
       tool_quality_events = attempt$execution$tool_quality_events %||% list(),
       diagnostics = attempt$execution$diagnostics %||% list(),
       token_trace = attempt$token_stats$token_trace %||% list(),
@@ -705,8 +907,6 @@ readr::write_file(
   jsonlite::toJSON(payload_release_audit, auto_unbox = TRUE, pretty = TRUE, null = "null"),
   path_payload_release_audit
 )
-
-`%||%` <- function(x, y) if (is.null(x)) y else x
 
 canonicalize_url <- function(url) {
   if (!is.character(url) || length(url) != 1L || is.na(url) || !nzchar(url)) {
@@ -1043,6 +1243,7 @@ run_provenance <- list(
     path_trace,
     path_token_stats,
     path_plan_output,
+    path_plan_history_output,
     path_fold_stats,
     path_fold_summary,
     path_fold_archive,

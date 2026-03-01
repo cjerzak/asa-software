@@ -1,9 +1,9 @@
 {
-  "run_id": "trace_real_20260227T163043",
-  "generated_at_utc": "2026-02-27T22:39:13Z",
+  "run_id": "trace_real_20260228T174856",
+  "generated_at_utc": "2026-03-01T00:00:02Z",
   "benchmark_mode": "blind",
-  "inference_started_at_utc": "2026-02-27T22:30:44Z",
-  "inference_finished_at_utc": "2026-02-27T22:39:13Z",
+  "inference_started_at_utc": "2026-02-28T23:48:56Z",
+  "inference_finished_at_utc": "2026-03-01T00:00:02Z",
   "disallowed_inference_reads": [
     "/Users/cjerzak/Documents/asa-software/tracked_reports/answer_gold_real.txt"
   ],
@@ -13,6 +13,7 @@
     "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real.txt",
     "/Users/cjerzak/Documents/asa-software/tracked_reports/token_stats_real.txt",
     "/Users/cjerzak/Documents/asa-software/tracked_reports/plan_output_real.txt",
+    "/Users/cjerzak/Documents/asa-software/tracked_reports/plan_history_output_real.txt",
     "/Users/cjerzak/Documents/asa-software/tracked_reports/fold_stats_real.txt",
     "/Users/cjerzak/Documents/asa-software/tracked_reports/fold_summary_real.txt",
     "/Users/cjerzak/Documents/asa-software/tracked_reports/fold_archive_real.txt",
@@ -29,8 +30,7 @@
   ],
   "tools_called": [
     "search",
-    "openwebpage",
-    "save_finding"
+    "openwebpage"
   ],
   "baseline_snapshot_available": {
     "answer_pred": true,

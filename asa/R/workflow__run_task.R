@@ -78,7 +78,10 @@
 #'   defaults to "text-embedding-3-small". For sentence-transformers, use a
 #'   local model name (e.g., "all-MiniLM-L6-v2").
 #' @param use_plan_mode Logical flag. When TRUE, the agent creates and follows
-#'   a structured execution plan, updating step status during the run.
+#'   a structured execution plan. Explicit \code{update_plan} tool calls update
+#'   step state, and a deterministic auto-progress fallback marks active work
+#'   when external tools run without explicit updates. Terminal snapshots close
+#'   any remaining open steps so completion state and plan state stay aligned.
 #'
 #' @return An \code{asa_result} object with:
 #'   \itemize{

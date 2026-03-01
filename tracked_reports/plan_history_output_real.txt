@@ -1,0 +1,248 @@
+{
+  "entries": [
+    {
+      "version": 1,
+      "plan": {
+        "goal": "Complete the task",
+        "steps": [
+          {
+            "id": 1,
+            "description": "Clarify scope and constraints: Clarify task objective",
+            "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+            "status": "pending",
+            "findings": ""
+          },
+          {
+            "id": 2,
+            "description": "Collect high-signal evidence from relevant tools/sources",
+            "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+            "status": "pending",
+            "findings": ""
+          },
+          {
+            "id": 3,
+            "description": "Validate consistency and resolve conflicts/gaps",
+            "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+            "status": "pending",
+            "findings": ""
+          },
+          {
+            "id": 4,
+            "description": "Produce final structured output with traceable justification",
+            "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+            "status": "pending",
+            "findings": ""
+          }
+        ],
+        "version": 1,
+        "current_step": 1
+      },
+      "source": "auto"
+    },
+    {
+      "version": 2,
+      "plan": {
+        "goal": "Complete the task",
+        "steps": [
+          {
+            "id": 1,
+            "description": "Clarify scope and constraints: Clarify task objective",
+            "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+            "status": "in_progress",
+            "findings": "Auto-progress: executed 2 external tool call(s)."
+          },
+          {
+            "id": 2,
+            "description": "Collect high-signal evidence from relevant tools/sources",
+            "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+            "status": "pending",
+            "findings": ""
+          },
+          {
+            "id": 3,
+            "description": "Validate consistency and resolve conflicts/gaps",
+            "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+            "status": "pending",
+            "findings": ""
+          },
+          {
+            "id": 4,
+            "description": "Produce final structured output with traceable justification",
+            "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+            "status": "pending",
+            "findings": ""
+          }
+        ],
+        "version": 2,
+        "current_step": 1
+      },
+      "source": "auto_progress"
+    },
+    {
+      "version": 3,
+      "plan": {
+        "goal": "Complete the task",
+        "steps": [
+          {
+            "id": 1,
+            "description": "Clarify scope and constraints: Clarify task objective",
+            "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 2 external tool call(s)."
+          },
+          {
+            "id": 2,
+            "description": "Collect high-signal evidence from relevant tools/sources",
+            "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+            "status": "in_progress",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          },
+          {
+            "id": 3,
+            "description": "Validate consistency and resolve conflicts/gaps",
+            "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+            "status": "pending",
+            "findings": ""
+          },
+          {
+            "id": 4,
+            "description": "Produce final structured output with traceable justification",
+            "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+            "status": "pending",
+            "findings": ""
+          }
+        ],
+        "version": 3,
+        "current_step": 2
+      },
+      "source": "auto_progress"
+    },
+    {
+      "version": 4,
+      "plan": {
+        "goal": "Complete the task",
+        "steps": [
+          {
+            "id": 1,
+            "description": "Clarify scope and constraints: Clarify task objective",
+            "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 2 external tool call(s)."
+          },
+          {
+            "id": 2,
+            "description": "Collect high-signal evidence from relevant tools/sources",
+            "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          },
+          {
+            "id": 3,
+            "description": "Validate consistency and resolve conflicts/gaps",
+            "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+            "status": "in_progress",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          },
+          {
+            "id": 4,
+            "description": "Produce final structured output with traceable justification",
+            "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+            "status": "pending",
+            "findings": ""
+          }
+        ],
+        "version": 4,
+        "current_step": 3
+      },
+      "source": "auto_progress"
+    },
+    {
+      "version": 5,
+      "plan": {
+        "goal": "Complete the task",
+        "steps": [
+          {
+            "id": 1,
+            "description": "Clarify scope and constraints: Clarify task objective",
+            "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 2 external tool call(s)."
+          },
+          {
+            "id": 2,
+            "description": "Collect high-signal evidence from relevant tools/sources",
+            "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          },
+          {
+            "id": 3,
+            "description": "Validate consistency and resolve conflicts/gaps",
+            "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          },
+          {
+            "id": 4,
+            "description": "Produce final structured output with traceable justification",
+            "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+            "status": "in_progress",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          }
+        ],
+        "version": 5,
+        "current_step": 4
+      },
+      "source": "auto_progress"
+    },
+    {
+      "version": 6,
+      "plan": {
+        "goal": "Complete the task",
+        "steps": [
+          {
+            "id": 1,
+            "description": "Clarify scope and constraints: Clarify task objective",
+            "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 2 external tool call(s)."
+          },
+          {
+            "id": 2,
+            "description": "Collect high-signal evidence from relevant tools/sources",
+            "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          },
+          {
+            "id": 3,
+            "description": "Validate consistency and resolve conflicts/gaps",
+            "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          },
+          {
+            "id": 4,
+            "description": "Produce final structured output with traceable justification",
+            "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+            "status": "completed",
+            "findings": "Auto-progress: executed 1 external tool call(s)."
+          }
+        ],
+        "version": 6,
+        "current_step": null
+      },
+      "source": "finalize"
+    }
+  ],
+  "entry_count": 6,
+  "latest_version": 6,
+  "latest_source": "finalize",
+  "latest_step_status_counts": {
+    "completed": 4,
+    "in_progress": 0,
+    "pending": 0,
+    "skipped": 0,
+    "unspecified": 0
+  }
+}

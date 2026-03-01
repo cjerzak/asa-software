@@ -45,6 +45,32 @@ test_that("_finalize_plan_statuses preserves version when no step status changes
   expect_equal(as.integer(out$current_step), 1L)
 })
 
+test_that("_finalize_plan_statuses closes pending steps when close_pending is TRUE", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  in_plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "pending", findings = ""),
+      list(id = 2L, description = "S2", status = "in_progress", findings = "working"),
+      list(id = 3L, description = "S3", status = "completed", findings = "done")
+    ),
+    version = 3L,
+    current_step = 1L
+  )
+
+  out <- reticulate::py_to_r(custom_ddg$`_finalize_plan_statuses`(
+    in_plan,
+    close_pending = TRUE
+  ))
+  expect_true(is.list(out))
+  expect_equal(as.character(out$steps[[1]]$status), "skipped")
+  expect_equal(as.character(out$steps[[2]]$status), "completed")
+  expect_equal(as.character(out$steps[[3]]$status), "completed")
+  expect_true(is.null(out$current_step))
+  expect_equal(as.integer(out$version), 4L)
+})
+
 test_that("_finalized_plan_history_entry emits finalize snapshot metadata", {
   custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
 
