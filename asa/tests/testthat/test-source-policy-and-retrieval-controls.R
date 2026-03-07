@@ -242,6 +242,122 @@ test_that("finalization invariant reconciles stale diagnostics before comparing 
   expect_false("diagnostics_unknown_fields_mismatch" %in% reasons)
 })
 
+test_that("finalization invariant tracks pending core fields via unresolved diagnostics", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  expected_schema <- list(
+    prior_occupation = "string|Unknown",
+    education_level = "string|Unknown"
+  )
+  field_status <- list(
+    prior_occupation = list(
+      status = "found",
+      value = "Teacher",
+      source_url = "https://example.org/profile"
+    ),
+    education_level = list(
+      status = "pending",
+      value = "",
+      attempts = 1L
+    )
+  )
+  stale_diagnostics <- list(
+    unknown_fields_count_current = 0L,
+    unknown_fields_current = list()
+  )
+  state <- list(
+    expected_schema = expected_schema,
+    field_status = field_status,
+    diagnostics = stale_diagnostics
+  )
+
+  report <- reticulate::py_to_r(core$`_finalization_invariant_report`(
+    state = state,
+    expected_schema = expected_schema,
+    field_status = field_status,
+    diagnostics = stale_diagnostics
+  ))
+
+  expect_false(isTRUE(report$failed))
+  expect_equal(as.integer(report$diagnostics_unresolved_fields_count_current), 1L)
+  expect_equal(as.integer(report$diagnostics_explicit_unknown_fields_count_current), 0L)
+  expect_true("education_level" %in% as.character(report$diagnostics_unresolved_fields_current_sample))
+  reasons <- as.character(if (is.null(report$reasons)) character(0) else report$reasons)
+  expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
+  expect_false("diagnostics_unknown_fields_mismatch" %in% reasons)
+})
+
+test_that("schema outcome gate skips invariant enforcement on intermediate tool-call turns", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  expected_schema <- list(
+    prior_occupation = "string|Unknown",
+    education_level = "string|Unknown"
+  )
+  field_status <- list(
+    prior_occupation = list(
+      status = "found",
+      value = "Teacher",
+      source_url = "https://example.org/profile"
+    ),
+    education_level = list(
+      status = "pending",
+      value = "",
+      attempts = 1L
+    )
+  )
+  stale_diagnostics <- list(
+    unknown_fields_count_current = 0L,
+    unknown_fields_current = list(),
+    unresolved_fields_count_current = 0L,
+    unresolved_fields_current = list()
+  )
+  state <- list(
+    expected_schema = expected_schema,
+    field_status = field_status,
+    diagnostics = stale_diagnostics,
+    budget_state = list(
+      tool_calls_used = 0L,
+      tool_calls_limit = 4L,
+      budget_exhausted = FALSE
+    ),
+    messages = list(
+      msgs$HumanMessage(content = "Keep searching"),
+      msgs$AIMessage(
+        content = "",
+        tool_calls = list(list(
+          name = "Search",
+          args = list(query = "Ramona Moye Camaconi education"),
+          id = "call_1"
+        ))
+      )
+    ),
+    final_emitted = FALSE,
+    terminal_valid = FALSE
+  )
+
+  report <- reticulate::py_to_r(core$`_schema_outcome_gate_report`(
+    state = state,
+    expected_schema = expected_schema,
+    field_status = field_status,
+    budget_state = state$budget_state,
+    diagnostics = stale_diagnostics
+  ))
+
+  expect_false(isTRUE(report$finalization_invariant_applicable))
+  expect_false(isTRUE(report$finalization_invariant_failed))
+  expect_false(isTRUE(report$auto_recovery_checkpoint_needed))
+  expect_false(isTRUE(report$finalization_invariant$applicable))
+  expect_equal(as.character(report$finalization_invariant$skip_reason), "intermediate_turn")
+})
+
 test_that("retrieval metrics track no-new-high-quality-evidence streak", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",

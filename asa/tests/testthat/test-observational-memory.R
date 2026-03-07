@@ -966,6 +966,12 @@ test_that("field-status diagnostics include unknown reason buckets", {
       attempts = 1L,
       descriptor = "string|Unknown"
     ),
+    class_background = list(
+      status = "pending",
+      value = "",
+      attempts = 1L,
+      descriptor = "string|Unknown"
+    ),
     prior_occupation = list(
       status = "found",
       value = "Teacher",
@@ -977,7 +983,10 @@ test_that("field-status diagnostics include unknown reason buckets", {
 
   collected <- reticulate::py_to_r(collect_diag(field_status = field_status))
   expect_equal(as.integer(collected$unknown_fields_count), 2L)
+  expect_equal(as.integer(collected$unresolved_fields_count), 3L)
   expect_true("education_level" %in% as.character(collected$unknown_fields))
+  expect_true("class_background" %in% as.character(collected$unresolved_fields))
+  expect_false("class_background" %in% as.character(collected$unknown_fields))
   expect_equal(
     as.integer(collected$unknown_reason_counts$recovery_blocked_entity_mismatch),
     1L
@@ -995,13 +1004,18 @@ test_that("field-status diagnostics include unknown reason buckets", {
   merged <- reticulate::py_to_r(merge_diag(
     diagnostics = list(
       unknown_fields_count = 1L,
+      unresolved_fields_count = 1L,
+      unresolved_fields = list("stale_pending"),
       unknown_reason_counts = list(not_attempted = 3L),
       unknown_fields_by_reason = list(not_attempted = list("stale_field"))
     ),
     field_status = field_status
   ))
   expect_equal(as.integer(merged$unknown_fields_count), 2L)
+  expect_equal(as.integer(merged$unresolved_fields_count), 3L)
+  expect_equal(as.integer(merged$current_snapshot$unresolved_fields_count), 3L)
   expect_equal(as.integer(merged$unknown_reason_counts$not_attempted), 3L)
+  expect_true("stale_pending" %in% as.character(merged$unresolved_fields))
   expect_true("stale_field" %in% as.character(merged$unknown_fields_by_reason$not_attempted))
 })
 
@@ -1474,6 +1488,9 @@ test_that("diagnostics normalization keeps snapshot and pairing telemetry", {
     unknown_fields_count = 4L,
     unknown_fields = list("birth_place", "birth_year"),
     unknown_fields_current = list("birth_place"),
+    unresolved_fields_count = 5L,
+    unresolved_fields = list("birth_place", "birth_year", "class_background"),
+    unresolved_fields_current = list("birth_place", "class_background"),
     grounding_blocks_count = 3L,
     grounding_blocked_fields = list("birth_place"),
     grounding_blocked_fields_current = list("birth_place"),
@@ -1499,6 +1516,9 @@ test_that("diagnostics normalization keeps snapshot and pairing telemetry", {
   expect_true(is.list(diagnostics$historical_snapshot))
   expect_equal(as.integer(diagnostics$current_snapshot$unknown_fields_count), 1L)
   expect_equal(as.integer(diagnostics$historical_snapshot$unknown_fields_count), 4L)
+  expect_equal(as.integer(diagnostics$current_snapshot$unresolved_fields_count), 2L)
+  expect_equal(as.integer(diagnostics$historical_snapshot$unresolved_fields_count), 5L)
+  expect_true("class_background" %in% as.character(diagnostics$current_snapshot$unresolved_fields))
 
   expect_true(is.list(diagnostics$tool_call_pairing))
   expect_equal(as.integer(diagnostics$tool_call_pairing$unpaired_tool_calls_count), 1L)

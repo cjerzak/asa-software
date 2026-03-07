@@ -8162,12 +8162,14 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "recovery_promotions_count",
         "recovery_rejections_count",
         "unknown_fields_count",
+        "unresolved_fields_count",
         "grounding_blocks_count_current",
         "source_consistency_fixes_count_current",
         "field_demotions_count_current",
         "recovery_promotions_count_current",
         "recovery_rejections_count_current",
         "unknown_fields_count_current",
+        "unresolved_fields_count_current",
         "off_target_tool_results_count",
         "empty_tool_results_count",
         "retry_or_replan_events",
@@ -8237,6 +8239,11 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["recovery_promoted_fields"] = list(existing.get("recovery_promoted_fields") or [])[:64]
     out["recovery_rejected_fields"] = list(existing.get("recovery_rejected_fields") or [])[:64]
     out["unknown_fields"] = list(existing.get("unknown_fields") or [])[:64]
+    out["unresolved_fields"] = list(
+        existing.get("unresolved_fields")
+        or existing.get("unknown_fields")
+        or []
+    )[:64]
     out["grounding_blocked_fields_current"] = list(
         existing.get("grounding_blocked_fields_current")
         or existing.get("grounding_blocked_fields")
@@ -8264,6 +8271,13 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     )[:64]
     out["unknown_fields_current"] = list(
         existing.get("unknown_fields_current")
+        or existing.get("unknown_fields")
+        or []
+    )[:64]
+    out["unresolved_fields_current"] = list(
+        existing.get("unresolved_fields_current")
+        or existing.get("unresolved_fields")
+        or existing.get("unknown_fields_current")
         or existing.get("unknown_fields")
         or []
     )[:64]
@@ -8407,6 +8421,11 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["anchor_reasons_current"] = list(existing.get("anchor_reasons_current") or [])[:8]
     out["tool_call_pairing"] = _tool_call_pairing_snapshot(existing.get("tool_call_pairing"))
     out["performance"] = _normalize_performance_diagnostics(existing.get("performance"))
+    return _refresh_diagnostics_snapshots(out)
+
+
+def _refresh_diagnostics_snapshots(diagnostics: Any) -> Dict[str, Any]:
+    out = diagnostics if isinstance(diagnostics, dict) else {}
     # Current-snapshot counters should always reflect latest field_status, while
     # legacy counters keep max/peak behavior for run-level telemetry.
     out["grounding_blocks_count_current"] = int(len(out.get("grounding_blocked_fields_current") or []))
@@ -8415,6 +8434,7 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["recovery_promotions_count_current"] = int(len(out.get("recovery_promoted_fields_current") or []))
     out["recovery_rejections_count_current"] = int(len(out.get("recovery_rejected_fields_current") or []))
     out["unknown_fields_count_current"] = int(len(out.get("unknown_fields_current") or []))
+    out["unresolved_fields_count_current"] = int(len(out.get("unresolved_fields_current") or []))
     out["current_snapshot"] = {
         "grounding_blocks_count": int(out.get("grounding_blocks_count_current", 0) or 0),
         "source_consistency_fixes_count": int(out.get("source_consistency_fixes_count_current", 0) or 0),
@@ -8423,6 +8443,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "recovery_rejections_count": int(out.get("recovery_rejections_count_current", 0) or 0),
         "unknown_fields_count": int(out.get("unknown_fields_count_current", 0) or 0),
         "unknown_fields": list(out.get("unknown_fields_current") or [])[:64],
+        "unresolved_fields_count": int(out.get("unresolved_fields_count_current", 0) or 0),
+        "unresolved_fields": list(out.get("unresolved_fields_current") or [])[:64],
     }
     out["historical_snapshot"] = {
         "grounding_blocks_count": int(out.get("grounding_blocks_count", 0) or 0),
@@ -8432,6 +8454,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "recovery_rejections_count": int(out.get("recovery_rejections_count", 0) or 0),
         "unknown_fields_count": int(out.get("unknown_fields_count", 0) or 0),
         "unknown_fields": list(out.get("unknown_fields") or [])[:64],
+        "unresolved_fields_count": int(out.get("unresolved_fields_count", 0) or 0),
+        "unresolved_fields": list(out.get("unresolved_fields") or [])[:64],
     }
     return out
 
@@ -8575,16 +8599,20 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     recovery_rejected_fields: List[str] = []
     recovery_reason_counts: Dict[str, int] = {}
     unknown_fields: List[str] = []
+    unresolved_fields: List[str] = []
     unknown_reason_counts: Dict[str, int] = {}
     unknown_fields_by_reason: Dict[str, List[str]] = {}
     anchor_mismatch_samples: List[Dict[str, Any]] = []
     for key, entry in (normalized or {}).items():
         if not isinstance(entry, dict):
             continue
+        key_str = str(key)
         raw_entry = raw_status.get(key) if isinstance(raw_status.get(key), dict) else {}
         evidence = str(entry.get("evidence") or "").strip().lower()
         evidence_reason = str(entry.get("evidence_reason") or evidence).strip().lower()
         status = str(entry.get("status") or "").strip().lower()
+        if key_str in resolvable_key_set and status in {_FIELD_STATUS_PENDING, _FIELD_STATUS_UNKNOWN}:
+            unresolved_fields.append(key_str)
         if evidence.startswith("grounding_blocked"):
             blocked_fields.append(str(key))
         # Only count actual fixes, not demotions.
@@ -8633,7 +8661,6 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
             if len(anchor_mismatch_samples) >= 64:
                 anchor_mismatch_samples = anchor_mismatch_samples[:64]
         if status == _FIELD_STATUS_UNKNOWN:
-            key_str = str(key)
             if key_str not in resolvable_key_set:
                 continue
             unknown_fields.append(key_str)
@@ -8661,6 +8688,8 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         "recovery_reason_counts": recovery_reason_counts,
         "unknown_fields_count": len(unknown_fields),
         "unknown_fields": unknown_fields[:64],
+        "unresolved_fields_count": len(unresolved_fields),
+        "unresolved_fields": unresolved_fields[:64],
         "unknown_reason_counts": unknown_reason_counts,
         "unknown_fields_by_reason": unknown_fields_by_reason,
         "anchor_mismatch_samples": anchor_mismatch_samples[:64],
@@ -8693,6 +8722,10 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
     out["unknown_fields_count"] = int(max(
         out.get("unknown_fields_count", 0),
         field_diag.get("unknown_fields_count", 0),
+    ))
+    out["unresolved_fields_count"] = int(max(
+        out.get("unresolved_fields_count", out.get("unknown_fields_count", 0)),
+        field_diag.get("unresolved_fields_count", 0),
     ))
     for blocked_field in field_diag.get("grounding_blocked_fields", []):
         out["grounding_blocked_fields"] = _append_limited_unique(
@@ -8730,6 +8763,12 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             unknown_field,
             max_items=64,
         )
+    for unresolved_field in field_diag.get("unresolved_fields", []):
+        out["unresolved_fields"] = _append_limited_unique(
+            out.get("unresolved_fields"),
+            unresolved_field,
+            max_items=64,
+        )
     # Current snapshot values (latest turn, no max/union semantics).
     out["grounding_blocks_count_current"] = int(field_diag.get("grounding_blocks_count", 0) or 0)
     out["source_consistency_fixes_count_current"] = int(field_diag.get("source_consistency_fixes_count", 0) or 0)
@@ -8737,12 +8776,14 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
     out["recovery_promotions_count_current"] = int(field_diag.get("recovery_promotions_count", 0) or 0)
     out["recovery_rejections_count_current"] = int(field_diag.get("recovery_rejections_count", 0) or 0)
     out["unknown_fields_count_current"] = int(field_diag.get("unknown_fields_count", 0) or 0)
+    out["unresolved_fields_count_current"] = int(field_diag.get("unresolved_fields_count", 0) or 0)
     out["grounding_blocked_fields_current"] = list(field_diag.get("grounding_blocked_fields") or [])[:64]
     out["source_consistency_fixes_current"] = list(field_diag.get("source_consistency_fixes") or [])[:64]
     out["field_demotion_fields_current"] = list(field_diag.get("field_demotion_fields") or [])[:64]
     out["recovery_promoted_fields_current"] = list(field_diag.get("recovery_promoted_fields") or [])[:64]
     out["recovery_rejected_fields_current"] = list(field_diag.get("recovery_rejected_fields") or [])[:64]
     out["unknown_fields_current"] = list(field_diag.get("unknown_fields") or [])[:64]
+    out["unresolved_fields_current"] = list(field_diag.get("unresolved_fields") or [])[:64]
     reason_counts = out.get("field_demotion_reason_counts") or {}
     if not isinstance(reason_counts, dict):
         reason_counts = {}
@@ -8807,7 +8848,7 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
         if len(existing_samples) >= 64:
             break
     out["anchor_mismatch_samples"] = existing_samples[:64]
-    return out
+    return _refresh_diagnostics_snapshots(out)
 
 
 def _normalize_retrieval_metrics(metrics: Any) -> Dict[str, Any]:
@@ -13246,6 +13287,37 @@ def _terminal_payload_for_invariants(state: Any, expected_schema: Any = None) ->
     return _terminal_payload_from_message(messages[-1], expected_schema=expected_schema)
 
 
+def _finalization_invariant_applicable(
+    state: Any,
+    *,
+    expected_schema: Any = None,
+    budget_state: Any = None,
+    terminal_payload: Any = None,
+) -> bool:
+    """Only enforce finalization invariants once a turn is actually terminal-ish."""
+    if expected_schema is None:
+        expected_schema = _state_expected_schema(state)
+    if terminal_payload is None:
+        terminal_payload = _terminal_payload_for_invariants(state, expected_schema=expected_schema)
+    if terminal_payload is not None:
+        return True
+    if budget_state is None:
+        budget_state = _state_budget(state)
+    finalize_reason = str(
+        (budget_state or {}).get("finalize_reason")
+        or state.get("finalize_reason")
+        or ""
+    ).strip()
+    if finalize_reason:
+        return True
+    if bool(state.get("terminal_valid", False)) or bool(state.get("final_emitted", False)):
+        return True
+    remaining = remaining_steps_value(state)
+    if _is_within_finalization_cutoff(state, remaining):
+        return True
+    return False
+
+
 def _finalization_invariant_report(
     state: Any,
     *,
@@ -13276,6 +13348,21 @@ def _finalization_invariant_report(
     diag_unknown_fields = [
         str(v) for v in list(diagnostics.get("unknown_fields_current") or []) if str(v).strip()
     ]
+    diag_unresolved_count = int(
+        diagnostics.get(
+            "unresolved_fields_count_current",
+            diagnostics.get("unknown_fields_count_current", 0),
+        ) or 0
+    )
+    diag_unresolved_fields = [
+        str(v)
+        for v in list(
+            diagnostics.get("unresolved_fields_current")
+            or diagnostics.get("unknown_fields_current")
+            or []
+        )
+        if str(v).strip()
+    ]
     status_unknown_count = int(core_counts.get("unknown", 0) or 0)
     status_unknown_fields = [str(v) for v in list(core_counts.get("unknown_keys") or []) if str(v).strip()]
     resolvable_keys = set(_collect_resolvable_field_keys(field_status))
@@ -13288,21 +13375,37 @@ def _finalization_invariant_report(
     if not diag_unknown_fields_core and int(diag_unknown_count) > 0:
         # Backward compatibility for older diagnostics payloads that only had count.
         diag_unknown_count_core = int(diag_unknown_count)
+    diag_unresolved_fields_core = [
+        field_name
+        for field_name in diag_unresolved_fields
+        if field_name in resolvable_keys
+    ]
+    diag_unresolved_count_core = int(len(diag_unresolved_fields_core))
+    if not diag_unresolved_fields_core and int(diag_unresolved_count) > 0:
+        # Backward compatibility for older diagnostics payloads that only had count.
+        diag_unresolved_count_core = int(diag_unresolved_count)
     diagnostics_has_current_snapshot = bool(
         isinstance(raw_diagnostics, dict)
         and (
-            "unknown_fields_count_current" in raw_diagnostics
+            "unresolved_fields_count_current" in raw_diagnostics
+            or "unresolved_fields_current" in raw_diagnostics
+            or "unknown_fields_count_current" in raw_diagnostics
             or "unknown_fields_current" in raw_diagnostics
         )
     )
-    if diagnostics_has_current_snapshot and diag_unknown_count_core != status_unknown_count:
+    if diagnostics_has_current_snapshot and diag_unresolved_count_core != status_unknown_count:
         reasons.append("diagnostics_unknown_count_mismatch")
         issues.append({
             "code": "diagnostics_unknown_count_mismatch",
-            "diagnostics_unknown_fields_count_current": int(diag_unknown_count_core),
+            # Keep the legacy unknown-named key as an alias for compared
+            # unresolved fields to avoid breaking existing consumers.
+            "diagnostics_unknown_fields_count_current": int(diag_unresolved_count_core),
+            "diagnostics_unresolved_fields_count_current": int(diag_unresolved_count_core),
+            "diagnostics_explicit_unknown_fields_count_current": int(diag_unknown_count_core),
             "field_status_core_unknown_fields": int(status_unknown_count),
+            "field_status_core_unresolved_fields": int(status_unknown_count),
         })
-    diag_unknown_set = set(diag_unknown_fields_core)
+    diag_unknown_set = set(diag_unresolved_fields_core)
     status_unknown_set = set(status_unknown_fields)
     if (
         diagnostics_has_current_snapshot
@@ -13314,7 +13417,10 @@ def _finalization_invariant_report(
         issues.append({
             "code": "diagnostics_unknown_fields_mismatch",
             "diagnostics_unknown_fields_current_sample": sorted(list(diag_unknown_set))[:16],
+            "diagnostics_unresolved_fields_current_sample": sorted(list(diag_unknown_set))[:16],
+            "diagnostics_explicit_unknown_fields_current_sample": sorted(list(diag_unknown_fields_core))[:16],
             "field_status_core_unknown_fields_sample": sorted(list(status_unknown_set))[:16],
+            "field_status_core_unresolved_fields_sample": sorted(list(status_unknown_set))[:16],
         })
 
     if (
@@ -13361,9 +13467,15 @@ def _finalization_invariant_report(
         "core_total_fields": int(core_counts.get("total", 0) or 0),
         "core_found_fields": int(core_counts.get("found", 0) or 0),
         "core_unknown_fields": int(core_counts.get("unknown", 0) or 0),
-        "diagnostics_unknown_fields_count_current": int(diag_unknown_count_core),
-        "diagnostics_unknown_fields_current_sample": diag_unknown_fields_core[:16],
+        "core_unresolved_fields": int(core_counts.get("unknown", 0) or 0),
+        "diagnostics_unknown_fields_count_current": int(diag_unresolved_count_core),
+        "diagnostics_unknown_fields_current_sample": diag_unresolved_fields_core[:16],
+        "diagnostics_unresolved_fields_count_current": int(diag_unresolved_count_core),
+        "diagnostics_unresolved_fields_current_sample": diag_unresolved_fields_core[:16],
+        "diagnostics_explicit_unknown_fields_count_current": int(diag_unknown_count_core),
+        "diagnostics_explicit_unknown_fields_current_sample": diag_unknown_fields_core[:16],
         "field_status_core_unknown_fields_sample": status_unknown_fields[:16],
+        "field_status_core_unresolved_fields_sample": status_unknown_fields[:16],
         "diagnostics_current_snapshot_present": bool(diagnostics_has_current_snapshot),
         "tool_call_pairing": _tool_call_pairing_snapshot(tool_pairing),
     }
@@ -13555,13 +13667,28 @@ def _schema_outcome_gate_report(
     unknown_ratio = 0.0
     if resolvable_keys:
         unknown_ratio = float(unknown_resolvable) / float(len(resolvable_keys))
+    terminal_payload = _terminal_payload_for_invariants(state, expected_schema=expected_schema)
     invariant = _finalization_invariant_report(
         state,
         expected_schema=expected_schema,
         field_status=field_status,
         diagnostics=diagnostics_snapshot,
-        terminal_payload=_terminal_payload_for_invariants(state, expected_schema=expected_schema),
+        terminal_payload=terminal_payload,
     )
+    invariant_applicable = _finalization_invariant_applicable(
+        state,
+        expected_schema=expected_schema,
+        budget_state=budget_state,
+        terminal_payload=terminal_payload,
+    )
+    if not invariant_applicable:
+        invariant = dict(invariant)
+        invariant["ok"] = True
+        invariant["failed"] = False
+        invariant["reasons"] = []
+        invariant["issues"] = []
+        invariant["skip_reason"] = "intermediate_turn"
+    invariant["applicable"] = bool(invariant_applicable)
     invariant_failed = bool(invariant.get("failed", False))
     confidence_components = _global_confidence_components(
         field_status,
@@ -13683,6 +13810,7 @@ def _schema_outcome_gate_report(
     report["finalization_invariant_failed"] = bool(invariant_failed)
     report["finalization_invariant_reasons"] = list(invariant.get("reasons") or [])[:16]
     report["finalization_invariant_ok"] = bool(invariant.get("ok", True))
+    report["finalization_invariant_applicable"] = bool(invariant_applicable)
     report["finalization_invariant"] = invariant
     recovery_enabled = bool(finalization_policy.get("diagnostics_auto_recovery_enabled", True))
     recovery_reasons = list(report.get("finalization_invariant_reasons") or [])[:16]

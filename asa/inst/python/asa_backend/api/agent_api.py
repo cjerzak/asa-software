@@ -1004,6 +1004,12 @@ def _build_trace_metadata(
         "unknown_fields_count_current": _nonneg_int(
             diagnostics.get("unknown_fields_count_current", diagnostics.get("unknown_fields_count", 0))
         ),
+        "unresolved_fields_count_current": _nonneg_int(
+            diagnostics.get(
+                "unresolved_fields_count_current",
+                diagnostics.get("unresolved_fields_count", diagnostics.get("unknown_fields_count", 0)),
+            )
+        ),
         "recovery_blocked_anchor_mismatch_count": _nonneg_int(
             recovery_reason_counts.get("recovery_blocked_anchor_mismatch", 0)
         ),

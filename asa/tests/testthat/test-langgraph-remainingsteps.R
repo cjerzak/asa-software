@@ -1936,7 +1936,7 @@ test_that("finalize_answer node sanitizes residual tool calls after tools (stand
   expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
 })
 
-.stale_diagnostics_finalize_state <- function(msgs) {
+.stale_diagnostics_finalize_state <- function(msgs, unresolved_status = "unknown") {
   expected_schema <- list(
     prior_occupation = "string|Unknown",
     education_level = "string|Unknown"
@@ -1948,8 +1948,8 @@ test_that("finalize_answer node sanitizes residual tool calls after tools (stand
       source_url = "https://example.org/profile"
     ),
     education_level = list(
-      status = "unknown",
-      value = "Unknown",
+      status = unresolved_status,
+      value = if (identical(unresolved_status, "unknown")) "Unknown" else "",
       attempts = 1L
     )
   )
@@ -1967,7 +1967,9 @@ test_that("finalize_answer node sanitizes residual tool calls after tools (stand
     field_status = field_status,
     diagnostics = list(
       unknown_fields_count_current = 0L,
-      unknown_fields_current = list()
+      unknown_fields_current = list(),
+      unresolved_fields_count_current = 0L,
+      unresolved_fields_current = list()
     ),
     budget_state = list(
       tool_calls_used = 0L,
@@ -2038,6 +2040,64 @@ test_that("standard finalize node reconciles stale diagnostics without retries",
   expect_equal(as.character(finalize_out$field_status$prior_occupation$status), "found")
 })
 
+test_that("standard finalize node keeps pending fields in unresolved telemetry without retries", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _FinalizePendingDiagnosticsLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(content='{\"prior_occupation\":\"Teacher\",\"education_level\":\"Unknown\"}')\n\n",
+    "finalize_pending_diagnostics_llm = _FinalizePendingDiagnosticsLLM()\n"
+  ))
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$finalize_pending_diagnostics_llm,
+    tools = list()
+  )
+
+  finalize_out <- reticulate::py_to_r(
+    agent$nodes[["finalize"]]$bound$invoke(
+      .stale_diagnostics_finalize_state(msgs, unresolved_status = "pending")
+    )
+  )
+
+  expect_equal(as.integer(reticulate::py$finalize_pending_diagnostics_llm$calls), 0L)
+  expect_false(isTRUE(finalize_out$completion_gate$finalization_invariant_failed))
+  reasons <- as.character(
+    if (is.null(finalize_out$completion_gate$finalization_invariant_reasons)) character(0)
+    else finalize_out$completion_gate$finalization_invariant_reasons
+  )
+  expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
+  expect_equal(
+    as.integer(finalize_out$completion_gate$finalization_invariant$diagnostics_unresolved_fields_count_current),
+    1L
+  )
+  mismatch_count <- 0L
+  reason_counts <- finalize_out$diagnostics$finalization_invariant_failures_by_reason
+  if (is.list(reason_counts) && !is.null(reason_counts$diagnostics_unknown_count_mismatch)) {
+    mismatch_count <- as.integer(reason_counts$diagnostics_unknown_count_mismatch)
+  }
+  expect_equal(mismatch_count, 0L)
+  retry_events <- finalize_out$diagnostics$diagnostics_recovery_checkpoint_events
+  if (is.null(retry_events) || is.na(retry_events)) {
+    retry_events <- 0L
+  }
+  expect_equal(as.integer(retry_events), 0L)
+  expect_equal(as.character(finalize_out$final_payload$prior_occupation), "Teacher")
+  expect_equal(as.character(finalize_out$field_status$prior_occupation$status), "found")
+})
+
 test_that("memory finalize node reconciles stale diagnostics without retries", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",
@@ -2079,6 +2139,66 @@ test_that("memory finalize node reconciles stale diagnostics without retries", {
   expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
   expect_equal(
     as.integer(finalize_out$completion_gate$finalization_invariant$diagnostics_unknown_fields_count_current),
+    1L
+  )
+  mismatch_count <- 0L
+  reason_counts <- finalize_out$diagnostics$finalization_invariant_failures_by_reason
+  if (is.list(reason_counts) && !is.null(reason_counts$diagnostics_unknown_count_mismatch)) {
+    mismatch_count <- as.integer(reason_counts$diagnostics_unknown_count_mismatch)
+  }
+  expect_equal(mismatch_count, 0L)
+  retry_events <- finalize_out$diagnostics$diagnostics_recovery_checkpoint_events
+  if (is.null(retry_events) || is.na(retry_events)) {
+    retry_events <- 0L
+  }
+  expect_equal(as.integer(retry_events), 0L)
+  expect_equal(as.character(finalize_out$final_payload$prior_occupation), "Teacher")
+  expect_equal(as.character(finalize_out$field_status$prior_occupation$status), "found")
+})
+
+test_that("memory finalize node keeps pending fields in unresolved telemetry without retries", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _MemoryFinalizePendingDiagnosticsLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(content='{\"prior_occupation\":\"Teacher\",\"education_level\":\"Unknown\"}')\n\n",
+    "memory_finalize_pending_diagnostics_llm = _MemoryFinalizePendingDiagnosticsLLM()\n"
+  ))
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$memory_finalize_pending_diagnostics_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  finalize_out <- reticulate::py_to_r(
+    agent$nodes[["finalize"]]$bound$invoke(
+      .stale_diagnostics_finalize_state(msgs, unresolved_status = "pending")
+    )
+  )
+
+  expect_equal(as.integer(reticulate::py$memory_finalize_pending_diagnostics_llm$calls), 0L)
+  expect_false(isTRUE(finalize_out$completion_gate$finalization_invariant_failed))
+  reasons <- as.character(
+    if (is.null(finalize_out$completion_gate$finalization_invariant_reasons)) character(0)
+    else finalize_out$completion_gate$finalization_invariant_reasons
+  )
+  expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
+  expect_equal(
+    as.integer(finalize_out$completion_gate$finalization_invariant$diagnostics_unresolved_fields_count_current),
     1L
   )
   mismatch_count <- 0L

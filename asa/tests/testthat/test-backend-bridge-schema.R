@@ -2,12 +2,16 @@ test_that(".parse_backend_contract_payload parses schema-versioned payload", {
   response <- list(
     trace_metadata = list(
       schema_version = "trace_metadata_v1",
-      model = "gemini-3-flash-preview"
+      model = "gemini-3-flash-preview",
+      unresolved_fields_count_current = 1L
     ),
     stop_reason = "complete",
     budget_state = list(tool_calls_used = 2L),
     field_status = list(name = "resolved"),
-    diagnostics = list(unknown_fields_count = 0L),
+    diagnostics = list(
+      unknown_fields_count = 0L,
+      unresolved_fields_count = 1L
+    ),
     json_repair = list(list(
       repair_reason = "repair_failed",
       parse_diagnostics = list(
@@ -59,8 +63,10 @@ test_that(".parse_backend_contract_payload parses schema-versioned payload", {
   expect_equal(parsed$sections$budget_state$tool_calls_used, 2L)
   expect_equal(parsed$sections$field_status$name, "resolved")
   expect_equal(parsed$sections$diagnostics$unknown_fields_count, 0L)
+  expect_equal(parsed$sections$diagnostics$unresolved_fields_count, 1L)
   expect_equal(parsed$sections$trace_metadata$schema_version, "trace_metadata_v1")
   expect_equal(parsed$sections$trace_metadata$model, "gemini-3-flash-preview")
+  expect_equal(parsed$sections$trace_metadata$unresolved_fields_count_current, 1L)
   expect_equal(parsed$sections$json_repair[[1]]$repair_reason, "repair_failed")
   expect_false(isTRUE(parsed$sections$json_repair[[1]]$parse_diagnostics$ok))
   expect_equal(parsed$sections$json_repair[[1]]$parse_diagnostics$error_reason, "json_decode_failed")
