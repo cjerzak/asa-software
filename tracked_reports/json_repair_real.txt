@@ -1,14 +1,64 @@
 [
   {
     "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 1,
+    "missing_keys_sample": "confidence",
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2017,
+        "normalized_length": 2017,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2017,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "c12e524fa64c1fad8ba0bdc1b1bc14394bca8a3671e045e2308f1c1afcdcde7f",
+    "output_text_hash": "6dd92e49987e12c7c2ccd760d56deb7f64f4eb808db480454c04cf55bf17ce0a",
+    "input_text_length": 2017,
+    "output_text_length": 1993,
+    "input_text_preview": "{ \"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\": null, \"prior_occupation\": \"...",
+    "output_text_preview": "{\"education_level\": \"Unknown\", \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": \"Unknown\", \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": \"Unknown\", \"education_institution_source\": null, \"education_institution_confidence\": null, \"prior_...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,33 +1 @@\n-{\n-  \"education_level\": null,\n-  \"education_level_source\": null,\n-  \"education_level_confidence\": null,\n-  \"education_field\": null,\n-  \"education_field_source\": null,\n-  \"education_field_confidence\": null,\n-  \"education_institution\": null,\n-  \"education_institution_source\": null,\n-  \"education_institution_confidence\": null,\n-  \"prior_occupation\": \"Presidenta de la Organización de Mujeres - Sub Central Sécure.\",\n-  \"prior_occupation_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"prior_occupation_confidence\": 1.0,\n-  \"class_background\": \"Working class\",\n-  \"class_background_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"class_background_confidence\": 0.85,\n-  \"birth_year\": 1982,\n-  \"birth_year_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"birth_year_confidence\": 1.0,\n-  \"birth_place\": null,\n-  \"birth_place_source\": null,\n-  \"birth_place_confidence\": null,\n-  \"disability_status\": \"Unknown\",\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_status_source\": null,\n-  \"lgbtq_status_confidence\": null,\n-  \"lgbtq_details\": null,\n-  \"lgbtq_details_source\": null,\n-  \"lgbtq_details_confidence\": null,\n-  \"justification\": \"Ramona Moye Camaconi is an indigenous leader from the TIPNIS territory in Bolivia. Official parliamentary records confirm her birth year as 1982 and her primary occupation prior to entering the Plurinational Legislative Assembly as the President of the Women's Organization of the Sub Central Sécure (an indigenous territorial organization). This role in indigenous community leadership, typically associated with agricultural and manual labor backgrounds in the TIPNIS region, maps to the working class category. No specific educational degrees or institutions are listed in her official biography, unlike her substitute, suggesting her background is primarily based on community activism.\"\n-}\n+{\"education_level\": \"Unknown\", \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": \"Unknown\", \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": \"Unknown\", \"education_institution_source\": null, \"education_institution_confidence\": null, \"prior_occupation\": \"Presidenta de la Organización de Mujeres - Sub Central Sécure.\", \"prior_occupation_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"prior_occupation_confidence\": 1.0, \"class_background\": \"Working class\", \"class_background_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"class_background_confidence\": 0.85, \"birth_year\": 1982, \"birth_year_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\", \"birth_year_confidence\": 1.0, \"birth_place\":\n...[diff truncated]",
+    "event_id": "5c68b1e4f21d4af4a4ce149c0939511a",
+    "ts_utc": "2026-03-07T20:43:55.573113Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
     "repair_reason": "field_status_canonical",
     "missing_keys_count": 0,
     "missing_keys_sample": [],
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "event_id": "2b575c33a1dd4fec9719e7d496adedb7",
-    "ts_utc": "2026-03-07T20:20:54.624801Z",
+    "event_id": "a0ee4f44967e4326b977fdf489878ddb",
+    "ts_utc": "2026-03-07T20:43:55.573144Z",
     "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
     "outcome_status": "applied",

@@ -13,7 +13,7 @@
       "description": "Collect high-signal evidence from relevant tools/sources",
       "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
       "status": "completed",
-      "findings": "Refining search for birth place, education, and class background. Found birth year (1982) and prior occupation (President of Women's Org - Sub Central Sécure)."
+      "findings": "Refining search to target official Bolivian legislative and electoral records for education and birth place."
     },
     {
       "id": 3,
