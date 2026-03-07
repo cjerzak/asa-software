@@ -13258,12 +13258,12 @@ def _finalization_invariant_report(
         expected_schema = _state_expected_schema(state)
     if field_status is None:
         field_status = _normalize_field_status_map(state.get("field_status"), expected_schema)
-    raw_diagnostics = diagnostics
-    if diagnostics is None:
-        diagnostics = _normalize_diagnostics(state.get("diagnostics"))
-        raw_diagnostics = state.get("diagnostics")
-    else:
-        diagnostics = _normalize_diagnostics(diagnostics)
+    raw_diagnostics = diagnostics if diagnostics is not None else state.get("diagnostics")
+    # Reconcile any stale snapshot against the current field ledger before
+    # comparing invariant counts. This keeps stale callers from manufacturing
+    # false diagnostics drift while preserving the original snapshot-presence
+    # signal for backward-compatible reporting.
+    diagnostics = _merge_field_status_diagnostics(raw_diagnostics, field_status)
     if terminal_payload is None:
         terminal_payload = _terminal_payload_for_invariants(state, expected_schema=expected_schema)
 
@@ -13970,6 +13970,7 @@ def _should_finalize_after_terminal(state: Any) -> bool:
     expected_schema = _state_expected_schema(state)
     field_status = _state_field_status(state)
     budget_state = _state_budget(state)
+    diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
     if not bool(policy.get("skip_finalize_if_terminal_valid", True)):
         return True
     gate_block = _quality_gate_finalize_block(
@@ -13985,7 +13986,7 @@ def _should_finalize_after_terminal(state: Any) -> bool:
         state,
         expected_schema=expected_schema,
         field_status=field_status,
-        diagnostics=state.get("diagnostics"),
+        diagnostics=diagnostics,
         terminal_payload=_terminal_payload_for_invariants(state, expected_schema=expected_schema),
     )
     if bool(invariant.get("failed", False)) and not bool(budget_state.get("budget_exhausted", False)):
@@ -19954,7 +19955,7 @@ def create_standard_agent(
             evidence_verify_reserve=state.get("evidence_verify_reserve"),
         )
         budget_state.update(_field_status_progress(field_status))
-        diagnostics = _normalize_diagnostics(state.get("diagnostics"))
+        diagnostics = _merge_field_status_diagnostics(state.get("diagnostics"), field_status)
         dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
         trigger_reason = _finalize_reason_for_state(state) or "finalize_node"
         finalize_invocations = int(state.get("finalize_invocations", 0) or 0) + 1

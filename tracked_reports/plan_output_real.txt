@@ -6,14 +6,14 @@
       "description": "Clarify scope and constraints: Clarify task objective",
       "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
       "status": "completed",
-      "findings": "Starting research on Ramona Moye Camaconi."
+      "findings": "Starting research for Ramona Moye Camaconi."
     },
     {
       "id": 2,
       "description": "Collect high-signal evidence from relevant tools/sources",
       "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
       "status": "completed",
-      "findings": "Refining search for education and class background. Already have birth year, birth place (TIPNIS), and prior occupation (Women's Org President)."
+      "findings": "Refining search strategy to target official Bolivian government domains and specific biographical keywords for the remaining fields."
     },
     {
       "id": 3,
@@ -30,6 +30,6 @@
       "findings": ""
     }
   ],
-  "version": 4,
+  "version": 5,
   "current_step": 3
 }

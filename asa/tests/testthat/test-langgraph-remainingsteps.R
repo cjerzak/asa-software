@@ -1936,6 +1936,166 @@ test_that("finalize_answer node sanitizes residual tool calls after tools (stand
   expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
 })
 
+.stale_diagnostics_finalize_state <- function(msgs) {
+  expected_schema <- list(
+    prior_occupation = "string|Unknown",
+    education_level = "string|Unknown"
+  )
+  field_status <- list(
+    prior_occupation = list(
+      status = "found",
+      value = "Teacher",
+      source_url = "https://example.org/profile"
+    ),
+    education_level = list(
+      status = "unknown",
+      value = "Unknown",
+      attempts = 1L
+    )
+  )
+
+  reticulate::dict(
+    messages = list(
+      msgs$HumanMessage(content = "Return terminal JSON"),
+      msgs$AIMessage(content = '{"prior_occupation":"Teacher","education_level":"Unknown"}')
+    ),
+    summary = "",
+    archive = list(),
+    scratchpad = list(),
+    expected_schema = expected_schema,
+    expected_schema_source = "explicit",
+    field_status = field_status,
+    diagnostics = list(
+      unknown_fields_count_current = 0L,
+      unknown_fields_current = list()
+    ),
+    budget_state = list(
+      tool_calls_used = 0L,
+      tool_calls_limit = 4L,
+      budget_exhausted = FALSE
+    ),
+    finalization_policy = list(
+      skip_finalize_if_terminal_valid = TRUE,
+      quality_gate_enforce = FALSE,
+      diagnostics_auto_recovery_enabled = TRUE
+    )
+  )
+}
+
+test_that("standard finalize node reconciles stale diagnostics without retries", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _FinalizeStaleDiagnosticsLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(content='{\"prior_occupation\":\"Teacher\",\"education_level\":\"Unknown\"}')\n\n",
+    "finalize_stale_diagnostics_llm = _FinalizeStaleDiagnosticsLLM()\n"
+  ))
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$finalize_stale_diagnostics_llm,
+    tools = list()
+  )
+
+  finalize_out <- reticulate::py_to_r(
+    agent$nodes[["finalize"]]$bound$invoke(.stale_diagnostics_finalize_state(msgs))
+  )
+
+  expect_equal(as.integer(reticulate::py$finalize_stale_diagnostics_llm$calls), 0L)
+  expect_false(isTRUE(finalize_out$completion_gate$finalization_invariant_failed))
+  reasons <- as.character(
+    if (is.null(finalize_out$completion_gate$finalization_invariant_reasons)) character(0)
+    else finalize_out$completion_gate$finalization_invariant_reasons
+  )
+  expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
+  expect_equal(
+    as.integer(finalize_out$completion_gate$finalization_invariant$diagnostics_unknown_fields_count_current),
+    1L
+  )
+  mismatch_count <- 0L
+  reason_counts <- finalize_out$diagnostics$finalization_invariant_failures_by_reason
+  if (is.list(reason_counts) && !is.null(reason_counts$diagnostics_unknown_count_mismatch)) {
+    mismatch_count <- as.integer(reason_counts$diagnostics_unknown_count_mismatch)
+  }
+  expect_equal(mismatch_count, 0L)
+  retry_events <- finalize_out$diagnostics$diagnostics_recovery_checkpoint_events
+  if (is.null(retry_events) || is.na(retry_events)) {
+    retry_events <- 0L
+  }
+  expect_equal(as.integer(retry_events), 0L)
+  expect_equal(as.character(finalize_out$final_payload$prior_occupation), "Teacher")
+  expect_equal(as.character(finalize_out$field_status$prior_occupation$status), "found")
+})
+
+test_that("memory finalize node reconciles stale diagnostics without retries", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _MemoryFinalizeStaleDiagnosticsLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        return AIMessage(content='{\"prior_occupation\":\"Teacher\",\"education_level\":\"Unknown\"}')\n\n",
+    "memory_finalize_stale_diagnostics_llm = _MemoryFinalizeStaleDiagnosticsLLM()\n"
+  ))
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$memory_finalize_stale_diagnostics_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  finalize_out <- reticulate::py_to_r(
+    agent$nodes[["finalize"]]$bound$invoke(.stale_diagnostics_finalize_state(msgs))
+  )
+
+  expect_equal(as.integer(reticulate::py$memory_finalize_stale_diagnostics_llm$calls), 0L)
+  expect_false(isTRUE(finalize_out$completion_gate$finalization_invariant_failed))
+  reasons <- as.character(
+    if (is.null(finalize_out$completion_gate$finalization_invariant_reasons)) character(0)
+    else finalize_out$completion_gate$finalization_invariant_reasons
+  )
+  expect_false("diagnostics_unknown_count_mismatch" %in% reasons)
+  expect_equal(
+    as.integer(finalize_out$completion_gate$finalization_invariant$diagnostics_unknown_fields_count_current),
+    1L
+  )
+  mismatch_count <- 0L
+  reason_counts <- finalize_out$diagnostics$finalization_invariant_failures_by_reason
+  if (is.list(reason_counts) && !is.null(reason_counts$diagnostics_unknown_count_mismatch)) {
+    mismatch_count <- as.integer(reason_counts$diagnostics_unknown_count_mismatch)
+  }
+  expect_equal(mismatch_count, 0L)
+  retry_events <- finalize_out$diagnostics$diagnostics_recovery_checkpoint_events
+  if (is.null(retry_events) || is.na(retry_events)) {
+    retry_events <- 0L
+  }
+  expect_equal(as.integer(retry_events), 0L)
+  expect_equal(as.character(finalize_out$final_payload$prior_occupation), "Teacher")
+  expect_equal(as.character(finalize_out$field_status$prior_occupation$status), "found")
+})
+
 test_that("explicit schema does not rewrite intermediate tool-call turns (standard)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
