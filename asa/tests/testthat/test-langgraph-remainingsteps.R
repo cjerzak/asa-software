@@ -3846,7 +3846,7 @@ test_that("update_plan no-op does not increment plan version", {
   plan <- reticulate::py_to_r(final_state$plan)
   expect_true(!is.null(plan), info = "Plan should exist")
   expect_equal(plan$version, 1L)
-  expect_equal(plan$steps[[1]]$status, "pending")
+  expect_equal(plan$steps[[1]]$status, "in_progress")
 })
 
 test_that("_format_plan_for_prompt returns None for empty plan", {
@@ -3896,7 +3896,122 @@ test_that("_parse_plan_response returns fallback for invalid JSON", {
   result <- custom_ddg$`_parse_plan_response`("not json at all")
   result_r <- reticulate::py_to_r(result)
   expect_true(!is.null(result_r$goal))
-  expect_true(length(result_r$steps) >= 1L)
+  expect_equal(length(result_r$steps), 4L)
+  expect_equal(as.character(result_r$steps[[1]]$status), "pending")
+  expect_match(as.character(result_r$steps[[1]]$description), "Clarify scope and constraints", fixed = TRUE)
+})
+
+test_that("plan mode invalid planner output bootstraps active multi-step plan and reconciled tokens (memory folding)", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _InvalidPlanUsageLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    "            return AIMessage(content='not json at all', response_metadata={'token_usage': {'input_tokens': 5, 'output_tokens': 7, 'total_tokens': 12}})\n",
+    "        return AIMessage(content='final answer', response_metadata={'token_usage': {'input_tokens': 11, 'output_tokens': 13, 'total_tokens': 24}})\n\n",
+    "invalid_plan_usage_llm = _InvalidPlanUsageLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_memory_folding_agent(
+    model = reticulate::py$invalid_plan_usage_llm,
+    tools = list(),
+    checkpointer = NULL,
+    message_threshold = as.integer(100),
+    fold_char_budget = as.integer(100000),
+    keep_recent = as.integer(1),
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(msgs$HumanMessage(content = "test invalid planner response")),
+      summary = "",
+      fold_stats = reticulate::dict(fold_count = 0L),
+      use_plan_mode = TRUE
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = "test_invalid_plan_usage_memory")
+    )
+  )
+
+  plan_r <- reticulate::py_to_r(final_state$plan)
+  expect_equal(length(plan_r$steps), 4L)
+  expect_true(as.character(plan_r$steps[[1]]$status) %in% c("in_progress", "completed"))
+
+  token_trace <- reticulate::py_to_r(final_state$token_trace)
+  trace_total <- sum(vapply(token_trace, function(entry) {
+    value <- entry$total_tokens
+    if (length(value) == 0L || is.null(value) || is.na(value[[1]])) return(0L)
+    as.integer(value[[1]])
+  }, integer(1)))
+  expect_equal(as.integer(final_state$tokens_used), trace_total)
+  expect_equal(as.integer(final_state$input_tokens), 16L)
+  expect_equal(as.integer(final_state$output_tokens), 20L)
+})
+
+test_that("plan mode invalid planner output bootstraps active multi-step plan and reconciled tokens (standard agent)", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "class _InvalidPlanUsageStdLLM:\n",
+    "    def __init__(self):\n",
+    "        self.n = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.n += 1\n",
+    "        if self.n == 1:\n",
+    "            return AIMessage(content='not json at all', response_metadata={'token_usage': {'input_tokens': 3, 'output_tokens': 4, 'total_tokens': 7}})\n",
+    "        return AIMessage(content='standard final answer', response_metadata={'token_usage': {'input_tokens': 13, 'output_tokens': 17, 'total_tokens': 30}})\n\n",
+    "invalid_plan_usage_std_llm = _InvalidPlanUsageStdLLM()\n"
+  ))
+
+  agent <- custom_ddg$create_standard_agent(
+    model = reticulate::py$invalid_plan_usage_std_llm,
+    tools = list(),
+    checkpointer = NULL,
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = list(list(role = "user", content = "test invalid planner response standard")),
+      stop_reason = NULL,
+      use_plan_mode = TRUE,
+      tokens_used = 0L,
+      input_tokens = 0L,
+      output_tokens = 0L,
+      token_trace = list()
+    ),
+    config = list(
+      recursion_limit = as.integer(20),
+      configurable = list(thread_id = "test_invalid_plan_usage_standard")
+    )
+  )
+
+  plan_r <- reticulate::py_to_r(final_state$plan)
+  expect_equal(length(plan_r$steps), 4L)
+  expect_true(as.character(plan_r$steps[[1]]$status) %in% c("in_progress", "completed"))
+
+  token_trace <- reticulate::py_to_r(final_state$token_trace)
+  trace_total <- sum(vapply(token_trace, function(entry) {
+    value <- entry$total_tokens
+    if (length(value) == 0L || is.null(value) || is.na(value[[1]])) return(0L)
+    as.integer(value[[1]])
+  }, integer(1)))
+  expect_equal(as.integer(final_state$tokens_used), trace_total)
+  expect_equal(as.integer(final_state$input_tokens), 16L)
+  expect_equal(as.integer(final_state$output_tokens), 21L)
 })
 
 test_that("_sanitize_memory_dict preserves full URLs in long facts", {

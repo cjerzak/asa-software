@@ -12,7 +12,10 @@ test_that("field_resolver defaults use langextract engine and compatibility alia
   expect_equal(fr$webpage_extraction_engine, "langextract")
   expect_true(isTRUE(fr$webpage_extraction_enabled))
   expect_true(isTRUE(fr$llm_webpage_extraction))
+  expect_equal(fr$search_snippet_extraction_engine, "deterministic_then_legacy")
   expect_equal(as.integer(fr$llm_webpage_extraction_max_chars), 9000L)
+  expect_equal(as.numeric(fr$search_snippet_extraction_timeout_s), 6)
+  expect_equal(as.integer(fr$search_snippet_extraction_max_output_tokens), 160L)
   expect_equal(as.integer(fr$langextract_extraction_passes), 2L)
   expect_equal(as.integer(fr$langextract_max_char_buffer), 2000L)
 

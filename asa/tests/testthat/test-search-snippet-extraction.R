@@ -78,6 +78,138 @@ test_that("search snippet extraction produces structured payloads promotable int
   expect_equal(as.character(updated_fs$birth_place_source$status), "found")
 })
 
+test_that("default snippet engine resolves deterministic facts without selector fallback", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  reticulate::py_run_string(paste0(
+    "import json\n",
+    "_asa_default_snippet_selector_calls = 0\n",
+    "class _ASADefaultSnippetModel:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_default_snippet_selector_calls\n",
+    "        _asa_default_snippet_selector_calls += 1\n",
+    "        class _Resp:\n",
+    "            def __init__(self, content):\n",
+    "                self.content = content\n",
+    "        return _Resp(json.dumps({'birth_year': 1970}))\n",
+    "_asa_default_snippet_model = _ASADefaultSnippetModel()\n"
+  ))
+
+  schema <- list(
+    birth_year = "integer|null|Unknown",
+    birth_year_source = "string|null"
+  )
+  field_status <- list(
+    birth_year = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    birth_year_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "Search",
+    content = paste0(
+      "__START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconi 1982-01-07 legislative profile. </CONTENT> ",
+      "<URL> https://www.example.gov/legislators/date-of-birth/428 </URL> __END_OF_SOURCE 1__"
+    )
+  ))
+
+  snippet_result <- core$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = reticulate::py$`_asa_default_snippet_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ramona", "Moye", "Camaconi"),
+    extracted_urls = list(),
+    max_sources = 1L,
+    max_chars = 800L,
+    extraction_engine = "deterministic_then_legacy",
+    debug = FALSE
+  )
+
+  snippet_r <- reticulate::py_to_r(snippet_result)
+  payloads <- snippet_r[[1]]
+  urls <- snippet_r[[2]]
+  meta <- snippet_r[[3]]
+
+  expect_equal(length(payloads), 1L)
+  expect_equal(as.integer(payloads[[1]]$payload$birth_year), 1982L)
+  expect_match(as.character(payloads[[1]]$payload$birth_year_source), "date-of-birth/428", perl = TRUE)
+  expect_equal(as.character(urls[[1]]), "https://www.example.gov/legislators/date-of-birth/428")
+  expect_equal(as.integer(meta$selector_model_calls), 0L)
+  expect_equal(as.integer(meta$langextract_calls), 0L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_default_snippet_selector_calls`)), 0L)
+})
+
+test_that("default snippet engine falls back to selector model only after deterministic miss", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  reticulate::py_run_string(paste0(
+    "import json\n",
+    "_asa_fallback_snippet_selector_calls = 0\n",
+    "class _ASAFallbackSnippetModel:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_fallback_snippet_selector_calls\n",
+    "        _asa_fallback_snippet_selector_calls += 1\n",
+    "        class _Resp:\n",
+    "            def __init__(self, content):\n",
+    "                self.content = content\n",
+    "        return _Resp(json.dumps({'prior_occupation': 'lawyer'}))\n",
+    "_asa_fallback_snippet_model = _ASAFallbackSnippetModel()\n"
+  ))
+
+  schema <- list(
+    prior_occupation = "string|Unknown",
+    prior_occupation_source = "string|null"
+  )
+  field_status <- list(
+    prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "Search",
+    content = paste0(
+      "__START_OF_SOURCE 1__ <CONTENT> Ada Lovelace official profile overview. </CONTENT> ",
+      "<URL> https://www.example.gov/profile </URL> __END_OF_SOURCE 1__"
+    )
+  ))
+
+  snippet_result <- core$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = reticulate::py$`_asa_fallback_snippet_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ada", "Lovelace"),
+    extracted_urls = list(),
+    max_sources = 1L,
+    max_chars = 800L,
+    extraction_engine = "deterministic_then_legacy",
+    debug = FALSE
+  )
+
+  snippet_r <- reticulate::py_to_r(snippet_result)
+  payloads <- snippet_r[[1]]
+  meta <- snippet_r[[3]]
+
+  expect_equal(length(payloads), 1L)
+  expect_equal(as.character(payloads[[1]]$payload$prior_occupation), "lawyer")
+  expect_match(
+    as.character(payloads[[1]]$payload$prior_occupation_source),
+    "example\\.gov",
+    perl = TRUE
+  )
+  expect_equal(as.integer(meta$deterministic_fallback_calls), 1L)
+  expect_equal(as.integer(meta$selector_model_calls), 1L)
+  expect_equal(as.integer(meta$langextract_calls), 0L)
+  expect_equal(as.integer(meta$snippet_candidates_attempted), 1L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_fallback_snippet_selector_calls`)), 1L)
+})
+
 test_that("search snippet field hints prioritize enriched birth-year snippets", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",
@@ -143,6 +275,142 @@ test_that("search snippet field hints prioritize enriched birth-year snippets", 
   expect_equal(as.integer(meta$snippet_candidates_selected), 1L)
   expect_equal(as.integer(meta$snippet_candidates_selected_with_field_hints), 1L)
   expect_equal(as.integer(meta$snippet_openwebpage_escalation_events), 0L)
+})
+
+test_that("search snippet langextract no_payload is classified as fallback, not provider error", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  original_bridge <- core$`_langextract_extract_schema_with_fallback`
+  on.exit(
+    reticulate::py_set_attr(core, "_langextract_extract_schema_with_fallback", original_bridge),
+    add = TRUE
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "def _asa_langextract_no_payload(**kwargs):\n",
+    "    return {'ok': False, 'payload': {}, 'provider': 'gemini', 'model_id': 'gemini-2.5-flash', 'error': 'no_payload'}\n\n",
+    "class _ASAEmptySnippetFallbackModel:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        return AIMessage(content='{}')\n\n",
+    "_asa_langextract_no_payload = _asa_langextract_no_payload\n",
+    "_asa_empty_snippet_fallback_model = _ASAEmptySnippetFallbackModel()\n"
+  ))
+  reticulate::py_set_attr(
+    core,
+    "_langextract_extract_schema_with_fallback",
+    reticulate::py$`_asa_langextract_no_payload`
+  )
+
+  schema <- list(
+    birth_place = "string|Unknown",
+    birth_place_source = "string|null"
+  )
+  field_status <- list(
+    birth_place = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    birth_place_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "Search",
+    content = paste0(
+      "__START_OF_SOURCE 1__ <CONTENT> Ada Lovelace was born in London. </CONTENT> ",
+      "<URL> https://www.example.gov/profile </URL> __END_OF_SOURCE 1__"
+    )
+  ))
+
+  snippet_result <- core$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = reticulate::py$`_asa_empty_snippet_fallback_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ada", "Lovelace"),
+    extracted_urls = list(),
+    max_sources = 1L,
+    max_chars = 800L,
+    extraction_engine = "langextract",
+    debug = FALSE
+  )
+
+  meta <- reticulate::py_to_r(snippet_result[[3]])
+  expect_equal(as.integer(meta$langextract_calls), 1L)
+  expect_equal(as.integer(meta$langextract_fallback_calls), 1L)
+  expect_equal(as.integer(meta$langextract_errors), 0L)
+  expect_equal(as.integer(meta$selector_model_calls), 0L)
+  expect_identical(as.character(meta$langextract_last_error), "")
+  expect_true(as.integer(meta$deterministic_fallback_calls) >= 1L)
+})
+
+test_that("openwebpage langextract provider failures remain classified as provider errors", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  original_bridge <- core$`_langextract_extract_schema_with_fallback`
+  on.exit(
+    reticulate::py_set_attr(core, "_langextract_extract_schema_with_fallback", original_bridge),
+    add = TRUE
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n\n",
+    "def _asa_langextract_timeout(**kwargs):\n",
+    "    return {'ok': False, 'payload': {}, 'provider': 'gemini', 'model_id': 'gemini-2.5-flash', 'error': 'langextract_timeout:18.0s'}\n\n",
+    "class _ASAEmptyOpenWebpageFallbackModel:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        return AIMessage(content='{}')\n\n",
+    "_asa_langextract_timeout = _asa_langextract_timeout\n",
+    "_asa_empty_openwebpage_fallback_model = _ASAEmptyOpenWebpageFallbackModel()\n"
+  ))
+  reticulate::py_set_attr(
+    core,
+    "_langextract_extract_schema_with_fallback",
+    reticulate::py$`_asa_langextract_timeout`
+  )
+
+  schema <- list(
+    birth_place = "string|Unknown",
+    birth_place_source = "string|null"
+  )
+  field_status <- list(
+    birth_place = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    birth_place_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "OpenWebpage",
+    content = paste(
+      "URL: https://www.example.gov/profile",
+      "Final URL: https://www.example.gov/profile",
+      "Title: Example profile",
+      "Relevant excerpts:",
+      "Ada Lovelace was born in London.",
+      sep = "\n"
+    )
+  ))
+
+  openwebpage_result <- core$`_llm_extract_schema_payloads_from_openwebpages`(
+    selector_model = reticulate::py$`_asa_empty_openwebpage_fallback_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ada", "Lovelace"),
+    extracted_urls = list(),
+    max_pages = 1L,
+    max_chars = 1200L,
+    extraction_engine = "langextract",
+    debug = FALSE
+  )
+
+  meta <- reticulate::py_to_r(openwebpage_result[[3]])
+  expect_equal(as.integer(meta$langextract_calls), 1L)
+  expect_equal(as.integer(meta$langextract_fallback_calls), 1L)
+  expect_equal(as.integer(meta$langextract_errors), 1L)
+  expect_match(as.character(meta$langextract_last_error), "langextract_timeout", fixed = TRUE)
 })
 
 

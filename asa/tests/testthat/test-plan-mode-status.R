@@ -24,6 +24,70 @@ test_that("_finalize_plan_statuses keeps pending steps and completes only in-pro
   expect_equal(as.integer(out$version), 3L)
 })
 
+test_that("_activate_plan_for_execution marks current pending step in_progress", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  in_plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "pending", findings = ""),
+      list(id = 2L, description = "S2", status = "pending", findings = "")
+    ),
+    version = 1L,
+    current_step = 1L
+  )
+
+  out <- reticulate::py_to_r(custom_ddg$`_activate_plan_for_execution`(in_plan))
+  expect_true(is.list(out))
+  expect_equal(as.character(out$steps[[1]]$status), "in_progress")
+  expect_equal(as.character(out$steps[[2]]$status), "pending")
+  expect_equal(as.integer(out$current_step), 1L)
+  expect_equal(as.integer(out$version), 1L)
+})
+
+test_that("_merge_plan_generation_updates preserves finalized plan state", {
+  custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
+
+  finalized_plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "completed", findings = "done")
+    ),
+    version = 2L,
+    current_step = NULL
+  )
+  pending_plan <- list(
+    goal = "G",
+    steps = list(
+      list(id = 1L, description = "S1", status = "in_progress", findings = "")
+    ),
+    version = 1L,
+    current_step = 1L
+  )
+
+  out <- reticulate::py_to_r(custom_ddg$`_merge_plan_generation_updates`(
+    list(
+      plan = finalized_plan,
+      plan_history = list(list(version = 2L, plan = finalized_plan, source = "finalize")),
+      token_trace = list(list(node = "agent", total_tokens = 24L))
+    ),
+    list(
+      plan = pending_plan,
+      plan_history = list(list(version = 1L, plan = pending_plan, source = "auto")),
+      token_trace = list(list(node = "planner", total_tokens = 12L)),
+      tokens_used = 12L,
+      input_tokens = 5L,
+      output_tokens = 7L
+    )
+  ))
+
+  expect_equal(as.character(out$plan$steps[[1]]$status), "completed")
+  expect_equal(length(out$plan_history), 1L)
+  expect_equal(as.character(out$plan_history[[1]]$source), "finalize")
+  expect_equal(vapply(out$token_trace, function(x) as.character(x$node), character(1)), c("planner", "agent"))
+  expect_false("tokens_used" %in% names(out))
+})
+
 test_that("_finalize_plan_statuses preserves version when no step status changes", {
   custom_ddg <- asa_test_import_langgraph_module("custom_ddg_production")
 
