@@ -1,4 +1,4 @@
-test_that("evaluate_schema_outcome reports complete when all fields resolved", {
+test_that("evaluate_schema_outcome distinguishes terminalized from concrete completion", {
   gate <- asa_test_import_module("shared.schema_outcome_gate", required_file = "shared/schema_outcome_gate.py")
 
   schema <- list(
@@ -19,8 +19,36 @@ test_that("evaluate_schema_outcome reports complete when all fields resolved", {
 
   expect_true(isTRUE(report$done))
   expect_equal(report$completion_status, "complete")
+  expect_true(isTRUE(report$all_required_terminalized))
+  expect_false(isTRUE(report$all_required_concrete))
+  expect_equal(as.character(report$reason), "all_required_fields_terminalized")
   expect_equal(as.integer(report$total_fields), 3L)
   expect_equal(length(report$missing_fields), 0L)
+  expect_true(any(grepl("state$", unlist(report$concrete_missing_fields))))
+  expect_equal(as.character(report$concrete_completion_status), "in_progress")
+})
+
+test_that("evaluate_schema_outcome reports concrete completion when all fields are found", {
+  gate <- asa_test_import_module("shared.schema_outcome_gate", required_file = "shared/schema_outcome_gate.py")
+
+  schema <- list(name = "string", birth_year = "integer|null")
+  field_status <- list(
+    name = list(status = "found", value = "Ada Lovelace"),
+    birth_year = list(status = "found", value = 1815L)
+  )
+
+  report <- gate$evaluate_schema_outcome(
+    expected_schema = schema,
+    field_status = field_status,
+    budget_state = list(budget_exhausted = FALSE)
+  )
+
+  expect_true(isTRUE(report$done))
+  expect_true(isTRUE(report$all_required_terminalized))
+  expect_true(isTRUE(report$all_required_concrete))
+  expect_equal(as.character(report$reason), "all_required_fields_concretely_resolved")
+  expect_equal(as.character(report$concrete_completion_status), "complete")
+  expect_equal(length(report$concrete_missing_fields), 0L)
 })
 
 test_that("evaluate_schema_outcome reports partial when budget exhausts first", {
@@ -39,7 +67,12 @@ test_that("evaluate_schema_outcome reports partial when budget exhausts first", 
 
   expect_false(isTRUE(report$done))
   expect_equal(report$completion_status, "partial")
+  expect_false(isTRUE(report$all_required_terminalized))
+  expect_false(isTRUE(report$all_required_concrete))
+  expect_equal(as.character(report$reason), "budget_exhausted_before_terminalization")
   expect_true("birth_year" %in% unlist(report$missing_fields))
+  expect_true("birth_year" %in% unlist(report$concrete_missing_fields))
+  expect_equal(as.character(report$concrete_completion_status), "partial")
 })
 
 test_that("evaluate_research_outcome distinguishes complete vs partial stops", {

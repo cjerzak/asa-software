@@ -2716,6 +2716,98 @@ test_that("canonical payload remains schema-constrained and fills confidence/jus
   expect_equal(as.character(field_status$class_background$value), "Unknown")
 })
 
+test_that("terminal canonical rewrites recalculate confidence and justification after grounded field changes", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  expected_schema <- list(
+    prior_occupation = "string|Unknown",
+    class_background = "Working class|Middle class/professional|Upper/elite|Unknown",
+    prior_occupation_source = "string|null",
+    confidence = "number",
+    justification = "string"
+  )
+
+  field_status <- list(
+    prior_occupation = list(
+      status = "found",
+      value = "Teacher",
+      source_url = "https://example.org/profile",
+      descriptor = "string|Unknown",
+      evidence = "recovery_source_backed",
+      evidence_score = 0.88
+    ),
+    prior_occupation_source = list(
+      status = "found",
+      value = "https://example.org/profile",
+      source_url = "https://example.org/profile",
+      descriptor = "string|null",
+      evidence = "recovery_source_backed",
+      evidence_score = 0.88
+    ),
+    class_background = list(
+      status = "unknown",
+      value = "Unknown",
+      descriptor = "Working class|Middle class/professional|Upper/elite|Unknown",
+      evidence = "finalization_policy_demotion_unverified"
+    ),
+    confidence = list(
+      status = "found",
+      value = 0.95,
+      descriptor = "number",
+      evidence = "terminal_payload_source_backed"
+    ),
+    justification = list(
+      status = "found",
+      value = "Working-class background confirmed from the profile.",
+      descriptor = "string",
+      evidence = "terminal_payload_source_backed"
+    )
+  )
+
+  expected_confidence <- as.numeric(prod$`_derive_confidence_from_field_status`(field_status))
+  expected_justification <- as.character(prod$`_derive_justification_from_field_status`(field_status))
+
+  response <- list(
+    role = "assistant",
+    content = paste0(
+      "{\"prior_occupation\":\"Teacher\",",
+      "\"class_background\":\"Working class\",",
+      "\"prior_occupation_source\":\"https://example.org/profile%5CnFinal\",",
+      "\"confidence\":0.95,",
+      "\"justification\":\"Working-class background confirmed from the profile.\"}"
+    )
+  )
+
+  guarded <- prod$`_apply_field_status_terminal_guard`(
+    response = response,
+    expected_schema = expected_schema,
+    field_status = field_status,
+    schema_source = "explicit",
+    context = "finalize",
+    debug = FALSE
+  )
+
+  guarded_response <- guarded[[1]]
+  guarded_text <- if (!is.null(guarded_response$content)) {
+    as.character(guarded_response$content)
+  } else {
+    as.character(guarded_response[["content"]])
+  }
+  parsed <- jsonlite::fromJSON(guarded_text)
+
+  expect_equal(as.character(parsed$prior_occupation), "Teacher")
+  expect_equal(as.character(parsed$class_background), "Unknown")
+  expect_equal(as.character(parsed$prior_occupation_source), "https://example.org/profile")
+  expect_equal(as.numeric(parsed$confidence), expected_confidence)
+  expect_false(isTRUE(all.equal(as.numeric(parsed$confidence), 0.95)))
+  expect_equal(as.character(parsed$justification), expected_justification)
+  expect_match(as.character(parsed$justification), "resolved 1 core fields", fixed = TRUE)
+})
+
 test_that("terminal promotion requires source text support for non-source values", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 

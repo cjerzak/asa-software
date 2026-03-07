@@ -15,7 +15,7 @@ import threading
 import time
 import uuid
 from datetime import datetime, timezone
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 # ────────────────────────────────────────────────────────────────────────
 # This implements the memory folding architecture from the DeepAgent paper
@@ -1188,6 +1188,9 @@ _DEFAULT_SOURCE_POLICY: Dict[str, Any] = {
         "/list",
         "/index",
     ],
+    "openwebpage_authority_bonus_weight": 0.20,
+    "openwebpage_detail_bonus_weight": 0.15,
+    "openwebpage_preferred_domain_bonus_weight": 0.10,
     "max_candidates_per_field": int(_EVIDENCE_MAX_CANDIDATES_PER_FIELD),
 }
 
@@ -1876,6 +1879,39 @@ def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
         max_candidates = int(policy.get("max_candidates_per_field", _EVIDENCE_MAX_CANDIDATES_PER_FIELD))
     except Exception:
         max_candidates = int(_EVIDENCE_MAX_CANDIDATES_PER_FIELD)
+    try:
+        openwebpage_authority_bonus_weight = float(
+            policy.get(
+                "openwebpage_authority_bonus_weight",
+                _DEFAULT_SOURCE_POLICY["openwebpage_authority_bonus_weight"],
+            )
+        )
+    except Exception:
+        openwebpage_authority_bonus_weight = float(
+            _DEFAULT_SOURCE_POLICY["openwebpage_authority_bonus_weight"]
+        )
+    try:
+        openwebpage_detail_bonus_weight = float(
+            policy.get(
+                "openwebpage_detail_bonus_weight",
+                _DEFAULT_SOURCE_POLICY["openwebpage_detail_bonus_weight"],
+            )
+        )
+    except Exception:
+        openwebpage_detail_bonus_weight = float(
+            _DEFAULT_SOURCE_POLICY["openwebpage_detail_bonus_weight"]
+        )
+    try:
+        openwebpage_preferred_domain_bonus_weight = float(
+            policy.get(
+                "openwebpage_preferred_domain_bonus_weight",
+                _DEFAULT_SOURCE_POLICY["openwebpage_preferred_domain_bonus_weight"],
+            )
+        )
+    except Exception:
+        openwebpage_preferred_domain_bonus_weight = float(
+            _DEFAULT_SOURCE_POLICY["openwebpage_preferred_domain_bonus_weight"]
+        )
     authority_weights = _normalize_host_weight_map(
         policy.get("authority_host_weights", _DEFAULT_SOURCE_POLICY["authority_host_weights"])
     )
@@ -1949,6 +1985,18 @@ def _normalize_source_policy(raw_policy: Any) -> Dict[str, Any]:
         ),
         "detail_page_url_penalties": _normalize_url_fragment_list(
             policy.get("detail_page_url_penalties", _DEFAULT_SOURCE_POLICY["detail_page_url_penalties"])
+        ),
+        "openwebpage_authority_bonus_weight": _clamp01(
+            openwebpage_authority_bonus_weight,
+            default=_DEFAULT_SOURCE_POLICY["openwebpage_authority_bonus_weight"],
+        ),
+        "openwebpage_detail_bonus_weight": _clamp01(
+            openwebpage_detail_bonus_weight,
+            default=_DEFAULT_SOURCE_POLICY["openwebpage_detail_bonus_weight"],
+        ),
+        "openwebpage_preferred_domain_bonus_weight": _clamp01(
+            openwebpage_preferred_domain_bonus_weight,
+            default=_DEFAULT_SOURCE_POLICY["openwebpage_preferred_domain_bonus_weight"],
         ),
         "max_candidates_per_field": max(1, int(max_candidates)),
     }
@@ -2543,6 +2591,101 @@ def _source_policy_detail_page_score(source_url: Any, source_policy: Dict[str, A
     return 0.60
 
 
+def _source_policy_preferred_domain_score(source_url: Any, source_policy: Dict[str, Any]) -> float:
+    host = _source_host(_normalize_url_match(source_url))
+    if not host:
+        return 0.0
+    preferred_domains = list(source_policy.get("preferred_domains") or [])
+    for fragment in preferred_domains:
+        token = str(fragment or "").strip().lower()
+        if token and token in host:
+            return 1.0
+    return 0.0
+
+
+def _openwebpage_followup_base_score(candidate: Any) -> float:
+    if not isinstance(candidate, dict):
+        return 0.0
+    try:
+        if candidate.get("base_score") is not None:
+            return float(candidate.get("base_score", 0.0) or 0.0)
+    except Exception:
+        pass
+    score = 0.0
+    try:
+        score += float(candidate.get("url_score", 0.0) or 0.0)
+    except Exception:
+        pass
+    try:
+        score += 0.80 * float(candidate.get("entity_hits", 0) or 0.0)
+    except Exception:
+        pass
+    try:
+        score += 1.20 * float(candidate.get("entity_ratio", 0.0) or 0.0)
+    except Exception:
+        pass
+    try:
+        score += 0.35 * float(candidate.get("field_hint_score", 0.0) or 0.0)
+    except Exception:
+        pass
+    return float(score)
+
+
+def _score_openwebpage_followup_candidate(
+    candidate: Dict[str, Any],
+    source_policy: Dict[str, Any],
+) -> Dict[str, Any]:
+    normalized_source_policy = _normalize_source_policy(source_policy)
+    normalized_url = _normalize_url_match(candidate.get("url") or candidate.get("source_url"))
+    base_score = float(_openwebpage_followup_base_score(candidate))
+    authority_score = float(_source_policy_authority_score(normalized_url, normalized_source_policy))
+    detail_score = float(_source_policy_detail_page_score(normalized_url, normalized_source_policy))
+    preferred_domain_score = float(
+        _source_policy_preferred_domain_score(normalized_url, normalized_source_policy)
+    )
+    authority_bonus_weight = float(
+        normalized_source_policy.get(
+            "openwebpage_authority_bonus_weight",
+            _DEFAULT_SOURCE_POLICY["openwebpage_authority_bonus_weight"],
+        )
+        or _DEFAULT_SOURCE_POLICY["openwebpage_authority_bonus_weight"]
+    )
+    detail_bonus_weight = float(
+        normalized_source_policy.get(
+            "openwebpage_detail_bonus_weight",
+            _DEFAULT_SOURCE_POLICY["openwebpage_detail_bonus_weight"],
+        )
+        or _DEFAULT_SOURCE_POLICY["openwebpage_detail_bonus_weight"]
+    )
+    preferred_domain_bonus_weight = float(
+        normalized_source_policy.get(
+            "openwebpage_preferred_domain_bonus_weight",
+            _DEFAULT_SOURCE_POLICY["openwebpage_preferred_domain_bonus_weight"],
+        )
+        or _DEFAULT_SOURCE_POLICY["openwebpage_preferred_domain_bonus_weight"]
+    )
+    followup_score = (
+        float(base_score)
+        + (authority_bonus_weight * authority_score)
+        + (detail_bonus_weight * detail_score)
+        + (preferred_domain_bonus_weight * preferred_domain_score)
+    )
+    scored = dict(candidate or {})
+    scored.update(
+        {
+            "url": normalized_url,
+            "base_score": float(base_score),
+            "authority_score": float(authority_score),
+            "detail_score": float(detail_score),
+            "preferred_domain_score": float(preferred_domain_score),
+            "preferred_domain_boost_applied": bool(preferred_domain_score > 0.0),
+            "openwebpage_followup_score": float(followup_score),
+            "total_score": float(followup_score),
+        }
+    )
+    return scored
+
+
 def _source_policy_score_candidate(candidate: Dict[str, Any], source_policy: Dict[str, Any]) -> float:
     base_score = (
         0.36 * float(candidate.get("value_support", 0.0))
@@ -2806,18 +2949,26 @@ def _normalize_url_from_text_snippet(raw_url: Any) -> Optional[str]:
     text = str(raw_url or "").strip()
     if not text:
         return None
-    text = re.sub(r"\\[rn]", " ", text)
-    text = re.sub(r"(?i)\bfinal\s+url\s*:\s*", " ", text)
-    text = re.sub(r"(?i)\\n\s*final\b.*$", "", text).strip()
-    for raw in re.findall(r"https?://[^\s<>()\"']+", text):
-        normalized = _canonicalize_url(raw)
-        if normalized:
-            return normalized
-    normalized = _canonicalize_url(text)
-    if normalized:
-        return normalized
-    for raw in re.findall(r"https?://[^\s<>()\"']+", text):
-        normalized = _canonicalize_url(raw)
+    candidate_texts: List[str] = []
+    for candidate in (text, unquote(text)):
+        cleaned = str(candidate or "").strip()
+        if not cleaned or cleaned in candidate_texts:
+            continue
+        cleaned = re.sub(r"(?i)%5c[nr]\s*final(?:\s+url)?\b.*$", "", cleaned)
+        cleaned = re.sub(r"(?i)%0d%0a\s*final(?:\s+url)?\b.*$", "", cleaned)
+        cleaned = re.sub(r"(?i)%0a\s*final(?:\s+url)?\b.*$", "", cleaned)
+        cleaned = re.sub(r"\\[rn]", " ", cleaned)
+        cleaned = re.sub(r"(?i)\bfinal\s+url\s*:\s*", " ", cleaned)
+        cleaned = re.sub(r"(?i)(?:\n|\r|\\n|\\r)\s*final(?:\s+url)?\b.*$", "", cleaned).strip()
+        if cleaned:
+            candidate_texts.append(cleaned)
+
+    for candidate in candidate_texts:
+        for raw in re.findall(r"https?://[^\s<>()\"']+", candidate):
+            normalized = _canonicalize_url(raw)
+            if normalized:
+                return normalized
+        normalized = _canonicalize_url(candidate)
         if normalized:
             return normalized
     return None
@@ -4193,10 +4344,24 @@ def _recover_unknown_fields_from_tool_evidence(
                 candidate_text=source_text,
                 finalization_policy=policy,
             )
-            if bool(anchor_state.get("hard_block", False)):
-                blocked_reason = "recovery_blocked_anchor_mismatch"
-                if bool(target_anchor_state.get("legacy_entity_tokens", False)):
-                    blocked_reason = "recovery_blocked_entity_mismatch"
+            anchor_hard_block = bool(anchor_state.get("hard_block", False))
+            anchor_block_reason = str(anchor_state.get("reason") or "").strip().lower()
+            blocked_reason = "recovery_blocked_anchor_mismatch"
+            anchor_observable = bool(
+                int(anchor_state.get("hits", 0) or 0) > 0
+                or int(anchor_state.get("phrase_hits", 0) or 0) > 0
+                or int(anchor_state.get("id_hits", 0) or 0) > 0
+            )
+            if bool(target_anchor_state.get("legacy_entity_tokens", False)):
+                blocked_reason = "recovery_blocked_entity_mismatch"
+            allow_softened_anchor_recovery = bool(
+                anchor_hard_block
+                and anchor_block_reason == "anchor_mismatch_hard_block"
+                and not bool(target_anchor_state.get("legacy_entity_tokens", False))
+                and anchor_observable
+                and not bool(anchor_state.get("context_contradiction", False))
+            )
+            if anchor_hard_block and not allow_softened_anchor_recovery:
                 rejected_reasons.append(blocked_reason)
                 continue
 
@@ -4221,7 +4386,7 @@ def _recover_unknown_fields_from_tool_evidence(
                 if not _source_supports_value(recovered_value, source_text):
                     rejected_reasons.append("recovery_blocked_source_value_mismatch")
                     continue
-                if strict_anchor:
+                if strict_anchor and not (anchor_hard_block and allow_softened_anchor_recovery):
                     alignment = _entity_value_alignment_state(
                         value=recovered_value,
                         source_text=source_text,
@@ -4286,6 +4451,23 @@ def _recover_unknown_fields_from_tool_evidence(
                         disclosure_state.get("reason")
                         or "grounding_blocked_sensitive_disclosure_not_explicit"
                     )
+                if anchor_hard_block:
+                    source_allowlisted = bool(normalized_source and normalized_source in allowed)
+                    source_specific = bool(normalized_source and _is_source_specific_url(normalized_source))
+                    if not (
+                        allow_softened_anchor_recovery
+                        and source_allowlisted
+                        and source_specific
+                        and not candidate.get("rejection_reason")
+                    ):
+                        rejected_reasons.append(blocked_reason)
+                        continue
+                    tolerance_penalty = _clamp01(
+                        policy.get("anchor_mismatch_penalty", _DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"]),
+                        default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
+                    )
+                    candidate["anchor_mismatch_penalty"] = float(tolerance_penalty)
+                    candidate["evidence_reason"] = "recovery_anchor_soft_penalty"
                 candidate_pool.append(candidate)
 
         scored = _score_evidence_candidates(candidate_pool, mode=recovery_mode)
@@ -5755,7 +5937,15 @@ def _llm_select_round_openwebpage_candidate(
             "host": host,
             "path": path,
             "snippet": snippet,
+            "base_score": round(float(item.get("base_score", 0.0)), 3),
             "url_score": round(float(item.get("url_score", 0.0)), 3),
+            "authority_score": round(float(item.get("authority_score", 0.0)), 3),
+            "detail_score": round(float(item.get("detail_score", 0.0)), 3),
+            "preferred_domain_boost_applied": bool(item.get("preferred_domain_boost_applied", False)),
+            "followup_score": round(
+                float(item.get("openwebpage_followup_score", item.get("total_score", 0.0))),
+                3,
+            ),
             "entity_hits": int(item.get("entity_hits", 0)),
             "entity_ratio": round(float(item.get("entity_ratio", 0.0)), 3),
         }
@@ -5852,6 +6042,7 @@ def _select_round_openwebpage_candidate(
     *,
     search_queries: Any = None,
     selector_model: Any = None,
+    source_policy: Any = None,
     webpage_policy: Any = None,
     blocked_hosts: Any = None,
     now_ts: Optional[float] = None,
@@ -5865,6 +6056,91 @@ def _select_round_openwebpage_candidate(
         return None
     if any(_normalize_match_text(p.get("tool_name")) == "openwebpage" for p in payloads):
         return None
+
+    previously_opened = _collect_openwebpage_urls_from_messages(state_messages, max_urls=1024)
+    previously_opened.update(
+        _collect_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
+    )
+    policy = _normalize_webpage_policy(webpage_policy, profile="balanced")
+    min_url_score = _clamp01(
+        policy.get("open_only_if_score_ge"),
+        default=float(policy.get("open_only_if_score_ge", 0.0)),
+    )
+    selector_mode = _AUTO_OPENWEBPAGE_SELECTOR_MODE
+    ranked_candidates = _collect_round_openwebpage_candidates(
+        state_messages,
+        round_tool_messages,
+        search_queries=search_queries,
+        source_policy=source_policy,
+        webpage_policy=webpage_policy,
+        blocked_hosts=blocked_hosts,
+        now_ts=now_ts,
+        max_candidates=max_candidates,
+    )
+    if not ranked_candidates:
+        return None
+
+    entity_tokens: List[str] = []
+    seen_entity = set()
+    for raw_query in list(search_queries or []):
+        query_text = str(raw_query or "").strip()
+        if not query_text:
+            continue
+        for token in _query_focus_tokens(query_text, max_tokens=6):
+            if token in seen_entity:
+                continue
+            seen_entity.add(token)
+            entity_tokens.append(token)
+            if len(entity_tokens) >= 10:
+                break
+        if len(entity_tokens) >= 10:
+            break
+    min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
+
+    if selector_mode in {"llm", "hybrid"}:
+        llm_candidates = ranked_candidates[: int(_AUTO_OPENWEBPAGE_SELECTOR_MAX_CANDIDATES)]
+        chosen_url = _llm_select_round_openwebpage_candidate(
+            selector_model=selector_model,
+            task_prompt=_extract_last_user_prompt(list(state_messages or [])),
+            search_queries=[str(q or "") for q in list(search_queries or [])[:8]],
+            candidates=llm_candidates,
+            previously_opened=previously_opened,
+        )
+        if chosen_url:
+            return chosen_url
+        if selector_mode == "llm":
+            return None
+
+    best = ranked_candidates[0]
+    best_url = _normalize_url_match(best.get("url"))
+    best_url_score = float(best.get("url_score", 0.0))
+    best_hits = int(best.get("entity_hits", 0))
+    best_ratio = float(best.get("entity_ratio", 0.0))
+    if not best_url or best_url_score < float(min_url_score):
+        return None
+    if entity_tokens and (best_hits < min_hits or best_ratio < min_ratio):
+        return None
+    return best_url
+
+
+def _collect_round_openwebpage_candidates(
+    state_messages: Any,
+    round_tool_messages: Any,
+    *,
+    search_queries: Any = None,
+    source_policy: Any = None,
+    webpage_policy: Any = None,
+    blocked_hosts: Any = None,
+    now_ts: Optional[float] = None,
+    max_candidates: int = 40,
+) -> List[Dict[str, Any]]:
+    payloads = _tool_message_payloads(round_tool_messages)
+    if not payloads:
+        return []
+    if not any(_normalize_match_text(p.get("tool_name")) == "search" for p in payloads):
+        return []
+    if any(_normalize_match_text(p.get("tool_name")) == "openwebpage" for p in payloads):
+        return []
 
     previously_opened = _collect_openwebpage_urls_from_messages(state_messages, max_urls=1024)
     previously_opened.update(
@@ -5893,6 +6169,7 @@ def _select_round_openwebpage_candidate(
         max_candidates = max(1, int(max_candidates))
     except Exception:
         max_candidates = 40
+    normalized_source_policy = _normalize_source_policy(source_policy)
 
     entity_tokens: List[str] = []
     seen_entity = set()
@@ -5965,18 +6242,18 @@ def _select_round_openwebpage_candidate(
                     continue
 
             seen.add(normalized)
-            total_score = url_score + (0.8 * float(entity_hits)) + (1.2 * float(entity_ratio))
-            candidates.append(
+            candidate = _score_openwebpage_followup_candidate(
                 {
                     "url": normalized,
                     "text": candidate_text,
-                    "total_score": float(total_score),
                     "url_score": float(url_score),
                     "entity_hits": int(entity_hits),
                     "entity_ratio": float(entity_ratio),
                     "order": int(order),
-                }
+                },
+                normalized_source_policy,
             )
+            candidates.append(candidate)
             order += 1
             if len(candidates) >= int(max_candidates):
                 break
@@ -5984,44 +6261,23 @@ def _select_round_openwebpage_candidate(
             break
 
     if not candidates:
-        return None
+        return []
 
     ranked_candidates = sorted(
         candidates,
         key=lambda item: (
-            float(item.get("total_score", 0.0)),
+            float(item.get("openwebpage_followup_score", item.get("total_score", 0.0))),
+            float(item.get("base_score", 0.0)),
             float(item.get("url_score", 0.0)),
+            float(item.get("authority_score", 0.0)),
+            float(item.get("detail_score", 0.0)),
             int(item.get("entity_hits", 0)),
             float(item.get("entity_ratio", 0.0)),
             -int(item.get("order", 0)),
         ),
         reverse=True,
     )
-
-    if selector_mode in {"llm", "hybrid"}:
-        llm_candidates = ranked_candidates[: int(_AUTO_OPENWEBPAGE_SELECTOR_MAX_CANDIDATES)]
-        chosen_url = _llm_select_round_openwebpage_candidate(
-            selector_model=selector_model,
-            task_prompt=_extract_last_user_prompt(list(state_messages or [])),
-            search_queries=[str(q or "") for q in list(search_queries or [])[:8]],
-            candidates=llm_candidates,
-            previously_opened=previously_opened,
-        )
-        if chosen_url:
-            return chosen_url
-        if selector_mode == "llm":
-            return None
-
-    best = ranked_candidates[0]
-    best_url = _normalize_url_match(best.get("url"))
-    best_url_score = float(best.get("url_score", 0.0))
-    best_hits = int(best.get("entity_hits", 0))
-    best_ratio = float(best.get("entity_ratio", 0.0))
-    if not best_url or best_url_score < float(min_url_score):
-        return None
-    if entity_tokens and (best_hits < min_hits or best_ratio < min_ratio):
-        return None
-    return best_url
+    return ranked_candidates
 
 
 def _select_round_openwebpage_candidates(
@@ -6030,6 +6286,7 @@ def _select_round_openwebpage_candidates(
     *,
     search_queries: Any = None,
     selector_model: Any = None,
+    source_policy: Any = None,
     webpage_policy: Any = None,
     blocked_hosts: Any = None,
     now_ts: Optional[float] = None,
@@ -6049,6 +6306,7 @@ def _select_round_openwebpage_candidates(
             round_tool_messages,
             search_queries=search_queries,
             selector_model=selector_model,
+            source_policy=source_policy,
             webpage_policy=webpage_policy,
             blocked_hosts=blocked_hosts,
             now_ts=now_ts,
@@ -6070,6 +6328,71 @@ def _select_round_openwebpage_candidates(
             }
         ]
     return chosen
+
+
+def _openwebpage_followup_selection_details(
+    selected_urls: Any,
+    state_messages: Any,
+    round_tool_messages: Any,
+    *,
+    search_queries: Any = None,
+    source_policy: Any = None,
+    webpage_policy: Any = None,
+    blocked_hosts: Any = None,
+    now_ts: Optional[float] = None,
+    max_candidates: int = 40,
+    max_items: int = 8,
+) -> List[Dict[str, Any]]:
+    ranked_candidates = _collect_round_openwebpage_candidates(
+        state_messages,
+        round_tool_messages,
+        search_queries=search_queries,
+        source_policy=source_policy,
+        webpage_policy=webpage_policy,
+        blocked_hosts=blocked_hosts,
+        now_ts=now_ts,
+        max_candidates=max_candidates,
+    )
+    candidate_by_url = {
+        _normalize_url_match(item.get("url")): item
+        for item in list(ranked_candidates or [])
+        if _normalize_url_match(item.get("url"))
+    }
+    normalized_source_policy = _normalize_source_policy(source_policy)
+    details: List[Dict[str, Any]] = []
+    seen = set()
+    for raw_url in list(selected_urls or []):
+        normalized = _normalize_url_match(raw_url)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        candidate = candidate_by_url.get(normalized)
+        if not isinstance(candidate, dict):
+            candidate = _score_openwebpage_followup_candidate(
+                {
+                    "url": normalized,
+                    "base_score": float(_score_primary_source_url(normalized)),
+                },
+                normalized_source_policy,
+            )
+        details.append(
+            {
+                "url": normalized,
+                "base_score": round(float(candidate.get("base_score", 0.0) or 0.0), 4),
+                "authority_score": round(float(candidate.get("authority_score", 0.0) or 0.0), 4),
+                "detail_score": round(float(candidate.get("detail_score", 0.0) or 0.0), 4),
+                "preferred_domain_boost_applied": bool(
+                    candidate.get("preferred_domain_boost_applied", False)
+                ),
+                "openwebpage_followup_score": round(
+                    float(candidate.get("openwebpage_followup_score", 0.0) or 0.0),
+                    4,
+                ),
+            }
+        )
+        if len(details) >= max(1, int(max_items)):
+            break
+    return details
 
 
 def _preferred_openwebpage_candidate_for_round(
@@ -8667,10 +8990,30 @@ def _found_field_keys(field_status: Any) -> set:
     return out
 
 
+def _field_status_entry_is_terminalized(entry: Any) -> bool:
+    if not isinstance(entry, dict):
+        return False
+    status = str(entry.get("status") or "missing").strip().lower()
+    return status in {_FIELD_STATUS_FOUND, _FIELD_STATUS_UNKNOWN}
+
+
+def _field_status_entry_is_concrete(entry: Any) -> bool:
+    if not isinstance(entry, dict):
+        return False
+    status = str(entry.get("status") or "missing").strip().lower()
+    value = entry.get("value")
+    return bool(
+        status == _FIELD_STATUS_FOUND
+        and not _is_empty_like(value)
+        and not _is_unknown_marker(value)
+    )
+
+
 def _missing_required_field_details(
     *,
     expected_schema: Any,
     field_status: Any,
+    resolution_axis: str = "concrete",
     max_items: int = 64,
 ) -> List[Dict[str, Any]]:
     normalized = _normalize_field_status_map(field_status, expected_schema)
@@ -8678,6 +9021,9 @@ def _missing_required_field_details(
     schema_leaf_set = set()
     if expected_schema is not None:
         schema_leaf_set = {path for path, _ in _schema_leaf_paths(expected_schema)}
+    axis = str(resolution_axis or "concrete").strip().lower()
+    if axis not in {"terminal", "concrete"}:
+        axis = "concrete"
 
     details: List[Dict[str, Any]] = []
     for key in required_keys:
@@ -8695,11 +9041,10 @@ def _missing_required_field_details(
                 attempts = 0
             descriptor = entry.get("descriptor")
 
-        is_resolved = bool(
-            status == _FIELD_STATUS_FOUND
-            and not _is_empty_like(value)
-            and not _is_unknown_marker(value)
-        )
+        if axis == "terminal":
+            is_resolved = _field_status_entry_is_terminalized(entry)
+        else:
+            is_resolved = _field_status_entry_is_concrete(entry)
         if is_resolved:
             continue
 
@@ -8713,6 +9058,7 @@ def _missing_required_field_details(
                 "evidence": str((entry or {}).get("evidence") or "").strip() if isinstance(entry, dict) else "",
                 "requires_source": bool(requires_source),
                 "descriptor": str(descriptor or "") if descriptor is not None else "",
+                "resolution_axis": axis,
             }
         )
         if len(details) >= max(1, int(max_items)):
@@ -9841,13 +10187,19 @@ def _justification_counts_match_field_status(
 def _apply_canonical_payload_derivations(
     payload: Any,
     normalized_field_status: Dict[str, Dict[str, Any]],
+    *,
+    force_confidence: bool = False,
+    force_justification: bool = False,
 ) -> Any:
     if not isinstance(payload, dict):
         return payload
+    payload = _sanitize_payload_source_metadata(payload)
 
     if "confidence" in payload:
         confidence = payload.get("confidence")
-        normalized_confidence = _normalize_confidence_score(confidence)
+        normalized_confidence = None
+        if not force_confidence:
+            normalized_confidence = _normalize_confidence_score(confidence)
         if normalized_confidence is None:
             normalized_confidence = _derive_confidence_from_field_status(normalized_field_status)
         payload["confidence"] = round(
@@ -9858,6 +10210,9 @@ def _apply_canonical_payload_derivations(
     if "justification" in payload:
         justification = payload.get("justification")
         if (
+            force_justification
+            or force_confidence
+            or
             _is_empty_like(justification)
             or _is_unknown_marker(justification)
             or not _justification_counts_match_field_status(justification, normalized_field_status)
@@ -9938,6 +10293,66 @@ def _apply_canonical_payload_derivations(
         seen_keys.add(key)
 
     return ordered_payload
+
+
+def _sanitize_payload_source_metadata(payload: Any) -> Any:
+    """Normalize terminal source metadata before final JSON emission."""
+    if isinstance(payload, dict):
+        for raw_key in list(payload.keys()):
+            key = str(raw_key)
+            value = payload.get(raw_key)
+            if key.endswith("_source") or key == "source_url":
+                payload[raw_key] = _normalize_url_match(value)
+                continue
+            payload[raw_key] = _sanitize_payload_source_metadata(value)
+        return payload
+    if isinstance(payload, list):
+        for idx, item in enumerate(list(payload)):
+            payload[idx] = _sanitize_payload_source_metadata(item)
+    return payload
+
+
+def _payload_grounding_leaf_map(
+    payload: Any,
+    schema: Any,
+    prefix: str = "",
+) -> Dict[str, Any]:
+    """Collect comparable base/source leaves while ignoring confidence fields."""
+    out: Dict[str, Any] = {}
+    if schema is None:
+        return out
+
+    if isinstance(schema, dict):
+        payload_dict = payload if isinstance(payload, dict) else {}
+        for key, child_schema in schema.items():
+            child_prefix = f"{prefix}.{key}" if prefix else str(key)
+            out.update(_payload_grounding_leaf_map(payload_dict.get(key), child_schema, child_prefix))
+        return out
+
+    if isinstance(schema, list):
+        key = prefix.rsplit(".", 1)[-1] if prefix else ""
+        if key in {"confidence", "justification"} or key.endswith("_confidence"):
+            return out
+        out[prefix] = _json_safe_value(payload if isinstance(payload, list) else [])
+        return out
+
+    key = prefix.rsplit(".", 1)[-1] if prefix else ""
+    if key in {"confidence", "justification"} or key.endswith("_confidence"):
+        return out
+    out[prefix] = _json_safe_value(payload)
+    return out
+
+
+def _payload_grounding_changed(
+    current_payload: Any,
+    canonical_payload: Any,
+    schema: Any,
+) -> bool:
+    """Return True when canonicalization changed any base or *_source field."""
+    return _payload_grounding_leaf_map(current_payload, schema) != _payload_grounding_leaf_map(
+        canonical_payload,
+        schema,
+    )
 
 
 def _field_status_entry_for_path(
@@ -10253,6 +10668,8 @@ def _apply_field_status_terminal_guard(
     current_text = _message_content_to_text(current_content).strip()
 
     merged_payload = payload
+    normalized_fs = _normalize_field_status_map(field_status, expected_schema)
+    grounding_changed = False
     if current_text:
         try:
             parsed_current = parse_llm_json(current_text)
@@ -10264,6 +10681,17 @@ def _apply_field_status_terminal_guard(
                 parsed_current,
                 expected_schema,
             )
+            grounding_changed = _payload_grounding_changed(
+                parsed_current,
+                merged_payload,
+                expected_schema,
+            )
+    merged_payload = _apply_canonical_payload_derivations(
+        merged_payload,
+        normalized_fs,
+        force_confidence=grounding_changed,
+        force_justification=grounding_changed,
+    )
 
     try:
         canonical_text = _canonical_json_text(merged_payload)
@@ -12964,6 +13392,22 @@ def _finalization_recovery_priority(diagnostics: Any, reasons: Any) -> str:
     return "invariant_reconciliation"
 
 
+def _gate_blocking_field_details(gate: Any, *, max_items: int = 64) -> List[Dict[str, Any]]:
+    if not isinstance(gate, dict):
+        return []
+    raw_details = gate.get("missing_required_field_details")
+    if not raw_details:
+        raw_details = gate.get("missing_required_concrete_field_details")
+    out: List[Dict[str, Any]] = []
+    for detail in list(raw_details or []):
+        if not isinstance(detail, dict):
+            continue
+        out.append(detail)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
 def _record_finalization_recovery_checkpoint(
     diagnostics: Any,
     completion_gate: Any,
@@ -13004,7 +13448,7 @@ def _record_finalization_recovery_checkpoint(
             prior_same_reason_diagnostics_hits += 1
 
     blocking_fields = []
-    for detail in list(gate.get("missing_required_field_details") or []):
+    for detail in _gate_blocking_field_details(gate, max_items=12):
         if not isinstance(detail, dict):
             continue
         field_name = str(detail.get("field") or "").strip()
@@ -13092,9 +13536,16 @@ def _schema_outcome_gate_report(
     finalization_policy = _state_finalization_policy(state)
     diagnostics_snapshot = diagnostics if diagnostics is not None else state.get("diagnostics")
     diagnostics_snapshot = _merge_field_status_diagnostics(diagnostics_snapshot, field_status)
-    missing_details = _missing_required_field_details(
+    terminal_missing_details = _missing_required_field_details(
         expected_schema=expected_schema,
         field_status=field_status,
+        resolution_axis="terminal",
+        max_items=64,
+    )
+    concrete_missing_details = _missing_required_field_details(
+        expected_schema=expected_schema,
+        field_status=field_status,
+        resolution_axis="concrete",
         max_items=64,
     )
     resolvable_keys = _collect_resolvable_field_keys(field_status)
@@ -13137,7 +13588,6 @@ def _schema_outcome_gate_report(
         bool(finalization_policy.get("quality_gate_enforce", True))
         and len(resolvable_keys) >= int(min_resolvable_fields)
         and int(unknown_resolvable) > 0
-        and not budget_exhausted
     )
     quality_gate_checks = {
         "unknown_ratio_exceeds_limit": bool(
@@ -13161,9 +13611,12 @@ def _schema_outcome_gate_report(
     ):
         if bool(quality_gate_checks.get(reason, False)):
             quality_gate_reasons.append(reason)
-    if quality_gate_reasons:
-        quality_gate_failed = True
+    quality_gate_triggered = bool(quality_gate_reasons)
+    quality_gate_blocked = bool(quality_gate_triggered and not budget_exhausted)
+    if quality_gate_triggered:
         quality_gate_reason = str(quality_gate_reasons[0])
+    if quality_gate_blocked:
+        quality_gate_failed = True
         report["done"] = False
         report["completion_status"] = "in_progress"
         report["reason"] = "quality_gate_failed"
@@ -13186,8 +13639,22 @@ def _schema_outcome_gate_report(
     report["finalize_on_all_fields_resolved"] = bool(
         state.get("finalize_on_all_fields_resolved", False)
     )
-    report["missing_required_field_count"] = int(len(missing_details))
-    report["missing_required_field_details"] = missing_details
+    report["all_required_terminalized"] = bool(report.get("all_required_terminalized", False))
+    report["all_required_concrete"] = bool(report.get("all_required_concrete", False))
+    report["terminalized_fields"] = int(report.get("terminalized_fields", report.get("resolved_fields", 0)) or 0)
+    report["resolved_fields"] = int(report.get("resolved_fields", report.get("terminalized_fields", 0)) or 0)
+    report["concrete_found_fields"] = int(report.get("concrete_found_fields", 0) or 0)
+    report["concrete_missing_fields"] = list(report.get("concrete_missing_fields") or [])
+    report["concrete_completion_status"] = str(
+        report.get("concrete_completion_status")
+        or ("complete" if report["all_required_concrete"] else ("partial" if budget_exhausted else "in_progress"))
+    ).strip()
+    report["missing_required_field_count"] = int(len(terminal_missing_details))
+    report["missing_required_field_details"] = terminal_missing_details
+    report["missing_required_terminal_field_count"] = int(len(terminal_missing_details))
+    report["missing_required_terminal_field_details"] = terminal_missing_details
+    report["missing_required_concrete_field_count"] = int(len(concrete_missing_details))
+    report["missing_required_concrete_field_details"] = concrete_missing_details
     report["resolvable_fields_count"] = int(len(resolvable_keys))
     report["resolvable_found_fields_count"] = int(found_resolvable)
     report["resolvable_unknown_fields_count"] = int(unknown_resolvable)
@@ -13208,6 +13675,8 @@ def _schema_outcome_gate_report(
         4,
     )
     report["quality_gate_failed"] = bool(quality_gate_failed)
+    report["quality_gate_triggered"] = bool(quality_gate_triggered)
+    report["quality_gate_blocked"] = bool(quality_gate_blocked)
     report["quality_gate_reason"] = quality_gate_reason
     report["quality_gate_reasons"] = quality_gate_reasons[:16]
     report["quality_gate_checks"] = quality_gate_checks
@@ -13258,10 +13727,10 @@ def _quality_gate_finalize_block(
         budget_state=budget_state,
     )
     quality_gate_failed = bool(report.get("quality_gate_failed", False))
-    budget_exhausted = bool((budget_state or {}).get("budget_exhausted", False))
+    quality_gate_blocked = bool(report.get("quality_gate_blocked", quality_gate_failed))
     reason = str(report.get("quality_gate_reason") or "").strip() or None
     return {
-        "blocked": bool(quality_gate_failed and not budget_exhausted),
+        "blocked": bool(quality_gate_blocked),
         "reason": reason,
         "report": report,
     }
@@ -14286,6 +14755,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
     expected_schema: Any,
     field_status: Any,
     tool_messages: Any,
+    source_policy: Any = None,
     entity_tokens: Optional[List[str]] = None,
     target_anchor: Any = None,
     extracted_urls: Optional[set] = None,
@@ -14335,6 +14805,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
 
     if expected_schema is None:
         return [], [], metadata
+    normalized_source_policy = _normalize_source_policy(source_policy)
 
     target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_tokens)
     anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
@@ -14537,19 +15008,21 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 "url": page_url,
                 "url_score": float(item.get("url_score", 0.0) or 0.0),
                 "entity_ratio": float(item.get("entity_ratio", 0.0) or 0.0),
+                "field_hint_score": float(item.get("field_hint_score", 0.0) or 0.0),
                 "order": int(item.get("order", 9999) or 9999),
             }
+            candidate = _score_openwebpage_followup_candidate(candidate, normalized_source_policy)
             if not existing:
                 escalation_map[page_url] = candidate
                 return
             existing_rank = (
-                float(existing.get("url_score", 0.0)),
-                float(existing.get("entity_ratio", 0.0)),
+                float(existing.get("openwebpage_followup_score", 0.0)),
+                float(existing.get("base_score", 0.0)),
                 -int(existing.get("order", 9999)),
             )
             candidate_rank = (
-                float(candidate.get("url_score", 0.0)),
-                float(candidate.get("entity_ratio", 0.0)),
+                float(candidate.get("openwebpage_followup_score", 0.0)),
+                float(candidate.get("base_score", 0.0)),
                 -int(candidate.get("order", 9999)),
             )
             if candidate_rank > existing_rank:
@@ -14740,8 +15213,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
     if escalation_candidates:
         escalation_candidates.sort(
             key=lambda c: (
-                -float(c.get("url_score", 0.0)),
-                -float(c.get("entity_ratio", 0.0)),
+                -float(c.get("openwebpage_followup_score", 0.0)),
+                -float(c.get("base_score", 0.0)),
+                -float(c.get("authority_score", 0.0)),
+                -float(c.get("detail_score", 0.0)),
                 int(c.get("order", 9999)),
                 str(c.get("url") or ""),
             ),
@@ -14827,15 +15302,23 @@ def _apply_auto_openwebpage_followup(
     search_queries: List[str],
     had_explicit_openwebpage_call: bool,
     selector_model: Any = None,
+    return_metadata: bool = False,
     debug: bool = False,
-) -> List[Any]:
+) -> Any:
     """Optionally append automatic OpenWebpage follow-ups for Search output."""
+    selection_metadata: Dict[str, Any] = {}
+
+    def _return(tool_output: List[Any]) -> Any:
+        if return_metadata:
+            return tool_output, selection_metadata
+        return tool_output
+
     if had_explicit_openwebpage_call:
-        return list(tool_messages or [])
+        return _return(list(tool_messages or []))
     if _is_critical_recursion_step(state, remaining_steps_value(state)):
-        return list(tool_messages or [])
+        return _return(list(tool_messages or []))
     if not _should_auto_openwebpage_followup(state, list(tool_messages or []), list(search_queries or [])):
-        return list(tool_messages or [])
+        return _return(list(tool_messages or []))
     budget_state = _state_budget(state)
     now_ts = float(time.time())
     blocked_hosts = (
@@ -14844,6 +15327,7 @@ def _apply_auto_openwebpage_followup(
         else {}
     )
     webpage_policy = _state_webpage_policy(state)
+    source_policy = _state_source_policy(state)
     remaining_tool_budget = max(0, int(budget_state.get("tool_calls_remaining", 0) or 0))
     opened_urls = _collect_openwebpage_urls_from_messages(
         state.get("messages"),
@@ -14863,7 +15347,7 @@ def _apply_auto_openwebpage_followup(
         min(int(remaining_tool_budget), int(remaining_open_quota), int(parallel_open_limit)),
     )
     if follow_attempt_limit <= 0:
-        return list(tool_messages or [])
+        return _return(list(tool_messages or []))
 
     candidate_urls: List[str] = []
     preferred_url = None
@@ -14885,6 +15369,7 @@ def _apply_auto_openwebpage_followup(
             list(tool_messages or []),
             search_queries=list(search_queries or []),
             selector_model=selector_model,
+            source_policy=source_policy,
             webpage_policy=webpage_policy,
             blocked_hosts=blocked_hosts,
             now_ts=now_ts,
@@ -14898,7 +15383,30 @@ def _apply_auto_openwebpage_followup(
             if len(candidate_urls) >= int(follow_attempt_limit):
                 break
     if not candidate_urls:
-        return list(tool_messages or [])
+        return _return(list(tool_messages or []))
+
+    selection_details = _openwebpage_followup_selection_details(
+        candidate_urls,
+        state.get("messages") or [],
+        list(tool_messages or []),
+        search_queries=list(search_queries or []),
+        source_policy=source_policy,
+        webpage_policy=webpage_policy,
+        blocked_hosts=blocked_hosts,
+        now_ts=now_ts,
+        max_candidates=max(4, int(len(candidate_urls)) + 4),
+        max_items=max(1, int(len(candidate_urls))),
+    )
+    if selection_details:
+        selection_metadata["selection_details"] = selection_details
+        first_detail = selection_details[0]
+        selection_metadata["selected_url"] = first_detail.get("url")
+        selection_metadata["selected_url_base_score"] = first_detail.get("base_score")
+        selection_metadata["selected_url_authority_score"] = first_detail.get("authority_score")
+        selection_metadata["selected_url_detail_score"] = first_detail.get("detail_score")
+        selection_metadata["selected_url_preferred_domain_boost_applied"] = bool(
+            first_detail.get("preferred_domain_boost_applied", False)
+        )
 
     appended_messages: List[Any] = []
     blocked_hosts_for_round = set()
@@ -14968,8 +15476,8 @@ def _apply_auto_openwebpage_followup(
             logger.warning("Auto OpenWebpage follow-up failed: %s", follow_exc)
 
     if appended_messages:
-        return list(tool_messages or []) + list(appended_messages)
-    return list(tool_messages or [])
+        return _return(list(tool_messages or []) + list(appended_messages))
+    return _return(list(tool_messages or []))
 
 
 def _create_tool_node_with_scratchpad(
@@ -15204,6 +15712,7 @@ def _create_tool_node_with_scratchpad(
                 expected_schema=expected_schema,
                 field_status=field_status,
                 tool_messages=extraction_messages,
+                source_policy=source_policy,
                 target_anchor=target_anchor,
                 extracted_urls=already_extracted,
                 max_sources=min(int(max_per_round), int(remaining_total)),
@@ -15266,16 +15775,36 @@ def _create_tool_node_with_scratchpad(
                 **state,
                 "budget_state": followup_budget_state,
             }
-        tool_messages = _apply_auto_openwebpage_followup(
+        tool_messages, auto_openwebpage_meta = _apply_auto_openwebpage_followup(
             state=followup_state,
             base_tool_node=base_tool_node,
             tool_messages=base_tool_messages,
             search_queries=search_queries,
             had_explicit_openwebpage_call=had_explicit_openwebpage_call,
             selector_model=selector_model,
+            return_metadata=True,
             debug=debug,
         )
         result["messages"] = tool_messages
+        if isinstance(auto_openwebpage_meta, dict) and auto_openwebpage_meta:
+            selection_details = list(auto_openwebpage_meta.get("selection_details") or [])
+            if selection_details:
+                diagnostics["auto_openwebpage_selection_details"] = selection_details[:8]
+            selected_url = _normalize_url_match(auto_openwebpage_meta.get("selected_url"))
+            if selected_url:
+                diagnostics["auto_openwebpage_selected_url"] = selected_url
+            diagnostics["auto_openwebpage_selected_url_base_score"] = auto_openwebpage_meta.get(
+                "selected_url_base_score"
+            )
+            diagnostics["auto_openwebpage_selected_url_authority_score"] = auto_openwebpage_meta.get(
+                "selected_url_authority_score"
+            )
+            diagnostics["auto_openwebpage_selected_url_detail_score"] = auto_openwebpage_meta.get(
+                "selected_url_detail_score"
+            )
+            diagnostics["auto_openwebpage_selected_url_preferred_domain_boost_applied"] = bool(
+                auto_openwebpage_meta.get("selected_url_preferred_domain_boost_applied", False)
+            )
         followup_messages = list(tool_messages[len(base_tool_messages):]) if len(tool_messages) > len(base_tool_messages) else []
         if followup_messages:
             followup_payloads, followup_webpage_extract_urls, followup_webpage_extract_meta = _run_webpage_extraction(
@@ -16937,7 +17466,7 @@ def create_memory_folding_agent(
             diagnostics,
             ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
         )
-        if bool(completion_gate.get("quality_gate_failed", False)):
+        if bool(completion_gate.get("quality_gate_triggered", completion_gate.get("quality_gate_failed", False))):
             diagnostics["quality_gate_failures"] = int(
                 diagnostics.get("quality_gate_failures", 0) or 0
             ) + 1
@@ -16980,7 +17509,7 @@ def create_memory_folding_agent(
                     reason_counts[reason] = 1
             diagnostics["finalization_invariant_failures_by_reason"] = reason_counts
             blocking_fields = list(diagnostics.get("finalization_blocking_fields") or [])
-            for detail in list(completion_gate.get("missing_required_field_details") or []):
+            for detail in _gate_blocking_field_details(completion_gate, max_items=64):
                 if not isinstance(detail, dict):
                     continue
                 field_name = str(detail.get("field") or "").strip()
@@ -17040,7 +17569,7 @@ def create_memory_folding_agent(
                 _is_within_finalization_cutoff(state, remaining)
                 or bool(completion_gate.get("done"))
                 or bool(finalize_reason)
-            ) and not bool(completion_gate.get("quality_gate_failed", False))
+            ) and not bool(completion_gate.get("quality_gate_blocked", completion_gate.get("quality_gate_failed", False)))
             if should_mark_final:
                 final_payload = terminal_payload
                 final_emitted = True
@@ -19225,7 +19754,7 @@ def create_standard_agent(
             diagnostics,
             ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
         )
-        if bool(completion_gate.get("quality_gate_failed", False)):
+        if bool(completion_gate.get("quality_gate_triggered", completion_gate.get("quality_gate_failed", False))):
             diagnostics["quality_gate_failures"] = int(
                 diagnostics.get("quality_gate_failures", 0) or 0
             ) + 1
@@ -19268,7 +19797,7 @@ def create_standard_agent(
                     reason_counts[reason] = 1
             diagnostics["finalization_invariant_failures_by_reason"] = reason_counts
             blocking_fields = list(diagnostics.get("finalization_blocking_fields") or [])
-            for detail in list(completion_gate.get("missing_required_field_details") or []):
+            for detail in _gate_blocking_field_details(completion_gate, max_items=64):
                 if not isinstance(detail, dict):
                     continue
                 field_name = str(detail.get("field") or "").strip()
@@ -19328,7 +19857,7 @@ def create_standard_agent(
                 _is_within_finalization_cutoff(state, remaining)
                 or bool(completion_gate.get("done"))
                 or bool(finalize_reason)
-            ) and not bool(completion_gate.get("quality_gate_failed", False))
+            ) and not bool(completion_gate.get("quality_gate_blocked", completion_gate.get("quality_gate_failed", False)))
             if should_mark_final:
                 final_payload = terminal_payload
                 final_emitted = True

@@ -842,18 +842,59 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, completion_g
   } else {
     "missing"
   }
-  quality_gate_failed_current <- as.logical(completion_gate_obj$quality_gate_failed %||% NA)
-  if (length(quality_gate_failed_current) == 0L) quality_gate_failed_current <- NA
-  quality_gate_failed_current <- if (is.na(quality_gate_failed_current[[1]] %||% NA)) {
+  quality_gate_triggered_current <- as.logical(
+    completion_gate_obj$quality_gate_triggered %||%
+      completion_gate_obj$quality_gate_failed %||%
+      NA
+  )
+  if (length(quality_gate_triggered_current) == 0L) quality_gate_triggered_current <- NA
+  quality_gate_triggered_current <- if (is.na(quality_gate_triggered_current[[1]] %||% NA)) {
     NA
   } else {
-    isTRUE(quality_gate_failed_current[[1]])
+    isTRUE(quality_gate_triggered_current[[1]])
+  }
+  quality_gate_blocked_current <- as.logical(
+    completion_gate_obj$quality_gate_blocked %||%
+      completion_gate_obj$quality_gate_failed %||%
+      NA
+  )
+  if (length(quality_gate_blocked_current) == 0L) quality_gate_blocked_current <- NA
+  quality_gate_blocked_current <- if (is.na(quality_gate_blocked_current[[1]] %||% NA)) {
+    NA
+  } else {
+    isTRUE(quality_gate_blocked_current[[1]])
   }
   quality_gate_reason_current <- as.character(completion_gate_obj$quality_gate_reason %||% NA_character_)
   if (length(quality_gate_reason_current) == 0L) quality_gate_reason_current <- NA_character_
   quality_gate_reason_current <- quality_gate_reason_current[[1]]
   if (is.na(quality_gate_reason_current) || !nzchar(trimws(quality_gate_reason_current))) {
     quality_gate_reason_current <- NA_character_
+  }
+  all_required_terminalized_current <- as.logical(
+    completion_gate_obj$all_required_terminalized %||% completion_gate_obj$done %||% NA
+  )
+  if (length(all_required_terminalized_current) == 0L) all_required_terminalized_current <- NA
+  all_required_terminalized_current <- if (is.na(all_required_terminalized_current[[1]] %||% NA)) {
+    NA
+  } else {
+    isTRUE(all_required_terminalized_current[[1]])
+  }
+  all_required_concrete_current <- as.logical(
+    completion_gate_obj$all_required_concrete %||% NA
+  )
+  if (length(all_required_concrete_current) == 0L) all_required_concrete_current <- NA
+  all_required_concrete_current <- if (is.na(all_required_concrete_current[[1]] %||% NA)) {
+    NA
+  } else {
+    isTRUE(all_required_concrete_current[[1]])
+  }
+  concrete_completion_status_current <- as.character(
+    completion_gate_obj$concrete_completion_status %||% NA_character_
+  )
+  if (length(concrete_completion_status_current) == 0L) concrete_completion_status_current <- NA_character_
+  concrete_completion_status_current <- concrete_completion_status_current[[1]]
+  if (is.na(concrete_completion_status_current) || !nzchar(trimws(concrete_completion_status_current))) {
+    concrete_completion_status_current <- NA_character_
   }
   confidence_min_threshold_current <- as.numeric(
     completion_gate_obj$quality_gate_min_global_confidence %||%
@@ -877,8 +918,12 @@ extract_metrics <- function(answer_obj, token_obj, diagnostics_obj, completion_g
     token_efficiency_source = token_efficiency_source,
     finalization_invariant_failures = invariant_failures,
     quality_gate_failures = quality_gate_failures,
-    quality_gate_failed_current = quality_gate_failed_current,
+    quality_gate_failed_current = quality_gate_triggered_current,
+    quality_gate_blocked_current = quality_gate_blocked_current,
     quality_gate_reason_current = quality_gate_reason_current,
+    all_required_terminalized_current = all_required_terminalized_current,
+    all_required_concrete_current = all_required_concrete_current,
+    concrete_completion_status_current = concrete_completion_status_current,
     confidence_min_threshold_current = confidence_min_threshold_current,
     global_confidence_payload = global_confidence_payload,
     global_confidence_gate_score = global_confidence_gate_score,

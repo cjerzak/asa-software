@@ -1042,10 +1042,15 @@ test_that("schema outcome quality gate blocks completion when unknown ratio is h
   ))
 
   expect_true(isTRUE(report$quality_gate_failed))
+  expect_true(isTRUE(report$quality_gate_triggered))
+  expect_true(isTRUE(report$quality_gate_blocked))
   expect_equal(as.character(report$quality_gate_reason), "unknown_ratio_exceeds_limit")
   expect_equal(as.character(report$completion_status), "in_progress")
   expect_false(isTRUE(report$done))
-  expect_equal(as.integer(report$missing_required_field_count), 2L)
+  expect_true(isTRUE(report$all_required_terminalized))
+  expect_false(isTRUE(report$all_required_concrete))
+  expect_equal(as.integer(report$missing_required_field_count), 0L)
+  expect_equal(as.integer(report$missing_required_concrete_field_count), 2L)
   expect_true("plan_mode_disabled" %in% as.character(report$artifact_markers))
   expect_true("invoke_error_absent" %in% as.character(report$artifact_markers))
 })
@@ -1089,6 +1094,54 @@ test_that("schema outcome quality gate blocks completion when global confidence 
   ))
 
   expect_true(isTRUE(report$quality_gate_failed))
+  expect_true(isTRUE(report$quality_gate_triggered))
+  expect_true(isTRUE(report$quality_gate_blocked))
+  expect_equal(as.character(report$quality_gate_reason), "global_confidence_below_min")
+  expect_true(isTRUE(report$quality_gate_checks$global_confidence_below_min))
+  expect_true(as.numeric(report$global_confidence_score) < 0.80)
+})
+
+test_that("schema outcome quality gate reports low confidence without blocking once budget is exhausted", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  gate_fn <- reticulate::py_get_attr(prod, "_schema_outcome_gate_report")
+  state <- list(
+    expected_schema = list(
+      education_level = "string|Unknown",
+      prior_occupation = "string|Unknown",
+      birth_place = "string|Unknown"
+    ),
+    field_status = list(
+      education_level = list(status = "found", value = "Bachelor's", attempts = 1L),
+      prior_occupation = list(status = "found", value = "Teacher", attempts = 1L),
+      birth_place = list(status = "unknown", value = "Unknown", attempts = 1L)
+    ),
+    budget_state = list(budget_exhausted = TRUE),
+    finalization_policy = list(
+      quality_gate_enforce = TRUE,
+      quality_gate_unknown_ratio_max = 0.95,
+      quality_gate_min_resolvable_fields = 2L,
+      quality_gate_min_global_confidence = 0.80,
+      quality_gate_min_found_fields = 1L
+    ),
+    use_plan_mode = FALSE,
+    json_repair = list()
+  )
+
+  report <- reticulate::py_to_r(gate_fn(
+    state = state,
+    expected_schema = state$expected_schema,
+    field_status = state$field_status,
+    budget_state = state$budget_state
+  ))
+
+  expect_false(isTRUE(report$quality_gate_failed))
+  expect_true(isTRUE(report$quality_gate_triggered))
+  expect_false(isTRUE(report$quality_gate_blocked))
   expect_equal(as.character(report$quality_gate_reason), "global_confidence_below_min")
   expect_true(isTRUE(report$quality_gate_checks$global_confidence_below_min))
   expect_true(as.numeric(report$global_confidence_score) < 0.80)
@@ -1163,7 +1216,52 @@ test_that("schema outcome quality gate can ignore invariant failure when policy 
   expect_true(isTRUE(report$finalization_invariant_failed))
   expect_true("terminal_justification_count_mismatch" %in% as.character(report$finalization_invariant_reasons))
   expect_false(isTRUE(report$quality_gate_failed))
+  expect_false(isTRUE(report$quality_gate_triggered))
+  expect_false(isTRUE(report$quality_gate_blocked))
   expect_false(isTRUE(report$quality_gate_checks$invariant_not_ok))
+})
+
+test_that("schema outcome report exposes concrete-missing fields without terminal contradictions", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  gate_fn <- reticulate::py_get_attr(prod, "_schema_outcome_gate_report")
+  state <- list(
+    expected_schema = list(
+      prior_occupation = "string|Unknown",
+      birth_year = "integer|null|Unknown"
+    ),
+    field_status = list(
+      prior_occupation = list(status = "found", value = "Teacher", attempts = 1L),
+      birth_year = list(status = "unknown", value = "Unknown", attempts = 2L)
+    ),
+    budget_state = list(budget_exhausted = FALSE),
+    finalization_policy = list(
+      quality_gate_enforce = FALSE
+    ),
+    use_plan_mode = FALSE,
+    json_repair = list()
+  )
+
+  report <- reticulate::py_to_r(gate_fn(
+    state = state,
+    expected_schema = state$expected_schema,
+    field_status = state$field_status,
+    budget_state = state$budget_state
+  ))
+
+  expect_true(isTRUE(report$done))
+  expect_true(isTRUE(report$all_required_terminalized))
+  expect_false(isTRUE(report$all_required_concrete))
+  expect_equal(as.character(report$completion_status), "complete")
+  expect_equal(as.character(report$reason), "all_required_fields_terminalized")
+  expect_equal(as.integer(report$missing_required_field_count), 0L)
+  expect_equal(as.integer(report$missing_required_terminal_field_count), 0L)
+  expect_equal(as.integer(report$missing_required_concrete_field_count), 1L)
+  expect_equal(as.character(report$missing_required_concrete_field_details[[1]]$field), "birth_year")
 })
 
 test_that("summarize fallback records parse retry history", {

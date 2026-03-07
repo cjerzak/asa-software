@@ -3,25 +3,25 @@
   "source_consistency_fixes_count": 0,
   "field_demotions_count": 0,
   "recovery_promotions_count": 0,
-  "recovery_rejections_count": 8,
-  "unknown_fields_count": 8,
+  "recovery_rejections_count": 7,
+  "unknown_fields_count": 7,
   "grounding_blocks_count_current": 0,
   "source_consistency_fixes_count_current": 0,
   "field_demotions_count_current": 0,
   "recovery_promotions_count_current": 0,
-  "recovery_rejections_count_current": 8,
-  "unknown_fields_count_current": 8,
-  "off_target_tool_results_count": 1,
-  "empty_tool_results_count": 2,
+  "recovery_rejections_count_current": 7,
+  "unknown_fields_count_current": 7,
+  "off_target_tool_results_count": 0,
+  "empty_tool_results_count": 1,
   "retry_or_replan_events": 6,
-  "quality_gate_failures": 6,
+  "quality_gate_failures": 9,
   "no_payload_extraction_rounds": 4,
   "webpage_no_payload_rounds": 0,
   "search_snippet_no_payload_rounds": 4,
   "webpage_llm_extraction_calls": 1,
   "webpage_langextract_calls": 2,
   "webpage_langextract_fallback_calls": 1,
-  "webpage_langextract_errors": 1,
+  "webpage_langextract_errors": 0,
   "webpage_openwebpage_candidates_total": 2,
   "webpage_openwebpage_candidates_selected": 2,
   "webpage_openwebpage_skipped_hard_failures": 0,
@@ -33,17 +33,17 @@
   "search_snippet_langextract_calls": 0,
   "search_snippet_langextract_fallback_calls": 0,
   "search_snippet_langextract_errors": 0,
-  "search_snippet_candidates_total": 36,
+  "search_snippet_candidates_total": 23,
   "search_snippet_candidates_selected": 8,
-  "search_snippet_candidates_selected_with_field_hints": 3,
-  "search_snippet_skipped_duplicate_urls": 8,
+  "search_snippet_candidates_selected_with_field_hints": 1,
+  "search_snippet_skipped_duplicate_urls": 3,
   "search_snippet_openwebpage_escalation_events": 8,
   "search_snippet_openwebpage_escalation_successes": 1,
   "search_snippet_deterministic_fallback_calls": 8,
   "search_snippet_deterministic_fallback_payloads": 0,
   "search_snippet_deterministic_fallback_no_payload": 8,
-  "webpage_langextract_elapsed_ms_total": 39058,
-  "webpage_langextract_error_elapsed_ms_total": 21756,
+  "webpage_langextract_elapsed_ms_total": 22809,
+  "webpage_langextract_error_elapsed_ms_total": 0,
   "search_snippet_langextract_elapsed_ms_total": 0,
   "search_snippet_langextract_error_elapsed_ms_total": 0,
   "low_signal_rewrite_events": 1,
@@ -52,8 +52,8 @@
   "low_efficiency_stop_events": 1,
   "no_new_evidence_replan_events": 1,
   "no_new_evidence_stop_events": 1,
-  "low_signal_rewrite_elapsed_ms_total": 9113,
-  "low_signal_stop_elapsed_ms_total": 64005,
+  "low_signal_rewrite_elapsed_ms_total": 7066,
+  "low_signal_stop_elapsed_ms_total": 50549,
   "retry_threshold_crossings": 2,
   "query_dedupe_escalation_events": 0,
   "empty_round_suppression_events": 0,
@@ -61,9 +61,9 @@
   "adaptive_budget_reduced_calls_total": 7,
   "structural_repair_events": 0,
   "structural_repair_retry_events": 0,
-  "finalization_invariant_failures": 6,
+  "finalization_invariant_failures": 9,
   "tool_call_pairing_mismatches": 0,
-  "diagnostics_recovery_checkpoint_events": 6,
+  "diagnostics_recovery_checkpoint_events": 9,
   "diagnostics_recovery_retry_events": 1,
   "anchor_hard_blocks_count": 0,
   "anchor_soft_penalties_count": 0,
@@ -71,26 +71,26 @@
   "source_consistency_fixes": [],
   "field_demotion_fields": [],
   "recovery_promoted_fields": [],
-  "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
-  "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+  "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
+  "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
   "grounding_blocked_fields_current": [],
   "source_consistency_fixes_current": [],
   "field_demotion_fields_current": [],
   "recovery_promoted_fields_current": [],
-  "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
-  "unknown_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+  "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
+  "unknown_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"],
   "field_demotion_reason_counts": {},
   "recovery_reason_counts": {
-    "recovery_blocked_anchor_mismatch": 8
+    "recovery_blocked_anchor_mismatch": 7
   },
   "unknown_reason_counts": {
-    "recovery_blocked_anchor_mismatch": 8
+    "recovery_blocked_anchor_mismatch": 7
   },
   "finalization_invariant_failures_by_reason": {
-    "diagnostics_unknown_count_mismatch": 6
+    "diagnostics_unknown_count_mismatch": 9
   },
   "unknown_fields_by_reason": {
-    "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"]
+    "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"]
   },
   "finalization_blocking_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
   "finalization_recovery_checkpoints": [
@@ -101,7 +101,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "replan_and_retry",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-03-07T16:26:57.671491Z"
+      "ts_utc": "2026-03-07T18:04:55.945507Z"
     },
     {
       "context": "agent",
@@ -110,7 +110,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-03-07T16:27:40.294313Z"
+      "ts_utc": "2026-03-07T18:05:24.038828Z"
     },
     {
       "context": "agent",
@@ -119,7 +119,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-03-07T16:28:02.676987Z"
+      "ts_utc": "2026-03-07T18:05:41.891007Z"
     },
     {
       "context": "agent",
@@ -128,7 +128,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-03-07T16:28:16.528057Z"
+      "ts_utc": "2026-03-07T18:05:56.738991Z"
     },
     {
       "context": "agent",
@@ -137,7 +137,7 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-03-07T16:28:34.020225Z"
+      "ts_utc": "2026-03-07T18:06:10.601968Z"
     },
     {
       "context": "agent",
@@ -146,7 +146,34 @@
       "priority": "diagnostics_reconciliation",
       "action": "none",
       "blocking_fields_sample": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
-      "ts_utc": "2026-03-07T16:29:48.249483Z"
+      "ts_utc": "2026-03-07T18:07:09.027002Z"
+    },
+    {
+      "context": "agent",
+      "reason": "diagnostics_unknown_count_mismatch",
+      "reasons": "diagnostics_unknown_count_mismatch",
+      "priority": "diagnostics_reconciliation",
+      "action": "none",
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
+      "ts_utc": "2026-03-07T18:07:42.205038Z"
+    },
+    {
+      "context": "agent",
+      "reason": "diagnostics_unknown_count_mismatch",
+      "reasons": "diagnostics_unknown_count_mismatch",
+      "priority": "diagnostics_reconciliation",
+      "action": "none",
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
+      "ts_utc": "2026-03-07T18:07:49.786173Z"
+    },
+    {
+      "context": "agent",
+      "reason": "diagnostics_unknown_count_mismatch",
+      "reasons": "diagnostics_unknown_count_mismatch",
+      "priority": "diagnostics_reconciliation",
+      "action": "none",
+      "blocking_fields_sample": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
+      "ts_utc": "2026-03-07T18:08:38.557264Z"
     }
   ],
   "anchor_mismatch_samples": [
@@ -191,14 +218,6 @@
       "candidate_score": 0
     },
     {
-      "field": "birth_place",
-      "reason": "recovery_blocked_anchor_mismatch",
-      "source_url": null,
-      "anchor_mode": null,
-      "anchor_strength": null,
-      "candidate_score": 0
-    },
-    {
       "field": "lgbtq_status",
       "reason": "recovery_blocked_anchor_mismatch",
       "source_url": null,
@@ -218,15 +237,15 @@
   "empty_tool_results_details": [
     {
       "tool_name": "search",
-      "query_digest": "6bb8551b1e400e7a",
+      "query_digest": "3e2e966bc9b6dfd7",
       "error_type": null,
-      "round_index": 6
+      "round_index": 9
     }
   ],
-  "retrieval_interventions": ["diagnostics_recovery_checkpoint:diagnostics_reconciliation", "search_snippet_openwebpage_escalation", "search_snippet_extraction_no_payload", "diagnostics_recovery_cap:diagnostics_reconciliation", "no_new_high_quality_evidence_replan:2", "low_efficiency_replan:2", "adaptive_budget_tighten:reason=diminishing_returns_budget_tighten,reduced=7", "low_signal_streak_rewrite:2", "retry_escalation:low_signal", "no_new_high_quality_evidence_replan:3", "no_new_high_quality_evidence_stop:3", "low_signal_streak_stop:3", "no_new_high_quality_evidence_replan:4", "no_new_high_quality_evidence_stop:4", "no_new_high_quality_evidence_replan:5", "no_new_high_quality_evidence_stop:5"],
+  "retrieval_interventions": ["diagnostics_recovery_checkpoint:diagnostics_reconciliation", "search_snippet_openwebpage_escalation", "search_snippet_extraction_no_payload", "diagnostics_recovery_cap:diagnostics_reconciliation", "no_new_high_quality_evidence_replan:2", "low_efficiency_replan:2", "adaptive_budget_tighten:reason=diminishing_returns_budget_tighten,reduced=7", "low_signal_streak_rewrite:2", "retry_escalation:low_signal", "no_new_high_quality_evidence_replan:3", "no_new_high_quality_evidence_stop:3", "low_signal_streak_stop:3", "no_new_high_quality_evidence_replan:4", "no_new_high_quality_evidence_stop:4", "no_new_high_quality_evidence_replan:5", "no_new_high_quality_evidence_stop:5", "no_new_high_quality_evidence_replan:6", "no_new_high_quality_evidence_stop:6", "no_new_high_quality_evidence_replan:7", "no_new_high_quality_evidence_stop:7", "no_new_high_quality_evidence_replan:8", "no_new_high_quality_evidence_stop:8"],
   "webpage_openwebpage_skip_reasons": [],
   "webpage_langextract_provider": "gemini",
-  "webpage_langextract_last_error": "langextract_timeout:18.0s",
+  "webpage_langextract_last_error": "",
   "search_snippet_langextract_provider": "",
   "search_snippet_langextract_last_error": "",
   "anchor_strength_current": "moderate",
@@ -234,9 +253,9 @@
   "anchor_confidence_current": 0.56,
   "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
   "tool_call_pairing": {
-    "issued_tool_calls_count": 16,
-    "tool_message_count": 16,
-    "paired_tool_calls_count": 16,
+    "issued_tool_calls_count": 21,
+    "tool_message_count": 21,
+    "paired_tool_calls_count": 21,
     "unpaired_tool_calls_count": 0,
     "unpaired_tool_call_ids": [],
     "unpaired_tool_call_names": [],
@@ -245,27 +264,27 @@
   },
   "performance": {
     "performance_profile": "quality",
-    "tool_round_count": 6,
-    "tool_round_elapsed_ms_total": 205747,
-    "tool_round_elapsed_ms_last": 65937,
-    "tool_round_elapsed_ms_max": 65937,
-    "search_tool_calls": 11,
+    "tool_round_count": 9,
+    "tool_round_elapsed_ms_total": 229998,
+    "tool_round_elapsed_ms_last": 49232,
+    "tool_round_elapsed_ms_max": 50549,
+    "search_tool_calls": 13,
     "openwebpage_tool_calls": 2,
     "other_tool_calls": 0,
-    "search_tool_elapsed_ms_est_total": 166316,
-    "openwebpage_tool_elapsed_ms_est_total": 39432,
+    "search_tool_elapsed_ms_est_total": 202113,
+    "openwebpage_tool_elapsed_ms_est_total": 27885,
     "other_tool_elapsed_ms_est_total": 0,
-    "provider_error_count": 1,
-    "provider_error_elapsed_ms_total": 21756,
-    "low_signal_streak_peak": 4,
-    "diminishing_returns_streak_peak": 5,
+    "provider_error_count": 0,
+    "provider_error_elapsed_ms_total": 0,
+    "low_signal_streak_peak": 3,
+    "diminishing_returns_streak_peak": 8,
     "adaptive_budget_events": 1,
     "adaptive_budget_reduced_calls_total": 7,
     "fold_event_count": 0,
     "fold_summarizer_latency_m_total": 0,
     "fold_summarizer_latency_m_last": 0,
-    "webpage_langextract_elapsed_ms_total": 39058,
-    "webpage_langextract_error_elapsed_ms_total": 21756,
+    "webpage_langextract_elapsed_ms_total": 22809,
+    "webpage_langextract_error_elapsed_ms_total": 0,
     "search_snippet_langextract_elapsed_ms_total": 0,
     "search_snippet_langextract_error_elapsed_ms_total": 0,
     "low_signal_rewrite_events": 1,
@@ -274,13 +293,13 @@
     "low_efficiency_stop_events": 1,
     "no_new_evidence_replan_events": 1,
     "no_new_evidence_stop_events": 1,
-    "tokens_used_cumulative": 37013,
-    "tokens_delta_since_last_round": 10337,
-    "low_efficiency_streak": 5,
+    "tokens_used_cumulative": 63369,
+    "tokens_delta_since_last_round": 11071,
+    "low_efficiency_streak": 8,
     "evidence_gain_units": 0,
     "evidence_gain_per_1k_tokens": 0,
-    "low_signal_rewrite_elapsed_ms_total": 9113,
-    "low_signal_stop_elapsed_ms_total": 64005,
+    "low_signal_rewrite_elapsed_ms_total": 7066,
+    "low_signal_stop_elapsed_ms_total": 50549,
     "retry_threshold_crossings": 4,
     "webpage_policy_max_open_calls": 4,
     "webpage_policy_open_only_if_score_ge": 0.25,
@@ -288,25 +307,25 @@
     "blocked_host_skip_events": 0,
     "adaptive_budget_last_reason": "diminishing_returns_budget_tighten",
     "fold_last_trigger_reason": null,
-    "provider_error_last_type": "langextract_timeout",
-    "provider_error_last_message": "langextract_timeout:18.0s"
+    "provider_error_last_type": null,
+    "provider_error_last_message": null
   },
   "current_snapshot": {
     "grounding_blocks_count": 0,
     "source_consistency_fixes_count": 0,
     "field_demotions_count": 0,
     "recovery_promotions_count": 0,
-    "recovery_rejections_count": 8,
-    "unknown_fields_count": 8,
-    "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"]
+    "recovery_rejections_count": 7,
+    "unknown_fields_count": 7,
+    "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"]
   },
   "historical_snapshot": {
     "grounding_blocks_count": 0,
     "source_consistency_fixes_count": 0,
     "field_demotions_count": 0,
     "recovery_promotions_count": 0,
-    "recovery_rejections_count": 8,
-    "unknown_fields_count": 8,
-    "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"]
+    "recovery_rejections_count": 7,
+    "unknown_fields_count": 7,
+    "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "lgbtq_status", "lgbtq_details"]
   }
 }

@@ -499,3 +499,128 @@ test_that("snippet escalation can trigger same-round OpenWebpage follow-up", {
   expect_equal(as.integer(out$diagnostics$search_snippet_llm_extraction_calls), 1L)
   expect_equal(as.integer(out$diagnostics$search_snippet_langextract_calls), 0L)
 })
+
+test_that("generic follow-up selection mildly prefers authoritative detail pages", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+
+  graph <- reticulate::import_from_path("asa_backend.graph.agent_graph_core", path = python_path)
+  original_score <- reticulate::py_get_attr(graph, "_score_primary_source_url")
+  on.exit({
+    reticulate::py_set_attr(graph, "_score_primary_source_url", original_score)
+  }, add = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "def __asa_test_followup_url_score(url):\n",
+    "    text = str(url or '')\n",
+    "    if 'neutral.example.net' in text:\n",
+    "        return 1.20\n",
+    "    if 'official.example' in text:\n",
+    "        return 1.00\n",
+    "    return 0.0\n"
+  ))
+  reticulate::py_set_attr(graph, "_score_primary_source_url",
+    reticulate::py_eval("__asa_test_followup_url_score", convert = FALSE))
+
+  search_msg <- list(
+    role = "tool",
+    name = "Search",
+    content = paste(
+      "__START_OF_SOURCE 1__ <CONTENT>Ada Lovelace overview search page.</CONTENT>",
+      "<URL>https://neutral.example.net/search/ada-lovelace</URL> __END_OF_SOURCE 1__",
+      "__START_OF_SOURCE 2__ <CONTENT>Ada Lovelace official legislator profile.</CONTENT>",
+      "<URL>https://official.example/people/profile/123</URL> __END_OF_SOURCE 2__"
+    )
+  )
+
+  selected <- graph$`_select_round_openwebpage_candidate`(
+    state_messages = list(),
+    round_tool_messages = list(search_msg),
+    search_queries = list("Ada Lovelace official biography"),
+    selector_model = NULL,
+    source_policy = list(
+      preferred_domains = list("official.example"),
+      authority_host_weights = list("official.example" = 1.0),
+      openwebpage_authority_bonus_weight = 0.20,
+      openwebpage_detail_bonus_weight = 0.15,
+      openwebpage_preferred_domain_bonus_weight = 0.10
+    ),
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0
+    )
+  )
+
+  expect_equal(
+    as.character(selected),
+    "https://official.example/people/profile/123"
+  )
+})
+
+test_that("snippet escalation preferred URL uses the same generic authority/detail rerank", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+
+  graph <- reticulate::import_from_path("asa_backend.graph.agent_graph_core", path = python_path)
+  original_score <- reticulate::py_get_attr(graph, "_score_primary_source_url")
+  on.exit({
+    reticulate::py_set_attr(graph, "_score_primary_source_url", original_score)
+  }, add = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "def __asa_test_snippet_url_score(url):\n",
+    "    text = str(url or '')\n",
+    "    if 'neutral.example.net' in text:\n",
+    "        return 1.20\n",
+    "    if 'official.example' in text:\n",
+    "        return 1.00\n",
+    "    return 0.0\n"
+  ))
+  reticulate::py_set_attr(graph, "_score_primary_source_url",
+    reticulate::py_eval("__asa_test_snippet_url_score", convert = FALSE))
+
+  search_msg <- list(
+    role = "tool",
+    name = "Search",
+    content = paste(
+      "__START_OF_SOURCE 1__ <CONTENT>Ada Lovelace overview search page.</CONTENT>",
+      "<URL>https://neutral.example.net/search/ada-lovelace</URL> __END_OF_SOURCE 1__",
+      "__START_OF_SOURCE 2__ <CONTENT>Ada Lovelace official legislator profile.</CONTENT>",
+      "<URL>https://official.example/people/profile/123</URL> __END_OF_SOURCE 2__"
+    )
+  )
+
+  out <- graph$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = NULL,
+    expected_schema = list(
+      prior_occupation = "string|Unknown",
+      prior_occupation_source = "string|null"
+    ),
+    field_status = list(
+      prior_occupation = list(status = "unknown", value = "Unknown", attempts = 0L),
+      prior_occupation_source = list(status = "pending", value = NULL, attempts = 0L)
+    ),
+    tool_messages = list(search_msg),
+    source_policy = list(
+      preferred_domains = list("official.example"),
+      authority_host_weights = list("official.example" = 1.0),
+      openwebpage_authority_bonus_weight = 0.20,
+      openwebpage_detail_bonus_weight = 0.15,
+      openwebpage_preferred_domain_bonus_weight = 0.10
+    ),
+    max_sources = 2L,
+    extraction_engine = "legacy",
+    debug = FALSE
+  )
+
+  meta <- out[[3]]
+  expect_equal(as.integer(meta$snippet_openwebpage_escalation_events), 2L)
+  expect_equal(
+    as.character(meta$preferred_openwebpage_url),
+    "https://official.example/people/profile/123"
+  )
+})

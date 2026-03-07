@@ -43,6 +43,28 @@ def _status_label(entry: Optional[Dict[str, Any]]) -> str:
     return str(entry.get("status") or "missing").strip().lower()
 
 
+def _is_empty_or_unknown_value(value: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str):
+        token = value.strip().lower()
+        return token in {"", "unknown", "n/a", "na", "none", "null"}
+    if isinstance(value, (list, tuple, set, dict)):
+        return len(value) == 0
+    return False
+
+
+def _is_terminalized_entry(entry: Optional[Dict[str, Any]]) -> bool:
+    return _status_label(entry) in {"found", "unknown"}
+
+
+def _is_concrete_entry(entry: Optional[Dict[str, Any]]) -> bool:
+    if _status_label(entry) != "found":
+        return False
+    value = entry.get("value") if isinstance(entry, dict) else None
+    return not _is_empty_or_unknown_value(value)
+
+
 def evaluate_schema_outcome(
     *,
     expected_schema: Any,
@@ -59,6 +81,12 @@ def evaluate_schema_outcome(
         return {
             "done": False,
             "completion_status": "partial" if exhausted else "in_progress",
+            "all_required_terminalized": False,
+            "all_required_concrete": False,
+            "terminalized_fields": 0,
+            "concrete_found_fields": 0,
+            "concrete_missing_fields": [],
+            "concrete_completion_status": "partial" if exhausted else "in_progress",
             "resolved_fields": 0,
             "unknown_fields": 0,
             "unresolved_fields": 0,
@@ -68,42 +96,64 @@ def evaluate_schema_outcome(
             "reason": "no_schema",
         }
 
-    resolved_fields = 0
+    terminalized_fields = 0
+    concrete_found_fields = 0
     unknown_fields = 0
     missing_fields: List[str] = []
+    concrete_missing_fields: List[str] = []
 
     for path, _descriptor in leaf_paths:
         entry = _lookup_field_entry(normalized_field_status, path)
+        if _is_terminalized_entry(entry):
+            terminalized_fields += 1
+        else:
+            missing_fields.append(path)
+
         status = _status_label(entry)
-        if status == "found":
-            resolved_fields += 1
-            continue
         if status == "unknown":
-            resolved_fields += 1
             unknown_fields += 1
-            continue
-        missing_fields.append(path)
+        if _is_concrete_entry(entry):
+            concrete_found_fields += 1
+        else:
+            concrete_missing_fields.append(path)
 
     total_fields = len(leaf_paths)
     unresolved_fields = len(missing_fields)
     done = unresolved_fields == 0 and total_fields > 0
+    all_required_concrete = len(concrete_missing_fields) == 0 and total_fields > 0
 
     budget = budget_state if isinstance(budget_state, dict) else {}
     budget_exhausted = bool(budget.get("budget_exhausted", False))
     if done:
         completion_status = "complete"
-        reason = "all_required_fields_resolved"
+        reason = (
+            "all_required_fields_concretely_resolved"
+            if all_required_concrete
+            else "all_required_fields_terminalized"
+        )
+        if all_required_concrete:
+            concrete_completion_status = "complete"
+        else:
+            concrete_completion_status = "partial" if budget_exhausted else "in_progress"
     elif budget_exhausted:
         completion_status = "partial"
-        reason = "budget_exhausted_before_resolution"
+        concrete_completion_status = "partial"
+        reason = "budget_exhausted_before_terminalization"
     else:
         completion_status = "in_progress"
-        reason = "missing_required_fields"
+        concrete_completion_status = "in_progress"
+        reason = "missing_required_terminal_fields"
 
     return {
         "done": done,
         "completion_status": completion_status,
-        "resolved_fields": resolved_fields,
+        "all_required_terminalized": done,
+        "all_required_concrete": all_required_concrete,
+        "terminalized_fields": terminalized_fields,
+        "concrete_found_fields": concrete_found_fields,
+        "concrete_missing_fields": concrete_missing_fields,
+        "concrete_completion_status": concrete_completion_status,
+        "resolved_fields": terminalized_fields,
         "unknown_fields": unknown_fields,
         "unresolved_fields": unresolved_fields,
         "total_fields": total_fields,

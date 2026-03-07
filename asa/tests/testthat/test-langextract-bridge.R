@@ -58,12 +58,15 @@ test_that("source URL normalization handles multiline and escaped-final-url tail
     sep = "\n"
   )
   raw_escaped <- "https://www.flickr.com/photos/194792615@N03/52180793916\\nFinal"
+  raw_encoded <- "https://www.flickr.com/photos/194792615@N03/52180793916%5CnFinal%20URL:%20https://www.flickr.com/photos/194792615@N03/52180793916"
 
   normalized_multiline <- as.character(core$`_normalize_url_match`(raw_multiline))
   normalized_escaped <- as.character(core$`_normalize_url_match`(raw_escaped))
+  normalized_encoded <- as.character(core$`_normalize_url_match`(raw_encoded))
 
   expect_equal(normalized_multiline, "https://www.flickr.com/photos/194792615@N03/52180793916")
   expect_equal(normalized_escaped, "https://www.flickr.com/photos/194792615@N03/52180793916")
+  expect_equal(normalized_encoded, "https://www.flickr.com/photos/194792615@N03/52180793916")
 })
 
 test_that("openwebpage text cleaner removes boilerplate and keeps evidence lines", {

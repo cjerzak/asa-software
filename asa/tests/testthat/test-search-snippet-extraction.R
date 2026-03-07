@@ -535,6 +535,58 @@ test_that("deterministic recovery blocks near-miss entity/value mismatches", {
   expect_false(identical(as.character(out_r$birth_year_source$status), "found"))
 })
 
+test_that("deterministic recovery softens hard anchor mismatch only for allowlisted specific source-backed evidence", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  schema <- list(
+    birth_year = "integer|null|Unknown",
+    birth_year_source = "string|null"
+  )
+  source_url <- "https://www.example.gov/legislators/profile/428"
+  source_text <- paste(
+    "Camaconi legislative profile.",
+    "Date of birth: 1982-01-07.",
+    "Official profile registry."
+  )
+
+  out <- core$`_recover_unknown_fields_from_tool_evidence`(
+    field_status = list(),
+    expected_schema = schema,
+    finalization_policy = list(
+      field_recovery_enabled = TRUE,
+      field_recovery_mode = "recall",
+      field_recovery_require_keyword_hit_for_numbers = FALSE,
+      anchor_mode = "strict",
+      anchor_mismatch_penalty = 0.05,
+      field_recovery_entity_tolerance_enabled = FALSE
+    ),
+    allowed_source_urls = list(source_url),
+    source_text_index = stats::setNames(list(source_text), source_url),
+    target_anchor = list(
+      tokens = list("ramona", "moye", "camaconi"),
+      phrases = list("ramona moye camaconi"),
+      id_signals = list(),
+      context_tokens = list(),
+      context_labels = list(),
+      confidence = 0.9,
+      strength = "strong",
+      provenance = list("test"),
+      mode = "strict"
+    )
+  )
+
+  out_r <- reticulate::py_to_r(out)
+  expect_equal(as.character(out_r$birth_year$status), "found")
+  expect_equal(as.integer(out_r$birth_year$value), 1982L)
+  expect_equal(as.character(out_r$birth_year$evidence), "recovery_source_backed")
+  expect_equal(as.character(out_r$birth_year$evidence_reason), "recovery_promoted_anchor_soft_penalty")
+  expect_equal(as.character(out_r$birth_year_source$status), "found")
+  expect_equal(as.character(out_r$birth_year_source$value), source_url)
+})
+
 test_that("field-status extraction rejects candidates with entity/value mismatch", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",
