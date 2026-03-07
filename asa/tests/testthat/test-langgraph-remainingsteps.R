@@ -1589,6 +1589,95 @@ test_that("reused finalize response gets a fresh message id", {
   ))
 })
 
+test_that("_collect_derived_values keeps only found field-rule values", {
+  prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+
+  out <- reticulate::py_to_r(prod$`_collect_derived_values`(list(
+    kept = list(status = "found", evidence = "derived_from_field_rule", value = "Teacher"),
+    missing = list(status = "missing", evidence = "derived_from_field_rule", value = "Ignored"),
+    sourced = list(status = "found", evidence = "terminal_payload_source_backed", value = "Ignored")
+  )))
+
+  expect_equal(names(out), "kept")
+  expect_equal(as.character(out$kept), "Teacher")
+})
+
+test_that("_build_terminal_state_update controls optional fields and token accounting", {
+  prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+
+  base_args <- list(
+    state = list(
+      tokens_used = 3L,
+      input_tokens = 1L,
+      output_tokens = 2L,
+      retrieval_metrics = list(),
+      tool_quality_events = list(),
+      candidate_resolution = list(),
+      candidate_facts = list(),
+      verified_facts = list()
+    ),
+    messages = list(list(role = "assistant", content = "ok")),
+    field_status = list(),
+    budget_state = list(),
+    diagnostics = list(),
+    finalization_status = list(schema_valid = TRUE),
+    completion_gate = list(done = TRUE),
+    source_policy = list(),
+    retry_policy = list(),
+    finalization_policy = list(),
+    field_rules = list(),
+    query_templates = list(),
+    orchestration_options = list(policy_version = "test_policy"),
+    derived_values = list(answer = "ok"),
+    final_payload = list(answer = "ok"),
+    final_emitted = TRUE,
+    terminal_valid = TRUE,
+    terminal_payload_hash = "hash-1",
+    finalize_invocations = 2L,
+    finalize_trigger_reasons = list("recursion_limit"),
+    node_name = "agent",
+    node_started_at = 0,
+    usage = list(total_tokens = 7L, input_tokens = 5L, output_tokens = 2L),
+    finalize_reason = "recursion_limit",
+    stop_reason = "recursion_limit",
+    expected_schema = list(answer = "string"),
+    expected_schema_source = "explicit",
+    json_repair_events = list(list(repair_reason = "field_status_canonical")),
+    json_repair_context = "agent",
+    plan_mode_enabled = FALSE,
+    clear_plan_when_disabled = TRUE,
+    extra_fields = list(om_config = list(enabled = TRUE))
+  )
+
+  out <- reticulate::py_to_r(do.call(prod$`_build_terminal_state_update`, base_args))
+
+  expect_true("expected_schema" %in% names(out))
+  expect_equal(as.character(out$expected_schema_source), "explicit")
+  expect_equal(as.integer(out$tokens_used), 10L)
+  expect_equal(as.integer(out$input_tokens), 6L)
+  expect_equal(as.integer(out$output_tokens), 4L)
+  expect_equal(as.character(out$policy_version), "test_policy")
+  expect_true(isTRUE(out$om_config$enabled))
+  expect_null(out$plan)
+  expect_true(is.list(out$json_repair))
+
+  base_args$usage <- NULL
+  base_args$expected_schema <- NULL
+  base_args$expected_schema_source <- NULL
+  base_args$json_repair_events <- list()
+  base_args$extra_fields <- NULL
+
+  out_without_optional <- reticulate::py_to_r(do.call(prod$`_build_terminal_state_update`, base_args))
+
+  expect_false("expected_schema" %in% names(out_without_optional))
+  expect_false("expected_schema_source" %in% names(out_without_optional))
+  expect_false("tokens_used" %in% names(out_without_optional))
+  expect_false("input_tokens" %in% names(out_without_optional))
+  expect_false("output_tokens" %in% names(out_without_optional))
+  expect_false("json_repair" %in% names(out_without_optional))
+  expect_false("om_config" %in% names(out_without_optional))
+})
+
 test_that("finalize strips residual tool calls and returns terminal JSON (standard + memory folding)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 
