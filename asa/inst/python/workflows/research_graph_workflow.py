@@ -597,6 +597,24 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
         date_before = config.get("date_before") or (research_config.date_before if research_config else None)
         temporal_strictness = config.get("temporal_strictness") or (research_config.temporal_strictness if research_config else "best_effort")
         use_wayback = bool(config.get("use_wayback") if config.get("use_wayback") is not None else (research_config.use_wayback if research_config else False))
+        strict_temporal_requested = temporal_strictness == "strict" and (date_after or date_before)
+        if strict_temporal_requested and verify_date_constraint is None:
+            reason = "strict_temporal_verifier_unavailable"
+            logger.error(
+                "Strict temporal filtering requested, but date_extractor is unavailable."
+            )
+            return _with_node_timing(
+                {
+                    "status": "failed",
+                    "stop_reason": reason,
+                    "errors": [{
+                        "stage": "temporal_verification",
+                        "error": reason,
+                    }],
+                },
+                node="searcher",
+                started_at=node_started_at,
+            )
         allow_read_webpages_raw = (
             config.get("allow_read_webpages")
             if config.get("allow_read_webpages") is not None
@@ -849,66 +867,63 @@ Use the Search tool to find information."""
                         logger.warning(f"Could not restore time filter: {e}")
 
         # Strict temporal verification (best-effort): filter web results using date metadata.
-        if temporal_strictness == "strict" and (date_after or date_before):
-            if verify_date_constraint is None:
-                logger.warning("Strict temporal filtering requested, but date_extractor is unavailable.")
-            else:
-                web_rows = [r for r in results if isinstance(r, dict) and r.get("worker_id") == "web_search"]
-                urls = sorted({r.get("source_url") for r in web_rows if isinstance(r.get("source_url"), str) and r.get("source_url", "").startswith("http")})
+        if strict_temporal_requested:
+            web_rows = [r for r in results if isinstance(r, dict) and r.get("worker_id") == "web_search"]
+            urls = sorted({r.get("source_url") for r in web_rows if isinstance(r.get("source_url"), str) and r.get("source_url", "").startswith("http")})
 
-                verified: Dict[str, Dict[str, Any]] = {}
-                if urls:
-                    max_workers = int(config.get("max_workers") or (research_config.max_workers if research_config else 4) or 4)
-                    max_workers = max(1, min(max_workers, 16))
-                    with ThreadPoolExecutor(max_workers=max_workers) as ex:
-                        futures = {
-                            ex.submit(verify_date_constraint, u, date_after=date_after, date_before=date_before): u
-                            for u in urls
-                        }
-                        for fut in as_completed(futures):
-                            u = futures[fut]
-                            try:
-                                verified[u] = fut.result()
-                            except Exception as e:
-                                verified[u] = {"url": u, "passes": None, "reason": f"verify_error:{e}"}
-
-                def _row_passes(row: Dict[str, Any]) -> bool:
-                    url = row.get("source_url")
-                    if not isinstance(url, str) or not url.startswith("http"):
-                        return False
-                    v = verified.get(url)
-                    if not isinstance(v, dict):
-                        return False
-                    if v.get("passes") is True:
-                        return True
-                    # Optional Wayback fallback: accept a snapshot within range
-                    if use_wayback and (v.get("passes") is None):
+            verified: Dict[str, Dict[str, Any]] = {}
+            if urls:
+                max_workers = int(config.get("max_workers") or (research_config.max_workers if research_config else 4) or 4)
+                max_workers = max(1, min(max_workers, 16))
+                with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                    futures = {
+                        ex.submit(verify_date_constraint, u, date_after=date_after, date_before=date_before): u
+                        for u in urls
+                    }
+                    for fut in as_completed(futures):
+                        u = futures[fut]
                         try:
-                            from tools.archive_wayback_tool import find_snapshots_in_range
-                            snaps = find_snapshots_in_range(url, after_date=date_after, before_date=date_before, limit=5)
-                            if snaps:
-                                snap = snaps[0]
-                                snap_date = snap.get("date")
-                                within = _within_date_range(snap_date, date_after, date_before)
-                                if within:
-                                    row["source_url"] = snap.get("wayback_url") or row.get("source_url")
-                                    row["confidence"] = min(float(row.get("confidence", 0.6)) + 0.1, 0.9)
-                                    return True
-                        except Exception:
-                            return False
-                    return False
+                            verified[u] = fut.result()
+                        except Exception as e:
+                            verified[u] = {"url": u, "passes": None, "reason": f"verify_error:{e}"}
 
-                filtered = []
-                for r in results:
-                    if isinstance(r, dict) and r.get("worker_id") == "web_search" and (date_after or date_before):
-                        if _row_passes(r):
-                            filtered.append(r)
-                    else:
+            def _row_passes(row: Dict[str, Any]) -> bool:
+                url = row.get("source_url")
+                if not isinstance(url, str) or not url.startswith("http"):
+                    return False
+                v = verified.get(url)
+                if not isinstance(v, dict):
+                    return False
+                if v.get("passes") is True:
+                    return True
+                # Optional Wayback fallback: accept a snapshot within range
+                if use_wayback and (v.get("passes") is None):
+                    try:
+                        from tools.archive_wayback_tool import find_snapshots_in_range
+                        snaps = find_snapshots_in_range(url, after_date=date_after, before_date=date_before, limit=5)
+                        if snaps:
+                            snap = snaps[0]
+                            snap_date = snap.get("date")
+                            within = _within_date_range(snap_date, date_after, date_before)
+                            if within:
+                                row["source_url"] = snap.get("wayback_url") or row.get("source_url")
+                                row["confidence"] = min(float(row.get("confidence", 0.6)) + 0.1, 0.9)
+                                return True
+                    except Exception:
+                        return False
+                return False
+
+            filtered = []
+            for r in results:
+                if isinstance(r, dict) and r.get("worker_id") == "web_search" and (date_after or date_before):
+                    if _row_passes(r):
                         filtered.append(r)
-                dropped = len(results) - len(filtered)
-                if dropped > 0:
-                    logger.info(f"Strict temporal filtering dropped {dropped} web results")
-                results = filtered
+                else:
+                    filtered.append(r)
+            dropped = len(results) - len(filtered)
+            if dropped > 0:
+                logger.info(f"Strict temporal filtering dropped {dropped} web results")
+            results = filtered
 
         node_usage = {
             "input_tokens": max(0, int(input_tokens) - int(start_input_tokens)),

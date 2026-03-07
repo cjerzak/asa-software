@@ -743,6 +743,64 @@ test_that("ResearchConfig accepts all valid time_filter values", {
   }
 })
 
+test_that("strict temporal search fails closed when verifier is unavailable", {
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGGRAPH_CORE_MODULES, initialize = FALSE)
+
+  py <- reticulate::py
+  py$asa_temporal_research_mod <- research
+  reticulate::py_run_string(paste(
+    "_asa_prev_verify_temporal = getattr(asa_temporal_research_mod, 'verify_date_constraint', None)",
+    "asa_temporal_research_mod.verify_date_constraint = None",
+    sep = "\n"
+  ))
+  on.exit(
+    reticulate::py_run_string(
+      "asa_temporal_research_mod.verify_date_constraint = _asa_prev_verify_temporal"
+    ),
+    add = TRUE
+  )
+
+  searcher <- research$create_searcher_node(
+    llm = NULL,
+    tools = list(),
+    wikidata_tool = NULL,
+    research_config = research$ResearchConfig(
+      use_web = TRUE,
+      use_wikidata = FALSE,
+      date_after = "2024-01-01",
+      temporal_strictness = "strict"
+    )
+  )
+
+  out <- reticulate::py_to_r(searcher(list(
+    query = "Find recent entities",
+    schema = list(name = "string"),
+    config = list(
+      use_web = TRUE,
+      use_wikidata = FALSE,
+      date_after = "2024-01-01",
+      temporal_strictness = "strict"
+    ),
+    seen_hashes = list(),
+    results = list(),
+    novelty_history = list(),
+    queries_used = 0L,
+    tokens_used = 0L,
+    input_tokens = 0L,
+    output_tokens = 0L,
+    round_number = 0L,
+    start_time = as.numeric(Sys.time())
+  )))
+
+  expect_identical(as.character(out$status), "failed")
+  expect_identical(
+    as.character(out$stop_reason),
+    "strict_temporal_verifier_unavailable"
+  )
+  expect_true(is.list(out$errors))
+  expect_identical(as.character(out$errors[[1]]$stage), "temporal_verification")
+})
+
 # ============================================================================
 # Stopper Node Tests (workflows/research_graph_workflow.py)
 # ============================================================================

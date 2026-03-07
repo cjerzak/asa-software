@@ -3040,6 +3040,257 @@ def _parse_source_blocks(text: str, *, max_blocks: int = 64) -> list:
     return out
 
 
+_SEARCH_SNIPPET_URL_CONTEXT_STOP_TOKENS = {
+    "www",
+    "www2",
+    "http",
+    "https",
+    "com",
+    "org",
+    "net",
+    "gov",
+    "edu",
+    "html",
+    "htm",
+    "php",
+    "asp",
+    "aspx",
+    "index",
+    "default",
+    "amp",
+    "utm",
+    "source",
+    "medium",
+    "campaign",
+    "ref",
+}
+
+_NUMERIC_DATE_FIELD_TOKENS = {
+    "age",
+    "birth",
+    "born",
+    "date",
+    "dob",
+    "month",
+    "time",
+    "timestamp",
+    "year",
+}
+
+
+def _dedupe_text_fragments(parts: Any, *, max_chars: int) -> str:
+    fragments: List[str] = []
+    seen = set()
+    for raw_part in list(parts or []):
+        fragment = re.sub(r"\s+", " ", str(raw_part or "")).strip()
+        if not fragment:
+            continue
+        normalized = _normalize_match_text(fragment)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        fragments.append(fragment)
+    if not fragments:
+        return ""
+    return " ".join(fragments)[: max(64, int(max_chars))]
+
+
+def _search_snippet_title_prefix(snippet_text: Any, *, max_words: int = 18, max_chars: int = 140) -> str:
+    text = re.sub(r"\s+", " ", str(snippet_text or "")).strip()
+    if not text:
+        return ""
+    first_line = re.split(r"[\r\n]+", text, maxsplit=1)[0].strip()
+    if not first_line:
+        return ""
+    for pattern in (r"\s+\|\s+", r"\s+-\s+", r"\s+:\s+"):
+        parts = re.split(pattern, first_line, maxsplit=1)
+        if len(parts) < 2:
+            continue
+        prefix = str(parts[0] or "").strip(" |-:")
+        if not prefix or len(prefix) > int(max_chars):
+            continue
+        token_count = len(re.findall(r"[a-z0-9]+", _normalize_match_text(prefix)))
+        if token_count < 2 or token_count > int(max_words):
+            continue
+        return prefix
+    return ""
+
+
+def _search_snippet_url_context(page_url: Any, *, max_tokens: int = 18) -> str:
+    normalized_url = _normalize_url_match(page_url)
+    if not normalized_url:
+        return ""
+    try:
+        parsed = urlparse(normalized_url)
+    except Exception:
+        return ""
+    out: List[str] = []
+    seen = set()
+    raw_bits = [
+        str(parsed.hostname or ""),
+        str(parsed.path or ""),
+        str(parsed.query or ""),
+    ]
+    for raw_bit in raw_bits:
+        for token in re.findall(r"[a-z0-9]+", _normalize_match_text(raw_bit)):
+            if len(token) < 2:
+                continue
+            if token in _SEARCH_SNIPPET_URL_CONTEXT_STOP_TOKENS:
+                continue
+            if token in seen:
+                continue
+            seen.add(token)
+            out.append(token)
+            if len(out) >= max(1, int(max_tokens)):
+                return " ".join(out)
+    return " ".join(out)
+
+
+def _build_search_snippet_extraction_context(
+    snippet_text: Any,
+    page_url: Any,
+    *,
+    max_chars: int,
+) -> str:
+    snippet_clean = re.sub(r"\s+", " ", str(snippet_text or "")).strip()
+    if not snippet_clean:
+        return ""
+    return _dedupe_text_fragments(
+        [
+            _search_snippet_title_prefix(snippet_clean),
+            snippet_clean,
+            _search_snippet_url_context(page_url),
+        ],
+        max_chars=max_chars,
+    )
+
+
+def _field_is_numeric_or_date_like(field_name: Any, descriptor: Any) -> bool:
+    descriptor_tokens = set(_field_recovery_raw_tokens(descriptor))
+    if descriptor_tokens.intersection({"integer", "number", "float", "date", "datetime", "timestamp"}):
+        return True
+    field_tokens = set(_field_recovery_raw_tokens(field_name))
+    return bool(field_tokens.intersection(_NUMERIC_DATE_FIELD_TOKENS))
+
+
+def _collect_unresolved_numeric_date_field_hints(
+    *,
+    expected_schema: Any,
+    field_status: Any,
+) -> List[Dict[str, Any]]:
+    if expected_schema is None:
+        return []
+    unresolved_fields = set(_collect_resolvable_unknown_fields(field_status))
+    if not unresolved_fields:
+        return []
+    descriptor_by_field: Dict[str, Any] = {}
+    for path, descriptor in _schema_leaf_paths(expected_schema):
+        path_key = str(path or "").replace("[]", "").strip()
+        if "[]" in str(path or ""):
+            continue
+        if not path_key or path_key.endswith("_source") or path_key.endswith("_confidence"):
+            continue
+        descriptor_by_field[path_key] = descriptor
+
+    hints: List[Dict[str, Any]] = []
+    for field_name in sorted(list(unresolved_fields)):
+        descriptor = descriptor_by_field.get(field_name)
+        if not _field_is_numeric_or_date_like(field_name, descriptor):
+            continue
+        keywords: List[str] = []
+        seen_keywords = set()
+        for keyword in _field_recovery_keywords(field_name, _field_key_aliases(field_name), max_tokens=10):
+            normalized = _normalize_match_text(keyword)
+            if not normalized or normalized in seen_keywords:
+                continue
+            seen_keywords.add(normalized)
+            keywords.append(normalized)
+        if not keywords:
+            continue
+        hints.append({
+            "field": field_name,
+            "keywords": keywords,
+        })
+    return hints
+
+
+def _search_snippet_date_signal(snippet_text: Any) -> Dict[str, bool]:
+    text = str(snippet_text or "")
+    if not text:
+        return {"structured_date": False, "year_only": False}
+    lowered = text.lower()
+    structured_date = bool(
+        re.search(r"\b(?:18|19|20)\d{2}[-/](?:0?[1-9]|1[0-2])[-/](?:0?[1-9]|[12]\d|3[01])\b", lowered)
+        or re.search(r"\b(?:0?[1-9]|[12]\d|3[01])[-/](?:0?[1-9]|1[0-2])[-/](?:18|19|20)\d{2}\b", lowered)
+        or re.search(
+            r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\s+\d{1,2},?\s+(?:18|19|20)\d{2}\b",
+            lowered,
+        )
+    )
+    year_only = bool(re.search(r"\b(?:18|19|20)\d{2}\b", lowered))
+    return {
+        "structured_date": structured_date,
+        "year_only": year_only,
+    }
+
+
+def _search_snippet_field_hint_score(snippet_text: Any, field_hints: Any) -> float:
+    text_norm = _normalize_match_text(snippet_text)
+    if not text_norm:
+        return 0.0
+    token_set = set(re.findall(r"[a-z0-9]+", text_norm))
+    keyword_score = 0.0
+    for hint in list(field_hints or []):
+        if not isinstance(hint, dict):
+            continue
+        hits = 0
+        for keyword in list(hint.get("keywords") or []):
+            keyword_norm = _normalize_match_text(keyword)
+            if not keyword_norm:
+                continue
+            if " " in keyword_norm:
+                if keyword_norm in text_norm:
+                    hits += 1
+                continue
+            if keyword_norm in token_set:
+                hits += 1
+        if hits <= 0:
+            continue
+        keyword_score += min(1.75, 0.85 + (0.35 * float(max(0, hits - 1))))
+
+    date_signal = _search_snippet_date_signal(snippet_text)
+    if bool(date_signal.get("structured_date", False)):
+        keyword_score += 0.45
+    elif keyword_score > 0.0 and bool(date_signal.get("year_only", False)):
+        keyword_score += 0.20
+    return round(float(keyword_score), 4)
+
+
+def _search_snippet_candidate_supports_openwebpage_escalation(
+    candidate: Any,
+    *,
+    target_anchor: Any = None,
+) -> bool:
+    if not isinstance(candidate, dict):
+        return False
+    page_url = _normalize_url_match(candidate.get("url"))
+    if not page_url or _is_noise_source_url(page_url):
+        return False
+    try:
+        url_score = float(candidate.get("url_score", 0.0) or 0.0)
+    except Exception:
+        url_score = 0.0
+    if url_score >= 0.0:
+        return True
+    if not _target_anchor_present(target_anchor):
+        return False
+    try:
+        entity_ratio = float(candidate.get("entity_ratio", 0.0) or 0.0)
+    except Exception:
+        entity_ratio = 0.0
+    return bool(_is_source_specific_url(page_url) and entity_ratio >= 0.35)
+
+
 def _normalize_key_token(token: Any) -> str:
     if token is None:
         return ""
@@ -5767,6 +6018,42 @@ def _select_round_openwebpage_candidates(
     return chosen
 
 
+def _preferred_openwebpage_candidate_for_round(
+    preferred_url: Any,
+    state_messages: Any,
+    round_tool_messages: Any,
+    *,
+    blocked_hosts: Any = None,
+    now_ts: Optional[float] = None,
+) -> Optional[str]:
+    normalized = _normalize_url_match(preferred_url)
+    if not normalized or _is_noise_source_url(normalized):
+        return None
+    payloads = _tool_message_payloads(round_tool_messages)
+    if not payloads:
+        return None
+    if not any(_normalize_match_text(p.get("tool_name")) == "search" for p in payloads):
+        return None
+    if any(_normalize_match_text(p.get("tool_name")) == "openwebpage" for p in payloads):
+        return None
+    previously_opened = _collect_openwebpage_urls_from_messages(state_messages, max_urls=1024)
+    previously_opened.update(
+        _collect_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
+    )
+    if normalized in previously_opened:
+        return None
+    blocked_host_map = _normalize_blocked_openwebpage_hosts(
+        blocked_hosts,
+        now_ts=now_ts,
+        max_hosts=256,
+    )
+    now_value = float(now_ts if now_ts is not None else time.time())
+    candidate_host = _url_host(normalized)
+    if candidate_host and float(blocked_host_map.get(candidate_host, 0.0) or 0.0) > now_value:
+        return None
+    return normalized
+
+
 def _collect_tool_source_text_index(
     messages: Any,
     *,
@@ -5784,8 +6071,11 @@ def _collect_tool_source_text_index(
             normalized_url = _normalize_url_match(block.get("url"))
             if not normalized_url or _is_noise_source_url(normalized_url):
                 continue
-            content = str(block.get("content") or block.get("raw") or "").strip()
-            content = re.sub(r"\s+", " ", content)
+            content = _build_search_snippet_extraction_context(
+                block.get("content") or block.get("raw") or "",
+                normalized_url,
+                max_chars=max(128, int(max_chars_per_source)),
+            )
             if not content:
                 continue
             existing = index.get(normalized_url, "")
@@ -5841,8 +6131,11 @@ def _collect_tool_source_text_index(
             normalized_url = _normalize_url_match(block.get("url"))
             if not normalized_url or _is_noise_source_url(normalized_url):
                 continue
-            content = str(block.get("content") or block.get("raw") or "").strip()
-            content = re.sub(r"\s+", " ", content)
+            content = _build_search_snippet_extraction_context(
+                block.get("content") or block.get("raw") or "",
+                normalized_url,
+                max_chars=max(128, int(max_chars_per_source)),
+            )
             if not content:
                 continue
             existing = index.get(normalized_url, "")
@@ -7304,6 +7597,7 @@ def _normalize_budget_state(
             limit_trigger_reason = "model_budget"
         elif tool_budget_exhausted:
             limit_trigger_reason = "tool_budget"
+    preferred_openwebpage_url = _normalize_url_match(existing.get("preferred_openwebpage_url"))
     out.update({
         "tool_calls_used": used,
         "tool_calls_limit": limit,
@@ -7334,6 +7628,7 @@ def _normalize_budget_state(
             max_hosts=256,
         ),
         "blocked_host_skip_events": max(0, int(existing.get("blocked_host_skip_events", 0) or 0)),
+        "preferred_openwebpage_url": preferred_openwebpage_url,
     })
     return out
 
@@ -7520,7 +7815,10 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "search_snippet_langextract_errors",
         "search_snippet_candidates_total",
         "search_snippet_candidates_selected",
+        "search_snippet_candidates_selected_with_field_hints",
         "search_snippet_skipped_duplicate_urls",
+        "search_snippet_openwebpage_escalation_events",
+        "search_snippet_openwebpage_escalation_successes",
         "search_snippet_deterministic_fallback_calls",
         "search_snippet_deterministic_fallback_payloads",
         "search_snippet_deterministic_fallback_no_payload",
@@ -13883,7 +14181,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "deterministic_fallback_no_payload": 0,
         "snippet_candidates_total": 0,
         "snippet_candidates_selected": 0,
+        "snippet_candidates_selected_with_field_hints": 0,
         "snippet_skipped_duplicate_urls": 0,
+        "snippet_openwebpage_escalation_events": 0,
+        "preferred_openwebpage_url": None,
     }
 
     if selector_model is None or expected_schema is None:
@@ -13905,6 +14206,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
         return [], [], metadata
 
     allowed_keys = set(unresolved_fields)
+    field_hints = _collect_unresolved_numeric_date_field_hints(
+        expected_schema=expected_schema,
+        field_status=field_status,
+    )
     for field in unresolved_fields:
         source_key = f"{field}_source"
         if source_key in schema_leaf_set:
@@ -13946,6 +14251,13 @@ def _llm_extract_schema_payloads_from_search_snippets(
             if not snippet_text:
                 continue
             snippet_text = snippet_text[:max_chars_int]
+            extraction_text = _build_search_snippet_extraction_context(
+                snippet_text,
+                page_url,
+                max_chars=max_chars_int,
+            )
+            if not extraction_text:
+                continue
 
             source_id = block.get("source_id")
             try:
@@ -13959,24 +14271,36 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 overlap = _anchor_overlap_for_candidate(
                     target_anchor=target_anchor_state,
                     candidate_url=page_url,
-                    candidate_text=snippet_text,
+                    candidate_text=extraction_text,
                 )
                 entity_ratio = float(overlap.get("score", 0.0) or 0.0)
+            field_hint_score = _search_snippet_field_hint_score(extraction_text, field_hints)
             existing = candidate_map.get(page_url)
             if existing:
                 merged = str(existing.get("text") or "")
                 if snippet_text and snippet_text not in merged:
                     merged = f"{merged} {snippet_text}".strip() if merged else snippet_text
                     existing["text"] = merged[:max_chars_int]
+                    existing["extraction_text"] = _build_search_snippet_extraction_context(
+                        existing.get("text"),
+                        page_url,
+                        max_chars=max_chars_int,
+                    )
                 existing["url_score"] = max(float(existing.get("url_score", 0.0)), url_score)
                 existing["entity_ratio"] = max(float(existing.get("entity_ratio", 0.0)), float(entity_ratio))
                 existing["order"] = min(int(existing.get("order", 9999)), int(source_order))
+                existing["field_hint_score"] = _search_snippet_field_hint_score(
+                    existing.get("extraction_text") or existing.get("text") or "",
+                    field_hints,
+                )
                 continue
             candidate_map[page_url] = {
                 "url": page_url,
                 "text": snippet_text,
+                "extraction_text": extraction_text,
                 "url_score": float(url_score),
                 "entity_ratio": float(entity_ratio),
+                "field_hint_score": float(field_hint_score),
                 "order": int(source_order),
             }
 
@@ -13985,11 +14309,31 @@ def _llm_extract_schema_payloads_from_search_snippets(
     if not candidates:
         return [], [], metadata
 
-    candidates.sort(
-        key=lambda c: (-float(c.get("url_score", 0.0)), -float(c.get("entity_ratio", 0.0)), int(c.get("order", 9999)), str(c.get("url") or "")),
-    )
+    if field_hints:
+        candidates.sort(
+            key=lambda c: (
+                -float(c.get("field_hint_score", 0.0)),
+                -float(c.get("url_score", 0.0)),
+                -float(c.get("entity_ratio", 0.0)),
+                int(c.get("order", 9999)),
+                str(c.get("url") or ""),
+            ),
+        )
+    else:
+        candidates.sort(
+            key=lambda c: (
+                -float(c.get("url_score", 0.0)),
+                -float(c.get("entity_ratio", 0.0)),
+                int(c.get("order", 9999)),
+                str(c.get("url") or ""),
+            ),
+        )
     chosen = candidates[: max(1, int(max_sources))]
     metadata["snippet_candidates_selected"] = len(chosen)
+    metadata["snippet_candidates_selected_with_field_hints"] = sum(
+        1 for item in chosen
+        if float(item.get("field_hint_score", 0.0) or 0.0) > 0.0
+    )
 
     try:
         from langchain_core.messages import HumanMessage, SystemMessage
@@ -13998,13 +14342,16 @@ def _llm_extract_schema_payloads_from_search_snippets(
 
     out_payloads: List[Dict[str, Any]] = []
     extracted: List[str] = []
+    escalation_map: Dict[str, Dict[str, Any]] = {}
 
     for item in chosen:
         page_url = _normalize_url_match(item.get("url"))
-        page_text = str(item.get("text") or "")
+        raw_text = str(item.get("text") or "")
+        page_text = str(item.get("extraction_text") or raw_text or "")
         if not page_url or not page_text.strip():
             continue
 
+        clipped_raw_text = raw_text[:max_chars_int]
         clipped_text = page_text[:max_chars_int]
 
         def _emit_payload(extracted_payload: Dict[str, Any]) -> None:
@@ -14016,7 +14363,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 )
             out_payloads.append({
                 "tool_name": "search_snippet_schema_extract",
-                "text": clipped_text,
+                "text": clipped_raw_text or clipped_text,
                 "payload": extracted_payload,
                 "source_blocks": [],
                 "source_payloads": [extracted_payload],
@@ -14024,6 +14371,35 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 "urls": [page_url],
             })
             extracted.append(page_url)
+
+        def _record_openwebpage_escalation() -> None:
+            if not _search_snippet_candidate_supports_openwebpage_escalation(
+                item,
+                target_anchor=target_anchor_state,
+            ):
+                return
+            existing = escalation_map.get(page_url)
+            candidate = {
+                "url": page_url,
+                "url_score": float(item.get("url_score", 0.0) or 0.0),
+                "entity_ratio": float(item.get("entity_ratio", 0.0) or 0.0),
+                "order": int(item.get("order", 9999) or 9999),
+            }
+            if not existing:
+                escalation_map[page_url] = candidate
+                return
+            existing_rank = (
+                float(existing.get("url_score", 0.0)),
+                float(existing.get("entity_ratio", 0.0)),
+                -int(existing.get("order", 9999)),
+            )
+            candidate_rank = (
+                float(candidate.get("url_score", 0.0)),
+                float(candidate.get("entity_ratio", 0.0)),
+                -int(candidate.get("order", 9999)),
+            )
+            if candidate_rank > existing_rank:
+                escalation_map[page_url] = candidate
 
         def _emit_deterministic_fallback() -> bool:
             metadata["deterministic_fallback_calls"] = int(
@@ -14130,12 +14506,14 @@ def _llm_extract_schema_payloads_from_search_snippets(
             timeout_s=timeout_s,
         )
         if response is None:
-            _emit_deterministic_fallback()
+            if not _emit_deterministic_fallback():
+                _record_openwebpage_escalation()
             continue
         response_text = _message_content_to_text(getattr(response, "content", ""))
         parsed = parse_llm_json(response_text)
         if not isinstance(parsed, dict) or not parsed:
-            _emit_deterministic_fallback()
+            if not _emit_deterministic_fallback():
+                _record_openwebpage_escalation()
             continue
 
         extracted_payload: Dict[str, Any] = {}
@@ -14155,7 +14533,8 @@ def _llm_extract_schema_payloads_from_search_snippets(
             extracted_payload[key] = raw_value
 
         if not extracted_payload:
-            _emit_deterministic_fallback()
+            if not _emit_deterministic_fallback():
+                _record_openwebpage_escalation()
             continue
 
         for key, value in list(extracted_payload.items()):
@@ -14166,6 +14545,21 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 extracted_payload[source_key] = page_url
 
         _emit_payload(extracted_payload)
+
+    escalation_candidates = list(escalation_map.values())
+    metadata["snippet_openwebpage_escalation_events"] = len(escalation_candidates)
+    if escalation_candidates:
+        escalation_candidates.sort(
+            key=lambda c: (
+                -float(c.get("url_score", 0.0)),
+                -float(c.get("entity_ratio", 0.0)),
+                int(c.get("order", 9999)),
+                str(c.get("url") or ""),
+            ),
+        )
+        metadata["preferred_openwebpage_url"] = _normalize_url_match(
+            escalation_candidates[0].get("url")
+        )
 
     return out_payloads, extracted, metadata
 
@@ -14282,16 +14676,38 @@ def _apply_auto_openwebpage_followup(
     if follow_attempt_limit <= 0:
         return list(tool_messages or [])
 
-    candidate_urls = _select_round_openwebpage_candidates(
+    candidate_urls: List[str] = []
+    preferred_url = None
+    if isinstance(budget_state, dict):
+        preferred_url = budget_state.get("preferred_openwebpage_url")
+    preferred_candidate = _preferred_openwebpage_candidate_for_round(
+        preferred_url,
         state.get("messages") or [],
         list(tool_messages or []),
-        search_queries=list(search_queries or []),
-        selector_model=selector_model,
-        webpage_policy=webpage_policy,
         blocked_hosts=blocked_hosts,
         now_ts=now_ts,
-        max_return=max(1, int(follow_attempt_limit)),
     )
+    if preferred_candidate:
+        candidate_urls.append(preferred_candidate)
+    remaining_slots = max(0, int(follow_attempt_limit) - int(len(candidate_urls)))
+    if remaining_slots > 0:
+        generic_candidates = _select_round_openwebpage_candidates(
+            state.get("messages") or [],
+            list(tool_messages or []),
+            search_queries=list(search_queries or []),
+            selector_model=selector_model,
+            webpage_policy=webpage_policy,
+            blocked_hosts=blocked_hosts,
+            now_ts=now_ts,
+            max_return=max(1, int(remaining_slots)),
+        )
+        for raw_url in list(generic_candidates or []):
+            normalized = _normalize_url_match(raw_url)
+            if not normalized or normalized in candidate_urls:
+                continue
+            candidate_urls.append(normalized)
+            if len(candidate_urls) >= int(follow_attempt_limit):
+                break
     if not candidate_urls:
         return list(tool_messages or [])
 
@@ -14439,6 +14855,9 @@ def _create_tool_node_with_scratchpad(
         snippet_extract_calls = 0
         snippet_payload_count = 0
         snippet_extract_meta: Dict[str, Any] = {}
+        prior_preferred_openwebpage_url = _normalize_url_match(
+            (prior_budget or {}).get("preferred_openwebpage_url")
+        )
         target_anchor = _task_target_anchor_from_messages(state.get("messages") or [])
         diagnostics["anchor_strength_current"] = str(target_anchor.get("strength") or "none")
         diagnostics["anchor_mode_current"] = _anchor_mode_for_policy(
@@ -14686,6 +15105,25 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_llm_extraction_calls"] = int(
                 diagnostics.get("search_snippet_llm_extraction_calls", 0) or 0
             ) + int(snippet_extract_calls)
+        opened_urls_this_round = _collect_openwebpage_urls_from_messages(
+            tool_messages,
+            max_urls=128,
+        )
+        preferred_openwebpage_url = prior_preferred_openwebpage_url
+        if preferred_openwebpage_url and preferred_openwebpage_url in opened_urls_this_round:
+            preferred_openwebpage_url = None
+            if prior_preferred_openwebpage_url in set(webpage_extract_urls or []):
+                diagnostics["search_snippet_openwebpage_escalation_successes"] = int(
+                    diagnostics.get("search_snippet_openwebpage_escalation_successes", 0) or 0
+                ) + 1
+        new_preferred_openwebpage_url = None
+        if isinstance(snippet_extract_meta, dict):
+            new_preferred_openwebpage_url = _normalize_url_match(
+                snippet_extract_meta.get("preferred_openwebpage_url")
+            )
+        if new_preferred_openwebpage_url:
+            preferred_openwebpage_url = new_preferred_openwebpage_url
+        budget_state["preferred_openwebpage_url"] = preferred_openwebpage_url
         if isinstance(webpage_extract_meta, dict) and webpage_extract_meta:
             diagnostics["webpage_langextract_calls"] = int(diagnostics.get("webpage_langextract_calls", 0) or 0) + int(
                 webpage_extract_meta.get("langextract_calls", 0) or 0
@@ -14760,9 +15198,15 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_candidates_selected"] = int(
                 diagnostics.get("search_snippet_candidates_selected", 0) or 0
             ) + int(snippet_extract_meta.get("snippet_candidates_selected", 0) or 0)
+            diagnostics["search_snippet_candidates_selected_with_field_hints"] = int(
+                diagnostics.get("search_snippet_candidates_selected_with_field_hints", 0) or 0
+            ) + int(snippet_extract_meta.get("snippet_candidates_selected_with_field_hints", 0) or 0)
             diagnostics["search_snippet_skipped_duplicate_urls"] = int(
                 diagnostics.get("search_snippet_skipped_duplicate_urls", 0) or 0
             ) + int(snippet_extract_meta.get("snippet_skipped_duplicate_urls", 0) or 0)
+            diagnostics["search_snippet_openwebpage_escalation_events"] = int(
+                diagnostics.get("search_snippet_openwebpage_escalation_events", 0) or 0
+            ) + int(snippet_extract_meta.get("snippet_openwebpage_escalation_events", 0) or 0)
             diagnostics["search_snippet_deterministic_fallback_calls"] = int(
                 diagnostics.get("search_snippet_deterministic_fallback_calls", 0) or 0
             ) + int(snippet_extract_meta.get("deterministic_fallback_calls", 0) or 0)
@@ -14778,6 +15222,12 @@ def _create_tool_node_with_scratchpad(
             last_error = str(snippet_extract_meta.get("langextract_last_error") or "").strip()
             if last_error:
                 diagnostics["search_snippet_langextract_last_error"] = last_error[:400]
+            if int(snippet_extract_meta.get("snippet_openwebpage_escalation_events", 0) or 0) > 0:
+                diagnostics["retrieval_interventions"] = _append_limited_unique(
+                    diagnostics.get("retrieval_interventions"),
+                    "search_snippet_openwebpage_escalation",
+                    max_items=64,
+                )
         no_payload_events = 0
         if int(webpage_extract_calls) > 0 and int(webpage_payload_count) <= 0:
             diagnostics["no_payload_extraction_rounds"] = int(

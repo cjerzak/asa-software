@@ -98,7 +98,7 @@ build_backend <- function(conda_env = NULL,
 
   # Create / reuse conda environment
 
-  envs <- tryCatch(reticulate::conda_list(), error = function(e) NULL)
+  envs <- tryCatch(reticulate::conda_list(conda = conda), error = function(e) NULL)
   env_exists <- !is.null(envs) && conda_env %in% envs$name
 
   if (env_exists && isTRUE(force)) {
@@ -153,16 +153,17 @@ build_backend <- function(conda_env = NULL,
   # Verify installation (strict: build_backend installs full dependency set)
 
   msg("Verifying installation...")
-  status <- check_backend(conda_env = conda_env, strict = TRUE)
+  status <- check_backend(conda_env = conda_env, conda = conda, strict = TRUE)
 
   if (!status$available) {
     all_missing <- unique(c(status$missing_packages, status$missing_optional_packages))
     if (length(all_missing) > 0) {
       warning(
         sprintf(
-          "Installation completed but verification found issues:\n  Missing packages: %s\n  Run check_backend('%s') for details.",
+          "Installation completed but verification found issues:\n  Missing packages: %s\n  Run check_backend('%s', conda = '%s') for details.",
           paste(all_missing, collapse = ", "),
-          conda_env
+          conda_env,
+          conda
         ),
         call. = FALSE
       )
@@ -538,12 +539,110 @@ build_backend <- function(conda_env = NULL,
   ))
 }
 
-#' Check Python Environment Availability
+# Backend verification helpers
+.check_backend_required_packages <- function() {
+  c(
+    "langchain_community",
+    "langchain_groq",
+    "langchain_openai",
+    "langchain_google_genai",
+    "langchain_anthropic",
+    "langchain_aws",
+    "langgraph",
+    "ddgs",
+    "selenium",
+    "primp",
+    "httpx",
+    "fake_headers",
+    "langextract"
+  )
+}
+
+.check_backend_optional_packages <- function() {
+  c(
+    "undetected_chromedriver",  # stealth Chrome (optional)
+    "stem"                      # Tor control (optional)
+  )
+}
+
+.check_backend_python_probe <- function(python_bin,
+                                        required_packages,
+                                        optional_packages,
+                                        timeout = 120) {
+  payload_json <- jsonlite::toJSON(
+    list(
+      required = unname(as.character(required_packages)),
+      optional = unname(as.character(optional_packages))
+    ),
+    auto_unbox = TRUE
+  )
+  payload_json <- gsub("'''", "\\\\'\\\\'\\\\'", payload_json, fixed = TRUE)
+  script <- paste(
+    "import importlib",
+    "import json",
+    "import sys",
+    sprintf("payload = json.loads(r'''%s''')", payload_json),
+    "",
+    "def _missing(module_names):",
+    "    out = []",
+    "    for name in module_names:",
+    "        try:",
+    "            importlib.import_module(name)",
+    "        except Exception:",
+    "            out.append(name)",
+    "    return out",
+    "",
+    "result = {",
+    "    'python_version': sys.version.split()[0],",
+    "    'missing_packages': _missing(payload.get('required', [])),",
+    "    'missing_optional_packages': _missing(payload.get('optional', [])),",
+    "}",
+    "print(json.dumps(result))",
+    sep = "\n"
+  )
+
+  probe <- .run_command(
+    command = python_bin,
+    args = c("-c", script),
+    timeout = timeout
+  )
+  status <- suppressWarnings(as.integer(probe$status)[1])
+  if (!is.finite(status)) {
+    status <- 1L
+  }
+  if (status != 0L) {
+    stderr <- trimws(as.character(probe$stderr %||% ""))
+    stdout <- trimws(as.character(probe$stdout %||% ""))
+    detail <- stderr
+    if (!nzchar(detail)) {
+      detail <- stdout
+    }
+    stop(
+      paste0(
+        "Python backend probe failed",
+        if (nzchar(detail)) paste0(": ", detail) else "."
+      ),
+      call. = FALSE
+    )
+  }
+
+  parsed <- jsonlite::fromJSON(trimws(as.character(probe$stdout %||% "")))
+  list(
+    python_version = parsed$python_version %||% NULL,
+    missing_packages = as.character(parsed$missing_packages %||% character(0)),
+    missing_optional_packages = as.character(parsed$missing_optional_packages %||% character(0))
+  )
+}
+
+#' Check Python Backend Availability
 #'
-#' Checks if the required Python environment and packages are available.
+#' Checks whether the configured Conda environment exists and can import the
+#' Python modules required by the ASA backend, without initializing reticulate's
+#' Python session for the current R process.
 #'
-#' @param conda_env Name of the conda environment to check. Defaults to the
-#'   package option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
+#' @param conda_env Name of the Conda environment. Defaults to the package
+#'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
+#' @param conda Path to conda executable (default: "auto")
 #' @param strict If TRUE, also require optional packages used for Tor control and
 #'   stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).
 #'
@@ -566,7 +665,7 @@ build_backend <- function(conda_env = NULL,
 #' }
 #'
 #' @export
-check_backend <- function(conda_env = NULL, strict = FALSE) {
+check_backend <- function(conda_env = NULL, conda = "auto", strict = FALSE) {
 
   conda_env <- conda_env %||% .get_default_conda_env()
 
@@ -581,57 +680,36 @@ check_backend <- function(conda_env = NULL, strict = FALSE) {
 
   # Check if conda env exists
   tryCatch({
-    envs <- reticulate::conda_list()
+    envs <- reticulate::conda_list(conda = conda)
     if (!conda_env %in% envs$name) {
       result$missing_packages <- "Environment not found"
       return(result)
     }
 
-    # Activate environment
-    reticulate::use_condaenv(conda_env, required = TRUE)
-
-    # Check Python version
-    result$python_version <- reticulate::py_config()$version
-
-    # Check packages
-    required_packages <- c(
-      "langchain_community",
-      "langchain_groq",
-      "langchain_openai",
-      "langchain_google_genai",
-      "langchain_anthropic",
-      "langchain_aws",
-      "langgraph",
-      "ddgs",
-      "selenium",
-      "primp",
-      "httpx",
-      "fake_headers",
-      "langextract"
-    )
-
-    optional_packages <- c(
-      "undetected_chromedriver",  # stealth Chrome (optional)
-      "stem"                      # Tor control (optional)
-    )
-
-    missing_required <- character(0)
-    for (pkg in required_packages) {
-      if (!reticulate::py_module_available(pkg)) {
-        missing_required <- c(missing_required, pkg)
-      }
+    python_bin <- reticulate::conda_python(envname = conda_env, conda = conda)
+    python_bin <- .try_or(as.character(python_bin)[1], "")
+    if (!nzchar(python_bin)) {
+      stop(
+        sprintf(
+          "Could not resolve python executable for conda env '%s' via conda '%s'.",
+          conda_env,
+          conda
+        ),
+        call. = FALSE
+      )
     }
 
-    missing_optional <- character(0)
-    for (pkg in optional_packages) {
-      if (!reticulate::py_module_available(pkg)) {
-        missing_optional <- c(missing_optional, pkg)
-      }
-    }
+    probe <- .check_backend_python_probe(
+      python_bin = python_bin,
+      required_packages = .check_backend_required_packages(),
+      optional_packages = .check_backend_optional_packages()
+    )
 
-    result$missing_packages <- missing_required
-    result$missing_optional_packages <- missing_optional
-    result$available <- length(missing_required) == 0 && (!isTRUE(strict) || length(missing_optional) == 0)
+    result$python_version <- probe$python_version %||% NULL
+    result$missing_packages <- probe$missing_packages %||% character(0)
+    result$missing_optional_packages <- probe$missing_optional_packages %||% character(0)
+    result$available <- length(result$missing_packages) == 0 &&
+      (!isTRUE(strict) || length(result$missing_optional_packages) == 0)
 
   }, error = function(e) {
     result$missing_packages <- paste("Error:", e$message)

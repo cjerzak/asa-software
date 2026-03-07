@@ -461,6 +461,16 @@ def runtime_circuit_init() -> Dict[str, Any]:
     return runtime_circuit_status()
 
 
+def _normalize_circuit_status_token(status: Any) -> str:
+    token = str(status or "").strip().lower()
+    if token == "success":
+        return "success"
+    if token in {"error", "captcha", "blocked"}:
+        return "error"
+    # Fail closed: unknown statuses should contribute to tripping protection.
+    return "error"
+
+
 def runtime_circuit_record(status: Any, verbose: bool = False) -> bool:
     state = _ensure_runtime_control()
     cfg = state.get("config") or _runtime_config()
@@ -472,8 +482,7 @@ def runtime_circuit_record(status: Any, verbose: bool = False) -> bool:
         state["circuit"] = circuit
         return True
 
-    token = str(status or "").strip().lower()
-    token = "error" if token == "error" else "success"
+    token = _normalize_circuit_status_token(status)
 
     circuit["recent_results"] = list(circuit.get("recent_results") or []) + [token]
     window = max(1, int(cfg.get("circuit_window", 20)))

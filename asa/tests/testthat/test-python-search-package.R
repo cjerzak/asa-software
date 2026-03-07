@@ -51,3 +51,38 @@ test_that("asa_backend.search aligns with agent_api public search surface", {
     "firefox_first"
   )
 })
+
+test_that("agent_api circuit breaker counts blocked and captcha as failures", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = c(
+      "asa_backend/search/__init__.py",
+      "asa_backend/api/agent_api.py"
+    )
+  )
+
+  asa_test_skip_if_missing_python_modules(
+    c("langchain_community", "pydantic", "requests", "ddgs", "bs4", "selenium", "primp"),
+    method = "py_module_available"
+  )
+
+  api <- reticulate::import_from_path("asa_backend.api.agent_api", path = python_path)
+  on.exit(api$runtime_control_reset(), add = TRUE)
+
+  api$runtime_control_init(config = list(
+    circuit_enabled = TRUE,
+    circuit_threshold = 0.10,
+    circuit_window = 5L,
+    circuit_cooldown = 3600
+  ))
+  api$runtime_circuit_init()
+
+  for (status in c("blocked", "captcha", "blocked", "captcha", "blocked")) {
+    api$runtime_circuit_record(status)
+  }
+
+  circuit_status <- reticulate::py_to_r(api$runtime_circuit_status())
+  expect_true(isTRUE(circuit_status$tripped))
+  expect_equal(as.integer(circuit_status$recent_count), 5L)
+  expect_equal(as.numeric(circuit_status$error_rate), 1.0)
+  expect_false(isTRUE(api$runtime_circuit_check()))
+})

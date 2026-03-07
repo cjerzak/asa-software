@@ -78,6 +78,73 @@ test_that("search snippet extraction produces structured payloads promotable int
   expect_equal(as.character(updated_fs$birth_place_source$status), "found")
 })
 
+test_that("search snippet field hints prioritize enriched birth-year snippets", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  reticulate::py_run_string(paste0(
+    "import json\n",
+    "class _ASAEmptySnippetModel:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        class _Resp:\n",
+    "            def __init__(self, content):\n",
+    "                self.content = content\n",
+    "        return _Resp('{}')\n",
+    "_asa_empty_snippet_model = _ASAEmptySnippetModel()\n"
+  ))
+
+  schema <- list(
+    birth_year = "integer|null|Unknown",
+    birth_year_source = "string|null"
+  )
+
+  field_status <- list(
+    birth_year = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    birth_year_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+
+  tool_text <- paste0(
+    "__START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconi legislative profile and committee summary. </CONTENT> ",
+    "<URL> https://www.example.gov/legislators/profile/overview </URL> __END_OF_SOURCE 1__ ",
+    "__START_OF_SOURCE 2__ <CONTENT> Ramona Moye Camaconi 1982-01-07 legislative profile. </CONTENT> ",
+    "<URL> https://www.example.gov/legislators/date-of-birth/428 </URL> __END_OF_SOURCE 2__"
+  )
+  tool_messages <- list(list(role = "tool", name = "Search", content = tool_text))
+
+  snippet_result <- core$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = reticulate::py$`_asa_empty_snippet_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ramona", "Moye", "Camaconi"),
+    extracted_urls = list(),
+    max_sources = 1L,
+    max_chars = 800L,
+    extraction_engine = "legacy",
+    debug = FALSE
+  )
+
+  snippet_r <- reticulate::py_to_r(snippet_result)
+  payloads <- snippet_r[[1]]
+  urls <- snippet_r[[2]]
+  meta <- snippet_r[[3]]
+
+  expect_equal(length(payloads), 1L)
+  expect_equal(as.integer(payloads[[1]]$payload$birth_year), 1982L)
+  expect_match(
+    as.character(payloads[[1]]$payload$birth_year_source),
+    "date-of-birth/428",
+    perl = TRUE
+  )
+  expect_equal(as.character(urls[[1]]), "https://www.example.gov/legislators/date-of-birth/428")
+  expect_equal(as.integer(meta$snippet_candidates_total), 2L)
+  expect_equal(as.integer(meta$snippet_candidates_selected), 1L)
+  expect_equal(as.integer(meta$snippet_candidates_selected_with_field_hints), 1L)
+  expect_equal(as.integer(meta$snippet_openwebpage_escalation_events), 0L)
+})
+
 
 test_that("deterministic numeric recovery requires a keyword hit when configured", {
   core <- asa_test_import_langgraph_module(

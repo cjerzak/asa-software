@@ -193,12 +193,6 @@ source_policy_override <- list(
   min_source_tier_for_sensitive_fields = "secondary",
   allow_tertiary_sources = FALSE,
   sensitive_fields_require_explicit_disclosure = TRUE,
-  preferred_domains = c(
-    "vicepresidencia.gob.bo",
-    "oep.org.bo",
-    "tse.org.bo",
-    "bolivia.gob.bo"
-  ),
   deny_host_fragments = c(
     "idcrawl.",
     "spokeo.",
@@ -235,36 +229,9 @@ finalization_policy_override <- list(
 )
 
 query_templates_override <- NULL
-#query_templates_override <- list(
-#  focused_field_query = "\"{entity}\" {field} Bolivia MAS Beni 2014",
-#  source_constrained_query = "site:{domain} \"{entity}\" {field} Bolivia",
-#  disambiguation_query = "\"{entity}\" MAS Beni Bolivia diputado 2014"
-#)
 
 # Heartbeat lifecycle is managed by package internals:
 # asa:::.heartbeat_start/.heartbeat_set_phase/.heartbeat_stop/.with_heartbeat
-
-"
-* **Name:** Cresent Hardy
-* **Country:** United States
-* **Election Year:** 2014
-* **Political Party:** Republican Party
-* **Region/Constituency:** Nevada's 4th Congressional District
-* **Known Birthday:** June 23, 1957
-* **Known Gender:** Male
-* **Known Ethnicity:** White
-"
-
-"
-- Name: Ramona Moye Camaconi
-- Country: Bolivia
-- Election Year: 2014
-- Political Party: Movimiento Al Socialismo - MAS
-- Region/Constituency: Beni
-- Known Birthday: Not available
-- Known Gender: Female
-- Known Ethnicity: Indigenous
-"
 
 
 prompt <- r"(TASK OVERVIEW:
@@ -356,7 +323,7 @@ message(sprintf(
   auto_openwebpage_policy
 ))
 trace_inference_started_at <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
-plan_mode_enabled <- FALSE
+plan_mode_enabled <- TRUE
 attempt <- asa:::.with_heartbeat(
   fn = function() {
     run_task(
@@ -378,6 +345,8 @@ attempt <- asa:::.with_heartbeat(
         #backend = "gemini", model = "gemini-2.5-pro",
         #backend = "gemini", model = "gemini-3-pro-preview",
         backend = "gemini", model = "gemini-3-flash-preview",
+        #backend = "gemini", model = "gemini-3.1-flash-lite-preview",
+        #backend = "xai", model = "grok-4.20-experimental-beta-0304-reasoning",
         #backend = "openai", model = "gpt-5-mini-2025-08-07",
         #backend = "openai", model = "gpt-5-nano-2025-08-07",
         proxy = "socks5h://127.0.0.1:9050",

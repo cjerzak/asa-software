@@ -2,13 +2,15 @@
 % Please edit documentation in R/infra__build_backend.R
 \name{check_backend}
 \alias{check_backend}
-\title{Check Python Environment Availability}
+\title{Check Python Backend Availability}
 \usage{
-check_backend(conda_env = NULL, strict = FALSE)
+check_backend(conda_env = NULL, conda = "auto", strict = FALSE)
 }
 \arguments{
-\item{conda_env}{Name of the conda environment to check. Defaults to the
-package option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
+\item{conda_env}{Name of the Conda environment. Defaults to the package
+option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
+
+\item{conda}{Path to conda executable (default: "auto")}
 
 \item{strict}{If TRUE, also require optional packages used for Tor control and
 stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).}
@@ -25,7 +27,9 @@ A list with components:
 }
 }
 \description{
-Checks if the required Python environment and packages are available.
+Checks whether the configured Conda environment exists and can import the
+Python modules required by the ASA backend, without initializing reticulate's
+Python session for the current R process.
 }
 \examples{
 \dontrun{
