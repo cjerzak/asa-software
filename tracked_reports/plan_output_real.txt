@@ -13,7 +13,7 @@
       "description": "Collect high-signal evidence from relevant tools/sources",
       "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
       "status": "completed",
-      "findings": "Refining search to target official Bolivian legislative and electoral records for education and birth place."
+      "findings": "Found birth_year (1982) and prior_occupation (Presidenta de la Organización de Mujeres - Sub Central Sécure). Missing: birth_place, education details, disability status, and LGBTQ status. Class background needs to be inferred from occupation."
     },
     {
       "id": 3,
@@ -30,6 +30,6 @@
       "findings": ""
     }
   ],
-  "version": 4,
+  "version": 5,
   "current_step": 3
 }

@@ -6,7 +6,7 @@
   "exact_non_decreasing": true,
   "semantic_non_decreasing": true,
   "evidence_quality_non_decreasing": true,
-  "confidence_non_decreasing": false,
+  "confidence_non_decreasing": true,
   "quality_gate_failures_non_increasing": true,
   "tokens_non_increasing": true,
   "token_efficiency_non_increasing": true,
