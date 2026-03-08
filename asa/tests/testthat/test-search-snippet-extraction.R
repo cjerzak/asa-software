@@ -210,6 +210,191 @@ test_that("default snippet engine falls back to selector model only after determ
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_fallback_snippet_selector_calls`)), 1L)
 })
 
+test_that("triage_then_structured skips low-information snippets and carries webpage follow-up", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  original_supports <- core$`_search_snippet_supports_direct_extraction`
+  on.exit(
+    reticulate::py_set_attr(core, "_search_snippet_supports_direct_extraction", original_supports),
+    add = TRUE
+  )
+
+  reticulate::py_run_string(paste0(
+    "def _asa_force_low_information(*args, **kwargs):\n",
+    "    return (False, 'low_information')\n",
+    "\n",
+    "_asa_triage_skip_with_calls = 0\n",
+    "_asa_triage_skip_legacy_calls = 0\n",
+    "class _ASATriageSkipInvoker:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        return {'prior_occupation': 'mathematician'}\n",
+    "class _ASATriageSkipModel:\n",
+    "    def with_structured_output(self, *args, **kwargs):\n",
+    "        global _asa_triage_skip_with_calls\n",
+    "        _asa_triage_skip_with_calls += 1\n",
+    "        return _ASATriageSkipInvoker()\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_triage_skip_legacy_calls\n",
+    "        _asa_triage_skip_legacy_calls += 1\n",
+    "        class _Resp:\n",
+    "            def __init__(self, content):\n",
+    "                self.content = content\n",
+    "        return _Resp('{}')\n",
+    "_asa_triage_skip_model = _ASATriageSkipModel()\n"
+  ))
+  reticulate::py_set_attr(
+    core,
+    "_search_snippet_supports_direct_extraction",
+    reticulate::py$`_asa_force_low_information`
+  )
+
+  schema <- list(
+    prior_occupation = "string|Unknown",
+    prior_occupation_source = "string|null"
+  )
+  field_status <- list(
+    prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "Search",
+    content = paste0(
+      "__START_OF_SOURCE 1__ <CONTENT> General biography overview. </CONTENT> ",
+      "<URL> https://profiles.example.net/ada </URL> __END_OF_SOURCE 1__"
+    )
+  ))
+
+  snippet_result <- core$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = reticulate::py$`_asa_triage_skip_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ada", "Lovelace"),
+    extracted_urls = list(),
+    max_sources = 1L,
+    max_chars = 800L,
+    extraction_engine = "triage_then_structured",
+    debug = FALSE
+  )
+
+  snippet_r <- reticulate::py_to_r(snippet_result)
+  payloads <- snippet_r[[1]]
+  urls <- snippet_r[[2]]
+  meta <- snippet_r[[3]]
+
+  expect_equal(length(payloads), 0L)
+  expect_equal(length(urls), 0L)
+  expect_equal(as.integer(meta$skipped_low_information), 1L)
+  expect_equal(as.integer(meta$structured_output_calls), 0L)
+  expect_equal(as.integer(meta$selector_model_calls), 0L)
+  expect_equal(as.integer(meta$snippet_candidates_attempted), 0L)
+  expect_equal(as.integer(meta$snippet_extraction_attempts), 0L)
+  expect_equal(as.character(meta$preferred_openwebpage_url), "https://profiles.example.net/ada")
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_skip_with_calls`)), 0L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_skip_legacy_calls`)), 0L)
+})
+
+test_that("triage_then_structured uses structured output after deterministic miss", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  original_supports <- core$`_search_snippet_supports_direct_extraction`
+  on.exit(
+    reticulate::py_set_attr(core, "_search_snippet_supports_direct_extraction", original_supports),
+    add = TRUE
+  )
+
+  reticulate::py_run_string(paste0(
+    "def _asa_force_direct_extract(*args, **kwargs):\n",
+    "    return (True, 'eligible')\n",
+    "\n",
+    "_asa_triage_structured_with_calls = 0\n",
+    "_asa_triage_structured_invoke_calls = 0\n",
+    "_asa_triage_structured_legacy_calls = 0\n",
+    "class _ASATriageStructuredInvoker:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_triage_structured_invoke_calls\n",
+    "        _asa_triage_structured_invoke_calls += 1\n",
+    "        return {'prior_occupation': 'mathematician'}\n",
+    "class _ASATriageStructuredModel:\n",
+    "    def with_structured_output(self, *args, **kwargs):\n",
+    "        global _asa_triage_structured_with_calls\n",
+    "        _asa_triage_structured_with_calls += 1\n",
+    "        return _ASATriageStructuredInvoker()\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_triage_structured_legacy_calls\n",
+    "        _asa_triage_structured_legacy_calls += 1\n",
+    "        class _Resp:\n",
+    "            def __init__(self, content):\n",
+    "                self.content = content\n",
+    "        return _Resp('{}')\n",
+    "_asa_triage_structured_model = _ASATriageStructuredModel()\n"
+  ))
+  reticulate::py_set_attr(
+    core,
+    "_search_snippet_supports_direct_extraction",
+    reticulate::py$`_asa_force_direct_extract`
+  )
+
+  schema <- list(
+    prior_occupation = "string|Unknown",
+    prior_occupation_source = "string|null"
+  )
+  field_status <- list(
+    prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "Search",
+    content = paste0(
+      "__START_OF_SOURCE 1__ <CONTENT> Ada Lovelace official biography and profile. </CONTENT> ",
+      "<URL> https://www.example.gov/profile/ada-lovelace </URL> __END_OF_SOURCE 1__"
+    )
+  ))
+
+  snippet_result <- core$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = reticulate::py$`_asa_triage_structured_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ada", "Lovelace"),
+    extracted_urls = list(),
+    max_sources = 1L,
+    max_chars = 800L,
+    extraction_engine = "triage_then_structured",
+    debug = FALSE
+  )
+
+  snippet_r <- reticulate::py_to_r(snippet_result)
+  payloads <- snippet_r[[1]]
+  urls <- snippet_r[[2]]
+  meta <- snippet_r[[3]]
+
+  expect_equal(length(payloads), 1L)
+  expect_equal(as.character(payloads[[1]]$payload$prior_occupation), "mathematician")
+  expect_match(
+    as.character(payloads[[1]]$payload$prior_occupation_source),
+    "example\\.gov/profile/ada-lovelace",
+    perl = TRUE
+  )
+  expect_equal(as.character(urls[[1]]), "https://www.example.gov/profile/ada-lovelace")
+  expect_equal(as.integer(meta$deterministic_fallback_calls), 1L)
+  expect_equal(as.integer(meta$structured_output_calls), 1L)
+  expect_equal(as.integer(meta$selector_model_calls), 0L)
+  expect_equal(as.integer(meta$snippet_candidates_attempted), 1L)
+  expect_equal(as.integer(meta$snippet_extraction_attempts), 1L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_with_calls`)), 1L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_invoke_calls`)), 1L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_legacy_calls`)), 0L)
+})
+
 test_that("search snippet field hints prioritize enriched birth-year snippets", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",
@@ -218,13 +403,13 @@ test_that("search snippet field hints prioritize enriched birth-year snippets", 
 
   reticulate::py_run_string(paste0(
     "import json\n",
-    "class _ASAEmptySnippetModel:\n",
+    "class _ASAFieldHintSnippetModel:\n",
     "    def invoke(self, messages, **kwargs):\n",
     "        class _Resp:\n",
     "            def __init__(self, content):\n",
     "                self.content = content\n",
-    "        return _Resp('{}')\n",
-    "_asa_empty_snippet_model = _ASAEmptySnippetModel()\n"
+    "        return _Resp(json.dumps({'birth_year': 1982}))\n",
+    "_asa_empty_snippet_model = _ASAFieldHintSnippetModel()\n"
   ))
 
   schema <- list(
@@ -275,6 +460,7 @@ test_that("search snippet field hints prioritize enriched birth-year snippets", 
   expect_equal(as.integer(meta$snippet_candidates_selected), 1L)
   expect_equal(as.integer(meta$snippet_candidates_selected_with_field_hints), 1L)
   expect_equal(as.integer(meta$snippet_openwebpage_escalation_events), 0L)
+  expect_equal(as.integer(meta$selector_model_calls), 1L)
 })
 
 test_that("search snippet langextract no_payload is classified as fallback, not provider error", {

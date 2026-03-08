@@ -500,6 +500,108 @@ test_that("snippet escalation can trigger same-round OpenWebpage follow-up", {
   expect_equal(as.integer(out$diagnostics$search_snippet_langextract_calls), 0L)
 })
 
+test_that("quality-gate recovery widens webpage extraction page budget", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+  asa_test_require_langgraph_stack(c(ASA_TEST_LANGGRAPH_MODULES, "langgraph.runtime"))
+
+  graph <- reticulate::import_from_path("asa_backend.graph.agent_graph_core", path = python_path)
+
+  original_webpage_extract <- reticulate::py_get_attr(graph, "_llm_extract_schema_payloads_from_openwebpages")
+  original_critical <- reticulate::py_get_attr(graph, "_is_critical_recursion_step")
+  on.exit({
+    reticulate::py_set_attr(graph, "_llm_extract_schema_payloads_from_openwebpages", original_webpage_extract)
+    reticulate::py_set_attr(graph, "_is_critical_recursion_step", original_critical)
+  }, add = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "captured_recovery_max_pages = None\n",
+    "\n",
+    "def __asa_capture_openwebpage_extract(**kwargs):\n",
+    "    global captured_recovery_max_pages\n",
+    "    captured_recovery_max_pages = kwargs.get('max_pages')\n",
+    "    return ([], [], {'structured_output_calls': 0})\n",
+    "\n",
+    "def __asa_test_false_recovery(*args, **kwargs):\n",
+    "    return False\n"
+  ))
+  reticulate::py_set_attr(
+    graph,
+    "_llm_extract_schema_payloads_from_openwebpages",
+    reticulate::py_eval("__asa_capture_openwebpage_extract", convert = FALSE)
+  )
+  reticulate::py_set_attr(
+    graph,
+    "_is_critical_recursion_step",
+    reticulate::py_eval("__asa_test_false_recovery", convert = FALSE)
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.tools import tool\n",
+    "from langchain_core.messages import AIMessage\n",
+    "from langgraph.prebuilt import ToolNode\n",
+    "from langgraph.runtime import Runtime\n",
+    "\n",
+    "@tool('OpenWebpage')\n",
+    "def OpenWebpage(url: str) -> str:\n",
+    "    \"\"\"Test OpenWebpage tool for recovery-budget widening.\"\"\"\n",
+    "    return 'URL: ' + url + '\\nFinal URL: ' + url + '\\nRelevant excerpts:\\n[1]\\nEvidence line'\n",
+    "\n",
+    "tool_node_recovery = ToolNode([OpenWebpage])\n",
+    "runtime_config_recovery = {'configurable': {'__pregel_runtime': Runtime()}}\n",
+    "\n",
+    "class _ToolNodeShimRecovery:\n",
+    "    def __init__(self, node, config):\n",
+    "        self._node = node\n",
+    "        self._config = config\n",
+    "    def invoke(self, state):\n",
+    "        return self._node.invoke(state, config=self._config)\n",
+    "\n",
+    "class _ASARecoverySelectorModel:\n",
+    "    pass\n",
+    "\n",
+    "base_tool_node_recovery = _ToolNodeShimRecovery(tool_node_recovery, runtime_config_recovery)\n",
+    "recovery_selector_model = _ASARecoverySelectorModel()\n"
+  ))
+
+  wrapped_tool_node <- graph$`_create_tool_node_with_scratchpad`(
+    reticulate::py$base_tool_node_recovery,
+    debug = FALSE,
+    selector_model = reticulate::py$recovery_selector_model
+  )
+
+  ai_open <- reticulate::py_eval(
+    "AIMessage(content='', tool_calls=[{'name':'OpenWebpage','args':{'url':'https://example.com/profile'},'id':'call_recovery_1'}])",
+    convert = FALSE
+  )
+  wrapped_tool_node(list(
+    messages = list(ai_open),
+    expected_schema = list(
+      birth_place = "string|Unknown",
+      birth_place_source = "string|null"
+    ),
+    field_status = list(
+      birth_place = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+      birth_place_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+    ),
+    orchestration_options = list(
+      field_resolver = list(
+        webpage_extraction_enabled = TRUE,
+        llm_webpage_extraction = TRUE,
+        llm_webpage_extraction_max_pages_per_round = 1L,
+        llm_webpage_extraction_max_total_pages = 1L
+      )
+    ),
+    budget_state = list(
+      quality_gate_recovery_active = TRUE
+    )
+  ))
+
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$captured_recovery_max_pages)), 2L)
+})
+
 test_that("generic follow-up selection mildly prefers authoritative detail pages", {
   python_path <- asa_test_skip_if_no_python(
     required_files = "asa_backend/graph/agent_graph_core.py",

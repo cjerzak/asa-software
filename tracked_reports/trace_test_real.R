@@ -171,6 +171,7 @@ orchestration_options_override <- if (use_fast_emulation) {
     field_resolver = list(
       webpage_extraction_enabled = TRUE,
       search_snippet_extraction_enabled = TRUE,
+      search_snippet_extraction_engine = "triage_then_structured",
       search_snippet_extraction_max_sources_per_round = 2L,
       search_snippet_extraction_max_total_sources = 6L
     ),
@@ -181,7 +182,11 @@ orchestration_options_override <- if (use_fast_emulation) {
     policy_version = "2026-02-24-trace-benchmark-v2"
   )
 } else {
-  NULL
+  list(
+    field_resolver = list(
+      search_snippet_extraction_engine = "triage_then_structured"
+    )
+  )
 }
 
 source_policy_override <- list(

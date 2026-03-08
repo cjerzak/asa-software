@@ -59,6 +59,7 @@ from asa_backend.search.ddg_transport import (
 from asa_backend.extraction.schema_langextract_bridge import (
     extract_schema_from_openwebpage_text as _langextract_extract_schema_from_openwebpage_text,
     extract_schema_with_provider_fallback as _langextract_extract_schema_with_fallback,
+    _resolve_route as _langextract_resolve_route,
 )
 from shared.state_graph_utils import (
     build_node_trace_entry,
@@ -1399,7 +1400,7 @@ def _normalize_component_mode(raw_mode: Any) -> str:
 
 def _normalize_search_snippet_extraction_engine(raw_engine: Any) -> str:
     token = str(raw_engine or "deterministic_then_legacy").strip().lower()
-    if token not in {"deterministic", "deterministic_then_legacy", "legacy", "langextract"}:
+    if token not in {"deterministic", "deterministic_then_legacy", "legacy", "langextract", "triage_then_structured"}:
         token = "deterministic_then_legacy"
     return token
 
@@ -3092,6 +3093,12 @@ def _prepare_openwebpage_text_for_extraction(
         return ""
 
     normalized = raw.replace("\r\n", "\n").replace("\r", "\n")
+    title_line = ""
+    title_match = re.search(r"^\s*Title:\s*(.+?)\s*$", normalized, flags=re.IGNORECASE | re.MULTILINE)
+    if title_match:
+        title_candidate = re.sub(r"\s+", " ", str(title_match.group(1) or "")).strip()
+        if title_candidate and title_candidate.lower() not in {"(unknown)", "unknown"}:
+            title_line = title_candidate
     excerpts_match = re.search(r"\n\s*Relevant excerpts:\s*\n", normalized, flags=re.IGNORECASE)
     if excerpts_match:
         normalized = normalized[excerpts_match.end():]
@@ -3116,6 +3123,8 @@ def _prepare_openwebpage_text_for_extraction(
 
     if not cleaned_lines:
         return ""
+    if title_line:
+        cleaned_lines = [title_line] + cleaned_lines
 
     signal_lines = [
         line for line in cleaned_lines
@@ -3502,6 +3511,122 @@ def _search_snippet_field_hint_score(snippet_text: Any, field_hints: Any) -> flo
     elif keyword_score > 0.0 and bool(date_signal.get("year_only", False)):
         keyword_score += 0.20
     return round(float(keyword_score), 4)
+
+
+def _collect_unresolved_field_keywords(
+    *,
+    expected_schema: Any,
+    field_status: Any,
+    max_keywords_per_field: int = 8,
+) -> List[str]:
+    unresolved_fields = _collect_resolvable_unknown_fields(field_status)
+    if not unresolved_fields:
+        return []
+    keywords: List[str] = []
+    seen = set()
+    descriptor_map = _schema_leaf_descriptor_map(expected_schema)
+    for field_name in list(unresolved_fields or []):
+        field_key = str(field_name or "").strip()
+        if not field_key or field_key.endswith("_source") or field_key.endswith("_confidence"):
+            continue
+        for keyword in _field_recovery_keywords(
+            field_key,
+            _field_key_aliases(field_key),
+            max_tokens=max_keywords_per_field,
+        ):
+            normalized = _normalize_match_text(keyword)
+            if not normalized or normalized in seen:
+                continue
+            seen.add(normalized)
+            keywords.append(normalized)
+        for option in _descriptor_enum_options(descriptor_map.get(field_key)):
+            normalized = _normalize_match_text(option)
+            if len(normalized) < 3 or normalized in seen:
+                continue
+            seen.add(normalized)
+            keywords.append(normalized)
+    return keywords[:64]
+
+
+def _search_snippet_has_explicit_value_signal(
+    snippet_text: Any,
+    *,
+    unresolved_keywords: Any = None,
+) -> bool:
+    raw_text = re.sub(r"\s+", " ", str(snippet_text or "")).strip()
+    if not raw_text:
+        return False
+    lowered = raw_text.lower()
+    date_signal = _search_snippet_date_signal(raw_text)
+    if bool(date_signal.get("structured_date", False)):
+        return True
+    if re.search(
+        r"\b(?:born|birth|education|educated|graduated|occupation|profession|worked|served|title|role|institution|university|disability|orientation)\b",
+        lowered,
+    ):
+        return True
+    if ":" in raw_text:
+        normalized_text = _normalize_match_text(raw_text)
+        for keyword in list(unresolved_keywords or []):
+            keyword_norm = _normalize_match_text(keyword)
+            if keyword_norm and keyword_norm in normalized_text:
+                return True
+    return False
+
+
+def _search_snippet_supports_direct_extraction(
+    candidate: Any,
+    *,
+    expected_schema: Any,
+    field_status: Any,
+) -> Tuple[bool, str]:
+    if not isinstance(candidate, dict):
+        return False, "invalid_candidate"
+    page_url = _normalize_url_match(candidate.get("url"))
+    if not page_url:
+        return False, "missing_url"
+    if _is_noise_source_url(page_url):
+        return False, "noise_source"
+    try:
+        url_score = float(candidate.get("url_score", 0.0) or 0.0)
+    except Exception:
+        url_score = 0.0
+    try:
+        entity_ratio = float(candidate.get("entity_ratio", 0.0) or 0.0)
+    except Exception:
+        entity_ratio = 0.0
+    try:
+        field_hint_score = float(candidate.get("field_hint_score", 0.0) or 0.0)
+    except Exception:
+        field_hint_score = 0.0
+    try:
+        source_tier = int(candidate.get("source_tier", 0) or 0)
+    except Exception:
+        source_tier = 0
+    try:
+        authority_score = float(candidate.get("authority_score", 0.0) or 0.0)
+    except Exception:
+        authority_score = 0.0
+    quoted_hits = int(candidate.get("query_intent_quoted_phrase_hits", 0) or 0)
+    explicit_value_signal = _search_snippet_has_explicit_value_signal(
+        candidate.get("extraction_text") or candidate.get("text") or "",
+        unresolved_keywords=_collect_unresolved_field_keywords(
+            expected_schema=expected_schema,
+            field_status=field_status,
+        ),
+    )
+    strong_source = bool(source_tier >= 2 or url_score >= 0.55 or authority_score >= 0.45)
+    strong_relevance = bool(
+        field_hint_score > 0.0
+        or quoted_hits > 0
+        or entity_ratio >= 0.35
+        or explicit_value_signal
+    )
+    if strong_source and strong_relevance:
+        return True, "eligible"
+    if not strong_source:
+        return False, "weak_source"
+    return False, "low_information"
 
 
 def _search_snippet_candidate_supports_openwebpage_escalation(
@@ -6433,6 +6558,402 @@ def _invoke_selector_model_with_timeout(
         executor.shutdown(wait=False, cancel_futures=True)
 
 
+def _selector_model_backend_for_extraction(
+    selector_model: Any,
+    *,
+    backend_hint: Optional[str] = None,
+) -> str:
+    token = str(backend_hint or "").strip().lower()
+    try:
+        route, _ = _langextract_resolve_route(
+            selector_model,
+            backend_hint=backend_hint,
+        )
+    except Exception:
+        route = None
+    if route is not None:
+        try:
+            route_backend = str(getattr(route, "backend", "") or "").strip().lower()
+        except Exception:
+            route_backend = ""
+        if route_backend:
+            return route_backend
+    return token
+
+
+def _schema_leaf_descriptor_map(expected_schema: Any) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
+    try:
+        leaf_paths = _schema_leaf_paths(expected_schema)
+    except Exception:
+        leaf_paths = []
+    for path, descriptor in list(leaf_paths or []):
+        key = str(path or "").replace("[]", "").strip()
+        if not key or "[]" in str(path or ""):
+            continue
+        out[key] = descriptor
+    return out
+
+
+def _json_schema_property_for_descriptor(descriptor: Any) -> Dict[str, Any]:
+    if isinstance(descriptor, dict):
+        return {
+            "type": ["object", "null"],
+            "additionalProperties": True,
+        }
+    if isinstance(descriptor, list):
+        return {
+            "type": ["array", "null"],
+            "items": {},
+        }
+
+    desc = str(descriptor or "").strip().lower()
+    if not desc:
+        return {"type": ["string", "null"]}
+
+    json_types: List[str] = []
+    if "integer" in desc:
+        json_types.append("integer")
+    elif "number" in desc or "float" in desc:
+        json_types.append("number")
+    elif "boolean" in desc or "bool" in desc:
+        json_types.append("boolean")
+    else:
+        json_types.append("string")
+
+    if "null" in desc or "unknown" in desc:
+        json_types.append("null")
+
+    enum_options = _descriptor_enum_options(descriptor)
+    property_schema: Dict[str, Any] = {
+        "type": json_types[0] if len(json_types) == 1 else json_types,
+    }
+    if enum_options and ("string" in json_types):
+        enum_values: List[Any] = [str(v) for v in list(enum_options or [])]
+        if "null" in json_types:
+            enum_values.append(None)
+        property_schema["enum"] = enum_values
+    return property_schema
+
+
+def _build_allowed_keys_json_schema(
+    *,
+    allowed_keys: Any,
+    expected_schema: Any,
+    schema_name: str = "asa_schema_extract",
+) -> Dict[str, Any]:
+    descriptor_map = _schema_leaf_descriptor_map(expected_schema)
+    properties: Dict[str, Any] = {}
+    for raw_key in list(allowed_keys or []):
+        key = str(raw_key or "").strip()
+        if not key:
+            continue
+        properties[key] = _json_schema_property_for_descriptor(descriptor_map.get(key))
+    return {
+        "name": str(schema_name or "asa_schema_extract"),
+        "schema": {
+            "type": "object",
+            "properties": properties,
+            "additionalProperties": False,
+        },
+    }
+
+
+def _coerce_structured_output_payload(raw: Any) -> Dict[str, Any]:
+    if isinstance(raw, dict):
+        return raw
+    if raw is None:
+        return {}
+    try:
+        model_dump = getattr(raw, "model_dump", None)
+        if callable(model_dump):
+            dumped = model_dump()
+            if isinstance(dumped, dict):
+                return dumped
+    except Exception:
+        pass
+    try:
+        to_dict = getattr(raw, "dict", None)
+        if callable(to_dict):
+            dumped = to_dict()
+            if isinstance(dumped, dict):
+                return dumped
+    except Exception:
+        pass
+    try:
+        to_json = getattr(raw, "json", None)
+        if callable(to_json):
+            parsed = parse_llm_json(to_json())
+            if isinstance(parsed, dict):
+                return parsed
+    except Exception:
+        pass
+    response_text = _message_content_to_text(getattr(raw, "content", raw))
+    parsed = parse_llm_json(response_text)
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _normalize_extracted_payload_dict(
+    parsed: Any,
+    *,
+    allowed_keys: Any,
+    page_url: Any,
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    allowed = {
+        str(key or "").strip()
+        for key in list(allowed_keys or [])
+        if str(key or "").strip()
+    }
+    raw_key_count = 0
+    raw_nonempty_key_count = 0
+    extracted_payload: Dict[str, Any] = {}
+    if not isinstance(parsed, dict):
+        return extracted_payload, {
+            "raw_key_count": 0,
+            "raw_nonempty_key_count": 0,
+            "accepted_key_count": 0,
+            "payload_filtered_all_keys": False,
+        }
+
+    for raw_key, raw_value in parsed.items():
+        key = str(raw_key or "").strip()
+        if not key:
+            continue
+        raw_key_count += 1
+        if not _is_empty_like(raw_value) and not (
+            isinstance(raw_value, str) and _is_unknown_marker(raw_value)
+        ):
+            raw_nonempty_key_count += 1
+        if key not in allowed:
+            continue
+        if _is_empty_like(raw_value):
+            continue
+        if isinstance(raw_value, str) and _is_unknown_marker(raw_value):
+            continue
+        if key.endswith("_source"):
+            normalized = _normalize_url_match(raw_value) or _normalize_url_match(page_url)
+            if normalized:
+                extracted_payload[key] = normalized
+            continue
+        extracted_payload[key] = raw_value
+
+    normalized_page_url = _normalize_url_match(page_url)
+    if normalized_page_url:
+        for key in list(extracted_payload.keys()):
+            if key.endswith("_source"):
+                continue
+            sibling = f"{key}_source"
+            if sibling in allowed and sibling not in extracted_payload:
+                extracted_payload[sibling] = normalized_page_url
+
+    accepted_key_count = len(extracted_payload)
+    return extracted_payload, {
+        "raw_key_count": int(raw_key_count),
+        "raw_nonempty_key_count": int(raw_nonempty_key_count),
+        "accepted_key_count": int(accepted_key_count),
+        "payload_filtered_all_keys": bool(raw_nonempty_key_count > 0 and accepted_key_count == 0),
+    }
+
+
+def _invoke_structured_selector_model_with_timeout(
+    model: Any,
+    messages: List[Any],
+    *,
+    expected_schema: Any,
+    allowed_keys: Any,
+    page_url: Any,
+    max_output_tokens: int = 180,
+    timeout_s: float = 0.0,
+) -> Dict[str, Any]:
+    schema_wrapper = _build_allowed_keys_json_schema(
+        allowed_keys=allowed_keys,
+        expected_schema=expected_schema,
+    )
+    json_schema = schema_wrapper.get("schema") or {}
+    timeout_value = 0.0
+    try:
+        timeout_value = float(timeout_s or 0.0)
+    except Exception:
+        timeout_value = 0.0
+
+    def _invoke_once() -> Dict[str, Any]:
+        last_error = "structured_output_unavailable"
+        with_structured_output = getattr(model, "with_structured_output", None)
+        if callable(with_structured_output):
+            builders = (
+                lambda: with_structured_output(json_schema, method="json_schema"),
+                lambda: with_structured_output(json_schema),
+                lambda: with_structured_output(schema=json_schema, method="json_schema"),
+                lambda: with_structured_output(schema=json_schema),
+            )
+            for builder in builders:
+                try:
+                    structured_model = builder()
+                    response = _invoke_model_with_output_cap(
+                        structured_model,
+                        messages,
+                        max_output_tokens=max_output_tokens,
+                    )
+                    payload_raw = _coerce_structured_output_payload(response)
+                    payload, payload_meta = _normalize_extracted_payload_dict(
+                        payload_raw,
+                        allowed_keys=allowed_keys,
+                        page_url=page_url,
+                    )
+                    if payload:
+                        return {
+                            "ok": True,
+                            "payload": payload,
+                            "error": None,
+                            "method": "with_structured_output",
+                            **payload_meta,
+                        }
+                    if bool(payload_meta.get("payload_filtered_all_keys", False)):
+                        return {
+                            "ok": False,
+                            "payload": {},
+                            "error": "payload_filtered_all_keys",
+                            "method": "with_structured_output",
+                            **payload_meta,
+                        }
+                    return {
+                        "ok": False,
+                        "payload": {},
+                        "error": "provider_empty_payload",
+                        "method": "with_structured_output",
+                        **payload_meta,
+                    }
+                except Exception as exc:
+                    last_error = f"structured_output_error:{exc}"
+
+        bind_method = getattr(model, "bind", None)
+        if callable(bind_method):
+            response_formats = (
+                {
+                    "response_format": {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": schema_wrapper.get("name") or "asa_schema_extract",
+                            "strict": True,
+                            "schema": json_schema,
+                        },
+                    }
+                },
+                {"response_format": {"type": "json_object"}},
+            )
+            for kwargs in response_formats:
+                try:
+                    bound_model = bind_method(**kwargs)
+                    response = _invoke_model_with_output_cap(
+                        bound_model,
+                        messages,
+                        max_output_tokens=max_output_tokens,
+                    )
+                    payload_raw = _coerce_structured_output_payload(response)
+                    payload, payload_meta = _normalize_extracted_payload_dict(
+                        payload_raw,
+                        allowed_keys=allowed_keys,
+                        page_url=page_url,
+                    )
+                    if payload:
+                        return {
+                            "ok": True,
+                            "payload": payload,
+                            "error": None,
+                            "method": "response_format",
+                            **payload_meta,
+                        }
+                    if bool(payload_meta.get("payload_filtered_all_keys", False)):
+                        return {
+                            "ok": False,
+                            "payload": {},
+                            "error": "payload_filtered_all_keys",
+                            "method": "response_format",
+                            **payload_meta,
+                        }
+                    return {
+                        "ok": False,
+                        "payload": {},
+                        "error": "provider_empty_payload",
+                        "method": "response_format",
+                        **payload_meta,
+                    }
+                except Exception as exc:
+                    last_error = f"structured_output_error:{exc}"
+
+        return {
+            "ok": False,
+            "payload": {},
+            "error": last_error,
+            "method": "",
+            "raw_key_count": 0,
+            "raw_nonempty_key_count": 0,
+            "accepted_key_count": 0,
+            "payload_filtered_all_keys": False,
+        }
+
+    if timeout_value <= 0.0:
+        try:
+            return _invoke_once()
+        except Exception as exc:
+            return {
+                "ok": False,
+                "payload": {},
+                "error": f"structured_output_error:{exc}",
+                "method": "",
+                "raw_key_count": 0,
+                "raw_nonempty_key_count": 0,
+                "accepted_key_count": 0,
+                "payload_filtered_all_keys": False,
+            }
+
+    try:
+        from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+    except Exception:
+        try:
+            return _invoke_once()
+        except Exception as exc:
+            return {
+                "ok": False,
+                "payload": {},
+                "error": f"structured_output_error:{exc}",
+                "method": "",
+                "raw_key_count": 0,
+                "raw_nonempty_key_count": 0,
+                "accepted_key_count": 0,
+                "payload_filtered_all_keys": False,
+            }
+
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(_invoke_once)
+    try:
+        return future.result(timeout=timeout_value)
+    except FuturesTimeoutError:
+        return {
+            "ok": False,
+            "payload": {},
+            "error": "provider_timeout",
+            "method": "",
+            "raw_key_count": 0,
+            "raw_nonempty_key_count": 0,
+            "accepted_key_count": 0,
+            "payload_filtered_all_keys": False,
+        }
+    except Exception as exc:
+        return {
+            "ok": False,
+            "payload": {},
+            "error": f"structured_output_error:{exc}",
+            "method": "",
+            "raw_key_count": 0,
+            "raw_nonempty_key_count": 0,
+            "accepted_key_count": 0,
+            "payload_filtered_all_keys": False,
+        }
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
 def _query_intent_for_search_queries(
     search_queries: Any,
     *,
@@ -8896,19 +9417,35 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "webpage_deterministic_fallback_calls",
         "webpage_deterministic_fallback_payloads",
         "webpage_deterministic_fallback_no_payload",
+        "webpage_structured_output_calls",
+        "webpage_structured_output_errors",
+        "webpage_provider_timeout",
+        "webpage_provider_empty_payload",
+        "webpage_payload_filtered_all_keys",
         "search_snippet_llm_extraction_calls",
         "search_snippet_langextract_calls",
         "search_snippet_langextract_fallback_calls",
         "search_snippet_langextract_errors",
+        "search_snippet_structured_output_calls",
+        "search_snippet_structured_output_errors",
         "search_snippet_candidates_total",
         "search_snippet_candidates_selected",
         "search_snippet_candidates_selected_with_field_hints",
         "search_snippet_skipped_duplicate_urls",
+        "search_snippet_skipped_low_information",
         "search_snippet_openwebpage_escalation_events",
         "search_snippet_openwebpage_escalation_successes",
+        "search_snippet_escalated_to_openwebpage",
         "search_snippet_deterministic_fallback_calls",
         "search_snippet_deterministic_fallback_payloads",
         "search_snippet_deterministic_fallback_no_payload",
+        "search_snippet_provider_timeout",
+        "search_snippet_provider_empty_payload",
+        "search_snippet_payload_filtered_all_keys",
+        "search_snippet_budget_blocked_rounds",
+        "search_snippet_policy_blocked_rounds",
+        "webpage_budget_blocked_rounds",
+        "webpage_policy_blocked_rounds",
         "webpage_langextract_elapsed_ms_total",
         "webpage_langextract_error_elapsed_ms_total",
         "search_snippet_langextract_elapsed_ms_total",
@@ -9154,6 +9691,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["webpage_langextract_last_error"] = str(existing.get("webpage_langextract_last_error") or "")[:400]
     out["search_snippet_langextract_provider"] = str(existing.get("search_snippet_langextract_provider") or "")
     out["search_snippet_langextract_last_error"] = str(existing.get("search_snippet_langextract_last_error") or "")[:400]
+    out["webpage_structured_output_last_error"] = str(existing.get("webpage_structured_output_last_error") or "")[:400]
+    out["search_snippet_structured_output_last_error"] = str(existing.get("search_snippet_structured_output_last_error") or "")[:400]
     out["anchor_strength_current"] = str(existing.get("anchor_strength_current") or "none").strip().lower()
     if out["anchor_strength_current"] not in {"none", "weak", "moderate", "strong"}:
         out["anchor_strength_current"] = "none"
@@ -15644,6 +16183,9 @@ def _llm_extract_schema_payloads_from_openwebpages(
         "langextract_elapsed_ms_total": 0,
         "langextract_elapsed_ms_max": 0,
         "langextract_error_elapsed_ms_total": 0,
+        "structured_output_calls": 0,
+        "structured_output_errors": 0,
+        "structured_output_last_error": "",
         "deterministic_fallback_calls": 0,
         "deterministic_fallback_payloads": 0,
         "deterministic_fallback_no_payload": 0,
@@ -15652,6 +16194,9 @@ def _llm_extract_schema_payloads_from_openwebpages(
         "openwebpage_skipped_hard_failures": 0,
         "openwebpage_skipped_empty": 0,
         "openwebpage_skip_reasons": [],
+        "provider_timeout": 0,
+        "provider_empty_payload": 0,
+        "payload_filtered_all_keys": 0,
     }
 
     if selector_model is None or expected_schema is None:
@@ -15771,6 +16316,11 @@ def _llm_extract_schema_payloads_from_openwebpages(
     engine = str(extraction_engine or "langextract").strip().lower()
     if engine not in {"langextract", "legacy"}:
         engine = "langextract"
+    selector_backend = _selector_model_backend_for_extraction(
+        selector_model,
+        backend_hint=langextract_backend_hint,
+    )
+    prefer_structured_output = bool(engine == "langextract" and selector_backend == "openai")
 
     for item in chosen:
         page_url = _normalize_url_match(item.get("url"))
@@ -15833,6 +16383,71 @@ def _llm_extract_schema_payloads_from_openwebpages(
                 return ""
             return error_text
 
+        def _record_empty_payload_reason(reason: Any) -> None:
+            token = str(reason or "").strip().lower()
+            if not token:
+                return
+            if token == "provider_timeout" or "timeout" in token:
+                metadata["provider_timeout"] = int(metadata.get("provider_timeout", 0) or 0) + 1
+                return
+            if token == "payload_filtered_all_keys":
+                metadata["payload_filtered_all_keys"] = int(
+                    metadata.get("payload_filtered_all_keys", 0) or 0
+                ) + 1
+                return
+            if token in {"provider_empty_payload", "no_payload", "empty_page_text", "no_examples"}:
+                metadata["provider_empty_payload"] = int(
+                    metadata.get("provider_empty_payload", 0) or 0
+                ) + 1
+                return
+            if "structured_output_unavailable" in token:
+                return
+            metadata["provider_empty_payload"] = int(metadata.get("provider_empty_payload", 0) or 0) + 1
+
+        if prefer_structured_output:
+            metadata["structured_output_calls"] = int(metadata.get("structured_output_calls", 0) or 0) + 1
+            structured_result = _invoke_structured_selector_model_with_timeout(
+                selector_model,
+                [
+                    {
+                        "role": "system",
+                        "content": (
+                            "Extract structured schema field values from the provided webpage text. "
+                            "Only include explicit concrete values for allowed keys."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {
+                                "page_url": page_url,
+                                "allowed_keys": sorted(allowed_keys),
+                                "page_text": clipped_text,
+                            },
+                            ensure_ascii=False,
+                        ),
+                    },
+                ],
+                expected_schema=expected_schema,
+                allowed_keys=sorted(allowed_keys),
+                page_url=page_url,
+                max_output_tokens=max(64, int(max_output_tokens)),
+                timeout_s=timeout_s,
+            )
+            structured_payload = structured_result.get("payload") if isinstance(structured_result, dict) else {}
+            if isinstance(structured_payload, dict) and structured_payload:
+                _emit_payload(structured_payload)
+                continue
+            structured_error = str((structured_result or {}).get("error") or "").strip()
+            if structured_error and "structured_output_unavailable" not in structured_error:
+                metadata["structured_output_errors"] = int(
+                    metadata.get("structured_output_errors", 0) or 0
+                ) + 1
+                metadata["structured_output_last_error"] = structured_error[:400]
+            _record_empty_payload_reason(structured_error)
+            _emit_deterministic_fallback()
+            continue
+
         if engine == "langextract":
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
             _entity_hint = " ".join(anchor_tokens) if anchor_tokens else None
@@ -15877,6 +16492,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
             metadata["langextract_fallback_calls"] = (
                 int(metadata.get("langextract_fallback_calls", 0) or 0) + 1
             )
+            _record_empty_payload_reason(langextract_result.get("error") if isinstance(langextract_result, dict) else None)
             provider_failure = _provider_failure_error_text(langextract_result)
             if provider_failure:
                 metadata["langextract_errors"] = int(metadata.get("langextract_errors", 0) or 0) + 1
@@ -15922,41 +16538,33 @@ def _llm_extract_schema_payloads_from_openwebpages(
             timeout_s=timeout_s,
         )
         if response is None:
+            metadata["provider_timeout"] = int(metadata.get("provider_timeout", 0) or 0) + 1
             _emit_deterministic_fallback()
             continue
         response_text = _message_content_to_text(getattr(response, "content", ""))
         parsed = parse_llm_json(response_text)
         if not isinstance(parsed, dict) or not parsed:
+            metadata["provider_empty_payload"] = int(metadata.get("provider_empty_payload", 0) or 0) + 1
             _emit_deterministic_fallback()
             continue
 
-        extracted_payload: Dict[str, Any] = {}
-        for raw_key, raw_value in parsed.items():
-            key = str(raw_key or "").strip()
-            if not key or key not in allowed_keys:
-                continue
-            if _is_empty_like(raw_value):
-                continue
-            if isinstance(raw_value, str) and _is_unknown_marker(raw_value):
-                continue
-            if key.endswith("_source"):
-                normalized = _normalize_url_match(raw_value) or page_url
-                if normalized:
-                    extracted_payload[key] = normalized
-                continue
-            extracted_payload[key] = raw_value
+        extracted_payload, payload_meta = _normalize_extracted_payload_dict(
+            parsed,
+            allowed_keys=sorted(allowed_keys),
+            page_url=page_url,
+        )
 
         if not extracted_payload:
+            if bool(payload_meta.get("payload_filtered_all_keys", False)):
+                metadata["payload_filtered_all_keys"] = int(
+                    metadata.get("payload_filtered_all_keys", 0) or 0
+                ) + 1
+            else:
+                metadata["provider_empty_payload"] = int(
+                    metadata.get("provider_empty_payload", 0) or 0
+                ) + 1
             _emit_deterministic_fallback()
             continue
-
-        # Fill in sibling *_source keys deterministically when allowed.
-        for key, value in list(extracted_payload.items()):
-            if key.endswith("_source"):
-                continue
-            source_key = f"{key}_source"
-            if source_key in allowed_keys and source_key not in extracted_payload:
-                extracted_payload[source_key] = page_url
 
         _emit_payload(extracted_payload)
 
@@ -16005,6 +16613,9 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "langextract_elapsed_ms_total": 0,
         "langextract_elapsed_ms_max": 0,
         "langextract_error_elapsed_ms_total": 0,
+        "structured_output_calls": 0,
+        "structured_output_errors": 0,
+        "structured_output_last_error": "",
         "deterministic_fallback_calls": 0,
         "deterministic_fallback_payloads": 0,
         "deterministic_fallback_no_payload": 0,
@@ -16012,9 +16623,15 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "snippet_candidates_selected": 0,
         "snippet_candidates_selected_with_field_hints": 0,
         "snippet_candidates_attempted": 0,
+        "snippet_extraction_attempts": 0,
         "snippet_skipped_duplicate_urls": 0,
+        "skipped_low_information": 0,
         "snippet_openwebpage_escalation_events": 0,
+        "snippet_escalated_to_openwebpage": 0,
         "selector_model_calls": 0,
+        "provider_timeout": 0,
+        "provider_empty_payload": 0,
+        "payload_filtered_all_keys": 0,
         "preferred_openwebpage_url": None,
     }
 
@@ -16058,9 +16675,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
             already.add(normalized)
 
     engine = _normalize_search_snippet_extraction_engine(extraction_engine)
-    use_deterministic_first = engine in {"deterministic", "deterministic_then_legacy"}
+    use_deterministic_first = engine in {"deterministic", "deterministic_then_legacy", "triage_then_structured"}
     use_selector_fallback = engine in {"legacy", "deterministic_then_legacy"}
     use_langextract = engine == "langextract"
+    use_structured_output = engine == "triage_then_structured"
 
     max_chars_int = max(256, int(max_chars or 2000))
     candidate_map: Dict[str, Dict[str, Any]] = {}
@@ -16190,8 +16808,8 @@ def _llm_extract_schema_payloads_from_search_snippets(
             -int(bool(item.get("query_intent_required_host_match", False))),
             -int(item.get("query_intent_quoted_phrase_hits", 0) or 0),
             -int(bool(item.get("query_intent_preferred_host_match", False))),
-            -float(item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0),
             -float(item.get("field_hint_score", 0.0) or 0.0),
+            -float(item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0),
             int(item.get("order", 9999) or 9999),
             str(item.get("url") or ""),
         ),
@@ -16222,13 +16840,23 @@ def _llm_extract_schema_payloads_from_search_snippets(
         page_text = str(item.get("extraction_text") or raw_text or "")
         if not page_url or not page_text.strip():
             continue
-        processed_urls.append(page_url)
-        metadata["snippet_candidates_attempted"] = int(
-            metadata.get("snippet_candidates_attempted", 0) or 0
-        ) + 1
 
         clipped_raw_text = raw_text[:max_chars_int]
         clipped_text = page_text[:max_chars_int]
+        extraction_attempt_recorded = False
+
+        def _record_extraction_attempt() -> None:
+            nonlocal extraction_attempt_recorded
+            if extraction_attempt_recorded:
+                return
+            extraction_attempt_recorded = True
+            processed_urls.append(page_url)
+            metadata["snippet_candidates_attempted"] = int(
+                metadata.get("snippet_candidates_attempted", 0) or 0
+            ) + 1
+            metadata["snippet_extraction_attempts"] = int(
+                metadata.get("snippet_extraction_attempts", 0) or 0
+            ) + 1
 
         def _emit_payload(extracted_payload: Dict[str, Any]) -> None:
             if debug:
@@ -16331,14 +16959,103 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 return ""
             return error_text
 
-        if use_deterministic_first and _emit_deterministic_fallback():
+        def _record_empty_payload_reason(reason: Any) -> None:
+            token = str(reason or "").strip().lower()
+            if not token:
+                return
+            if token == "provider_timeout" or "timeout" in token:
+                metadata["provider_timeout"] = int(metadata.get("provider_timeout", 0) or 0) + 1
+                return
+            if token == "payload_filtered_all_keys":
+                metadata["payload_filtered_all_keys"] = int(
+                    metadata.get("payload_filtered_all_keys", 0) or 0
+                ) + 1
+                return
+            if token in {"provider_empty_payload", "no_payload", "empty_page_text", "no_examples"}:
+                metadata["provider_empty_payload"] = int(
+                    metadata.get("provider_empty_payload", 0) or 0
+                ) + 1
+                return
+            if "structured_output_unavailable" in token:
+                return
+            metadata["provider_empty_payload"] = int(metadata.get("provider_empty_payload", 0) or 0) + 1
+
+        if use_structured_output:
+            direct_extract_ok, _ = _search_snippet_supports_direct_extraction(
+                item,
+                expected_schema=expected_schema,
+                field_status=field_status,
+            )
+            if not direct_extract_ok:
+                metadata["skipped_low_information"] = int(
+                    metadata.get("skipped_low_information", 0) or 0
+                ) + 1
+                _record_openwebpage_escalation()
+                continue
+
+        if use_deterministic_first:
+            _record_extraction_attempt()
+            if _emit_deterministic_fallback():
+                continue
+
+        if use_structured_output:
+            if selector_model is None:
+                _record_openwebpage_escalation()
+                continue
+            _record_extraction_attempt()
+            metadata["structured_output_calls"] = int(
+                metadata.get("structured_output_calls", 0) or 0
+            ) + 1
+            structured_result = _invoke_structured_selector_model_with_timeout(
+                selector_model,
+                [
+                    {
+                        "role": "system",
+                        "content": (
+                            "Extract structured schema field values from the provided text snippet. "
+                            "Only include explicit concrete values for allowed keys."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {
+                                "page_url": page_url,
+                                "allowed_keys": sorted(allowed_keys),
+                                "page_text": clipped_text,
+                            },
+                            ensure_ascii=False,
+                        ),
+                    },
+                ],
+                expected_schema=expected_schema,
+                allowed_keys=sorted(allowed_keys),
+                page_url=page_url,
+                max_output_tokens=max(64, int(max_output_tokens)),
+                timeout_s=timeout_s,
+            )
+            structured_payload = structured_result.get("payload") if isinstance(structured_result, dict) else {}
+            if isinstance(structured_payload, dict) and structured_payload:
+                _emit_payload(structured_payload)
+                continue
+            structured_error = str((structured_result or {}).get("error") or "").strip()
+            if structured_error and "structured_output_unavailable" not in structured_error:
+                metadata["structured_output_errors"] = int(
+                    metadata.get("structured_output_errors", 0) or 0
+                ) + 1
+                metadata["structured_output_last_error"] = structured_error[:400]
+            _record_empty_payload_reason(structured_error)
+            _record_openwebpage_escalation()
             continue
 
         if use_langextract:
             if selector_model is None:
-                if not use_deterministic_first and not _emit_deterministic_fallback():
-                    _record_openwebpage_escalation()
+                if not use_deterministic_first:
+                    _record_extraction_attempt()
+                    if not _emit_deterministic_fallback():
+                        _record_openwebpage_escalation()
                 continue
+            _record_extraction_attempt()
             metadata["langextract_calls"] = int(metadata.get("langextract_calls", 0) or 0) + 1
             _entity_hint = " ".join(anchor_tokens) if anchor_tokens else None
             _langextract_started = time.perf_counter()
@@ -16380,6 +17097,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 _emit_payload(extracted_payload)
                 continue
             metadata["langextract_fallback_calls"] = int(metadata.get("langextract_fallback_calls", 0) or 0) + 1
+            _record_empty_payload_reason(langextract_result.get("error") if isinstance(langextract_result, dict) else None)
             provider_failure = _provider_failure_error_text(langextract_result)
             if provider_failure:
                 metadata["langextract_errors"] = int(metadata.get("langextract_errors", 0) or 0) + 1
@@ -16396,8 +17114,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
             continue
 
         if selector_model is None or HumanMessage is None or SystemMessage is None:
-            if not use_deterministic_first and _emit_deterministic_fallback():
-                continue
+            if not use_deterministic_first:
+                _record_extraction_attempt()
+                if _emit_deterministic_fallback():
+                    continue
             _record_openwebpage_escalation()
             continue
 
@@ -16425,6 +17145,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
             f"INPUT:\n{json.dumps(request, ensure_ascii=False)}"
         ))
 
+        _record_extraction_attempt()
         metadata["selector_model_calls"] = int(metadata.get("selector_model_calls", 0) or 0) + 1
         response = _invoke_selector_model_with_timeout(
             selector_model,
@@ -16433,6 +17154,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
             timeout_s=timeout_s,
         )
         if response is None:
+            metadata["provider_timeout"] = int(metadata.get("provider_timeout", 0) or 0) + 1
             if not use_deterministic_first and _emit_deterministic_fallback():
                 continue
             _record_openwebpage_escalation()
@@ -16440,44 +17162,37 @@ def _llm_extract_schema_payloads_from_search_snippets(
         response_text = _message_content_to_text(getattr(response, "content", ""))
         parsed = parse_llm_json(response_text)
         if not isinstance(parsed, dict) or not parsed:
+            metadata["provider_empty_payload"] = int(metadata.get("provider_empty_payload", 0) or 0) + 1
             if not use_deterministic_first and _emit_deterministic_fallback():
                 continue
             _record_openwebpage_escalation()
             continue
 
-        extracted_payload: Dict[str, Any] = {}
-        for raw_key, raw_value in parsed.items():
-            key = str(raw_key or "").strip()
-            if not key or key not in allowed_keys:
-                continue
-            if _is_empty_like(raw_value):
-                continue
-            if isinstance(raw_value, str) and _is_unknown_marker(raw_value):
-                continue
-            if key.endswith("_source"):
-                normalized = _normalize_url_match(raw_value) or page_url
-                if normalized:
-                    extracted_payload[key] = normalized
-                continue
-            extracted_payload[key] = raw_value
+        extracted_payload, payload_meta = _normalize_extracted_payload_dict(
+            parsed,
+            allowed_keys=sorted(allowed_keys),
+            page_url=page_url,
+        )
 
         if not extracted_payload:
+            if bool(payload_meta.get("payload_filtered_all_keys", False)):
+                metadata["payload_filtered_all_keys"] = int(
+                    metadata.get("payload_filtered_all_keys", 0) or 0
+                ) + 1
+            else:
+                metadata["provider_empty_payload"] = int(
+                    metadata.get("provider_empty_payload", 0) or 0
+                ) + 1
             if not use_deterministic_first and _emit_deterministic_fallback():
                 continue
             _record_openwebpage_escalation()
             continue
-
-        for key, value in list(extracted_payload.items()):
-            if key.endswith("_source"):
-                continue
-            source_key = f"{key}_source"
-            if source_key in allowed_keys and source_key not in extracted_payload:
-                extracted_payload[source_key] = page_url
 
         _emit_payload(extracted_payload)
 
     escalation_candidates = list(escalation_map.values())
     metadata["snippet_openwebpage_escalation_events"] = len(escalation_candidates)
+    metadata["snippet_escalated_to_openwebpage"] = len(escalation_candidates)
     if escalation_candidates:
         escalation_candidates.sort(
             key=lambda c: (
@@ -16853,7 +17568,7 @@ def _create_tool_node_with_scratchpad(
                 or not _orchestration_component_enabled(state, "field_resolver")
                 or _is_critical_recursion_step(state, remaining_steps_value(state))
             ):
-                return [], [], {}
+                return [], [], {"policy_blocked": 1}
             try:
                 used_total = int((prior_budget or {}).get("webpage_extractions_used", 0) or 0) + int(used_delta)
             except Exception:
@@ -16862,15 +17577,17 @@ def _create_tool_node_with_scratchpad(
                 max_total = max(0, int(field_resolver_options.get("llm_webpage_extraction_max_total_pages", 2) or 2))
             except Exception:
                 max_total = 2
+            if quality_gate_recovery_active:
+                max_total = max(int(max_total), 4)
             remaining_total = max(0, int(max_total) - int(used_total))
             if remaining_total <= 0:
-                return [], [], {}
+                return [], [], {"budget_blocked": 1}
             try:
                 max_per_round = max(1, int(field_resolver_options.get("llm_webpage_extraction_max_pages_per_round", 1) or 1))
             except Exception:
                 max_per_round = 1
             if quality_gate_recovery_active:
-                max_per_round = max_per_round + 1
+                max_per_round = max(int(max_per_round), 2)
             try:
                 max_chars = max(512, int(field_resolver_options.get("llm_webpage_extraction_max_chars", 9000) or 9000))
             except Exception:
@@ -16933,7 +17650,7 @@ def _create_tool_node_with_scratchpad(
                 or not _orchestration_component_enabled(state, "field_resolver")
                 or _is_critical_recursion_step(state, remaining_steps_value(state))
             ):
-                return [], [], {}
+                return [], [], {"policy_blocked": 1}
             try:
                 used_total = int((prior_budget or {}).get("search_snippet_extractions_used", 0) or 0)
             except Exception:
@@ -16944,7 +17661,7 @@ def _create_tool_node_with_scratchpad(
                 max_total = 8
             remaining_total = max(0, int(max_total) - int(used_total))
             if remaining_total <= 0:
-                return [], [], {}
+                return [], [], {"budget_blocked": 1}
             try:
                 max_per_round = max(
                     1, int(field_resolver_options.get("search_snippet_extraction_max_sources_per_round", 2) or 2)
@@ -17038,11 +17755,16 @@ def _create_tool_node_with_scratchpad(
         if snippet_payloads:
             extra_payloads.extend(list(snippet_payloads))
         snippet_extract_calls = int(
-            (snippet_extract_meta or {}).get("snippet_candidates_attempted", len(snippet_extract_urls or [])) or 0
+            (snippet_extract_meta or {}).get(
+                "snippet_extraction_attempts",
+                (snippet_extract_meta or {}).get("snippet_candidates_attempted", len(snippet_extract_urls or [])),
+            ) or 0
         )
         snippet_selector_calls = int((snippet_extract_meta or {}).get("selector_model_calls", 0) or 0)
         snippet_model_calls = int(snippet_selector_calls) + int(
             (snippet_extract_meta or {}).get("langextract_calls", 0) or 0
+        ) + int(
+            (snippet_extract_meta or {}).get("structured_output_calls", 0) or 0
         )
 
         new_preferred_openwebpage_url = None
@@ -17238,6 +17960,27 @@ def _create_tool_node_with_scratchpad(
             diagnostics["webpage_deterministic_fallback_no_payload"] = int(
                 diagnostics.get("webpage_deterministic_fallback_no_payload", 0) or 0
             ) + int(webpage_extract_meta.get("deterministic_fallback_no_payload", 0) or 0)
+            diagnostics["webpage_structured_output_calls"] = int(
+                diagnostics.get("webpage_structured_output_calls", 0) or 0
+            ) + int(webpage_extract_meta.get("structured_output_calls", 0) or 0)
+            diagnostics["webpage_structured_output_errors"] = int(
+                diagnostics.get("webpage_structured_output_errors", 0) or 0
+            ) + int(webpage_extract_meta.get("structured_output_errors", 0) or 0)
+            diagnostics["webpage_provider_timeout"] = int(
+                diagnostics.get("webpage_provider_timeout", 0) or 0
+            ) + int(webpage_extract_meta.get("provider_timeout", 0) or 0)
+            diagnostics["webpage_provider_empty_payload"] = int(
+                diagnostics.get("webpage_provider_empty_payload", 0) or 0
+            ) + int(webpage_extract_meta.get("provider_empty_payload", 0) or 0)
+            diagnostics["webpage_payload_filtered_all_keys"] = int(
+                diagnostics.get("webpage_payload_filtered_all_keys", 0) or 0
+            ) + int(webpage_extract_meta.get("payload_filtered_all_keys", 0) or 0)
+            diagnostics["webpage_budget_blocked_rounds"] = int(
+                diagnostics.get("webpage_budget_blocked_rounds", 0) or 0
+            ) + int(webpage_extract_meta.get("budget_blocked", 0) or 0)
+            diagnostics["webpage_policy_blocked_rounds"] = int(
+                diagnostics.get("webpage_policy_blocked_rounds", 0) or 0
+            ) + int(webpage_extract_meta.get("policy_blocked", 0) or 0)
             for reason in list(webpage_extract_meta.get("openwebpage_skip_reasons") or []):
                 reason_token = str(reason or "").strip()
                 if not reason_token:
@@ -17253,6 +17996,9 @@ def _create_tool_node_with_scratchpad(
             last_error = str(webpage_extract_meta.get("langextract_last_error") or "").strip()
             if last_error:
                 diagnostics["webpage_langextract_last_error"] = last_error[:400]
+            structured_last_error = str(webpage_extract_meta.get("structured_output_last_error") or "").strip()
+            if structured_last_error:
+                diagnostics["webpage_structured_output_last_error"] = structured_last_error[:400]
         if isinstance(snippet_extract_meta, dict) and snippet_extract_meta:
             diagnostics["search_snippet_langextract_calls"] = int(
                 diagnostics.get("search_snippet_langextract_calls", 0) or 0
@@ -17281,9 +18027,15 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_skipped_duplicate_urls"] = int(
                 diagnostics.get("search_snippet_skipped_duplicate_urls", 0) or 0
             ) + int(snippet_extract_meta.get("snippet_skipped_duplicate_urls", 0) or 0)
+            diagnostics["search_snippet_skipped_low_information"] = int(
+                diagnostics.get("search_snippet_skipped_low_information", 0) or 0
+            ) + int(snippet_extract_meta.get("skipped_low_information", 0) or 0)
             diagnostics["search_snippet_openwebpage_escalation_events"] = int(
                 diagnostics.get("search_snippet_openwebpage_escalation_events", 0) or 0
             ) + int(snippet_extract_meta.get("snippet_openwebpage_escalation_events", 0) or 0)
+            diagnostics["search_snippet_escalated_to_openwebpage"] = int(
+                diagnostics.get("search_snippet_escalated_to_openwebpage", 0) or 0
+            ) + int(snippet_extract_meta.get("snippet_escalated_to_openwebpage", 0) or 0)
             diagnostics["search_snippet_deterministic_fallback_calls"] = int(
                 diagnostics.get("search_snippet_deterministic_fallback_calls", 0) or 0
             ) + int(snippet_extract_meta.get("deterministic_fallback_calls", 0) or 0)
@@ -17293,12 +18045,36 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_deterministic_fallback_no_payload"] = int(
                 diagnostics.get("search_snippet_deterministic_fallback_no_payload", 0) or 0
             ) + int(snippet_extract_meta.get("deterministic_fallback_no_payload", 0) or 0)
+            diagnostics["search_snippet_structured_output_calls"] = int(
+                diagnostics.get("search_snippet_structured_output_calls", 0) or 0
+            ) + int(snippet_extract_meta.get("structured_output_calls", 0) or 0)
+            diagnostics["search_snippet_structured_output_errors"] = int(
+                diagnostics.get("search_snippet_structured_output_errors", 0) or 0
+            ) + int(snippet_extract_meta.get("structured_output_errors", 0) or 0)
+            diagnostics["search_snippet_provider_timeout"] = int(
+                diagnostics.get("search_snippet_provider_timeout", 0) or 0
+            ) + int(snippet_extract_meta.get("provider_timeout", 0) or 0)
+            diagnostics["search_snippet_provider_empty_payload"] = int(
+                diagnostics.get("search_snippet_provider_empty_payload", 0) or 0
+            ) + int(snippet_extract_meta.get("provider_empty_payload", 0) or 0)
+            diagnostics["search_snippet_payload_filtered_all_keys"] = int(
+                diagnostics.get("search_snippet_payload_filtered_all_keys", 0) or 0
+            ) + int(snippet_extract_meta.get("payload_filtered_all_keys", 0) or 0)
+            diagnostics["search_snippet_budget_blocked_rounds"] = int(
+                diagnostics.get("search_snippet_budget_blocked_rounds", 0) or 0
+            ) + int(snippet_extract_meta.get("budget_blocked", 0) or 0)
+            diagnostics["search_snippet_policy_blocked_rounds"] = int(
+                diagnostics.get("search_snippet_policy_blocked_rounds", 0) or 0
+            ) + int(snippet_extract_meta.get("policy_blocked", 0) or 0)
             provider_name = str(snippet_extract_meta.get("langextract_provider") or "").strip()
             if provider_name:
                 diagnostics["search_snippet_langextract_provider"] = provider_name
             last_error = str(snippet_extract_meta.get("langextract_last_error") or "").strip()
             if last_error:
                 diagnostics["search_snippet_langextract_last_error"] = last_error[:400]
+            structured_last_error = str(snippet_extract_meta.get("structured_output_last_error") or "").strip()
+            if structured_last_error:
+                diagnostics["search_snippet_structured_output_last_error"] = structured_last_error[:400]
             if int(snippet_extract_meta.get("snippet_openwebpage_escalation_events", 0) or 0) > 0:
                 diagnostics["retrieval_interventions"] = _append_limited_unique(
                     diagnostics.get("retrieval_interventions"),

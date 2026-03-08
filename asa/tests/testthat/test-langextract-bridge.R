@@ -28,6 +28,16 @@ test_that("field_resolver defaults use langextract engine and compatibility alia
   fr_off <- legacy_off$field_resolver
   expect_false(isTRUE(fr_off$webpage_extraction_enabled))
   expect_false(isTRUE(fr_off$llm_webpage_extraction))
+
+  triage_structured <- reticulate::py_to_r(core$`_normalize_orchestration_options`(list(
+    field_resolver = list(
+      search_snippet_extraction_engine = "triage_then_structured"
+    )
+  )))
+  expect_equal(
+    triage_structured$field_resolver$search_snippet_extraction_engine,
+    "triage_then_structured"
+  )
 })
 
 test_that("orchestration normalization applies latency profile webpage controls", {
@@ -213,6 +223,111 @@ test_that("langextract bridge returns unsupported backend without importing prov
 
   expect_false(isTRUE(result$ok))
   expect_match(as.character(result$error), "unsupported_backend", fixed = TRUE)
+})
+
+test_that("openai-backed webpage extraction prefers structured output over langextract fallback", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  original_bridge <- core$`_langextract_extract_schema_with_fallback`
+  on.exit(
+    reticulate::py_set_attr(core, "_langextract_extract_schema_with_fallback", original_bridge),
+    add = TRUE
+  )
+
+  reticulate::py_run_string(paste0(
+    "_asa_openai_structured_langextract_calls = 0\n",
+    "_asa_openai_structured_with_calls = 0\n",
+    "_asa_openai_structured_invoke_calls = 0\n",
+    "_asa_openai_structured_legacy_calls = 0\n",
+    "\n",
+    "def _asa_openai_structured_langextract(**kwargs):\n",
+    "    global _asa_openai_structured_langextract_calls\n",
+    "    _asa_openai_structured_langextract_calls += 1\n",
+    "    return {'ok': False, 'payload': {}, 'provider': 'gemini', 'error': 'should_not_be_called'}\n",
+    "\n",
+    "class _ASAOpenAIStructuredInvoker:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_openai_structured_invoke_calls\n",
+    "        _asa_openai_structured_invoke_calls += 1\n",
+    "        return {'birth_place': 'London'}\n",
+    "\n",
+    "class _ASAOpenAIStructuredModel:\n",
+    "    def with_structured_output(self, *args, **kwargs):\n",
+    "        global _asa_openai_structured_with_calls\n",
+    "        _asa_openai_structured_with_calls += 1\n",
+    "        return _ASAOpenAIStructuredInvoker()\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_openai_structured_legacy_calls\n",
+    "        _asa_openai_structured_legacy_calls += 1\n",
+    "        class _Resp:\n",
+    "            def __init__(self, content):\n",
+    "                self.content = content\n",
+    "        return _Resp('{}')\n",
+    "\n",
+    "_asa_openai_structured_langextract = _asa_openai_structured_langextract\n",
+    "_asa_openai_structured_model = _ASAOpenAIStructuredModel()\n"
+  ))
+  reticulate::py_set_attr(
+    core,
+    "_langextract_extract_schema_with_fallback",
+    reticulate::py$`_asa_openai_structured_langextract`
+  )
+
+  schema <- list(
+    birth_place = "string|Unknown",
+    birth_place_source = "string|null"
+  )
+  field_status <- list(
+    birth_place = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    birth_place_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "OpenWebpage",
+    content = paste(
+      "URL: https://www.example.gov/profile",
+      "Final URL: https://www.example.gov/profile",
+      "Title: Example profile",
+      "Relevant excerpts:",
+      "Ada Lovelace was born in London.",
+      sep = "\n"
+    )
+  ))
+
+  openwebpage_result <- core$`_llm_extract_schema_payloads_from_openwebpages`(
+    selector_model = reticulate::py$`_asa_openai_structured_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ada", "Lovelace"),
+    extracted_urls = list(),
+    max_pages = 1L,
+    max_chars = 1200L,
+    extraction_engine = "langextract",
+    langextract_backend_hint = "openai",
+    debug = FALSE
+  )
+
+  openwebpage_r <- reticulate::py_to_r(openwebpage_result)
+  payloads <- openwebpage_r[[1]]
+  meta <- openwebpage_r[[3]]
+
+  expect_equal(length(payloads), 1L)
+  expect_equal(as.character(payloads[[1]]$payload$birth_place), "London")
+  expect_match(
+    as.character(payloads[[1]]$payload$birth_place_source),
+    "example\\.gov/profile",
+    perl = TRUE
+  )
+  expect_equal(as.integer(meta$structured_output_calls), 1L)
+  expect_equal(as.integer(meta$langextract_calls), 0L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_openai_structured_with_calls`)), 1L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_openai_structured_invoke_calls`)), 1L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_openai_structured_legacy_calls`)), 0L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_openai_structured_langextract_calls`)), 0L)
 })
 
 
