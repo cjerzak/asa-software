@@ -39,13 +39,17 @@ from asa_backend.search.ddg_transport import (
     _AUTO_OPENWEBPAGE_POLICY,
     _AUTO_OPENWEBPAGE_SELECTOR_MODE,
     _LOW_SIGNAL_HOST_FRAGMENTS,
+    _build_query_intent,
     _canonicalize_url,
     _entity_match_thresholds,
     _entity_overlap_for_candidate,
     _extract_profile_hints,
     _is_noise_source_url,
     _is_source_specific_url,
+    _merge_query_intents,
     _normalize_match_text,
+    _query_intent_host_matches,
+    _query_intent_phrase_hits,
     _query_focus_tokens,
     _score_primary_source_url,
     _source_specificity_score,
@@ -1233,6 +1237,8 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "anchor_strict_min_confidence": 0.65,
     "anchor_soft_min_confidence": 0.25,
     "anchor_mismatch_penalty": 0.15,
+    "anchor_hard_block_requires_explicit_contradiction": True,
+    "anchor_low_overlap_mode": "penalize",
     "anchor_hard_block_min_strength": "strong",
     "field_recovery_min_source_quality": 0.26,
     "quality_gate_enforce": True,
@@ -1241,6 +1247,9 @@ _DEFAULT_FINALIZATION_POLICY: Dict[str, Any] = {
     "quality_gate_min_global_confidence": 0.55,
     "quality_gate_min_found_fields": 2,
     "quality_gate_require_invariant_ok": True,
+    "quality_gate_recovery_enabled": True,
+    "quality_gate_recovery_max_extra_rounds": 1,
+    "finalize_on_budget_exhaustion_only_if_quality_gate_passes": True,
     "diagnostics_auto_recovery_enabled": True,
     "semantic_validation_enabled": True,
     "unsourced_allowlist_patterns": [
@@ -1312,6 +1321,7 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "early_stop_min_gain": 0.10,
         "early_stop_patience_steps": 2,
         "max_repeat_offtopic": 8,
+        "host_failure_threshold": 2,
         # Generic diminishing-returns controller (task-agnostic).
         # In enforce mode this can tighten effective search budgets when
         # repeated rounds produce little incremental signal.
@@ -1576,6 +1586,10 @@ def _normalize_orchestration_options(
         rc["max_repeat_offtopic"] = max(1, int(rc.get("max_repeat_offtopic", 8)))
     except Exception:
         rc["max_repeat_offtopic"] = 8
+    try:
+        rc["host_failure_threshold"] = max(1, int(rc.get("host_failure_threshold", 2)))
+    except Exception:
+        rc["host_failure_threshold"] = 2
     rc["adaptive_budget_enabled"] = bool(rc.get("adaptive_budget_enabled", True))
     try:
         rc["adaptive_min_remaining_calls"] = max(0, int(rc.get("adaptive_min_remaining_calls", 1)))
@@ -2227,6 +2241,15 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
         anchor_hard_block_min_strength = str(
             _DEFAULT_FINALIZATION_POLICY["anchor_hard_block_min_strength"]
         )
+    anchor_low_overlap_mode = str(
+        policy.get(
+            "anchor_low_overlap_mode",
+            _DEFAULT_FINALIZATION_POLICY["anchor_low_overlap_mode"],
+        )
+        or _DEFAULT_FINALIZATION_POLICY["anchor_low_overlap_mode"]
+    ).strip().lower()
+    if anchor_low_overlap_mode not in {"penalize", "block"}:
+        anchor_low_overlap_mode = str(_DEFAULT_FINALIZATION_POLICY["anchor_low_overlap_mode"])
 
     try:
         quality_gate_unknown_ratio_max = float(
@@ -2285,6 +2308,18 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
             _DEFAULT_FINALIZATION_POLICY["quality_gate_min_found_fields"]
         )
     quality_gate_min_found_fields = max(0, min(200, quality_gate_min_found_fields))
+    try:
+        quality_gate_recovery_max_extra_rounds = int(
+            policy.get(
+                "quality_gate_recovery_max_extra_rounds",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_recovery_max_extra_rounds"],
+            )
+        )
+    except Exception:
+        quality_gate_recovery_max_extra_rounds = int(
+            _DEFAULT_FINALIZATION_POLICY["quality_gate_recovery_max_extra_rounds"]
+        )
+    quality_gate_recovery_max_extra_rounds = max(0, min(4, quality_gate_recovery_max_extra_rounds))
 
     try:
         field_recovery_min_source_quality = float(
@@ -2361,6 +2396,13 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
         "anchor_strict_min_confidence": float(anchor_strict_min_confidence),
         "anchor_soft_min_confidence": float(anchor_soft_min_confidence),
         "anchor_mismatch_penalty": float(anchor_mismatch_penalty),
+        "anchor_hard_block_requires_explicit_contradiction": bool(
+            policy.get(
+                "anchor_hard_block_requires_explicit_contradiction",
+                _DEFAULT_FINALIZATION_POLICY["anchor_hard_block_requires_explicit_contradiction"],
+            )
+        ),
+        "anchor_low_overlap_mode": anchor_low_overlap_mode,
         "anchor_hard_block_min_strength": anchor_hard_block_min_strength,
         "field_recovery_min_source_quality": float(field_recovery_min_source_quality),
         "quality_gate_enforce": bool(
@@ -2377,6 +2419,19 @@ def _normalize_finalization_policy(raw_policy: Any) -> Dict[str, Any]:
             policy.get(
                 "quality_gate_require_invariant_ok",
                 _DEFAULT_FINALIZATION_POLICY["quality_gate_require_invariant_ok"],
+            )
+        ),
+        "quality_gate_recovery_enabled": bool(
+            policy.get(
+                "quality_gate_recovery_enabled",
+                _DEFAULT_FINALIZATION_POLICY["quality_gate_recovery_enabled"],
+            )
+        ),
+        "quality_gate_recovery_max_extra_rounds": int(quality_gate_recovery_max_extra_rounds),
+        "finalize_on_budget_exhaustion_only_if_quality_gate_passes": bool(
+            policy.get(
+                "finalize_on_budget_exhaustion_only_if_quality_gate_passes",
+                _DEFAULT_FINALIZATION_POLICY["finalize_on_budget_exhaustion_only_if_quality_gate_passes"],
             )
         ),
         "diagnostics_auto_recovery_enabled": bool(
@@ -4070,6 +4125,184 @@ def _entity_value_alignment_state(
     }
 
 
+def _candidate_target_consistency_state(
+    *,
+    value: Any,
+    source_url: Any,
+    source_text: Any,
+    target_anchor: Any,
+    finalization_policy: Any = None,
+    source_field: bool = False,
+) -> Dict[str, Any]:
+    """Compute generic target-consistency state without task-specific heuristics."""
+    policy = _normalize_finalization_policy(finalization_policy)
+    anchor = _normalize_target_anchor(target_anchor)
+    anchor_tokens = _target_anchor_tokens(anchor, max_tokens=16)
+    anchor_state = _anchor_mismatch_state(
+        target_anchor=anchor,
+        candidate_url=source_url,
+        candidate_text=source_text,
+        finalization_policy=policy,
+    )
+    anchor_checked = bool(anchor_state.get("checked", False))
+    anchor_score = 0.50 if not anchor_checked else _clamp01(anchor_state.get("score"), default=0.0)
+
+    alignment_state: Dict[str, Any] = {
+        "pass": True,
+        "checked": False,
+        "hits": 0,
+        "ratio": 0.0,
+        "min_hits": 0,
+        "min_ratio": 0.0,
+        "reason": "not_checked",
+    }
+    relation_state: Dict[str, Any] = {
+        "pass": True,
+        "checked": False,
+        "reason": "not_checked",
+    }
+    alignment_score = 0.50
+    relation_score = 0.50
+
+    if not bool(source_field):
+        alignment_state = _entity_value_alignment_state(
+            value=value,
+            source_text=source_text,
+            entity_tokens=anchor_tokens,
+        )
+        if bool(alignment_state.get("checked", False)):
+            if bool(alignment_state.get("pass", False)):
+                alignment_score = 1.0
+            else:
+                try:
+                    best_hits = max(0, int(alignment_state.get("hits", 0) or 0))
+                except Exception:
+                    best_hits = 0
+                try:
+                    min_hits = max(1, int(alignment_state.get("min_hits", 1) or 1))
+                except Exception:
+                    min_hits = 1
+                try:
+                    best_ratio = max(0.0, float(alignment_state.get("ratio", 0.0) or 0.0))
+                except Exception:
+                    best_ratio = 0.0
+                try:
+                    min_ratio = max(0.01, float(alignment_state.get("min_ratio", 0.01) or 0.01))
+                except Exception:
+                    min_ratio = 0.01
+                alignment_score = _clamp01(
+                    max(
+                        float(best_hits) / float(max(1, min_hits)),
+                        float(best_ratio) / float(max(0.01, min_ratio)),
+                    )
+                    * 0.35,
+                    default=0.0,
+                )
+        relation_state = _entity_relation_contamination_state(
+            value=value,
+            source_text=source_text,
+            entity_tokens=anchor_tokens,
+        )
+        if bool(relation_state.get("checked", False)):
+            if bool(relation_state.get("pass", False)):
+                relation_score = 1.0
+            else:
+                relation_reason = str(relation_state.get("reason") or "").strip().lower()
+                if relation_reason == "relation_contamination_multi_entity":
+                    relation_score = 0.0
+                else:
+                    relation_score = 0.15
+
+    target_consistency = _clamp01(
+        (0.45 * float(anchor_score))
+        + (0.35 * float(alignment_score))
+        + (0.20 * float(relation_score)),
+        default=0.50,
+    )
+    contradiction_state = "none"
+    hard_block = False
+    promotion_block = False
+    demotion_penalty = 0.0
+    detail_reason = None
+    soft_anchor_penalty = False
+
+    if bool(anchor_state.get("hard_block", False)):
+        detail_reason = str(anchor_state.get("reason") or "").strip().lower() or "anchor_conflict"
+        if bool(anchor_state.get("context_contradiction", False)):
+            contradiction_state = "explicit_contradiction"
+            hard_block = True
+            demotion_penalty = max(float(demotion_penalty), 0.80)
+            target_consistency = min(float(target_consistency), 0.0)
+        else:
+            contradiction_state = "high_conflict"
+            hard_block = True
+            demotion_penalty = max(float(demotion_penalty), 0.55)
+            target_consistency = min(float(target_consistency), 0.08)
+    elif bool(anchor_state.get("penalty", 0.0)):
+        soft_anchor_penalty = True
+        contradiction_state = "soft_anchor_penalty"
+        demotion_penalty = max(
+            float(demotion_penalty),
+            _clamp01(anchor_state.get("penalty"), default=0.0),
+        )
+        target_consistency = max(0.0, float(target_consistency) - float(demotion_penalty))
+
+    if not bool(source_field):
+        relation_reason = str(relation_state.get("reason") or "").strip().lower()
+        if bool(relation_state.get("checked", False)) and not bool(relation_state.get("pass", False)):
+            detail_reason = detail_reason or relation_reason or "relation_conflict"
+            if relation_reason == "relation_contamination_multi_entity":
+                contradiction_state = "high_conflict"
+                hard_block = True
+                demotion_penalty = max(float(demotion_penalty), 0.60)
+                target_consistency = min(float(target_consistency), 0.05)
+            else:
+                contradiction_state = "medium_conflict"
+                promotion_block = True
+                demotion_penalty = max(float(demotion_penalty), 0.38)
+                target_consistency = min(float(target_consistency), 0.22)
+
+        if bool(alignment_state.get("checked", False)) and not bool(alignment_state.get("pass", False)):
+            detail_reason = detail_reason or str(alignment_state.get("reason") or "").strip().lower() or "entity_value_mismatch"
+            anchor_support_present = bool(
+                int(anchor_state.get("hits", 0) or 0) > 0
+                or float(anchor_state.get("ratio", 0.0) or 0.0) >= 0.25
+                or int(anchor_state.get("phrase_hits", 0) or 0) > 0
+                or int(anchor_state.get("id_hits", 0) or 0) > 0
+            )
+            demotion_penalty = max(
+                float(demotion_penalty),
+                0.12 if anchor_support_present else 0.34,
+            )
+            if not anchor_support_present:
+                if contradiction_state == "none":
+                    contradiction_state = "medium_conflict"
+                if contradiction_state != "high_conflict" and not bool(hard_block):
+                    promotion_block = True
+                if contradiction_state == "medium_conflict":
+                    target_consistency = min(float(target_consistency), 0.24)
+
+    if hard_block and contradiction_state == "none":
+        contradiction_state = "high_conflict"
+    if promotion_block and contradiction_state == "none":
+        contradiction_state = "medium_conflict"
+
+    target_consistency = _clamp01(target_consistency, default=0.0)
+    return {
+        "target_consistency": float(target_consistency),
+        "target_consistency_label": _candidate_consistency_label(target_consistency),
+        "contradiction_state": contradiction_state,
+        "hard_block": bool(hard_block),
+        "promotion_block": bool(promotion_block and not hard_block),
+        "demotion_penalty": _clamp01(demotion_penalty, default=0.0),
+        "detail_reason": detail_reason,
+        "anchor_state": anchor_state,
+        "alignment_state": alignment_state,
+        "relation_state": relation_state,
+        "soft_anchor_penalty": bool(soft_anchor_penalty),
+    }
+
+
 _FIELD_RECOVERY_STOP_TOKENS = {
     "field",
     "source",
@@ -4241,8 +4474,15 @@ def _normalize_recovery_rejection_reason(reason: Any) -> Optional[str]:
         "grounding_blocked_entity_source_mismatch": "recovery_blocked_entity_mismatch",
         "grounding_blocked_entity_value_mismatch": "recovery_blocked_entity_value_mismatch",
         "grounding_blocked_relation_contamination": "recovery_blocked_relation_contamination",
+        "explicit_contradiction_block": "explicit_contradiction_block",
+        "high_conflict_block": "high_conflict_demotion",
+        "high_conflict_demotion": "high_conflict_demotion",
+        "insufficient_support": "insufficient_support",
         "semantic_validation_failed": "recovery_blocked_semantic_validation",
         "source_specificity_demotion": "recovery_blocked_non_specific_source",
+        "source_quality_below_threshold": "recovery_blocked_source_quality_below_threshold",
+        "source_quality_below_policy_threshold": "recovery_blocked_source_quality_below_threshold",
+        "source_specificity_below_policy_threshold": "recovery_blocked_source_specificity_below_policy_threshold",
         "source_tier_below_policy_threshold": "recovery_blocked_source_tier_below_policy_threshold",
         "source_tier_tertiary_disallowed": "recovery_blocked_source_tier_tertiary_disallowed",
     }
@@ -4338,33 +4578,6 @@ def _recover_unknown_fields_from_tool_evidence(
         rejected_reasons: List[str] = []
 
         for source_url, source_text in sources:
-            anchor_state = _anchor_mismatch_state(
-                target_anchor=target_anchor_state,
-                candidate_url=source_url,
-                candidate_text=source_text,
-                finalization_policy=policy,
-            )
-            anchor_hard_block = bool(anchor_state.get("hard_block", False))
-            anchor_block_reason = str(anchor_state.get("reason") or "").strip().lower()
-            blocked_reason = "recovery_blocked_anchor_mismatch"
-            anchor_observable = bool(
-                int(anchor_state.get("hits", 0) or 0) > 0
-                or int(anchor_state.get("phrase_hits", 0) or 0) > 0
-                or int(anchor_state.get("id_hits", 0) or 0) > 0
-            )
-            if bool(target_anchor_state.get("legacy_entity_tokens", False)):
-                blocked_reason = "recovery_blocked_entity_mismatch"
-            allow_softened_anchor_recovery = bool(
-                anchor_hard_block
-                and anchor_block_reason == "anchor_mismatch_hard_block"
-                and not bool(target_anchor_state.get("legacy_entity_tokens", False))
-                and anchor_observable
-                and not bool(anchor_state.get("context_contradiction", False))
-            )
-            if anchor_hard_block and not allow_softened_anchor_recovery:
-                rejected_reasons.append(blocked_reason)
-                continue
-
             recovered_values = _recover_values_from_source_text(
                 descriptor=descriptor,
                 source_text=source_text,
@@ -4377,32 +4590,6 @@ def _recover_unknown_fields_from_tool_evidence(
 
             for recovered_value in recovered_values:
                 normalized_source = _normalize_url_match(source_url)
-                if requires_source and not normalized_source:
-                    rejected_reasons.append("recovery_blocked_missing_source_url")
-                    continue
-                if requires_source and allowed and normalized_source not in allowed:
-                    rejected_reasons.append("recovery_blocked_untrusted_source_url")
-                    continue
-                if not _source_supports_value(recovered_value, source_text):
-                    rejected_reasons.append("recovery_blocked_source_value_mismatch")
-                    continue
-                if strict_anchor and not (anchor_hard_block and allow_softened_anchor_recovery):
-                    alignment = _entity_value_alignment_state(
-                        value=recovered_value,
-                        source_text=source_text,
-                        entity_tokens=anchor_tokens,
-                    )
-                    if bool(alignment.get("checked", False)) and not bool(alignment.get("pass", False)):
-                        rejected_reasons.append("recovery_blocked_entity_value_mismatch")
-                        continue
-                    relation_state = _entity_relation_contamination_state(
-                        value=recovered_value,
-                        source_text=source_text,
-                        entity_tokens=anchor_tokens,
-                    )
-                    if bool(relation_state.get("checked", False)) and not bool(relation_state.get("pass", False)):
-                        rejected_reasons.append("recovery_blocked_relation_contamination")
-                        continue
                 allow_non_specific = True
                 if normalized_source and not _is_source_specific_url(normalized_source):
                     allow_non_specific = _allow_non_specific_source_url(
@@ -4413,9 +4600,6 @@ def _recover_unknown_fields_from_tool_evidence(
                         source_field=False,
                         finalization_policy=policy,
                     )
-                if not allow_non_specific:
-                    rejected_reasons.append("recovery_blocked_non_specific_source")
-                    continue
                 candidate = _build_evidence_candidate(
                     value=recovered_value,
                     source_url=normalized_source,
@@ -4424,21 +4608,67 @@ def _recover_unknown_fields_from_tool_evidence(
                     allow_non_specific=allow_non_specific,
                     source_field=False,
                 )
-                if bool(anchor_state.get("tolerated", False)):
-                    tolerance_penalty = _clamp01(
-                        policy.get("anchor_mismatch_penalty", _DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"]),
+                consistency_state = _candidate_target_consistency_state(
+                    value=recovered_value,
+                    source_url=normalized_source or "",
+                    source_text=source_text,
+                    target_anchor=target_anchor_state,
+                    finalization_policy=policy,
+                    source_field=False,
+                )
+                candidate["target_consistency"] = float(
+                    consistency_state.get("target_consistency", candidate.get("entity_overlap", 0.0))
+                )
+                candidate["target_consistency_label"] = str(
+                    consistency_state.get("target_consistency_label")
+                    or _candidate_consistency_label(candidate.get("target_consistency"))
+                )
+                candidate["contradiction_state"] = str(
+                    consistency_state.get("contradiction_state") or "none"
+                ).strip().lower() or "none"
+                candidate["target_consistency_penalty"] = float(
+                    consistency_state.get("demotion_penalty", 0.0) or 0.0
+                )
+                candidate["soft_anchor_penalty"] = bool(
+                    consistency_state.get("soft_anchor_penalty", False)
+                )
+                candidate["admitted_weak_anchor"] = bool(candidate.get("soft_anchor_penalty", False))
+                candidate["high_conflict_demotion"] = bool(
+                    str(candidate.get("contradiction_state") or "").strip().lower()
+                    in {"medium_conflict", "high_conflict"}
+                )
+                candidate["explicit_contradiction_block"] = bool(
+                    str(candidate.get("contradiction_state") or "").strip().lower()
+                    == "explicit_contradiction"
+                )
+                anchor_state = consistency_state.get("anchor_state") or {}
+                if bool(anchor_state.get("penalty", 0.0)):
+                    candidate["anchor_mismatch_penalty"] = _clamp01(
+                        anchor_state.get("penalty"),
                         default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
                     )
-                    candidate["anchor_mismatch_penalty"] = float(tolerance_penalty)
-                    candidate["evidence_reason"] = "recovery_anchor_soft_penalty"
+                    candidate["soft_anchor_penalty"] = True
+                    candidate["admitted_weak_anchor"] = True
                 if requires_source and not normalized_source:
+                    candidate["policy_block_reason"] = "grounding_blocked_missing_source_url"
                     candidate["rejection_reason"] = "grounding_blocked_missing_source_url"
+                elif requires_source and allowed and normalized_source not in allowed:
+                    candidate["policy_block_reason"] = "recovery_blocked_untrusted_source_url"
+                    candidate["rejection_reason"] = "recovery_blocked_untrusted_source_url"
+                elif not _source_supports_value(recovered_value, source_text):
+                    candidate["support_state"] = "insufficient_support"
+                    candidate["promotion_block_reason"] = "insufficient_support"
+                    rejected_reasons.append("recovery_blocked_source_value_mismatch")
+                elif not allow_non_specific:
+                    candidate["policy_block_reason"] = "recovery_blocked_non_specific_source"
+                    candidate["rejection_reason"] = "recovery_blocked_non_specific_source"
                 tier_allowed, tier_reason = _candidate_meets_source_tier_policy(
                     field_key=key,
                     candidate=candidate,
                     source_policy=normalized_source_policy,
                 )
                 if not tier_allowed and not candidate.get("rejection_reason"):
+                    candidate["policy_block_reason"] = str(tier_reason or "source_tier_below_policy_threshold")
                     candidate["rejection_reason"] = str(tier_reason or "source_tier_below_policy_threshold")
                 disclosure_state = _sensitive_field_disclosure_state(
                     field_key=key,
@@ -4447,27 +4677,38 @@ def _recover_unknown_fields_from_tool_evidence(
                     source_policy=normalized_source_policy,
                 )
                 if not bool(disclosure_state.get("pass", False)) and not candidate.get("rejection_reason"):
+                    candidate["policy_block_reason"] = str(
+                        disclosure_state.get("reason")
+                        or "grounding_blocked_sensitive_disclosure_not_explicit"
+                    )
                     candidate["rejection_reason"] = str(
                         disclosure_state.get("reason")
                         or "grounding_blocked_sensitive_disclosure_not_explicit"
                     )
-                if anchor_hard_block:
-                    source_allowlisted = bool(normalized_source and normalized_source in allowed)
-                    source_specific = bool(normalized_source and _is_source_specific_url(normalized_source))
-                    if not (
-                        allow_softened_anchor_recovery
-                        and source_allowlisted
-                        and source_specific
-                        and not candidate.get("rejection_reason")
-                    ):
-                        rejected_reasons.append(blocked_reason)
-                        continue
-                    tolerance_penalty = _clamp01(
-                        policy.get("anchor_mismatch_penalty", _DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"]),
-                        default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
+                if bool(consistency_state.get("hard_block", False)):
+                    detail_reason = str(consistency_state.get("detail_reason") or "").strip().lower()
+                    if bool(candidate.get("explicit_contradiction_block", False)):
+                        candidate["rejection_reason"] = "explicit_contradiction_block"
+                        rejected_reasons.append("explicit_contradiction_block")
+                    else:
+                        candidate["rejection_reason"] = "high_conflict_demotion"
+                        candidate["high_conflict_demotion"] = True
+                        rejected_reasons.append("high_conflict_demotion")
+                elif bool(consistency_state.get("promotion_block", False)):
+                    candidate["promotion_block_reason"] = (
+                        candidate.get("promotion_block_reason") or "high_conflict_demotion"
                     )
-                    candidate["anchor_mismatch_penalty"] = float(tolerance_penalty)
-                    candidate["evidence_reason"] = "recovery_anchor_soft_penalty"
+                    candidate["high_conflict_demotion"] = True
+                if (
+                    float(candidate.get("value_support", 0.0) or 0.0) < 0.35
+                    and not candidate.get("rejection_reason")
+                ):
+                    candidate["support_state"] = "insufficient_support"
+                    candidate["promotion_block_reason"] = (
+                        candidate.get("promotion_block_reason") or "insufficient_support"
+                    )
+                if candidate.get("rejection_reason"):
+                    rejected_reasons.append(str(candidate.get("rejection_reason")))
                 candidate_pool.append(candidate)
 
         scored = _score_evidence_candidates(candidate_pool, mode=recovery_mode)
@@ -4527,6 +4768,18 @@ def _recover_unknown_fields_from_tool_evidence(
                     selected_reason = "recovery_promoted_anchor_soft_penalty"
                 entry["evidence_reason"] = selected_reason
                 entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
+                entry["candidate_score"] = round(float(selected.get("candidate_score", selected.get("score", 0.0))), 4)
+                entry["target_consistency"] = round(
+                    float(selected.get("target_consistency", selected.get("entity_overlap", 0.0)) or 0.0),
+                    4,
+                )
+                entry["target_consistency_label"] = str(
+                    selected.get("target_consistency_label")
+                    or _candidate_consistency_label(selected.get("target_consistency"))
+                )
+                entry["contradiction_state"] = str(selected.get("contradiction_state") or "none")
+                entry["evidence_category"] = _candidate_decision_category(selected, selected_reason)
+                entry["soft_anchor_penalty"] = bool(selected.get("soft_anchor_penalty", False))
                 normalized[key] = entry
                 source_key = f"{key}_source"
                 if source_key in normalized and found_source:
@@ -4537,6 +4790,7 @@ def _recover_unknown_fields_from_tool_evidence(
                     source_entry["evidence"] = "recovery_source_backed"
                     source_entry["evidence_reason"] = selected_reason
                     source_entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
+                    source_entry["evidence_category"] = _candidate_decision_category(selected, selected_reason)
                     normalized[source_key] = source_entry
                 continue
 
@@ -4571,6 +4825,20 @@ def _recover_unknown_fields_from_tool_evidence(
             entry["evidence_reason"] = blocked_reason
             if scored:
                 entry["evidence_score"] = round(float(scored[0].get("score", 0.0)), 4)
+                entry["candidate_score"] = round(float(scored[0].get("candidate_score", scored[0].get("score", 0.0))), 4)
+                top_source_url = _normalize_url_match(scored[0].get("source_url"))
+                if top_source_url:
+                    entry["evidence_source_url"] = top_source_url
+                entry["target_consistency"] = round(
+                    float(scored[0].get("target_consistency", scored[0].get("entity_overlap", 0.0)) or 0.0),
+                    4,
+                )
+                entry["target_consistency_label"] = str(
+                    scored[0].get("target_consistency_label")
+                    or _candidate_consistency_label(scored[0].get("target_consistency"))
+                )
+                entry["contradiction_state"] = str(scored[0].get("contradiction_state") or "none")
+                entry["evidence_category"] = _candidate_decision_category(scored[0], blocked_reason)
             normalized[key] = entry
 
     normalized = _apply_field_status_derivations(normalized)
@@ -4991,11 +5259,30 @@ def _normalize_evidence_ledger(ledger: Any) -> Dict[str, List[Dict[str, Any]]]:
                 "value_support": _clamp01(raw.get("value_support"), default=0.0),
                 "entity_overlap": _clamp01(raw.get("entity_overlap"), default=0.0),
                 "anchor_overlap": _clamp01(raw.get("anchor_overlap", raw.get("entity_overlap")), default=0.0),
+                "target_consistency": _clamp01(
+                    raw.get("target_consistency", raw.get("anchor_overlap", raw.get("entity_overlap"))),
+                    default=0.0,
+                ),
+                "target_consistency_label": str(
+                    raw.get("target_consistency_label")
+                    or _candidate_consistency_label(
+                        raw.get("target_consistency", raw.get("anchor_overlap", raw.get("entity_overlap")))
+                    )
+                ),
+                "contradiction_state": str(raw.get("contradiction_state") or "none").strip().lower() or "none",
                 "corroboration": _clamp01(raw.get("corroboration"), default=0.0),
                 "score": _clamp01(raw.get("score"), default=0.0),
+                "candidate_score": _clamp01(raw.get("candidate_score", raw.get("score")), default=0.0),
                 "confidence_hint": _normalize_confidence_label(raw.get("confidence_hint")) or "Low",
                 "evidence_excerpt": str(raw.get("evidence_excerpt") or "")[:240],
                 "anchor_mismatch_penalty": _clamp01(raw.get("anchor_mismatch_penalty"), default=0.0),
+                "promotion_block_reason": str(raw.get("promotion_block_reason") or "").strip() or None,
+                "policy_block_reason": str(raw.get("policy_block_reason") or "").strip() or None,
+                "support_state": str(raw.get("support_state") or "").strip().lower() or None,
+                "soft_anchor_penalty": bool(raw.get("soft_anchor_penalty", False)),
+                "admitted_weak_anchor": bool(raw.get("admitted_weak_anchor", False)),
+                "high_conflict_demotion": bool(raw.get("high_conflict_demotion", False)),
+                "explicit_contradiction_block": bool(raw.get("explicit_contradiction_block", False)),
                 "rejection_reason": str(raw.get("rejection_reason") or "").strip() or None,
             }
             if _is_empty_like(item.get("value")):
@@ -5016,6 +5303,10 @@ def _normalize_evidence_stats(stats: Any) -> Dict[str, Any]:
         "fields_promoted": 0,
         "anchor_soft_penalties": 0,
         "anchor_hard_blocks": 0,
+        "weak_anchor_candidates_admitted": 0,
+        "contradiction_blocks": 0,
+        "strong_conflict_demotions": 0,
+        "weak_anchor_promotions": 0,
     }
     out: Dict[str, Any] = {}
     for key, default in counters.items():
@@ -5103,11 +5394,33 @@ def _build_evidence_candidate(
         "anchor_overlap": entity_overlap,
         "corroboration": 0.0,
         "score": 0.0,
+        "candidate_score": 0.0,
         "confidence_hint": "Low",
         "evidence_excerpt": source_text_str[:240],
         "anchor_mismatch_penalty": 0.0,
+        "target_consistency": entity_overlap,
+        "target_consistency_label": "moderate" if entity_overlap >= 0.50 else "weak",
+        "contradiction_state": "none",
+        "promotion_block_reason": None,
+        "policy_block_reason": None,
+        "support_state": "sufficient" if value_support >= 0.35 else "insufficient_support",
+        "soft_anchor_penalty": False,
+        "admitted_weak_anchor": False,
+        "high_conflict_demotion": False,
+        "explicit_contradiction_block": False,
         "rejection_reason": rejection_reason,
     }
+
+
+def _candidate_consistency_label(score: Any) -> str:
+    value = _clamp01(score, default=0.0)
+    if value >= 0.75:
+        return "strong"
+    if value >= 0.45:
+        return "moderate"
+    if value > 0.0:
+        return "weak"
+    return "none"
 
 
 def _merge_evidence_candidates(
@@ -5145,24 +5458,27 @@ def _score_evidence_candidates(
             "source_quality": 0.20,
             "source_specificity": 0.20,
             "value_support": 0.35,
-            "entity_overlap": 0.15,
-            "corroboration": 0.10,
+            "entity_overlap": 0.10,
+            "target_consistency": 0.10,
+            "corroboration": 0.05,
         }
     elif normalized_mode == "recall":
         weights = {
             "source_quality": 0.20,
             "source_specificity": 0.15,
             "value_support": 0.30,
-            "entity_overlap": 0.20,
-            "corroboration": 0.15,
+            "entity_overlap": 0.15,
+            "target_consistency": 0.10,
+            "corroboration": 0.10,
         }
     else:
         weights = {
             "source_quality": 0.24,
             "source_specificity": 0.20,
             "value_support": 0.30,
-            "entity_overlap": 0.16,
-            "corroboration": 0.10,
+            "entity_overlap": 0.10,
+            "target_consistency": 0.10,
+            "corroboration": 0.06,
         }
 
     value_hosts: Dict[str, set] = {}
@@ -5198,8 +5514,14 @@ def _score_evidence_candidates(
             item.get("anchor_mismatch_penalty"),
             default=0.0,
         )
+        target_consistency_penalty = _clamp01(
+            item.get("target_consistency_penalty"),
+            default=0.0,
+        )
         combined_penalty = _clamp01(
-            float(entity_tolerance_penalty) + float(anchor_mismatch_penalty),
+            float(entity_tolerance_penalty)
+            + float(anchor_mismatch_penalty)
+            + float(target_consistency_penalty),
             default=0.0,
         )
         score = (
@@ -5207,12 +5529,15 @@ def _score_evidence_candidates(
             + float(item.get("source_specificity", 0.0)) * weights["source_specificity"]
             + float(item.get("value_support", 0.0)) * weights["value_support"]
             + float(item.get("entity_overlap", 0.0)) * weights["entity_overlap"]
+            + float(item.get("target_consistency", item.get("entity_overlap", 0.0))) * weights["target_consistency"]
             + float(item.get("corroboration", 0.0)) * weights["corroboration"]
             - float(combined_penalty)
         )
         item["score"] = _clamp01(score, default=0.0)
+        item["candidate_score"] = float(item["score"])
         item["entity_tolerance_penalty"] = float(entity_tolerance_penalty)
         item["anchor_mismatch_penalty"] = float(anchor_mismatch_penalty)
+        item["target_consistency_penalty"] = float(target_consistency_penalty)
         item["entity_match_tolerated"] = bool(float(entity_tolerance_penalty) > 0.0)
         item["anchor_match_soft_penalty"] = bool(float(anchor_mismatch_penalty) > 0.0)
         item["confidence_hint"] = _candidate_confidence_hint(
@@ -5239,19 +5564,30 @@ def _select_promotable_candidate(
 
     viable = [c for c in candidates if not c.get("rejection_reason")]
     if not viable:
+        top_blocked = next((c for c in candidates if isinstance(c, dict)), None)
+        if isinstance(top_blocked, dict):
+            blocked_reason = str(top_blocked.get("promotion_block_reason") or top_blocked.get("rejection_reason") or "").strip()
+            if blocked_reason:
+                return None, blocked_reason
         return None, "all_candidates_rejected"
 
-    top = viable[0]
+    promotable = [c for c in viable if not c.get("promotion_block_reason")]
+    if not promotable:
+        top_blocked = viable[0]
+        blocked_reason = str(top_blocked.get("promotion_block_reason") or "").strip()
+        return None, blocked_reason or "promotion_blocked"
+
+    top = promotable[0]
     top_score = float(top.get("score", 0.0))
     if top_score < min_score:
-        return None, "score_below_threshold"
+        return None, "insufficient_support"
     if requires_source and not _normalize_url_match(top.get("source_url")):
         return None, "missing_source_url"
     if require_second_source and float(top.get("corroboration", 0.0)) < 1.0:
         return None, "requires_second_source"
 
     top_value_key = _candidate_value_key(top.get("value"))
-    for alt in viable[1:]:
+    for alt in promotable[1:]:
         alt_value_key = _candidate_value_key(alt.get("value"))
         if not alt_value_key or alt_value_key == top_value_key:
             continue
@@ -5259,6 +5595,127 @@ def _select_promotable_candidate(
         if alt_score >= min_score * 0.85 and abs(top_score - alt_score) <= conflict_margin:
             return None, "conflict_unresolved"
     return top, "promoted"
+
+
+def _candidate_decision_category(
+    candidate: Any,
+    decision_reason: Any = None,
+) -> Optional[str]:
+    row = candidate if isinstance(candidate, dict) else {}
+    reason = str(
+        decision_reason
+        or row.get("promotion_block_reason")
+        or row.get("policy_block_reason")
+        or row.get("rejection_reason")
+        or ""
+    ).strip().lower()
+    contradiction_state = str(row.get("contradiction_state") or "").strip().lower()
+    if contradiction_state == "explicit_contradiction":
+        return "explicit_contradiction_block"
+    if contradiction_state in {"medium_conflict", "high_conflict"}:
+        return "high_conflict_demotion"
+    if contradiction_state == "soft_anchor_penalty":
+        return "soft_anchor_penalty"
+    if bool(row.get("explicit_contradiction_block", False)) or reason in {
+        "anchor_context_contradiction_hard_block",
+        "explicit_contradiction_block",
+    }:
+        return "explicit_contradiction_block"
+    if bool(row.get("high_conflict_demotion", False)) or reason in {
+        "high_conflict_block",
+        "high_conflict_demotion",
+        "grounding_blocked_entity_value_mismatch",
+        "grounding_blocked_relation_contamination",
+        "recovery_blocked_entity_value_mismatch",
+        "recovery_blocked_relation_contamination",
+        "relation_contamination_multi_entity",
+        "relation_contamination_non_target",
+    }:
+        return "high_conflict_demotion"
+    if (
+        str(row.get("policy_block_reason") or "").strip()
+        or reason.startswith("source_")
+        or "policy" in reason
+        or "denylist" in reason
+        or "disclosure" in reason
+        or "sensitive" in reason
+    ):
+        return "policy_block"
+    if (
+        str(row.get("support_state") or "").strip().lower() == "insufficient_support"
+        or reason in {
+            "insufficient_support",
+            "score_below_threshold",
+            "no_candidates",
+            "all_candidates_rejected",
+            "grounding_blocked_missing_explicit_source_support",
+            "recovery_blocked_source_value_mismatch",
+        }
+    ):
+        return "insufficient_support"
+    if bool(row.get("soft_anchor_penalty", False)) or reason in {
+        "anchor_mismatch_soft_penalty",
+        "recovery_promoted_anchor_soft_penalty",
+        "soft_anchor_penalty",
+    }:
+        return "soft_anchor_penalty"
+    return None
+
+
+def _evidence_state_category(reason: Any) -> Optional[str]:
+    token = str(reason or "").strip().lower()
+    if not token:
+        return None
+    if token in {
+        "explicit_contradiction_block",
+        "grounding_blocked_explicit_contradiction",
+        "recovery_blocked_explicit_contradiction",
+        "anchor_context_contradiction_hard_block",
+    }:
+        return "explicit_contradiction_block"
+    if token in {
+        "high_conflict_demotion",
+        "grounding_blocked_high_conflict",
+        "recovery_blocked_high_conflict",
+        "grounding_blocked_entity_value_mismatch",
+        "grounding_blocked_relation_contamination",
+        "recovery_blocked_entity_value_mismatch",
+        "recovery_blocked_relation_contamination",
+        "relation_contamination_multi_entity",
+        "relation_contamination_non_target",
+    }:
+        return "high_conflict_demotion"
+    if (
+        token.startswith("source_")
+        or "policy" in token
+        or "denylist" in token
+        or "disclosure" in token
+        or "sensitive" in token
+        or token in {
+            "grounding_blocked_missing_source_url",
+            "source_quality_below_policy_threshold",
+            "source_specificity_below_policy_threshold",
+            "source_tier_below_policy_threshold",
+            "source_tier_tertiary_disallowed",
+        }
+    ):
+        return "policy_block"
+    if token in {
+        "insufficient_support",
+        "score_below_threshold",
+        "no_candidates",
+        "all_candidates_rejected",
+        "grounding_blocked_missing_explicit_source_support",
+        "recovery_blocked_source_value_mismatch",
+    }:
+        return "insufficient_support"
+    if token in {
+        "anchor_mismatch_soft_penalty",
+        "recovery_promoted_anchor_soft_penalty",
+        "soft_anchor_penalty",
+    }:
+        return "soft_anchor_penalty"
+    return None
 
 
 def _extract_field_status_updates(
@@ -5430,6 +5887,39 @@ def _extract_field_status_updates(
                     allow_non_specific=allow_non_specific,
                     source_field=source_field,
                 )
+                consistency_state = _candidate_target_consistency_state(
+                    value=value,
+                    source_url=candidate_source or "",
+                    source_text=text,
+                    target_anchor=target_anchor_state,
+                    finalization_policy=finalization_policy,
+                    source_field=source_field,
+                )
+                candidate["target_consistency"] = float(
+                    consistency_state.get("target_consistency", candidate.get("entity_overlap", 0.0))
+                )
+                candidate["target_consistency_label"] = str(
+                    consistency_state.get("target_consistency_label")
+                    or _candidate_consistency_label(candidate.get("target_consistency"))
+                )
+                candidate["contradiction_state"] = str(
+                    consistency_state.get("contradiction_state") or "none"
+                ).strip().lower() or "none"
+                candidate["target_consistency_penalty"] = float(
+                    consistency_state.get("demotion_penalty", 0.0) or 0.0
+                )
+                candidate["soft_anchor_penalty"] = bool(
+                    consistency_state.get("soft_anchor_penalty", False)
+                )
+                candidate["admitted_weak_anchor"] = bool(candidate.get("soft_anchor_penalty", False))
+                candidate["high_conflict_demotion"] = bool(
+                    str(candidate.get("contradiction_state") or "").strip().lower()
+                    in {"medium_conflict", "high_conflict"}
+                )
+                candidate["explicit_contradiction_block"] = bool(
+                    str(candidate.get("contradiction_state") or "").strip().lower()
+                    == "explicit_contradiction"
+                )
                 if (
                     requires_schema_source
                     and not source_field
@@ -5438,49 +5928,51 @@ def _extract_field_status_updates(
                     and text.strip()
                     and not _source_supports_value(value, text)
                 ):
-                    candidate["rejection_reason"] = "grounding_blocked_missing_explicit_source_support"
-                anchor_state = _anchor_mismatch_state(
-                    target_anchor=target_anchor_state,
-                    candidate_url=candidate_source or "",
-                    candidate_text=text,
-                    finalization_policy=finalization_policy,
-                )
-                if bool(anchor_state.get("hard_block", False)):
-                    block_reason = "grounding_blocked_anchor_mismatch"
-                    if bool(target_anchor_state.get("legacy_entity_tokens", False)):
-                        block_reason = "grounding_blocked_entity_source_mismatch"
-                    candidate["rejection_reason"] = block_reason
-                    stats["anchor_hard_blocks"] = int(stats.get("anchor_hard_blocks", 0) or 0) + 1
-                elif bool(anchor_state.get("tolerated", False)):
+                    candidate["support_state"] = "insufficient_support"
+                    if not candidate.get("rejection_reason"):
+                        candidate["rejection_reason"] = "insufficient_support"
+                anchor_state = consistency_state.get("anchor_state") or {}
+                if bool(anchor_state.get("penalty", 0.0)):
                     candidate["anchor_mismatch_penalty"] = _clamp01(
                         anchor_state.get("penalty"),
                         default=_DEFAULT_FINALIZATION_POLICY["anchor_mismatch_penalty"],
                     )
+                    candidate["soft_anchor_penalty"] = True
+                    candidate["admitted_weak_anchor"] = True
                     stats["anchor_soft_penalties"] = int(stats.get("anchor_soft_penalties", 0) or 0) + 1
-                if (
-                    strict_anchor
-                    and not source_field
-                ):
-                    alignment = _entity_value_alignment_state(
-                        value=value,
-                        source_text=text,
-                        entity_tokens=anchor_tokens,
+                    stats["weak_anchor_candidates_admitted"] = int(
+                        stats.get("weak_anchor_candidates_admitted", 0) or 0
+                    ) + 1
+                if bool(consistency_state.get("hard_block", False)):
+                    detail_reason = str(consistency_state.get("detail_reason") or "").strip().lower()
+                    if bool(candidate.get("explicit_contradiction_block", False)):
+                        candidate["rejection_reason"] = detail_reason or "explicit_contradiction_block"
+                        stats["contradiction_blocks"] = int(
+                            stats.get("contradiction_blocks", 0) or 0
+                        ) + 1
+                    else:
+                        candidate["rejection_reason"] = detail_reason or "high_conflict_block"
+                        candidate["high_conflict_demotion"] = True
+                        stats["strong_conflict_demotions"] = int(
+                            stats.get("strong_conflict_demotions", 0) or 0
+                        ) + 1
+                elif bool(consistency_state.get("promotion_block", False)):
+                    candidate["promotion_block_reason"] = (
+                        candidate.get("promotion_block_reason") or "high_conflict_demotion"
                     )
-                    if bool(alignment.get("checked", False)) and not bool(alignment.get("pass", False)):
-                        candidate["rejection_reason"] = "grounding_blocked_entity_value_mismatch"
-                    relation_state = _entity_relation_contamination_state(
-                        value=value,
-                        source_text=text,
-                        entity_tokens=anchor_tokens,
-                    )
-                    if (
-                        bool(relation_state.get("checked", False))
-                        and not bool(relation_state.get("pass", False))
-                        and not candidate.get("rejection_reason")
-                    ):
-                        candidate["rejection_reason"] = "grounding_blocked_relation_contamination"
+                    candidate["high_conflict_demotion"] = True
+                    stats["strong_conflict_demotions"] = int(
+                        stats.get("strong_conflict_demotions", 0) or 0
+                    ) + 1
                 if requires_source and not candidate_source and not candidate.get("rejection_reason"):
+                    candidate["policy_block_reason"] = "grounding_blocked_missing_source_url"
                     candidate["rejection_reason"] = "grounding_blocked_missing_source_url"
+                if (
+                    float(candidate.get("value_support", 0.0) or 0.0) < 0.35
+                    and not candidate.get("rejection_reason")
+                ):
+                    candidate["rejection_reason"] = "insufficient_support"
+                    candidate["support_state"] = "insufficient_support"
 
                 candidate_pool.append(candidate)
 
@@ -5541,11 +6033,13 @@ def _extract_field_status_updates(
                     + (0.20 * float(candidate.get("source_policy_score", 0.0))),
                     default=0.0,
                 )
+                candidate["candidate_score"] = float(candidate.get("score", 0.0) or 0.0)
                 allowed, reason = _source_policy_host_gate(
                     candidate.get("source_url"),
                     normalized_source_policy,
                 )
                 if not allowed and not candidate.get("rejection_reason"):
+                    candidate["policy_block_reason"] = str(reason or "policy_block")
                     candidate["rejection_reason"] = reason
                 if (
                     float(candidate.get("source_quality", 0.0))
@@ -5558,12 +6052,14 @@ def _extract_field_status_updates(
                         and _normalize_url_match(candidate.get("source_url"))
                     )
                     if not strong_direct_support:
+                        candidate["policy_block_reason"] = "source_quality_below_policy_threshold"
                         candidate["rejection_reason"] = "source_quality_below_policy_threshold"
                 if (
                     float(candidate.get("source_specificity", 0.0))
                     < float(normalized_source_policy.get("min_source_specificity", 0.0))
                     and not candidate.get("rejection_reason")
                 ):
+                    candidate["policy_block_reason"] = "source_specificity_below_policy_threshold"
                     candidate["rejection_reason"] = "source_specificity_below_policy_threshold"
                 tier_allowed, tier_reason = _candidate_meets_source_tier_policy(
                     field_key=key,
@@ -5571,6 +6067,7 @@ def _extract_field_status_updates(
                     source_policy=normalized_source_policy,
                 )
                 if not tier_allowed and not candidate.get("rejection_reason"):
+                    candidate["policy_block_reason"] = str(tier_reason or "source_tier_below_policy_threshold")
                     candidate["rejection_reason"] = str(tier_reason or "source_tier_below_policy_threshold")
                 if (
                     bool(
@@ -5585,7 +6082,12 @@ def _extract_field_status_updates(
                     and float(candidate.get("entity_overlap", 0.0)) < 0.15
                     and not candidate.get("rejection_reason")
                 ):
-                    candidate["rejection_reason"] = "entity_anchor_below_policy_threshold"
+                    candidate["target_consistency_penalty"] = max(
+                        float(candidate.get("target_consistency_penalty", 0.0) or 0.0),
+                        0.12,
+                    )
+                    candidate["admitted_weak_anchor"] = True
+                    candidate["soft_anchor_penalty"] = True
                 if not source_field and not candidate.get("rejection_reason"):
                     disclosure_state = _sensitive_field_disclosure_state(
                         field_key=key,
@@ -5594,6 +6096,10 @@ def _extract_field_status_updates(
                         source_policy=normalized_source_policy,
                     )
                     if not bool(disclosure_state.get("pass", False)):
+                        candidate["policy_block_reason"] = str(
+                            disclosure_state.get("reason")
+                            or "grounding_blocked_sensitive_disclosure_not_explicit"
+                        )
                         candidate["rejection_reason"] = str(
                             disclosure_state.get("reason") or "grounding_blocked_sensitive_disclosure_not_explicit"
                         )
@@ -5625,7 +6131,7 @@ def _extract_field_status_updates(
                 (
                     candidate
                     for candidate in list(ledger.get(key) or [])
-                    if not candidate.get("rejection_reason")
+                    if not candidate.get("rejection_reason") and not candidate.get("promotion_block_reason")
                 ),
                 None,
             )
@@ -5680,7 +6186,19 @@ def _extract_field_status_updates(
                 entry["evidence"] = found_evidence
             entry["evidence_reason"] = str(decision_reason or "promoted")
             entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
+            entry["candidate_score"] = round(float(selected.get("candidate_score", selected.get("score", 0.0))), 4)
             entry["confidence_hint"] = str(selected.get("confidence_hint") or "Low")
+            entry["target_consistency"] = round(
+                float(selected.get("target_consistency", selected.get("entity_overlap", 0.0)) or 0.0),
+                4,
+            )
+            entry["target_consistency_label"] = str(
+                selected.get("target_consistency_label")
+                or _candidate_consistency_label(selected.get("target_consistency"))
+            )
+            entry["contradiction_state"] = str(selected.get("contradiction_state") or "none")
+            entry["evidence_category"] = _candidate_decision_category(selected, decision_reason)
+            entry["soft_anchor_penalty"] = bool(selected.get("soft_anchor_penalty", False))
             if (
                 found_source
                 and not key.endswith("_source")
@@ -5695,10 +6213,15 @@ def _extract_field_status_updates(
                 source_entry["evidence"] = "derived_from_evidence_candidate"
                 source_entry["evidence_reason"] = str(decision_reason or "promoted")
                 source_entry["evidence_score"] = round(float(selected.get("score", 0.0)), 4)
+                source_entry["evidence_category"] = _candidate_decision_category(selected, decision_reason)
                 field_status[source_key] = source_entry
             field_status[key] = entry
             stats["candidates_promoted"] = int(stats.get("candidates_promoted", 0)) + 1
             stats["fields_promoted"] = int(stats.get("fields_promoted", 0)) + 1
+            if bool(selected.get("soft_anchor_penalty", False)):
+                stats["weak_anchor_promotions"] = int(
+                    stats.get("weak_anchor_promotions", 0) or 0
+                ) + 1
             continue
 
         if decision_reason and decision_reason not in {"no_candidates", "all_candidates_rejected"}:
@@ -5713,8 +6236,6 @@ def _extract_field_status_updates(
                 None,
             )
         if rejected_evidence:
-            entry["evidence"] = rejected_evidence
-            entry["evidence_reason"] = rejected_evidence
             top_candidate = next(
                 (
                     candidate
@@ -5723,6 +6244,11 @@ def _extract_field_status_updates(
                 ),
                 None,
             )
+            evidence_category = _candidate_decision_category(top_candidate, rejected_evidence)
+            entry["evidence"] = rejected_evidence
+            entry["evidence_reason"] = rejected_evidence
+            if evidence_category:
+                entry["evidence_category"] = evidence_category
             top_score = 0.0
             if isinstance(top_candidate, dict):
                 try:
@@ -5733,6 +6259,16 @@ def _extract_field_status_updates(
                 if top_source_url:
                     entry["evidence_source_url"] = top_source_url
                 entry["candidate_score"] = round(float(top_score), 4)
+                entry["target_consistency"] = round(
+                    float(top_candidate.get("target_consistency", top_candidate.get("entity_overlap", 0.0)) or 0.0),
+                    4,
+                )
+                entry["target_consistency_label"] = str(
+                    top_candidate.get("target_consistency_label")
+                    or _candidate_consistency_label(top_candidate.get("target_consistency"))
+                )
+                entry["contradiction_state"] = str(top_candidate.get("contradiction_state") or "none")
+                entry["soft_anchor_penalty"] = bool(top_candidate.get("soft_anchor_penalty", False))
             entry["anchor_mode"] = str(anchor_mode or "adaptive").strip().lower() or "adaptive"
             entry["anchor_strength"] = str(target_anchor_state.get("strength") or "none").strip().lower() or "none"
             entry["evidence_score"] = round(float(top_score), 4)
@@ -5897,6 +6433,23 @@ def _invoke_selector_model_with_timeout(
         executor.shutdown(wait=False, cancel_futures=True)
 
 
+def _query_intent_for_search_queries(
+    search_queries: Any,
+    *,
+    source_policy: Any = None,
+) -> Dict[str, Any]:
+    normalized_source_policy = _normalize_source_policy(source_policy)
+    preferred_domains = list(normalized_source_policy.get("preferred_domains") or [])
+    intents = [
+        _build_query_intent(query, preferred_domains=preferred_domains)
+        for query in list(search_queries or [])
+        if str(query or "").strip()
+    ]
+    if not intents:
+        return _build_query_intent("", preferred_domains=preferred_domains)
+    return _merge_query_intents(intents)
+
+
 def _llm_select_round_openwebpage_candidate(
     *,
     selector_model: Any,
@@ -5904,10 +6457,13 @@ def _llm_select_round_openwebpage_candidate(
     search_queries: List[str],
     candidates: List[Dict[str, Any]],
     previously_opened: set,
+    query_intent: Any = None,
 ) -> Optional[str]:
     """Ask the LLM to pick one best URL candidate for this round."""
     if selector_model is None or not candidates:
         return None
+    normalized_query_intent = _query_intent_for_search_queries(search_queries)
+    merged_query_intent = _merge_query_intents([normalized_query_intent, query_intent])
 
     try:
         from langchain_core.messages import HumanMessage, SystemMessage
@@ -5948,6 +6504,9 @@ def _llm_select_round_openwebpage_candidate(
             ),
             "entity_hits": int(item.get("entity_hits", 0)),
             "entity_ratio": round(float(item.get("entity_ratio", 0.0)), 3),
+            "required_host_match": bool(item.get("query_intent_required_host_match", False)),
+            "preferred_host_match": bool(item.get("query_intent_preferred_host_match", False)),
+            "quoted_phrase_hits": int(item.get("query_intent_quoted_phrase_hits", 0) or 0),
         }
         candidate_rows.append(row)
         candidate_id_to_url[idx] = url
@@ -5959,6 +6518,12 @@ def _llm_select_round_openwebpage_candidate(
     selector_payload = {
         "task_prompt": str(task_prompt or "")[:1800],
         "search_queries": [str(q or "")[:220] for q in list(search_queries or [])[:8]],
+        "query_intent": {
+            "required_hosts": list(merged_query_intent.get("required_hosts") or [])[:8],
+            "preferred_hosts": list(merged_query_intent.get("preferred_hosts") or [])[:8],
+            "quoted_phrases": list(merged_query_intent.get("quoted_phrases") or [])[:6],
+            "focus_tokens": list(merged_query_intent.get("focus_tokens") or [])[:10],
+        },
         "already_opened_urls": sorted(list(previously_opened))[:16],
         "candidates": candidate_rows,
     }
@@ -6067,6 +6632,10 @@ def _select_round_openwebpage_candidate(
         default=float(policy.get("open_only_if_score_ge", 0.0)),
     )
     selector_mode = _AUTO_OPENWEBPAGE_SELECTOR_MODE
+    query_intent = _query_intent_for_search_queries(
+        search_queries,
+        source_policy=source_policy,
+    )
     ranked_candidates = _collect_round_openwebpage_candidates(
         state_messages,
         round_tool_messages,
@@ -6076,25 +6645,12 @@ def _select_round_openwebpage_candidate(
         blocked_hosts=blocked_hosts,
         now_ts=now_ts,
         max_candidates=max_candidates,
+        query_intent=query_intent,
     )
     if not ranked_candidates:
         return None
 
-    entity_tokens: List[str] = []
-    seen_entity = set()
-    for raw_query in list(search_queries or []):
-        query_text = str(raw_query or "").strip()
-        if not query_text:
-            continue
-        for token in _query_focus_tokens(query_text, max_tokens=6):
-            if token in seen_entity:
-                continue
-            seen_entity.add(token)
-            entity_tokens.append(token)
-            if len(entity_tokens) >= 10:
-                break
-        if len(entity_tokens) >= 10:
-            break
+    entity_tokens = list(query_intent.get("focus_tokens") or [])
     min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
 
     if selector_mode in {"llm", "hybrid"}:
@@ -6105,6 +6661,7 @@ def _select_round_openwebpage_candidate(
             search_queries=[str(q or "") for q in list(search_queries or [])[:8]],
             candidates=llm_candidates,
             previously_opened=previously_opened,
+            query_intent=query_intent,
         )
         if chosen_url:
             return chosen_url
@@ -6133,6 +6690,7 @@ def _collect_round_openwebpage_candidates(
     blocked_hosts: Any = None,
     now_ts: Optional[float] = None,
     max_candidates: int = 40,
+    query_intent: Any = None,
 ) -> List[Dict[str, Any]]:
     payloads = _tool_message_payloads(round_tool_messages)
     if not payloads:
@@ -6170,22 +6728,14 @@ def _collect_round_openwebpage_candidates(
     except Exception:
         max_candidates = 40
     normalized_source_policy = _normalize_source_policy(source_policy)
-
-    entity_tokens: List[str] = []
-    seen_entity = set()
-    for raw_query in list(search_queries or []):
-        query_text = str(raw_query or "").strip()
-        if not query_text:
-            continue
-        for token in _query_focus_tokens(query_text, max_tokens=6):
-            if token in seen_entity:
-                continue
-            seen_entity.add(token)
-            entity_tokens.append(token)
-            if len(entity_tokens) >= 10:
-                break
-        if len(entity_tokens) >= 10:
-            break
+    merged_query_intent = _merge_query_intents([
+        _query_intent_for_search_queries(
+            search_queries,
+            source_policy=normalized_source_policy,
+        ),
+        query_intent,
+    ])
+    entity_tokens = list(merged_query_intent.get("focus_tokens") or [])
     min_hits, min_ratio = _entity_match_thresholds(len(entity_tokens))
     selector_mode = _AUTO_OPENWEBPAGE_SELECTOR_MODE
 
@@ -6220,35 +6770,42 @@ def _collect_round_openwebpage_candidates(
             candidate_host = _url_host(normalized)
             if candidate_host and float(blocked_host_map.get(candidate_host, 0.0) or 0.0) > now_value:
                 continue
-
             candidate_text = str(row.get("text") or "")
             entity_hits, entity_ratio = _entity_overlap_for_candidate(
                 entity_tokens,
                 candidate_url=normalized,
                 candidate_text=candidate_text,
             )
+            query_intent_required_host_match = bool(
+                merged_query_intent.get("required_hosts")
+                and _query_intent_host_matches(normalized, merged_query_intent, key="required_hosts")
+            )
+            if merged_query_intent.get("required_hosts") and not query_intent_required_host_match:
+                continue
+            query_intent_preferred_host_match = bool(
+                merged_query_intent.get("preferred_hosts")
+                and _query_intent_host_matches(normalized, merged_query_intent, key="preferred_hosts")
+            )
+            query_intent_quoted_phrase_hits = int(
+                _query_intent_phrase_hits(f"{candidate_text} {normalized}", merged_query_intent)
+            )
             url_score = _score_primary_source_url(normalized)
             if float(url_score) < float(min_url_score):
                 continue
-            if entity_tokens and entity_hits <= 0 and entity_ratio <= 0:
-                continue
-            if selector_mode == "heuristic":
-                if entity_tokens and (entity_hits < min_hits or entity_ratio < min_ratio):
-                    continue
-            else:
-                # Keep the candidate pool broad for model choice, only removing
-                # strongly low-signal URLs.
-                if url_score < -1.5:
-                    continue
 
             seen.add(normalized)
             candidate = _score_openwebpage_followup_candidate(
                 {
                     "url": normalized,
+                    "host": candidate_host,
                     "text": candidate_text,
+                    "base_score": float(url_score),
                     "url_score": float(url_score),
                     "entity_hits": int(entity_hits),
                     "entity_ratio": float(entity_ratio),
+                    "query_intent_required_host_match": bool(query_intent_required_host_match),
+                    "query_intent_preferred_host_match": bool(query_intent_preferred_host_match),
+                    "query_intent_quoted_phrase_hits": int(query_intent_quoted_phrase_hits),
                     "order": int(order),
                 },
                 normalized_source_policy,
@@ -6266,17 +6823,29 @@ def _collect_round_openwebpage_candidates(
     ranked_candidates = sorted(
         candidates,
         key=lambda item: (
-            float(item.get("openwebpage_followup_score", item.get("total_score", 0.0))),
-            float(item.get("base_score", 0.0)),
-            float(item.get("url_score", 0.0)),
-            float(item.get("authority_score", 0.0)),
-            float(item.get("detail_score", 0.0)),
-            int(item.get("entity_hits", 0)),
-            float(item.get("entity_ratio", 0.0)),
-            -int(item.get("order", 0)),
+            -int(bool(item.get("query_intent_required_host_match", False))),
+            -int(item.get("query_intent_quoted_phrase_hits", 0) or 0),
+            -int(bool(item.get("query_intent_preferred_host_match", False))),
+            -float(item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0),
+            int(item.get("order", 9999) or 9999),
+            str(item.get("url") or ""),
         ),
-        reverse=True,
     )
+
+    if selector_mode == "heuristic" and entity_tokens:
+        filtered = [
+            item for item in ranked_candidates
+            if (
+                int(item.get("entity_hits", 0) or 0) >= min_hits
+                or float(item.get("entity_ratio", 0.0) or 0.0) >= min_ratio
+                or int(item.get("query_intent_quoted_phrase_hits", 0) or 0) > 0
+                or bool(item.get("query_intent_preferred_host_match", False))
+                or int(item.get("source_tier", 0) or 0) >= 3
+                or int(item.get("authority_tier", 0) or 0) >= 4
+            )
+        ]
+        if filtered:
+            ranked_candidates = filtered
     return ranked_candidates
 
 
@@ -6383,6 +6952,15 @@ def _openwebpage_followup_selection_details(
                 "detail_score": round(float(candidate.get("detail_score", 0.0) or 0.0), 4),
                 "preferred_domain_boost_applied": bool(
                     candidate.get("preferred_domain_boost_applied", False)
+                ),
+                "query_intent_required_host_match": bool(
+                    candidate.get("query_intent_required_host_match", False)
+                ),
+                "query_intent_preferred_host_match": bool(
+                    candidate.get("query_intent_preferred_host_match", False)
+                ),
+                "query_intent_quoted_phrase_hits": int(
+                    candidate.get("query_intent_quoted_phrase_hits", 0) or 0
                 ),
                 "openwebpage_followup_score": round(
                     float(candidate.get("openwebpage_followup_score", 0.0) or 0.0),
@@ -6947,6 +7525,7 @@ def _anchor_mismatch_state(
 
     policy = _normalize_finalization_policy(finalization_policy)
     mode = _anchor_mode_for_policy(anchor, policy)
+    low_overlap_mode = str(policy.get("anchor_low_overlap_mode") or "penalize").strip().lower()
     overlap = _anchor_overlap_for_candidate(
         target_anchor=anchor,
         candidate_url=candidate_url,
@@ -7028,17 +7607,29 @@ def _anchor_mismatch_state(
             penalty = float(penalty_default)
             reason = "anchor_mismatch_soft_penalty"
         else:
-            min_strength = str(policy.get("anchor_hard_block_min_strength") or "strong").strip().lower()
-            hard_block = bool(
-                _anchor_strength_rank(anchor.get("strength"))
-                >= _anchor_strength_rank(min_strength)
-            )
-            if hard_block:
-                passed = False
-                reason = "anchor_mismatch_hard_block"
-            else:
+            plain_mismatch_requires_penalty = bool(
+                policy.get("anchor_hard_block_requires_explicit_contradiction", True)
+            ) or low_overlap_mode == "penalize"
+            if plain_mismatch_requires_penalty:
+                strength = str(anchor.get("strength") or "none").strip().lower()
                 penalty = float(penalty_default)
+                if strength == "strong":
+                    penalty = min(0.35, float(penalty_default) * 1.35)
+                elif strength == "moderate":
+                    penalty = min(0.30, float(penalty_default) * 1.20)
                 reason = "anchor_mismatch_soft_penalty"
+            else:
+                min_strength = str(policy.get("anchor_hard_block_min_strength") or "strong").strip().lower()
+                hard_block = bool(
+                    _anchor_strength_rank(anchor.get("strength"))
+                    >= _anchor_strength_rank(min_strength)
+                )
+                if hard_block:
+                    passed = False
+                    reason = "anchor_mismatch_hard_block"
+                else:
+                    penalty = float(penalty_default)
+                    reason = "anchor_mismatch_soft_penalty"
     elif mismatch:
         # Scale soft penalty inversely with anchor confidence (Step 10).
         strength = str(anchor.get("strength") or "none").strip().lower()
@@ -7069,7 +7660,6 @@ def _anchor_mismatch_state(
         "tolerated": bool(tolerated or (mismatch and not hard_block and penalty > 0.0)),
         "context_contradiction": bool(context_contradiction),
     }
-
 
 def _task_target_anchor_from_messages(
     messages: Any,
@@ -7185,6 +7775,114 @@ def _task_target_anchor_from_messages(
         "strength": _anchor_strength_from_confidence(confidence),
         "provenance": provenance,
         "mode": "adaptive",
+    })
+
+
+def _augment_target_anchor_with_field_status(
+    target_anchor: Any,
+    field_status: Any,
+    *,
+    min_evidence_score: float = 0.78,
+    max_added_tokens: int = 8,
+) -> Dict[str, Any]:
+    anchor = _normalize_target_anchor(target_anchor)
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    if not normalized:
+        return anchor
+
+    tokens = list(anchor.get("tokens") or [])
+    phrases = list(anchor.get("phrases") or [])
+    id_signals = list(anchor.get("id_signals") or [])
+    provenance = list(anchor.get("provenance") or [])
+    token_set = set(tokens)
+    base_token_set = set(tokens)
+    phrase_set = {
+        _normalize_match_text(value)
+        for value in list(phrases or [])
+        if _normalize_match_text(value)
+    }
+    id_signal_set = {
+        str(value).strip().lower()
+        for value in list(id_signals or [])
+        if str(value).strip()
+    }
+    added_tokens = 0
+
+    for key, entry in list(normalized.items()):
+        if not isinstance(entry, dict):
+            continue
+        key_str = str(key or "").strip()
+        if (
+            not key_str
+            or key_str.endswith("_source")
+            or key_str.endswith("_confidence")
+            or key_str in {"confidence", "justification"}
+        ):
+            continue
+        if str(entry.get("status") or "").strip().lower() != _FIELD_STATUS_FOUND:
+            continue
+        if _is_empty_like(entry.get("value")) or _is_unknown_marker(entry.get("value")):
+            continue
+        if _clamp01(entry.get("evidence_score"), default=0.0) < float(min_evidence_score):
+            continue
+        if not _normalize_url_match(entry.get("source_url")):
+            continue
+
+        value = entry.get("value")
+        if not isinstance(value, str):
+            continue
+        text_value = str(value).strip()
+        if not text_value or len(text_value) > 120:
+            continue
+        url_signal = _normalize_url_match(text_value)
+        if url_signal:
+            signal_key = str(url_signal).strip().lower()
+            if signal_key and signal_key not in id_signal_set:
+                id_signals.append(url_signal)
+                id_signal_set.add(signal_key)
+                provenance = _append_limited_unique(provenance, "confirmed_evidence_url", max_items=12)
+            continue
+        if re.fullmatch(r"[@#][A-Za-z0-9_.-]{3,}", text_value) or re.fullmatch(
+            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+            text_value,
+        ):
+            signal_key = text_value.lower()
+            if signal_key not in id_signal_set:
+                id_signals.append(text_value[:160])
+                id_signal_set.add(signal_key)
+                provenance = _append_limited_unique(provenance, "confirmed_evidence_id", max_items=12)
+            continue
+        normalized_value = _normalize_match_text(text_value)
+        value_tokens = [
+            tok for tok in re.findall(r"[a-z0-9]+", normalized_value)
+            if len(tok) >= 3
+        ]
+        if not value_tokens or len(value_tokens) > 4:
+            continue
+        if base_token_set and not (set(value_tokens) & base_token_set):
+            continue
+        phrase_key = " ".join(value_tokens)
+        if len(value_tokens) >= 2 and phrase_key not in phrase_set:
+            phrases.append(text_value[:120])
+            phrase_set.add(phrase_key)
+            provenance = _append_limited_unique(provenance, "confirmed_evidence_phrase", max_items=12)
+        for token in value_tokens:
+            if token in token_set:
+                continue
+            tokens.append(token)
+            token_set.add(token)
+            added_tokens += 1
+            if added_tokens >= max(0, int(max_added_tokens)):
+                break
+        if added_tokens >= max(0, int(max_added_tokens)):
+            break
+
+    return _normalize_target_anchor({
+        **anchor,
+        "tokens": tokens[:24],
+        "phrases": phrases[:8],
+        "id_signals": id_signals[:8],
+        "provenance": provenance[:12],
     })
 
 
@@ -7715,7 +8413,10 @@ def _sync_terminal_response_with_field_status(
 ) -> tuple[Any, Dict[str, Dict[str, Any]], Optional[Dict[str, Any]]]:
     """Single entry-point for terminal sync plus optional canonical guard."""
     normalized_finalization_policy = _normalize_finalization_policy(finalization_policy)
-    target_anchor = _task_target_anchor_from_messages(messages)
+    target_anchor = _augment_target_anchor_with_field_status(
+        _task_target_anchor_from_messages(messages),
+        field_status,
+    )
     allowed_source_urls = _collect_tool_urls_from_messages(
         messages,
         summary=summary,
@@ -7997,6 +8698,13 @@ def _normalize_budget_state(
             0, int(existing.get("no_new_high_quality_evidence_streak", 0) or 0)
         ),
         "replan_requested": bool(existing.get("replan_requested", False)),
+        "quality_gate_recovery_rounds_used": max(
+            0, int(existing.get("quality_gate_recovery_rounds_used", 0) or 0)
+        ),
+        "quality_gate_recovery_active": bool(existing.get("quality_gate_recovery_active", False)),
+        "quality_gate_recovery_last_reason": str(
+            existing.get("quality_gate_recovery_last_reason") or ""
+        ).strip() or None,
         "premature_end_nudge_count": max(0, int(existing.get("premature_end_nudge_count", 0) or 0)),
         "structural_repair_retry_required": bool(existing.get("structural_repair_retry_required", False)),
         "blocked_openwebpage_hosts": _normalize_blocked_openwebpage_hosts(
@@ -8224,8 +8932,13 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "tool_call_pairing_mismatches",
         "diagnostics_recovery_checkpoint_events",
         "diagnostics_recovery_retry_events",
+        "quality_gate_recovery_events",
         "anchor_hard_blocks_count",
         "anchor_soft_penalties_count",
+        "weak_anchor_candidates_admitted_count",
+        "contradiction_blocks_count",
+        "strong_conflict_demotions_count",
+        "weak_anchor_promotions_survived_finalization_count",
     )
     out: Dict[str, Any] = {}
     for key in counters:
@@ -8317,6 +9030,18 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
             except Exception:
                 unknown_reason_counts[reason] = 0
     out["unknown_reason_counts"] = unknown_reason_counts
+    evidence_state_reason_counts_raw = existing.get("evidence_state_reason_counts") or {}
+    evidence_state_reason_counts: Dict[str, int] = {}
+    if isinstance(evidence_state_reason_counts_raw, dict):
+        for raw_reason, raw_count in evidence_state_reason_counts_raw.items():
+            reason = str(raw_reason or "").strip()
+            if not reason:
+                continue
+            try:
+                evidence_state_reason_counts[reason] = max(0, int(raw_count))
+            except Exception:
+                evidence_state_reason_counts[reason] = 0
+    out["evidence_state_reason_counts"] = evidence_state_reason_counts
     finalization_reason_counts_raw = existing.get("finalization_invariant_failures_by_reason") or {}
     finalization_reason_counts: Dict[str, int] = {}
     if isinstance(finalization_reason_counts_raw, dict):
@@ -8389,6 +9114,24 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
             "candidate_score": round(float(score), 4),
         })
     out["anchor_mismatch_samples"] = anchor_mismatch_samples
+    evidence_state_samples: List[Dict[str, Any]] = []
+    for raw in list(existing.get("evidence_state_samples") or [])[:64]:
+        if not isinstance(raw, dict):
+            continue
+        score = 0.0
+        try:
+            score = float(raw.get("candidate_score", 0.0) or 0.0)
+        except Exception:
+            score = 0.0
+        evidence_state_samples.append({
+            "field": str(raw.get("field") or "").strip() or None,
+            "reason": str(raw.get("reason") or "").strip() or None,
+            "source_url": _normalize_url_match(raw.get("source_url")),
+            "anchor_mode": str(raw.get("anchor_mode") or "").strip().lower() or None,
+            "anchor_strength": str(raw.get("anchor_strength") or "").strip().lower() or None,
+            "candidate_score": round(float(score), 4),
+        })
+    out["evidence_state_samples"] = evidence_state_samples
     empty_tool_results_details: List[Dict[str, Any]] = []
     for raw in list(existing.get("empty_tool_results_details") or [])[:64]:
         if not isinstance(raw, dict):
@@ -8562,10 +9305,19 @@ def _field_unknown_reason(entry: Any) -> str:
         return "missing_field_entry"
     status = str(entry.get("status") or "").strip().lower()
     evidence = str(entry.get("evidence") or "").strip().lower()
+    evidence_category = str(entry.get("evidence_category") or "").strip().lower()
     if status == _FIELD_STATUS_FOUND:
         value = entry.get("value")
         if not _is_empty_like(value) and not _is_unknown_marker(value):
             return "resolved"
+    if evidence_category in {
+        "soft_anchor_penalty",
+        "explicit_contradiction_block",
+        "high_conflict_demotion",
+        "policy_block",
+        "insufficient_support",
+    }:
+        return evidence_category
     if evidence.startswith("recovery_blocked_"):
         return evidence
     if evidence.startswith("grounding_blocked_"):
@@ -8587,6 +9339,58 @@ def _field_unknown_reason(entry: Any) -> str:
     return "unresolved_or_missing"
 
 
+def _evidence_state_category(reason: Any) -> Optional[str]:
+    token = str(reason or "").strip().lower()
+    if not token:
+        return None
+    if token in {"soft_anchor_penalty", "recovery_promoted_anchor_soft_penalty"}:
+        return "soft_anchor_penalty"
+    if token in {
+        "explicit_contradiction_block",
+        "anchor_context_contradiction_hard_block",
+        "grounding_blocked_explicit_contradiction",
+    }:
+        return "explicit_contradiction_block"
+    if token in {
+        "high_conflict_demotion",
+        "high_conflict_block",
+        "grounding_blocked_high_conflict",
+        "grounding_blocked_entity_value_mismatch",
+        "grounding_blocked_relation_contamination",
+        "recovery_blocked_entity_value_mismatch",
+        "recovery_blocked_relation_contamination",
+    }:
+        return "high_conflict_demotion"
+    if (
+        token.startswith("source_")
+        or "policy" in token
+        or "denylist" in token
+        or "disclosure" in token
+        or "sensitive" in token
+        or token in {
+            "grounding_blocked_missing_source_url",
+            "grounding_blocked_untrusted_source_url",
+            "recovery_blocked_untrusted_source_url",
+            "recovery_blocked_non_specific_source",
+            "source_quality_below_policy_threshold",
+            "source_specificity_below_policy_threshold",
+            "source_tier_below_policy_threshold",
+        }
+    ):
+        return "policy_block"
+    if token in {
+        "insufficient_support",
+        "score_below_threshold",
+        "no_candidates",
+        "all_candidates_rejected",
+        "conflict_unresolved",
+        "source_quality_below_threshold",
+        "source_policy_min_candidate_score",
+    }:
+        return "insufficient_support"
+    return None
+
+
 def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     raw_status = field_status if isinstance(field_status, dict) else {}
     normalized = _normalize_field_status_map(field_status, expected_schema=None)
@@ -8602,7 +9406,10 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     unresolved_fields: List[str] = []
     unknown_reason_counts: Dict[str, int] = {}
     unknown_fields_by_reason: Dict[str, List[str]] = {}
+    evidence_state_reason_counts: Dict[str, int] = {}
+    evidence_state_samples: List[Dict[str, Any]] = []
     anchor_mismatch_samples: List[Dict[str, Any]] = []
+    weak_anchor_promotions_survived_finalization_count = 0
     for key, entry in (normalized or {}).items():
         if not isinstance(entry, dict):
             continue
@@ -8611,6 +9418,16 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         evidence = str(entry.get("evidence") or "").strip().lower()
         evidence_reason = str(entry.get("evidence_reason") or evidence).strip().lower()
         status = str(entry.get("status") or "").strip().lower()
+        contradiction_state = str(entry.get("contradiction_state") or "").strip().lower()
+        evidence_state = str(entry.get("evidence_category") or "").strip().lower()
+        if not evidence_state and contradiction_state == "soft_anchor_penalty":
+            evidence_state = "soft_anchor_penalty"
+        elif not evidence_state and contradiction_state == "explicit_contradiction":
+            evidence_state = "explicit_contradiction_block"
+        elif not evidence_state and contradiction_state in {"medium_conflict", "high_conflict"}:
+            evidence_state = "high_conflict_demotion"
+        if not evidence_state:
+            evidence_state = _evidence_state_category(evidence_reason or evidence)
         if key_str in resolvable_key_set and status in {_FIELD_STATUS_PENDING, _FIELD_STATUS_UNKNOWN}:
             unresolved_fields.append(key_str)
         if evidence.startswith("grounding_blocked"):
@@ -8626,10 +9443,19 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         if evidence.startswith("recovery_blocked"):
             recovery_rejected_fields.append(str(key))
             recovery_reason_counts[evidence] = int(recovery_reason_counts.get(evidence, 0)) + 1
-        if (
-            evidence_reason in {"recovery_blocked_anchor_mismatch", "grounding_blocked_anchor_mismatch"}
-            or evidence in {"recovery_blocked_anchor_mismatch", "grounding_blocked_anchor_mismatch"}
-        ):
+        if evidence_state:
+            evidence_state_reason_counts[evidence_state] = int(
+                evidence_state_reason_counts.get(evidence_state, 0)
+            ) + 1
+        if evidence_state == "soft_anchor_penalty" and status == _FIELD_STATUS_FOUND:
+            weak_anchor_promotions_survived_finalization_count += 1
+        if evidence_state in {
+            "soft_anchor_penalty",
+            "explicit_contradiction_block",
+            "high_conflict_demotion",
+            "policy_block",
+            "insufficient_support",
+        }:
             candidate_score = 0.0
             try:
                 candidate_score = float(entry.get("candidate_score", entry.get("evidence_score", 0.0)) or 0.0)
@@ -8656,10 +9482,14 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
                 ).strip().lower() or None,
                 "candidate_score": round(float(candidate_score), 4),
             }
-            if sample not in anchor_mismatch_samples:
+            if status in {_FIELD_STATUS_PENDING, _FIELD_STATUS_UNKNOWN} and sample not in evidence_state_samples:
+                evidence_state_samples.append(sample)
+            if evidence_state == "soft_anchor_penalty" and sample not in anchor_mismatch_samples:
                 anchor_mismatch_samples.append(sample)
             if len(anchor_mismatch_samples) >= 64:
                 anchor_mismatch_samples = anchor_mismatch_samples[:64]
+            if len(evidence_state_samples) >= 64:
+                evidence_state_samples = evidence_state_samples[:64]
         if status == _FIELD_STATUS_UNKNOWN:
             if key_str not in resolvable_key_set:
                 continue
@@ -8692,7 +9522,12 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         "unresolved_fields": unresolved_fields[:64],
         "unknown_reason_counts": unknown_reason_counts,
         "unknown_fields_by_reason": unknown_fields_by_reason,
+        "evidence_state_reason_counts": evidence_state_reason_counts,
+        "evidence_state_samples": evidence_state_samples[:64],
         "anchor_mismatch_samples": anchor_mismatch_samples[:64],
+        "weak_anchor_promotions_survived_finalization_count": int(
+            weak_anchor_promotions_survived_finalization_count
+        ),
     }
 
 
@@ -8784,6 +9619,10 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
     out["recovery_rejected_fields_current"] = list(field_diag.get("recovery_rejected_fields") or [])[:64]
     out["unknown_fields_current"] = list(field_diag.get("unknown_fields") or [])[:64]
     out["unresolved_fields_current"] = list(field_diag.get("unresolved_fields") or [])[:64]
+    out["weak_anchor_promotions_survived_finalization_count"] = int(max(
+        int(out.get("weak_anchor_promotions_survived_finalization_count", 0) or 0),
+        int(field_diag.get("weak_anchor_promotions_survived_finalization_count", 0) or 0),
+    ))
     reason_counts = out.get("field_demotion_reason_counts") or {}
     if not isinstance(reason_counts, dict):
         reason_counts = {}
@@ -8823,6 +9662,19 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             count = 0
         unknown_reason_counts[reason] = max(int(unknown_reason_counts.get(reason, 0) or 0), count)
     out["unknown_reason_counts"] = unknown_reason_counts
+    evidence_state_reason_counts = out.get("evidence_state_reason_counts") or {}
+    if not isinstance(evidence_state_reason_counts, dict):
+        evidence_state_reason_counts = {}
+    for raw_reason, raw_count in (field_diag.get("evidence_state_reason_counts") or {}).items():
+        reason = str(raw_reason or "").strip()
+        if not reason:
+            continue
+        try:
+            count = max(0, int(raw_count))
+        except Exception:
+            count = 0
+        evidence_state_reason_counts[reason] = max(int(evidence_state_reason_counts.get(reason, 0) or 0), count)
+    out["evidence_state_reason_counts"] = evidence_state_reason_counts
     unknown_fields_by_reason = out.get("unknown_fields_by_reason") or {}
     if not isinstance(unknown_fields_by_reason, dict):
         unknown_fields_by_reason = {}
@@ -8848,6 +9700,15 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
         if len(existing_samples) >= 64:
             break
     out["anchor_mismatch_samples"] = existing_samples[:64]
+    evidence_state_samples = list(out.get("evidence_state_samples") or [])
+    for raw_sample in list(field_diag.get("evidence_state_samples") or []):
+        if not isinstance(raw_sample, dict):
+            continue
+        if raw_sample not in evidence_state_samples:
+            evidence_state_samples.append(raw_sample)
+        if len(evidence_state_samples) >= 64:
+            break
+    out["evidence_state_samples"] = evidence_state_samples[:64]
     return _refresh_diagnostics_snapshots(out)
 
 
@@ -9449,7 +10310,10 @@ def _candidate_resolution_from_ledger(
     enabled = bool(resolver.get("enabled", True))
     top_k = max(1, int(resolver.get("top_k", 5) or 5))
     source_tier_provider = options.get("source_tier_provider")
-    target_anchor = _task_target_anchor_from_messages(state.get("messages") or [])
+    target_anchor = _augment_target_anchor_with_field_status(
+        _task_target_anchor_from_messages(state.get("messages") or []),
+        field_status,
+    )
     anchor_tokens = _target_anchor_tokens(target_anchor, max_tokens=16)
     required_fields = [
         key for key in _required_field_keys(_state_expected_schema(state), field_status)
@@ -9565,6 +10429,7 @@ def _build_finalization_status(
     state: Any,
     expected_schema: Any,
     terminal_payload: Any,
+    completion_gate: Any = None,
     repair_events: Optional[List[Dict[str, Any]]] = None,
     context: str = "agent",
     canonicalization_version: str = "v2",
@@ -9594,6 +10459,10 @@ def _build_finalization_status(
             missing_keys = []
         type_compatible = _payload_schema_types_compatible(terminal_payload, expected_schema)
         schema_valid = bool((not missing_keys) and type_compatible)
+    gate = completion_gate if isinstance(completion_gate, dict) else {}
+    completion_status = str(gate.get("completion_status") or "").strip() or None
+    quality_gate_terminal_degraded = bool(gate.get("quality_gate_terminal_degraded", False))
+    degraded_reason = str(gate.get("reason") or "").strip() or None
     return {
         "enabled": bool(finalizer.get("enabled", True)),
         "mode": mode,
@@ -9604,6 +10473,14 @@ def _build_finalization_status(
         "missing_keys_count": int(len(missing_keys)),
         "missing_keys_sample": [str(k) for k in list(missing_keys or [])[:10]],
         "type_compatible": bool(type_compatible),
+        "completion_status": completion_status,
+        "degraded": bool(quality_gate_terminal_degraded),
+        "degraded_reason": degraded_reason if quality_gate_terminal_degraded else None,
+        "quality_gate_failed": bool(gate.get("quality_gate_failed", False)),
+        "quality_gate_triggered": bool(gate.get("quality_gate_triggered", False)),
+        "quality_gate_terminal_degraded": bool(quality_gate_terminal_degraded),
+        "quality_gate_reason": str(gate.get("quality_gate_reason") or "").strip() or None,
+        "quality_gate_passed": not bool(gate.get("quality_gate_triggered", False)),
         "repair_applied": bool(len(repair_reasons) > 0),
         "repair_reasons": repair_reasons,
         "canonicalization_version": str(canonicalization_version),
@@ -13504,6 +14381,75 @@ def _finalization_recovery_priority(diagnostics: Any, reasons: Any) -> str:
     return "invariant_reconciliation"
 
 
+def _quality_gate_recovery_state(
+    *,
+    field_status: Any,
+    diagnostics: Any,
+    budget_state: Any,
+    finalization_policy: Any,
+    quality_gate_triggered: bool,
+    quality_gate_blocked: bool,
+) -> Dict[str, Any]:
+    policy = _normalize_finalization_policy(finalization_policy)
+    if not bool(policy.get("quality_gate_recovery_enabled", True)):
+        return {"needed": False, "reason": None, "rounds_used": 0, "rounds_remaining": 0}
+    if not bool(quality_gate_triggered) or not bool(quality_gate_blocked):
+        return {"needed": False, "reason": None, "rounds_used": 0, "rounds_remaining": 0}
+
+    budget = budget_state if isinstance(budget_state, dict) else {}
+    if bool(budget.get("budget_exhausted", False)):
+        return {"needed": False, "reason": None, "rounds_used": 0, "rounds_remaining": 0}
+
+    unresolved_fields = _collect_resolvable_unknown_fields(field_status)
+    if not unresolved_fields:
+        return {"needed": False, "reason": None, "rounds_used": 0, "rounds_remaining": 0}
+
+    diagnostics_map = diagnostics if isinstance(diagnostics, dict) else {}
+    rounds_used = max(0, int(budget.get("quality_gate_recovery_rounds_used", 0) or 0))
+    max_rounds = max(0, int(policy.get("quality_gate_recovery_max_extra_rounds", 1) or 1))
+    rounds_remaining = max(0, int(max_rounds) - int(rounds_used))
+    if rounds_remaining <= 0:
+        return {
+            "needed": False,
+            "reason": None,
+            "rounds_used": int(rounds_used),
+            "rounds_remaining": 0,
+        }
+
+    reason = "unresolved_field_recovery"
+    no_payload_rounds = int(diagnostics_map.get("no_payload_extraction_rounds", 0) or 0)
+    no_payload_rounds += int(diagnostics_map.get("search_snippet_no_payload_rounds", 0) or 0)
+    no_payload_rounds += int(diagnostics_map.get("webpage_no_payload_rounds", 0) or 0)
+    if no_payload_rounds > 0:
+        reason = "low_extraction_yield"
+    else:
+        promotable_samples = 0
+        for raw in list(diagnostics_map.get("evidence_state_samples") or []):
+            if not isinstance(raw, dict):
+                continue
+            try:
+                sample_score = float(raw.get("candidate_score", 0.0) or 0.0)
+            except Exception:
+                sample_score = 0.0
+            if sample_score >= 0.45 and _normalize_url_match(raw.get("source_url")):
+                promotable_samples += 1
+        if promotable_samples > 0:
+            reason = "unresolved_candidate_recovery"
+        elif (
+            int(diagnostics_map.get("weak_anchor_candidates_admitted_count", 0) or 0) > 0
+            or int(diagnostics_map.get("anchor_soft_penalties_count", 0) or 0) > 0
+            or int((diagnostics_map.get("evidence_state_reason_counts") or {}).get("soft_anchor_penalty", 0) or 0) > 0
+        ):
+            reason = "anchor_pressure_recovery"
+
+    return {
+        "needed": True,
+        "reason": reason,
+        "rounds_used": int(rounds_used),
+        "rounds_remaining": int(rounds_remaining),
+    }
+
+
 def _gate_blocking_field_details(gate: Any, *, max_items: int = 64) -> List[Dict[str, Any]]:
     if not isinstance(gate, dict):
         return []
@@ -13615,6 +14561,100 @@ def _record_finalization_recovery_checkpoint(
             max_items=max_items,
         )
 
+    return out_diagnostics, out_budget
+
+
+def _quality_gate_recovery_failure_modes(
+    *,
+    diagnostics: Any,
+    field_status: Any,
+) -> List[str]:
+    diag = diagnostics if isinstance(diagnostics, dict) else {}
+    modes: List[str] = []
+    no_payload_rounds = int(diag.get("no_payload_extraction_rounds", 0) or 0)
+    snippet_no_payload_rounds = int(diag.get("search_snippet_no_payload_rounds", 0) or 0)
+    webpage_no_payload_rounds = int(diag.get("webpage_no_payload_rounds", 0) or 0)
+    if (no_payload_rounds + snippet_no_payload_rounds + webpage_no_payload_rounds) > 0:
+        modes.append("low_extraction_yield")
+
+    unresolved_promotable = False
+    normalized = _normalize_field_status_map(field_status, expected_schema=None)
+    for _, entry in normalized.items():
+        if not isinstance(entry, dict):
+            continue
+        status = str(entry.get("status") or "").strip().lower()
+        if status not in {_FIELD_STATUS_PENDING, _FIELD_STATUS_UNKNOWN}:
+            continue
+        try:
+            candidate_score = float(entry.get("candidate_score", entry.get("evidence_score", 0.0)) or 0.0)
+        except Exception:
+            candidate_score = 0.0
+        if candidate_score >= 0.45 and _normalize_url_match(entry.get("evidence_source_url")):
+            unresolved_promotable = True
+            break
+    if unresolved_promotable:
+        modes.append("unresolved_promotable_candidates")
+
+    evidence_state_counts = diag.get("evidence_state_reason_counts")
+    if not isinstance(evidence_state_counts, dict):
+        evidence_state_counts = {}
+    anchor_pressure = int(evidence_state_counts.get("soft_anchor_penalty", 0) or 0) + int(
+        diag.get("anchor_soft_penalties_count", 0) or 0
+    )
+    if anchor_pressure > 0:
+        modes.append("anchor_pressure")
+
+    return modes[:8]
+
+
+def _apply_quality_gate_recovery_budget(
+    *,
+    diagnostics: Any,
+    completion_gate: Any,
+    budget_state: Any,
+    field_status: Any,
+    finalization_policy: Any,
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    out_diagnostics = _normalize_diagnostics(diagnostics)
+    out_budget = _normalize_budget_state(budget_state)
+    gate = completion_gate if isinstance(completion_gate, dict) else {}
+    policy = _normalize_finalization_policy(finalization_policy)
+    if not bool(policy.get("quality_gate_recovery_enabled", True)):
+        return out_diagnostics, out_budget
+    if bool(out_budget.get("budget_exhausted", False)):
+        return out_diagnostics, out_budget
+    if not bool(gate.get("quality_gate_blocked", False)):
+        return out_diagnostics, out_budget
+
+    try:
+        rounds_used = max(0, int(out_budget.get("quality_gate_recovery_rounds_used", 0) or 0))
+    except Exception:
+        rounds_used = 0
+    max_rounds = max(0, int(policy.get("quality_gate_recovery_max_extra_rounds", 1) or 1))
+    if rounds_used >= max_rounds:
+        return out_diagnostics, out_budget
+
+    failure_modes = _quality_gate_recovery_failure_modes(
+        diagnostics=out_diagnostics,
+        field_status=field_status,
+    )
+    if not failure_modes:
+        return out_diagnostics, out_budget
+
+    out_budget["replan_requested"] = True
+    out_budget["quality_gate_recovery_rounds_used"] = int(rounds_used) + 1
+    out_budget["quality_gate_recovery_active"] = True
+    out_budget["quality_gate_recovery_last_reason"] = str(failure_modes[0])
+    if str(out_budget.get("priority_retry_reason") or "").strip().lower() != "structural_repair":
+        out_budget["priority_retry_reason"] = "quality_gate_recovery"
+    out_diagnostics["quality_gate_recovery_events"] = int(
+        out_diagnostics.get("quality_gate_recovery_events", 0) or 0
+    ) + 1
+    out_diagnostics["retrieval_interventions"] = _append_limited_unique(
+        out_diagnostics.get("retrieval_interventions"),
+        "quality_gate_recovery:" + ",".join(failure_modes[:3]),
+        max_items=64,
+    )
     return out_diagnostics, out_budget
 
 
@@ -13739,14 +14779,24 @@ def _schema_outcome_gate_report(
         if bool(quality_gate_checks.get(reason, False)):
             quality_gate_reasons.append(reason)
     quality_gate_triggered = bool(quality_gate_reasons)
+    quality_gate_failed = bool(quality_gate_triggered)
     quality_gate_blocked = bool(quality_gate_triggered and not budget_exhausted)
+    quality_gate_terminal_degraded = False
     if quality_gate_triggered:
         quality_gate_reason = str(quality_gate_reasons[0])
     if quality_gate_blocked:
-        quality_gate_failed = True
         report["done"] = False
         report["completion_status"] = "in_progress"
         report["reason"] = "quality_gate_failed"
+    elif (
+        quality_gate_triggered
+        and budget_exhausted
+        and bool(finalization_policy.get("finalize_on_budget_exhaustion_only_if_quality_gate_passes", True))
+    ):
+        quality_gate_terminal_degraded = True
+        report["done"] = False
+        report["completion_status"] = "partial"
+        report["reason"] = "budget_exhausted_quality_gate_failed"
 
     invoke_error_present = False
     for event in list(state.get("json_repair") or []):
@@ -13776,6 +14826,8 @@ def _schema_outcome_gate_report(
         report.get("concrete_completion_status")
         or ("complete" if report["all_required_concrete"] else ("partial" if budget_exhausted else "in_progress"))
     ).strip()
+    if quality_gate_terminal_degraded:
+        report["concrete_completion_status"] = "partial"
     report["missing_required_field_count"] = int(len(terminal_missing_details))
     report["missing_required_field_details"] = terminal_missing_details
     report["missing_required_terminal_field_count"] = int(len(terminal_missing_details))
@@ -13804,6 +14856,7 @@ def _schema_outcome_gate_report(
     report["quality_gate_failed"] = bool(quality_gate_failed)
     report["quality_gate_triggered"] = bool(quality_gate_triggered)
     report["quality_gate_blocked"] = bool(quality_gate_blocked)
+    report["quality_gate_terminal_degraded"] = bool(quality_gate_terminal_degraded)
     report["quality_gate_reason"] = quality_gate_reason
     report["quality_gate_reasons"] = quality_gate_reasons[:16]
     report["quality_gate_checks"] = quality_gate_checks
@@ -13834,6 +14887,38 @@ def _schema_outcome_gate_report(
     report["quality_gate_min_global_confidence"] = float(min_global_confidence)
     report["quality_gate_min_found_fields"] = int(min_found_fields)
     report["quality_gate_require_invariant_ok"] = bool(require_invariant_ok)
+    quality_gate_recovery_failure_modes = _quality_gate_recovery_failure_modes(
+        diagnostics=diagnostics_snapshot,
+        field_status=field_status,
+    )
+    try:
+        quality_gate_recovery_rounds_used = max(
+            0,
+            int((budget_state or {}).get("quality_gate_recovery_rounds_used", 0) or 0),
+        )
+    except Exception:
+        quality_gate_recovery_rounds_used = 0
+    quality_gate_recovery_max_extra_rounds = max(
+        0,
+        int(finalization_policy.get("quality_gate_recovery_max_extra_rounds", 1) or 1),
+    )
+    report["quality_gate_recovery_enabled"] = bool(
+        finalization_policy.get("quality_gate_recovery_enabled", True)
+    )
+    report["quality_gate_recovery_failure_modes"] = quality_gate_recovery_failure_modes[:8]
+    report["quality_gate_recovery_rounds_used"] = int(quality_gate_recovery_rounds_used)
+    report["quality_gate_recovery_rounds_remaining"] = int(
+        max(0, quality_gate_recovery_max_extra_rounds - quality_gate_recovery_rounds_used)
+    )
+    report["quality_gate_recovery_needed"] = bool(
+        report["quality_gate_recovery_enabled"]
+        and quality_gate_blocked
+        and bool(quality_gate_recovery_failure_modes)
+        and quality_gate_recovery_rounds_used < quality_gate_recovery_max_extra_rounds
+    )
+    report["finalize_on_budget_exhaustion_only_if_quality_gate_passes"] = bool(
+        finalization_policy.get("finalize_on_budget_exhaustion_only_if_quality_gate_passes", True)
+    )
     report["artifact_markers"] = artifact_markers
     return report
 
@@ -14885,6 +15970,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
     field_status: Any,
     tool_messages: Any,
     source_policy: Any = None,
+    search_queries: Any = None,
     entity_tokens: Optional[List[str]] = None,
     target_anchor: Any = None,
     extracted_urls: Optional[set] = None,
@@ -14935,6 +16021,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
     if expected_schema is None:
         return [], [], metadata
     normalized_source_policy = _normalize_source_policy(source_policy)
+    query_intent = _query_intent_for_search_queries(
+        search_queries,
+        source_policy=normalized_source_policy,
+    )
 
     target_anchor_state = _normalize_target_anchor(target_anchor, entity_tokens=entity_tokens)
     anchor_tokens = _target_anchor_tokens(target_anchor_state, max_tokens=16)
@@ -15013,6 +16103,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 source_order = 9999
 
             url_score = float(_score_primary_source_url(page_url))
+            page_host = _url_host(page_url)
             entity_ratio = 0.0
             if _target_anchor_present(target_anchor_state):
                 overlap = _anchor_overlap_for_candidate(
@@ -15043,6 +16134,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 continue
             candidate_map[page_url] = {
                 "url": page_url,
+                "host": page_host,
                 "text": snippet_text,
                 "extraction_text": extraction_text,
                 "url_score": float(url_score),
@@ -15056,26 +16148,55 @@ def _llm_extract_schema_payloads_from_search_snippets(
     if not candidates:
         return [], [], metadata
 
-    if field_hints:
-        candidates.sort(
-            key=lambda c: (
-                -float(c.get("field_hint_score", 0.0)),
-                -float(c.get("url_score", 0.0)),
-                -float(c.get("entity_ratio", 0.0)),
-                int(c.get("order", 9999)),
-                str(c.get("url") or ""),
-            ),
+    ranked_candidates_input: List[Dict[str, Any]] = []
+    for candidate in candidates:
+        candidate_url = candidate.get("url")
+        query_intent_required_host_match = bool(
+            query_intent.get("required_hosts")
+            and _query_intent_host_matches(candidate_url, query_intent, key="required_hosts")
         )
-    else:
-        candidates.sort(
-            key=lambda c: (
-                -float(c.get("url_score", 0.0)),
-                -float(c.get("entity_ratio", 0.0)),
-                int(c.get("order", 9999)),
-                str(c.get("url") or ""),
-            ),
+        if query_intent.get("required_hosts") and not query_intent_required_host_match:
+            continue
+        query_intent_preferred_host_match = bool(
+            query_intent.get("preferred_hosts")
+            and _query_intent_host_matches(candidate_url, query_intent, key="preferred_hosts")
         )
-    chosen = candidates[: max(1, int(max_sources))]
+        query_intent_quoted_phrase_hits = int(
+            _query_intent_phrase_hits(
+                f"{candidate.get('text') or ''} {candidate_url or ''}",
+                query_intent,
+            )
+        )
+        ranked_candidates_input.append(
+            _score_openwebpage_followup_candidate(
+                {
+                    "url": candidate_url,
+                    "host": candidate.get("host"),
+                    "text": candidate.get("text"),
+                    "base_score": float(candidate.get("url_score", 0.0) or 0.0),
+                    "url_score": float(candidate.get("url_score", 0.0) or 0.0),
+                    "entity_ratio": float(candidate.get("entity_ratio", 0.0) or 0.0),
+                    "field_hint_score": float(candidate.get("field_hint_score", 0.0) or 0.0),
+                    "query_intent_required_host_match": bool(query_intent_required_host_match),
+                    "query_intent_preferred_host_match": bool(query_intent_preferred_host_match),
+                    "query_intent_quoted_phrase_hits": int(query_intent_quoted_phrase_hits),
+                    "order": int(candidate.get("order", 9999) or 9999),
+                },
+                normalized_source_policy,
+            )
+        )
+    ranked_candidates_input.sort(
+        key=lambda item: (
+            -int(bool(item.get("query_intent_required_host_match", False))),
+            -int(item.get("query_intent_quoted_phrase_hits", 0) or 0),
+            -int(bool(item.get("query_intent_preferred_host_match", False))),
+            -float(item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0),
+            -float(item.get("field_hint_score", 0.0) or 0.0),
+            int(item.get("order", 9999) or 9999),
+            str(item.get("url") or ""),
+        ),
+    )
+    chosen = list(ranked_candidates_input)[: max(1, int(max_sources))]
     metadata["snippet_candidates_selected"] = len(chosen)
     metadata["snippet_candidates_selected_with_field_hints"] = sum(
         1 for item in chosen
@@ -15138,20 +16259,38 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 "url_score": float(item.get("url_score", 0.0) or 0.0),
                 "entity_ratio": float(item.get("entity_ratio", 0.0) or 0.0),
                 "field_hint_score": float(item.get("field_hint_score", 0.0) or 0.0),
+                "authority_score": float(item.get("authority_score", 0.0) or 0.0),
+                "detail_score": float(item.get("detail_score", 0.0) or 0.0),
+                "preferred_domain_score": float(item.get("preferred_domain_score", 0.0) or 0.0),
+                "query_intent_preferred_host_match": bool(item.get("query_intent_preferred_host_match", False)),
+                "query_intent_required_host_match": bool(item.get("query_intent_required_host_match", False)),
+                "query_intent_quoted_phrase_hits": int(item.get("query_intent_quoted_phrase_hits", 0) or 0),
+                "retrieval_lane": str(item.get("retrieval_lane") or ""),
+                "controller_reason": str(item.get("controller_reason") or ""),
+                "constraint_tier": int(item.get("constraint_tier", 0) or 0),
+                "entity_tier": int(item.get("entity_tier", 0) or 0),
+                "source_tier": int(item.get("source_tier", 0) or 0),
+                "specificity_tier": int(item.get("specificity_tier", 0) or 0),
+                "followup_score": float(
+                    item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0
+                ),
                 "order": int(item.get("order", 9999) or 9999),
             }
-            candidate = _score_openwebpage_followup_candidate(candidate, normalized_source_policy)
             if not existing:
                 escalation_map[page_url] = candidate
                 return
             existing_rank = (
-                float(existing.get("openwebpage_followup_score", 0.0)),
-                float(existing.get("base_score", 0.0)),
+                int(existing.get("constraint_tier", 0) or 0),
+                int(existing.get("entity_tier", 0) or 0),
+                int(existing.get("source_tier", 0) or 0),
+                int(existing.get("specificity_tier", 0) or 0),
                 -int(existing.get("order", 9999)),
             )
             candidate_rank = (
-                float(candidate.get("openwebpage_followup_score", 0.0)),
-                float(candidate.get("base_score", 0.0)),
+                int(candidate.get("constraint_tier", 0) or 0),
+                int(candidate.get("entity_tier", 0) or 0),
+                int(candidate.get("source_tier", 0) or 0),
+                int(candidate.get("specificity_tier", 0) or 0),
                 -int(candidate.get("order", 9999)),
             )
             if candidate_rank > existing_rank:
@@ -15342,10 +16481,14 @@ def _llm_extract_schema_payloads_from_search_snippets(
     if escalation_candidates:
         escalation_candidates.sort(
             key=lambda c: (
-                -float(c.get("openwebpage_followup_score", 0.0)),
-                -float(c.get("base_score", 0.0)),
-                -float(c.get("authority_score", 0.0)),
-                -float(c.get("detail_score", 0.0)),
+                -int(bool(c.get("query_intent_required_host_match", False))),
+                -int(c.get("source_tier", c.get("authority_tier", 0)) or 0),
+                -int(c.get("entity_tier", 0) or 0),
+                -int(c.get("specificity_tier", 0) or 0),
+                -int(c.get("query_intent_quoted_phrase_hits", 0) or 0),
+                -int(bool(c.get("query_intent_preferred_host_match", False))),
+                -float(c.get("followup_score", 0.0) or 0.0),
+                -float(c.get("field_hint_score", 0.0) or 0.0),
                 int(c.get("order", 9999)),
                 str(c.get("url") or ""),
             ),
@@ -15644,6 +16787,16 @@ def _create_tool_node_with_scratchpad(
         source_policy = _normalize_source_policy(state.get("source_policy"))
         retry_policy = _normalize_retry_policy(state.get("retry_policy"))
         finalization_policy = _normalize_finalization_policy(state.get("finalization_policy"))
+        quality_gate_recovery_active = bool(
+            (prior_budget or {}).get("quality_gate_recovery_active", False)
+            or str((prior_budget or {}).get("priority_retry_reason") or "").strip().lower() == "quality_gate_recovery"
+        )
+        effective_finalization_policy = dict(finalization_policy)
+        if quality_gate_recovery_active:
+            effective_finalization_policy["anchor_mismatch_penalty"] = max(
+                0.02,
+                float(finalization_policy.get("anchor_mismatch_penalty", 0.15) or 0.15) * 0.5,
+        )
         unknown_after = prior_budget.get(
             "unknown_after_searches",
             retry_policy.get("max_attempts_per_field", _DEFAULT_UNKNOWN_AFTER_SEARCHES),
@@ -15673,11 +16826,14 @@ def _create_tool_node_with_scratchpad(
         prior_preferred_openwebpage_url = _normalize_url_match(
             (prior_budget or {}).get("preferred_openwebpage_url")
         )
-        target_anchor = _task_target_anchor_from_messages(state.get("messages") or [])
+        target_anchor = _augment_target_anchor_with_field_status(
+            _task_target_anchor_from_messages(state.get("messages") or []),
+            field_status,
+        )
         diagnostics["anchor_strength_current"] = str(target_anchor.get("strength") or "none")
         diagnostics["anchor_mode_current"] = _anchor_mode_for_policy(
             target_anchor,
-            finalization_policy,
+            effective_finalization_policy,
         )
         diagnostics["anchor_confidence_current"] = round(
             float(_clamp01(target_anchor.get("confidence"), default=0.0)),
@@ -15713,6 +16869,8 @@ def _create_tool_node_with_scratchpad(
                 max_per_round = max(1, int(field_resolver_options.get("llm_webpage_extraction_max_pages_per_round", 1) or 1))
             except Exception:
                 max_per_round = 1
+            if quality_gate_recovery_active:
+                max_per_round = max_per_round + 1
             try:
                 max_chars = max(512, int(field_resolver_options.get("llm_webpage_extraction_max_chars", 9000) or 9000))
             except Exception:
@@ -15793,6 +16951,8 @@ def _create_tool_node_with_scratchpad(
                 )
             except Exception:
                 max_per_round = 2
+            if quality_gate_recovery_active:
+                max_per_round = max_per_round + 1
             try:
                 max_chars = max(
                     256, int(field_resolver_options.get("search_snippet_extraction_max_chars", 2000) or 2000)
@@ -15842,6 +17002,7 @@ def _create_tool_node_with_scratchpad(
                 field_status=field_status,
                 tool_messages=extraction_messages,
                 source_policy=source_policy,
+                search_queries=search_queries,
                 target_anchor=target_anchor,
                 extracted_urls=already_extracted,
                 max_sources=min(int(max_per_round), int(remaining_total)),
@@ -15975,7 +17136,7 @@ def _create_tool_node_with_scratchpad(
             evidence_require_second_source=state.get("evidence_require_second_source"),
             source_policy=source_policy,
             source_tier_provider=source_tier_provider,
-            finalization_policy=finalization_policy,
+            finalization_policy=effective_finalization_policy,
             retrieval_controller=(orchestration_options.get("retrieval_controller") or {}),
         )
         diagnostics["anchor_hard_blocks_count"] = int(
@@ -15984,6 +17145,15 @@ def _create_tool_node_with_scratchpad(
         diagnostics["anchor_soft_penalties_count"] = int(
             diagnostics.get("anchor_soft_penalties_count", 0) or 0
         ) + int((evidence_stats or {}).get("anchor_soft_penalties", 0) or 0)
+        diagnostics["weak_anchor_candidates_admitted_count"] = int(
+            diagnostics.get("weak_anchor_candidates_admitted_count", 0) or 0
+        ) + int((evidence_stats or {}).get("weak_anchor_candidates_admitted", 0) or 0)
+        diagnostics["contradiction_blocks_count"] = int(
+            diagnostics.get("contradiction_blocks_count", 0) or 0
+        ) + int((evidence_stats or {}).get("contradiction_blocks", 0) or 0)
+        diagnostics["strong_conflict_demotions_count"] = int(
+            diagnostics.get("strong_conflict_demotions_count", 0) or 0
+        ) + int((evidence_stats or {}).get("strong_conflict_demotions", 0) or 0)
         field_status = _apply_configured_field_rules(field_status, state.get("field_rules"))
         budget_state = _normalize_budget_state(
             prior_budget,
@@ -16616,10 +17786,12 @@ def _create_tool_node_with_scratchpad(
         )
         # A tool round has been executed; clear one-shot structural retry marker.
         budget_state["structural_repair_retry_required"] = False
+        budget_state["quality_gate_recovery_active"] = False
         if str(budget_state.get("priority_retry_reason") or "").strip().lower() in {
             "structural_repair",
             "query_dedupe_escalation",
             "diagnostics_recovery_checkpoint",
+            "quality_gate_recovery",
         }:
             budget_state["priority_retry_reason"] = None
         if (
@@ -17266,11 +18438,13 @@ def _run_finalize_flow(
             state={**state, "orchestration_options": orchestration_options},
             expected_schema=expected_schema,
             terminal_payload=terminal_payload,
+            completion_gate=completion_gate,
             repair_events=None,
             context="finalize",
         )
         finalize_reason = trigger_reason or "terminal_valid"
         budget_state["finalize_reason"] = finalize_reason
+        degraded_terminal = bool(completion_gate.get("quality_gate_terminal_degraded", False))
         stop_reason = None
         if (
             _is_within_finalization_cutoff(state, remaining)
@@ -17293,7 +18467,7 @@ def _run_finalize_flow(
             orchestration_options=orchestration_options,
             derived_values=state.get("derived_values") or {},
             final_payload=terminal_payload if terminal_payload is not None else state.get("final_payload"),
-            final_emitted=True,
+            final_emitted=not bool(degraded_terminal),
             terminal_valid=bool(terminal_payload is not None),
             terminal_payload_hash=terminal_payload_hash,
             finalize_invocations=finalize_invocations,
@@ -17541,6 +18715,7 @@ def _run_finalize_flow(
             state={**state, "orchestration_options": orchestration_options},
             expected_schema=expected_schema,
             terminal_payload=final_payload,
+            completion_gate=completion_gate,
             repair_events=repair_events,
             context="finalize",
         ),
@@ -18100,6 +19275,13 @@ def create_memory_folding_agent(
             budget_state,
             context="agent",
         )
+        diagnostics, budget_state = _apply_quality_gate_recovery_budget(
+            diagnostics=diagnostics,
+            completion_gate=completion_gate,
+            budget_state=budget_state,
+            field_status=field_status,
+            finalization_policy=finalization_policy,
+        )
         structural_events = list(repair_events or [])
         if repair_event:
             structural_events.append(repair_event)
@@ -18162,6 +19344,7 @@ def create_memory_folding_agent(
             state={**state, "orchestration_options": orchestration_options},
             expected_schema=expected_schema,
             terminal_payload=_terminal_payload_from_message(response, expected_schema=expected_schema),
+            completion_gate=completion_gate,
             repair_events=repair_events,
             context="agent",
         )
@@ -18179,12 +19362,16 @@ def create_memory_folding_agent(
             else str(state.get("terminal_payload_hash") or "").strip() or None
         )
         if terminal_valid:
+            degraded_terminal = bool(completion_gate.get("quality_gate_terminal_degraded", False))
             should_mark_final = bool(
                 _is_within_finalization_cutoff(state, remaining)
                 or bool(completion_gate.get("done"))
                 or bool(finalize_reason)
             ) and not bool(completion_gate.get("quality_gate_blocked", completion_gate.get("quality_gate_failed", False)))
-            if should_mark_final:
+            if bool(degraded_terminal):
+                final_payload = terminal_payload
+                final_emitted = False
+            elif should_mark_final:
                 final_payload = terminal_payload
                 final_emitted = True
         if final_payload is not None and terminal_payload_hash is None:
@@ -20015,6 +21202,13 @@ def create_standard_agent(
             budget_state,
             context="agent",
         )
+        diagnostics, budget_state = _apply_quality_gate_recovery_budget(
+            diagnostics=diagnostics,
+            completion_gate=completion_gate,
+            budget_state=budget_state,
+            field_status=field_status,
+            finalization_policy=finalization_policy,
+        )
         structural_events = list(repair_events or [])
         if repair_event:
             structural_events.append(repair_event)
@@ -20077,6 +21271,7 @@ def create_standard_agent(
             state={**state, "orchestration_options": orchestration_options},
             expected_schema=expected_schema,
             terminal_payload=_terminal_payload_from_message(response, expected_schema=expected_schema),
+            completion_gate=completion_gate,
             repair_events=repair_events,
             context="agent",
         )
@@ -20094,12 +21289,16 @@ def create_standard_agent(
             else str(state.get("terminal_payload_hash") or "").strip() or None
         )
         if terminal_valid:
+            degraded_terminal = bool(completion_gate.get("quality_gate_terminal_degraded", False))
             should_mark_final = bool(
                 _is_within_finalization_cutoff(state, remaining)
                 or bool(completion_gate.get("done"))
                 or bool(finalize_reason)
             ) and not bool(completion_gate.get("quality_gate_blocked", completion_gate.get("quality_gate_failed", False)))
-            if should_mark_final:
+            if bool(degraded_terminal):
+                final_payload = terminal_payload
+                final_emitted = False
+            elif should_mark_final:
                 final_payload = terminal_payload
                 final_emitted = True
         if final_payload is not None and terminal_payload_hash is None:

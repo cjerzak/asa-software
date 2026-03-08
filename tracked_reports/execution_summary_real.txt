@@ -1,93 +1,100 @@
 {
-  "elapsed_time": 3.8363,
+  "elapsed_time": 4.2245,
   "field_status": {
     "education_level": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "explicit_contradiction_block",
       "attempts": 2,
       "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "explicit_contradiction_block",
+      "evidence_score": 0,
+      "candidate_score": 0,
+      "evidence_source_url": "https://www.maxpreps.com/ca/ramona/ramona-bulldogs",
+      "target_consistency": 0,
+      "target_consistency_label": "none",
+      "contradiction_state": "explicit_contradiction",
+      "evidence_category": "explicit_contradiction_block"
     },
     "education_institution": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 2,
       "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "education_field": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 2,
       "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "prior_occupation": {
       "status": "found",
-      "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure.",
+      "value": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "content='URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\\nFinal URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\\nTitle: Vicepresidencia del Estado\\nBytes read",
-      "attempts": 1,
+      "evidence": "scratchpad_source_backed",
+      "attempts": 2,
       "descriptor": "string|Unknown"
     },
     "class_background": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 2,
       "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "disability_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 2,
       "descriptor": "No disability|Some disability|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "birth_place": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 2,
       "descriptor": "string|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "birth_year": {
       "status": "found",
       "value": 1982,
       "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-      "evidence": "content='URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\\nFinal URL: https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\\nTitle: Vicepresidencia del Estado\\nBytes read",
-      "attempts": 1,
+      "evidence": "scratchpad_source_backed",
+      "attempts": 2,
       "descriptor": "integer|null|Unknown"
     },
     "lgbtq_status": {
       "status": "unknown",
       "value": "Unknown",
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 2,
       "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "lgbtq_details": {
       "status": "unknown",
       "value": null,
       "source_url": null,
-      "evidence": "recovery_blocked_anchor_mismatch",
+      "evidence": "recovery_blocked_no_candidates",
       "attempts": 2,
       "descriptor": "string|null",
-      "evidence_reason": "recovery_blocked_anchor_mismatch"
+      "evidence_reason": "recovery_blocked_no_candidates"
     },
     "confidence": {
       "status": "found",
@@ -99,7 +106,7 @@
     },
     "justification": {
       "status": "found",
-      "value": "Ramona Moye Camaconi was born on January 7, 1982. Her primary occupation prior to entering the Plurinational Legislative Assembly was as a community leader, specifically serving as the President of the Women's Organization of the Sub Central Sécure within the TIPNIS (Isiboro Sécure National Park and Indigenous Territory). Given that this role involves indigenous community leadership in a rural, subsistence-based territory, her background is categorized as working class (agriculture/manual labor context). No specific higher education degrees or institutions are recorded in her official parliamentary profile.",
+      "value": "Source-backed searches resolved 2 core fields (including birth_year, prior_occupation), while 8 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_no_candidates(7), attempted_no_verified_evidence(1).",
       "source_url": null,
       "evidence": "terminal_payload_source_backed",
       "attempts": 2,
@@ -109,25 +116,25 @@
   "diagnostics": {
     "grounding_blocks_count": 0,
     "source_consistency_fixes_count": 0,
-    "field_demotions_count": 0,
+    "field_demotions_count": 2,
     "recovery_promotions_count": 0,
-    "recovery_rejections_count": 8,
+    "recovery_rejections_count": 7,
     "unknown_fields_count": 8,
     "unresolved_fields_count": 10,
     "grounding_blocks_count_current": 0,
     "source_consistency_fixes_count_current": 0,
-    "field_demotions_count_current": 0,
+    "field_demotions_count_current": 2,
     "recovery_promotions_count_current": 0,
-    "recovery_rejections_count_current": 8,
+    "recovery_rejections_count_current": 7,
     "unknown_fields_count_current": 8,
     "unresolved_fields_count_current": 8,
-    "off_target_tool_results_count": 3,
-    "empty_tool_results_count": 1,
+    "off_target_tool_results_count": 4,
+    "empty_tool_results_count": 2,
     "retry_or_replan_events": 6,
-    "quality_gate_failures": 8,
-    "no_payload_extraction_rounds": 4,
+    "quality_gate_failures": 7,
+    "no_payload_extraction_rounds": 3,
     "webpage_no_payload_rounds": 0,
-    "search_snippet_no_payload_rounds": 4,
+    "search_snippet_no_payload_rounds": 3,
     "webpage_llm_extraction_calls": 1,
     "webpage_langextract_calls": 2,
     "webpage_langextract_fallback_calls": 1,
@@ -139,20 +146,20 @@
     "webpage_deterministic_fallback_calls": 1,
     "webpage_deterministic_fallback_payloads": 0,
     "webpage_deterministic_fallback_no_payload": 1,
-    "search_snippet_llm_extraction_calls": 8,
+    "search_snippet_llm_extraction_calls": 6,
     "search_snippet_langextract_calls": 0,
     "search_snippet_langextract_fallback_calls": 0,
     "search_snippet_langextract_errors": 0,
-    "search_snippet_candidates_total": 25,
-    "search_snippet_candidates_selected": 8,
+    "search_snippet_candidates_total": 55,
+    "search_snippet_candidates_selected": 6,
     "search_snippet_candidates_selected_with_field_hints": 1,
-    "search_snippet_skipped_duplicate_urls": 7,
-    "search_snippet_openwebpage_escalation_events": 8,
+    "search_snippet_skipped_duplicate_urls": 2,
+    "search_snippet_openwebpage_escalation_events": 6,
     "search_snippet_openwebpage_escalation_successes": 1,
-    "search_snippet_deterministic_fallback_calls": 8,
+    "search_snippet_deterministic_fallback_calls": 6,
     "search_snippet_deterministic_fallback_payloads": 0,
-    "search_snippet_deterministic_fallback_no_payload": 8,
-    "webpage_langextract_elapsed_ms_total": 24535,
+    "search_snippet_deterministic_fallback_no_payload": 6,
+    "webpage_langextract_elapsed_ms_total": 20402,
     "webpage_langextract_error_elapsed_ms_total": 0,
     "search_snippet_langextract_elapsed_ms_total": 0,
     "search_snippet_langextract_error_elapsed_ms_total": 0,
@@ -162,8 +169,8 @@
     "low_efficiency_stop_events": 1,
     "no_new_evidence_replan_events": 1,
     "no_new_evidence_stop_events": 1,
-    "low_signal_rewrite_elapsed_ms_total": 6707,
-    "low_signal_stop_elapsed_ms_total": 35871,
+    "low_signal_rewrite_elapsed_ms_total": 37493,
+    "low_signal_stop_elapsed_ms_total": 63321,
     "retry_threshold_crossings": 2,
     "query_dedupe_escalation_events": 0,
     "empty_round_suppression_events": 0,
@@ -175,96 +182,86 @@
     "tool_call_pairing_mismatches": 0,
     "diagnostics_recovery_checkpoint_events": 0,
     "diagnostics_recovery_retry_events": 0,
+    "quality_gate_recovery_events": 1,
     "anchor_hard_blocks_count": 0,
     "anchor_soft_penalties_count": 0,
+    "weak_anchor_candidates_admitted_count": 0,
+    "contradiction_blocks_count": 0,
+    "strong_conflict_demotions_count": 24,
+    "weak_anchor_promotions_survived_finalization_count": 0,
     "grounding_blocked_fields": [],
     "source_consistency_fixes": [],
-    "field_demotion_fields": [],
+    "field_demotion_fields": ["prior_occupation", "birth_year"],
     "recovery_promoted_fields": [],
-    "recovery_rejected_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "recovery_rejected_fields": ["education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
     "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
     "unresolved_fields": ["education_level", "education_institution", "education_field", "prior_occupation", "class_background", "disability_status", "birth_place", "birth_year", "lgbtq_status", "lgbtq_details"],
     "grounding_blocked_fields_current": [],
     "source_consistency_fixes_current": [],
-    "field_demotion_fields_current": [],
+    "field_demotion_fields_current": ["prior_occupation", "birth_year"],
     "recovery_promoted_fields_current": [],
-    "recovery_rejected_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
+    "recovery_rejected_fields_current": ["education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
     "unknown_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
     "unresolved_fields_current": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
-    "field_demotion_reason_counts": {},
+    "field_demotion_reason_counts": {
+      "high_conflict_demotion": 2
+    },
     "recovery_reason_counts": {
-      "recovery_blocked_anchor_mismatch": 8
+      "recovery_blocked_no_candidates": 7
     },
     "unknown_reason_counts": {
-      "recovery_blocked_anchor_mismatch": 8
+      "attempted_no_verified_evidence": 1,
+      "recovery_blocked_no_candidates": 7
+    },
+    "evidence_state_reason_counts": {
+      "high_conflict_demotion": 2,
+      "explicit_contradiction_block": 1
     },
     "finalization_invariant_failures_by_reason": {},
     "unknown_fields_by_reason": {
-      "recovery_blocked_anchor_mismatch": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"]
+      "attempted_no_verified_evidence": "education_level",
+      "recovery_blocked_no_candidates": ["education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"]
     },
     "finalization_blocking_fields": [],
     "finalization_recovery_checkpoints": [],
-    "anchor_mismatch_samples": [
+    "anchor_mismatch_samples": [],
+    "evidence_state_samples": [
+      {
+        "field": "prior_occupation",
+        "reason": "high_conflict_demotion",
+        "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+        "anchor_mode": "soft",
+        "anchor_strength": "moderate",
+        "candidate_score": 0
+      },
+      {
+        "field": "birth_year",
+        "reason": "high_conflict_demotion",
+        "source_url": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+        "anchor_mode": "soft",
+        "anchor_strength": "moderate",
+        "candidate_score": 0
+      },
+      {
+        "field": "prior_occupation",
+        "reason": "high_conflict_demotion",
+        "source_url": null,
+        "anchor_mode": null,
+        "anchor_strength": null,
+        "candidate_score": 0
+      },
+      {
+        "field": "birth_year",
+        "reason": "high_conflict_demotion",
+        "source_url": null,
+        "anchor_mode": null,
+        "anchor_strength": null,
+        "candidate_score": 0
+      },
       {
         "field": "education_level",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
-        "anchor_mode": null,
-        "anchor_strength": null,
-        "candidate_score": 0
-      },
-      {
-        "field": "education_institution",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
-        "anchor_mode": null,
-        "anchor_strength": null,
-        "candidate_score": 0
-      },
-      {
-        "field": "education_field",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
-        "anchor_mode": null,
-        "anchor_strength": null,
-        "candidate_score": 0
-      },
-      {
-        "field": "class_background",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
-        "anchor_mode": null,
-        "anchor_strength": null,
-        "candidate_score": 0
-      },
-      {
-        "field": "disability_status",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
-        "anchor_mode": null,
-        "anchor_strength": null,
-        "candidate_score": 0
-      },
-      {
-        "field": "birth_place",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
-        "anchor_mode": null,
-        "anchor_strength": null,
-        "candidate_score": 0
-      },
-      {
-        "field": "lgbtq_status",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
-        "anchor_mode": null,
-        "anchor_strength": null,
-        "candidate_score": 0
-      },
-      {
-        "field": "lgbtq_details",
-        "reason": "recovery_blocked_anchor_mismatch",
-        "source_url": null,
+        "reason": "explicit_contradiction_block",
+        "source_url": "https://www.maxpreps.com/ca/ramona/ramona-bulldogs",
         "anchor_mode": null,
         "anchor_strength": null,
         "candidate_score": 0
@@ -273,12 +270,18 @@
     "empty_tool_results_details": [
       {
         "tool_name": "search",
-        "query_digest": "a28581a65f3c35c7",
+        "query_digest": "7122f0fe92448998",
         "error_type": null,
-        "round_index": 8
+        "round_index": 6
+      },
+      {
+        "tool_name": "search",
+        "query_digest": "3f2c7f7305f6911d",
+        "error_type": null,
+        "round_index": 7
       }
     ],
-    "retrieval_interventions": ["search_snippet_openwebpage_escalation", "search_snippet_extraction_no_payload", "no_new_high_quality_evidence_replan:2", "low_efficiency_replan:2", "adaptive_budget_tighten:reason=diminishing_returns_budget_tighten,reduced=7", "low_signal_streak_rewrite:2", "retry_escalation:low_signal", "no_new_high_quality_evidence_replan:3", "no_new_high_quality_evidence_stop:3", "low_signal_streak_stop:3", "no_new_high_quality_evidence_replan:4", "no_new_high_quality_evidence_stop:4", "no_new_high_quality_evidence_replan:5", "no_new_high_quality_evidence_stop:5", "no_new_high_quality_evidence_replan:6", "no_new_high_quality_evidence_stop:6"],
+    "retrieval_interventions": ["search_snippet_openwebpage_escalation", "search_snippet_extraction_no_payload", "validated_host_promoted:vicepresidencia.gob.bo", "quality_gate_recovery:low_extraction_yield", "no_new_high_quality_evidence_replan:2", "low_efficiency_replan:2", "adaptive_budget_tighten:reason=diminishing_returns_budget_tighten,reduced=7", "no_new_high_quality_evidence_replan:3", "no_new_high_quality_evidence_stop:3", "no_new_high_quality_evidence_replan:4", "no_new_high_quality_evidence_stop:4", "low_signal_streak_rewrite:2", "retry_escalation:low_signal", "no_new_high_quality_evidence_replan:5", "no_new_high_quality_evidence_stop:5", "low_signal_streak_stop:3", "no_new_high_quality_evidence_replan:6", "no_new_high_quality_evidence_stop:6"],
     "webpage_openwebpage_skip_reasons": [],
     "webpage_langextract_provider": "gemini",
     "webpage_langextract_last_error": "",
@@ -289,9 +292,9 @@
     "anchor_confidence_current": 0.56,
     "anchor_reasons_current": ["profile_hints", "labeled_hint", "context_tokens"],
     "tool_call_pairing": {
-      "issued_tool_calls_count": 19,
-      "tool_message_count": 19,
-      "paired_tool_calls_count": 19,
+      "issued_tool_calls_count": 17,
+      "tool_message_count": 17,
+      "paired_tool_calls_count": 17,
       "unpaired_tool_calls_count": 0,
       "unpaired_tool_call_ids": [],
       "unpaired_tool_call_names": [],
@@ -300,15 +303,15 @@
     },
     "performance": {
       "performance_profile": "quality",
-      "tool_round_count": 8,
-      "tool_round_elapsed_ms_total": 173047,
-      "tool_round_elapsed_ms_last": 40037,
-      "tool_round_elapsed_ms_max": 44224,
-      "search_tool_calls": 12,
+      "tool_round_count": 7,
+      "tool_round_elapsed_ms_total": 206690,
+      "tool_round_elapsed_ms_last": 63321,
+      "tool_round_elapsed_ms_max": 63354,
+      "search_tool_calls": 11,
       "openwebpage_tool_calls": 2,
       "other_tool_calls": 0,
-      "search_tool_elapsed_ms_est_total": 145815,
-      "openwebpage_tool_elapsed_ms_est_total": 27228,
+      "search_tool_elapsed_ms_est_total": 183222,
+      "openwebpage_tool_elapsed_ms_est_total": 23469,
       "other_tool_elapsed_ms_est_total": 0,
       "provider_error_count": 0,
       "provider_error_elapsed_ms_total": 0,
@@ -319,7 +322,7 @@
       "fold_event_count": 0,
       "fold_summarizer_latency_m_total": 0,
       "fold_summarizer_latency_m_last": 0,
-      "webpage_langextract_elapsed_ms_total": 24535,
+      "webpage_langextract_elapsed_ms_total": 20402,
       "webpage_langextract_error_elapsed_ms_total": 0,
       "search_snippet_langextract_elapsed_ms_total": 0,
       "search_snippet_langextract_error_elapsed_ms_total": 0,
@@ -329,13 +332,13 @@
       "low_efficiency_stop_events": 1,
       "no_new_evidence_replan_events": 1,
       "no_new_evidence_stop_events": 1,
-      "tokens_used_cumulative": 49743,
-      "tokens_delta_since_last_round": 10686,
+      "tokens_used_cumulative": 42547,
+      "tokens_delta_since_last_round": 9438,
       "low_efficiency_streak": 6,
       "evidence_gain_units": 0,
       "evidence_gain_per_1k_tokens": 0,
-      "low_signal_rewrite_elapsed_ms_total": 6707,
-      "low_signal_stop_elapsed_ms_total": 35871,
+      "low_signal_rewrite_elapsed_ms_total": 37493,
+      "low_signal_stop_elapsed_ms_total": 63321,
       "retry_threshold_crossings": 4,
       "webpage_policy_max_open_calls": 4,
       "webpage_policy_open_only_if_score_ge": 0.25,
@@ -349,9 +352,9 @@
     "current_snapshot": {
       "grounding_blocks_count": 0,
       "source_consistency_fixes_count": 0,
-      "field_demotions_count": 0,
+      "field_demotions_count": 2,
       "recovery_promotions_count": 0,
-      "recovery_rejections_count": 8,
+      "recovery_rejections_count": 7,
       "unknown_fields_count": 8,
       "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
       "unresolved_fields_count": 8,
@@ -360,9 +363,9 @@
     "historical_snapshot": {
       "grounding_blocks_count": 0,
       "source_consistency_fixes_count": 0,
-      "field_demotions_count": 0,
+      "field_demotions_count": 2,
       "recovery_promotions_count": 0,
-      "recovery_rejections_count": 8,
+      "recovery_rejections_count": 7,
       "unknown_fields_count": 8,
       "unknown_fields": ["education_level", "education_institution", "education_field", "class_background", "disability_status", "birth_place", "lgbtq_status", "lgbtq_details"],
       "unresolved_fields_count": 10,
@@ -370,8 +373,8 @@
     }
   },
   "completion_gate": {
-    "done": true,
-    "completion_status": "complete",
+    "done": false,
+    "completion_status": "partial",
     "all_required_terminalized": true,
     "all_required_concrete": false,
     "terminalized_fields": 12,
@@ -384,7 +387,7 @@
     "total_fields": 12,
     "missing_fields": [],
     "budget_exhausted": true,
-    "reason": "all_required_fields_terminalized",
+    "reason": "budget_exhausted_quality_gate_failed",
     "finalize_on_all_fields_resolved": false,
     "missing_required_field_count": 0,
     "missing_required_field_details": [],
@@ -396,8 +399,8 @@
         "field": "education_level",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "attempted_no_verified_evidence",
+        "evidence": "explicit_contradiction_block",
         "requires_source": false,
         "descriptor": "High School|Some College|Associate|Bachelor's|Master's/Professional|PhD|Unknown",
         "resolution_axis": "concrete"
@@ -406,8 +409,8 @@
         "field": "education_institution",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "recovery_blocked_no_candidates",
+        "evidence": "recovery_blocked_no_candidates",
         "requires_source": false,
         "descriptor": "string|Unknown",
         "resolution_axis": "concrete"
@@ -416,8 +419,8 @@
         "field": "education_field",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "recovery_blocked_no_candidates",
+        "evidence": "recovery_blocked_no_candidates",
         "requires_source": false,
         "descriptor": "string|Unknown",
         "resolution_axis": "concrete"
@@ -426,8 +429,8 @@
         "field": "class_background",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "recovery_blocked_no_candidates",
+        "evidence": "recovery_blocked_no_candidates",
         "requires_source": false,
         "descriptor": "Working class|Middle class/professional|Upper/elite|Unknown",
         "resolution_axis": "concrete"
@@ -436,8 +439,8 @@
         "field": "disability_status",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "recovery_blocked_no_candidates",
+        "evidence": "recovery_blocked_no_candidates",
         "requires_source": false,
         "descriptor": "No disability|Some disability|Unknown",
         "resolution_axis": "concrete"
@@ -446,8 +449,8 @@
         "field": "birth_place",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "recovery_blocked_no_candidates",
+        "evidence": "recovery_blocked_no_candidates",
         "requires_source": false,
         "descriptor": "string|Unknown",
         "resolution_axis": "concrete"
@@ -456,8 +459,8 @@
         "field": "lgbtq_status",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "recovery_blocked_no_candidates",
+        "evidence": "recovery_blocked_no_candidates",
         "requires_source": false,
         "descriptor": "Non-LGBTQ|Openly LGBTQ|Unknown",
         "resolution_axis": "concrete"
@@ -466,8 +469,8 @@
         "field": "lgbtq_details",
         "status": "unknown",
         "attempts": 2,
-        "unknown_reason": "recovery_blocked_anchor_mismatch",
-        "evidence": "recovery_blocked_anchor_mismatch",
+        "unknown_reason": "recovery_blocked_no_candidates",
+        "evidence": "recovery_blocked_no_candidates",
         "requires_source": false,
         "descriptor": "string|null",
         "resolution_axis": "concrete"
@@ -477,14 +480,14 @@
     "resolvable_found_fields_count": 2,
     "resolvable_unknown_fields_count": 8,
     "unknown_field_ratio": 0.8,
-    "global_confidence_score": 0.4492,
+    "global_confidence_score": 0.5292,
     "confidence_components": {
       "coverage": 0.2,
       "mean_field_confidence": 0.7,
       "mean_source_quality": 0.8167,
-      "consistency_penalty": 0.08,
-      "anchor_mismatch_pressure": 0.8,
-      "global_confidence_score": 0.4492,
+      "consistency_penalty": 0,
+      "anchor_mismatch_pressure": 0,
+      "global_confidence_score": 0.5292,
       "found_fields_count": 2,
       "unknown_fields_count": 8,
       "total_fields_count": 10
@@ -492,10 +495,11 @@
     "gate_component_coverage": 0.2,
     "gate_component_evidence_quality": 0.8167,
     "gate_component_field_confidence": 0.7,
-    "gate_component_consistency_penalty": 0.08,
-    "quality_gate_failed": false,
+    "gate_component_consistency_penalty": 0,
+    "quality_gate_failed": true,
     "quality_gate_triggered": true,
     "quality_gate_blocked": false,
+    "quality_gate_terminal_degraded": true,
     "quality_gate_reason": "global_confidence_below_min",
     "quality_gate_reasons": "global_confidence_below_min",
     "quality_gate_checks": {
@@ -527,9 +531,9 @@
       "field_status_core_unresolved_fields_sample": ["birth_place", "class_background", "disability_status", "education_field", "education_institution", "education_level", "lgbtq_details", "lgbtq_status"],
       "diagnostics_current_snapshot_present": true,
       "tool_call_pairing": {
-        "issued_tool_calls_count": 19,
-        "tool_message_count": 19,
-        "paired_tool_calls_count": 19,
+        "issued_tool_calls_count": 17,
+        "tool_message_count": 17,
+        "paired_tool_calls_count": 17,
         "unpaired_tool_calls_count": 0,
         "unpaired_tool_call_ids": [],
         "unpaired_tool_call_names": [],
@@ -547,6 +551,12 @@
     "quality_gate_min_global_confidence": 0.55,
     "quality_gate_min_found_fields": 2,
     "quality_gate_require_invariant_ok": true,
+    "quality_gate_recovery_enabled": true,
+    "quality_gate_recovery_failure_modes": "low_extraction_yield",
+    "quality_gate_recovery_rounds_used": 1,
+    "quality_gate_recovery_rounds_remaining": 0,
+    "quality_gate_recovery_needed": false,
+    "finalize_on_budget_exhaustion_only_if_quality_gate_passes": true,
     "artifact_markers": ["completion_gate", "field_status", "plan_enabled", "plan_present", "invoke_error_absent"]
   }
 }

@@ -3532,6 +3532,174 @@ def _query_focus_tokens(query: Any, *, max_tokens: int = 6) -> List[str]:
     return deduped
 
 
+_QUERY_SITE_OPERATOR_RE = re.compile(r"(?<!\w)site:([^\s\"'<>]+)", re.I)
+_QUERY_LANG_OPERATOR_RE = re.compile(r"(?<!\w)(?:lang|language):([a-z]{2,12})", re.I)
+_QUERY_AFTER_OPERATOR_RE = re.compile(r"(?<!\w)after:([0-9]{4}(?:-[0-9]{2}(?:-[0-9]{2})?)?)", re.I)
+_QUERY_BEFORE_OPERATOR_RE = re.compile(r"(?<!\w)before:([0-9]{4}(?:-[0-9]{2}(?:-[0-9]{2})?)?)", re.I)
+
+
+def _normalize_host_constraint(raw_value: Any) -> str:
+    value = str(raw_value or "").strip().strip(".,;:()[]{}")
+    if not value:
+        return ""
+    if "://" not in value:
+        value = f"https://{value}"
+    try:
+        parsed = urlparse(value)
+    except Exception:
+        return ""
+    host = str(parsed.hostname or "").strip().lower()
+    if host.startswith("www."):
+        host = host[4:]
+    return host
+
+
+def _dedupe_normalized_text(values: Any, *, max_items: int) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for raw_value in list(values or []):
+        normalized = _normalize_match_text(raw_value)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        out.append(normalized)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _dedupe_normalized_hosts(values: Any, *, max_items: int) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for raw_value in list(values or []):
+        normalized = _normalize_host_constraint(raw_value)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        out.append(normalized)
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
+def _normalize_query_intent(raw_intent: Any) -> Dict[str, Any]:
+    if isinstance(raw_intent, dict):
+        intent = dict(raw_intent)
+    else:
+        intent = {}
+    return {
+        "required_hosts": _dedupe_normalized_hosts(intent.get("required_hosts"), max_items=8),
+        "preferred_hosts": _dedupe_normalized_hosts(intent.get("preferred_hosts"), max_items=8),
+        "quoted_phrases": _dedupe_normalized_text(intent.get("quoted_phrases"), max_items=8),
+        "focus_tokens": _dedupe_normalized_text(intent.get("focus_tokens"), max_items=12),
+        "language_hint": str(intent.get("language_hint") or "").strip().lower() or None,
+        "temporal_hint": str(intent.get("temporal_hint") or "").strip() or None,
+    }
+
+
+def _build_query_intent(
+    query: Any,
+    *,
+    preferred_domains: Any = None,
+    language_hint: Any = None,
+    temporal_hint: Any = None,
+) -> Dict[str, Any]:
+    text = str(query or "").strip()
+    required_hosts = _dedupe_normalized_hosts(
+        [match.group(1) for match in _QUERY_SITE_OPERATOR_RE.finditer(text)],
+        max_items=8,
+    )
+    quoted_phrases = _dedupe_normalized_text(re.findall(r'"([^"]+)"', text), max_items=8)
+    focus_tokens = _dedupe_normalized_text(_query_focus_tokens(text, max_tokens=10), max_items=10)
+
+    resolved_language_hint = str(language_hint or "").strip().lower() or None
+    if resolved_language_hint is None:
+        lang_match = _QUERY_LANG_OPERATOR_RE.search(text)
+        if lang_match:
+            resolved_language_hint = str(lang_match.group(1) or "").strip().lower() or None
+
+    resolved_temporal_hint = str(temporal_hint or "").strip() or None
+    if resolved_temporal_hint is None:
+        temporal_tokens: List[str] = []
+        after_match = _QUERY_AFTER_OPERATOR_RE.search(text)
+        before_match = _QUERY_BEFORE_OPERATOR_RE.search(text)
+        if after_match:
+            temporal_tokens.append(f"after:{str(after_match.group(1) or '').strip()}")
+        if before_match:
+            temporal_tokens.append(f"before:{str(before_match.group(1) or '').strip()}")
+        if temporal_tokens:
+            resolved_temporal_hint = " ".join(temporal_tokens)
+
+    return _normalize_query_intent(
+        {
+            "required_hosts": required_hosts,
+            "preferred_hosts": preferred_domains,
+            "quoted_phrases": quoted_phrases,
+            "focus_tokens": focus_tokens,
+            "language_hint": resolved_language_hint,
+            "temporal_hint": resolved_temporal_hint,
+        }
+    )
+
+
+def _merge_query_intents(intents: Any) -> Dict[str, Any]:
+    required_hosts: List[str] = []
+    preferred_hosts: List[str] = []
+    quoted_phrases: List[str] = []
+    focus_tokens: List[str] = []
+    language_hint = None
+    temporal_hint = None
+    for raw_intent in list(intents or []):
+        intent = _normalize_query_intent(raw_intent)
+        required_hosts.extend(list(intent.get("required_hosts") or []))
+        preferred_hosts.extend(list(intent.get("preferred_hosts") or []))
+        quoted_phrases.extend(list(intent.get("quoted_phrases") or []))
+        focus_tokens.extend(list(intent.get("focus_tokens") or []))
+        if language_hint is None and intent.get("language_hint"):
+            language_hint = intent.get("language_hint")
+        if temporal_hint is None and intent.get("temporal_hint"):
+            temporal_hint = intent.get("temporal_hint")
+    return _normalize_query_intent(
+        {
+            "required_hosts": required_hosts,
+            "preferred_hosts": preferred_hosts,
+            "quoted_phrases": quoted_phrases,
+            "focus_tokens": focus_tokens,
+            "language_hint": language_hint,
+            "temporal_hint": temporal_hint,
+        }
+    )
+
+
+def _host_matches_constraint(host: Any, constraint: Any) -> bool:
+    normalized_host = _normalize_host_constraint(host)
+    normalized_constraint = _normalize_host_constraint(constraint)
+    if not normalized_host or not normalized_constraint:
+        return False
+    return normalized_host == normalized_constraint or normalized_host.endswith(f".{normalized_constraint}")
+
+
+def _query_intent_host_matches(url_or_host: Any, query_intent: Any, *, key: str = "required_hosts") -> bool:
+    intent = _normalize_query_intent(query_intent)
+    constraints = list(intent.get(key) or [])
+    if not constraints:
+        return False
+    host = _normalize_host_constraint(url_or_host)
+    return any(_host_matches_constraint(host, constraint) for constraint in constraints)
+
+
+def _query_intent_phrase_hits(text: Any, query_intent: Any) -> int:
+    normalized_text = _normalize_match_text(text)
+    if not normalized_text:
+        return 0
+    intent = _normalize_query_intent(query_intent)
+    return sum(
+        1
+        for phrase in list(intent.get("quoted_phrases") or [])
+        if phrase and phrase in normalized_text
+    )
+
+
 def _relaxed_entity_query(query: Any) -> str:
     """Build a fallback query centered on the main quoted/name entity."""
     text = str(query or "").strip()
@@ -3632,7 +3800,6 @@ def _rerank_search_results(
     query_tokens = _tokenize_for_retrieval(query)
     entity_tokens = _query_entity_tokens(query)
     if not query_tokens:
-        # Keep stable IDs when no lexical signal is available.
         out = []
         for idx, row in enumerate(results[:limit], 1):
             if not isinstance(row, dict):
@@ -3673,27 +3840,32 @@ def _rerank_search_results(
         )
         strong_entity_match = bool(entity_tokens) and entity_hits >= min(2, len(entity_tokens))
         trusted_domain_bonus = 0.0
-        href_lower = href.lower()
+        is_public_institution_host = (
+            bool(href)
+            and (
+                "wikipedia.org" in href.lower()
+                or (
+                    bool(urlparse(href).hostname)
+                    and (
+                        str(urlparse(href).hostname).lower().endswith(".gov")
+                        or ".gov." in str(urlparse(href).hostname).lower()
+                        or str(urlparse(href).hostname).lower().endswith(".gob")
+                        or ".gob." in str(urlparse(href).hostname).lower()
+                        or "parliament" in str(urlparse(href).hostname).lower()
+                        or "senate" in str(urlparse(href).hostname).lower()
+                        or "congress" in str(urlparse(href).hostname).lower()
+                        or "assembly" in str(urlparse(href).hostname).lower()
+                    )
+                )
+            )
+        )
+        if is_public_institution_host:
+            trusted_domain_bonus = 1.25
+        low_signal_penalty = 0.0
         try:
             host = str(urlparse(href).hostname or "").lower()
         except Exception:
             host = ""
-        is_public_institution_host = (
-            bool(host)
-            and (
-                host.endswith(".gov")
-                or ".gov." in host
-                or host.endswith(".gob")
-                or ".gob." in host
-                or "parliament" in host
-                or "senate" in host
-                or "congress" in host
-                or "assembly" in host
-            )
-        )
-        if "wikipedia.org" in href_lower or is_public_institution_host:
-            trusted_domain_bonus = 1.25
-        low_signal_penalty = 0.0
         if any(fragment in host for fragment in _LOW_SIGNAL_HOST_FRAGMENTS):
             low_signal_penalty = 1.75
         score = (
@@ -3717,8 +3889,6 @@ def _rerank_search_results(
     min_keep = max(1, min(int(min_results), limit))
     strict_entity_mode = bool(entity_tokens)
     if strict_entity_mode:
-        # When user query carries explicit entity tokens (e.g., quoted person name),
-        # keep the result set tight to avoid flooding the prompt with off-topic pages.
         min_keep = 1
 
     def _append_candidate(candidate: Any) -> None:
@@ -3743,19 +3913,15 @@ def _rerank_search_results(
     has_trusted_signal = any(candidate[3] > 0 for candidate in scored)
 
     if strict_entity_mode and not has_entity_signal and not has_trusted_signal:
-        # No lexical match to the queried entity anywhere in returned rows.
-        # Return empty so the caller can retry with a relaxed fallback query.
         return []
     else:
         if strict_entity_mode:
-            # In strict entity mode, prioritize trusted/government sources first.
             for candidate in scored:
                 _, _, _, trusted_bonus, _, _ = candidate
                 if trusted_bonus > 0:
                     _append_candidate(candidate)
                     if len(chosen) >= limit:
                         break
-            # Then add non-social pages that still match entity tokens.
             if len(chosen) < limit:
                 for candidate in scored:
                     _, _, entity_hits, _, _, _ = candidate
@@ -3763,28 +3929,23 @@ def _rerank_search_results(
                         _append_candidate(candidate)
                         if len(chosen) >= limit:
                             break
-            # Final strict backfill (at most one result required).
             if len(chosen) < min_keep:
                 for candidate in scored:
                     _append_candidate(candidate)
                     if len(chosen) >= min_keep:
                         break
         else:
-            # Prefer candidates with explicit entity support or trusted domains.
             for candidate in scored:
                 _, _, entity_hits, trusted_bonus, _, _ = candidate
                 if entity_hits > 0 or trusted_bonus > 0:
                     _append_candidate(candidate)
                     if len(chosen) >= limit:
                         break
-
-            # Backfill if focused filtering got too strict.
             if len(chosen) < min_keep:
                 for candidate in scored:
                     _append_candidate(candidate)
                     if len(chosen) >= min_keep:
                         break
-
             if len(chosen) < limit:
                 for candidate in scored:
                     _append_candidate(candidate)

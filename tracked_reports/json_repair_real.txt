@@ -1,53 +1,20 @@
 [
   {
     "repair_applied": true,
-    "repair_reason": "missing_keys",
-    "repair_severity": "structural",
-    "missing_keys_count": 1,
-    "missing_keys_sample": "confidence",
+    "repair_reason": "residual_tool_calls_no_content",
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "parse_diagnostics": {
-      "ok": true,
-      "error_reason": null,
-      "exception_type": null,
-      "exception_message": null,
-      "context": {
-        "content_length": 2068,
-        "normalized_length": 2056,
-        "attempt_count": 1
-      }
-    },
-    "repair_diagnostics": {
-      "ok": true,
-      "error_reason": null,
-      "exception_type": null,
-      "exception_message": null,
-      "context": {
-        "output_length": 2068,
-        "schema_type": "dict",
-        "expected_shape": "dict",
-        "parsed_type": "dict",
-        "coerced_input_shape": false,
-        "fallback_on_failure": true
-      }
-    },
-    "repair_attempt_count": 1,
-    "repair_retry_used": false,
-    "input_text_hash": "c480970deb991b68b6ffa8f81e422cd8f6005f7ac5778d0fa52650927f392c75",
-    "output_text_hash": "a947627e2452b54c8ab31f9e909a5c6fe9a7759f57db0d0480ff205b6b02b319",
-    "input_text_length": 2068,
-    "output_text_length": 2026,
-    "input_text_preview": "```json { \"educational_attainment\": null, \"educational_attainment_source\": null, \"educational_attainment_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\"...",
-    "output_text_preview": "{\"educational_attainment\": null, \"educational_attainment_source\": null, \"educational_attainment_confidence\": null, \"education_field\": \"Unknown\", \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": \"Unknown\", \"education_institution_source\": null, \"education_institution_confidence...",
-    "payload_diff_summary": "--- before\n+++ after\n@@ -1,38 +1 @@\n-```json\n-{\n-  \"educational_attainment\": null,\n-  \"educational_attainment_source\": null,\n-  \"educational_attainment_confidence\": null,\n-  \"education_field\": null,\n-  \"education_field_source\": null,\n-  \"education_field_confidence\": null,\n-  \"education_institution\": null,\n-  \"education_institution_source\": null,\n-  \"education_institution_confidence\": null,\n-  \"education_level\": null,\n-  \"education_level_source\": null,\n-  \"education_level_confidence\": null,\n-  \"prior_occupation\": \"Presidenta de la Organización de Mujeres - Sub Central Sécure.\",\n-  \"prior_occupation_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"prior_occupation_confidence\": 1,\n-  \"birth_year\": 1982,\n-  \"birth_year_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"birth_year_confidence\": 1,\n-  \"birth_place\": null,\n-  \"birth_place_source\": null,\n-  \"birth_place_confidence\": null,\n-  \"disability_status\": \"Unknown\",\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_status_source\": null,\n-  \"lgbtq_status_confidence\": null,\n-  \"lgbtq_details\": null,\n-  \"lgbtq_details_source\": null,\n-  \"lgbtq_details_confidence\": null,\n-  \"class_background\": \"Working class\",\n-  \"class_background_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-  \"class_background_confidence\": 0.8,\n-  \"justification\": \"Ramona Moye Camaconi was born on January 7, 1982. Her primary occupation prior to entering the Plurinational Legislative Assembly was as a community leader, specifically serving as the President of the Women's Organization of the Sub Central Sécure within the TIPNIS (Isiboro Sécure National Park and Indigenous Territory). Given that this role involves indigenous community leadership in a rural, subsistence-based territory, her background is categorized as working class (agriculture/manual labor context). No specific higher education degrees or institutions are recorded in her official parliamentary profile.\"\n-}",
-    "event_id": "0d8650e6b57c46b2a73daf7c26ff4975",
-    "ts_utc": "2026-03-07T23:57:09.291182Z",
+    "event_id": "94eee743c7f34ec19db09a38e9c269c6",
+    "ts_utc": "2026-03-08T04:12:24.688434Z",
     "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
     "outcome_status": "applied",
-    "payload_diff_available": true
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
   },
   {
     "repair_applied": true,
@@ -57,8 +24,8 @@
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "event_id": "bbaa84389ed5490eaec0bffec9832bb1",
-    "ts_utc": "2026-03-07T23:57:09.291196Z",
+    "event_id": "d4265d44a43047408c49bc9c782e34d2",
+    "ts_utc": "2026-03-08T04:12:24.688445Z",
     "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
     "outcome_status": "applied",

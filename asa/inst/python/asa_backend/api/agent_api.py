@@ -995,6 +995,13 @@ def _build_trace_metadata(
         "model": model_name,
         "stop_reason": _state_get(state, "stop_reason", None),
         "completion_status": completion_gate.get("completion_status"),
+        "completion_reason": completion_gate.get("reason"),
+        "quality_gate_failed": bool(completion_gate.get("quality_gate_failed", False)),
+        "quality_gate_triggered": bool(completion_gate.get("quality_gate_triggered", False)),
+        "quality_gate_terminal_degraded": bool(
+            completion_gate.get("quality_gate_terminal_degraded", False)
+        ),
+        "quality_gate_passed": not bool(completion_gate.get("quality_gate_triggered", False)),
         "finalization_invariant_failed": bool(
             completion_gate.get("finalization_invariant_failed", False)
         ),

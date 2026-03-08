@@ -29,7 +29,7 @@ test_that("build_node_trace_entry emits metadata fields", {
   expect_true(grepl("Z$", as.character(entry$ended_at_utc)))
 })
 
-test_that("field-status diagnostics surface anchor mismatch samples", {
+test_that("field-status diagnostics surface generic evidence-state samples and counters", {
   prod <- asa_test_import_langgraph_module(
     "custom_ddg_production",
     required_files = "custom_ddg_production.py",
@@ -44,12 +44,45 @@ test_that("field-status diagnostics surface anchor mismatch samples", {
       status = "unknown",
       value = "Unknown",
       source_url = NULL,
-      evidence = "recovery_blocked_anchor_mismatch",
-      evidence_reason = "recovery_blocked_anchor_mismatch",
+      evidence = "soft_anchor_penalty",
+      evidence_reason = "soft_anchor_penalty",
+      evidence_category = "soft_anchor_penalty",
       evidence_source_url = "https://example.com/profile",
       anchor_mode = "strict",
       anchor_strength = "strong",
       candidate_score = 0.41,
+      descriptor = "string|Unknown"
+    ),
+    birth_place = list(
+      status = "unknown",
+      value = "Unknown",
+      source_url = NULL,
+      evidence = "explicit_contradiction_block",
+      evidence_reason = "explicit_contradiction_block",
+      evidence_category = "explicit_contradiction_block",
+      evidence_source_url = "https://example.com/chile-profile",
+      candidate_score = 0.67,
+      descriptor = "string|Unknown"
+    ),
+    committee_role = list(
+      status = "unknown",
+      value = "Unknown",
+      source_url = NULL,
+      evidence = "high_conflict_demotion",
+      evidence_reason = "high_conflict_demotion",
+      evidence_category = "high_conflict_demotion",
+      evidence_source_url = "https://example.com/alternate",
+      candidate_score = 0.58,
+      descriptor = "string|Unknown"
+    ),
+    prior_occupation = list(
+      status = "found",
+      value = "Teacher",
+      source_url = "https://example.com/profile",
+      evidence = "recovery_source_backed",
+      evidence_reason = "recovery_promoted_anchor_soft_penalty",
+      evidence_category = "soft_anchor_penalty",
+      candidate_score = 0.82,
       descriptor = "string|Unknown"
     )
   )
@@ -57,16 +90,24 @@ test_that("field-status diagnostics surface anchor mismatch samples", {
   collected <- reticulate::py_to_r(collect_diag(field_status = field_status))
   expect_true(is.list(collected$anchor_mismatch_samples))
   expect_true(length(collected$anchor_mismatch_samples) >= 1)
-  sample <- collected$anchor_mismatch_samples[[1]]
-  expect_equal(as.character(sample$field), "education_level")
-  expect_equal(as.character(sample$anchor_mode), "strict")
-  expect_equal(as.character(sample$anchor_strength), "strong")
+  sample <- collected$evidence_state_samples[[1]]
+  expect_true(as.character(sample$field) %in% c("education_level", "birth_place", "committee_role"))
+  expect_true(as.character(collected$anchor_mismatch_samples[[1]]$field) %in% c("education_level", "prior_occupation"))
+  expect_equal(as.character(collected$anchor_mismatch_samples[[1]]$source_url), "https://example.com/profile")
+  expect_equal(as.integer(collected$evidence_state_reason_counts$soft_anchor_penalty), 1L)
+  expect_equal(as.integer(collected$evidence_state_reason_counts$explicit_contradiction_block), 1L)
+  expect_equal(as.integer(collected$evidence_state_reason_counts$high_conflict_demotion), 1L)
+  expect_equal(as.integer(collected$weak_anchor_promotions_survived_finalization_count), 0L)
 
   normalized <- reticulate::py_to_r(normalize_diag(list(
     finalization_invariant_failures_by_reason = list(diagnostics_unknown_fields_mismatch = 2L),
     finalization_blocking_fields = list("education_level"),
     diagnostics_recovery_checkpoint_events = 1L,
     diagnostics_recovery_retry_events = 1L,
+    weak_anchor_candidates_admitted_count = 3L,
+    contradiction_blocks_count = 1L,
+    strong_conflict_demotions_count = 2L,
+    weak_anchor_promotions_survived_finalization_count = 1L,
     finalization_recovery_checkpoints = list(list(
       context = "agent",
       reason = "diagnostics_unknown_count_mismatch",
@@ -82,7 +123,8 @@ test_that("field-status diagnostics surface anchor mismatch samples", {
       error_type = "timeout",
       round_index = 2L
     )),
-    anchor_mismatch_samples = collected$anchor_mismatch_samples
+    anchor_mismatch_samples = collected$anchor_mismatch_samples,
+    evidence_state_samples = collected$evidence_state_samples
   )))
 
   expect_equal(
@@ -92,11 +134,16 @@ test_that("field-status diagnostics surface anchor mismatch samples", {
   expect_true("education_level" %in% as.character(normalized$finalization_blocking_fields))
   expect_equal(as.integer(normalized$diagnostics_recovery_checkpoint_events), 1L)
   expect_equal(as.integer(normalized$diagnostics_recovery_retry_events), 1L)
+  expect_equal(as.integer(normalized$weak_anchor_candidates_admitted_count), 3L)
+  expect_equal(as.integer(normalized$contradiction_blocks_count), 1L)
+  expect_equal(as.integer(normalized$strong_conflict_demotions_count), 2L)
+  expect_equal(as.integer(normalized$weak_anchor_promotions_survived_finalization_count), 1L)
   expect_true(is.list(normalized$finalization_recovery_checkpoints))
   expect_equal(as.character(normalized$finalization_recovery_checkpoints[[1]]$priority), "anchor_mismatch_recovery")
   expect_true(is.list(normalized$empty_tool_results_details))
   expect_equal(as.character(normalized$empty_tool_results_details[[1]]$tool_name), "search")
   expect_true(length(normalized$anchor_mismatch_samples) >= 1)
+  expect_true(length(normalized$evidence_state_samples) >= 1)
 })
 
 test_that("schema outcome gate reconciles stale diagnostics snapshots", {

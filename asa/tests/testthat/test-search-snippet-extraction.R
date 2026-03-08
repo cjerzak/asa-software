@@ -451,7 +451,7 @@ test_that("deterministic numeric recovery requires a keyword hit when configured
 })
 
 
-test_that("deterministic recovery reports entity mismatch when candidates exist but are off-target", {
+test_that("deterministic recovery keeps weakly aligned candidates visible with scored diagnostics", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",
     required_files = "asa_backend/graph/agent_graph_core.py"
@@ -484,11 +484,19 @@ test_that("deterministic recovery reports entity mismatch when candidates exist 
   )
 
   out_r <- reticulate::py_to_r(out)
-  expect_equal(as.character(out_r$birth_year$evidence), "recovery_blocked_entity_mismatch")
-  expect_equal(as.character(out_r$birth_year$evidence_reason), "recovery_blocked_entity_mismatch")
+  expect_false(identical(as.character(out_r$birth_year$status), "found"))
+  expect_equal(as.character(out_r$birth_year$evidence_source_url), source_url)
+  expect_true(as.numeric(out_r$birth_year$candidate_score) > 0)
+  expect_true(as.numeric(out_r$birth_year$target_consistency) < 0.35)
+  expect_true(as.character(out_r$birth_year$evidence_category) %in% c(
+    "high_conflict_demotion",
+    "soft_anchor_penalty",
+    "insufficient_support"
+  ))
+  expect_false(identical(as.character(out_r$birth_year$evidence), "recovery_blocked_entity_mismatch"))
 })
 
-test_that("deterministic recovery blocks near-miss entity/value mismatches", {
+test_that("deterministic recovery soft-penalizes near-miss alignment when source evidence is otherwise strong", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",
     required_files = "asa_backend/graph/agent_graph_core.py"
@@ -524,15 +532,67 @@ test_that("deterministic recovery blocks near-miss entity/value mismatches", {
 
   out_r <- reticulate::py_to_r(out)
   expect_false(identical(as.character(out_r$birth_year$status), "found"))
-  expect_equal(
-    as.character(out_r$birth_year$evidence),
-    "recovery_blocked_entity_value_mismatch"
-  )
-  expect_equal(
-    as.character(out_r$birth_year$evidence_reason),
-    "recovery_blocked_entity_value_mismatch"
-  )
+  expect_equal(as.character(out_r$birth_year$evidence_category), "soft_anchor_penalty")
+  expect_equal(as.character(out_r$birth_year$contradiction_state), "soft_anchor_penalty")
+  expect_true(as.numeric(out_r$birth_year$candidate_score) > 0)
   expect_false(identical(as.character(out_r$birth_year_source$status), "found"))
+})
+
+test_that("candidate consistency hard-blocks explicit context contradiction", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  state <- reticulate::py_to_r(core$`_candidate_target_consistency_state`(
+    value = "Teacher",
+    source_url = "https://www.example.cl/ramona-parra",
+    source_text = "Ramona Parra fue una militante chilena.",
+    target_anchor = list(
+      tokens = list("ramona"),
+      phrases = list(),
+      id_signals = list(),
+      context_tokens = list("bolivia"),
+      context_labels = list("country:Bolivia"),
+      confidence = 0.7,
+      strength = "moderate",
+      provenance = list("test"),
+      mode = "adaptive"
+    )
+  ))
+
+  expect_true(isTRUE(state$hard_block))
+  expect_false(isTRUE(state$promotion_block))
+  expect_equal(as.character(state$contradiction_state), "explicit_contradiction")
+})
+
+test_that("candidate consistency strongly demotes medium-confidence target conflict", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  state <- reticulate::py_to_r(core$`_candidate_target_consistency_state`(
+    value = "alternate",
+    source_url = "https://www.example.gov/profile/12345",
+    source_text = "Bob Jones serves as alternate member of the committee.",
+    target_anchor = list(
+      tokens = list("alice", "smith"),
+      phrases = list("alice smith"),
+      id_signals = list(),
+      context_tokens = list(),
+      context_labels = list(),
+      confidence = 0.9,
+      strength = "strong",
+      provenance = list("test"),
+      mode = "strict"
+    )
+  ))
+
+  expect_false(isTRUE(state$hard_block))
+  expect_true(isTRUE(state$promotion_block))
+  expect_equal(as.character(state$contradiction_state), "medium_conflict")
+  expect_true(as.numeric(state$demotion_penalty) > 0.30)
 })
 
 test_that("deterministic recovery softens hard anchor mismatch only for allowlisted specific source-backed evidence", {
@@ -594,24 +654,18 @@ test_that("field-status extraction rejects candidates with entity/value mismatch
   )
 
   schema <- list(
-    prior_occupation = "string|Unknown",
-    prior_occupation_source = "string|null"
+    office_title = "string|Unknown",
+    office_title_source = "string|null"
   )
   field_status <- list(
-    prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
-    prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+    office_title = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    office_title_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
   )
-  profile_url <- "https://example.gov/profile/ramona"
-  separator <- paste(rep("archival snippet without target identity", 80), collapse = " ")
-  source_text <- paste(
-    "Ramona Moye Camaconi is a Bolivian legislator.",
-    separator,
-    "Juan Perez worked as a teacher before politics.",
-    "Profile registry with mixed person snippets."
-  )
+  profile_url <- "https://example.gov/profile/alice"
+  source_text <- "Directory snippet: Bob Jones serves as alternate member of the committee."
   payload <- list(
-    prior_occupation = "teacher",
-    prior_occupation_source = profile_url
+    office_title = "alternate",
+    office_title_source = profile_url
   )
   extra_payloads <- list(list(
     tool_name = "search_snippet_extract",
@@ -630,17 +684,19 @@ test_that("field-status extraction rejects candidates with entity/value mismatch
     extra_payloads = extra_payloads,
     tool_calls_delta = 1L,
     unknown_after_searches = 3L,
-    entity_name_tokens = list("Ramona", "Moye", "Camaconi"),
+    entity_name_tokens = list("Alice", "Smith"),
     evidence_enabled = TRUE
   )
   updates_r <- reticulate::py_to_r(updates)
   updated_fs <- updates_r[[1]]
 
-  expect_false(identical(as.character(updated_fs$prior_occupation$status), "found"))
-  expect_equal(
-    as.character(updated_fs$prior_occupation$evidence),
-    "grounding_blocked_entity_value_mismatch"
-  )
+  expect_false(identical(as.character(updated_fs$office_title$status), "found"))
+  expect_equal(as.character(updated_fs$office_title$evidence_category), "high_conflict_demotion")
+  expect_true(as.character(updated_fs$office_title$contradiction_state) %in% c(
+    "medium_conflict",
+    "high_conflict"
+  ))
+  expect_true(as.numeric(updated_fs$office_title$candidate_score) > 0)
 })
 
 

@@ -1153,12 +1153,84 @@ test_that("schema outcome quality gate reports low confidence without blocking o
     budget_state = state$budget_state
   ))
 
-  expect_false(isTRUE(report$quality_gate_failed))
+  expect_true(isTRUE(report$quality_gate_failed))
   expect_true(isTRUE(report$quality_gate_triggered))
   expect_false(isTRUE(report$quality_gate_blocked))
+  expect_true(isTRUE(report$quality_gate_terminal_degraded))
   expect_equal(as.character(report$quality_gate_reason), "global_confidence_below_min")
   expect_true(isTRUE(report$quality_gate_checks$global_confidence_below_min))
   expect_true(as.numeric(report$global_confidence_score) < 0.80)
+  expect_equal(as.character(report$completion_status), "partial")
+  expect_equal(as.character(report$reason), "budget_exhausted_quality_gate_failed")
+  expect_equal(as.character(report$concrete_completion_status), "partial")
+})
+
+test_that("quality gate recovery budget triggers one bounded generic retry pass", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  apply_recovery <- reticulate::py_get_attr(prod, "_apply_quality_gate_recovery_budget")
+
+  first <- reticulate::py_to_r(apply_recovery(
+    diagnostics = list(
+      no_payload_extraction_rounds = 1L,
+      evidence_state_reason_counts = list(soft_anchor_penalty = 1L)
+    ),
+    completion_gate = list(
+      quality_gate_blocked = TRUE
+    ),
+    budget_state = list(
+      budget_exhausted = FALSE,
+      quality_gate_recovery_rounds_used = 0L
+    ),
+    field_status = list(
+      birth_year = list(
+        status = "unknown",
+        candidate_score = 0.63,
+        evidence_source_url = "https://example.org/profile/1"
+      )
+    ),
+    finalization_policy = list(
+      quality_gate_recovery_enabled = TRUE,
+      quality_gate_recovery_max_extra_rounds = 1L
+    )
+  ))
+
+  first_diag <- first[[1]]
+  first_budget <- first[[2]]
+  expect_true(isTRUE(first_budget$replan_requested))
+  expect_true(isTRUE(first_budget$quality_gate_recovery_active))
+  expect_equal(as.integer(first_budget$quality_gate_recovery_rounds_used), 1L)
+  expect_equal(as.character(first_budget$priority_retry_reason), "quality_gate_recovery")
+  expect_equal(as.character(first_budget$quality_gate_recovery_last_reason), "low_extraction_yield")
+  expect_equal(as.integer(first_diag$quality_gate_recovery_events), 1L)
+
+  second <- reticulate::py_to_r(apply_recovery(
+    diagnostics = first_diag,
+    completion_gate = list(
+      quality_gate_blocked = TRUE
+    ),
+    budget_state = first_budget,
+    field_status = list(
+      birth_year = list(
+        status = "unknown",
+        candidate_score = 0.63,
+        evidence_source_url = "https://example.org/profile/1"
+      )
+    ),
+    finalization_policy = list(
+      quality_gate_recovery_enabled = TRUE,
+      quality_gate_recovery_max_extra_rounds = 1L
+    )
+  ))
+
+  second_diag <- second[[1]]
+  second_budget <- second[[2]]
+  expect_equal(as.integer(second_budget$quality_gate_recovery_rounds_used), 1L)
+  expect_equal(as.integer(second_diag$quality_gate_recovery_events), 1L)
 })
 
 test_that("schema outcome quality gate can ignore invariant failure when policy disables invariant requirement", {
