@@ -10,7 +10,7 @@
   "education_field_confidence": null,
   "prior_occupation": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
   "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-  "prior_occupation_confidence": 1,
+  "prior_occupation_confidence": 0.7,
   "class_background": "Unknown",
   "class_background_source": null,
   "class_background_confidence": null,
@@ -19,10 +19,10 @@
   "disability_status_confidence": null,
   "birth_place": "Tipnis",
   "birth_place_source": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
-  "birth_place_confidence": 0.9,
+  "birth_place_confidence": 0.7,
   "birth_year": 1982,
   "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
-  "birth_year_confidence": 1,
+  "birth_year_confidence": 0.7,
   "lgbtq_status": "Unknown",
   "lgbtq_status_source": null,
   "lgbtq_status_confidence": null,
@@ -30,5 +30,5 @@
   "lgbtq_details_source": null,
   "lgbtq_details_confidence": null,
   "confidence": 0.5594,
-  "justification": "Source-backed searches resolved 3 core fields (including birth_place, birth_year, prior_occupation), while 7 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_no_candidates(6), finalization_policy_demotion_unverified(1)."
+  "justification": "Source-backed searches resolved 3 core fields (including birth_place, birth_year, prior_occupation), while 7 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_no_candidates(7)."
 }

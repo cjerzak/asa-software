@@ -12,8 +12,8 @@
       "id": 2,
       "description": "Collect high-signal evidence from relevant tools/sources",
       "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
-      "status": "completed",
-      "findings": "Found birth year (1982) and prior occupation (Presidenta de la Organización de Mujeres - Sub Central Sécure). Need birth place, education details, and class background."
+      "status": "pending",
+      "findings": ""
     },
     {
       "id": 3,
@@ -30,6 +30,6 @@
       "findings": ""
     }
   ],
-  "version": 4,
-  "current_step": 3
+  "version": 3,
+  "current_step": 2
 }
