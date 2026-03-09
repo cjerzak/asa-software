@@ -1,18 +1,18 @@
 {
-  "run_id": "asa_caed578d80b2f651",
-  "generated_at_utc": "2026-03-09T03:10:16Z",
-  "canonical_artifact_id": "e30d3e8892bdd8d36542eccc21266b6769cca4097b63c53f25768073243167df",
-  "released_artifact_id": "d2d5a69564cdf233a9c08eb6f783347605a640d9bc0517851819e0596558a260",
+  "run_id": "asa_d7a8d79a04c4eeb6",
+  "generated_at_utc": "2026-03-09T03:25:12Z",
+  "canonical_artifact_id": "3446047fe80d93026092f848fd862561b9aef0aac6b3ac65d10ff74a1c9f836b",
+  "released_artifact_id": "b4bbd386dcd7ce256e9009aea6b117362b6575d50587011a5f9fdba1a1ce048a",
   "released_from": "final_payload",
   "canonical_available": true,
   "canonical_matches_message": true,
-  "canonical_byte_hash": "d2d5a69564cdf233a9c08eb6f783347605a640d9bc0517851819e0596558a260",
-  "released_byte_hash": "d2d5a69564cdf233a9c08eb6f783347605a640d9bc0517851819e0596558a260",
+  "canonical_byte_hash": "b4bbd386dcd7ce256e9009aea6b117362b6575d50587011a5f9fdba1a1ce048a",
+  "released_byte_hash": "b4bbd386dcd7ce256e9009aea6b117362b6575d50587011a5f9fdba1a1ce048a",
   "byte_hash_matches": true,
-  "canonical_semantic_hash": "d4a42c1284131ae005e3525fe52dd797136515ea9e4fa5ded7c183d840d11b70",
-  "released_semantic_hash": "d4a42c1284131ae005e3525fe52dd797136515ea9e4fa5ded7c183d840d11b70",
+  "canonical_semantic_hash": "fd6e37110ac0330279d2eea1fbb686a2d52b6fddfdbac38b34523f2b3ae4f44d",
+  "released_semantic_hash": "fd6e37110ac0330279d2eea1fbb686a2d52b6fddfdbac38b34523f2b3ae4f44d",
   "semantic_hash_matches": true,
   "hash_mismatch_type": "none",
   "truncation_signals": [],
-  "json_repair_reasons": "field_status_canonical"
+  "json_repair_reasons": ["missing_keys", "field_status_canonical"]
 }
