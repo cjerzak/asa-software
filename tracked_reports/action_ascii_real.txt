@@ -1,13 +1,13 @@
 AGENT ACTION MAP
 ================
-Steps captured: 22
-LangGraph timed steps: 14
+Steps captured: 28
+LangGraph timed steps: 20
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
-      Source-backed found values: 2 (across 12 tracked fields)
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 3 (across 12 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
@@ -15,26 +15,26 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 9 tool-call turn(s), 1 answer turn(s)
-      Tool results: 19 total (Tool Search=12, Tool OpenWebpag...finding=2, Tool update_plan=1)
+      AI turns: 12 tool-call turn(s), 1 answer turn(s)
+      Tool results: 16 total (Tool Search=9, Tool OpenWebpage...e_plan=2, Tool save_finding=1)
       Structured terminal answer emitted
-      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=3, OFF_TOPIC_RESULT=2)
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=3, OFF_TOPIC_RESULT=0)
 
 START
-  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      agent: 3.4563m (tok=34402, n=6)
-      tools: 3.3679m (tok=0, n=6)
-      planner: 3.0585m (tok=0, n=1)
-      finalize: 0.3657m (tok=14402, n=1)
+      tools: 5.3338m (tok=0, n=9)
+      agent: 0.7152m (tok=55219, n=9)
+      finalize: 0.3119m (tok=14366, n=1)
+      planner: 0.1782m (tok=1828, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #02 agent: 3.0976m (tok=1910)
-      #01 planner: 3.0585m (tok=0)
-      #13 tools: 1.3593m (tok=0)
-      #11 tools: 0.8577m (tok=0)
-      #07 tools: 0.4286m (tok=0)
-  +-- [TIMING] wall=7.1908m nodes=10.2484m delta=-3.0575m (overlap likely)
+      #11 tools: 1.6169m (tok=0)
+      #13 tools: 1.0398m (tok=0)
+      #15 tools: 0.8504m (tok=0)
+      #19 tools: 0.6645m (tok=0)
+      #17 tools: 0.6050m (tok=0)
+  +-- [TIMING] wall=6.3623m nodes=6.5391m delta=-0.1768m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -54,7 +54,7 @@ START
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> En el caso de la diputa...tml </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...rio </URL> __END_OF_SOURC...
   +-- [05] Requested 1 tool call (OpenWebpage)
       by: AI
       tok: in=0 out=0 total=0
@@ -75,75 +75,103 @@ START
       tok: in=0 out=0 total=0
       min: n/a
       detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
-  +-- [09] Requested 3 tool calls (save_finding, Search)
+  +-- [09] Requested 1 tool call (save_finding)
       by: AI
-      tok: in=1663 out=247 total=1910
-      min: 3.0976m
-      detail: save_finding(finding=birth_year = 1982 (source:...lamen...aconi biografia estudios ...
-  +-- [10] Returned 2 results
+      tok: in=1663 out=242 total=1905
+      min: 0.2129m
+      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
+  +-- [10] Returned result
       by: Tool save_finding
       tok: in=0 out=0 total=0
       min: n/a
       detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
-  +-- [11] Returned result
+  +-- [11] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3394 out=84 total=3478
+      min: 0.0302m
+      detail: Search(query=Ramona Moye Camaconi biografia estudios o...)
+  +-- [12] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...es </URL> __END_OF_SOURCE...
-  +-- [12] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...le </URL> __END_OF_SOURCE...
+  +-- [13] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=3536 out=130 total=3666
-      min: 0.0337m
-      detail: OpenWebpage(url=https://pub.eldiario.net/n...s-falsificadas=)
-  +-- [13] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://pub.eldiario.net/noticias/2018/2018_09/nt1.../i_deportes.php] INTERNAC...
-  +-- [14] Requested 3 tool calls (Search)
-      by: AI
-      tok: in=4187 out=428 total=4615
-      min: 0.0443m
-      detail: Search(query=site:diputados.bo "Ramona Moye Camaconi" ....maconi" formación académi...
-  +-- [15] Returned 3 results
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...oni </URL> __END_OF_SOURC...
-  +-- [16] Requested 3 tool calls (Search)
-      by: AI
-      tok: in=6368 out=580 total=6948
-      min: 0.0824m
-      detail: Search(query=Ramona Moye Camaconi "lugar de nacimiento....maconi" profesión OR ofic...
-  +-- [17] Returned 3 results
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: El fascinante or...cia </URL> __END_OF_SOURC...
-  +-- [18] Requested 4 tool calls (Search)
-      by: AI
-      tok: in=7327 out=1013 total=8340
-      min: 0.1066m
-      detail: Search(query="Ramona Moye Camaconi" "lugar de nacimien....maconi" TIPNIS "Sub Centr...
-  +-- [19] Returned 4 results
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Fact Check: Resu...pdf </URL> __END_OF_SOURC...
-  +-- [20] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=8212 out=711 total=8923
-      min: 0.0916m
+      tok: in=3999 out=246 total=4245
+      min: 0.0363m
       detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
-  +-- [21] Returned result
+  +-- [14] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
       detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
-  +-- [22] Produced structured answer
+  +-- [15] Requested 1 tool call (Search)
       by: AI
-      tok: in=10786 out=3616 total=14402
-      min: 0.3657m
+      tok: in=4441 out=64 total=4505
+      min: 0.0419m
+      detail: Search(query=Ramona Moye Camaconi "lugar de nacimiento...)
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Preguntas de jóv...ga </URL> __END_OF_SOURCE...
+  +-- [17] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5541 out=439 total=5980
+      min: 0.0522m
+      detail: OpenWebpage(url=https://www.italotribu.org...abuelo-italiano)
+  +-- [18] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.italotribu.org/ciudadania-italiana/com.../] CIUDADANÍA ITALIANA EN...
+  +-- [19] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=7543 out=592 total=8135
+      min: 0.0747m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...encia.gob.bo "Ramona Moye...
+  +-- [20] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [22] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7696 out=928 total=8624
+      min: 0.0933m
+      detail: Search(query=Ramona Moye Camaconi "lugar de nacimiento...)
+  +-- [23] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [24] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7739 out=835 total=8574
+      min: 0.0929m
+      detail: Search(query=Ramona Moye Camaconi "lugar de nacimiento...)
+  +-- [25] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Egan Bernal y lo...46 </URL> __END_OF_SOURCE...
+  +-- [26] Requested 3 tool calls (Search)
+      by: AI
+      tok: in=9205 out=568 total=9773
+      min: 0.0807m
+      detail: Search(query=site:oep.org.bo "Ramona Moye Camaconi") | ...maconi" biografía TIPNIS ...
+  +-- [27] Returned 3 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...as= </URL> __END_OF_SOURC...
+  +-- [28] Produced structured answer
+      by: AI
+      tok: in=11475 out=2891 total=14366
+      min: 0.3119m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_level_source":n...ds or credible news sourc...
+      detail: {"education_level":"Unknown","education_level_source":n...cial parliamentary profil...
 END
