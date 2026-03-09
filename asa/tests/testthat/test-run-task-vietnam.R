@@ -265,9 +265,8 @@ test_that("run_task returns current Vietnam first-level divisions in JSON (Gemin
   if (!is.null(declared_count) && !is.na(declared_count)) {
     expect_equal(declared_count, 34L, info = sprintf("Expected declared count 34, got %d", declared_count))
   }
-  expect_setequal(
-    normalized_unique,
-    names(expected_lookup),
+  expect_true(
+    setequal(normalized_unique, names(expected_lookup)),
     info = "Returned divisions did not match Vietnam's current 34 first-level units"
   )
 })
