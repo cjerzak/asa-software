@@ -76,8 +76,21 @@ E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1
 \item{inter_search_delay}{Minimum delay in seconds between consecutive searches.
 Helps avoid rate limiting from search providers. Default: 1.5.}
 
+\item{humanize_timing}{Whether to humanize search timing with non-uniform
+delays. Default uses \code{ASA_HUMANIZE_TIMING}.}
+
+\item{jitter_factor}{Random jitter factor applied to humanized timing and
+retry spacing. Default uses \code{ASA_JITTER_FACTOR}.}
+
+\item{allow_direct_fallback}{Whether to allow direct fallback requests in the
+search transport. Default: FALSE.}
+
 \item{selenium_browser_preference}{Selenium browser engine preference order.
 One of \code{"firefox_first"} (default) or \code{"chrome_first"}.}
+
+\item{stability_profile}{High-level search stability profile. One of
+\code{"deterministic"}, \code{"balanced"}, or \code{"stealth_first"}
+(default). This controls default anti-detection and orchestration behavior.}
 
 \item{performance_profile}{Orchestration profile optimized for one of:
 \code{"latency"}, \code{"balanced"}, or \code{"quality"}.}
@@ -86,6 +99,17 @@ One of \code{"firefox_first"} (default) or \code{"chrome_first"}.}
 \code{max_open_calls}, \code{host_cooldown_seconds},
 \code{blocked_host_ttl_seconds}, \code{open_only_if_score_ge}, and
 \code{parallel_open_limit}.}
+
+\item{auto_openwebpage_policy}{Automatic OpenWebpage follow-up policy. Use
+\code{"auto"} for profile-driven automatic opening or \code{"off"} to
+disable it. Defaults to \code{"off"} for the deterministic profile and
+\code{"auto"} otherwise.}
+
+\item{langgraph_node_retries}{Whether to enable LangGraph node-level retries
+in agent graph construction. Default: TRUE.}
+
+\item{langgraph_cache_enabled}{Whether to enable LangGraph node caching.
+Default: FALSE.}
 
 \item{finalize_when_all_unresolved_exhausted}{Optional override for
 orchestration finalizer behavior. When TRUE, finalize once all unresolved

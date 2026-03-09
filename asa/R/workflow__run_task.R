@@ -56,6 +56,15 @@
 #'   fields may be marked as unknown.
 #' @param finalize_on_all_fields_resolved Optional logical flag. When TRUE, the
 #'   agent finalizes once all required fields are resolved.
+#' @param field_rules Optional named list/dict of field-level extraction rules
+#'   passed directly to the backend state. Use task-agnostic rule objects;
+#'   \code{NULL} leaves backend defaults unchanged.
+#' @param source_policy Optional named list/dict controlling source selection
+#'   and evidence-policy behavior in the backend state.
+#' @param retry_policy Optional named list/dict controlling backend retry
+#'   behavior for follow-up planning and field resolution.
+#' @param finalization_policy Optional named list/dict controlling terminal
+#'   finalization behavior in the backend state.
 #' @param orchestration_options Optional named list/dict of generic orchestration
 #'   controls (component enable/mode and thresholds). This is passed directly to
 #'   the backend state and must remain task-agnostic.
@@ -65,6 +74,8 @@
 #'   \code{max_open_calls}, \code{host_cooldown_seconds},
 #'   \code{blocked_host_ttl_seconds}, \code{open_only_if_score_ge}, and
 #'   \code{parallel_open_limit}.
+#' @param query_templates Optional named list/dict of backend query template
+#'   overrides used when orchestration components generate follow-up searches.
 #' @param verbose Print progress messages (default: FALSE)
 #' @param allow_read_webpages If TRUE, allows the agent to open and read full
 #'   webpages (HTML/text) via the OpenWebpage tool. Disabled by default.

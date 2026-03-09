@@ -401,8 +401,25 @@ print.asa_temporal <- function(x, ...) {
 #'   E.g., with retry_delay=2 and multiplier=1.5, delays are 2s, 3s, 4.5s. Default: 1.5.
 #' @param inter_search_delay Minimum delay in seconds between consecutive searches.
 #'   Helps avoid rate limiting from search providers. Default: 1.5.
+#' @param humanize_timing Whether to humanize search timing with non-uniform
+#'   delays. Default uses \code{ASA_HUMANIZE_TIMING}.
+#' @param jitter_factor Random jitter factor applied to humanized timing and
+#'   retry spacing. Default uses \code{ASA_JITTER_FACTOR}.
+#' @param allow_direct_fallback Whether to allow direct fallback requests in the
+#'   search transport. Default: FALSE.
 #' @param selenium_browser_preference Selenium browser engine preference order.
 #'   One of \code{"firefox_first"} (default) or \code{"chrome_first"}.
+#' @param stability_profile High-level search stability profile. One of
+#'   \code{"deterministic"}, \code{"balanced"}, or \code{"stealth_first"}
+#'   (default). This controls default anti-detection and orchestration behavior.
+#' @param auto_openwebpage_policy Automatic OpenWebpage follow-up policy. Use
+#'   \code{"auto"} for profile-driven automatic opening or \code{"off"} to
+#'   disable it. Defaults to \code{"off"} for the deterministic profile and
+#'   \code{"auto"} otherwise.
+#' @param langgraph_node_retries Whether to enable LangGraph node-level retries
+#'   in agent graph construction. Default: TRUE.
+#' @param langgraph_cache_enabled Whether to enable LangGraph node caching.
+#'   Default: FALSE.
 #' @param wiki_top_k_results Number of Wikipedia search results to fetch per
 #'   query (default: 5). Higher values may provide more coverage at the cost of
 #'   latency/noise.

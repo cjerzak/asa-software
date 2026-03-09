@@ -770,52 +770,6 @@ configure_temporal <- function(time_filter = NULL) {
 
   result
 }
-
-
-#' Run Code with a Temporary Configuration Snapshot
-#'
-#' Internal helper that snapshots a runtime config, executes code, then
-#' best-effort restores the original config on exit.
-#'
-#' @param snapshot_fn Function returning previous config snapshot.
-#' @param restore_fn Function restoring previous config.
-#' @param fn Function to execute while temporary config is active.
-#' @param should_restore Optional predicate that decides whether restore should run.
-#' @param on_exit_fn Optional cleanup function executed on exit.
-#' @return Result of \code{fn()}.
-#' @keywords internal
-
-#' Compare Runtime Configuration Values
-#'
-#' Internal helper that compares two config fragments while ignoring
-#' attribute differences (e.g., integer vs numeric scalars from Python).
-#'
-#' @param lhs Left-hand value/list
-#' @param rhs Right-hand value/list
-#' @return TRUE when equivalent, FALSE otherwise
-#' @keywords internal
-
-
-#' Apply Search Configuration for a Single Operation
-#'
-#' Internal helper that applies search settings, runs a function,
-#' and restores the original configuration afterward.
-#'
-#' @param search asa_search object or list of search settings
-#' @param conda_env Conda env used by search tools
-#' @param fn Function to run with search config applied
-#' @return Result of fn()
-#' @keywords internal
-#' Resolve a single option from config
-#'
-#' Returns \code{value} unless it is \code{NULL} and \code{config[[key]]}
-#' exists, in which case the config value is returned.
-#'
-#' @param value Explicit value (returned if non-NULL).
-#' @param config Configuration list to fall back to.
-#' @param key Key to look up in \code{config}.
-#' @return The resolved value.
-#' @keywords internal
 #' Resolve Webpage Reader Settings
 #'
 #' Internal helper that merges per-call webpage reader options with defaults
