@@ -8,9 +8,9 @@
   "education_field": "Unknown",
   "education_field_source": null,
   "education_field_confidence": null,
-  "prior_occupation": "diputada",
-  "prior_occupation_source": "https://sisin.oep.org.bo/medios_digitales/14455/detalle",
-  "prior_occupation_confidence": 0.9,
+  "prior_occupation": "Presidenta de la Organización de Mujeres - Sub Central Sécure",
+  "prior_occupation_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
+  "prior_occupation_confidence": 1,
   "class_background": "Unknown",
   "class_background_source": null,
   "class_background_confidence": null,
@@ -29,6 +29,6 @@
   "lgbtq_details": null,
   "lgbtq_details_source": null,
   "lgbtq_details_confidence": null,
-  "confidence": 0.85,
-  "justification": "Ramona Moye Camaconi was born in 1982 in the TIPNIS territory of Bolivia. She is an indigenous leader who served as the President of the Women's Organization of the Sub Central Sécure before or during her political career. She was elected as a deputy for the MAS party representing the Beni region in 2014. While her community leadership is documented, specific details regarding her formal education level and pre-political professional occupation (outside of community leadership) are not publicly disclosed in official parliamentary profiles."
+  "confidence": 0.5594,
+  "justification": "Source-backed searches resolved 3 core fields (including birth_place, birth_year, prior_occupation), while 7 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_no_candidates(6), finalization_policy_demotion_unverified(1)."
 }

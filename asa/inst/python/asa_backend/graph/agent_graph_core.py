@@ -3615,25 +3615,54 @@ def _search_snippet_has_explicit_value_signal(
     snippet_text: Any,
     *,
     unresolved_keywords: Any = None,
+    allow_date_signal: bool = False,
 ) -> bool:
     raw_text = re.sub(r"\s+", " ", str(snippet_text or "")).strip()
     if not raw_text:
         return False
-    lowered = raw_text.lower()
+    lowered = _normalize_match_text(raw_text)
     date_signal = _search_snippet_date_signal(raw_text)
-    if bool(date_signal.get("structured_date", False)):
+    if bool(allow_date_signal) and bool(date_signal.get("structured_date", False)):
         return True
+    keywords = [
+        _normalize_match_text(keyword)
+        for keyword in list(unresolved_keywords or [])
+        if _normalize_match_text(keyword)
+    ]
+    if keywords:
+        for segment in re.split(r"[\n\r.;]+", raw_text):
+            segment_norm = _normalize_match_text(segment)
+            if not segment_norm:
+                continue
+            if ":" in segment:
+                lhs_raw, rhs_raw = segment.split(":", 1)
+                lhs_norm = _normalize_match_text(lhs_raw)
+                rhs_norm = _normalize_match_text(rhs_raw)
+                if rhs_norm and any(keyword in lhs_norm for keyword in keywords):
+                    return True
+            for keyword in keywords:
+                if keyword not in segment_norm:
+                    continue
+                if re.search(
+                    rf"\b{re.escape(keyword)}\b(?:\s+\w+){{0,4}}\s*(?:is|was|were|are|=|-|as)\s+[a-z0-9]",
+                    segment_norm,
+                ):
+                    return True
+                if re.search(
+                    rf"\b{re.escape(keyword)}\b(?:\s+\w+){{0,6}}\s+(?:of|in|on)\s+\d",
+                    segment_norm,
+                ):
+                    return True
     if re.search(
-        r"\b(?:born|birth|education|educated|graduated|occupation|profession|worked|served|title|role|institution|university|disability|orientation)\b",
+        r"\b(?:education|educated|graduated)\b.{0,40}\b(?:from|at|in)\b.{0,40}\b[a-z0-9]",
         lowered,
     ):
         return True
-    if ":" in raw_text:
-        normalized_text = _normalize_match_text(raw_text)
-        for keyword in list(unresolved_keywords or []):
-            keyword_norm = _normalize_match_text(keyword)
-            if keyword_norm and keyword_norm in normalized_text:
-                return True
+    if re.search(
+        r"\b(?:occupation|profession|title|role|institution|university|disability|orientation)\b.{0,32}(?:is|was|were|=|-|:)\s+[a-z0-9]",
+        lowered,
+    ):
+        return True
     return False
 
 
@@ -3671,12 +3700,17 @@ def _search_snippet_supports_direct_extraction(
     except Exception:
         authority_score = 0.0
     quoted_hits = int(candidate.get("query_intent_quoted_phrase_hits", 0) or 0)
+    numeric_date_hints = _collect_unresolved_numeric_date_field_hints(
+        expected_schema=expected_schema,
+        field_status=field_status,
+    )
     explicit_value_signal = _search_snippet_has_explicit_value_signal(
         candidate.get("extraction_text") or candidate.get("text") or "",
         unresolved_keywords=_collect_unresolved_field_keywords(
             expected_schema=expected_schema,
             field_status=field_status,
         ),
+        allow_date_signal=bool(numeric_date_hints),
     )
     strong_source = bool(source_tier >= 2 or url_score >= 0.55 or authority_score >= 0.45)
     strong_relevance = bool(
@@ -7082,6 +7116,104 @@ def _build_allowed_keys_json_schema(
     }
 
 
+def _structured_output_schema_candidates(
+    model: Any,
+    *,
+    schema_wrapper: Dict[str, Any],
+    backend_hint: Optional[str] = None,
+) -> Tuple[str, List[Dict[str, Any]], List[Dict[str, Any]]]:
+    backend = _selector_model_backend_for_extraction(model, backend_hint=backend_hint)
+    schema_name = str(schema_wrapper.get("name") or "asa_schema_extract").strip() or "asa_schema_extract"
+    json_schema = schema_wrapper.get("schema") or {}
+    if not isinstance(json_schema, dict):
+        json_schema = {}
+    wrapped_schema = {
+        "name": schema_name,
+        "schema": dict(json_schema),
+    }
+    titled_schema = dict(json_schema)
+    if "title" not in titled_schema:
+        titled_schema["title"] = schema_name
+
+    structured_specs: List[Dict[str, Any]] = []
+    if backend == "openai":
+        structured_specs.extend([
+            {
+                "schema_mode": "wrapped_json_schema",
+                "args": (wrapped_schema,),
+                "kwargs": {"method": "json_schema"},
+            },
+            {
+                "schema_mode": "titled_json_schema",
+                "args": (titled_schema,),
+                "kwargs": {"method": "json_schema"},
+            },
+            {
+                "schema_mode": "wrapped_default",
+                "args": (wrapped_schema,),
+                "kwargs": {},
+            },
+            {
+                "schema_mode": "titled_default",
+                "args": (titled_schema,),
+                "kwargs": {},
+            },
+            {
+                "schema_mode": "kw_wrapped_json_schema",
+                "args": (),
+                "kwargs": {"schema": wrapped_schema, "method": "json_schema"},
+            },
+            {
+                "schema_mode": "kw_titled_json_schema",
+                "args": (),
+                "kwargs": {"schema": titled_schema, "method": "json_schema"},
+            },
+        ])
+    else:
+        structured_specs.extend([
+            {
+                "schema_mode": "bare_json_schema",
+                "args": (json_schema,),
+                "kwargs": {"method": "json_schema"},
+            },
+            {
+                "schema_mode": "bare_default",
+                "args": (json_schema,),
+                "kwargs": {},
+            },
+            {
+                "schema_mode": "kw_bare_json_schema",
+                "args": (),
+                "kwargs": {"schema": json_schema, "method": "json_schema"},
+            },
+            {
+                "schema_mode": "kw_bare_default",
+                "args": (),
+                "kwargs": {"schema": json_schema},
+            },
+            {
+                "schema_mode": "wrapped_json_schema",
+                "args": (wrapped_schema,),
+                "kwargs": {"method": "json_schema"},
+            },
+        ])
+
+    bind_specs: List[Dict[str, Any]] = [{
+        "schema_mode": "response_format_json_schema",
+        "kwargs": {
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": schema_name,
+                    "strict": True,
+                    "schema": json_schema,
+                },
+            },
+        },
+    }]
+    return backend, structured_specs, bind_specs
+
+
 def _coerce_structured_output_payload(raw: Any) -> Dict[str, Any]:
     if isinstance(raw, dict):
         return raw
@@ -7187,12 +7319,17 @@ def _invoke_structured_selector_model_with_timeout(
     page_url: Any,
     max_output_tokens: int = 180,
     timeout_s: float = 0.0,
+    backend_hint: Optional[str] = None,
 ) -> Dict[str, Any]:
     schema_wrapper = _build_allowed_keys_json_schema(
         allowed_keys=allowed_keys,
         expected_schema=expected_schema,
     )
-    json_schema = schema_wrapper.get("schema") or {}
+    structured_backend, structured_specs, bind_specs = _structured_output_schema_candidates(
+        model,
+        schema_wrapper=schema_wrapper,
+        backend_hint=backend_hint,
+    )
     timeout_value = 0.0
     try:
         timeout_value = float(timeout_s or 0.0)
@@ -7201,17 +7338,16 @@ def _invoke_structured_selector_model_with_timeout(
 
     def _invoke_once() -> Dict[str, Any]:
         last_error = "structured_output_unavailable"
+        last_schema_mode = ""
         with_structured_output = getattr(model, "with_structured_output", None)
         if callable(with_structured_output):
-            builders = (
-                lambda: with_structured_output(json_schema, method="json_schema"),
-                lambda: with_structured_output(json_schema),
-                lambda: with_structured_output(schema=json_schema, method="json_schema"),
-                lambda: with_structured_output(schema=json_schema),
-            )
-            for builder in builders:
+            for spec in structured_specs:
+                last_schema_mode = str(spec.get("schema_mode") or "").strip()
                 try:
-                    structured_model = builder()
+                    structured_model = with_structured_output(
+                        *(tuple(spec.get("args") or ())),
+                        **dict(spec.get("kwargs") or {}),
+                    )
                     response = _invoke_model_with_output_cap(
                         structured_model,
                         messages,
@@ -7229,6 +7365,8 @@ def _invoke_structured_selector_model_with_timeout(
                             "payload": payload,
                             "error": None,
                             "method": "with_structured_output",
+                            "backend": structured_backend,
+                            "schema_mode": last_schema_mode,
                             **payload_meta,
                         }
                     if bool(payload_meta.get("payload_filtered_all_keys", False)):
@@ -7237,6 +7375,8 @@ def _invoke_structured_selector_model_with_timeout(
                             "payload": {},
                             "error": "payload_filtered_all_keys",
                             "method": "with_structured_output",
+                            "backend": structured_backend,
+                            "schema_mode": last_schema_mode,
                             **payload_meta,
                         }
                     return {
@@ -7244,6 +7384,8 @@ def _invoke_structured_selector_model_with_timeout(
                         "payload": {},
                         "error": "provider_empty_payload",
                         "method": "with_structured_output",
+                        "backend": structured_backend,
+                        "schema_mode": last_schema_mode,
                         **payload_meta,
                     }
                 except Exception as exc:
@@ -7251,22 +7393,10 @@ def _invoke_structured_selector_model_with_timeout(
 
         bind_method = getattr(model, "bind", None)
         if callable(bind_method):
-            response_formats = (
-                {
-                    "response_format": {
-                        "type": "json_schema",
-                        "json_schema": {
-                            "name": schema_wrapper.get("name") or "asa_schema_extract",
-                            "strict": True,
-                            "schema": json_schema,
-                        },
-                    }
-                },
-                {"response_format": {"type": "json_object"}},
-            )
-            for kwargs in response_formats:
+            for spec in bind_specs:
+                last_schema_mode = str(spec.get("schema_mode") or "").strip()
                 try:
-                    bound_model = bind_method(**kwargs)
+                    bound_model = bind_method(**dict(spec.get("kwargs") or {}))
                     response = _invoke_model_with_output_cap(
                         bound_model,
                         messages,
@@ -7284,6 +7414,8 @@ def _invoke_structured_selector_model_with_timeout(
                             "payload": payload,
                             "error": None,
                             "method": "response_format",
+                            "backend": structured_backend,
+                            "schema_mode": last_schema_mode,
                             **payload_meta,
                         }
                     if bool(payload_meta.get("payload_filtered_all_keys", False)):
@@ -7292,6 +7424,8 @@ def _invoke_structured_selector_model_with_timeout(
                             "payload": {},
                             "error": "payload_filtered_all_keys",
                             "method": "response_format",
+                            "backend": structured_backend,
+                            "schema_mode": last_schema_mode,
                             **payload_meta,
                         }
                     return {
@@ -7299,6 +7433,8 @@ def _invoke_structured_selector_model_with_timeout(
                         "payload": {},
                         "error": "provider_empty_payload",
                         "method": "response_format",
+                        "backend": structured_backend,
+                        "schema_mode": last_schema_mode,
                         **payload_meta,
                     }
                 except Exception as exc:
@@ -7309,6 +7445,8 @@ def _invoke_structured_selector_model_with_timeout(
             "payload": {},
             "error": last_error,
             "method": "",
+            "backend": structured_backend,
+            "schema_mode": last_schema_mode,
             "raw_key_count": 0,
             "raw_nonempty_key_count": 0,
             "accepted_key_count": 0,
@@ -7324,6 +7462,8 @@ def _invoke_structured_selector_model_with_timeout(
                 "payload": {},
                 "error": f"structured_output_error:{exc}",
                 "method": "",
+                "backend": structured_backend,
+                "schema_mode": "",
                 "raw_key_count": 0,
                 "raw_nonempty_key_count": 0,
                 "accepted_key_count": 0,
@@ -7341,6 +7481,8 @@ def _invoke_structured_selector_model_with_timeout(
                 "payload": {},
                 "error": f"structured_output_error:{exc}",
                 "method": "",
+                "backend": structured_backend,
+                "schema_mode": "",
                 "raw_key_count": 0,
                 "raw_nonempty_key_count": 0,
                 "accepted_key_count": 0,
@@ -7357,6 +7499,8 @@ def _invoke_structured_selector_model_with_timeout(
             "payload": {},
             "error": "provider_timeout",
             "method": "",
+            "backend": structured_backend,
+            "schema_mode": "",
             "raw_key_count": 0,
             "raw_nonempty_key_count": 0,
             "accepted_key_count": 0,
@@ -7368,6 +7512,8 @@ def _invoke_structured_selector_model_with_timeout(
             "payload": {},
             "error": f"structured_output_error:{exc}",
             "method": "",
+            "backend": structured_backend,
+            "schema_mode": "",
             "raw_key_count": 0,
             "raw_nonempty_key_count": 0,
             "accepted_key_count": 0,
@@ -16803,6 +16949,8 @@ def _llm_extract_schema_payloads_from_openwebpages(
         "structured_output_calls": 0,
         "structured_output_errors": 0,
         "structured_output_last_error": "",
+        "structured_output_backend": "",
+        "structured_output_schema_mode": "",
         "deterministic_fallback_calls": 0,
         "deterministic_fallback_payloads": 0,
         "deterministic_fallback_no_payload": 0,
@@ -17030,7 +17178,7 @@ def _llm_extract_schema_payloads_from_openwebpages(
                         "role": "system",
                         "content": (
                             "Extract structured schema field values from the provided webpage text. "
-                            "Only include explicit concrete values for allowed keys."
+                            "Return a JSON object using only the allowed keys and only explicit concrete values."
                         ),
                     },
                     {
@@ -17050,7 +17198,14 @@ def _llm_extract_schema_payloads_from_openwebpages(
                 page_url=page_url,
                 max_output_tokens=max(64, int(max_output_tokens)),
                 timeout_s=timeout_s,
+                backend_hint=selector_backend,
             )
+            metadata["structured_output_backend"] = str(
+                (structured_result or {}).get("backend") or selector_backend or ""
+            ).strip()
+            metadata["structured_output_schema_mode"] = str(
+                (structured_result or {}).get("schema_mode") or ""
+            ).strip()
             structured_payload = structured_result.get("payload") if isinstance(structured_result, dict) else {}
             if isinstance(structured_payload, dict) and structured_payload:
                 _emit_payload(structured_payload)
@@ -17235,6 +17390,8 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "structured_output_calls": 0,
         "structured_output_errors": 0,
         "structured_output_last_error": "",
+        "structured_output_backend": "",
+        "structured_output_schema_mode": "",
         "structured_output_elapsed_ms_total": 0,
         "structured_output_elapsed_ms_max": 0,
         "structured_output_timeout_elapsed_ms_total": 0,
@@ -17303,6 +17460,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
     use_selector_fallback = engine in {"legacy", "deterministic_then_legacy"}
     use_langextract = engine == "langextract"
     use_structured_output = engine == "triage_then_structured"
+    selector_backend = _selector_model_backend_for_extraction(
+        selector_model,
+        backend_hint=langextract_backend_hint,
+    )
 
     max_chars_int = max(256, int(max_chars or 2000))
     candidate_map: Dict[str, Dict[str, Any]] = {}
@@ -17647,7 +17808,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                         "role": "system",
                         "content": (
                             "Extract structured schema field values from the provided text snippet. "
-                            "Only include explicit concrete values for allowed keys."
+                            "Return a JSON object using only the allowed keys and only explicit concrete values."
                         ),
                     },
                     {
@@ -17667,7 +17828,14 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 page_url=page_url,
                 max_output_tokens=max(64, int(max_output_tokens)),
                 timeout_s=timeout_s,
+                backend_hint=selector_backend,
             )
+            metadata["structured_output_backend"] = str(
+                (structured_result or {}).get("backend") or selector_backend or ""
+            ).strip()
+            metadata["structured_output_schema_mode"] = str(
+                (structured_result or {}).get("schema_mode") or ""
+            ).strip()
             _structured_output_elapsed_ms = max(
                 0,
                 int(round((time.perf_counter() - _structured_output_started) * 1000.0)),

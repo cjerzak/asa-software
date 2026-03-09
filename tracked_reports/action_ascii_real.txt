@@ -1,7 +1,7 @@
 AGENT ACTION MAP
 ================
-Steps captured: 28
-LangGraph timed steps: 20
+Steps captured: 25
+LangGraph timed steps: 16
 
 INVESTIGATOR SIGNALS
 --------------------
@@ -15,26 +15,26 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 12 tool-call turn(s), 1 answer turn(s)
-      Tool results: 16 total (Tool Search=9, Tool OpenWebpage...e_plan=2, Tool save_finding=1)
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 18 total (Tool Search=10, Tool OpenWebpag...finding=2, Tool update_plan=2)
       Structured terminal answer emitted
       Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
-      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=3, OFF_TOPIC_RESULT=0)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=2, OFF_TOPIC_RESULT=1)
 
 START
   +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 5.3338m (tok=0, n=9)
-      agent: 0.7152m (tok=55219, n=9)
-      finalize: 0.3119m (tok=14366, n=1)
-      planner: 0.1782m (tok=1828, n=1)
+      tools: 5.7369m (tok=0, n=7)
+      agent: 0.5669m (tok=40065, n=7)
+      finalize: 0.4786m (tok=13242, n=1)
+      planner: 0.1539m (tok=1595, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #11 tools: 1.6169m (tok=0)
-      #13 tools: 1.0398m (tok=0)
-      #15 tools: 0.8504m (tok=0)
-      #19 tools: 0.6645m (tok=0)
-      #17 tools: 0.6050m (tok=0)
-  +-- [TIMING] wall=6.3623m nodes=6.5391m delta=-0.1768m (overlap likely)
+      #15 tools: 1.6191m (tok=0)
+      #03 tools: 0.9872m (tok=0)
+      #13 tools: 0.9667m (tok=0)
+      #07 tools: 0.8309m (tok=0)
+      #05 tools: 0.7045m (tok=0)
+  +-- [TIMING] wall=6.7839m nodes=6.9362m delta=-0.1523m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -54,124 +54,110 @@ START
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconi, dip...rio </URL> __END_OF_SOURC...
+      detail: __START_OF_SOURCE 1__ <CONTENT> A map ofBoliviahighligh...ven </URL> __END_OF_SOURC...
   +-- [05] Requested 1 tool call (OpenWebpage)
       by: AI
       tok: in=0 out=0 total=0
       min: n/a
-      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
+      detail: OpenWebpage(url=https://woborders.blog/201...pnis-year-seven)
   +-- [06] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
-  +-- [07] Requested 1 tool call (OpenWebpage)
+      detail: URL: https://woborders.blog/2017/07/13/tipnis-year-seve...rights/] / Space and Terr...
+  +-- [07] Requested 1 tool call (Search)
       by: AI
       tok: in=0 out=0 total=0
       min: n/a
-      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
+      detail: Search(query=Ramona Moye Camaconi biografía educación ...)
   +-- [08] Returned result
-      by: Tool OpenWebpage
+      by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
-  +-- [09] Requested 1 tool call (save_finding)
+      detail: __START_OF_SOURCE 1__ <CONTENT> La ComandantaRamona(Chi...ia </URL> __END_OF_SOURCE...
+  +-- [09] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=1663 out=242 total=1905
-      min: 0.2129m
-      detail: save_finding(finding=birth_year = 1982 (source:...lamentario=609), category=fact)
+      tok: in=1663 out=245 total=1908
+      min: 0.1897m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=428)
   +-- [10] Returned result
-      by: Tool save_finding
+      by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
-  +-- [11] Requested 1 tool call (Search)
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...c. en Ciencias de la Educ...
+  +-- [11] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=3394 out=84 total=3478
-      min: 0.0302m
-      detail: Search(query=Ramona Moye Camaconi biografia estudios o...)
+      tok: in=3237 out=83 total=3320
+      min: 0.0263m
+      detail: OpenWebpage(url=https://www.biodiversidadl...gena-de-Bolivia)
   +-- [12] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...le </URL> __END_OF_SOURCE...
-  +-- [13] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=3999 out=246 total=4245
-      min: 0.0363m
-      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
-  +-- [14] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
-  +-- [15] Requested 1 tool call (Search)
+      detail: URL: https://www.biodiversidadla.org/Documentos/El-Tipn...lexander Vidal y Pablo Ca...
+  +-- [13] Requested 2 tool calls (update_plan, Search)
       by: AI
-      tok: in=4441 out=64 total=4505
-      min: 0.0419m
-      detail: Search(query=Ramona Moye Camaconi "lugar de nacimiento...)
-  +-- [16] Returned result
-      by: Tool Search
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Preguntas de jóv...ga </URL> __END_OF_SOURCE...
-  +-- [17] Requested 1 tool call (OpenWebpage)
-      by: AI
-      tok: in=5541 out=439 total=5980
-      min: 0.0522m
-      detail: OpenWebpage(url=https://www.italotribu.org...abuelo-italiano)
-  +-- [18] Returned result
-      by: Tool OpenWebpage
-      tok: in=0 out=0 total=0
-      min: n/a
-      detail: URL: https://www.italotribu.org/ciudadania-italiana/com.../] CIUDADANÍA ITALIANA EN...
-  +-- [19] Requested 2 tool calls (update_plan, Search)
-      by: AI
-      tok: in=7543 out=592 total=8135
-      min: 0.0747m
+      tok: in=5378 out=435 total=5813
+      min: 0.0626m
       detail: update_plan(status=in_progress, step_id=2) | Search(que...encia.gob.bo "Ramona Moye...
-  +-- [20] Returned result
+  +-- [14] Returned result
       by: Tool update_plan
       tok: in=0 out=0 total=0
       min: n/a
       detail: Plan step 2 updated to 'in_progress'
-  +-- [21] Returned result
+  +-- [15] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-  +-- [22] Requested 1 tool call (Search)
+  +-- [16] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=7696 out=928 total=8624
-      min: 0.0933m
-      detail: Search(query=Ramona Moye Camaconi "lugar de nacimiento...)
-  +-- [23] Returned result
+      tok: in=5507 out=664 total=6171
+      min: 0.0841m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=609)
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
+  +-- [18] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=6077 out=703 total=6780
+      min: 0.0744m
+      detail: save_finding(finding=birth_year = 1982 (source:...lamen...bo "Ramona Moye Camaconi"...
+  +-- [19] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...mentario&id_parlamentario...
+  +-- [20] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-  +-- [24] Requested 1 tool call (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...oni </URL> __END_OF_SOURC...
+  +-- [21] Requested 3 tool calls (Search)
       by: AI
-      tok: in=7739 out=835 total=8574
-      min: 0.0929m
-      detail: Search(query=Ramona Moye Camaconi "lugar de nacimiento...)
-  +-- [25] Returned result
+      tok: in=6723 out=471 total=7194
+      min: 0.0553m
+      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient....maconi" TIPNIS biografía ...
+  +-- [22] Returned 3 results
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Egan Bernal y lo...46 </URL> __END_OF_SOURCE...
-  +-- [26] Requested 3 tool calls (Search)
+      detail: __START_OF_SOURCE 1__ <CONTENT> Ramona Moye Camaconiis ...956 </URL> __END_OF_SOURC...
+  +-- [23] Requested 3 tool calls (Search)
       by: AI
-      tok: in=9205 out=568 total=9773
-      min: 0.0807m
-      detail: Search(query=site:oep.org.bo "Ramona Moye Camaconi") | ...maconi" biografía TIPNIS ...
-  +-- [27] Returned 3 results
+      tok: in=8437 out=442 total=8879
+      min: 0.0745m
+      detail: Search(query="Ramona Moye Camaconi" biografía educació....maconi" nacida en TIPNIS ...
+  +-- [24] Returned 3 results
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...as= </URL> __END_OF_SOURC...
-  +-- [28] Produced structured answer
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
+  +-- [25] Produced structured answer
       by: AI
-      tok: in=11475 out=2891 total=14366
-      min: 0.3119m
+      tok: in=9521 out=3721 total=13242
+      min: 0.4786m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_level_source":n...cial parliamentary profil...
+      detail: {"education_level":"Unknown","education_level_source":n...licy_demotion_unverified(...
 END

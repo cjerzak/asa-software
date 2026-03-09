@@ -331,6 +331,74 @@ test_that("entity overlap alone does not permit direct structured snippet extrac
   expect_equal(as.character(out_r[[2]]), "low_information")
 })
 
+test_that("date-only snippets do not count as direct extraction evidence for non-date fields", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  out <- core$`_search_snippet_supports_direct_extraction`(
+    candidate = list(
+      url = "https://profiles.example.net/ada",
+      source_tier = 2L,
+      url_score = 0.70,
+      authority_score = 0.60,
+      entity_ratio = 0.95,
+      field_hint_score = 0,
+      query_intent_quoted_phrase_hits = 0L,
+      extraction_text = "Ada Lovelace 1815-12-10 biography overview."
+    ),
+    expected_schema = list(
+      prior_occupation = "string|Unknown",
+      prior_occupation_source = "string|null"
+    ),
+    field_status = list(
+      prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+      prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+    )
+  )
+
+  out_r <- reticulate::py_to_r(out)
+  expect_false(isTRUE(out_r[[1]]))
+  expect_equal(as.character(out_r[[2]]), "low_information")
+})
+
+test_that("structured date evidence still permits direct extraction when date-like fields remain unresolved", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  out <- core$`_search_snippet_supports_direct_extraction`(
+    candidate = list(
+      url = "https://www.example.gov/profile/ada-lovelace",
+      source_tier = 3L,
+      url_score = 0.92,
+      authority_score = 0.91,
+      entity_ratio = 0.62,
+      field_hint_score = 0,
+      query_intent_quoted_phrase_hits = 0L,
+      extraction_text = "Ada Lovelace was born in London on December 10, 1815. Occupation: mathematician."
+    ),
+    expected_schema = list(
+      birth_year = "integer|null|Unknown",
+      birth_year_source = "string|null",
+      prior_occupation = "string|Unknown",
+      prior_occupation_source = "string|null"
+    ),
+    field_status = list(
+      birth_year = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+      birth_year_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L),
+      prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+      prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+    )
+  )
+
+  out_r <- reticulate::py_to_r(out)
+  expect_true(isTRUE(out_r[[1]]))
+  expect_equal(as.character(out_r[[2]]), "eligible")
+})
+
 test_that("snippet escalation gate rejects weak generic candidates", {
   python_path <- asa_test_skip_if_no_python(
     required_files = "asa_backend/graph/agent_graph_core.py",
@@ -639,6 +707,53 @@ test_that("triage_then_structured uses structured output after deterministic mis
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_with_calls`)), 1L)
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_invoke_calls`)), 1L)
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_legacy_calls`)), 0L)
+})
+
+test_that("openai structured helper passes a named schema instead of the bare inner schema", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  reticulate::py_run_string(paste0(
+    "_asa_structured_schema_calls = []\n",
+    "class _ASAStructuredSchemaInvoker:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        return {'birth_year': 1815}\n",
+    "class _ASAStructuredSchemaModel:\n",
+    "    def with_structured_output(self, *args, **kwargs):\n",
+    "        schema = kwargs.get('schema', args[0] if args else None)\n",
+    "        method = kwargs.get('method')\n",
+    "        _asa_structured_schema_calls.append({'schema': schema, 'method': method})\n",
+    "        return _ASAStructuredSchemaInvoker()\n",
+    "_asa_structured_schema_model = _ASAStructuredSchemaModel()\n"
+  ))
+
+  out <- core$`_invoke_structured_selector_model_with_timeout`(
+    model = reticulate::py$`_asa_structured_schema_model`,
+    messages = list(
+      list(role = "system", content = "Return a JSON object only."),
+      list(role = "user", content = "{\"page_text\":\"Ada Lovelace was born in 1815.\"}")
+    ),
+    expected_schema = list(
+      birth_year = "integer|null|Unknown",
+      birth_year_source = "string|null"
+    ),
+    allowed_keys = list("birth_year", "birth_year_source"),
+    page_url = "https://www.example.gov/profile/ada-lovelace",
+    backend_hint = "openai"
+  )
+
+  out_r <- reticulate::py_to_r(out)
+  calls <- reticulate::py_to_r(reticulate::py$`_asa_structured_schema_calls`)
+
+  expect_true(isTRUE(out_r$ok))
+  expect_equal(as.integer(out_r$payload$birth_year), 1815L)
+  expect_equal(length(calls), 1L)
+  expect_equal(as.character(calls[[1]]$method), "json_schema")
+  expect_equal(as.character(calls[[1]]$schema$name), "asa_schema_extract")
+  expect_true(is.list(calls[[1]]$schema$schema))
+  expect_false("type" %in% names(calls[[1]]$schema))
 })
 
 test_that("triage_then_structured skips structured calls when snippet timeout circuit is open", {

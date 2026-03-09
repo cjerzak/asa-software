@@ -296,6 +296,12 @@ asa_test_require_gemini_key <- function() {
   api_key
 }
 
+asa_test_require_openai_key <- function() {
+  api_key <- Sys.getenv("OPENAI_API_KEY", unset = "")
+  skip_if_not(nzchar(api_key), "No OPENAI_API_KEY available")
+  api_key
+}
+
 asa_test_require_openai_or_groq_key <- function() {
   if (nzchar(Sys.getenv("OPENAI_API_KEY"))) {
     return(list(backend = "openai", model = "gpt-4.1-mini",

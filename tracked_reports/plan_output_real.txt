@@ -13,7 +13,7 @@
       "description": "Collect high-signal evidence from relevant tools/sources",
       "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
       "status": "completed",
-      "findings": "Found birth_year (1982) and prior_occupation (Presidenta de la Organización de Mujeres - Sub Central Sécure). Need birth_place, education details, and disability/LGBTQ status."
+      "findings": "Found that Ramona Moye Camaconi is an indigenous leader from TIPNIS and a former Deputy for MAS in Beni. Need specific biographical details like birth year, place, and education."
     },
     {
       "id": 3,
