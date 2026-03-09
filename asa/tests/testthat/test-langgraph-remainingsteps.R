@@ -3351,6 +3351,72 @@ test_that("terminal canonical rewrites recalculate confidence and justification 
   expect_match(as.character(parsed$justification), "resolved 1 core fields", fixed = TRUE)
 })
 
+test_that("terminal canonical guard preserves concrete model scalars for soft unresolved fields without provenance requirements", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  expected_schema <- list(
+    country = "string",
+    divisions = list("string"),
+    count = "integer"
+  )
+
+  field_status <- list(
+    country = list(
+      status = "unknown",
+      value = "Unknown",
+      descriptor = "string",
+      evidence = "recovery_blocked_no_candidates",
+      attempts = 2L
+    ),
+    count = list(
+      status = "unknown",
+      value = NULL,
+      descriptor = "integer",
+      evidence = "high_conflict_demotion",
+      attempts = 2L
+    )
+  )
+
+  response <- list(
+    role = "assistant",
+    content = paste0(
+      "{\"country\":\"Vietnam\",",
+      "\"divisions\":[\"An Giang\",\"Hanoi\",\"Ho Chi Minh City\"],",
+      "\"count\":3}"
+    )
+  )
+
+  guarded <- prod$`_apply_field_status_terminal_guard`(
+    response = response,
+    expected_schema = expected_schema,
+    field_status = field_status,
+    schema_source = "explicit",
+    context = "finalize",
+    debug = FALSE
+  )
+
+  guarded_response <- guarded[[1]]
+  guarded_event <- guarded[[2]]
+  guarded_text <- if (!is.null(guarded_response$content)) {
+    as.character(guarded_response$content)
+  } else {
+    as.character(guarded_response[["content"]])
+  }
+  parsed <- jsonlite::fromJSON(guarded_text)
+
+  expect_equal(as.character(parsed$country), "Vietnam")
+  expect_equal(as.integer(parsed$count), 3L)
+  expect_equal(as.character(parsed$divisions), c("An Giang", "Hanoi", "Ho Chi Minh City"))
+  expect_equal(as.character(guarded_event$repair_reason), "field_status_canonical")
+  expect_equal(as.character(guarded_event$repair_variant), "preserve_model_values")
+  expect_equal(as.integer(guarded_event$preserved_model_values_count), 2L)
+  expect_true(all(c("country", "count") %in% as.character(guarded_event$preserved_model_values_sample)))
+})
+
 test_that("terminal promotion requires source text support for non-source values", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 

@@ -12536,6 +12536,99 @@ def _metadata_base_field_key(key: Any) -> Optional[str]:
     return base_key
 
 
+_TERMINAL_GUARD_SOFT_PRESERVE_REASONS = {
+    "recovery_blocked_no_candidates",
+    "high_conflict_demotion",
+}
+
+
+def _set_payload_path_value(payload: Any, path: str, value: Any) -> bool:
+    """Set a dotted object path inside a JSON payload."""
+    if not isinstance(payload, dict) or not path:
+        return False
+
+    parts = [part for part in path.replace("[]", "").split(".") if part]
+    if not parts:
+        return False
+
+    current = payload
+    for part in parts[:-1]:
+        child = current.get(part)
+        if not isinstance(child, dict):
+            return False
+        current = child
+
+    current[parts[-1]] = _json_safe_value(value)
+    return True
+
+
+def _preserve_model_scalars_for_soft_unknowns(
+    canonical_payload: Any,
+    model_payload: Any,
+    expected_schema: Any,
+    field_status: Any,
+) -> tuple[Any, List[str]]:
+    """Preserve concrete model scalars when canonicalization would only degrade them."""
+    if expected_schema is None:
+        return canonical_payload, []
+    if not isinstance(canonical_payload, dict) or not isinstance(model_payload, dict):
+        return canonical_payload, []
+
+    normalized = _normalize_field_status_map(field_status, expected_schema)
+    if not normalized:
+        return canonical_payload, []
+
+    try:
+        leaf_paths = list(_schema_leaf_paths(expected_schema))
+    except Exception:
+        return canonical_payload, []
+
+    schema_leaf_set = {path for path, _ in leaf_paths}
+    preserved: List[str] = []
+
+    for path, descriptor in leaf_paths:
+        if not path or "[]" in path:
+            continue
+
+        key = path.rsplit(".", 1)[-1] if path else ""
+        if (
+            key in {"confidence", "justification"}
+            or key.endswith("_source")
+            or key.endswith("_confidence")
+        ):
+            continue
+        if f"{path}_source" in schema_leaf_set:
+            continue
+
+        entry = _field_status_entry_for_path(normalized, path)
+        if _field_unknown_reason(entry) not in _TERMINAL_GUARD_SOFT_PRESERVE_REASONS:
+            continue
+
+        present_model, model_value = _lookup_path_with_presence(model_payload, path)
+        if not present_model:
+            continue
+        model_value = _coerce_found_value_for_descriptor(model_value, descriptor)
+        if _is_empty_like(model_value) or _is_unknown_marker(model_value):
+            continue
+        if not _value_schema_compatible(model_value, descriptor):
+            continue
+
+        present_canonical, canonical_value = _lookup_path_with_presence(canonical_payload, path)
+        if present_canonical:
+            canonical_value = _coerce_found_value_for_descriptor(canonical_value, descriptor)
+        if (
+            present_canonical
+            and not _is_empty_like(canonical_value)
+            and not _is_unknown_marker(canonical_value)
+        ):
+            continue
+
+        if _set_payload_path_value(canonical_payload, path, model_value):
+            preserved.append(path)
+
+    return canonical_payload, preserved
+
+
 def _merge_canonical_payload_with_model_arrays(
     canonical_payload: Any,
     model_payload: Any,
@@ -12780,6 +12873,7 @@ def _apply_field_status_terminal_guard(
     merged_payload = payload
     normalized_fs = _normalize_field_status_map(field_status, expected_schema)
     grounding_changed = False
+    preserved_model_paths: List[str] = []
     if current_text:
         try:
             parsed_current = parse_llm_json(current_text)
@@ -12790,6 +12884,12 @@ def _apply_field_status_terminal_guard(
                 payload,
                 parsed_current,
                 expected_schema,
+            )
+            merged_payload, preserved_model_paths = _preserve_model_scalars_for_soft_unknowns(
+                merged_payload,
+                parsed_current,
+                expected_schema,
+                normalized_fs,
             )
             grounding_changed = _payload_grounding_changed(
                 parsed_current,
@@ -12826,6 +12926,13 @@ def _apply_field_status_terminal_guard(
     event = {
         "repair_applied": True,
         "repair_reason": "field_status_canonical",
+        "repair_variant": (
+            "preserve_model_values"
+            if preserved_model_paths
+            else "canonical_overwrite"
+        ),
+        "preserved_model_values_count": int(len(preserved_model_paths)),
+        "preserved_model_values_sample": preserved_model_paths[:8],
         "missing_keys_count": 0,
         "missing_keys_sample": [],
         "fallback_on_failure": True,
@@ -13462,6 +13569,10 @@ def _final_system_prompt(
         "4. MANDATORY: The FIELD STATUS section below is the authoritative record of resolved values.\n"
         "   For EVERY field marked 'found' in FIELD STATUS, you MUST use that exact value in your output.\n"
         "   Do NOT output 'Unknown' or null for any field that FIELD STATUS shows as 'found'.\n"
+        "   If a field is unresolved in FIELD STATUS, but the latest assistant JSON draft already has a concrete,\n"
+        "   schema-compatible value for that field and the schema does NOT require a sibling '<field>_source',\n"
+        "   keep that concrete value unless FIELD STATUS shows a source-backed contradiction.\n"
+        "   Do NOT replace such concrete values with Unknown/null solely because FIELD STATUS is unresolved.\n"
         "   Scratchpad is secondary notes only.\n"
         "5. Self-check: parseable JSON? All required keys present? No hallucinations?\n"
         "   Verify: does every 'found' field from FIELD STATUS appear with its value in your output?"
