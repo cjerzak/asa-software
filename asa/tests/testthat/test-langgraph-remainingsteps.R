@@ -1108,6 +1108,19 @@ test_that("shared router prioritizes pending tool calls when budget allows", {
     "    'messages': [AIMessage(content='old') for _ in range(35)] + [AIMessage(content='calling tool', tool_calls=[{'name':'Search','args':{'query':'ada'},'id':'edge_call_2'}])],\n",
     "    'remaining_steps': 3,\n",
     "    'token_trace': [{'node':'agent'} for _ in range(40)],\n",
+    "}\n",
+    "route_state_resolution_ready = {\n",
+    "    'messages': [AIMessage(content='calling tool', tool_calls=[{'name':'Search','args':{'query':'ada profile'},'id':'edge_call_3'}])],\n",
+    "    'remaining_steps': 2,\n",
+    "    'finalize_on_all_fields_resolved': True,\n",
+    "    'field_status': {\n",
+    "        'prior_occupation': {'status': 'found', 'value': 'Teacher', 'descriptor': 'string|Unknown'}\n",
+    "    },\n",
+    "}\n",
+    "route_state_budget_exhausted = {\n",
+    "    'messages': [AIMessage(content='calling tool', tool_calls=[{'name':'Search','args':{'query':'ada profile'},'id':'edge_call_4'}])],\n",
+    "    'remaining_steps': 2,\n",
+    "    'budget_state': {'budget_exhausted': True, 'tool_calls_used': 8, 'tool_calls_limit': 8},\n",
     "}\n"
   ))
 
@@ -1123,11 +1136,19 @@ test_that("shared router prioritizes pending tool calls when budget allows", {
   route_long <- prod$`_route_after_agent_step`(
     reticulate::py$route_state_long_history
   )
+  route_resolution_ready <- prod$`_route_after_agent_step`(
+    reticulate::py$route_state_resolution_ready
+  )
+  route_budget_exhausted <- prod$`_route_after_agent_step`(
+    reticulate::py$route_state_budget_exhausted
+  )
 
   expect_equal(as.character(route_ok), "tools")
   expect_equal(as.character(route_low), "finalize")
   expect_equal(as.character(route_zero), "end")
   expect_equal(as.character(route_long), "tools")
+  expect_equal(as.character(route_resolution_ready), "tools")
+  expect_equal(as.character(route_budget_exhausted), "finalize")
 })
 
 test_that("post-tools routing reserves a terminal step near recursion edge", {
@@ -2023,6 +2044,159 @@ test_that("finalize_answer node sanitizes residual tool calls after tools (stand
 
   expect_true(is.list(parsed))
   expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
+})
+
+test_that("standard agent executes feasible late Search instead of synthetic finalize skip", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "late_search_standard_calls = 0\n\n",
+    "def _late_search_standard(query: str) -> str:\n",
+    "    global late_search_standard_calls\n",
+    "    late_search_standard_calls += 1\n",
+    "    return 'late search result for ' + query\n\n",
+    "late_search_standard_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Late Search tool',\n",
+    "    func=_late_search_standard,\n",
+    ")\n\n",
+    "class _LateSearchStandardLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        if self.calls == 1:\n",
+    "            return AIMessage(\n",
+    "                content='need one more search',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'Ada Lovelace profile'},'id':'late_call_std_1'}],\n",
+    "            )\n",
+    "        return AIMessage(content='{\"name\":\"Ada Lovelace\"}')\n\n",
+    "late_search_standard_llm = _LateSearchStandardLLM()\n"
+  ))
+
+  agent <- prod$create_standard_agent(
+    model = reticulate::py$late_search_standard_llm,
+    tools = list(reticulate::py$late_search_standard_tool)
+  )
+
+  invoke <- asa_test_invoke_json_agent(
+    agent = agent,
+    expected_schema = list(name = "string|Unknown"),
+    expected_schema_source = "explicit",
+    input_state = list(
+      messages = list(list(role = "user", content = "Return JSON")),
+      field_status = list(
+        name = list(status = "unknown", value = "Unknown", attempts = 3L, descriptor = "string|Unknown")
+      ),
+      unknown_after_searches = 3L
+    ),
+    config = list(recursion_limit = 5L),
+    backend = "gemini"
+  )
+
+  final_state <- invoke$final_state
+  expect_equal(as.integer(reticulate::py$late_search_standard_llm$calls), 2L)
+  expect_equal(as.integer(reticulate::py$late_search_standard_calls), 1L)
+
+  repair_events <- reticulate::py_to_r(final_state$json_repair)
+  reasons <- character(0)
+  if (is.list(repair_events) && length(repair_events) > 0) {
+    reasons <- vapply(repair_events, function(ev) {
+      if (is.list(ev) && !is.null(ev$repair_reason)) as.character(ev$repair_reason) else NA_character_
+    }, character(1))
+  }
+  expect_false("synthetic_tool_skip_on_finalize" %in% reasons)
+
+  diagnostics <- tryCatch(reticulate::py_to_r(final_state$diagnostics), error = function(e) final_state$diagnostics)
+  finalization_status <- tryCatch(reticulate::py_to_r(final_state$finalization_status), error = function(e) final_state$finalization_status)
+  expect_equal(as.integer(diagnostics$forced_finalize_pending_tool_calls_count %||% 0L), 0L)
+  expect_equal(as.integer(finalization_status$forced_finalize_pending_tool_calls_count %||% 0L), 0L)
+})
+
+test_that("memory-folding agent executes feasible late Search instead of synthetic finalize skip", {
+  prod <- asa_test_import_langgraph_module(
+    "custom_ddg_production",
+    required_files = "custom_ddg_production.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n\n",
+    "late_search_memory_calls = 0\n\n",
+    "def _late_search_memory(query: str) -> str:\n",
+    "    global late_search_memory_calls\n",
+    "    late_search_memory_calls += 1\n",
+    "    return 'late search result for ' + query\n\n",
+    "late_search_memory_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Late Search tool',\n",
+    "    func=_late_search_memory,\n",
+    ")\n\n",
+    "class _LateSearchMemoryLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        if self.calls == 1:\n",
+    "            return AIMessage(\n",
+    "                content='need one more search',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'Ada Lovelace profile'},'id':'late_call_mem_1'}],\n",
+    "            )\n",
+    "        return AIMessage(content='{\"name\":\"Ada Lovelace\"}')\n\n",
+    "late_search_memory_llm = _LateSearchMemoryLLM()\n"
+  ))
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$late_search_memory_llm,
+    tools = list(reticulate::py$late_search_memory_tool),
+    message_threshold = 999L
+  )
+
+  invoke <- asa_test_invoke_json_agent(
+    agent = agent,
+    expected_schema = list(name = "string|Unknown"),
+    expected_schema_source = "explicit",
+    input_state = list(
+      messages = list(list(role = "user", content = "Return JSON")),
+      field_status = list(
+        name = list(status = "unknown", value = "Unknown", attempts = 3L, descriptor = "string|Unknown")
+      ),
+      unknown_after_searches = 3L,
+      summary = "",
+      archive = list()
+    ),
+    config = list(recursion_limit = 5L),
+    backend = "gemini"
+  )
+
+  final_state <- invoke$final_state
+  expect_equal(as.integer(reticulate::py$late_search_memory_llm$calls), 2L)
+  expect_equal(as.integer(reticulate::py$late_search_memory_calls), 1L)
+
+  repair_events <- reticulate::py_to_r(final_state$json_repair)
+  reasons <- character(0)
+  if (is.list(repair_events) && length(repair_events) > 0) {
+    reasons <- vapply(repair_events, function(ev) {
+      if (is.list(ev) && !is.null(ev$repair_reason)) as.character(ev$repair_reason) else NA_character_
+    }, character(1))
+  }
+  expect_false("synthetic_tool_skip_on_finalize" %in% reasons)
+
+  diagnostics <- tryCatch(reticulate::py_to_r(final_state$diagnostics), error = function(e) final_state$diagnostics)
+  finalization_status <- tryCatch(reticulate::py_to_r(final_state$finalization_status), error = function(e) final_state$finalization_status)
+  expect_equal(as.integer(diagnostics$forced_finalize_pending_tool_calls_count %||% 0L), 0L)
+  expect_equal(as.integer(finalization_status$forced_finalize_pending_tool_calls_count %||% 0L), 0L)
 })
 
 .stale_diagnostics_finalize_state <- function(msgs, unresolved_status = "unknown") {

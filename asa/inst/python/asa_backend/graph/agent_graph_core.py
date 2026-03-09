@@ -9961,6 +9961,7 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "structural_repair_retry_events",
         "finalization_invariant_failures",
         "tool_call_pairing_mismatches",
+        "forced_finalize_pending_tool_calls_count",
         "diagnostics_recovery_checkpoint_events",
         "diagnostics_recovery_retry_events",
         "quality_gate_recovery_events",
@@ -10011,6 +10012,10 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["recovery_rejected_fields_current"] = list(
         existing.get("recovery_rejected_fields_current")
         or existing.get("recovery_rejected_fields")
+        or []
+    )[:64]
+    out["forced_finalize_pending_tool_calls"] = list(
+        existing.get("forced_finalize_pending_tool_calls")
         or []
     )[:64]
     out["unknown_fields_current"] = list(
@@ -11464,6 +11469,7 @@ def _build_finalization_status(
     terminal_payload: Any,
     completion_gate: Any = None,
     repair_events: Optional[List[Dict[str, Any]]] = None,
+    forced_finalize_pending_tool_calls: Optional[List[str]] = None,
     context: str = "agent",
     canonicalization_version: str = "v2",
 ) -> Dict[str, Any]:
@@ -11478,6 +11484,11 @@ def _build_finalization_status(
         reason = str(event.get("repair_reason") or "").strip()
         if reason and reason not in repair_reasons:
             repair_reasons.append(reason)
+    forced_pending = [
+        str(value).strip()
+        for value in list(forced_finalize_pending_tool_calls or [])[:16]
+        if str(value).strip()
+    ]
     if isinstance(terminal_payload, (dict, list)) and _is_nonempty_payload(terminal_payload):
         payload_present = True
     else:
@@ -11516,6 +11527,8 @@ def _build_finalization_status(
         "quality_gate_passed": not bool(gate.get("quality_gate_triggered", False)),
         "repair_applied": bool(len(repair_reasons) > 0),
         "repair_reasons": repair_reasons,
+        "forced_finalize_pending_tool_calls_count": int(len(forced_pending)),
+        "forced_finalize_pending_tool_calls": forced_pending,
         "canonicalization_version": str(canonicalization_version),
         "policy_version": str(options.get("policy_version") or _DEFAULT_ORCHESTRATION_OPTIONS["policy_version"]),
     }
@@ -12816,7 +12829,6 @@ def _finalize_plan_statuses(plan: Any) -> Optional[Dict[str, Any]]:
     if not isinstance(steps, list):
         return finalized
 
-    next_pending = None
     status_changed = False
     for i, step in enumerate(steps):
         if not isinstance(step, dict):
@@ -12827,8 +12839,6 @@ def _finalize_plan_statuses(plan: Any) -> Optional[Dict[str, Any]]:
         if status == "in_progress":
             step["status"] = "completed"
             status_changed = True
-        if next_pending is None and str(step.get("status", "")).strip().lower() == "pending":
-            next_pending = step_id
 
     if status_changed:
         try:
@@ -12836,7 +12846,7 @@ def _finalize_plan_statuses(plan: Any) -> Optional[Dict[str, Any]]:
         except Exception:
             version = 0
         finalized["version"] = max(1, version + 1)
-    finalized["current_step"] = next_pending
+    finalized["current_step"] = _next_pending_plan_step_id(steps)
     return finalized
 
 
@@ -12854,6 +12864,73 @@ def _finalized_plan_history_entry(plan: Any) -> Optional[Dict[str, Any]]:
         "plan": finalized,
         "source": "finalize",
     }
+
+
+def _next_pending_plan_step_id(steps: Any) -> Any:
+    """Return the first pending step id, normalized consistently."""
+    if not isinstance(steps, list):
+        return None
+    for i, step in enumerate(steps):
+        if not isinstance(step, dict):
+            continue
+        step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+        if str(step.get("status", "")).strip().lower() == "pending":
+            return step_id
+    return None
+
+
+def _apply_plan_updates(
+    plan: Any,
+    plan_updates: Any,
+    *,
+    findings_max_chars: int = 500,
+) -> Optional[Dict[str, Any]]:
+    """Apply update_plan tool deltas without mutating the input plan."""
+    if not isinstance(plan, dict) or not isinstance(plan_updates, list) or not plan_updates:
+        return None
+
+    try:
+        current_plan = copy.deepcopy(plan)
+    except Exception:
+        current_plan = dict(plan)
+
+    steps = current_plan.get("steps", [])
+    if not isinstance(steps, list):
+        return None
+
+    changed = False
+    valid_statuses = {"in_progress", "completed", "skipped"}
+    for update in plan_updates:
+        if not isinstance(update, dict):
+            continue
+        step_id = _normalize_plan_step_id(update.get("step_id"))
+        if step_id is None:
+            continue
+        for i, step in enumerate(steps):
+            if not isinstance(step, dict):
+                continue
+            current_step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
+            if current_step_id != step_id:
+                continue
+            step["id"] = current_step_id
+            new_status = str(update.get("status", "")).strip().lower()
+            if new_status in valid_statuses and step.get("status") != new_status:
+                step["status"] = new_status
+                changed = True
+            findings_raw = update.get("findings")
+            if findings_raw:
+                findings_text = str(findings_raw)[: max(1, int(findings_max_chars))]
+                if step.get("findings") != findings_text:
+                    step["findings"] = findings_text
+                    changed = True
+            break
+
+    if not changed:
+        return None
+
+    current_plan["version"] = current_plan.get("version", 0) + 1
+    current_plan["current_step"] = _next_pending_plan_step_id(steps)
+    return current_plan
 
 
 def _extract_step_completion_criteria(step: dict) -> str:
@@ -15062,14 +15139,39 @@ def _tool_call_pairing_snapshot(report: Any) -> Dict[str, Any]:
     }
 
 
+def _pending_tool_call_records(
+    messages: Any,
+    *,
+    max_items: int = 8,
+) -> List[Dict[str, Any]]:
+    report = _tool_call_pairing_report(messages, max_items=max_items)
+    return list(report.get("unpaired_calls") or [])[: max(1, int(max_items))]
+
+
+def _pending_tool_call_labels(
+    messages: Any,
+    *,
+    max_items: int = 8,
+) -> List[str]:
+    labels: List[str] = []
+    for call in _pending_tool_call_records(messages, max_items=max_items):
+        call_id = str(call.get("id") or "").strip()
+        tool_name = str(call.get("raw_name") or call.get("name") or "tool").strip() or "tool"
+        label = f"{tool_name}:{call_id}" if call_id else tool_name
+        if label and label not in labels:
+            labels.append(label)
+        if len(labels) >= max(1, int(max_items)):
+            break
+    return labels
+
+
 def _build_synthetic_tool_skip_messages(
     messages: Any,
     *,
     max_items: int = 8,
 ) -> List[Any]:
     """Emit synthetic tool responses for unresolved tool calls before final JSON."""
-    report = _tool_call_pairing_report(messages, max_items=max_items)
-    unresolved_calls = list(report.get("unpaired_calls") or [])
+    unresolved_calls = _pending_tool_call_records(messages, max_items=max_items)
     if not unresolved_calls:
         return []
 
@@ -16174,8 +16276,13 @@ def _finalize_reason_for_state(state: Any) -> Optional[str]:
 
 
 def _can_route_tools_safely(state: Any, remaining: Optional[int]) -> bool:
-    """Require budget for a tool step plus one follow-up step."""
-    if _budget_or_resolution_finalize(state):
+    """Require actual budget for a tool step plus one follow-up step."""
+    budget = _state_budget(state)
+    if bool(budget.get("budget_exhausted", False)):
+        return False
+    if int(budget.get("tool_calls_remaining", 0) or 0) < 1:
+        return False
+    if _is_active_recursion_stop(state, remaining):
         return False
     if _is_critical_recursion_step(state, remaining):
         return False
@@ -16202,6 +16309,22 @@ def _can_end_on_recursion_stop(state: Any, messages: list, remaining: Optional[i
 def _no_budget_for_next_node(remaining: Optional[int]) -> bool:
     """Return True when LangGraph has no remaining steps for another node."""
     return remaining is not None and remaining <= 0
+
+
+def _should_sanitize_agent_response_at_cutoff(
+    state: Any,
+    response: Any,
+    *,
+    remaining: Optional[int] = None,
+) -> bool:
+    """Only sanitize tool-calling cutoff responses when another tool round is impossible."""
+    if remaining is None:
+        remaining = remaining_steps_value(state)
+    if not _is_within_finalization_cutoff(state, remaining):
+        return False
+    if not _extract_response_tool_calls(response):
+        return True
+    return not _can_route_tools_safely(state, remaining)
 
 
 def _should_finalize_after_terminal(state: Any) -> bool:
@@ -19497,39 +19620,8 @@ def _create_tool_node_with_scratchpad(
         # Apply plan updates if plan mode is enabled and the agent called update_plan.
         plan_mode_enabled = bool(state.get("use_plan_mode", False))
         if plan_updates and plan_mode_enabled and state.get("plan"):
-            import copy as _copy
-            current_plan = _copy.deepcopy(state["plan"])
-            steps = current_plan.get("steps", []) if isinstance(current_plan, dict) else []
-            changed = False
-            for update in plan_updates:
-                step_id = _normalize_plan_step_id(update.get("step_id"))
-                if step_id is None:
-                    continue
-                for i, step in enumerate(steps):
-                    if not isinstance(step, dict):
-                        continue
-                    current_step_id = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
-                    if current_step_id == step_id:
-                        step["id"] = current_step_id
-                        new_status = update.get("status", "")
-                        if new_status in ("in_progress", "completed", "skipped"):
-                            if step.get("status") != new_status:
-                                step["status"] = new_status
-                                changed = True
-                        if update.get("findings"):
-                            findings_text = str(update["findings"])[:500]
-                            if step.get("findings") != findings_text:
-                                step["findings"] = findings_text
-                                changed = True
-            if changed:
-                current_plan["version"] = current_plan.get("version", 0) + 1
-                # Advance current_step to next pending, else clear when all steps are done.
-                next_pending = None
-                for i, step in enumerate(steps):
-                    if isinstance(step, dict) and step.get("status") == "pending":
-                        next_pending = _normalize_plan_step_id(step.get("id"), fallback=i + 1)
-                        break
-                current_plan["current_step"] = next_pending
+            current_plan = _apply_plan_updates(state.get("plan"), plan_updates)
+            if isinstance(current_plan, dict):
                 result["plan"] = current_plan
                 result["plan_history"] = [{"version": current_plan["version"], "plan": current_plan}]
 
@@ -19863,6 +19955,252 @@ def _build_terminal_state_update(
     return out
 
 
+def _finalize_agent_node_response(
+    *,
+    state: Any,
+    response: Any,
+    messages: Any,
+    field_status: Dict[str, Dict[str, Any]],
+    budget_state: Dict[str, Any],
+    diagnostics: Dict[str, Any],
+    expected_schema: Any,
+    expected_schema_source: Optional[str],
+    source_policy: Any,
+    retry_policy: Any,
+    finalization_policy: Dict[str, Any],
+    field_rules: Any,
+    query_templates: Any,
+    orchestration_options: Dict[str, Any],
+    remaining: Optional[int],
+    node_started_at: float,
+    plan_mode_enabled: bool,
+    plan_updates: Any = None,
+    extra_fields: Optional[Dict[str, Any]] = None,
+    sync_terminal_response: Optional[
+        Callable[[Any, Dict[str, Dict[str, Any]]], Tuple[Any, Dict[str, Dict[str, Any]], Any]]
+    ] = None,
+    repair_events: Optional[List[Dict[str, Any]]] = None,
+    debug: bool = False,
+) -> Dict[str, Any]:
+    """Shared terminal-processing path for agent nodes after a model response."""
+    if sync_terminal_response is None:
+        raise ValueError("sync_terminal_response is required")
+
+    cutoff = _is_within_finalization_cutoff(state, remaining)
+    repair_event = None
+    canonical_event = None
+    status_repair_events = list(repair_events or [])
+
+    # Never rewrite intermediate tool-call turns as JSON payloads.
+    # Only repair terminal text responses.
+    if not _extract_response_tool_calls(response):
+        force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
+        response, repair_event = _repair_best_effort_json(
+            expected_schema,
+            response,
+            fallback_on_failure=force_fallback,
+            schema_source=expected_schema_source,
+            context="agent",
+            debug=debug,
+        )
+        # First sync the terminal payload into the ledger; enforce policies on
+        # the ledger; then canonicalize the terminal JSON from the ledger so
+        # emitted output matches post-policy field_status.
+        response, field_status, _ = sync_terminal_response(response, field_status)
+        field_status = _apply_configured_field_rules(field_status, field_rules)
+        if cutoff:
+            field_status = _enforce_finalization_policy_on_field_status(
+                field_status,
+                finalization_policy,
+            )
+        if force_fallback or cutoff:
+            response, canonical_event = _apply_field_status_terminal_guard(
+                response,
+                expected_schema,
+                field_status=field_status,
+                finalization_policy=finalization_policy,
+                schema_source=expected_schema_source,
+                context="agent",
+                debug=debug,
+            )
+            response, field_status, _ = sync_terminal_response(response, field_status)
+        budget_state.update(_field_status_progress(field_status))
+        diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
+
+    usage = _token_usage_dict_from_message(response)
+    state_for_gate = {
+        **state,
+        "messages": list(messages or []) + [response],
+        "field_status": field_status,
+        "budget_state": budget_state,
+        "diagnostics": diagnostics,
+    }
+    completion_gate = _schema_outcome_gate_report(
+        state_for_gate,
+        expected_schema=expected_schema,
+        field_status=field_status,
+        budget_state=budget_state,
+        diagnostics=diagnostics,
+    )
+    diagnostics = _apply_tool_call_pairing_diagnostics(
+        diagnostics,
+        ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
+    )
+    if bool(completion_gate.get("quality_gate_triggered", completion_gate.get("quality_gate_failed", False))):
+        diagnostics["quality_gate_failures"] = int(
+            diagnostics.get("quality_gate_failures", 0) or 0
+        ) + 1
+    diagnostics, budget_state = _record_finalization_recovery_checkpoint(
+        diagnostics,
+        completion_gate,
+        budget_state,
+        context="agent",
+    )
+    diagnostics, budget_state = _apply_quality_gate_recovery_budget(
+        diagnostics=diagnostics,
+        completion_gate=completion_gate,
+        budget_state=budget_state,
+        field_status=field_status,
+        finalization_policy=finalization_policy,
+    )
+    structural_events = list(status_repair_events or [])
+    if repair_event:
+        structural_events.append(repair_event)
+    if canonical_event:
+        structural_events.append(canonical_event)
+    structural_repair_event_count = sum(
+        1 for event in structural_events if _repair_event_is_structural(event)
+    )
+    if structural_repair_event_count > 0:
+        diagnostics["structural_repair_events"] = int(
+            diagnostics.get("structural_repair_events", 0) or 0
+        ) + int(structural_repair_event_count)
+    if bool(completion_gate.get("finalization_invariant_failed", False)):
+        diagnostics["finalization_invariant_failures"] = int(
+            diagnostics.get("finalization_invariant_failures", 0) or 0
+        ) + 1
+        reason_counts = diagnostics.get("finalization_invariant_failures_by_reason") or {}
+        if not isinstance(reason_counts, dict):
+            reason_counts = {}
+        reasons = [
+            str(reason).strip()
+            for reason in list(completion_gate.get("finalization_invariant_reasons") or [])
+            if str(reason).strip()
+        ]
+        if not reasons:
+            reasons = ["finalization_invariant_failed"]
+        for reason in reasons:
+            try:
+                reason_counts[reason] = max(0, int(reason_counts.get(reason, 0) or 0)) + 1
+            except Exception:
+                reason_counts[reason] = 1
+        diagnostics["finalization_invariant_failures_by_reason"] = reason_counts
+        blocking_fields = list(diagnostics.get("finalization_blocking_fields") or [])
+        for detail in _gate_blocking_field_details(completion_gate, max_items=64):
+            if not isinstance(detail, dict):
+                continue
+            field_name = str(detail.get("field") or "").strip()
+            if not field_name:
+                continue
+            if field_name not in blocking_fields:
+                blocking_fields.append(field_name)
+            if len(blocking_fields) >= 64:
+                break
+        diagnostics["finalization_blocking_fields"] = blocking_fields[:64]
+    if structural_repair_event_count > 0 and not bool(budget_state.get("budget_exhausted", False)):
+        budget_state["structural_repair_retry_required"] = True
+        budget_state["replan_requested"] = True
+        budget_state["priority_retry_reason"] = "structural_repair"
+        diagnostics["structural_repair_retry_events"] = int(
+            diagnostics.get("structural_repair_retry_events", 0) or 0
+        ) + 1
+        diagnostics["retrieval_interventions"] = _append_limited_unique(
+            diagnostics.get("retrieval_interventions"),
+            "structural_repair_retry",
+            max_items=64,
+        )
+    elif bool(budget_state.get("budget_exhausted", False)):
+        budget_state["structural_repair_retry_required"] = False
+
+    json_repair_events = list(status_repair_events or [])
+    if repair_event:
+        json_repair_events.append(repair_event)
+    if canonical_event:
+        json_repair_events.append(canonical_event)
+    finalization_status = _build_finalization_status(
+        state={**state, "orchestration_options": orchestration_options},
+        expected_schema=expected_schema,
+        terminal_payload=_terminal_payload_from_message(response, expected_schema=expected_schema),
+        completion_gate=completion_gate,
+        repair_events=json_repair_events,
+        context="agent",
+    )
+    finalize_reason = _finalize_reason_for_state(state_for_gate)
+    if finalize_reason:
+        budget_state["finalize_reason"] = finalize_reason
+    final_payload = state.get("final_payload")
+    final_emitted = bool(state.get("final_emitted", False))
+    dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
+    terminal_payload = _terminal_payload_from_message(response, expected_schema=expected_schema)
+    terminal_valid = terminal_payload is not None
+    terminal_payload_hash = (
+        _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
+        if terminal_valid
+        else str(state.get("terminal_payload_hash") or "").strip() or None
+    )
+    if terminal_valid:
+        degraded_terminal = bool(completion_gate.get("quality_gate_terminal_degraded", False))
+        should_mark_final = bool(
+            cutoff
+            or bool(completion_gate.get("done"))
+            or bool(finalize_reason)
+        ) and not bool(completion_gate.get("quality_gate_blocked", completion_gate.get("quality_gate_failed", False)))
+        if bool(degraded_terminal):
+            final_payload = terminal_payload
+            final_emitted = False
+        elif should_mark_final:
+            final_payload = terminal_payload
+            final_emitted = True
+    if final_payload is not None and terminal_payload_hash is None:
+        terminal_payload_hash = _terminal_payload_hash(final_payload, mode=dedupe_mode)
+    stop_reason = "recursion_limit" if cutoff else None
+    return _build_terminal_state_update(
+        state=state,
+        messages=[response],
+        field_status=field_status,
+        budget_state=budget_state,
+        diagnostics=diagnostics,
+        finalization_status=finalization_status,
+        completion_gate=completion_gate,
+        source_policy=source_policy,
+        retry_policy=retry_policy,
+        finalization_policy=finalization_policy,
+        field_rules=field_rules,
+        query_templates=query_templates,
+        orchestration_options=orchestration_options,
+        derived_values=_collect_derived_values(field_status),
+        final_payload=final_payload,
+        final_emitted=bool(final_emitted),
+        terminal_valid=bool(terminal_valid),
+        terminal_payload_hash=terminal_payload_hash,
+        finalize_invocations=int(state.get("finalize_invocations", 0) or 0),
+        finalize_trigger_reasons=_next_finalize_trigger_reasons(state, None),
+        node_name="agent",
+        node_started_at=node_started_at,
+        usage=usage,
+        finalize_reason=finalize_reason,
+        stop_reason=stop_reason,
+        expected_schema=expected_schema,
+        expected_schema_source=expected_schema_source,
+        json_repair_events=json_repair_events,
+        json_repair_context="agent",
+        plan_mode_enabled=plan_mode_enabled,
+        clear_plan_when_disabled=True,
+        plan_updates=plan_updates,
+        extra_fields=extra_fields,
+    )
+
+
 def _run_finalize_flow(
     *,
     state: Any,
@@ -20119,8 +20457,18 @@ def _run_finalize_flow(
     diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
 
     _usage = _token_usage_dict_from_message(response)
+    forced_pending_tool_calls = _pending_tool_call_labels(messages, max_items=8)
     synthetic_tool_messages = _build_synthetic_tool_skip_messages(messages, max_items=8)
     if synthetic_tool_messages:
+        diagnostics["forced_finalize_pending_tool_calls_count"] = int(
+            diagnostics.get("forced_finalize_pending_tool_calls_count", 0) or 0
+        ) + int(len(forced_pending_tool_calls))
+        for pending_call in list(forced_pending_tool_calls or [])[:16]:
+            diagnostics["forced_finalize_pending_tool_calls"] = _append_limited_unique(
+                diagnostics.get("forced_finalize_pending_tool_calls"),
+                pending_call,
+                max_items=64,
+            )
         diagnostics["retrieval_interventions"] = _append_limited_unique(
             diagnostics.get("retrieval_interventions"),
             "synthetic_tool_skip_on_finalize",
@@ -20205,6 +20553,7 @@ def _run_finalize_flow(
             terminal_payload=final_payload,
             completion_gate=completion_gate,
             repair_events=repair_events,
+            forced_finalize_pending_tool_calls=forced_pending_tool_calls,
             context="finalize",
         ),
         completion_gate=completion_gate,
@@ -20656,7 +21005,11 @@ def create_memory_folding_agent(
         repair_events: List[Dict[str, Any]] = []
         if invoke_event:
             repair_events.append(invoke_event)
-        if _is_within_finalization_cutoff(state, remaining):
+        if _should_sanitize_agent_response_at_cutoff(
+            state,
+            response,
+            remaining=remaining,
+        ):
             response, finalize_event = _sanitize_finalize_response(
                 response,
                 expected_schema,
@@ -20669,26 +21022,13 @@ def create_memory_folding_agent(
             if finalize_event:
                 repair_events.append(finalize_event)
 
-        repair_event = None
-        canonical_event = None
-        # Never rewrite intermediate tool-call turns as JSON payloads.
-        # Only repair terminal text responses.
-        if not _extract_response_tool_calls(response):
-            force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
-            response, repair_event = _repair_best_effort_json(
-                expected_schema,
-                response,
-                fallback_on_failure=force_fallback,
-                schema_source=expected_schema_source,
-                context="agent",
-                debug=debug,
-            )
-            # First sync the terminal payload into the ledger; enforce policies on
-            # the ledger; then canonicalize the terminal JSON from the ledger so
-            # emitted output matches post-policy field_status.
-            response, field_status, _ = _sync_terminal_response_with_field_status(
+        def _sync_agent_response(
+            response: Any,
+            current_field_status: Dict[str, Dict[str, Any]],
+        ) -> Tuple[Any, Dict[str, Dict[str, Any]], Any]:
+            return _sync_terminal_response_with_field_status(
                 response=response,
-                field_status=field_status,
+                field_status=current_field_status,
                 expected_schema=expected_schema,
                 messages=messages,
                 summary=summary,
@@ -20700,209 +21040,28 @@ def create_memory_folding_agent(
                 force_canonical=False,
                 debug=debug,
             )
-            field_status = _apply_configured_field_rules(field_status, field_rules)
-            if _is_within_finalization_cutoff(state, remaining):
-                field_status = _enforce_finalization_policy_on_field_status(
-                    field_status,
-                    finalization_policy,
-                )
-            canonical_event = None
-            if force_fallback or _is_within_finalization_cutoff(state, remaining):
-                response, canonical_event = _apply_field_status_terminal_guard(
-                    response,
-                    expected_schema,
-                    field_status=field_status,
-                    finalization_policy=finalization_policy,
-                    schema_source=expected_schema_source,
-                    context="agent",
-                    debug=debug,
-                )
-                response, field_status, _ = _sync_terminal_response_with_field_status(
-                    response=response,
-                    field_status=field_status,
-                    expected_schema=expected_schema,
-                    messages=messages,
-                    summary=summary,
-                    archive=archive,
-                    finalization_policy=finalization_policy,
-                    source_policy=source_policy,
-                    expected_schema_source=expected_schema_source,
-                    context="agent",
-                    force_canonical=False,
-                    debug=debug,
-                )
-            budget_state.update(_field_status_progress(field_status))
-            diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
-
-        _usage = _token_usage_dict_from_message(response)
-        _state_for_gate = {
-            **state,
-            "messages": list(messages or []) + [response],
-            "field_status": field_status,
-            "budget_state": budget_state,
-            "diagnostics": diagnostics,
-        }
-        completion_gate = _schema_outcome_gate_report(
-            _state_for_gate,
-            expected_schema=expected_schema,
-            field_status=field_status,
-            budget_state=budget_state,
-            diagnostics=diagnostics,
-        )
-        diagnostics = _apply_tool_call_pairing_diagnostics(
-            diagnostics,
-            ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
-        )
-        if bool(completion_gate.get("quality_gate_triggered", completion_gate.get("quality_gate_failed", False))):
-            diagnostics["quality_gate_failures"] = int(
-                diagnostics.get("quality_gate_failures", 0) or 0
-            ) + 1
-        diagnostics, budget_state = _record_finalization_recovery_checkpoint(
-            diagnostics,
-            completion_gate,
-            budget_state,
-            context="agent",
-        )
-        diagnostics, budget_state = _apply_quality_gate_recovery_budget(
-            diagnostics=diagnostics,
-            completion_gate=completion_gate,
-            budget_state=budget_state,
-            field_status=field_status,
-            finalization_policy=finalization_policy,
-        )
-        structural_events = list(repair_events or [])
-        if repair_event:
-            structural_events.append(repair_event)
-        if canonical_event:
-            structural_events.append(canonical_event)
-        structural_repair_event_count = sum(
-            1 for event in structural_events if _repair_event_is_structural(event)
-        )
-        if structural_repair_event_count > 0:
-            diagnostics["structural_repair_events"] = int(
-                diagnostics.get("structural_repair_events", 0) or 0
-            ) + int(structural_repair_event_count)
-        if bool(completion_gate.get("finalization_invariant_failed", False)):
-            diagnostics["finalization_invariant_failures"] = int(
-                diagnostics.get("finalization_invariant_failures", 0) or 0
-            ) + 1
-            reason_counts = diagnostics.get("finalization_invariant_failures_by_reason") or {}
-            if not isinstance(reason_counts, dict):
-                reason_counts = {}
-            reasons = [
-                str(reason).strip()
-                for reason in list(completion_gate.get("finalization_invariant_reasons") or [])
-                if str(reason).strip()
-            ]
-            if not reasons:
-                reasons = ["finalization_invariant_failed"]
-            for reason in reasons:
-                try:
-                    reason_counts[reason] = max(0, int(reason_counts.get(reason, 0) or 0)) + 1
-                except Exception:
-                    reason_counts[reason] = 1
-            diagnostics["finalization_invariant_failures_by_reason"] = reason_counts
-            blocking_fields = list(diagnostics.get("finalization_blocking_fields") or [])
-            for detail in _gate_blocking_field_details(completion_gate, max_items=64):
-                if not isinstance(detail, dict):
-                    continue
-                field_name = str(detail.get("field") or "").strip()
-                if not field_name:
-                    continue
-                if field_name not in blocking_fields:
-                    blocking_fields.append(field_name)
-                if len(blocking_fields) >= 64:
-                    break
-            diagnostics["finalization_blocking_fields"] = blocking_fields[:64]
-        if structural_repair_event_count > 0 and not bool(budget_state.get("budget_exhausted", False)):
-            budget_state["structural_repair_retry_required"] = True
-            budget_state["replan_requested"] = True
-            budget_state["priority_retry_reason"] = "structural_repair"
-            diagnostics["structural_repair_retry_events"] = int(
-                diagnostics.get("structural_repair_retry_events", 0) or 0
-            ) + 1
-            diagnostics["retrieval_interventions"] = _append_limited_unique(
-                diagnostics.get("retrieval_interventions"),
-                "structural_repair_retry",
-                max_items=64,
-            )
-        elif bool(budget_state.get("budget_exhausted", False)):
-            budget_state["structural_repair_retry_required"] = False
-        finalization_status = _build_finalization_status(
-            state={**state, "orchestration_options": orchestration_options},
-            expected_schema=expected_schema,
-            terminal_payload=_terminal_payload_from_message(response, expected_schema=expected_schema),
-            completion_gate=completion_gate,
-            repair_events=repair_events,
-            context="agent",
-        )
-        finalize_reason = _finalize_reason_for_state(_state_for_gate)
-        if finalize_reason:
-            budget_state["finalize_reason"] = finalize_reason
-        final_payload = state.get("final_payload")
-        final_emitted = bool(state.get("final_emitted", False))
-        dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
-        terminal_payload = _terminal_payload_from_message(response, expected_schema=expected_schema)
-        terminal_valid = terminal_payload is not None
-        terminal_payload_hash = (
-            _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
-            if terminal_valid
-            else str(state.get("terminal_payload_hash") or "").strip() or None
-        )
-        if terminal_valid:
-            degraded_terminal = bool(completion_gate.get("quality_gate_terminal_degraded", False))
-            should_mark_final = bool(
-                _is_within_finalization_cutoff(state, remaining)
-                or bool(completion_gate.get("done"))
-                or bool(finalize_reason)
-            ) and not bool(completion_gate.get("quality_gate_blocked", completion_gate.get("quality_gate_failed", False)))
-            if bool(degraded_terminal):
-                final_payload = terminal_payload
-                final_emitted = False
-            elif should_mark_final:
-                final_payload = terminal_payload
-                final_emitted = True
-        if final_payload is not None and terminal_payload_hash is None:
-            terminal_payload_hash = _terminal_payload_hash(final_payload, mode=dedupe_mode)
-        json_repair_events = list(repair_events or [])
-        if repair_event:
-            json_repair_events.append(repair_event)
-        if canonical_event:
-            json_repair_events.append(canonical_event)
-        stop_reason = "recursion_limit" if _is_within_finalization_cutoff(state, remaining) else None
-        return _build_terminal_state_update(
+        return _finalize_agent_node_response(
             state=state,
-            messages=[response],
+            response=response,
+            messages=messages,
             field_status=field_status,
             budget_state=budget_state,
             diagnostics=diagnostics,
-            finalization_status=finalization_status,
-            completion_gate=completion_gate,
+            expected_schema=expected_schema,
+            expected_schema_source=expected_schema_source,
             source_policy=source_policy,
             retry_policy=retry_policy,
             finalization_policy=finalization_policy,
             field_rules=field_rules,
             query_templates=query_templates,
             orchestration_options=orchestration_options,
-            derived_values=_collect_derived_values(field_status),
-            final_payload=final_payload,
-            final_emitted=bool(final_emitted),
-            terminal_valid=bool(terminal_valid),
-            terminal_payload_hash=terminal_payload_hash,
-            finalize_invocations=int(state.get("finalize_invocations", 0) or 0),
-            finalize_trigger_reasons=_next_finalize_trigger_reasons(state, None),
-            node_name="agent",
+            remaining=remaining,
             node_started_at=node_started_at,
-            usage=_usage,
-            finalize_reason=finalize_reason,
-            stop_reason=stop_reason,
-            expected_schema=expected_schema,
-            expected_schema_source=expected_schema_source,
-            json_repair_events=json_repair_events,
-            json_repair_context="agent",
             plan_mode_enabled=plan_mode_enabled,
-            clear_plan_when_disabled=True,
             plan_updates=_plan_updates,
+            sync_terminal_response=_sync_agent_response,
+            repair_events=repair_events,
+            debug=debug,
             extra_fields={"om_config": state.get("om_config")},
         )
 
@@ -22587,7 +22746,11 @@ def create_standard_agent(
         repair_events: List[Dict[str, Any]] = []
         if invoke_event:
             repair_events.append(invoke_event)
-        if _is_within_finalization_cutoff(state, remaining):
+        if _should_sanitize_agent_response_at_cutoff(
+            state,
+            response,
+            remaining=remaining,
+        ):
             response, finalize_event = _sanitize_finalize_response(
                 response,
                 expected_schema,
@@ -22600,26 +22763,13 @@ def create_standard_agent(
             if finalize_event:
                 repair_events.append(finalize_event)
 
-        repair_event = None
-        canonical_event = None
-        # Never rewrite intermediate tool-call turns as JSON payloads.
-        # Only repair terminal text responses.
-        if not _extract_response_tool_calls(response):
-            force_fallback = _should_force_finalize(state) or expected_schema_source == "explicit"
-            response, repair_event = _repair_best_effort_json(
-                expected_schema,
-                response,
-                fallback_on_failure=force_fallback,
-                schema_source=expected_schema_source,
-                context="agent",
-                debug=debug,
-            )
-            # First sync the terminal payload into the ledger; enforce policies on
-            # the ledger; then canonicalize the terminal JSON from the ledger so
-            # emitted output matches post-policy field_status.
-            response, field_status, _ = _sync_terminal_response_with_field_status(
+        def _sync_agent_response(
+            response: Any,
+            current_field_status: Dict[str, Dict[str, Any]],
+        ) -> Tuple[Any, Dict[str, Dict[str, Any]], Any]:
+            return _sync_terminal_response_with_field_status(
                 response=response,
-                field_status=field_status,
+                field_status=current_field_status,
                 expected_schema=expected_schema,
                 messages=messages,
                 finalization_policy=finalization_policy,
@@ -22629,207 +22779,28 @@ def create_standard_agent(
                 force_canonical=False,
                 debug=debug,
             )
-            field_status = _apply_configured_field_rules(field_status, field_rules)
-            if _is_within_finalization_cutoff(state, remaining):
-                field_status = _enforce_finalization_policy_on_field_status(
-                    field_status,
-                    finalization_policy,
-                )
-            canonical_event = None
-            if force_fallback or _is_within_finalization_cutoff(state, remaining):
-                response, canonical_event = _apply_field_status_terminal_guard(
-                    response,
-                    expected_schema,
-                    field_status=field_status,
-                    finalization_policy=finalization_policy,
-                    schema_source=expected_schema_source,
-                    context="agent",
-                    debug=debug,
-                )
-                response, field_status, _ = _sync_terminal_response_with_field_status(
-                    response=response,
-                    field_status=field_status,
-                    expected_schema=expected_schema,
-                    messages=messages,
-                    finalization_policy=finalization_policy,
-                    source_policy=source_policy,
-                    expected_schema_source=expected_schema_source,
-                    context="agent",
-                    force_canonical=False,
-                    debug=debug,
-                )
-            budget_state.update(_field_status_progress(field_status))
-            diagnostics = _merge_field_status_diagnostics(diagnostics, field_status)
-
-        _usage = _token_usage_dict_from_message(response)
-        _state_for_gate = {
-            **state,
-            "messages": list(messages or []) + [response],
-            "field_status": field_status,
-            "budget_state": budget_state,
-            "diagnostics": diagnostics,
-        }
-        completion_gate = _schema_outcome_gate_report(
-            _state_for_gate,
-            expected_schema=expected_schema,
-            field_status=field_status,
-            budget_state=budget_state,
-            diagnostics=diagnostics,
-        )
-        diagnostics = _apply_tool_call_pairing_diagnostics(
-            diagnostics,
-            ((completion_gate.get("finalization_invariant") or {}).get("tool_call_pairing")),
-        )
-        if bool(completion_gate.get("quality_gate_triggered", completion_gate.get("quality_gate_failed", False))):
-            diagnostics["quality_gate_failures"] = int(
-                diagnostics.get("quality_gate_failures", 0) or 0
-            ) + 1
-        diagnostics, budget_state = _record_finalization_recovery_checkpoint(
-            diagnostics,
-            completion_gate,
-            budget_state,
-            context="agent",
-        )
-        diagnostics, budget_state = _apply_quality_gate_recovery_budget(
-            diagnostics=diagnostics,
-            completion_gate=completion_gate,
-            budget_state=budget_state,
-            field_status=field_status,
-            finalization_policy=finalization_policy,
-        )
-        structural_events = list(repair_events or [])
-        if repair_event:
-            structural_events.append(repair_event)
-        if canonical_event:
-            structural_events.append(canonical_event)
-        structural_repair_event_count = sum(
-            1 for event in structural_events if _repair_event_is_structural(event)
-        )
-        if structural_repair_event_count > 0:
-            diagnostics["structural_repair_events"] = int(
-                diagnostics.get("structural_repair_events", 0) or 0
-            ) + int(structural_repair_event_count)
-        if bool(completion_gate.get("finalization_invariant_failed", False)):
-            diagnostics["finalization_invariant_failures"] = int(
-                diagnostics.get("finalization_invariant_failures", 0) or 0
-            ) + 1
-            reason_counts = diagnostics.get("finalization_invariant_failures_by_reason") or {}
-            if not isinstance(reason_counts, dict):
-                reason_counts = {}
-            reasons = [
-                str(reason).strip()
-                for reason in list(completion_gate.get("finalization_invariant_reasons") or [])
-                if str(reason).strip()
-            ]
-            if not reasons:
-                reasons = ["finalization_invariant_failed"]
-            for reason in reasons:
-                try:
-                    reason_counts[reason] = max(0, int(reason_counts.get(reason, 0) or 0)) + 1
-                except Exception:
-                    reason_counts[reason] = 1
-            diagnostics["finalization_invariant_failures_by_reason"] = reason_counts
-            blocking_fields = list(diagnostics.get("finalization_blocking_fields") or [])
-            for detail in _gate_blocking_field_details(completion_gate, max_items=64):
-                if not isinstance(detail, dict):
-                    continue
-                field_name = str(detail.get("field") or "").strip()
-                if not field_name:
-                    continue
-                if field_name not in blocking_fields:
-                    blocking_fields.append(field_name)
-                if len(blocking_fields) >= 64:
-                    break
-            diagnostics["finalization_blocking_fields"] = blocking_fields[:64]
-        if structural_repair_event_count > 0 and not bool(budget_state.get("budget_exhausted", False)):
-            budget_state["structural_repair_retry_required"] = True
-            budget_state["replan_requested"] = True
-            budget_state["priority_retry_reason"] = "structural_repair"
-            diagnostics["structural_repair_retry_events"] = int(
-                diagnostics.get("structural_repair_retry_events", 0) or 0
-            ) + 1
-            diagnostics["retrieval_interventions"] = _append_limited_unique(
-                diagnostics.get("retrieval_interventions"),
-                "structural_repair_retry",
-                max_items=64,
-            )
-        elif bool(budget_state.get("budget_exhausted", False)):
-            budget_state["structural_repair_retry_required"] = False
-        finalization_status = _build_finalization_status(
-            state={**state, "orchestration_options": orchestration_options},
-            expected_schema=expected_schema,
-            terminal_payload=_terminal_payload_from_message(response, expected_schema=expected_schema),
-            completion_gate=completion_gate,
-            repair_events=repair_events,
-            context="agent",
-        )
-        finalize_reason = _finalize_reason_for_state(_state_for_gate)
-        if finalize_reason:
-            budget_state["finalize_reason"] = finalize_reason
-        final_payload = state.get("final_payload")
-        final_emitted = bool(state.get("final_emitted", False))
-        dedupe_mode = str(finalization_policy.get("terminal_dedupe_mode", "hash") or "hash").strip().lower()
-        terminal_payload = _terminal_payload_from_message(response, expected_schema=expected_schema)
-        terminal_valid = terminal_payload is not None
-        terminal_payload_hash = (
-            _terminal_payload_hash(terminal_payload, mode=dedupe_mode)
-            if terminal_valid
-            else str(state.get("terminal_payload_hash") or "").strip() or None
-        )
-        if terminal_valid:
-            degraded_terminal = bool(completion_gate.get("quality_gate_terminal_degraded", False))
-            should_mark_final = bool(
-                _is_within_finalization_cutoff(state, remaining)
-                or bool(completion_gate.get("done"))
-                or bool(finalize_reason)
-            ) and not bool(completion_gate.get("quality_gate_blocked", completion_gate.get("quality_gate_failed", False)))
-            if bool(degraded_terminal):
-                final_payload = terminal_payload
-                final_emitted = False
-            elif should_mark_final:
-                final_payload = terminal_payload
-                final_emitted = True
-        if final_payload is not None and terminal_payload_hash is None:
-            terminal_payload_hash = _terminal_payload_hash(final_payload, mode=dedupe_mode)
-        json_repair_events = list(repair_events or [])
-        if repair_event:
-            json_repair_events.append(repair_event)
-        if canonical_event:
-            json_repair_events.append(canonical_event)
-        stop_reason = "recursion_limit" if _is_within_finalization_cutoff(state, remaining) else None
-        return _build_terminal_state_update(
+        return _finalize_agent_node_response(
             state=state,
-            messages=[response],
+            response=response,
+            messages=messages,
             field_status=field_status,
             budget_state=budget_state,
             diagnostics=diagnostics,
-            finalization_status=finalization_status,
-            completion_gate=completion_gate,
+            expected_schema=expected_schema,
+            expected_schema_source=expected_schema_source,
             source_policy=source_policy,
             retry_policy=retry_policy,
             finalization_policy=finalization_policy,
             field_rules=field_rules,
             query_templates=query_templates,
             orchestration_options=orchestration_options,
-            derived_values=_collect_derived_values(field_status),
-            final_payload=final_payload,
-            final_emitted=bool(final_emitted),
-            terminal_valid=bool(terminal_valid),
-            terminal_payload_hash=terminal_payload_hash,
-            finalize_invocations=int(state.get("finalize_invocations", 0) or 0),
-            finalize_trigger_reasons=_next_finalize_trigger_reasons(state, None),
-            node_name="agent",
+            remaining=remaining,
             node_started_at=node_started_at,
-            usage=_usage,
-            finalize_reason=finalize_reason,
-            stop_reason=stop_reason,
-            expected_schema=expected_schema,
-            expected_schema_source=expected_schema_source,
-            json_repair_events=json_repair_events,
-            json_repair_context="agent",
             plan_mode_enabled=plan_mode_enabled,
-            clear_plan_when_disabled=True,
             plan_updates=_plan_updates,
+            sync_terminal_response=_sync_agent_response,
+            repair_events=repair_events,
+            debug=debug,
         )
 
     def finalize_answer(state: StandardAgentState) -> dict:

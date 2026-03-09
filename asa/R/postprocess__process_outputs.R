@@ -1242,6 +1242,24 @@
   if (length(plan_summary) > 0L) {
     lines <- c(lines, paste0("Plan status: ", plan_summary[[1]]))
   }
+  forced_finalize_count <- suppressWarnings(as.integer(diagnostics$forced_finalize_pending_tool_calls_count %||% 0L))
+  forced_finalize_calls <- tryCatch(
+    as.character(diagnostics$forced_finalize_pending_tool_calls %||% character(0)),
+    error = function(e) character(0)
+  )
+  forced_finalize_calls <- forced_finalize_calls[!is.na(forced_finalize_calls) & nzchar(forced_finalize_calls)]
+  if (is.finite(forced_finalize_count) && forced_finalize_count > 0L) {
+    preview_calls <- forced_finalize_calls[seq_len(min(length(forced_finalize_calls), 2L))]
+    lines <- c(
+      lines,
+      paste0(
+        "Forced finalize skipped ",
+        forced_finalize_count,
+        " pending tool call(s)",
+        if (length(preview_calls) > 0L) paste0(": ", paste(preview_calls, collapse = ", ")) else ""
+      )
+    )
+  }
   anomaly_line <- .summarize_step_anomalies(
     steps,
     diagnostics = diagnostics,

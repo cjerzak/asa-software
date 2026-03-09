@@ -271,6 +271,23 @@ test_that(".summarize_action_overall returns a compact header summary", {
   expect_true(any(grepl("Structured terminal answer emitted", overall)))
 })
 
+test_that(".summarize_action_overall surfaces forced finalize skips", {
+  raw_steps <- list(
+    list(type = "human", actor = "Human", summary = "Submitted task prompt", preview = "Prompt"),
+    list(type = "ai_response", actor = "AI", summary = "Produced structured answer", preview = "{\"ok\":true}")
+  )
+
+  overall <- asa:::.summarize_action_overall(
+    raw_steps,
+    diagnostics = list(
+      forced_finalize_pending_tool_calls_count = 2L,
+      forced_finalize_pending_tool_calls = c("Search:call_1", "OpenWebpage:call_2")
+    )
+  )
+
+  expect_true(any(grepl("Forced finalize skipped 2 pending tool call\\(s\\): Search:call_1, OpenWebpage:call_2", overall)))
+})
+
 test_that(".extract_action_trace annotates anomalies and investigator summary", {
   trace_json <- jsonlite::toJSON(
     list(
