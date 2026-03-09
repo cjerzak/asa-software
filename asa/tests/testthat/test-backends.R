@@ -2,7 +2,7 @@
 # Uses loop-based approach to test all supported backends
 
 # Backend configurations: (backend, model, env_var)
-# Updated Dec 2025 with current model IDs
+# Updated Mar 2026 with stable smoke-test model IDs
 backends <- list(
   list(backend = "openai", model = "gpt-4o-mini", env = "OPENAI_API_KEY"),
   list(backend = "groq", model = "llama-3.3-70b-versatile", env = "GROQ_API_KEY"),
@@ -14,8 +14,7 @@ backends <- list(
     py_module = "langchain_google_genai"
   ),
   list(backend = "openrouter", model = "google/gemini-2.0-flash-001", env = "OPENROUTER_API_KEY"),
-  list(backend = "openrouter", model = "meta-llama/llama-3.3-70b-instruct", env = "OPENROUTER_API_KEY"),
-  list(backend = "openrouter", model = "deepseek/deepseek-r1", env = "OPENROUTER_API_KEY")
+  list(backend = "openrouter", model = "openai/gpt-4.1-mini", env = "OPENROUTER_API_KEY")
 )
 
 .extract_numeric_answer <- function(text) {
@@ -42,6 +41,28 @@ backends <- list(
   suppressWarnings(as.numeric(nums[[length(nums)]]))
 }
 
+.backend_invoke_error_info <- function(result) {
+  invoke_error <- result$execution$invoke_error %||% NULL
+  if (!is.list(invoke_error) || length(invoke_error) == 0L) {
+    return("")
+  }
+
+  error_type <- as.character(invoke_error$error_type %||% "")
+  error_message <- as.character(invoke_error$error_message %||% "")
+  parts <- c()
+  if (nzchar(error_type)) {
+    parts <- c(parts, paste("error_type:", error_type))
+  }
+  if (nzchar(error_message)) {
+    parts <- c(parts, paste("error_message:", substr(error_message, 1, 200)))
+  }
+  if (length(parts) == 0L) {
+    return("")
+  }
+
+  paste(parts, collapse = " ")
+}
+
 .with_backend_agent <- function(cfg, expr) {
   asa_test_skip_api_tests()
   if (!is.null(cfg$py_module)) {
@@ -58,6 +79,7 @@ backends <- list(
   agent <- initialize_agent(
     backend = cfg$backend,
     model = cfg$model,
+    search = search_options(stability_profile = "deterministic"),
     verbose = FALSE
   )
   eval(substitute(expr), envir = list2env(list(agent = agent, cfg = cfg), parent = parent.frame()))
@@ -82,6 +104,7 @@ for (cfg in backends) {
         output_format = "text",
         agent = agent
       )
+      error_info <- .backend_invoke_error_info(result)
       result_text <- if (is.null(result$message) || length(result$message) == 0 || is.na(result$message[1])) {
         ""
       } else {
@@ -90,12 +113,16 @@ for (cfg in backends) {
       expect_identical(
         result$status,
         "success",
-        info = paste("Expected success status; got:", result$status, "message:", substr(result_text, 1, 200))
+        info = paste(
+          "Expected success status; got:", result$status,
+          "message:", substr(result_text, 1, 200),
+          error_info
+        )
       )
       answer_num <- .extract_numeric_answer(result_text)
       expect_true(
         is.finite(answer_num) && isTRUE(all.equal(answer_num, 4, tolerance = 1e-9)),
-        info = paste("Expected numeric answer 4; got:", substr(result_text, 1, 200))
+        info = paste("Expected numeric answer 4; got:", substr(result_text, 1, 200), error_info)
       )
     })
   })

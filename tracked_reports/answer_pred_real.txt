@@ -17,9 +17,9 @@
   "disability_status": "Unknown",
   "disability_status_source": null,
   "disability_status_confidence": null,
-  "birth_place": "Unknown",
-  "birth_place_source": null,
-  "birth_place_confidence": null,
+  "birth_place": "Tipnis",
+  "birth_place_source": "https://sisin.oep.org.bo/medios_digitales/34363/detalle",
+  "birth_place_confidence": 0.9,
   "birth_year": 1982,
   "birth_year_source": "https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609",
   "birth_year_confidence": 1,
@@ -29,6 +29,6 @@
   "lgbtq_details": null,
   "lgbtq_details_source": null,
   "lgbtq_details_confidence": null,
-  "confidence": 0.5292,
-  "justification": "Ramona Moye Camaconi is an indigenous leader from the TIPNIS region of Bolivia. Official parliamentary records confirm her birth year as 1982 and her prior occupation as President of the Women's Organization of the Sub Central Sécure. No specific details regarding her formal education, birth city, disability status, or sexual orientation are publicly available in official or credible biographical sources."
+  "confidence": 0.5594,
+  "justification": "Source-backed searches resolved 3 core fields (including birth_place, birth_year, prior_occupation), while 7 core fields remain unknown due to limited verifiable evidence. Top unresolved reasons: recovery_blocked_no_candidates(6), finalization_policy_demotion_unverified(1)."
 }
