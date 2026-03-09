@@ -14,8 +14,10 @@ test_that("field_resolver defaults use langextract engine and compatibility alia
   expect_true(isTRUE(fr$llm_webpage_extraction))
   expect_equal(fr$search_snippet_extraction_engine, "deterministic_then_legacy")
   expect_equal(as.integer(fr$llm_webpage_extraction_max_chars), 9000L)
-  expect_equal(as.numeric(fr$search_snippet_extraction_timeout_s), 6)
+  expect_equal(as.numeric(fr$search_snippet_extraction_timeout_s), 15)
   expect_equal(as.integer(fr$search_snippet_extraction_max_output_tokens), 160L)
+  expect_equal(as.integer(fr$search_snippet_timeout_circuit_threshold), 2L)
+  expect_equal(as.integer(fr$search_snippet_preferred_openwebpage_queue_size), 6L)
   expect_equal(as.integer(fr$langextract_extraction_passes), 2L)
   expect_equal(as.integer(fr$langextract_max_char_buffer), 2000L)
 
@@ -54,6 +56,21 @@ test_that("orchestration normalization applies latency profile webpage controls"
   expect_equal(as.integer(latency$retrieval_controller$max_empty_round_streak), 1L)
   expect_equal(as.integer(latency$retrieval_controller$webpage_policy$max_open_calls), 2L)
   expect_equal(as.integer(latency$field_resolver$llm_webpage_extraction_max_total_pages), 1L)
+  expect_equal(as.numeric(latency$field_resolver$search_snippet_extraction_timeout_s), 6)
+})
+
+test_that("orchestration normalization applies quality snippet timeout default", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  quality <- reticulate::py_to_r(core$`_normalize_orchestration_options`(list(
+    performance_profile = "quality"
+  )))
+
+  expect_equal(as.character(quality$performance_profile), "quality")
+  expect_equal(as.numeric(quality$field_resolver$search_snippet_extraction_timeout_s), 20)
 })
 
 test_that("source URL normalization handles multiline and escaped-final-url tails", {

@@ -3327,8 +3327,8 @@ _TASK_HINT_NAME_KEY_RE = re.compile(
 _TASK_HINT_QUOTED_RE = re.compile(r'"([^"]+)"')
 
 
-def _extract_profile_hints(text: str) -> Dict[str, Any]:
-    """Extract lightweight name/context hints from task text."""
+def _extract_entity_hints(text: str) -> Dict[str, Any]:
+    """Extract lightweight entity/context hints from task text."""
     out: Dict[str, Any] = {
         "name_tokens": set(),
         "context_tokens": set(),
@@ -3424,7 +3424,7 @@ def _tokenize_for_retrieval(text: str) -> set:
 
 def _query_entity_tokens(query: Any, *, max_tokens: int = 8) -> List[str]:
     """Extract likely entity-bearing tokens from a free-form search query."""
-    hints = _extract_profile_hints(str(query or ""))
+    hints = _extract_entity_hints(str(query or ""))
     hint_name_tokens = [tok for tok in (hints.get("name_tokens") or set())]
     hint_context_tokens = [tok for tok in (hints.get("context_tokens") or set())]
     seen: set = set()

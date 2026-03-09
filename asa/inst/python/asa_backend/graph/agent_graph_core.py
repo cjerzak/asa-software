@@ -43,7 +43,7 @@ from asa_backend.search.ddg_transport import (
     _canonicalize_url,
     _entity_match_thresholds,
     _entity_overlap_for_candidate,
-    _extract_profile_hints,
+    _extract_entity_hints,
     _is_noise_source_url,
     _is_source_specific_url,
     _merge_query_intents,
@@ -1291,7 +1291,7 @@ _DEFAULT_WEBPAGE_POLICY_BY_PROFILE: Dict[str, Dict[str, Any]] = {
 _DEFAULT_QUERY_TEMPLATES: Dict[str, str] = {
     "focused_field_query": "{entity} {field}",
     "source_constrained_query": "site:{domain} {entity} {field}",
-    "disambiguation_query": "{entity} {field} biography profile",
+    "disambiguation_query": "{entity} {field} exact match",
 }
 
 _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
@@ -1350,8 +1350,10 @@ _DEFAULT_ORCHESTRATION_OPTIONS: Dict[str, Any] = {
         "search_snippet_extraction_max_sources_per_round": 2,
         "search_snippet_extraction_max_total_sources": 8,
         "search_snippet_extraction_max_chars": 2000,
-        "search_snippet_extraction_timeout_s": 6.0,
+        "search_snippet_extraction_timeout_s": 15.0,
         "search_snippet_extraction_max_output_tokens": 160,
+        "search_snippet_timeout_circuit_threshold": 2,
+        "search_snippet_preferred_openwebpage_queue_size": 6,
         # Webpage extraction engine. "langextract" is default; "legacy" keeps
         # the prior selector-model JSON extraction path.
         "webpage_extraction_engine": "langextract",
@@ -1433,6 +1435,15 @@ def _normalize_performance_profile(raw_profile: Any) -> str:
     if token in {"latency", "balanced", "quality"}:
         return token
     return "balanced"
+
+
+def _default_search_snippet_timeout_s(profile: Any) -> float:
+    normalized_profile = _normalize_performance_profile(profile)
+    if normalized_profile == "quality":
+        return 20.0
+    if normalized_profile == "latency":
+        return 6.0
+    return 15.0
 
 
 def _normalize_webpage_policy(raw_policy: Any, *, profile: str = "balanced") -> Dict[str, Any]:
@@ -1698,13 +1709,17 @@ def _normalize_orchestration_options(
         except Exception:
             return float(default)
 
+    snippet_timeout_default = _default_search_snippet_timeout_s(profile_token)
+    raw_snippet_timeout = snippet_timeout_default
+    if isinstance(raw_field_resolver, dict) and "search_snippet_extraction_timeout_s" in raw_field_resolver:
+        raw_snippet_timeout = raw_field_resolver.get("search_snippet_extraction_timeout_s")
     try:
         fr["search_snippet_extraction_timeout_s"] = max(
             0.0,
-            _safe_float(fr.get("search_snippet_extraction_timeout_s", 6.0) or 6.0, 6.0),
+            _safe_float(raw_snippet_timeout or snippet_timeout_default, snippet_timeout_default),
         )
     except Exception:
-        fr["search_snippet_extraction_timeout_s"] = 6.0
+        fr["search_snippet_extraction_timeout_s"] = snippet_timeout_default
     try:
         fr["search_snippet_extraction_max_output_tokens"] = max(
             64,
@@ -1712,6 +1727,20 @@ def _normalize_orchestration_options(
         )
     except Exception:
         fr["search_snippet_extraction_max_output_tokens"] = 160
+    try:
+        fr["search_snippet_timeout_circuit_threshold"] = max(
+            1,
+            _safe_int(fr.get("search_snippet_timeout_circuit_threshold", 2) or 2, 2),
+        )
+    except Exception:
+        fr["search_snippet_timeout_circuit_threshold"] = 2
+    try:
+        fr["search_snippet_preferred_openwebpage_queue_size"] = max(
+            1,
+            _safe_int(fr.get("search_snippet_preferred_openwebpage_queue_size", 6) or 6, 6),
+        )
+    except Exception:
+        fr["search_snippet_preferred_openwebpage_queue_size"] = 6
 
     if profile_token == "latency":
         rc["max_empty_round_streak"] = min(_safe_int(rc.get("max_empty_round_streak", 2), 2), 1)
@@ -1726,7 +1755,7 @@ def _normalize_orchestration_options(
             4,
         )
         fr["search_snippet_extraction_timeout_s"] = min(
-            _safe_float(fr.get("search_snippet_extraction_timeout_s", 6.0) or 6.0, 6.0),
+            _safe_float(raw_snippet_timeout or 6.0, 6.0),
             6.0,
         )
         fr["llm_webpage_extraction_timeout_s"] = min(
@@ -2636,10 +2665,23 @@ def _source_policy_detail_page_score(source_url: Any, source_policy: Dict[str, A
         return 0.15
     parsed = urlparse(normalized)
     path = str(parsed.path or "")
+    path_lower = path.lower()
     query = str(parsed.query or "")
+    query_lower = query.lower()
+    if path_lower in {"/", "/home", "/index", "/inicio", "/portal", "/default"} or path_lower.endswith("-home"):
+        return 0.15
+    has_id_like_query = bool(
+        re.search(r"(?:^|[?&])(?:id|item|slug|person|profile|[a-z0-9]+_id|id_[a-z0-9_]+)=[^&]+", query_lower)
+    )
+    has_page_detail_combo = bool(
+        re.search(r"(?:^|[?&])page=[a-z0-9_-]{4,}(?:&|$)", query_lower)
+        and re.search(r"(?:^|[?&])[a-z0-9_]*id[a-z0-9_]*=[0-9]{2,}(?:&|$)", query_lower)
+    )
     has_detail_hint = bool(
-        re.search(r"/[a-z0-9_-]+/[a-z0-9_-]{3,}$", path.lower())
-        or re.search(r"(?:^|[?&])(id|item|slug|person|profile)=", query.lower())
+        re.search(r"/[a-z0-9_-]+/[a-z0-9_-]{3,}$", path_lower)
+        or re.search(r"/(?:profile|profiles|person|people|persona|parlamentario|parlamentaria)/", path_lower)
+        or has_id_like_query
+        or has_page_detail_combo
         or re.search(r"/[0-9]{3,}", path)
     )
     if has_detail_hint:
@@ -2696,6 +2738,7 @@ def _score_openwebpage_followup_candidate(
     base_score = float(_openwebpage_followup_base_score(candidate))
     authority_score = float(_source_policy_authority_score(normalized_url, normalized_source_policy))
     detail_score = float(_source_policy_detail_page_score(normalized_url, normalized_source_policy))
+    source_tier = int(_candidate_source_tier(candidate, source_url=normalized_url))
     preferred_domain_score = float(
         _source_policy_preferred_domain_score(normalized_url, normalized_source_policy)
     )
@@ -2732,9 +2775,12 @@ def _score_openwebpage_followup_candidate(
             "url": normalized_url,
             "base_score": float(base_score),
             "authority_score": float(authority_score),
+            "authority_tier": int(_authority_tier_from_score(authority_score)),
             "detail_score": float(detail_score),
             "preferred_domain_score": float(preferred_domain_score),
             "preferred_domain_boost_applied": bool(preferred_domain_score > 0.0),
+            "source_specific": bool(_is_source_specific_url(normalized_url)),
+            "source_tier": int(source_tier),
             "openwebpage_followup_score": float(followup_score),
             "total_score": float(followup_score),
         }
@@ -3026,6 +3072,23 @@ def _normalize_url_from_text_snippet(raw_url: Any) -> Optional[str]:
                 return normalized
         normalized = _canonicalize_url(candidate)
         if normalized:
+            return normalized
+    return None
+
+
+def _extract_openwebpage_canonical_url(text: Any) -> Optional[str]:
+    raw = str(text or "")
+    if not raw.strip():
+        return None
+    for pattern in (
+        r"(?im)^\s*final\s+url\s*:\s*(https?://\S+)\s*$",
+        r"(?im)^\s*url\s*:\s*(https?://\S+)\s*$",
+    ):
+        match = re.search(pattern, raw)
+        if not match:
+            continue
+        normalized = _normalize_url_from_text_snippet(match.group(1))
+        if normalized and not _is_noise_source_url(normalized):
             return normalized
     return None
 
@@ -3506,7 +3569,7 @@ def _search_snippet_field_hint_score(snippet_text: Any, field_hints: Any) -> flo
         keyword_score += min(1.75, 0.85 + (0.35 * float(max(0, hits - 1))))
 
     date_signal = _search_snippet_date_signal(snippet_text)
-    if bool(date_signal.get("structured_date", False)):
+    if keyword_score > 0.0 and bool(date_signal.get("structured_date", False)):
         keyword_score += 0.45
     elif keyword_score > 0.0 and bool(date_signal.get("year_only", False)):
         keyword_score += 0.20
@@ -3619,7 +3682,6 @@ def _search_snippet_supports_direct_extraction(
     strong_relevance = bool(
         field_hint_score > 0.0
         or quoted_hits > 0
-        or entity_ratio >= 0.35
         or explicit_value_signal
     )
     if strong_source and strong_relevance:
@@ -3629,29 +3691,319 @@ def _search_snippet_supports_direct_extraction(
     return False, "low_information"
 
 
-def _search_snippet_candidate_supports_openwebpage_escalation(
-    candidate: Any,
-    *,
-    target_anchor: Any = None,
-) -> bool:
+_LOW_VALUE_OPENWEBPAGE_HOST_FRAGMENTS = (
+    "facebook.com",
+    "instagram.com",
+    "linkedin.com",
+    "flickr.com",
+    "prezi.com",
+    "pinterest.",
+    "tiktok.com",
+    "twitter.com",
+    "x.com",
+    "archive.org",
+    "webcache.",
+)
+_LOW_VALUE_OPENWEBPAGE_PATH_FRAGMENTS = (
+    "/photo",
+    "/photos",
+    "/posts",
+    "/share",
+    "/shares",
+    "/status",
+    "/story",
+    "/stories",
+)
+_LOW_VALUE_OPENWEBPAGE_NEWS_PATH_FRAGMENTS = (
+    "/article",
+    "/articles",
+    "/news/",
+    "/noticias/",
+    "/press/",
+)
+
+
+def _candidate_source_tier(candidate: Any, *, source_url: Any = None) -> int:
+    if isinstance(candidate, dict):
+        raw_tier = candidate.get("source_tier")
+    else:
+        raw_tier = None
+    if isinstance(raw_tier, str):
+        token = str(raw_tier or "").strip().lower()
+        if token and not re.fullmatch(r"[0-9]+", token):
+            return max(0, int(_source_tier_rank(token)))
+    if raw_tier not in (None, ""):
+        try:
+            return max(0, int(raw_tier))
+        except Exception:
+            pass
+    normalized_url = _normalize_url_match(
+        source_url
+        or (candidate.get("url") if isinstance(candidate, dict) else None)
+        or (candidate.get("source_url") if isinstance(candidate, dict) else None)
+    )
+    if not normalized_url:
+        return 0
+    return max(0, int(_source_tier_rank(_get_source_tier(normalized_url))))
+
+
+def _authority_tier_from_score(raw_score: Any) -> int:
+    score = _clamp01(raw_score, default=0.0)
+    if score >= 0.85:
+        return 4
+    if score >= 0.70:
+        return 3
+    if score >= 0.55:
+        return 2
+    if score > 0.0:
+        return 1
+    return 0
+
+
+def _candidate_followup_score(candidate: Any) -> float:
+    if not isinstance(candidate, dict):
+        return 0.0
+    try:
+        return float(
+            candidate.get(
+                "openwebpage_followup_score",
+                candidate.get("followup_score", candidate.get("total_score", 0.0)),
+            )
+            or 0.0
+        )
+    except Exception:
+        return 0.0
+
+
+def _candidate_followup_threshold(webpage_policy: Any) -> float:
+    normalized_policy = _normalize_webpage_policy(webpage_policy)
+    return _clamp01(
+        normalized_policy.get("open_only_if_score_ge"),
+        default=float(normalized_policy.get("open_only_if_score_ge", 0.4)),
+    )
+
+
+def _candidate_has_followup_source_strength(candidate: Any) -> bool:
     if not isinstance(candidate, dict):
         return False
-    page_url = _normalize_url_match(candidate.get("url"))
+    page_url = _normalize_url_match(candidate.get("url") or candidate.get("source_url"))
     if not page_url or _is_noise_source_url(page_url):
         return False
     try:
         url_score = float(candidate.get("url_score", 0.0) or 0.0)
     except Exception:
         url_score = 0.0
-    if url_score >= 0.0:
-        return True
-    if not _target_anchor_present(target_anchor):
+    try:
+        authority_score = float(candidate.get("authority_score", 0.0) or 0.0)
+    except Exception:
+        authority_score = 0.0
+    source_tier = _candidate_source_tier(candidate, source_url=page_url)
+    return bool(
+        _is_source_specific_url(page_url)
+        or source_tier >= 2
+        or authority_score >= 0.45
+        or url_score >= 0.55
+    )
+
+
+def _candidate_has_followup_evidence_signal(candidate: Any) -> bool:
+    if not isinstance(candidate, dict):
+        return False
+    try:
+        field_hint_score = float(candidate.get("field_hint_score", 0.0) or 0.0)
+    except Exception:
+        field_hint_score = 0.0
+    quoted_hits = int(candidate.get("query_intent_quoted_phrase_hits", 0) or 0)
+    try:
+        entity_ratio = float(candidate.get("entity_ratio", 0.0) or 0.0)
+    except Exception:
+        entity_ratio = 0.0
+    try:
+        preferred_domain_score = float(candidate.get("preferred_domain_score", 0.0) or 0.0)
+    except Exception:
+        preferred_domain_score = 0.0
+    targeted_host_support = bool(
+        candidate.get("query_intent_required_host_match", False)
+        or candidate.get("query_intent_preferred_host_match", False)
+        or preferred_domain_score > 0.0
+    )
+    field_hint_support = bool(
+        field_hint_score > 0.0
+        and (
+            entity_ratio >= 0.15
+            or targeted_host_support
+        )
+    )
+    return bool(
+        field_hint_support
+        or entity_ratio >= 0.45
+        or (quoted_hits > 0 and (entity_ratio >= 0.45 or targeted_host_support))
+    )
+
+
+def _candidate_has_strong_field_hint(candidate: Any, *, min_score: float = 1.0) -> bool:
+    if not isinstance(candidate, dict):
+        return False
+    if _is_low_value_openwebpage_candidate(candidate):
+        return False
+    try:
+        field_hint_score = float(candidate.get("field_hint_score", 0.0) or 0.0)
+    except Exception:
+        field_hint_score = 0.0
+    return bool(field_hint_score >= float(min_score))
+
+
+def _candidate_has_targeted_authority_support(candidate: Any) -> bool:
+    if not isinstance(candidate, dict):
         return False
     try:
         entity_ratio = float(candidate.get("entity_ratio", 0.0) or 0.0)
     except Exception:
         entity_ratio = 0.0
-    return bool(_is_source_specific_url(page_url) and entity_ratio >= 0.35)
+    try:
+        preferred_domain_score = float(candidate.get("preferred_domain_score", 0.0) or 0.0)
+    except Exception:
+        preferred_domain_score = 0.0
+    try:
+        detail_score = float(candidate.get("detail_score", 0.0) or 0.0)
+    except Exception:
+        detail_score = 0.0
+    try:
+        authority_score = float(candidate.get("authority_score", 0.0) or 0.0)
+    except Exception:
+        authority_score = 0.0
+    authoritative_detail_page_rescue = bool(
+        authority_score >= 0.95
+        and detail_score >= 0.85
+    )
+    return bool(
+        entity_ratio >= 0.45
+        or bool(candidate.get("query_intent_required_host_match", False))
+        or bool(candidate.get("query_intent_preferred_host_match", False))
+        or preferred_domain_score > 0.0
+        or authoritative_detail_page_rescue
+    )
+
+
+def _candidate_uses_authority_lane(candidate: Any, *, webpage_policy: Any = None) -> bool:
+    if not isinstance(candidate, dict):
+        return False
+    page_url = _normalize_url_match(candidate.get("url") or candidate.get("source_url"))
+    if not page_url or _is_noise_source_url(page_url):
+        return False
+    if _candidate_followup_score(candidate) < _candidate_followup_threshold(webpage_policy):
+        return False
+    try:
+        authority_score = float(candidate.get("authority_score", 0.0) or 0.0)
+    except Exception:
+        authority_score = 0.0
+    source_tier = _candidate_source_tier(candidate, source_url=page_url)
+    try:
+        preferred_domain_score = float(candidate.get("preferred_domain_score", 0.0) or 0.0)
+    except Exception:
+        preferred_domain_score = 0.0
+    try:
+        detail_score = float(candidate.get("detail_score", 0.0) or 0.0)
+    except Exception:
+        detail_score = 0.0
+    source_specific = bool(
+        candidate.get("source_specific", False)
+        or _is_source_specific_url(page_url)
+    )
+    targeted_support = _candidate_has_targeted_authority_support(candidate)
+    if not targeted_support:
+        return False
+    if not (source_specific or detail_score >= 0.85 or preferred_domain_score > 0.0):
+        return False
+    return bool(
+        authority_score >= 0.85
+        or source_tier >= 3
+        or (source_specific and preferred_domain_score > 0.0)
+    )
+
+
+def _is_low_value_openwebpage_candidate(candidate: Any) -> bool:
+    if not isinstance(candidate, dict):
+        return False
+    page_url = _normalize_url_match(candidate.get("url") or candidate.get("source_url"))
+    if not page_url:
+        return False
+    lowered_url = str(page_url).lower()
+    host = _url_host(page_url)
+    path = str(urlparse(page_url).path or "").lower()
+    if any(fragment in host for fragment in _LOW_VALUE_OPENWEBPAGE_HOST_FRAGMENTS):
+        return True
+    if any(fragment in path for fragment in _LOW_VALUE_OPENWEBPAGE_PATH_FRAGMENTS):
+        return True
+    if any(fragment in lowered_url for fragment in _LOW_VALUE_OPENWEBPAGE_NEWS_PATH_FRAGMENTS):
+        return True
+    return False
+
+
+def _openwebpage_followup_candidate_sort_key(
+    candidate: Any,
+    *,
+    webpage_policy: Any = None,
+) -> tuple:
+    if not isinstance(candidate, dict):
+        return (1, 1, 1, 1, 1.0, 1, 1.0, 1, 1.0, 1, 1.0, 9999, "")
+    authority_lane = _candidate_uses_authority_lane(candidate, webpage_policy=webpage_policy)
+    evidence_lane = _candidate_has_followup_evidence_signal(candidate)
+    low_value = _is_low_value_openwebpage_candidate(candidate)
+    return (
+        -int(bool(candidate.get("query_intent_required_host_match", False))),
+        -int(_candidate_has_strong_field_hint(candidate)),
+        -int(bool(authority_lane)),
+        -int(_candidate_source_tier(candidate)),
+        -int(_authority_tier_from_score(candidate.get("authority_score", 0.0))),
+        -int(bool(candidate.get("source_specific", False) or _is_source_specific_url(candidate.get("url")))),
+        -float(candidate.get("detail_score", 0.0) or 0.0),
+        -float(candidate.get("preferred_domain_score", 0.0) or 0.0),
+        -int(bool(candidate.get("query_intent_preferred_host_match", False))),
+        -float(_candidate_followup_score(candidate)),
+        int(bool(low_value and not evidence_lane)),
+        -float(candidate.get("field_hint_score", 0.0) or 0.0),
+        -int(candidate.get("query_intent_quoted_phrase_hits", 0) or 0),
+        -float(candidate.get("entity_ratio", 0.0) or 0.0),
+        int(candidate.get("order", 9999) or 9999),
+        str(candidate.get("url") or ""),
+    )
+
+
+def _candidate_is_relevant_followup_target(candidate: Any, *, webpage_policy: Any = None) -> bool:
+    if not isinstance(candidate, dict):
+        return False
+    if _candidate_uses_authority_lane(candidate, webpage_policy=webpage_policy):
+        return True
+    if _candidate_has_strong_field_hint(candidate):
+        return True
+    if _candidate_has_followup_evidence_signal(candidate):
+        return True
+    return bool(candidate.get("query_intent_required_host_match", False))
+
+
+def _search_snippet_candidate_supports_openwebpage_escalation(
+    candidate: Any,
+    *,
+    target_anchor: Any = None,
+    webpage_policy: Any = None,
+) -> bool:
+    if not isinstance(candidate, dict):
+        return False
+    page_url = _normalize_url_match(candidate.get("url"))
+    if not page_url or _is_noise_source_url(page_url):
+        return False
+    normalized_policy = _normalize_webpage_policy(webpage_policy)
+    if _candidate_uses_authority_lane(candidate, webpage_policy=normalized_policy):
+        return True
+    if not _candidate_has_followup_source_strength(candidate):
+        return False
+    if not _candidate_has_followup_evidence_signal(candidate):
+        return False
+    return bool(
+        _candidate_followup_score(candidate)
+        >= _candidate_followup_threshold(normalized_policy)
+    )
 
 
 def _normalize_key_token(token: Any) -> str:
@@ -6474,20 +6826,78 @@ def _collect_tool_urls_from_messages(
     return urls
 
 
-def _collect_openwebpage_urls_from_messages(messages: Any, *, max_urls: int = 256) -> set:
-    """Collect normalized URLs that were actually opened via OpenWebpage."""
+def _extract_openwebpage_requested_url(raw_call: Any) -> Optional[str]:
+    if _normalize_match_text(_tool_call_name(raw_call)) != "openwebpage":
+        return None
+    args = None
+    if isinstance(raw_call, dict):
+        args = raw_call.get("args")
+        if args is None and isinstance(raw_call.get("function"), dict):
+            args = raw_call.get("function", {}).get("arguments")
+    else:
+        try:
+            args = getattr(raw_call, "args", None)
+            if args is None:
+                fn_spec = getattr(raw_call, "function", None)
+                if isinstance(fn_spec, dict):
+                    args = fn_spec.get("arguments")
+                elif fn_spec is not None:
+                    args = getattr(fn_spec, "arguments", None)
+        except Exception:
+            args = None
+    if isinstance(args, str):
+        parsed_args = parse_llm_json(args)
+        args = parsed_args if isinstance(parsed_args, dict) else {"url": args}
+    if not isinstance(args, dict):
+        return None
+    normalized = _normalize_url_from_text_snippet(args.get("url"))
+    if normalized and not _is_noise_source_url(normalized):
+        return normalized
+    return None
+
+
+def _collect_attempted_openwebpage_urls_from_messages(messages: Any, *, max_urls: int = 256) -> set:
+    """Collect canonical OpenWebpage targets from prior AI tool calls and tool outputs."""
     limit = max(1, int(max_urls))
     urls = set()
-    for payload_item in _tool_message_payloads(messages):
-        if _normalize_match_text(payload_item.get("tool_name")) != "openwebpage":
-            continue
-        for raw_url in payload_item.get("urls") or []:
-            normalized = _normalize_url_match(raw_url)
-            if not normalized or _is_noise_source_url(normalized):
+    for msg in list(messages or []):
+        for raw_call in _message_tool_calls(msg):
+            normalized = _extract_openwebpage_requested_url(raw_call)
+            if not normalized:
                 continue
             urls.add(normalized)
             if len(urls) >= limit:
                 return urls
+        if not _message_is_tool(msg):
+            continue
+        if _normalize_match_text(_tool_message_name(msg)) != "openwebpage":
+            continue
+        text = _message_content_to_text(_message_content_from_message(msg))
+        normalized = _extract_openwebpage_canonical_url(text)
+        if not normalized:
+            continue
+        urls.add(normalized)
+        if len(urls) >= limit:
+            return urls
+    return urls
+
+
+def _collect_openwebpage_urls_from_messages(messages: Any, *, max_urls: int = 256) -> set:
+    """Collect normalized URLs that were actually opened via OpenWebpage."""
+    limit = max(1, int(max_urls))
+    urls = set()
+    for msg in list(messages or []):
+        if not _message_is_tool(msg):
+            continue
+        if _normalize_match_text(_tool_message_name(msg)) != "openwebpage":
+            continue
+        text = _message_content_to_text(_message_content_from_message(msg))
+        normalized = _extract_openwebpage_canonical_url(text)
+        if not normalized:
+            continue
+        urls.add(normalized)
+        if len(urls) >= limit:
+            return urls
     return urls
 
 
@@ -6503,14 +6913,27 @@ def _collect_successful_openwebpage_urls_from_messages(messages: Any, *, max_url
         text = _message_content_to_text(_message_content_from_message(msg))
         if _openwebpage_hard_failure_reason(text):
             continue
-        for raw_url in _extract_url_candidates(text, max_urls=3):
-            normalized = _normalize_url_match(raw_url)
-            if not normalized or _is_noise_source_url(normalized):
-                continue
-            urls.add(normalized)
-            if len(urls) >= limit:
-                return urls
+        normalized = _extract_openwebpage_canonical_url(text)
+        if not normalized:
+            continue
+        urls.add(normalized)
+        if len(urls) >= limit:
+            return urls
     return urls
+
+
+def _count_tool_messages(messages: Any, *, tool_name: str) -> int:
+    normalized_tool_name = _normalize_match_text(tool_name)
+    if not normalized_tool_name:
+        return 0
+    count = 0
+    for msg in list(messages or []):
+        if not _message_is_tool(msg):
+            continue
+        if _normalize_match_text(_tool_message_name(msg)) != normalized_tool_name:
+            continue
+        count += 1
+    return int(count)
 
 
 def _invoke_selector_model_with_timeout(
@@ -7143,9 +7566,9 @@ def _select_round_openwebpage_candidate(
     if any(_normalize_match_text(p.get("tool_name")) == "openwebpage" for p in payloads):
         return None
 
-    previously_opened = _collect_openwebpage_urls_from_messages(state_messages, max_urls=1024)
-    previously_opened.update(
-        _collect_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
+    previously_attempted = _collect_attempted_openwebpage_urls_from_messages(state_messages, max_urls=1024)
+    previously_attempted.update(
+        _collect_attempted_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
     )
     policy = _normalize_webpage_policy(webpage_policy, profile="balanced")
     min_url_score = _clamp01(
@@ -7181,7 +7604,7 @@ def _select_round_openwebpage_candidate(
             task_prompt=_extract_last_user_prompt(list(state_messages or [])),
             search_queries=[str(q or "") for q in list(search_queries or [])[:8]],
             candidates=llm_candidates,
-            previously_opened=previously_opened,
+            previously_opened=previously_attempted,
             query_intent=query_intent,
         )
         if chosen_url:
@@ -7189,16 +7612,18 @@ def _select_round_openwebpage_candidate(
         if selector_mode == "llm":
             return None
 
-    best = ranked_candidates[0]
-    best_url = _normalize_url_match(best.get("url"))
-    best_url_score = float(best.get("url_score", 0.0))
-    best_hits = int(best.get("entity_hits", 0))
-    best_ratio = float(best.get("entity_ratio", 0.0))
-    if not best_url or best_url_score < float(min_url_score):
-        return None
-    if entity_tokens and (best_hits < min_hits or best_ratio < min_ratio):
-        return None
-    return best_url
+    for best in ranked_candidates:
+        best_url = _normalize_url_match(best.get("url"))
+        best_url_score = float(best.get("url_score", 0.0))
+        best_hits = int(best.get("entity_hits", 0))
+        best_ratio = float(best.get("entity_ratio", 0.0))
+        if not best_url or best_url_score < float(min_url_score):
+            continue
+        if entity_tokens and (best_hits < min_hits or best_ratio < min_ratio):
+            if not _candidate_uses_authority_lane(best, webpage_policy=policy):
+                continue
+        return best_url
+    return None
 
 
 def _collect_round_openwebpage_candidates(
@@ -7221,9 +7646,9 @@ def _collect_round_openwebpage_candidates(
     if any(_normalize_match_text(p.get("tool_name")) == "openwebpage" for p in payloads):
         return []
 
-    previously_opened = _collect_openwebpage_urls_from_messages(state_messages, max_urls=1024)
-    previously_opened.update(
-        _collect_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
+    previously_attempted = _collect_attempted_openwebpage_urls_from_messages(state_messages, max_urls=1024)
+    previously_attempted.update(
+        _collect_attempted_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
     )
     policy = _normalize_webpage_policy(webpage_policy, profile="balanced")
     min_url_score = _clamp01(
@@ -7286,7 +7711,7 @@ def _collect_round_openwebpage_candidates(
             normalized = _normalize_url_match(raw_url)
             if not normalized or _is_noise_source_url(normalized):
                 continue
-            if normalized in seen or normalized in previously_opened:
+            if normalized in seen or normalized in previously_attempted:
                 continue
             candidate_host = _url_host(normalized)
             if candidate_host and float(blocked_host_map.get(candidate_host, 0.0) or 0.0) > now_value:
@@ -7343,15 +7768,16 @@ def _collect_round_openwebpage_candidates(
 
     ranked_candidates = sorted(
         candidates,
-        key=lambda item: (
-            -int(bool(item.get("query_intent_required_host_match", False))),
-            -int(item.get("query_intent_quoted_phrase_hits", 0) or 0),
-            -int(bool(item.get("query_intent_preferred_host_match", False))),
-            -float(item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0),
-            int(item.get("order", 9999) or 9999),
-            str(item.get("url") or ""),
+        key=lambda item: _openwebpage_followup_candidate_sort_key(
+            item,
+            webpage_policy=policy,
         ),
     )
+    relevant_ranked_candidates = [
+        item for item in ranked_candidates
+        if _candidate_is_relevant_followup_target(item, webpage_policy=policy)
+    ]
+    ranked_candidates = relevant_ranked_candidates
 
     if selector_mode == "heuristic" and entity_tokens:
         filtered = [
@@ -7361,8 +7787,7 @@ def _collect_round_openwebpage_candidates(
                 or float(item.get("entity_ratio", 0.0) or 0.0) >= min_ratio
                 or int(item.get("query_intent_quoted_phrase_hits", 0) or 0) > 0
                 or bool(item.get("query_intent_preferred_host_match", False))
-                or int(item.get("source_tier", 0) or 0) >= 3
-                or int(item.get("authority_tier", 0) or 0) >= 4
+                or bool(_candidate_uses_authority_lane(item, webpage_policy=policy))
             )
         ]
         if filtered:
@@ -7512,11 +7937,11 @@ def _preferred_openwebpage_candidate_for_round(
         return None
     if any(_normalize_match_text(p.get("tool_name")) == "openwebpage" for p in payloads):
         return None
-    previously_opened = _collect_openwebpage_urls_from_messages(state_messages, max_urls=1024)
-    previously_opened.update(
-        _collect_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
+    previously_attempted = _collect_attempted_openwebpage_urls_from_messages(state_messages, max_urls=1024)
+    previously_attempted.update(
+        _collect_attempted_openwebpage_urls_from_messages(round_tool_messages, max_urls=128)
     )
-    if normalized in previously_opened:
+    if normalized in previously_attempted:
         return None
     blocked_host_map = _normalize_blocked_openwebpage_hosts(
         blocked_hosts,
@@ -8191,7 +8616,7 @@ def _task_target_anchor_from_messages(
     if not prompt:
         return _normalize_target_anchor({})
 
-    hints = _extract_profile_hints(prompt)
+    hints = _extract_entity_hints(prompt)
     tokens: List[str] = []
     phrases: List[str] = []
     id_signals: List[str] = []
@@ -8209,7 +8634,7 @@ def _task_target_anchor_from_messages(
         if len(tokens) >= max(1, int(max_tokens)):
             break
     if tokens:
-        provenance.append("profile_hints")
+        provenance.append("entity_hints")
         phrase = " ".join(tokens[: max(2, min(len(tokens), 4))]).strip()
         if phrase:
             phrases.append(phrase)
@@ -8256,7 +8681,7 @@ def _task_target_anchor_from_messages(
         if len(id_signals) >= 8:
             break
 
-    # Build context_tokens and context_labels from profile hints.
+    # Build context_tokens and context_labels from extracted entity hints.
     context_toks: List[str] = []
     context_labels: List[str] = []
     for raw_tok in list(hints.get("context_tokens") or set()):
@@ -9133,6 +9558,50 @@ def _normalize_blocked_openwebpage_hosts(
     return normalized
 
 
+def _normalize_preferred_openwebpage_urls(
+    raw_urls: Any,
+    *,
+    max_urls: int = 6,
+) -> List[str]:
+    values: List[Any]
+    if raw_urls is None:
+        values = []
+    elif isinstance(raw_urls, (list, tuple, set)):
+        values = list(raw_urls)
+    else:
+        values = [raw_urls]
+    normalized: List[str] = []
+    seen = set()
+    limit = max(1, int(max_urls))
+    for raw in values:
+        url = _normalize_url_match(raw)
+        if not url or _is_noise_source_url(url) or url in seen:
+            continue
+        seen.add(url)
+        normalized.append(url)
+        if len(normalized) >= limit:
+            break
+    return normalized
+
+
+def _merge_preferred_openwebpage_urls(
+    *url_groups: Any,
+    max_urls: int = 6,
+) -> List[str]:
+    merged: List[str] = []
+    seen = set()
+    limit = max(1, int(max_urls))
+    for group in list(url_groups or []):
+        for url in _normalize_preferred_openwebpage_urls(group, max_urls=limit):
+            if url in seen:
+                continue
+            seen.add(url)
+            merged.append(url)
+            if len(merged) >= limit:
+                return merged
+    return merged
+
+
 def _normalize_budget_state(
     budget_state: Any,
     *,
@@ -9197,6 +9666,13 @@ def _normalize_budget_state(
         elif tool_budget_exhausted:
             limit_trigger_reason = "tool_budget"
     preferred_openwebpage_url = _normalize_url_match(existing.get("preferred_openwebpage_url"))
+    preferred_openwebpage_urls = _merge_preferred_openwebpage_urls(
+        [preferred_openwebpage_url] if preferred_openwebpage_url else [],
+        existing.get("preferred_openwebpage_urls"),
+        max_urls=6,
+    )
+    if preferred_openwebpage_urls:
+        preferred_openwebpage_url = preferred_openwebpage_urls[0]
     out.update({
         "tool_calls_used": used,
         "tool_calls_limit": limit,
@@ -9234,7 +9710,14 @@ def _normalize_budget_state(
             max_hosts=256,
         ),
         "blocked_host_skip_events": max(0, int(existing.get("blocked_host_skip_events", 0) or 0)),
+        "search_snippet_timeout_count": max(
+            0, int(existing.get("search_snippet_timeout_count", 0) or 0)
+        ),
+        "search_snippet_timeout_circuit_open": bool(
+            existing.get("search_snippet_timeout_circuit_open", False)
+        ),
         "preferred_openwebpage_url": preferred_openwebpage_url,
+        "preferred_openwebpage_urls": preferred_openwebpage_urls,
     })
     return out
 
@@ -9435,15 +9918,26 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "search_snippet_skipped_low_information",
         "search_snippet_openwebpage_escalation_events",
         "search_snippet_openwebpage_escalation_successes",
+        "search_snippet_timeout_circuit_events",
+        "search_snippet_timeout_circuit_open_rounds",
+        "search_snippet_forced_openwebpage_followup_rounds",
+        "search_snippet_preferred_queue_size_max",
         "search_snippet_escalated_to_openwebpage",
         "search_snippet_deterministic_fallback_calls",
         "search_snippet_deterministic_fallback_payloads",
         "search_snippet_deterministic_fallback_no_payload",
+        "search_snippet_structured_output_elapsed_ms_total",
+        "search_snippet_structured_output_elapsed_ms_max",
+        "search_snippet_structured_output_timeout_elapsed_ms_total",
         "search_snippet_provider_timeout",
         "search_snippet_provider_empty_payload",
         "search_snippet_payload_filtered_all_keys",
         "search_snippet_budget_blocked_rounds",
         "search_snippet_policy_blocked_rounds",
+        "auto_openwebpage_quota_blocked_rounds",
+        "auto_openwebpage_budget_blocked_rounds",
+        "auto_openwebpage_no_preferred_candidate_rounds",
+        "auto_openwebpage_no_generic_candidate_rounds",
         "webpage_budget_blocked_rounds",
         "webpage_policy_blocked_rounds",
         "webpage_langextract_elapsed_ms_total",
@@ -15961,7 +16455,7 @@ def _build_retry_rewrite_message(
     field_hint = ", ".join(list(pending_fields or [])[:6]) if pending_fields else "remaining fields"
     focused_template = str(templates.get("focused_field_query") or "{entity} {field}")
     source_template = str(templates.get("source_constrained_query") or "site:{domain} {entity} {field}")
-    disambiguation_template = str(templates.get("disambiguation_query") or "{entity} {field} biography profile")
+    disambiguation_template = str(templates.get("disambiguation_query") or "{entity} {field} exact match")
     preferred_domains = [
         str(v).strip()
         for v in list(source_policy.get("preferred_domains") or [])
@@ -16578,6 +17072,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
     field_status: Any,
     tool_messages: Any,
     source_policy: Any = None,
+    webpage_policy: Any = None,
     search_queries: Any = None,
     entity_tokens: Optional[List[str]] = None,
     target_anchor: Any = None,
@@ -16592,6 +17087,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
     langextract_prompt_validation_level: str = "warning",
     langextract_backend_hint: Optional[str] = None,
     langextract_model_id: Optional[str] = None,
+    structured_output_timeout_circuit_open: bool = False,
     debug: bool = False,
 ) -> tuple[List[Dict[str, Any]], List[str], Dict[str, Any]]:
     """Best-effort schema extraction from Search tool snippet blocks.
@@ -16616,6 +17112,9 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "structured_output_calls": 0,
         "structured_output_errors": 0,
         "structured_output_last_error": "",
+        "structured_output_elapsed_ms_total": 0,
+        "structured_output_elapsed_ms_max": 0,
+        "structured_output_timeout_elapsed_ms_total": 0,
         "deterministic_fallback_calls": 0,
         "deterministic_fallback_payloads": 0,
         "deterministic_fallback_no_payload": 0,
@@ -16633,11 +17132,13 @@ def _llm_extract_schema_payloads_from_search_snippets(
         "provider_empty_payload": 0,
         "payload_filtered_all_keys": 0,
         "preferred_openwebpage_url": None,
+        "preferred_openwebpage_urls": [],
     }
 
     if expected_schema is None:
         return [], [], metadata
     normalized_source_policy = _normalize_source_policy(source_policy)
+    normalized_webpage_policy = _normalize_webpage_policy(webpage_policy)
     query_intent = _query_intent_for_search_queries(
         search_queries,
         source_policy=normalized_source_policy,
@@ -16804,16 +17305,19 @@ def _llm_extract_schema_payloads_from_search_snippets(
             )
         )
     ranked_candidates_input.sort(
-        key=lambda item: (
-            -int(bool(item.get("query_intent_required_host_match", False))),
-            -int(item.get("query_intent_quoted_phrase_hits", 0) or 0),
-            -int(bool(item.get("query_intent_preferred_host_match", False))),
-            -float(item.get("field_hint_score", 0.0) or 0.0),
-            -float(item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0),
-            int(item.get("order", 9999) or 9999),
-            str(item.get("url") or ""),
+        key=lambda item: _openwebpage_followup_candidate_sort_key(
+            item,
+            webpage_policy=normalized_webpage_policy,
         ),
     )
+    relevant_ranked_candidates_input = [
+        item for item in ranked_candidates_input
+        if _candidate_is_relevant_followup_target(
+            item,
+            webpage_policy=normalized_webpage_policy,
+        )
+    ]
+    ranked_candidates_input = relevant_ranked_candidates_input
     chosen = list(ranked_candidates_input)[: max(1, int(max_sources))]
     metadata["snippet_candidates_selected"] = len(chosen)
     metadata["snippet_candidates_selected_with_field_hints"] = sum(
@@ -16879,6 +17383,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
             if not _search_snippet_candidate_supports_openwebpage_escalation(
                 item,
                 target_anchor=target_anchor_state,
+                webpage_policy=normalized_webpage_policy,
             ):
                 return
             existing = escalation_map.get(page_url)
@@ -16888,6 +17393,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 "entity_ratio": float(item.get("entity_ratio", 0.0) or 0.0),
                 "field_hint_score": float(item.get("field_hint_score", 0.0) or 0.0),
                 "authority_score": float(item.get("authority_score", 0.0) or 0.0),
+                "authority_tier": int(item.get("authority_tier", 0) or 0),
                 "detail_score": float(item.get("detail_score", 0.0) or 0.0),
                 "preferred_domain_score": float(item.get("preferred_domain_score", 0.0) or 0.0),
                 "query_intent_preferred_host_match": bool(item.get("query_intent_preferred_host_match", False)),
@@ -16898,6 +17404,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 "constraint_tier": int(item.get("constraint_tier", 0) or 0),
                 "entity_tier": int(item.get("entity_tier", 0) or 0),
                 "source_tier": int(item.get("source_tier", 0) or 0),
+                "source_specific": bool(item.get("source_specific", False)),
                 "specificity_tier": int(item.get("specificity_tier", 0) or 0),
                 "followup_score": float(
                     item.get("openwebpage_followup_score", item.get("total_score", 0.0)) or 0.0
@@ -16999,6 +17506,9 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 continue
 
         if use_structured_output:
+            if bool(structured_output_timeout_circuit_open):
+                _record_openwebpage_escalation()
+                continue
             if selector_model is None:
                 _record_openwebpage_escalation()
                 continue
@@ -17006,6 +17516,7 @@ def _llm_extract_schema_payloads_from_search_snippets(
             metadata["structured_output_calls"] = int(
                 metadata.get("structured_output_calls", 0) or 0
             ) + 1
+            _structured_output_started = time.perf_counter()
             structured_result = _invoke_structured_selector_model_with_timeout(
                 selector_model,
                 [
@@ -17034,6 +17545,17 @@ def _llm_extract_schema_payloads_from_search_snippets(
                 max_output_tokens=max(64, int(max_output_tokens)),
                 timeout_s=timeout_s,
             )
+            _structured_output_elapsed_ms = max(
+                0,
+                int(round((time.perf_counter() - _structured_output_started) * 1000.0)),
+            )
+            metadata["structured_output_elapsed_ms_total"] = int(
+                metadata.get("structured_output_elapsed_ms_total", 0) or 0
+            ) + int(_structured_output_elapsed_ms)
+            metadata["structured_output_elapsed_ms_max"] = max(
+                int(metadata.get("structured_output_elapsed_ms_max", 0) or 0),
+                int(_structured_output_elapsed_ms),
+            )
             structured_payload = structured_result.get("payload") if isinstance(structured_result, dict) else {}
             if isinstance(structured_payload, dict) and structured_payload:
                 _emit_payload(structured_payload)
@@ -17044,6 +17566,10 @@ def _llm_extract_schema_payloads_from_search_snippets(
                     metadata.get("structured_output_errors", 0) or 0
                 ) + 1
                 metadata["structured_output_last_error"] = structured_error[:400]
+            if structured_error == "provider_timeout" or "timeout" in structured_error.lower():
+                metadata["structured_output_timeout_elapsed_ms_total"] = int(
+                    metadata.get("structured_output_timeout_elapsed_ms_total", 0) or 0
+                ) + int(_structured_output_elapsed_ms)
             _record_empty_payload_reason(structured_error)
             _record_openwebpage_escalation()
             continue
@@ -17195,22 +17721,17 @@ def _llm_extract_schema_payloads_from_search_snippets(
     metadata["snippet_escalated_to_openwebpage"] = len(escalation_candidates)
     if escalation_candidates:
         escalation_candidates.sort(
-            key=lambda c: (
-                -int(bool(c.get("query_intent_required_host_match", False))),
-                -int(c.get("source_tier", c.get("authority_tier", 0)) or 0),
-                -int(c.get("entity_tier", 0) or 0),
-                -int(c.get("specificity_tier", 0) or 0),
-                -int(c.get("query_intent_quoted_phrase_hits", 0) or 0),
-                -int(bool(c.get("query_intent_preferred_host_match", False))),
-                -float(c.get("followup_score", 0.0) or 0.0),
-                -float(c.get("field_hint_score", 0.0) or 0.0),
-                int(c.get("order", 9999)),
-                str(c.get("url") or ""),
+            key=lambda c: _openwebpage_followup_candidate_sort_key(
+                c,
+                webpage_policy=normalized_webpage_policy,
             ),
         )
-        metadata["preferred_openwebpage_url"] = _normalize_url_match(
-            escalation_candidates[0].get("url")
+        preferred_urls = _normalize_preferred_openwebpage_urls(
+            [candidate.get("url") for candidate in escalation_candidates],
+            max_urls=3,
         )
+        metadata["preferred_openwebpage_urls"] = preferred_urls
+        metadata["preferred_openwebpage_url"] = preferred_urls[0] if preferred_urls else None
 
     return out_payloads, processed_urls, metadata
 
@@ -17289,6 +17810,7 @@ def _apply_auto_openwebpage_followup(
     search_queries: List[str],
     had_explicit_openwebpage_call: bool,
     selector_model: Any = None,
+    force_due_to_snippet_recovery: bool = False,
     return_metadata: bool = False,
     debug: bool = False,
 ) -> Any:
@@ -17304,7 +17826,11 @@ def _apply_auto_openwebpage_followup(
         return _return(list(tool_messages or []))
     if _is_critical_recursion_step(state, remaining_steps_value(state)):
         return _return(list(tool_messages or []))
-    if not _should_auto_openwebpage_followup(state, list(tool_messages or []), list(search_queries or [])):
+    if not force_due_to_snippet_recovery and not _should_auto_openwebpage_followup(
+        state,
+        list(tool_messages or []),
+        list(search_queries or []),
+    ):
         return _return(list(tool_messages or []))
     budget_state = _state_budget(state)
     now_ts = float(time.time())
@@ -17316,7 +17842,7 @@ def _apply_auto_openwebpage_followup(
     webpage_policy = _state_webpage_policy(state)
     source_policy = _state_source_policy(state)
     remaining_tool_budget = max(0, int(budget_state.get("tool_calls_remaining", 0) or 0))
-    opened_urls = _collect_openwebpage_urls_from_messages(
+    attempted_open_urls = _collect_attempted_openwebpage_urls_from_messages(
         state.get("messages"),
         max_urls=2048,
     )
@@ -17324,32 +17850,65 @@ def _apply_auto_openwebpage_followup(
         max_open_calls = max(1, int(webpage_policy.get("max_open_calls", 3) or 3))
     except Exception:
         max_open_calls = 3
-    remaining_open_quota = max(0, int(max_open_calls) - int(len(opened_urls)))
+    remaining_open_quota = max(0, int(max_open_calls) - int(len(attempted_open_urls)))
     try:
         parallel_open_limit = max(1, int(webpage_policy.get("parallel_open_limit", 1) or 1))
     except Exception:
         parallel_open_limit = 1
+    if (
+        bool(budget_state.get("quality_gate_recovery_active", False))
+        or bool(budget_state.get("search_snippet_timeout_circuit_open", False))
+    ):
+        parallel_open_limit = max(int(parallel_open_limit), 2)
     follow_attempt_limit = max(
         0,
         min(int(remaining_tool_budget), int(remaining_open_quota), int(parallel_open_limit)),
     )
     if follow_attempt_limit <= 0:
+        if int(remaining_open_quota) <= 0:
+            selection_metadata["noop_reason"] = "quota_blocked"
+        elif int(remaining_tool_budget) <= 0:
+            selection_metadata["noop_reason"] = "budget_blocked"
         return _return(list(tool_messages or []))
 
     candidate_urls: List[str] = []
-    preferred_url = None
+    preferred_urls: List[str] = []
     if isinstance(budget_state, dict):
-        preferred_url = budget_state.get("preferred_openwebpage_url")
-    preferred_candidate = _preferred_openwebpage_candidate_for_round(
-        preferred_url,
-        state.get("messages") or [],
-        list(tool_messages or []),
-        blocked_hosts=blocked_hosts,
-        now_ts=now_ts,
-    )
-    if preferred_candidate:
+        preferred_urls = _merge_preferred_openwebpage_urls(
+            budget_state.get("preferred_openwebpage_urls"),
+            budget_state.get("preferred_openwebpage_url"),
+            max_urls=max(1, int(follow_attempt_limit)),
+        )
+    preferred_slot_limit = 1
+    if preferred_urls and (
+        bool(budget_state.get("quality_gate_recovery_active", False))
+        or bool(budget_state.get("search_snippet_timeout_circuit_open", False))
+    ):
+        preferred_head = _score_openwebpage_followup_candidate(
+            {
+                "url": preferred_urls[0],
+                "base_score": float(_score_primary_source_url(preferred_urls[0])),
+                "url_score": float(_score_primary_source_url(preferred_urls[0])),
+            },
+            source_policy,
+        )
+        if _candidate_uses_authority_lane(preferred_head, webpage_policy=webpage_policy):
+            preferred_slot_limit = max(1, min(2, int(follow_attempt_limit)))
+    for preferred_url in list(preferred_urls or [])[: max(1, int(preferred_slot_limit))]:
+        preferred_candidate = _preferred_openwebpage_candidate_for_round(
+            preferred_url,
+            state.get("messages") or [],
+            list(tool_messages or []),
+            blocked_hosts=blocked_hosts,
+            now_ts=now_ts,
+        )
+        if not preferred_candidate or preferred_candidate in candidate_urls:
+            continue
         candidate_urls.append(preferred_candidate)
+        if len(candidate_urls) >= int(follow_attempt_limit):
+            break
     remaining_slots = max(0, int(follow_attempt_limit) - int(len(candidate_urls)))
+    generic_candidates: List[str] = []
     if remaining_slots > 0:
         generic_candidates = _select_round_openwebpage_candidates(
             state.get("messages") or [],
@@ -17370,6 +17929,10 @@ def _apply_auto_openwebpage_followup(
             if len(candidate_urls) >= int(follow_attempt_limit):
                 break
     if not candidate_urls:
+        if preferred_urls:
+            selection_metadata["noop_reason"] = "no_preferred_candidate"
+        else:
+            selection_metadata["noop_reason"] = "no_generic_candidate"
         return _return(list(tool_messages or []))
 
     selection_details = _openwebpage_followup_selection_details(
@@ -17394,10 +17957,21 @@ def _apply_auto_openwebpage_followup(
         selection_metadata["selected_url_preferred_domain_boost_applied"] = bool(
             first_detail.get("preferred_domain_boost_applied", False)
         )
+    selection_metadata["forced_due_to_snippet_recovery"] = bool(force_due_to_snippet_recovery)
+    selection_metadata["remaining_open_quota"] = int(remaining_open_quota)
 
     appended_messages: List[Any] = []
     blocked_hosts_for_round = set()
     attempted_hosts = set()
+    attempted_urls: List[str] = []
+    successful_urls: List[str] = []
+    successful_followups = 0
+    successful_followup_limit = 1
+    if (
+        bool(budget_state.get("quality_gate_recovery_active", False))
+        or bool(budget_state.get("search_snippet_timeout_circuit_open", False))
+    ):
+        successful_followup_limit = max(1, min(2, int(follow_attempt_limit)))
 
     try:
         from langchain_core.messages import AIMessage
@@ -17415,6 +17989,7 @@ def _apply_auto_openwebpage_followup(
                 continue
             if host:
                 attempted_hosts.add(host)
+            attempted_urls.append(normalized_url)
 
             follow_ai = AIMessage(content="", tool_calls=[{
                 "name": "OpenWebpage",
@@ -17446,8 +18021,11 @@ def _apply_auto_openwebpage_followup(
                     hard_failure_reasons.append(str(failure_reason))
 
             if not hard_failure_reasons:
-                # First successful response wins; avoid redundant follow-ups.
-                break
+                successful_urls.append(normalized_url)
+                successful_followups += 1
+                if successful_followups >= int(successful_followup_limit):
+                    break
+                continue
 
             if host and any(
                 reason in {"blocked_fetch", "bot_wall"}
@@ -17461,6 +18039,9 @@ def _apply_auto_openwebpage_followup(
     except Exception as follow_exc:
         if debug:
             logger.warning("Auto OpenWebpage follow-up failed: %s", follow_exc)
+
+    selection_metadata["attempted_urls"] = attempted_urls[: max(1, int(follow_attempt_limit))]
+    selection_metadata["successful_urls"] = successful_urls[: max(1, int(successful_followup_limit))]
 
     if appended_messages:
         return _return(list(tool_messages or []) + list(appended_messages))
@@ -17683,9 +18264,15 @@ def _create_tool_node_with_scratchpad(
             except Exception:
                 max_output_tokens = 160
             try:
-                timeout_s = float(field_resolver_options.get("search_snippet_extraction_timeout_s", 6.0) or 6.0)
+                timeout_s = float(
+                    field_resolver_options.get(
+                        "search_snippet_extraction_timeout_s",
+                        _default_search_snippet_timeout_s(performance_profile),
+                    )
+                    or _default_search_snippet_timeout_s(performance_profile)
+                )
             except Exception:
-                timeout_s = 6.0
+                timeout_s = _default_search_snippet_timeout_s(performance_profile)
             extraction_engine = _normalize_search_snippet_extraction_engine(
                 field_resolver_options.get("search_snippet_extraction_engine")
             )
@@ -17713,12 +18300,16 @@ def _create_tool_node_with_scratchpad(
             if langextract_model_id is not None:
                 langextract_model_id = str(langextract_model_id).strip() or None
             already_extracted = set((prior_budget or {}).get("search_snippet_extracted_urls") or [])
+            structured_output_timeout_circuit_open = bool(
+                (prior_budget or {}).get("search_snippet_timeout_circuit_open", False)
+            )
             return _llm_extract_schema_payloads_from_search_snippets(
                 selector_model=selector_model,
                 expected_schema=expected_schema,
                 field_status=field_status,
                 tool_messages=extraction_messages,
                 source_policy=source_policy,
+                webpage_policy=webpage_policy,
                 search_queries=search_queries,
                 target_anchor=target_anchor,
                 extracted_urls=already_extracted,
@@ -17727,6 +18318,7 @@ def _create_tool_node_with_scratchpad(
                 max_output_tokens=max_output_tokens,
                 timeout_s=timeout_s,
                 extraction_engine=extraction_engine,
+                structured_output_timeout_circuit_open=structured_output_timeout_circuit_open,
                 langextract_extraction_passes=langextract_extraction_passes,
                 langextract_max_char_buffer=langextract_max_char_buffer,
                 langextract_prompt_validation_level=langextract_prompt_validation_level,
@@ -17767,26 +18359,49 @@ def _create_tool_node_with_scratchpad(
             (snippet_extract_meta or {}).get("structured_output_calls", 0) or 0
         )
 
-        new_preferred_openwebpage_url = None
+        try:
+            preferred_queue_size = max(
+                1,
+                int(field_resolver_options.get("search_snippet_preferred_openwebpage_queue_size", 6) or 6),
+            )
+        except Exception:
+            preferred_queue_size = 6
+        prior_preferred_openwebpage_urls = _merge_preferred_openwebpage_urls(
+            (prior_budget or {}).get("preferred_openwebpage_urls"),
+            prior_preferred_openwebpage_url,
+            max_urls=preferred_queue_size,
+        )
+        new_preferred_openwebpage_urls: List[str] = []
         if isinstance(snippet_extract_meta, dict):
-            new_preferred_openwebpage_url = _normalize_url_match(
-                snippet_extract_meta.get("preferred_openwebpage_url")
+            new_preferred_openwebpage_urls = _merge_preferred_openwebpage_urls(
+                snippet_extract_meta.get("preferred_openwebpage_urls"),
+                snippet_extract_meta.get("preferred_openwebpage_url"),
+                max_urls=min(3, preferred_queue_size),
             )
-        followup_preferred_openwebpage_url = new_preferred_openwebpage_url or prior_preferred_openwebpage_url
-        followup_state = state
-        if followup_preferred_openwebpage_url:
-            followup_budget_state = _normalize_budget_state(
-                prior_budget,
-                search_budget_limit=state.get("search_budget_limit"),
-                unknown_after_searches=unknown_after,
-                model_budget_limit=state.get("model_budget_limit"),
-                evidence_verify_reserve=state.get("evidence_verify_reserve"),
-            )
-            followup_budget_state["preferred_openwebpage_url"] = followup_preferred_openwebpage_url
-            followup_state = {
-                **state,
-                "budget_state": followup_budget_state,
-            }
+        merged_preferred_openwebpage_urls = _merge_preferred_openwebpage_urls(
+            new_preferred_openwebpage_urls,
+            prior_preferred_openwebpage_urls,
+            max_urls=preferred_queue_size,
+        )
+        force_snippet_followup = bool(
+            int((snippet_extract_meta or {}).get("provider_timeout", 0) or 0) > 0
+            or int((snippet_extract_meta or {}).get("snippet_openwebpage_escalation_events", 0) or 0) > 0
+        )
+        followup_budget_state = _normalize_budget_state(
+            prior_budget,
+            search_budget_limit=state.get("search_budget_limit"),
+            unknown_after_searches=unknown_after,
+            model_budget_limit=state.get("model_budget_limit"),
+            evidence_verify_reserve=state.get("evidence_verify_reserve"),
+        )
+        followup_budget_state["preferred_openwebpage_urls"] = list(merged_preferred_openwebpage_urls or [])
+        followup_budget_state["preferred_openwebpage_url"] = (
+            merged_preferred_openwebpage_urls[0] if merged_preferred_openwebpage_urls else None
+        )
+        followup_state = {
+            **state,
+            "budget_state": followup_budget_state,
+        }
         tool_messages, auto_openwebpage_meta = _apply_auto_openwebpage_followup(
             state=followup_state,
             base_tool_node=base_tool_node,
@@ -17794,6 +18409,7 @@ def _create_tool_node_with_scratchpad(
             search_queries=search_queries,
             had_explicit_openwebpage_call=had_explicit_openwebpage_call,
             selector_model=selector_model,
+            force_due_to_snippet_recovery=force_snippet_followup,
             return_metadata=True,
             debug=debug,
         )
@@ -17817,6 +18433,23 @@ def _create_tool_node_with_scratchpad(
             diagnostics["auto_openwebpage_selected_url_preferred_domain_boost_applied"] = bool(
                 auto_openwebpage_meta.get("selected_url_preferred_domain_boost_applied", False)
             )
+            noop_reason = str(auto_openwebpage_meta.get("noop_reason") or "").strip().lower()
+            if noop_reason == "quota_blocked":
+                diagnostics["auto_openwebpage_quota_blocked_rounds"] = int(
+                    diagnostics.get("auto_openwebpage_quota_blocked_rounds", 0) or 0
+                ) + 1
+            elif noop_reason == "budget_blocked":
+                diagnostics["auto_openwebpage_budget_blocked_rounds"] = int(
+                    diagnostics.get("auto_openwebpage_budget_blocked_rounds", 0) or 0
+                ) + 1
+            elif noop_reason == "no_preferred_candidate":
+                diagnostics["auto_openwebpage_no_preferred_candidate_rounds"] = int(
+                    diagnostics.get("auto_openwebpage_no_preferred_candidate_rounds", 0) or 0
+                ) + 1
+            elif noop_reason == "no_generic_candidate":
+                diagnostics["auto_openwebpage_no_generic_candidate_rounds"] = int(
+                    diagnostics.get("auto_openwebpage_no_generic_candidate_rounds", 0) or 0
+                ) + 1
         followup_messages = list(tool_messages[len(base_tool_messages):]) if len(tool_messages) > len(base_tool_messages) else []
         if followup_messages:
             followup_payloads, followup_webpage_extract_urls, followup_webpage_extract_meta = _run_webpage_extraction(
@@ -17910,17 +18543,79 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_llm_extraction_calls"] = int(
                 diagnostics.get("search_snippet_llm_extraction_calls", 0) or 0
             ) + int(snippet_selector_calls)
-        successful_opened_urls_this_round = _collect_successful_openwebpage_urls_from_messages(
-            tool_messages,
+        timeout_delta = int((snippet_extract_meta or {}).get("provider_timeout", 0) or 0)
+        prior_timeout_count = int((prior_budget or {}).get("search_snippet_timeout_count", 0) or 0)
+        try:
+            timeout_circuit_threshold = max(
+                1,
+                int(field_resolver_options.get("search_snippet_timeout_circuit_threshold", 2) or 2),
+            )
+        except Exception:
+            timeout_circuit_threshold = 2
+        prior_timeout_circuit_open = bool((prior_budget or {}).get("search_snippet_timeout_circuit_open", False))
+        timeout_count = int(prior_timeout_count) + int(timeout_delta)
+        timeout_circuit_open = bool(
+            prior_timeout_circuit_open or int(timeout_count) >= int(timeout_circuit_threshold)
+        )
+        budget_state["search_snippet_timeout_count"] = timeout_count
+        budget_state["search_snippet_timeout_circuit_open"] = timeout_circuit_open
+        if timeout_circuit_open:
+            diagnostics["search_snippet_timeout_circuit_open_rounds"] = int(
+                diagnostics.get("search_snippet_timeout_circuit_open_rounds", 0) or 0
+            ) + 1
+        if timeout_circuit_open and not prior_timeout_circuit_open:
+            diagnostics["search_snippet_timeout_circuit_events"] = int(
+                diagnostics.get("search_snippet_timeout_circuit_events", 0) or 0
+            ) + 1
+        if force_snippet_followup:
+            diagnostics["search_snippet_forced_openwebpage_followup_rounds"] = int(
+                diagnostics.get("search_snippet_forced_openwebpage_followup_rounds", 0) or 0
+            ) + 1
+        diagnostics["search_snippet_preferred_queue_size_max"] = max(
+            int(diagnostics.get("search_snippet_preferred_queue_size_max", 0) or 0),
+            int(len(merged_preferred_openwebpage_urls or [])),
+        )
+        attempted_followup_urls = _normalize_preferred_openwebpage_urls(
+            (auto_openwebpage_meta or {}).get("attempted_urls"),
             max_urls=128,
         )
-        preferred_openwebpage_url = new_preferred_openwebpage_url or prior_preferred_openwebpage_url
-        if preferred_openwebpage_url and preferred_openwebpage_url in successful_opened_urls_this_round:
-            preferred_openwebpage_url = None
+        successful_followup_urls = _normalize_preferred_openwebpage_urls(
+            (auto_openwebpage_meta or {}).get("successful_urls"),
+            max_urls=128,
+        )
+        successful_opened_urls_this_round = _merge_preferred_openwebpage_urls(
+            successful_followup_urls,
+            _collect_successful_openwebpage_urls_from_messages(
+                tool_messages,
+                max_urls=128,
+            ),
+            max_urls=128,
+        )
+        queued_opened_urls = {
+            url
+            for url in list(successful_opened_urls_this_round or [])
+            if url in set(merged_preferred_openwebpage_urls or [])
+        }
+        if queued_opened_urls:
             diagnostics["search_snippet_openwebpage_escalation_successes"] = int(
                 diagnostics.get("search_snippet_openwebpage_escalation_successes", 0) or 0
-            ) + 1
-        budget_state["preferred_openwebpage_url"] = preferred_openwebpage_url
+            ) + int(len(queued_opened_urls))
+        attempted_or_successful_urls = set(
+            _merge_preferred_openwebpage_urls(
+                attempted_followup_urls,
+                successful_opened_urls_this_round,
+                max_urls=256,
+            )
+        )
+        remaining_preferred_openwebpage_urls = [
+            url
+            for url in list(merged_preferred_openwebpage_urls or [])
+            if url and url not in attempted_or_successful_urls
+        ]
+        budget_state["preferred_openwebpage_urls"] = remaining_preferred_openwebpage_urls
+        budget_state["preferred_openwebpage_url"] = (
+            remaining_preferred_openwebpage_urls[0] if remaining_preferred_openwebpage_urls else None
+        )
         for webpage_extract_meta in list(webpage_extract_meta_segments or []):
             if not isinstance(webpage_extract_meta, dict) or not webpage_extract_meta:
                 continue
@@ -18051,6 +18746,16 @@ def _create_tool_node_with_scratchpad(
             diagnostics["search_snippet_structured_output_errors"] = int(
                 diagnostics.get("search_snippet_structured_output_errors", 0) or 0
             ) + int(snippet_extract_meta.get("structured_output_errors", 0) or 0)
+            diagnostics["search_snippet_structured_output_elapsed_ms_total"] = int(
+                diagnostics.get("search_snippet_structured_output_elapsed_ms_total", 0) or 0
+            ) + int(snippet_extract_meta.get("structured_output_elapsed_ms_total", 0) or 0)
+            diagnostics["search_snippet_structured_output_elapsed_ms_max"] = max(
+                int(diagnostics.get("search_snippet_structured_output_elapsed_ms_max", 0) or 0),
+                int(snippet_extract_meta.get("structured_output_elapsed_ms_max", 0) or 0),
+            )
+            diagnostics["search_snippet_structured_output_timeout_elapsed_ms_total"] = int(
+                diagnostics.get("search_snippet_structured_output_timeout_elapsed_ms_total", 0) or 0
+            ) + int(snippet_extract_meta.get("structured_output_timeout_elapsed_ms_total", 0) or 0)
             diagnostics["search_snippet_provider_timeout"] = int(
                 diagnostics.get("search_snippet_provider_timeout", 0) or 0
             ) + int(snippet_extract_meta.get("provider_timeout", 0) or 0)
@@ -18140,11 +18845,13 @@ def _create_tool_node_with_scratchpad(
             page_url = None
             page_host = None
             if tool_name_norm == "openwebpage":
-                for raw_url in _extract_url_candidates(msg_text, max_urls=3):
-                    normalized_url = _normalize_url_match(raw_url)
-                    if normalized_url:
-                        page_url = normalized_url
-                        break
+                page_url = _extract_openwebpage_canonical_url(msg_text)
+                if not page_url:
+                    for raw_url in _extract_url_candidates(msg_text, max_urls=3):
+                        normalized_url = _normalize_url_match(raw_url)
+                        if normalized_url:
+                            page_url = normalized_url
+                            break
                 page_host = _url_host(page_url) if page_url else None
             tool_quality_events.append({
                 "message_index_in_round": int(idx),
@@ -18632,7 +19339,12 @@ def _create_tool_node_with_scratchpad(
         perf["tool_round_elapsed_ms_last"] = int(tool_round_elapsed_ms)
         perf["tool_round_elapsed_ms_max"] = max(int(perf.get("tool_round_elapsed_ms_max", 0)), int(tool_round_elapsed_ms))
         perf["search_tool_calls"] = int(perf.get("search_tool_calls", 0)) + int(search_tool_hits)
-        perf["openwebpage_tool_calls"] = int(perf.get("openwebpage_tool_calls", 0)) + int(openwebpage_tool_hits)
+        perf["openwebpage_tool_calls"] = int(
+            _count_tool_messages(
+                list(state.get("messages") or []) + list(tool_messages or []),
+                tool_name="openwebpage",
+            )
+        )
         perf["other_tool_calls"] = int(perf.get("other_tool_calls", 0)) + int(other_tool_hits)
         perf["search_tool_elapsed_ms_est_total"] = int(
             perf.get("search_tool_elapsed_ms_est_total", 0)

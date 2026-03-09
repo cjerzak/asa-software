@@ -294,8 +294,252 @@ test_that("triage_then_structured skips low-information snippets and carries web
   expect_equal(as.integer(meta$snippet_candidates_attempted), 0L)
   expect_equal(as.integer(meta$snippet_extraction_attempts), 0L)
   expect_equal(as.character(meta$preferred_openwebpage_url), "https://profiles.example.net/ada")
+  expect_equal(as.character(meta$preferred_openwebpage_urls[[1]]), "https://profiles.example.net/ada")
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_skip_with_calls`)), 0L)
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_skip_legacy_calls`)), 0L)
+})
+
+test_that("entity overlap alone does not permit direct structured snippet extraction", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  out <- core$`_search_snippet_supports_direct_extraction`(
+    candidate = list(
+      url = "https://profiles.example.net/ada",
+      source_tier = 2L,
+      url_score = 0.70,
+      authority_score = 0.60,
+      entity_ratio = 0.95,
+      field_hint_score = 0,
+      query_intent_quoted_phrase_hits = 0L,
+      extraction_text = "Ada Lovelace biography overview."
+    ),
+    expected_schema = list(
+      prior_occupation = "string|Unknown",
+      prior_occupation_source = "string|null"
+    ),
+    field_status = list(
+      prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+      prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+    )
+  )
+
+  out_r <- reticulate::py_to_r(out)
+  expect_false(isTRUE(out_r[[1]]))
+  expect_equal(as.character(out_r[[2]]), "low_information")
+})
+
+test_that("snippet escalation gate rejects weak generic candidates", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
+  reticulate::py_run_string("import sys\nsys.modules.pop('asa_backend.graph.agent_graph_core', None)\n")
+  core <- reticulate::import_from_path(
+    "asa_backend.graph.agent_graph_core",
+    path = python_path
+  )
+
+  allowed <- core$`_search_snippet_candidate_supports_openwebpage_escalation`(
+    candidate = list(
+      url = "https://prezi.com/p/84pdg0dsextr/una-biografia",
+      source_tier = 1L,
+      url_score = 0.20,
+      authority_score = 0.10,
+      entity_ratio = 0.10,
+      field_hint_score = 0,
+      query_intent_quoted_phrase_hits = 0L,
+      openwebpage_followup_score = 0.80
+    ),
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0.40
+    )
+  )
+
+  expect_false(isTRUE(reticulate::py_to_r(allowed)))
+})
+
+test_that("snippet escalation gate keeps strong official candidates above threshold", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
+  reticulate::py_run_string("import sys\nsys.modules.pop('asa_backend.graph.agent_graph_core', None)\n")
+  core <- reticulate::import_from_path(
+    "asa_backend.graph.agent_graph_core",
+    path = python_path
+  )
+
+  allowed <- core$`_search_snippet_candidate_supports_openwebpage_escalation`(
+    candidate = list(
+      url = "https://www.example.gov/profile/ada-lovelace",
+      source_tier = 3L,
+      url_score = 0.75,
+      authority_score = 0.60,
+      entity_ratio = 0.45,
+      field_hint_score = 1,
+      query_intent_quoted_phrase_hits = 1L,
+      openwebpage_followup_score = 0.65
+    ),
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0.40
+    )
+  )
+  blocked <- core$`_search_snippet_candidate_supports_openwebpage_escalation`(
+    candidate = list(
+      url = "https://www.example.gov/profile/ada-lovelace",
+      source_tier = 3L,
+      url_score = 0.75,
+      authority_score = 0.60,
+      entity_ratio = 0.45,
+      field_hint_score = 1,
+      query_intent_quoted_phrase_hits = 1L,
+      openwebpage_followup_score = 0.30
+    ),
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0.40
+    )
+  )
+
+  expect_true(isTRUE(reticulate::py_to_r(allowed)))
+  expect_false(isTRUE(reticulate::py_to_r(blocked)))
+})
+
+test_that("snippet escalation gate admits sparse official profile URLs via authority lane", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
+  reticulate::py_run_string("import sys\nsys.modules.pop('asa_backend.graph.agent_graph_core', None)\n")
+  core <- reticulate::import_from_path(
+    "asa_backend.graph.agent_graph_core",
+    path = python_path
+  )
+
+  allowed <- core$`_search_snippet_candidate_supports_openwebpage_escalation`(
+    candidate = list(
+      url = "https://official.example/parliamentarian?id=428",
+      source_tier = 3L,
+      url_score = 0.80,
+      authority_score = 0.98,
+      preferred_domain_score = 1,
+      entity_ratio = 0,
+      field_hint_score = 0,
+      query_intent_quoted_phrase_hits = 0L,
+      openwebpage_followup_score = 0.72
+    ),
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0.40
+    )
+  )
+
+  expect_true(isTRUE(reticulate::py_to_r(allowed)))
+})
+
+test_that("snippet escalation gate rejects generic authority docs without target support", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
+  reticulate::py_run_string("import sys\nsys.modules.pop('asa_backend.graph.agent_graph_core', None)\n")
+  core <- reticulate::import_from_path(
+    "asa_backend.graph.agent_graph_core",
+    path = python_path
+  )
+
+  blocked <- core$`_search_snippet_candidate_supports_openwebpage_escalation`(
+    candidate = list(
+      url = "https://www.electoral.gob.ar/nuevo/paginas/btn/tyf_f003.php",
+      source_tier = 3L,
+      url_score = 0.95,
+      authority_score = 0.98,
+      detail_score = 0.60,
+      preferred_domain_score = 0,
+      entity_ratio = 0,
+      field_hint_score = 0,
+      query_intent_quoted_phrase_hits = 2L,
+      openwebpage_followup_score = 0.90
+    ),
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0.40
+    )
+  )
+
+  expect_false(isTRUE(reticulate::py_to_r(blocked)))
+})
+
+test_that("search snippet field hints ignore publication dates without matching keywords", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  score <- core$`_search_snippet_field_hint_score`(
+    snippet_text = paste(
+      "Registro Civil de Camarzana de Tera.",
+      "December 30, 2023.",
+      "Contiene información crucial como el nombre completo y los nombres de los padres."
+    ),
+    field_hints = list(list(
+      field = "birth_year",
+      keywords = list("birth year", "year of birth", "born")
+    ))
+  )
+
+  expect_equal(as.numeric(reticulate::py_to_r(score)), 0)
+})
+
+test_that("snippet escalation gate rejects field-hint-only snippets without target support", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+  asa_test_require_langgraph_stack(ASA_TEST_LANGGRAPH_MODULES)
+  reticulate::py_run_string("import sys\nsys.modules.pop('asa_backend.graph.agent_graph_core', None)\n")
+  core <- reticulate::import_from_path(
+    "asa_backend.graph.agent_graph_core",
+    path = python_path
+  )
+
+  candidate <- list(
+    url = "https://www.regciv.es/registro-civil-de-camarzana-de-tera",
+    source_tier = 1L,
+    url_score = 0.90,
+    authority_score = 0.50,
+    entity_ratio = 0,
+    field_hint_score = 0.85,
+    query_intent_quoted_phrase_hits = 1L,
+    openwebpage_followup_score = 1.09
+  )
+
+  allowed <- core$`_search_snippet_candidate_supports_openwebpage_escalation`(
+    candidate = candidate,
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0.40
+    )
+  )
+  relevant <- core$`_candidate_is_relevant_followup_target`(
+    candidate = candidate,
+    webpage_policy = list(
+      enabled = TRUE,
+      open_only_if_score_ge = 0.40
+    )
+  )
+
+  expect_false(isTRUE(reticulate::py_to_r(allowed)))
+  expect_false(isTRUE(reticulate::py_to_r(relevant)))
 })
 
 test_that("triage_then_structured uses structured output after deterministic miss", {
@@ -387,12 +631,170 @@ test_that("triage_then_structured uses structured output after deterministic mis
   expect_equal(as.character(urls[[1]]), "https://www.example.gov/profile/ada-lovelace")
   expect_equal(as.integer(meta$deterministic_fallback_calls), 1L)
   expect_equal(as.integer(meta$structured_output_calls), 1L)
+  expect_gte(as.integer(meta$structured_output_elapsed_ms_total), 0L)
+  expect_gte(as.integer(meta$structured_output_elapsed_ms_max), 0L)
   expect_equal(as.integer(meta$selector_model_calls), 0L)
   expect_equal(as.integer(meta$snippet_candidates_attempted), 1L)
   expect_equal(as.integer(meta$snippet_extraction_attempts), 1L)
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_with_calls`)), 1L)
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_invoke_calls`)), 1L)
   expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_structured_legacy_calls`)), 0L)
+})
+
+test_that("triage_then_structured skips structured calls when snippet timeout circuit is open", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  original_supports <- core$`_search_snippet_supports_direct_extraction`
+  on.exit(
+    reticulate::py_set_attr(core, "_search_snippet_supports_direct_extraction", original_supports),
+    add = TRUE
+  )
+
+  reticulate::py_run_string(paste0(
+    "def _asa_force_direct_extract_circuit(*args, **kwargs):\n",
+    "    return (True, 'eligible')\n",
+    "\n",
+    "_asa_triage_circuit_with_calls = 0\n",
+    "_asa_triage_circuit_invoke_calls = 0\n",
+    "class _ASATriageCircuitInvoker:\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        global _asa_triage_circuit_invoke_calls\n",
+    "        _asa_triage_circuit_invoke_calls += 1\n",
+    "        return {'prior_occupation': 'mathematician'}\n",
+    "class _ASATriageCircuitModel:\n",
+    "    def with_structured_output(self, *args, **kwargs):\n",
+    "        global _asa_triage_circuit_with_calls\n",
+    "        _asa_triage_circuit_with_calls += 1\n",
+    "        return _ASATriageCircuitInvoker()\n",
+    "    def invoke(self, messages, **kwargs):\n",
+    "        raise RuntimeError('legacy path should not be used')\n",
+    "_asa_triage_circuit_model = _ASATriageCircuitModel()\n"
+  ))
+  reticulate::py_set_attr(
+    core,
+    "_search_snippet_supports_direct_extraction",
+    reticulate::py$`_asa_force_direct_extract_circuit`
+  )
+
+  schema <- list(
+    prior_occupation = "string|Unknown",
+    prior_occupation_source = "string|null"
+  )
+  field_status <- list(
+    prior_occupation = list(status = "unknown", value = "Unknown", source_url = NULL, attempts = 0L),
+    prior_occupation_source = list(status = "pending", value = NULL, source_url = NULL, attempts = 0L)
+  )
+  tool_messages <- list(list(
+    role = "tool",
+    name = "Search",
+    content = paste0(
+      "__START_OF_SOURCE 1__ <CONTENT> Ada Lovelace official biography and profile. </CONTENT> ",
+      "<URL> https://www.example.gov/profile/ada-lovelace </URL> __END_OF_SOURCE 1__"
+    )
+  ))
+
+  snippet_result <- core$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = reticulate::py$`_asa_triage_circuit_model`,
+    expected_schema = schema,
+    field_status = field_status,
+    tool_messages = tool_messages,
+    entity_tokens = list("Ada", "Lovelace"),
+    extracted_urls = list(),
+    max_sources = 1L,
+    max_chars = 800L,
+    extraction_engine = "triage_then_structured",
+    structured_output_timeout_circuit_open = TRUE,
+    debug = FALSE
+  )
+
+  snippet_r <- reticulate::py_to_r(snippet_result)
+  payloads <- snippet_r[[1]]
+  urls <- snippet_r[[2]]
+  meta <- snippet_r[[3]]
+
+  expect_equal(length(payloads), 0L)
+  expect_equal(length(urls), 1L)
+  expect_equal(as.integer(meta$structured_output_calls), 0L)
+  expect_equal(as.integer(meta$deterministic_fallback_calls), 1L)
+  expect_equal(as.integer(meta$deterministic_fallback_no_payload), 1L)
+  expect_equal(as.integer(meta$snippet_openwebpage_escalation_events), 1L)
+  expect_equal(as.character(urls[[1]]), "https://www.example.gov/profile/ada-lovelace")
+  expect_equal(as.character(meta$preferred_openwebpage_urls[[1]]), "https://www.example.gov/profile/ada-lovelace")
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_circuit_with_calls`)), 0L)
+  expect_equal(as.integer(reticulate::py_to_r(reticulate::py$`_asa_triage_circuit_invoke_calls`)), 0L)
+})
+
+test_that("snippet escalation ranking keeps sparse official URLs ahead of noisy named pages", {
+  python_path <- asa_test_skip_if_no_python(
+    required_files = "asa_backend/graph/agent_graph_core.py",
+    initialize = TRUE
+  )
+
+  graph <- reticulate::import_from_path("asa_backend.graph.agent_graph_core", path = python_path)
+  original_score <- reticulate::py_get_attr(graph, "_score_primary_source_url")
+  on.exit({
+    reticulate::py_set_attr(graph, "_score_primary_source_url", original_score)
+  }, add = TRUE)
+
+  reticulate::py_run_string(paste0(
+    "def __asa_sparse_official_score(url):\n",
+    "    text = str(url or '')\n",
+    "    if 'news.example.net' in text:\n",
+    "        return 1.15\n",
+    "    if 'official.example' in text:\n",
+    "        return 0.95\n",
+    "    return 0.0\n"
+  ))
+  reticulate::py_set_attr(
+    graph,
+    "_score_primary_source_url",
+    reticulate::py_eval("__asa_sparse_official_score", convert = FALSE)
+  )
+
+  search_msg <- list(
+    role = "tool",
+    name = "Search",
+    content = paste(
+      "__START_OF_SOURCE 1__ <CONTENT>Ada Lovelace biography article.</CONTENT>",
+      "<URL>https://news.example.net/article/ada-lovelace</URL> __END_OF_SOURCE 1__",
+      "__START_OF_SOURCE 2__ <CONTENT>Official parliamentary profile page.</CONTENT>",
+      "<URL>https://official.example/parliamentarian?id=428</URL> __END_OF_SOURCE 2__"
+    )
+  )
+
+  out <- graph$`_llm_extract_schema_payloads_from_search_snippets`(
+    selector_model = NULL,
+    expected_schema = list(
+      prior_occupation = "string|Unknown",
+      prior_occupation_source = "string|null"
+    ),
+    field_status = list(
+      prior_occupation = list(status = "unknown", value = "Unknown", attempts = 0L),
+      prior_occupation_source = list(status = "pending", value = NULL, attempts = 0L)
+    ),
+    tool_messages = list(search_msg),
+    source_policy = list(
+      preferred_domains = list("official.example"),
+      authority_host_weights = list("official.example" = 1.0),
+      openwebpage_authority_bonus_weight = 0.20,
+      openwebpage_detail_bonus_weight = 0.15,
+      openwebpage_preferred_domain_bonus_weight = 0.10
+    ),
+    search_queries = list("Ada Lovelace prior occupation"),
+    max_sources = 2L,
+    extraction_engine = "legacy",
+    debug = FALSE
+  )
+
+  meta <- reticulate::py_to_r(out[[3]])
+  expect_gte(as.integer(meta$snippet_openwebpage_escalation_events), 1L)
+  expect_equal(
+    as.character(meta$preferred_openwebpage_url),
+    "https://official.example/parliamentarian?id=428"
+  )
 })
 
 test_that("search snippet field hints prioritize enriched birth-year snippets", {
@@ -934,7 +1336,7 @@ test_that("anchor overlap includes context_hits and context_ratio", {
     context_labels = list("country:Bolivia", "region:Beni"),
     confidence = 0.6,
     strength = "moderate",
-    provenance = list("profile_hints"),
+    provenance = list("entity_hints"),
     mode = "adaptive"
   )
 
@@ -971,7 +1373,7 @@ test_that("context-contradiction hard blocks candidates from wrong country", {
     context_labels = list("country:Bolivia", "region:Beni"),
     confidence = 0.5,
     strength = "moderate",
-    provenance = list("profile_hints"),
+    provenance = list("entity_hints"),
     mode = "adaptive"
   )
 
@@ -1003,7 +1405,7 @@ test_that("context-contradiction does not fire when candidate matches anchor cou
     context_labels = list("country:Bolivia"),
     confidence = 0.5,
     strength = "moderate",
-    provenance = list("profile_hints"),
+    provenance = list("entity_hints"),
     mode = "adaptive"
   )
 
@@ -1016,6 +1418,60 @@ test_that("context-contradiction does not fire when candidate matches anchor cou
 
   expect_false(result$context_contradiction)
   expect_true(result$pass)
+})
+
+
+test_that("default disambiguation query template is task-agnostic", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  templates <- reticulate::py_to_r(core$`_normalize_query_templates`(NULL))
+
+  expect_equal(
+    as.character(templates$disambiguation_query),
+    "{entity} {field} exact match"
+  )
+})
+
+
+test_that("retry rewrite message uses neutral default disambiguation wording", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  msg <- core$`_build_retry_rewrite_message`(
+    state = reticulate::dict(),
+    pending_fields = list("prior_occupation"),
+    query_context = "Ada Lovelace"
+  )
+  msg <- as.character(reticulate::py_to_r(msg))
+
+  expect_match(msg, "disambiguation='\\{entity\\} \\{field\\} exact match'", perl = TRUE)
+  expect_false(grepl("\\bbiography\\b|\\bprofile\\b", msg, ignore.case = TRUE, perl = TRUE))
+})
+
+
+test_that("retry rewrite message preserves caller disambiguation template override", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  msg <- core$`_build_retry_rewrite_message`(
+    state = reticulate::dict(
+      query_templates = reticulate::dict(
+        disambiguation_query = "{entity} {field} official source"
+      )
+    ),
+    pending_fields = list("prior_occupation"),
+    query_context = "Ada Lovelace"
+  )
+  msg <- as.character(reticulate::py_to_r(msg))
+
+  expect_match(msg, "disambiguation='\\{entity\\} \\{field\\} official source'", perl = TRUE)
 })
 
 
