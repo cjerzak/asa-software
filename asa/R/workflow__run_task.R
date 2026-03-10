@@ -260,6 +260,46 @@ NULL
   overrides
 }
 
+.resolve_agent_from_config <- function(config = NULL, agent = NULL, verbose = FALSE) {
+  if (!is.null(agent) || is.null(config) || !inherits(config, "asa_config")) {
+    return(agent)
+  }
+
+  current <- if (.is_initialized()) get_agent() else NULL
+  if (!is.null(current) && .agent_matches_config(current, config)) {
+    return(current)
+  }
+
+  if (verbose) {
+    message("Initializing agent from asa_config...")
+  }
+
+  initialize_agent(
+    backend = config$backend,
+    model = config$model,
+    conda_env = config$conda_env,
+    proxy = config$proxy,
+    use_browser = config$use_browser %||% ASA_DEFAULT_USE_BROWSER,
+    search = config$search,
+    use_memory_folding = config$memory_folding,
+    memory_threshold = config$memory_threshold,
+    memory_keep_recent = config$memory_keep_recent,
+    use_observational_memory = config$use_observational_memory %||% FALSE,
+    om_observation_token_budget = config$om_observation_token_budget %||% ASA_DEFAULT_OM_OBSERVATION_TOKENS,
+    om_reflection_token_budget = config$om_reflection_token_budget %||% ASA_DEFAULT_OM_REFLECTION_TOKENS,
+    om_buffer_tokens = config$om_buffer_tokens %||% ASA_DEFAULT_OM_BUFFER_TOKENS,
+    om_buffer_activation = config$om_buffer_activation %||% ASA_DEFAULT_OM_BUFFER_ACTIVATION,
+    om_block_after = config$om_block_after %||% ASA_DEFAULT_OM_BLOCK_AFTER,
+    om_async_prebuffer = config$om_async_prebuffer %||% ASA_DEFAULT_OM_ASYNC_PREBUFFER,
+    om_cross_thread_memory = config$om_cross_thread_memory %||% FALSE,
+    rate_limit = config$rate_limit,
+    timeout = config$timeout,
+    tor = config$tor,
+    recursion_limit = config$recursion_limit,
+    verbose = verbose
+  )
+}
+
 .resolve_orchestration_options_for_run_task <- function(orchestration_options = NULL,
                                                         config_search = NULL) {
   overrides <- .search_orchestration_overrides(config_search)
@@ -357,42 +397,7 @@ run_task <- function(prompt,
   )
 
   # Initialize agent from config if provided
-  if (is.null(agent) && !is.null(config) && inherits(config, "asa_config")) {
-    current <- if (.is_initialized()) get_agent() else NULL
-    if (!is.null(current)) {
-      if (.agent_matches_config(current, config)) {
-        agent <- current
-      }
-    }
-
-    if (is.null(agent)) {
-      if (verbose) message("Initializing agent from asa_config...")
-      agent <- initialize_agent(
-        backend = config$backend,
-        model = config$model,
-        conda_env = config$conda_env,
-        proxy = config$proxy,
-        use_browser = config$use_browser %||% ASA_DEFAULT_USE_BROWSER,
-        search = config$search,
-        use_memory_folding = config$memory_folding,
-        memory_threshold = config$memory_threshold,
-        memory_keep_recent = config$memory_keep_recent,
-        use_observational_memory = config$use_observational_memory %||% FALSE,
-        om_observation_token_budget = config$om_observation_token_budget %||% ASA_DEFAULT_OM_OBSERVATION_TOKENS,
-        om_reflection_token_budget = config$om_reflection_token_budget %||% ASA_DEFAULT_OM_REFLECTION_TOKENS,
-        om_buffer_tokens = config$om_buffer_tokens %||% ASA_DEFAULT_OM_BUFFER_TOKENS,
-        om_buffer_activation = config$om_buffer_activation %||% ASA_DEFAULT_OM_BUFFER_ACTIVATION,
-        om_block_after = config$om_block_after %||% ASA_DEFAULT_OM_BLOCK_AFTER,
-        om_async_prebuffer = config$om_async_prebuffer %||% ASA_DEFAULT_OM_ASYNC_PREBUFFER,
-        om_cross_thread_memory = config$om_cross_thread_memory %||% FALSE,
-        rate_limit = config$rate_limit,
-        timeout = config$timeout,
-        tor = config$tor,
-        recursion_limit = config$recursion_limit,
-        verbose = verbose
-      )
-    }
-  }
+  agent <- .resolve_agent_from_config(config = config, agent = agent, verbose = verbose)
 
   # Validate temporal if provided
   .validate_temporal(temporal)
@@ -817,6 +822,346 @@ run_task <- function(prompt,
 
   # For "raw" format, add additional fields for debugging
   result
+}
+
+#' Run a Direct Provider Task Without ASA Tooling
+#'
+#' Invokes the configured provider directly using the underlying chat model
+#' attached to an initialized agent. This bypasses the ASA agent loop, tools,
+#' search, and temporal prompt augmentation while preserving the same backend
+#' and model selection.
+#'
+#' @param prompt The prompt or question to send directly to the configured LLM
+#' @param output_format Expected output format. One of:
+#'   \itemize{
+#'     \item "text": Returns response text (default)
+#'     \item "json": Parse response as JSON
+#'     \item "raw": Include the raw provider response object for debugging
+#'     \item Character vector: Extract specific fields from response
+#'   }
+#' @param config An \code{asa_config} object for unified configuration, or NULL
+#'   to use the currently initialized agent.
+#' @param agent An \code{asa_agent} object from \code{\link{initialize_agent}},
+#'   or NULL to initialize/reuse one from \code{config}.
+#' @param verbose Print progress messages (default: FALSE)
+#'
+#' @return An \code{asa_result} object with \code{execution$mode =
+#'   "provider_direct"} and \code{search_tier = "none"}.
+#'
+#' @export
+run_direct_task <- function(prompt,
+                            output_format = "text",
+                            config = NULL,
+                            agent = NULL,
+                            verbose = FALSE) {
+  .validate_asa_config(config)
+  .validate_run_task(
+    prompt = prompt,
+    output_format = output_format,
+    agent = agent,
+    verbose = verbose
+  )
+
+  runtime_inputs <- .resolve_runtime_inputs(
+    config = config,
+    agent = agent,
+    temporal = NULL,
+    allow_read_webpages = FALSE,
+    webpage_relevance_mode = NULL,
+    webpage_embedding_provider = NULL,
+    webpage_embedding_model = NULL
+  )
+  runtime <- runtime_inputs$runtime
+
+  agent <- .resolve_agent_from_config(config = config, agent = agent, verbose = verbose)
+  if (is.null(agent)) {
+    agent <- get_agent()
+  }
+  if (is.null(agent)) {
+    stop(
+      "Agent not initialized. Call initialize_agent() first or pass an asa_config/asa_agent.",
+      call. = FALSE
+    )
+  }
+  if (is.null(agent$llm)) {
+    stop(
+      "Direct provider mode requires an initialized LLM on the agent. Reinitialize the agent and retry.",
+      call. = FALSE
+    )
+  }
+
+  extract_direct_response_meta <- function(raw_response, backend) {
+    plain <- .try_or(reticulate::py_to_r(raw_response), raw_response)
+
+    candidate_states <- list()
+    if (is.list(raw_response) && !is.null(raw_response$messages)) {
+      candidate_states[[length(candidate_states) + 1L]] <- raw_response
+    }
+    candidate_states[[length(candidate_states) + 1L]] <- list(messages = list(raw_response))
+    if (!identical(plain, raw_response)) {
+      if (is.list(plain) && !is.null(plain$messages)) {
+        candidate_states[[length(candidate_states) + 1L]] <- plain
+      }
+      candidate_states[[length(candidate_states) + 1L]] <- list(messages = list(plain))
+    }
+
+    for (candidate in candidate_states) {
+      meta <- .try_or(.extract_response_text(candidate, backend, with_meta = TRUE), NULL)
+      text <- .try_or(as.character(meta$text), character(0))
+      if (!is.null(meta) && length(text) > 0L && !is.na(text[[1]]) && nzchar(text[[1]])) {
+        meta$text <- text[[1]]
+        return(meta)
+      }
+    }
+
+    direct_text <- character(0)
+    if (is.character(plain)) {
+      direct_text <- plain[!is.na(plain) & nzchar(plain)]
+    } else if (is.list(plain)) {
+      for (field in c("content", "text", "value", "message")) {
+        value <- plain[[field]] %||% NULL
+        text <- .try_or(as.character(value), character(0))
+        text <- text[!is.na(text) & nzchar(text)]
+        if (length(text) > 0L) {
+          direct_text <- text
+          break
+        }
+      }
+    }
+
+    if (length(direct_text) > 0L) {
+      return(list(
+        text = direct_text[[1]],
+        sanitized = FALSE,
+        released_from = "direct_provider_text"
+      ))
+    }
+
+    list(
+      text = "",
+      sanitized = FALSE,
+      released_from = "direct_provider_empty"
+    )
+  }
+
+  render_direct_raw_output <- function(raw_response, fallback_text) {
+    plain <- .try_or(reticulate::py_to_r(raw_response), raw_response)
+
+    if (is.character(plain)) {
+      text <- plain[!is.na(plain)]
+      if (length(text) > 0L) {
+        return(paste(text, collapse = "\n"))
+      }
+    }
+    if (is.list(plain)) {
+      for (field in c("content", "text", "value", "message")) {
+        value <- plain[[field]] %||% NULL
+        text <- .try_or(as.character(value), character(0))
+        text <- text[!is.na(text) & nzchar(text)]
+        if (length(text) > 0L) {
+          return(paste(text, collapse = "\n"))
+        }
+      }
+    }
+
+    rendered <- .try_or(
+      paste(utils::capture.output(str(plain, max.level = 4L)), collapse = "\n"),
+      ""
+    )
+    if (nzchar(rendered)) {
+      return(rendered)
+    }
+
+    fallback <- .try_or(as.character(plain), character(0))
+    fallback <- fallback[!is.na(fallback) & nzchar(fallback)]
+    if (length(fallback) > 0L) {
+      return(paste(fallback, collapse = "\n"))
+    }
+
+    fallback_text %||% ""
+  }
+
+  start_time <- Sys.time()
+  phase_marks <- list(
+    run_direct_task_started = start_time
+  )
+
+  phase_marks$rate_limit_started <- Sys.time()
+  .acquire_rate_limit_token(verbose = verbose)
+  phase_marks$rate_limit_finished <- Sys.time()
+
+  config_for_invoke <- agent$config %||% list()
+  invoke_max_attempts <- max(
+    1L,
+    as.integer(config_for_invoke$invoke_max_attempts %||% ASA_DEFAULT_INVOKE_MAX_ATTEMPTS)
+  )
+  invoke_retry_delay <- as.numeric(config_for_invoke$invoke_retry_delay %||% ASA_DEFAULT_INVOKE_RETRY_DELAY)
+  invoke_retry_backoff <- as.numeric(config_for_invoke$invoke_retry_backoff %||% ASA_DEFAULT_INVOKE_RETRY_BACKOFF)
+  invoke_retry_jitter <- as.numeric(config_for_invoke$invoke_retry_jitter %||% ASA_DEFAULT_INVOKE_RETRY_JITTER)
+
+  invoke_attempts <- 0L
+  invoke_condition <- NULL
+  phase_marks$backend_invoke_started <- Sys.time()
+  raw_response <- tryCatch(
+    .with_runtime_wrappers(runtime = runtime, agent = agent, fn = function() {
+      .invoke_agent_with_retry(
+        invoke_fn = function() {
+          invoke_attempts <<- invoke_attempts + 1L
+          agent$llm$invoke(prompt)
+        },
+        max_attempts = invoke_max_attempts,
+        retry_delay = invoke_retry_delay,
+        retry_backoff = invoke_retry_backoff,
+        retry_jitter = invoke_retry_jitter,
+        verbose = verbose
+      )
+    }),
+    error = function(e) {
+      invoke_condition <<- e
+      NULL
+    }
+  )
+  phase_marks$backend_invoke_finished <- Sys.time()
+
+  elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
+
+  response_meta <- if (inherits(invoke_condition, "error")) {
+    list(
+      text = conditionMessage(invoke_condition) %||% "Provider invocation failed.",
+      sanitized = FALSE,
+      released_from = "invoke_error"
+    )
+  } else {
+    extract_direct_response_meta(raw_response = raw_response, backend = agent$backend)
+  }
+
+  response_text <- .try_or(as.character(response_meta$text), character(0))
+  response_text <- if (length(response_text) > 0L && !is.na(response_text[[1]]) && nzchar(response_text[[1]])) {
+    response_text[[1]]
+  } else if (!inherits(invoke_condition, "error")) {
+    "Provider returned an empty response."
+  } else {
+    "Provider invocation failed."
+  }
+
+  status <- if (inherits(invoke_condition, "error")) "error" else "success"
+  if (!nzchar(response_text)) {
+    status <- "error"
+    response_text <- "Provider returned an empty response."
+  }
+  stop_reason <- if (identical(status, "success")) {
+    "provider_direct"
+  } else if (inherits(invoke_condition, "error")) {
+    "invoke_error"
+  } else {
+    "empty_response"
+  }
+
+  adaptive_status <- status
+  if (identical(status, "error")) {
+    msg_lower <- tolower(response_text)
+    if (grepl("captcha|robot|unusual traffic", msg_lower)) {
+      adaptive_status <- "captcha"
+    } else if (grepl("rate.?limit|blocked|forbidden", msg_lower)) {
+      adaptive_status <- "blocked"
+    }
+  }
+  .adaptive_rate_record(adaptive_status, verbose = verbose)
+
+  phase_marks$output_parse_started <- Sys.time()
+  parsed <- NULL
+  if (identical(status, "success")) {
+    if (identical(output_format, "json")) {
+      parsed <- .parse_json_response(response_text)
+    } else if (is.character(output_format) && length(output_format) > 1) {
+      parsed <- .extract_fields(response_text, output_format)
+    }
+  }
+  parsing_status <- .validate_json_schema(parsed, expected_fields = NULL)
+  phase_marks$output_parse_finished <- Sys.time()
+
+  raw_output <- if (inherits(invoke_condition, "error")) response_text else {
+    render_direct_raw_output(raw_response = raw_response, fallback_text = response_text)
+  }
+
+  invoke_error <- if (identical(status, "error")) {
+    list(
+      error_type = if (inherits(invoke_condition, "error")) "provider_invoke_error" else "provider_empty_response",
+      error_message = response_text,
+      retry_attempts = invoke_attempts,
+      retry_max_attempts = invoke_max_attempts,
+      retryable_error = if (inherits(invoke_condition, "error")) {
+        .is_retryable_invoke_error(invoke_condition)
+      } else {
+        FALSE
+      }
+    )
+  } else {
+    list()
+  }
+
+  payload_integrity <- list(
+    released_from = response_meta$released_from %||% NA_character_,
+    canonical_available = FALSE,
+    canonical_matches_message = identical(status, "success"),
+    message_sanitized = isTRUE(response_meta$sanitized)
+  )
+  phase_marks$execution_assembly_started <- Sys.time()
+  execution <- list(
+    mode = "provider_direct",
+    stop_reason = stop_reason,
+    status_code = if (identical(status, "success")) ASA_STATUS_SUCCESS else ASA_STATUS_ERROR,
+    invoke_error = invoke_error,
+    terminal_payload_source = response_meta$released_from %||% NA_character_,
+    payload_integrity = payload_integrity,
+    phase_timings = list(
+      total_minutes = elapsed,
+      rate_limit_wait_minutes = as.numeric(difftime(
+        phase_marks$rate_limit_finished,
+        phase_marks$rate_limit_started,
+        units = "mins"
+      )),
+      backend_invoke_minutes = as.numeric(difftime(
+        phase_marks$backend_invoke_finished,
+        phase_marks$backend_invoke_started,
+        units = "mins"
+      )),
+      output_parse_minutes = as.numeric(difftime(
+        phase_marks$output_parse_finished,
+        phase_marks$output_parse_started,
+        units = "mins"
+      )),
+      backend = list(
+        invoke_attempts = invoke_attempts,
+        invoke_max_attempts = invoke_max_attempts
+      )
+    )
+  )
+  phase_marks$execution_assembly_finished <- Sys.time()
+  execution$phase_timings$execution_assembly_minutes <- as.numeric(difftime(
+    phase_marks$execution_assembly_finished,
+    phase_marks$execution_assembly_started,
+    units = "mins"
+  ))
+
+  result <- asa_result(
+    prompt = prompt,
+    message = response_text,
+    parsed = parsed,
+    raw_output = raw_output,
+    trace_json = "",
+    elapsed_time = elapsed,
+    status = status,
+    search_tier = "none",
+    parsing_status = parsing_status,
+    execution = execution
+  )
+
+  .attach_result_aliases(
+    result = result,
+    include_raw_response = identical(output_format, "raw"),
+    raw_response = raw_response
+  )
 }
 
 #' Attach Top-Level Backward-Compatibility Aliases to asa_result
