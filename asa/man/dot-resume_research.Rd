@@ -4,7 +4,13 @@
 \alias{.resume_research}
 \title{Resume Research from Checkpoint}
 \usage{
-.resume_research(checkpoint_file, verbose)
+.resume_research(
+  checkpoint_file,
+  output = c("data.frame", "csv", "json"),
+  progress = TRUE,
+  include_provenance = FALSE,
+  verbose = TRUE
+)
 }
 \description{
 Resume Research from Checkpoint

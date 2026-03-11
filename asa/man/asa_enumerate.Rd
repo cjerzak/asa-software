@@ -5,7 +5,7 @@
 \title{Multi-Agent Research for Open-Ended Queries}
 \usage{
 asa_enumerate(
-  query,
+  query = NULL,
   schema = NULL,
   output = c("data.frame", "csv", "json"),
   config = NULL,
@@ -34,7 +34,8 @@ asa_enumerate(
 )
 }
 \arguments{
-\item{query}{Character string describing the research goal.
+\item{query}{Character string describing the research goal. Required for fresh
+runs; optional when \code{resume_from} points to an existing checkpoint.
 Examples: "Find all current US senators with their state, party, and term end date"}
 
 \item{schema}{Named character vector defining the output schema.
@@ -108,11 +109,14 @@ local model name (e.g., "all-MiniLM-L6-v2").}
 
 \item{include_provenance}{Include source URLs and confidence per row (default: FALSE).}
 
-\item{checkpoint}{Enable auto-save after each round (default: TRUE).}
+\item{checkpoint}{Enable auto-save after planning and each completed round
+(default: TRUE).}
 
 \item{checkpoint_dir}{Directory for checkpoint files (default: tempdir()).}
 
-\item{resume_from}{Path to checkpoint file to resume from (default: NULL).}
+\item{resume_from}{Path to checkpoint file to resume from (default: NULL).
+For v2 checkpoints this continues execution from the last saved round
+state. Legacy v1 checkpoints return the saved result without continuation.}
 
 \item{agent}{An initialized \code{asa_agent} object. If NULL, uses the current
 agent or creates a new one with specified backend/model.}
@@ -159,10 +163,10 @@ authoritative enumerations with complete, verified data.
 }
 \section{Checkpointing}{
 
-With checkpoint=TRUE, state is saved after each round. If interrupted,
-use resume_from to continue from the last checkpoint:
+With checkpoint=TRUE, state is saved after planning and after each completed
+round. If interrupted, use resume_from to continue from the last checkpoint:
 \preformatted{
-result <- asa_enumerate(query, resume_from = "/path/to/checkpoint.rds")
+result <- asa_enumerate(resume_from = "/path/to/checkpoint.rds")
 }
 }
 

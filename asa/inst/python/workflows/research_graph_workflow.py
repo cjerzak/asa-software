@@ -117,8 +117,10 @@ class ResearchState(TypedDict):
     output_tokens: int
     token_trace: Annotated[list, add_to_list]
     start_time: float
+    elapsed_carry_sec: float
     status: str  # "planning", "searching", "complete", "failed"
     stop_reason: Optional[str]
+    resume_stage: str
     completion_gate: Annotated[Dict[str, Any], merge_dicts]
     errors: Annotated[List[Dict], add_to_list]
     remaining_steps: RemainingSteps
@@ -189,6 +191,104 @@ def _effective_recursion_stop_buffer(state: Any) -> int:
     if configured_limit is not None and configured_limit <= 4:
         return 1
     return RECURSION_STOP_BUFFER
+
+
+def _active_elapsed_seconds(state: Any, *, now: Optional[float] = None) -> float:
+    """Compute active runtime, excluding time spent paused between resume sessions."""
+    now = float(now if now is not None else time.time())
+    carry = 0.0
+    started = None
+    try:
+        carry = float(state.get("elapsed_carry_sec", 0.0) or 0.0)
+    except Exception:
+        carry = 0.0
+    try:
+        started = float(state.get("start_time", 0.0) or 0.0)
+    except Exception:
+        started = 0.0
+    active = max(0.0, now - started) if started else 0.0
+    return max(0.0, carry + active)
+
+
+def _reset_resume_markers(state: Dict[str, Any]) -> Dict[str, Any]:
+    """Clear stale terminal markers before resuming from a saved state."""
+    out = dict(state or {})
+    plan = out.get("plan")
+    if not isinstance(plan, dict):
+        plan = {}
+    out["plan"] = plan
+    out["new_results"] = []
+    out["stop_reason"] = None
+    out["completion_gate"] = {}
+    out["status"] = "searching" if plan else "planning"
+    out["resume_stage"] = "searcher" if plan else "planner"
+    out["start_time"] = time.time()
+    return out
+
+
+def _build_resume_state(
+    state_snapshot: Dict[str, Any],
+    *,
+    query: str,
+    schema: Dict[str, str],
+    config_dict: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Normalize a saved state snapshot for a new resume session."""
+    state = dict(state_snapshot or {})
+    now = time.time()
+    carry = _active_elapsed_seconds(state, now=now)
+    plan = state.get("plan")
+    if not isinstance(plan, dict):
+        plan = {}
+    completion_gate = state.get("completion_gate")
+    if not isinstance(completion_gate, dict):
+        completion_gate = {}
+    errors = state.get("errors")
+    if not isinstance(errors, list):
+        errors = []
+    results = state.get("results")
+    if not isinstance(results, list):
+        results = []
+    novelty_history = state.get("novelty_history")
+    if not isinstance(novelty_history, list):
+        novelty_history = []
+    seen_hashes = state.get("seen_hashes")
+    if not isinstance(seen_hashes, dict):
+        seen_hashes = {}
+
+    state.update({
+        "query": query,
+        "schema": schema,
+        "config": config_dict or state.get("config") or {},
+        "plan": plan,
+        "results": results,
+        "new_results": [],
+        "seen_hashes": seen_hashes,
+        "novelty_history": novelty_history,
+        "completion_gate": completion_gate,
+        "errors": errors,
+        "elapsed_carry_sec": carry,
+        "start_time": now,
+    })
+    return _reset_resume_markers(state)
+
+
+def _state_snapshot_for_checkpoint(
+    state: Dict[str, Any],
+    *,
+    query: str,
+    schema: Dict[str, str],
+    config_dict: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Create a serializable checkpoint snapshot with active elapsed time baked in."""
+    snapshot = dict(state or {})
+    now = time.time()
+    snapshot["query"] = query
+    snapshot["schema"] = schema
+    snapshot["config"] = config_dict or snapshot.get("config") or {}
+    snapshot["elapsed_carry_sec"] = _active_elapsed_seconds(snapshot, now=now)
+    snapshot["start_time"] = now
+    return snapshot
 
 
 def _with_node_timing(
@@ -527,6 +627,7 @@ def create_planner_node(llm):
                 "entity_type": plan.get("entity_type", "unknown"),
                 "wikidata_type": plan.get("wikidata_type"),
                 "status": "searching",
+                "resume_stage": "searcher",
                 "queries_used": 1,
                 "tokens_used": state.get("tokens_used", 0) + usage["total_tokens"],
                 "input_tokens": state.get("input_tokens", 0) + usage["input_tokens"],
@@ -562,7 +663,7 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
                 round_number=int(state.get("round_number", 0) or 0),
                 queries_used=int(state.get("queries_used", 0) or 0),
                 tokens_used=int(state.get("tokens_used", 0) or 0),
-                elapsed_sec=max(0.0, time.time() - float(state.get("start_time", 0.0) or 0.0)),
+                elapsed_sec=_active_elapsed_seconds(state),
                 items_found=int(len(state.get("seen_hashes", {}) or {})),
                 novelty_history=state.get("novelty_history", []) if isinstance(state.get("novelty_history", []), list) else [],
                 max_rounds=(research_config.max_rounds if research_config else None),
@@ -937,7 +1038,8 @@ Use the Search tool to find information."""
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "token_trace": local_token_trace,
-            "round_number": state.get("round_number", 0) + 1
+            "round_number": state.get("round_number", 0) + 1,
+            "resume_stage": "searcher",
         }, node="searcher", started_at=node_started_at, usage=node_usage)
 
     return searcher_node
@@ -1008,7 +1110,7 @@ def create_deduper_node():
                 round_number=int(state.get("round_number", 0) or 0),
                 queries_used=int(state.get("queries_used", 0) or 0),
                 tokens_used=int(state.get("tokens_used", 0) or 0),
-                elapsed_sec=max(0.0, time.time() - float(state.get("start_time", 0.0) or 0.0)),
+                elapsed_sec=_active_elapsed_seconds(state),
                 items_found=int(len(seen_hashes) + len(new_hashes)),
                 novelty_history=state.get("novelty_history", []) if isinstance(state.get("novelty_history", []), list) else [],
                 target_items=(state.get("config", {}) or {}).get("target_items"),
@@ -1017,6 +1119,7 @@ def create_deduper_node():
             out["status"] = "complete"
             out["stop_reason"] = "recursion_limit"
             out["completion_gate"] = gate
+        out["resume_stage"] = "searcher"
         return _with_node_timing(out, node="deduper", started_at=node_started_at)
 
     return deduper_node
@@ -1034,8 +1137,7 @@ def create_stopper_node(config: ResearchConfig):
         round_num = state.get("round_number", 0)
         queries = state.get("queries_used", 0)
         tokens = state.get("tokens_used", 0)
-        start_time = state.get("start_time", 0.0) or 0.0
-        elapsed = time.time() - float(start_time) if start_time else 0.0
+        elapsed = _active_elapsed_seconds(state)
         seen_hashes = state.get("seen_hashes", {})
         total_unique = len(seen_hashes)
         novelty_history = state.get("novelty_history", [])
@@ -1065,13 +1167,14 @@ def create_stopper_node(config: ResearchConfig):
                     "status": "complete",
                     "stop_reason": gate.get("stop_reason"),
                     "completion_gate": gate,
+                    "resume_stage": "searcher",
                 },
                 node="stopper",
                 started_at=node_started_at,
             )
 
         return _with_node_timing(
-            {"status": "searching", "completion_gate": gate},
+            {"status": "searching", "completion_gate": gate, "resume_stage": "searcher"},
             node="stopper",
             started_at=node_started_at,
         )
@@ -1096,6 +1199,21 @@ def should_continue(state: ResearchState) -> str:
     return "end"
 
 
+def _route_research_entry(state: ResearchState) -> str:
+    """Choose the first executable node for fresh and resumed runs."""
+    resume_stage = str(state.get("resume_stage", "") or "").strip().lower()
+    plan = state.get("plan")
+    has_plan = isinstance(plan, dict) and bool(plan)
+
+    if resume_stage == "searcher":
+        return "search"
+    if resume_stage == "planner":
+        return "planner"
+    if state.get("status") == "searching" and has_plan:
+        return "search"
+    return "planner"
+
+
 def create_research_graph(
     llm,
     tools: List,
@@ -1115,12 +1233,18 @@ def create_research_graph(
     # Build graph
     workflow = StateGraph(ResearchState)
 
+    workflow.add_node("entry_router", lambda state: {})
     workflow.add_node("planner", planner)
     workflow.add_node("searcher", searcher)
     workflow.add_node("deduper", deduper)
     workflow.add_node("stopper", stopper)
 
-    workflow.set_entry_point("planner")
+    workflow.set_entry_point("entry_router")
+    workflow.add_conditional_edges(
+        "entry_router",
+        _route_research_entry,
+        {"planner": "planner", "search": "searcher"}
+    )
 
     # Edges
     workflow.add_conditional_edges(
@@ -1180,8 +1304,10 @@ def _build_initial_state(
         "output_tokens": 0,
         "token_trace": [],
         "start_time": time.time(),
+        "elapsed_carry_sec": 0.0,
         "status": "planning",
         "stop_reason": None,
+        "resume_stage": "planner",
         "completion_gate": {},
         "errors": []
     }
@@ -1252,7 +1378,8 @@ def _build_langgraph_run_config(
 def _build_research_result(
     state: Dict[str, Any],
     elapsed: float,
-    status_fallback: str = "unknown"
+    status_fallback: str = "unknown",
+    thread_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """Build normalized research results from a completed state."""
     state = state or {}
@@ -1290,6 +1417,7 @@ def _build_research_result(
             "output_tokens": state.get("output_tokens", 0),
             "token_trace": state.get("token_trace", []),
             "time_elapsed": elapsed,
+            "active_elapsed_sec": _active_elapsed_seconds(state),
             "items_found": len(results)
         },
         "status": state.get("status", status_fallback),
@@ -1297,14 +1425,16 @@ def _build_research_result(
         "stop_reason": state.get("stop_reason"),
         "completion_gate": completion_gate,
         "errors": state.get("errors", []),
-        "plan": state.get("plan", {})
+        "plan": state.get("plan", {}),
+        "thread_id": thread_id
     }
 
 
 def _build_research_error_result(
     error: Exception,
     elapsed: float,
-    state: Optional[Dict[str, Any]] = None
+    state: Optional[Dict[str, Any]] = None,
+    thread_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """Build normalized failed research results."""
     state = state or {}
@@ -1327,13 +1457,18 @@ def _build_research_error_result(
     return {
         "results": results,
         "provenance": provenance,
-        "metrics": {"time_elapsed": elapsed},
+        "metrics": {
+            "time_elapsed": elapsed,
+            "active_elapsed_sec": _active_elapsed_seconds(state),
+            "items_found": len(results),
+        },
         "status": "failed",
         "verification_status": completion_gate.get("completion_status"),
         "stop_reason": f"execution_error: {str(error)}",
         "completion_gate": completion_gate,
         "errors": [{"stage": "execution", "error": str(error)}],
-        "plan": state.get("plan", {})
+        "plan": state.get("plan", {}),
+        "thread_id": thread_id
     }
 
 
@@ -1355,11 +1490,60 @@ def run_research(
         final_state = graph.invoke(initial_state, config)
         elapsed = time.time() - start_time
 
-        return _build_research_result(final_state, elapsed, status_fallback="unknown")
+        return _build_research_result(
+            final_state,
+            elapsed,
+            status_fallback="unknown",
+            thread_id=thread_id,
+        )
 
     except Exception as e:
         logger.error(f"Research error: {e}")
-        return _build_research_error_result(e, time.time() - start_time)
+        return _build_research_error_result(
+            e,
+            time.time() - start_time,
+            state=initial_state,
+            thread_id=thread_id,
+        )
+
+
+def run_research_from_state(
+    graph,
+    state_snapshot: Dict[str, Any],
+    query: str,
+    schema: Dict[str, str],
+    config_dict: Dict[str, Any] = None,
+    thread_id: str = None
+) -> Dict[str, Any]:
+    """Resume research graph from a normalized saved state snapshot."""
+    thread_id = _resolve_thread_id(query, thread_id)
+    initial_state = _build_resume_state(
+        state_snapshot,
+        query=query,
+        schema=schema,
+        config_dict=config_dict,
+    )
+
+    config = _build_langgraph_run_config(thread_id, config_dict)
+    start_time = time.time()
+
+    try:
+        final_state = graph.invoke(initial_state, config)
+        elapsed = time.time() - start_time
+        return _build_research_result(
+            final_state,
+            elapsed,
+            status_fallback="unknown",
+            thread_id=thread_id,
+        )
+    except Exception as e:
+        logger.error(f"Research resume error: {e}")
+        return _build_research_error_result(
+            e,
+            time.time() - start_time,
+            state=initial_state,
+            thread_id=thread_id,
+        )
 
 
 def stream_research(
@@ -1376,7 +1560,52 @@ def stream_research(
     """
     thread_id = _resolve_thread_id(query, thread_id)
     initial_state = _build_initial_state(query, schema, config_dict)
+    yield from _stream_research_impl(
+        graph=graph,
+        initial_state=initial_state,
+        query=query,
+        schema=schema,
+        config_dict=config_dict,
+        thread_id=thread_id,
+    )
 
+
+def stream_research_from_state(
+    graph,
+    state_snapshot: Dict[str, Any],
+    query: str,
+    schema: Dict[str, str],
+    config_dict: Dict[str, Any] = None,
+    thread_id: str = None
+):
+    """Resume streaming research from a normalized saved state snapshot."""
+    thread_id = _resolve_thread_id(query, thread_id)
+    initial_state = _build_resume_state(
+        state_snapshot,
+        query=query,
+        schema=schema,
+        config_dict=config_dict,
+    )
+    yield from _stream_research_impl(
+        graph=graph,
+        initial_state=initial_state,
+        query=query,
+        schema=schema,
+        config_dict=config_dict,
+        thread_id=thread_id,
+    )
+
+
+def _stream_research_impl(
+    *,
+    graph,
+    initial_state: Dict[str, Any],
+    query: str,
+    schema: Dict[str, str],
+    config_dict: Optional[Dict[str, Any]],
+    thread_id: str
+):
+    """Shared streaming implementation for fresh and resumed research runs."""
     config = _build_langgraph_run_config(thread_id, config_dict)
     start_time = time.time()
 
@@ -1411,29 +1640,59 @@ def stream_research(
                 "node": node_name,
                 "status": node_state.get("status", "running"),
                 "items_found": len(accumulated_state.get("results", [])),
-                "elapsed": time.time() - start_time
+                "elapsed": time.time() - start_time,
+                "thread_id": thread_id,
+                "state_update": node_state,
+                "state_snapshot": _state_snapshot_for_checkpoint(
+                    accumulated_state,
+                    query=query,
+                    schema=schema,
+                    config_dict=config_dict,
+                ),
             }
 
         # Build final result in same format as run_research()
         elapsed = time.time() - start_time
+        state_snapshot = _state_snapshot_for_checkpoint(
+            accumulated_state,
+            query=query,
+            schema=schema,
+            config_dict=config_dict,
+        )
         final_result = _build_research_result(
             accumulated_state,
             elapsed,
-            status_fallback="complete"
+            status_fallback="complete",
+            thread_id=thread_id,
         )
 
         yield {
             "event_type": "complete",
             "elapsed": elapsed,
+            "thread_id": thread_id,
+            "state_snapshot": state_snapshot,
             "final_result": final_result
         }
 
     except Exception as e:
         elapsed = time.time() - start_time
-        error_result = _build_research_error_result(e, elapsed, state=accumulated_state)
+        state_snapshot = _state_snapshot_for_checkpoint(
+            accumulated_state,
+            query=query,
+            schema=schema,
+            config_dict=config_dict,
+        )
+        error_result = _build_research_error_result(
+            e,
+            elapsed,
+            state=accumulated_state,
+            thread_id=thread_id,
+        )
         yield {
             "event_type": "error",
             "error": str(e),
             "elapsed": elapsed,
+            "thread_id": thread_id,
+            "state_snapshot": state_snapshot,
             "final_result": error_result
         }

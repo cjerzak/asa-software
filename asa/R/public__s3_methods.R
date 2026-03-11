@@ -1482,6 +1482,12 @@ print.asa_enumerate_result <- function(x, n = 6, ...) {
   # Metrics summary
   if (!is.null(x$metrics)) {
     cat("\nMetrics:\n")
+    if (isTRUE(x$metrics$resumed_from_checkpoint)) {
+      cat("  Resumed:       Yes\n", sep = "")
+      if (!is.null(x$metrics$checkpoint_round) && !is.na(x$metrics$checkpoint_round)) {
+        cat("  Resume Round:  ", x$metrics$checkpoint_round, "\n", sep = "")
+      }
+    }
     if (!is.null(x$metrics$round_number)) {
       cat("  Rounds:        ", x$metrics$round_number, "\n", sep = "")
     }
@@ -1550,7 +1556,14 @@ summary.asa_enumerate_result <- function(object, ...) {
 
   if (!is.null(object$metrics)) {
     cat("\nExecution Metrics:\n")
+    if (isTRUE(object$metrics$resumed_from_checkpoint)) {
+      cat("  resumed_from_checkpoint: TRUE\n")
+      if (!is.null(object$metrics$checkpoint_round) && !is.na(object$metrics$checkpoint_round)) {
+        cat("  checkpoint_round: ", object$metrics$checkpoint_round, "\n", sep = "")
+      }
+    }
     for (name in names(object$metrics)) {
+      if (name %in% c("resumed_from_checkpoint", "checkpoint_round")) next
       val <- object$metrics[[name]]
       if (is.numeric(val)) {
         if (grepl("time|elapsed", name, ignore.case = TRUE)) {

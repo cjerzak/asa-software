@@ -4,7 +4,14 @@
 \alias{.save_checkpoint}
 \title{Save Checkpoint}
 \usage{
-.save_checkpoint(result, query, schema_dict, config_dict, checkpoint_file)
+.save_checkpoint(
+  result = NULL,
+  query = NULL,
+  schema_dict = NULL,
+  config_dict = NULL,
+  checkpoint_file,
+  checkpoint_payload = NULL
+)
 }
 \description{
 Save Checkpoint

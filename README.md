@@ -176,7 +176,7 @@ summary(senators)
 - **Temporal filtering**: Filter results by date range, use Wayback Machine for historical data
 - **Smart stopping**: Target count, novelty plateau, budget limits
 - **Schema enforcement**: Structured output with specified columns
-- **Checkpointing**: Resume interrupted searches with `resume_from`
+- **Checkpointing**: Round-level checkpoints that let `resume_from` continue interrupted searches
 - **Provenance tracking**: Optional source attribution per row
 
 **Available Wikidata entity types** (for authoritative enumeration):

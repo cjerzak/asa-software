@@ -4,7 +4,8 @@
 #' Decomposes complex queries into sub-tasks, executes parallel searches, and
 #' aggregates results into structured output (data.frame, CSV, or JSON).
 #'
-#' @param query Character string describing the research goal.
+#' @param query Character string describing the research goal. Required for fresh
+#'   runs; optional when \code{resume_from} points to an existing checkpoint.
 #'   Examples: "Find all current US senators with their state, party, and term end date"
 #' @param schema Named character vector defining the output schema.
 #'   Names are column names, values are R types ("character", "numeric", "logical").
@@ -61,9 +62,12 @@
 #' @param pagination Enable pagination for large result sets (default: TRUE).
 #' @param progress Show progress bar and status updates (default: TRUE).
 #' @param include_provenance Include source URLs and confidence per row (default: FALSE).
-#' @param checkpoint Enable auto-save after each round (default: TRUE).
+#' @param checkpoint Enable auto-save after planning and each completed round
+#'   (default: TRUE).
 #' @param checkpoint_dir Directory for checkpoint files (default: tempdir()).
 #' @param resume_from Path to checkpoint file to resume from (default: NULL).
+#'   For v2 checkpoints this continues execution from the last saved round
+#'   state. Legacy v1 checkpoints return the saved result without continuation.
 #' @param agent An initialized \code{asa_agent} object. If NULL, uses the current
 #'   agent or creates a new one with specified backend/model.
 #' @param backend LLM backend if creating new agent: "openai", "groq", "xai", "gemini", "exo", "openrouter".
@@ -98,10 +102,10 @@
 #' authoritative enumerations with complete, verified data.
 #'
 #' @section Checkpointing:
-#' With checkpoint=TRUE, state is saved after each round. If interrupted,
-#' use resume_from to continue from the last checkpoint:
+#' With checkpoint=TRUE, state is saved after planning and after each completed
+#' round. If interrupted, use resume_from to continue from the last checkpoint:
 #' \preformatted{
-#' result <- asa_enumerate(query, resume_from = "/path/to/checkpoint.rds")
+#' result <- asa_enumerate(resume_from = "/path/to/checkpoint.rds")
 #' }
 #'
 #' @section Schema:
@@ -168,7 +172,7 @@
 #' @seealso \code{\link{run_task}}, \code{\link{initialize_agent}}
 #'
 #' @export
-asa_enumerate <- function(query,
+asa_enumerate <- function(query = NULL,
                          schema = NULL,
                          output = c("data.frame", "csv", "json"),
                          config = NULL,
@@ -196,6 +200,22 @@ asa_enumerate <- function(query,
                          verbose = TRUE) {
 
   .validate_asa_config(config)
+
+  output <- match.arg(output)
+
+  if (!is.null(resume_from)) {
+    if (!file.exists(resume_from)) {
+      stop("`resume_from` file not found: ", resume_from, call. = FALSE)
+    }
+    .warn_resume_research_ignored_args(match.call(expand.dots = FALSE))
+    return(.resume_research(
+      checkpoint_file = resume_from,
+      output = output,
+      progress = progress,
+      include_provenance = include_provenance,
+      verbose = verbose
+    ))
+  }
 
   runtime_inputs <- .resolve_runtime_inputs(
     config = config,
@@ -225,9 +245,6 @@ asa_enumerate <- function(query,
     .get_default_conda_env()
   }
 
-  # Match output format
-  output <- match.arg(output)
-
   # Validate inputs
   .validate_research_inputs(
     query = query,
@@ -245,11 +262,6 @@ asa_enumerate <- function(query,
     checkpoint_dir = checkpoint_dir,
     resume_from = resume_from
   )
-
-  # Handle resume from checkpoint
-  if (!is.null(resume_from)) {
-    return(.resume_research(resume_from, verbose))
-  }
 
   # Normalize schema (no Python required)
   schema_dict <- .normalize_schema(schema, query, verbose)
@@ -293,60 +305,26 @@ asa_enumerate <- function(query,
     )
   }
 
-  # Ensure agent is initialized
-  if (is.null(agent)) {
-    config_for_agent <- if (!is.null(config)) config else asa_config(
-      backend = backend,
-      model = model,
-      conda_env = conda_env
-    )
-
-    # Ensure overrides are reflected if config was provided
-    config_for_agent$backend <- backend
-    config_for_agent$model <- model
-    config_for_agent$conda_env <- conda_env
-
-    current <- if (.is_initialized()) get_agent() else NULL
-    if (!is.null(current) && .agent_matches_config(current, config_for_agent)) {
-      agent <- current
-    } else {
-      if (verbose) message("Initializing agent...")
-      agent <- initialize_agent(
-        backend = config_for_agent$backend,
-        model = config_for_agent$model,
-        conda_env = config_for_agent$conda_env,
-        proxy = config_for_agent$proxy,
-        use_browser = config_for_agent$use_browser %||% ASA_DEFAULT_USE_BROWSER,
-        search = config_for_agent$search,
-        use_memory_folding = config_for_agent$memory_folding,
-        memory_threshold = config_for_agent$memory_threshold,
-        memory_keep_recent = config_for_agent$memory_keep_recent,
-        use_observational_memory = config_for_agent$use_observational_memory %||% FALSE,
-        om_observation_token_budget = config_for_agent$om_observation_token_budget %||% ASA_DEFAULT_OM_OBSERVATION_TOKENS,
-        om_reflection_token_budget = config_for_agent$om_reflection_token_budget %||% ASA_DEFAULT_OM_REFLECTION_TOKENS,
-        om_buffer_tokens = config_for_agent$om_buffer_tokens %||% ASA_DEFAULT_OM_BUFFER_TOKENS,
-        om_buffer_activation = config_for_agent$om_buffer_activation %||% ASA_DEFAULT_OM_BUFFER_ACTIVATION,
-        om_block_after = config_for_agent$om_block_after %||% ASA_DEFAULT_OM_BLOCK_AFTER,
-        om_async_prebuffer = config_for_agent$om_async_prebuffer %||% ASA_DEFAULT_OM_ASYNC_PREBUFFER,
-        om_cross_thread_memory = config_for_agent$om_cross_thread_memory %||% FALSE,
-        rate_limit = config_for_agent$rate_limit,
-        timeout = config_for_agent$timeout,
-        tor = config_for_agent$tor,
-        recursion_limit = config_for_agent$recursion_limit,
-        verbose = verbose
-      )
-    }
-  }
+  agent_boot <- .ensure_research_agent(
+    agent = agent,
+    config = config,
+    backend = backend,
+    model = model,
+    conda_env = conda_env,
+    verbose = verbose
+  )
+  agent <- agent_boot$agent
+  agent_config <- agent_boot$config
 
   # Import Python modules
   .import_research_modules()
 
   # Create checkpoint file path
-  checkpoint_file <- NULL
-  if (checkpoint) {
-    query_hash <- substr(digest::digest(query), 1, 12)
-    checkpoint_file <- file.path(checkpoint_dir, paste0("asa_enumerate_", query_hash, ".rds"))
-  }
+  checkpoint_file <- .derive_research_checkpoint_file(
+    checkpoint = checkpoint,
+    checkpoint_dir = checkpoint_dir,
+    query = query
+  )
 
   # Create research graph
   if (verbose) message("Creating research graph...")
@@ -363,68 +341,39 @@ asa_enumerate <- function(query,
     conda_env = conda_env_used,
     agent = agent,
     fn = function() {
-      if (progress) {
-        .run_research_with_progress(graph, query, schema_dict, config_dict,
-                                    checkpoint_file, verbose)
-      } else {
-        .run_research(graph, query, schema_dict, config_dict)
-      }
+      .run_research_streaming(
+        graph = graph,
+        query = query,
+        schema_dict = schema_dict,
+        config_dict = config_dict,
+        checkpoint_file = checkpoint_file,
+        agent_config = agent_config,
+        progress = progress,
+        verbose = verbose
+      )
     }
   )
 
-  elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
+  elapsed_total <- as.numeric(difftime(Sys.time(), start_time, units = "mins"))
 
-  # Process results
-  if (verbose) message("Processing results...")
-  processed <- .process_research_results(result, schema_dict, include_provenance)
-
-  # Save final checkpoint
-  if (checkpoint && !is.null(checkpoint_file)) {
-    .save_checkpoint(result, query, schema_dict, config_dict, checkpoint_file)
-    if (verbose) message("  Checkpoint saved: ", checkpoint_file)
-  }
-
-  # Build result object
-  verification_status <- .try_or(as.character(result$verification_status), character(0))
-  verification_status <- if (length(verification_status) > 0 && nzchar(verification_status[[1]])) {
-    verification_status[[1]]
-  } else {
-    NA_character_
-  }
-  status_out <- result$status %||% "unknown"
-  if (!is.na(verification_status) && !verification_status %in% c("searching", "in_progress")) {
-    status_out <- verification_status
-  }
-  completion_gate <- result$completion_gate %||% list()
-
-  research_result <- asa_enumerate_result(
-    data = processed$data,
-    status = status_out,
-    stop_reason = result$stop_reason,
-    metrics = c(
-      result$metrics,
-      list(
-        elapsed_total = elapsed,
-        verification_status = verification_status,
-        completion_gate = completion_gate
-      )
-    ),
-    provenance = if (include_provenance) processed$provenance else NULL,
-    plan = result$plan,
+  research_result <- .materialize_research_result(
+    result = result,
+    schema_dict = schema_dict,
+    include_provenance = include_provenance,
     checkpoint_file = checkpoint_file,
     query = query,
-    schema = schema_dict
+    elapsed_total = elapsed_total,
+    extra_metrics = list(
+      resumed_from_checkpoint = FALSE,
+      checkpoint_version = if (!is.null(checkpoint_file)) 2L else NA_integer_,
+      checkpoint_round = .as_scalar_int(result$metrics$round_number %||% NA_integer_),
+      thread_id = result$thread_id %||% NA_character_,
+      active_elapsed_sec = .checkpoint_active_elapsed_sec(result$metrics %||% list()),
+      checkpoint_updated_at = if (!is.null(checkpoint_file)) Sys.time() else NA
+    )
   )
 
-  # Output format conversion
-  if (output == "csv") {
-    csv_file <- tempfile(fileext = ".csv")
-    utils::write.csv(research_result$data, csv_file, row.names = FALSE)
-    if (verbose) message("  CSV written to: ", csv_file)
-    attr(research_result, "csv_file") <- csv_file
-  } else if (output == "json") {
-    research_result$json <- jsonlite::toJSON(research_result$data, pretty = TRUE, auto_unbox = TRUE)
-  }
+  research_result <- .apply_enumerate_output(research_result, output = output, verbose = verbose)
 
   if (verbose) {
     message("Research complete!")
@@ -619,6 +568,263 @@ asa_enumerate <- function(query,
   )
 }
 
+.warn_resume_research_ignored_args <- function(call_expr) {
+  arg_names <- names(as.list(call_expr))[-1]
+  ignored <- intersect(
+    arg_names,
+    c(
+      "query", "schema", "config", "workers", "max_rounds", "budget",
+      "stop_policy", "sources", "temporal", "agent", "backend", "model",
+      "conda_env", "allow_read_webpages", "webpage_relevance_mode",
+      "webpage_embedding_provider", "webpage_embedding_model", "pagination"
+    )
+  )
+  if (length(ignored) > 0) {
+    warning(
+      "Ignoring execution-shaping arguments when `resume_from` is provided: ",
+      paste(sort(unique(ignored)), collapse = ", "),
+      call. = FALSE
+    )
+  }
+}
+
+.derive_research_checkpoint_file <- function(checkpoint, checkpoint_dir, query) {
+  if (!isTRUE(checkpoint)) {
+    return(NULL)
+  }
+  query_hash <- substr(digest::digest(query), 1, 12)
+  file.path(checkpoint_dir, paste0("asa_enumerate_", query_hash, ".rds"))
+}
+
+.agent_config_from_agent <- function(agent) {
+  if (is.null(agent) || !inherits(agent, "asa_agent")) {
+    return(NULL)
+  }
+
+  asa_config(
+    backend = agent$backend,
+    model = agent$model,
+    conda_env = agent$config$conda_env,
+    proxy = agent$config$proxy,
+    use_browser = agent$config$use_browser %||% ASA_DEFAULT_USE_BROWSER,
+    workers = .get_default_workers(),
+    timeout = agent$config$timeout,
+    rate_limit = agent$config$rate_limit,
+    memory_folding = agent$config$use_memory_folding %||% agent$config$memory_folding,
+    memory_threshold = agent$config$memory_threshold,
+    memory_keep_recent = agent$config$memory_keep_recent,
+    use_observational_memory = agent$config$use_observational_memory %||% FALSE,
+    om_observation_token_budget = agent$config$om_observation_token_budget %||% ASA_DEFAULT_OM_OBSERVATION_TOKENS,
+    om_reflection_token_budget = agent$config$om_reflection_token_budget %||% ASA_DEFAULT_OM_REFLECTION_TOKENS,
+    om_buffer_tokens = agent$config$om_buffer_tokens %||% ASA_DEFAULT_OM_BUFFER_TOKENS,
+    om_buffer_activation = agent$config$om_buffer_activation %||% ASA_DEFAULT_OM_BUFFER_ACTIVATION,
+    om_block_after = agent$config$om_block_after %||% ASA_DEFAULT_OM_BLOCK_AFTER,
+    om_async_prebuffer = agent$config$om_async_prebuffer %||% ASA_DEFAULT_OM_ASYNC_PREBUFFER,
+    om_cross_thread_memory = agent$config$om_cross_thread_memory %||% FALSE,
+    recursion_limit = agent$config$recursion_limit,
+    search = agent$config$search,
+    tor = agent$config$tor
+  )
+}
+
+.ensure_research_agent <- function(agent = NULL,
+                                   config = NULL,
+                                   backend = NULL,
+                                   model = NULL,
+                                   conda_env = NULL,
+                                   verbose = TRUE) {
+  if (!is.null(agent) && inherits(agent, "asa_agent")) {
+    return(list(
+      agent = agent,
+      config = config %||% .agent_config_from_agent(agent)
+    ))
+  }
+
+  config_for_agent <- if (!is.null(config)) config else asa_config(
+    backend = backend,
+    model = model,
+    conda_env = conda_env
+  )
+
+  config_for_agent$backend <- backend %||% config_for_agent$backend
+  config_for_agent$model <- model %||% config_for_agent$model
+  config_for_agent$conda_env <- conda_env %||% config_for_agent$conda_env
+
+  current <- if (.is_initialized()) get_agent() else NULL
+  if (!is.null(current) && .agent_matches_config(current, config_for_agent)) {
+    return(list(agent = current, config = config_for_agent))
+  }
+
+  if (verbose) message("Initializing agent...")
+  initialized <- initialize_agent(
+    backend = config_for_agent$backend,
+    model = config_for_agent$model,
+    conda_env = config_for_agent$conda_env,
+    proxy = config_for_agent$proxy,
+    use_browser = config_for_agent$use_browser %||% ASA_DEFAULT_USE_BROWSER,
+    search = config_for_agent$search,
+    use_memory_folding = config_for_agent$memory_folding,
+    memory_threshold = config_for_agent$memory_threshold,
+    memory_keep_recent = config_for_agent$memory_keep_recent,
+    use_observational_memory = config_for_agent$use_observational_memory %||% FALSE,
+    om_observation_token_budget = config_for_agent$om_observation_token_budget %||% ASA_DEFAULT_OM_OBSERVATION_TOKENS,
+    om_reflection_token_budget = config_for_agent$om_reflection_token_budget %||% ASA_DEFAULT_OM_REFLECTION_TOKENS,
+    om_buffer_tokens = config_for_agent$om_buffer_tokens %||% ASA_DEFAULT_OM_BUFFER_TOKENS,
+    om_buffer_activation = config_for_agent$om_buffer_activation %||% ASA_DEFAULT_OM_BUFFER_ACTIVATION,
+    om_block_after = config_for_agent$om_block_after %||% ASA_DEFAULT_OM_BLOCK_AFTER,
+    om_async_prebuffer = config_for_agent$om_async_prebuffer %||% ASA_DEFAULT_OM_ASYNC_PREBUFFER,
+    om_cross_thread_memory = config_for_agent$om_cross_thread_memory %||% FALSE,
+    rate_limit = config_for_agent$rate_limit,
+    timeout = config_for_agent$timeout,
+    tor = config_for_agent$tor,
+    recursion_limit = config_for_agent$recursion_limit,
+    verbose = verbose
+  )
+
+  list(agent = initialized, config = config_for_agent)
+}
+
+.build_research_temporal_from_config <- function(config_dict) {
+  if (is.null(config_dict)) {
+    return(NULL)
+  }
+  keys <- c("time_filter", "date_after", "date_before", "temporal_strictness", "use_wayback")
+  if (!any(vapply(keys, function(k) !is.null(config_dict[[k]]), logical(1)))) {
+    return(NULL)
+  }
+
+  temporal_options(
+    time_filter = config_dict$time_filter %||% NULL,
+    after = config_dict$date_after %||% NULL,
+    before = config_dict$date_before %||% NULL,
+    strictness = config_dict$temporal_strictness %||% "best_effort",
+    use_wayback = isTRUE(config_dict$use_wayback)
+  )
+}
+
+.checkpoint_active_elapsed_sec <- function(metrics = NULL) {
+  metrics <- metrics %||% list()
+  active <- suppressWarnings(as.numeric(metrics$active_elapsed_sec %||% NA_real_))
+  if (is.finite(active)) {
+    return(active)
+  }
+  fallback <- suppressWarnings(as.numeric(metrics$time_elapsed %||% NA_real_))
+  if (is.finite(fallback)) {
+    return(fallback)
+  }
+  NA_real_
+}
+
+.build_research_checkpoint_payload <- function(query,
+                                               schema_dict,
+                                               config_dict,
+                                               agent_config,
+                                               state_snapshot,
+                                               thread_id,
+                                               status,
+                                               resume_stage,
+                                               stop_reason = NULL,
+                                               updated_at = Sys.time()) {
+  round_number <- .as_scalar_int(state_snapshot$round_number %||% NA_integer_)
+  items_found <- length(state_snapshot$results %||% list())
+  active_elapsed_sec <- suppressWarnings(as.numeric(state_snapshot$elapsed_carry_sec %||% NA_real_))
+
+  list(
+    version = "2.0",
+    checkpoint_type = "research_state",
+    query = query,
+    schema = schema_dict,
+    config = config_dict,
+    agent_config = agent_config,
+    thread_id = thread_id,
+    resume_stage = resume_stage,
+    status = status,
+    stop_reason = stop_reason %||% state_snapshot$stop_reason %||% NULL,
+    state_snapshot = state_snapshot,
+    metrics = list(
+      round_number = round_number,
+      items_found = items_found,
+      active_elapsed_sec = active_elapsed_sec,
+      thread_id = thread_id
+    ),
+    result_summary = list(
+      status = status,
+      stop_reason = stop_reason %||% state_snapshot$stop_reason %||% NULL,
+      round_number = round_number,
+      items_found = items_found
+    ),
+    updated_at = updated_at
+  )
+}
+
+.materialize_research_result <- function(result,
+                                         schema_dict,
+                                         include_provenance,
+                                         checkpoint_file,
+                                         query,
+                                         elapsed_total = NULL,
+                                         extra_metrics = list()) {
+  if (is.null(result)) {
+    result <- list(
+      results = list(),
+      provenance = list(),
+      metrics = list(),
+      status = "failed",
+      stop_reason = "missing_result",
+      errors = list(list(stage = "execution", error = "Missing research result")),
+      plan = list(),
+      completion_gate = list()
+    )
+  }
+
+  processed <- .process_research_results(result, schema_dict, include_provenance)
+  verification_status <- .try_or(as.character(result$verification_status), character(0))
+  verification_status <- if (length(verification_status) > 0 && nzchar(verification_status[[1]])) {
+    verification_status[[1]]
+  } else {
+    NA_character_
+  }
+  status_out <- result$status %||% "unknown"
+  if (!is.na(verification_status) && !verification_status %in% c("searching", "in_progress")) {
+    status_out <- verification_status
+  }
+  completion_gate <- result$completion_gate %||% list()
+  metrics_out <- c(
+    result$metrics %||% list(),
+    list(
+      elapsed_total = elapsed_total %||% (.checkpoint_active_elapsed_sec(result$metrics %||% list()) / 60),
+      verification_status = verification_status,
+      completion_gate = completion_gate
+    ),
+    extra_metrics %||% list()
+  )
+
+  asa_enumerate_result(
+    data = processed$data,
+    status = status_out,
+    stop_reason = result$stop_reason,
+    metrics = metrics_out,
+    provenance = if (include_provenance) processed$provenance else NULL,
+    plan = result$plan,
+    checkpoint_file = checkpoint_file,
+    query = query,
+    schema = schema_dict
+  )
+}
+
+.apply_enumerate_output <- function(research_result, output = c("data.frame", "csv", "json"), verbose = TRUE) {
+  output <- match.arg(output)
+  if (output == "csv") {
+    csv_file <- tempfile(fileext = ".csv")
+    utils::write.csv(research_result$data, csv_file, row.names = FALSE)
+    if (verbose) message("  CSV written to: ", csv_file)
+    attr(research_result, "csv_file") <- csv_file
+  } else if (output == "json") {
+    research_result$json <- jsonlite::toJSON(research_result$data, pretty = TRUE, auto_unbox = TRUE)
+  }
+  research_result
+}
+
 
 #' Run Research (Non-Streaming)
 #' @keywords internal
@@ -632,52 +838,103 @@ asa_enumerate <- function(query,
 }
 
 
-#' Run Research with Progress Updates
+#' Run Research via Streaming
 #' @keywords internal
-.run_research_with_progress <- function(graph, query, schema_dict, config_dict,
-                                        checkpoint_file, verbose) {
-  # Use streaming for progress updates
-  # The stream now returns final_result in the complete/error event
+.run_research_streaming <- function(graph, query, schema_dict, config_dict,
+                                    checkpoint_file = NULL, agent_config = NULL,
+                                    progress = TRUE, verbose = TRUE,
+                                    thread_id = NULL, state_snapshot = NULL) {
   final_result <- NULL
 
   tryCatch({
-    # Stream events
-    events <- asa_env$research_graph$stream_research(
-      graph = graph,
-      query = query,
-      schema = schema_dict,
-      config_dict = config_dict
-    )
+    events <- if (is.null(state_snapshot)) {
+      asa_env$research_graph$stream_research(
+        graph = graph,
+        query = query,
+        schema = schema_dict,
+        config_dict = config_dict,
+        thread_id = thread_id
+      )
+    } else {
+      asa_env$research_graph$stream_research_from_state(
+        graph = graph,
+        state_snapshot = state_snapshot,
+        query = query,
+        schema = schema_dict,
+        config_dict = config_dict,
+        thread_id = thread_id
+      )
+    }
 
-    # Process events (Python generator)
     event_iter <- reticulate::iterate(events)
 
     for (event in event_iter) {
+      event <- .try_or(reticulate::py_to_r(event), event)
       event_type <- event$event_type
 
       if (event_type == "node_update") {
-        if (verbose) {
+        if (isTRUE(progress) && verbose) {
           message(sprintf("  [%s] Items: %d, Elapsed: %.1fs",
                          event$node, event$items_found, event$elapsed))
         }
+        if (!is.null(checkpoint_file) && event$node %in% c("planner", "stopper")) {
+          checkpoint_payload <- .build_research_checkpoint_payload(
+            query = query,
+            schema_dict = schema_dict,
+            config_dict = config_dict,
+            agent_config = agent_config,
+            state_snapshot = event$state_snapshot %||% list(),
+            thread_id = event$thread_id %||% thread_id %||% NA_character_,
+            status = event$state_snapshot$status %||% event$status %||% "searching",
+            resume_stage = "searcher",
+            stop_reason = event$state_snapshot$stop_reason %||% NULL
+          )
+          .save_checkpoint(checkpoint_payload = checkpoint_payload, checkpoint_file = checkpoint_file)
+        }
       } else if (event_type == "complete") {
-        # Capture final result from streaming (avoids double execution)
         final_result <- event$final_result
+        if (!is.null(checkpoint_file)) {
+          checkpoint_payload <- .build_research_checkpoint_payload(
+            query = query,
+            schema_dict = schema_dict,
+            config_dict = config_dict,
+            agent_config = agent_config,
+            state_snapshot = event$state_snapshot %||% list(),
+            thread_id = event$thread_id %||% thread_id %||% NA_character_,
+            status = final_result$status %||% "complete",
+            resume_stage = event$state_snapshot$resume_stage %||% "searcher",
+            stop_reason = final_result$stop_reason %||% NULL
+          )
+          .save_checkpoint(checkpoint_payload = checkpoint_payload, checkpoint_file = checkpoint_file)
+          if (verbose) message("  Checkpoint saved: ", checkpoint_file)
+        }
         if (verbose) message("  Research complete")
       } else if (event_type == "error") {
-        # Capture error result with any partial data
         final_result <- event$final_result
+        if (!is.null(checkpoint_file)) {
+          checkpoint_payload <- .build_research_checkpoint_payload(
+            query = query,
+            schema_dict = schema_dict,
+            config_dict = config_dict,
+            agent_config = agent_config,
+            state_snapshot = event$state_snapshot %||% list(),
+            thread_id = event$thread_id %||% thread_id %||% NA_character_,
+            status = final_result$status %||% "failed",
+            resume_stage = event$state_snapshot$resume_stage %||% "searcher",
+            stop_reason = final_result$stop_reason %||% event$error
+          )
+          .save_checkpoint(checkpoint_payload = checkpoint_payload, checkpoint_file = checkpoint_file)
+          if (verbose) message("  Checkpoint saved: ", checkpoint_file)
+        }
         if (verbose) message("  Error: ", event$error)
       }
     }
 
-    # Return the captured result from streaming
     if (!is.null(final_result)) {
       return(final_result)
     }
 
-    # Fallback: empty result if streaming yielded nothing
-    return(list(
+    list(
       results = list(),
       provenance = list(),
       metrics = list(),
@@ -685,7 +942,7 @@ asa_enumerate <- function(query,
       stop_reason = "no_result_from_stream",
       errors = list(list(stage = "stream", error = "Stream completed without result")),
       plan = list()
-    ))
+    )
 
   }, error = function(e) {
     list(
@@ -770,8 +1027,13 @@ asa_enumerate <- function(query,
 
 #' Save Checkpoint
 #' @keywords internal
-.save_checkpoint <- function(result, query, schema_dict, config_dict, checkpoint_file) {
-  checkpoint_data <- list(
+.save_checkpoint <- function(result = NULL,
+                             query = NULL,
+                             schema_dict = NULL,
+                             config_dict = NULL,
+                             checkpoint_file,
+                             checkpoint_payload = NULL) {
+  checkpoint_data <- checkpoint_payload %||% list(
     result = result,
     query = query,
     schema = schema_dict,
@@ -780,44 +1042,166 @@ asa_enumerate <- function(query,
     version = "1.0"
   )
   saveRDS(checkpoint_data, checkpoint_file)
+  invisible(checkpoint_file)
 }
 
 
 #' Resume Research from Checkpoint
 #' @keywords internal
-.resume_research <- function(checkpoint_file, verbose) {
+.resume_research <- function(checkpoint_file,
+                             output = c("data.frame", "csv", "json"),
+                             progress = TRUE,
+                             include_provenance = FALSE,
+                             verbose = TRUE) {
   if (!file.exists(checkpoint_file)) {
-    stop("Checkpoint file not found: ", checkpoint_file, call. = FALSE)
+    stop("`resume_from` file not found: ", checkpoint_file, call. = FALSE)
   }
+
+  output <- match.arg(output)
 
   if (verbose) message("Resuming from checkpoint: ", checkpoint_file)
 
   checkpoint <- readRDS(checkpoint_file)
+  version <- as.character(checkpoint$version %||% "1.0")
 
-  # Validate checkpoint structure
-  if (is.null(checkpoint$result) || is.null(checkpoint$query)) {
-    stop("Invalid checkpoint file structure", call. = FALSE)
+  if (!startsWith(version, "2")) {
+    if (is.null(checkpoint$result) || is.null(checkpoint$query)) {
+      stop("Invalid checkpoint file structure", call. = FALSE)
+    }
+    warning(
+      "Legacy checkpoint format does not support continuation; returning saved result.",
+      call. = FALSE
+    )
+    legacy_result <- .materialize_research_result(
+      result = checkpoint$result,
+      schema_dict = checkpoint$schema,
+      include_provenance = include_provenance,
+      checkpoint_file = checkpoint_file,
+      query = checkpoint$query,
+      elapsed_total = (.checkpoint_active_elapsed_sec(checkpoint$result$metrics %||% list()) / 60),
+      extra_metrics = list(
+        resumed_from_checkpoint = TRUE,
+        checkpoint_version = 1L,
+        checkpoint_round = .as_scalar_int(checkpoint$result$metrics$round_number %||% NA_integer_),
+        thread_id = NA_character_,
+        active_elapsed_sec = .checkpoint_active_elapsed_sec(checkpoint$result$metrics %||% list()),
+        checkpoint_updated_at = checkpoint$timestamp %||% NA
+      )
+    )
+    return(.apply_enumerate_output(legacy_result, output = output, verbose = verbose))
   }
 
-  # Process the saved results
-  processed <- .process_research_results(
-    checkpoint$result,
-    checkpoint$schema,
-    include_provenance = TRUE
+  if (is.null(checkpoint$query) || is.null(checkpoint$schema) || is.null(checkpoint$config)) {
+    stop("Invalid v2 checkpoint file structure", call. = FALSE)
+  }
+
+  terminal_status <- as.character(checkpoint$status %||% "")
+  if (terminal_status %in% c("complete", "failed")) {
+    terminal_result <- list(
+      results = checkpoint$state_snapshot$results %||% list(),
+      provenance = list(),
+      metrics = c(
+        checkpoint$metrics %||% list(),
+        list(
+          active_elapsed_sec = checkpoint$metrics$active_elapsed_sec %||%
+            checkpoint$state_snapshot$elapsed_carry_sec %||% NA_real_
+        )
+      ),
+      status = terminal_status,
+      stop_reason = checkpoint$stop_reason %||% checkpoint$state_snapshot$stop_reason %||% NULL,
+      verification_status = checkpoint$state_snapshot$completion_gate$completion_status %||% NULL,
+      completion_gate = checkpoint$state_snapshot$completion_gate %||% list(),
+      errors = checkpoint$state_snapshot$errors %||% list(),
+      plan = checkpoint$state_snapshot$plan %||% list(),
+      thread_id = checkpoint$thread_id %||% NA_character_
+    )
+    terminal_out <- .materialize_research_result(
+      result = terminal_result,
+      schema_dict = checkpoint$schema,
+      include_provenance = include_provenance,
+      checkpoint_file = checkpoint_file,
+      query = checkpoint$query,
+      elapsed_total = (checkpoint$metrics$active_elapsed_sec %||%
+        checkpoint$state_snapshot$elapsed_carry_sec %||% NA_real_) / 60,
+      extra_metrics = list(
+        resumed_from_checkpoint = TRUE,
+        checkpoint_version = 2L,
+        checkpoint_round = .as_scalar_int(checkpoint$metrics$round_number %||% NA_integer_),
+        thread_id = checkpoint$thread_id %||% NA_character_,
+        active_elapsed_sec = checkpoint$metrics$active_elapsed_sec %||%
+          checkpoint$state_snapshot$elapsed_carry_sec %||% NA_real_,
+        checkpoint_updated_at = checkpoint$updated_at %||% NA
+      )
+    )
+    return(.apply_enumerate_output(terminal_out, output = output, verbose = verbose))
+  }
+
+  checkpoint_agent_config <- checkpoint$agent_config %||% asa_config(
+    backend = .get_default_backend(),
+    model = .get_default_model()
+  )
+  agent_boot <- .ensure_research_agent(
+    agent = NULL,
+    config = checkpoint_agent_config,
+    backend = checkpoint_agent_config$backend %||% NULL,
+    model = checkpoint_agent_config$model %||% NULL,
+    conda_env = checkpoint_agent_config$conda_env %||% NULL,
+    verbose = verbose
+  )
+  agent <- agent_boot$agent
+  agent_config <- agent_boot$config
+
+  .import_research_modules()
+
+  runtime_inputs <- .resolve_runtime_inputs(
+    config = agent_config,
+    agent = agent,
+    temporal = .build_research_temporal_from_config(checkpoint$config),
+    allow_read_webpages = checkpoint$config$allow_read_webpages %||% NULL
   )
 
-  # Create result object
-  asa_enumerate_result(
-    data = processed$data,
-    status = checkpoint$result$status %||% "resumed",
-    stop_reason = checkpoint$result$stop_reason,
-    metrics = checkpoint$result$metrics,
-    provenance = processed$provenance,
-    plan = checkpoint$result$plan,
+  if (verbose) message("Creating research graph...")
+  graph <- .create_research_graph(agent, checkpoint$config)
+  started <- Sys.time()
+
+  result <- .with_runtime_wrappers(
+    runtime = runtime_inputs$runtime,
+    conda_env = agent_config$conda_env %||% .get_default_conda_env(),
+    agent = agent,
+    fn = function() {
+      .run_research_streaming(
+        graph = graph,
+        query = checkpoint$query,
+        schema_dict = checkpoint$schema,
+        config_dict = checkpoint$config,
+        checkpoint_file = checkpoint_file,
+        agent_config = agent_config,
+        progress = progress,
+        verbose = verbose,
+        thread_id = checkpoint$thread_id %||% NULL,
+        state_snapshot = checkpoint$state_snapshot
+      )
+    }
+  )
+
+  resumed <- .materialize_research_result(
+    result = result,
+    schema_dict = checkpoint$schema,
+    include_provenance = include_provenance,
     checkpoint_file = checkpoint_file,
     query = checkpoint$query,
-    schema = checkpoint$schema
+    elapsed_total = as.numeric(difftime(Sys.time(), started, units = "mins")),
+    extra_metrics = list(
+      resumed_from_checkpoint = TRUE,
+      checkpoint_version = 2L,
+      checkpoint_round = .as_scalar_int(checkpoint$metrics$round_number %||% NA_integer_),
+      thread_id = result$thread_id %||% checkpoint$thread_id %||% NA_character_,
+      active_elapsed_sec = .checkpoint_active_elapsed_sec(result$metrics %||% list()),
+      checkpoint_updated_at = checkpoint$updated_at %||% NA
+    )
   )
+
+  .apply_enumerate_output(resumed, output = output, verbose = verbose)
 }
 
 
