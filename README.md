@@ -686,13 +686,13 @@ If `ASA_RUN_TOR_TESTS=true` and Tor is not reachable, these tests fail fast by d
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2026-03-10 21:41:31 CDT | **Status:** PASS
+**Last Run:** 2026-03-11 08:30:24 CDT | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.080s | 0.09s | 0.89x | PASS |
-| `helper_funcs` | 0.047s | 0.07s | 0.67x | PASS |
-| `combined` | 0.076s | 0.09s | 0.83x | PASS |
+| `build_prompt` | 0.086s | 0.09s | 0.96x | PASS |
+| `helper_funcs` | 0.056s | 0.07s | 0.80x | PASS |
+| `combined` | 0.076s | 0.09s | 0.84x | PASS |
 | `agent_search` | 31.7s | 18s | 1.80x | PASS |
 
 Tests fail if time exceeds 4.00x baseline. 
