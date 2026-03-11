@@ -2655,6 +2655,183 @@ test_that("recursion-limit finalize preserves earlier tool-derived facts (standa
   }
 })
 
+test_that("memory folding preserves hidden multi-step payload mappings from folded Search history", {
+  prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+  msgs <- reticulate::import("langchain_core.messages", convert = TRUE)
+
+  expected_step_records <- data.frame(
+    step = 1:10,
+    marker = c(
+      "RUNE_ATLAS", "RUNE_BIRCH", "RUNE_CINDER", "RUNE_DRIFT", "RUNE_ECHO",
+      "RUNE_FABLE", "RUNE_GLADE", "RUNE_HARBOR", "RUNE_IVORY", "RUNE_JUNIPER"
+    ),
+    checksum = c(103L, 211L, 307L, 401L, 509L, 613L, 709L, 811L, 907L, 1009L),
+    stringsAsFactors = FALSE
+  )
+  expected_step_json <- jsonlite::toJSON(
+    lapply(seq_len(nrow(expected_step_records)), function(i) {
+      list(
+        step = unname(expected_step_records$step[[i]]),
+        marker = unname(expected_step_records$marker[[i]]),
+        checksum = unname(expected_step_records$checksum[[i]])
+      )
+    }),
+    auto_unbox = TRUE
+  )
+
+  reticulate::py_run_string(paste0(
+    "from langchain_core.messages import AIMessage\n",
+    "from langchain_core.tools import Tool\n",
+    "import json\n",
+    "import re\n\n",
+    "expected_step_records = ", expected_step_json, "\n",
+    "def _fold_trigger_search(query: str) -> str:\n",
+    "    return json.dumps({'ok': True, 'query': query, 'summary_tag': 'TRIGGER_ONLY'})\n\n",
+    "fold_trigger_search_tool = Tool(\n",
+    "    name='Search',\n",
+    "    description='Deterministic tool used only to trigger a fold boundary',\n",
+    "    func=_fold_trigger_search,\n",
+    ")\n\n",
+    "class _StubResponse:\n",
+    "    def __init__(self, content):\n",
+    "        self.content = content\n\n",
+    "class _HiddenStepSummarizer:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "        self.last_prompt = None\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        prompt = str(messages[0].content or '') if messages else ''\n",
+    "        self.last_prompt = prompt\n",
+    "        dedup = {}\n",
+    "        for step, marker, checksum in re.findall(r'STEP_REC::(\\\\d+)::([^:]+)::(\\\\d+)', prompt):\n",
+    "            dedup[int(step)] = f'STEP_REC::{step}::{marker}::{checksum}'\n",
+    "        ordered = [dedup[k] for k in sorted(dedup)]\n",
+    "        return _StubResponse(json.dumps({\n",
+    "            'version': 1,\n",
+    "            'facts': ordered,\n",
+    "            'decisions': [],\n",
+    "            'open_questions': [],\n",
+    "            'sources': [],\n",
+    "            'warnings': []\n",
+    "        }))\n\n",
+    "hidden_step_summarizer = _HiddenStepSummarizer()\n\n",
+    "class _HiddenStepLLM:\n",
+    "    def __init__(self):\n",
+    "        self.calls = 0\n",
+    "        self.system_prompts = []\n",
+    "    def bind_tools(self, tools):\n",
+    "        return self\n",
+    "    def invoke(self, messages):\n",
+    "        self.calls += 1\n",
+    "        sys_text = str(getattr(messages[0], 'content', '') or '') if messages else ''\n",
+    "        self.system_prompts.append(sys_text)\n",
+    "        if self.calls == 1:\n",
+    "            return AIMessage(\n",
+    "                content='trigger fold',\n",
+    "                tool_calls=[{'name':'Search','args':{'query':'trigger_fold'},'id':'call_trigger'}]\n",
+    "            )\n",
+    "        return AIMessage(content='done')\n\n",
+    "hidden_step_llm = _HiddenStepLLM()\n"
+  ))
+
+  initial_messages <- list(msgs$HumanMessage(content = "Initial request: preserve hidden Search records."))
+  for (i in seq_len(nrow(expected_step_records))) {
+    step <- expected_step_records$step[[i]]
+    marker <- expected_step_records$marker[[i]]
+    checksum <- expected_step_records$checksum[[i]]
+    call_id <- paste0("seed_call_", step)
+    seed_payload <- paste0(
+      "{\"step\":", step,
+      ",\"marker\":\"", marker,
+      "\",\"checksum\":", checksum,
+      ",\"summary_tag\":\"STEP_REC::", step, "::", marker, "::", checksum,
+      "\",\"context_blob\":\"", paste(rep(paste0("CTX_", marker), 40L), collapse = "_"), "\"}"
+    )
+    initial_messages <- c(
+      initial_messages,
+      list(msgs$AIMessage(
+        content = paste0("calling Search for hidden step ", step),
+        tool_calls = list(list(name = "Search", args = list(query = paste0("seed_", step)), id = call_id))
+      )),
+      list(msgs$ToolMessage(content = seed_payload, tool_call_id = call_id)),
+      list(msgs$AIMessage(content = paste0("processed hidden step ", step)))
+    )
+  }
+
+  agent <- prod$create_memory_folding_agent(
+    model = reticulate::py$hidden_step_llm,
+    tools = list(reticulate::py$fold_trigger_search_tool),
+    checkpointer = NULL,
+    message_threshold = as.integer(6),
+    keep_recent = as.integer(1),
+    fold_char_budget = as.integer(2000),
+    summarizer_model = reticulate::py$hidden_step_summarizer,
+    debug = FALSE
+  )
+
+  final_state <- agent$invoke(
+    list(
+      messages = initial_messages,
+      summary = "",
+      archive = list(),
+      fold_stats = reticulate::dict(fold_count = 0L)
+    ),
+    config = list(
+      recursion_limit = 40L,
+      configurable = list(thread_id = "test_hidden_multistep_memory_semantics")
+    )
+  )
+
+  extract_step_tags <- function(x) {
+    chunks <- character(0)
+    walk <- function(obj) {
+      if (is.null(obj)) {
+        return(invisible(NULL))
+      }
+      if (is.character(obj)) {
+        chunks <<- c(chunks, obj)
+        return(invisible(NULL))
+      }
+      content <- tryCatch(as.character(obj$content), error = function(e) character(0))
+      if (length(content) > 0L) {
+        chunks <<- c(chunks, content)
+      }
+      if (is.list(obj)) {
+        invisible(lapply(obj, walk))
+      }
+      invisible(NULL)
+    }
+    walk(x)
+    unique(unlist(regmatches(chunks, gregexpr("STEP_REC::[0-9]+::[A-Z_]+::[0-9]+", chunks, perl = TRUE))))
+  }
+
+  expect_true(as.integer(reticulate::py$hidden_step_llm$calls) >= 2L)
+  expect_true(as.integer(reticulate::py$hidden_step_summarizer$calls) >= 1L)
+  expect_true(grepl("STEP_REC::1::RUNE_ATLAS::103", as.character(reticulate::py$hidden_step_summarizer$last_prompt), fixed = TRUE))
+  expect_true(is.list(final_state$fold_stats))
+  expect_true(as.integer(as.list(final_state$fold_stats)$fold_count) >= 1L)
+  expect_true(is.list(final_state$summary))
+  expect_true("facts" %in% names(final_state$summary))
+  expect_true(is.list(final_state$archive))
+  expect_true(length(final_state$archive) >= 1L)
+
+  preserved_tags <- unique(c(
+    extract_step_tags(final_state$archive),
+    extract_step_tags(final_state$messages),
+    extract_step_tags(as.character(reticulate::py$hidden_step_summarizer$last_prompt))
+  ))
+  expected_facts <- paste0(
+    "STEP_REC::",
+    expected_step_records$step,
+    "::",
+    expected_step_records$marker,
+    "::",
+    expected_step_records$checksum
+  )
+  expect_setequal(preserved_tags, expected_facts)
+})
+
 test_that("field_status is canonical vs scratchpad and is injected into finalize prompts (standard)", {
   prod <- asa_test_import_langgraph_module("custom_ddg_production", required_files = "custom_ddg_production.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 

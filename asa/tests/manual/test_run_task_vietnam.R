@@ -107,15 +107,10 @@ expected_lookup <- setNames(
 
 prompt <- paste(
   "List the current first-level administrative divisions of Vietnam as of March 9, 2026.",
-  "Vietnam implemented a provincial administrative reform on July 1, 2025.",
-  "Return only the current 28 provinces and 6 centrally governed cities (34 total), not the pre-reform 63-division structure.",
-  "The count field must exactly equal length(divisions).",
-  "Do not include former pre-reform units such as Ba Ria-Vung Tau, Bac Kan, Bac Lieu, Binh Duong, Hai Duong, Quang Nam, Soc Trang, or Tien Giang.",
-  "Use standard English names and official government or Wikipedia sources if needed.",
+  "Use standard English names.",
   "Return only valid JSON with a single top-level object and fields:",
   "country (string), divisions (flat array of strings), count (integer).",
-  "Example:",
-  "{\"country\":\"Vietnam\",\"divisions\":[\"An Giang\", \"Hanoi\", \"Ho Chi Minh City\"],\"count\":34}"
+  "Do not include explanatory text or markdown."
 )
 
 print_debug <- function(name, value) {

@@ -2,6 +2,27 @@
 # Extracted from test-langgraph-remainingsteps.R for faster unit test runs.
 # These tests require a valid GOOGLE_API_KEY / GEMINI_API_KEY and network access.
 
+.asa_test_coerce_records_df <- function(x, required_names) {
+  if (is.data.frame(x)) {
+    return(x)
+  }
+  if (is.list(x) && length(x) > 0L) {
+    return(tryCatch({
+      if (!is.null(names(x)) && all(required_names %in% names(x))) {
+        as.data.frame(x, stringsAsFactors = FALSE)
+      } else if (all(vapply(x, is.list, logical(1)))) {
+        do.call(
+          rbind,
+          lapply(x, function(entry) as.data.frame(entry, stringsAsFactors = FALSE))
+        )
+      } else {
+        NULL
+      }
+    }, error = function(e) NULL))
+  }
+  NULL
+}
+
 test_that("standard agent reaches recursion_limit and preserves JSON output (Gemini, best-effort)", {
 
   asa_test_skip_api_tests()
@@ -64,6 +85,7 @@ test_that("standard agent reaches recursion_limit and preserves JSON output (Gem
   )
 
   expect_equal(final_state$stop_reason, "recursion_limit")
+  expect_true(isTRUE(asa_test_has_search_tool_activity(final_state$messages)))
 
   # Extract response text using the same logic as run_task()/run_agent() so we
   # verify "best effort" formatting survives Gemini + recursion_limit.
@@ -78,13 +100,18 @@ test_that("standard agent reaches recursion_limit and preserves JSON output (Gem
   expect_true(is.list(parsed))
   expect_true(all(c("status", "items", "missing", "notes") %in% names(parsed)))
 
-  if (is.data.frame(parsed$items)) {
-    expect_true(all(c("name", "birth_year", "field") %in% names(parsed$items)))
-    expect_true(any(parsed$items$name %in% c("Ada Lovelace", "Alan Turing", "Grace Hopper")))
+  fixture_items <- asa_test_recursion_limit_fixture_items()
+  items_df <- .asa_test_coerce_records_df(parsed$items, c("name", "birth_year", "field"))
+  if (!is.null(items_df) && nrow(items_df) >= 1L) {
+    expect_true(all(c("name", "birth_year", "field") %in% names(items_df)))
+    matched_idx <- match(as.character(items_df$name), fixture_items$name)
+    expect_true(all(!is.na(matched_idx)))
+    expect_equal(as.integer(items_df$birth_year), fixture_items$birth_year[matched_idx])
+    expect_equal(as.character(items_df$field), fixture_items$field[matched_idx])
   }
 })
 
-test_that("Gemini 3 Flash multi-step folding preserves semantic correctness across 10 tool steps", {
+test_that("Gemini 3 Flash multi-step folding triggers folding and returns schema-valid output", {
 
   asa_test_skip_api_tests()
   api_key <- asa_test_require_gemini_key()
@@ -104,21 +131,40 @@ test_that("Gemini 3 Flash multi-step folding preserves semantic correctness acro
     api_key = api_key
   )
 
+  expected_step_records <- data.frame(
+    step = 1:10,
+    marker = c(
+      "RUNE_ATLAS", "RUNE_BIRCH", "RUNE_CINDER", "RUNE_DRIFT", "RUNE_ECHO",
+      "RUNE_FABLE", "RUNE_GLADE", "RUNE_HARBOR", "RUNE_IVORY", "RUNE_JUNIPER"
+    ),
+    checksum = c(103L, 211L, 307L, 401L, 509L, 613L, 709L, 811L, 907L, 1009L),
+    stringsAsFactors = FALSE
+  )
+  expected_step_json <- jsonlite::toJSON(
+    lapply(seq_len(nrow(expected_step_records)), function(i) {
+      list(
+        step = unname(expected_step_records$step[[i]]),
+        marker = unname(expected_step_records$marker[[i]]),
+        checksum = unname(expected_step_records$checksum[[i]])
+      )
+    }),
+    auto_unbox = TRUE
+  )
+
   reticulate::py_run_string(paste0(
     "from langchain_core.tools import Tool\n",
     "import json\n",
     "import re\n\n",
+    "expected_step_records = ", expected_step_json, "\n",
     "multi_step_counter = {'n': 0}\n\n",
     "def _multi_step_search(query: str) -> str:\n",
     "    multi_step_counter['n'] += 1\n",
     "    m = re.search(r'step_(\\\\d+)', str(query))\n",
     "    step = int(m.group(1)) if m else int(multi_step_counter['n'])\n",
-    "    payload = {\n",
-    "        'step': step,\n",
-    "        'fact': f'fact_{step}',\n",
-    "        'checksum': step * 11,\n",
-    "        'context_blob': ('STEP_' + str(step) + '_DETAIL_') * 80\n",
-    "    }\n",
+    "    idx = max(0, min(step - 1, len(expected_step_records) - 1))\n",
+    "    payload = dict(expected_step_records[idx])\n",
+    "    payload['summary_tag'] = f\"STEP_REC::{payload['step']}::{payload['marker']}::{payload['checksum']}\"\n",
+    "    payload['context_blob'] = ('STEP_' + payload['marker'] + '_DETAIL_') * 80\n",
     "    return json.dumps(payload)\n\n",
     "multi_step_search_tool = Tool(\n",
     "    name='Search',\n",
@@ -150,17 +196,19 @@ test_that("Gemini 3 Flash multi-step folding preserves semantic correctness acro
     "8) Call Search with query 'step_8'.\n",
     "9) Call Search with query 'step_9'.\n",
     "10) Call Search with query 'step_10'.\n",
+    "After each Search call, keep the exact step, marker, and checksum returned by the tool.\n",
     "After completing all 10 searches, output STRICT JSON only with this schema:\n",
     "{\n",
     "  \"status\": \"complete\"|\"partial\",\n",
-    "  \"steps\": [{\"step\": integer, \"fact\": string, \"checksum\": integer}],\n",
+    "  \"steps\": [{\"step\": integer, \"marker\": string, \"checksum\": integer}],\n",
     "  \"missing\": [integer],\n",
     "  \"notes\": string\n",
     "}\n",
     "Rules:\n",
     "- Include one entry for each completed step.\n",
-    "- For each step k, fact must be \"fact_k\" and checksum must be k*11.\n",
+    "- Copy marker and checksum exactly from Search results.\n",
     "- If any step is missing, set status=\"partial\" and list missing step numbers.\n",
+    "- Do not infer or synthesize values that were not returned by Search.\n",
     "- Do not include markdown."
   )
 
@@ -195,41 +243,26 @@ test_that("Gemini 3 Flash multi-step folding preserves semantic correctness acro
   parsed_status <- if (length(parsed_status) > 0L) parsed_status[[1]] else ""
   expect_true(parsed_status %in% c("complete", "partial"))
 
-  steps_df <- NULL
-  if (is.data.frame(parsed$steps)) {
-    steps_df <- parsed$steps
-  } else if (is.list(parsed$steps) && length(parsed$steps) > 0L) {
-    steps_df <- tryCatch({
-      if (!is.null(names(parsed$steps)) &&
-          all(c("step", "fact", "checksum") %in% names(parsed$steps))) {
-        as.data.frame(parsed$steps, stringsAsFactors = FALSE)
-      } else if (all(vapply(parsed$steps, is.list, logical(1)))) {
-        do.call(
-          rbind,
-          lapply(parsed$steps, function(entry) as.data.frame(entry, stringsAsFactors = FALSE))
-        )
-      } else {
-        NULL
-      }
-    }, error = function(e) NULL)
-  }
+  steps_df <- .asa_test_coerce_records_df(parsed$steps, c("step", "marker", "checksum"))
 
   # Live provider behavior varies; if no usable rows are returned, require
   # only schema-level validity.
-  if (is.null(steps_df) || !all(c("step", "fact", "checksum") %in% names(steps_df)) || nrow(steps_df) < 1L) {
+  if (is.null(steps_df) || !all(c("step", "marker", "checksum") %in% names(steps_df)) || nrow(steps_df) < 1L) {
     return(invisible(NULL))
   }
 
   step_int <- suppressWarnings(as.integer(steps_df$step))
   checksum_int <- suppressWarnings(as.integer(steps_df$checksum))
-  fact_chr <- as.character(steps_df$fact)
+  marker_chr <- as.character(steps_df$marker)
 
-  valid <- which(!is.na(step_int) & !is.na(checksum_int) & !is.na(fact_chr))
+  valid <- which(!is.na(step_int) & !is.na(checksum_int) & !is.na(marker_chr))
   if (length(valid) == 0L) {
     return(invisible(NULL))
   }
 
   expect_true(any(step_int[valid] >= 1L & step_int[valid] <= 10L))
-  expect_true(all(fact_chr[valid] == paste0("fact_", step_int[valid])))
-  expect_true(all(checksum_int[valid] == step_int[valid] * 11L))
+  matched_idx <- match(step_int[valid], expected_step_records$step)
+  expect_true(all(!is.na(matched_idx)))
+  expect_equal(marker_chr[valid], expected_step_records$marker[matched_idx])
+  expect_equal(checksum_int[valid], expected_step_records$checksum[matched_idx])
 })

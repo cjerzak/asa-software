@@ -1,5 +1,5 @@
 # Manual test: Recursion limit with Gemini Flash 3
-# Verifies: (a) valid predictions AND (b) finalize node triggered
+# Verifies: schema-valid best-effort JSON, Search tool activity, and recursion_limit finalization.
 #
 # Usage:
 #   Rscript asa/tests/manual/test_recursion_limit_gemini.R
@@ -7,6 +7,10 @@
 # Requires: GOOGLE_API_KEY or GEMINI_API_KEY environment variable
 
 library(asa)
+
+`%||%` <- function(x, y) {
+  if (is.null(x) || length(x) == 0L || all(is.na(x))) y else x
+}
 
 cat("\n========================================\n")
 cat("Recursion Limit Test with Gemini Flash 3\n")
@@ -98,6 +102,57 @@ if (!exists("asa_test_recursion_limit_prompt", mode = "function")) {
   }
 }
 
+fixture_items <- if (exists("asa_test_recursion_limit_fixture_items", mode = "function")) {
+  asa_test_recursion_limit_fixture_items()
+} else {
+  data.frame(
+    name = c("Ada Lovelace", "Alan Turing", "Grace Hopper"),
+    birth_year = c(1815L, 1912L, 1906L),
+    field = c("mathematics", "computer science", "computer science"),
+    stringsAsFactors = FALSE
+  )
+}
+
+has_search_tool_activity <- if (exists("asa_test_has_search_tool_activity", mode = "function")) {
+  asa_test_has_search_tool_activity
+} else {
+  function(messages) {
+    if (is.null(messages) || length(messages) == 0L) {
+      return(FALSE)
+    }
+    any(vapply(messages, function(msg) {
+      tool_calls <- tryCatch(msg$tool_calls, error = function(e) NULL)
+      if (is.null(tool_calls) || length(tool_calls) == 0L) {
+        return(FALSE)
+      }
+      any(vapply(tool_calls, function(call) {
+        identical(as.character(call$name %||% "")[[1]], "Search")
+      }, logical(1)))
+    }, logical(1)))
+  }
+}
+
+coerce_items_df <- function(x) {
+  if (is.data.frame(x)) {
+    return(x)
+  }
+  if (is.list(x) && length(x) > 0L) {
+    return(tryCatch({
+      if (!is.null(names(x)) && all(c("name", "birth_year", "field") %in% names(x))) {
+        as.data.frame(x, stringsAsFactors = FALSE)
+      } else if (all(vapply(x, is.list, logical(1)))) {
+        do.call(
+          rbind,
+          lapply(x, function(entry) as.data.frame(entry, stringsAsFactors = FALSE))
+        )
+      } else {
+        NULL
+      }
+    }, error = function(e) NULL))
+  }
+  NULL
+}
+
 # Test prompt
 prompt <- if (exists("asa_test_recursion_limit_prompt", mode = "function")) {
   asa_test_recursion_limit_prompt()
@@ -120,15 +175,12 @@ prompt <- if (exists("asa_test_recursion_limit_prompt", mode = "function")) {
     "- Use null for unknown key_contribution.\n",
     "- List any unknown fields in missing.\n",
     "- Do NOT speculate.\n",
-    "Known seed data (you may use this even without Search):\n",
-    "- Ada Lovelace (birth_year=1815, field=\"mathematics\")\n",
-    "- Alan Turing (birth_year=1912, field=\"computer science\")\n",
-    "- Grace Hopper (birth_year=1906, field=\"computer science\")\n",
-    "Your items MUST include these three people at minimum.\n"
+    "- If you include any items, only use facts supported by the Search output.\n"
   )
 }
 
 # Run tests with different recursion limits
+failures <- character(0)
 for (rec_limit in c(3L, 4L, 5L)) {
   cat("\n========================================\n")
   cat(sprintf("Testing with recursion_limit = %d\n", rec_limit))
@@ -146,13 +198,21 @@ for (rec_limit in c(3L, 4L, 5L)) {
 
   if (is.null(final_state)) {
     cat("⚠ Agent invocation failed\n")
+    failures <- c(failures, sprintf("recursion_limit=%d: invocation failed", rec_limit))
     next
   }
 
   # Check stop_reason
   stop_reason <- final_state$stop_reason
+  run_failures <- character(0)
   cat("stop_reason:", if (is.null(stop_reason)) "NULL" else stop_reason, "\n")
   cat("Finalize node triggered:", !is.null(stop_reason) && stop_reason == "recursion_limit", "\n")
+  if (!identical(stop_reason, "recursion_limit")) {
+    run_failures <- c(run_failures, sprintf("Expected stop_reason recursion_limit, got %s", stop_reason %||% "NULL"))
+  }
+  if (!isTRUE(has_search_tool_activity(final_state$messages))) {
+    run_failures <- c(run_failures, "No Search tool call recorded in message history")
+  }
 
   # Extract response text
   response_text <- asa:::.extract_response_text(final_state, backend = "gemini")
@@ -164,12 +224,18 @@ for (rec_limit in c(3L, 4L, 5L)) {
 
   # Parse JSON
   cat("\nJSON validation:\n")
+  parse_error <- NULL
   parsed <- tryCatch({
     jsonlite::fromJSON(response_text)
   }, error = function(e) {
-    cat("✗ JSON parse failed:", conditionMessage(e), "\n")
+    parse_error <<- conditionMessage(e)
+    cat("✗ JSON parse failed:", parse_error, "\n")
     NULL
   })
+
+  if (!is.null(parse_error)) {
+    run_failures <- c(run_failures, sprintf("JSON parse failed: %s", parse_error))
+  }
 
   if (!is.null(parsed)) {
     cat("✓ JSON parsed successfully\n")
@@ -184,17 +250,54 @@ for (rec_limit in c(3L, 4L, 5L)) {
       cat("✓ All required schema fields present\n")
     } else {
       cat("✗ Missing schema fields:", required_fields[!present], "\n")
+      run_failures <- c(run_failures, sprintf(
+        "Missing schema fields: %s",
+        paste(required_fields[!present], collapse = ", ")
+      ))
     }
 
-    # Check items contain expected names
-    if (is.data.frame(parsed$items) && "name" %in% names(parsed$items)) {
-      expected_names <- c("Ada Lovelace", "Alan Turing", "Grace Hopper")
-      found <- expected_names[expected_names %in% parsed$items$name]
-      cat("  Found expected names:", paste(found, collapse = ", "), "\n")
+    items_df <- coerce_items_df(parsed$items)
+    if (!is.null(items_df) && nrow(items_df) >= 1L) {
+      matched_idx <- match(as.character(items_df$name), fixture_items$name)
+      if (any(is.na(matched_idx))) {
+        unexpected_names <- unique(as.character(items_df$name[is.na(matched_idx)]))
+        cat("  Unexpected names:", paste(unexpected_names, collapse = ", "), "\n")
+        run_failures <- c(run_failures, sprintf(
+          "Returned item names not present in Search fixture: %s",
+          paste(unexpected_names, collapse = ", ")
+        ))
+      } else {
+        birth_year_matches <- as.integer(items_df$birth_year) == fixture_items$birth_year[matched_idx]
+        field_matches <- as.character(items_df$field) == fixture_items$field[matched_idx]
+        if (!all(birth_year_matches) || !all(field_matches)) {
+          run_failures <- c(run_failures, "Returned item attributes did not match Search fixture values")
+        }
+        cat("  Returned fixture-backed names:", paste(as.character(items_df$name), collapse = ", "), "\n")
+      }
     }
+  }
+
+  if (length(run_failures) > 0L) {
+    cat("\nAssertion failures:\n")
+    for (msg in run_failures) {
+      cat(" - ", msg, "\n", sep = "")
+    }
+    failures <- c(failures, sprintf("recursion_limit=%d: %s", rec_limit, paste(run_failures, collapse = "; ")))
+  } else {
+    cat("✓ Assertions passed for this recursion_limit\n")
   }
 }
 
 cat("\n========================================\n")
 cat("Test complete\n")
 cat("========================================\n")
+
+if (length(failures) > 0L) {
+  stop(
+    paste(
+      "Recursion limit manual test failed:",
+      paste(failures, collapse = " | ")
+    ),
+    call. = FALSE
+  )
+}

@@ -791,10 +791,31 @@ asa_test_recursion_limit_prompt <- function() {
     "- Use null for unknown key_contribution.\n",
     "- List any unknown fields in missing.\n",
     "- Do NOT speculate.\n",
-    "Known seed data (you may use this even without Search):\n",
-    "- Ada Lovelace (birth_year=1815, field=\"mathematics\")\n",
-    "- Alan Turing (birth_year=1912, field=\"computer science\")\n",
-    "- Grace Hopper (birth_year=1906, field=\"computer science\")\n",
-    "Your items MUST include these three people at minimum.\n"
+    "- If you include any items, only use facts supported by the Search output.\n"
   )
+}
+
+asa_test_recursion_limit_fixture_items <- function() {
+  data.frame(
+    name = c("Ada Lovelace", "Alan Turing", "Grace Hopper"),
+    birth_year = c(1815L, 1912L, 1906L),
+    field = c("mathematics", "computer science", "computer science"),
+    stringsAsFactors = FALSE
+  )
+}
+
+asa_test_has_search_tool_activity <- function(messages) {
+  if (is.null(messages) || length(messages) == 0L) {
+    return(FALSE)
+  }
+  any(vapply(messages, function(msg) {
+    tool_calls <- tryCatch(msg$tool_calls, error = function(e) NULL)
+    if (is.null(tool_calls) || length(tool_calls) == 0L) {
+      return(FALSE)
+    }
+    any(vapply(tool_calls, function(call) {
+      call_name <- tryCatch(as.character(call$name), error = function(e) character(0))
+      length(call_name) > 0L && identical(call_name[[1]], "Search")
+    }, logical(1)))
+  }, logical(1)))
 }
