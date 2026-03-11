@@ -130,6 +130,185 @@ test_that("stream_research forwards recursion_limit into graph config", {
   expect_equal(as.integer(captured$recursion_limit), 9L)
 })
 
+test_that("run_research preserves partial state on GraphRecursionError", {
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+
+  reticulate::py_run_string(paste0(
+    "from typing import TypedDict\n",
+    "from langgraph.graph import StateGraph\n",
+    "\n",
+    "class _ResearchLoopState(TypedDict, total=False):\n",
+    "    results: list\n",
+    "    plan: dict\n",
+    "    status: str\n",
+    "    round_number: int\n",
+    "    queries_used: int\n",
+    "    tokens_used: int\n",
+    "    completion_gate: dict\n",
+    "\n",
+    "def _loop_fresh(state):\n",
+    "    return {\n",
+    "        'results': [{\n",
+    "            'row_id': 'row_1',\n",
+    "            'fields': {'name': 'Alice'},\n",
+    "            'source_url': 'https://example.com/a',\n",
+    "            'confidence': 0.81,\n",
+    "            'worker_id': 'worker-1',\n",
+    "            'extraction_timestamp': 123.0,\n",
+    "        }],\n",
+    "        'plan': {'stage': 'search'},\n",
+    "        'status': 'searching',\n",
+    "        'round_number': 1,\n",
+    "        'queries_used': 2,\n",
+    "        'tokens_used': 5,\n",
+    "        'completion_gate': {'completion_status': 'in_progress'},\n",
+    "    }\n",
+    "\n",
+    "def _route(state):\n",
+    "    return 'loop'\n",
+    "\n",
+    "wf_fresh = StateGraph(_ResearchLoopState)\n",
+    "wf_fresh.add_node('loop', _loop_fresh)\n",
+    "wf_fresh.set_entry_point('loop')\n",
+    "wf_fresh.add_conditional_edges('loop', _route, {'loop': 'loop'})\n",
+    "partial_recursion_graph = wf_fresh.compile()\n"
+  ))
+
+  result <- research$run_research(
+    graph = reticulate::py$partial_recursion_graph,
+    query = "test query",
+    schema = list(name = "character"),
+    config_dict = list(recursion_limit = 5L),
+    thread_id = "test-thread-run-research-recursion"
+  )
+
+  expect_equal(result$status, "complete")
+  expect_equal(result$stop_reason, "recursion_limit")
+  expect_equal(result$verification_status, "partial")
+  expect_equal(result$plan$stage, "search")
+  expect_length(result$results, 1)
+  expect_equal(result$results[[1]]$row_id, "row_1")
+  expect_equal(result$completion_gate$stop_reason, "recursion_limit")
+  expect_true(isTRUE(result$completion_gate$should_stop))
+})
+
+test_that("run_research_from_state preserves partial state on GraphRecursionError", {
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+
+  reticulate::py_run_string(paste0(
+    "from typing import TypedDict\n",
+    "from langgraph.graph import StateGraph\n",
+    "\n",
+    "class _ResearchResumeState(TypedDict, total=False):\n",
+    "    results: list\n",
+    "    plan: dict\n",
+    "    status: str\n",
+    "    round_number: int\n",
+    "    queries_used: int\n",
+    "    tokens_used: int\n",
+    "    completion_gate: dict\n",
+    "\n",
+    "def _loop_resume(state):\n",
+    "    return {\n",
+    "        'results': [{\n",
+    "            'row_id': 'row_resume',\n",
+    "            'fields': {'name': 'Bob'},\n",
+    "            'source_url': 'https://example.com/b',\n",
+    "            'confidence': 0.67,\n",
+    "            'worker_id': 'worker-2',\n",
+    "            'extraction_timestamp': 456.0,\n",
+    "        }],\n",
+    "        'plan': {'stage': 'resume-search'},\n",
+    "        'status': 'searching',\n",
+    "        'round_number': 3,\n",
+    "        'queries_used': 4,\n",
+    "        'tokens_used': 11,\n",
+    "        'completion_gate': {'completion_status': 'in_progress'},\n",
+    "    }\n",
+    "\n",
+    "def _route(state):\n",
+    "    return 'loop'\n",
+    "\n",
+    "wf_resume = StateGraph(_ResearchResumeState)\n",
+    "wf_resume.add_node('loop', _loop_resume)\n",
+    "wf_resume.set_entry_point('loop')\n",
+    "wf_resume.add_conditional_edges('loop', _route, {'loop': 'loop'})\n",
+    "resume_recursion_graph = wf_resume.compile()\n"
+  ))
+
+  result <- research$run_research_from_state(
+    graph = reticulate::py$resume_recursion_graph,
+    state_snapshot = list(
+      plan = list(existing = "resume"),
+      results = list(),
+      novelty_history = list(0.4),
+      status = "searching",
+      completion_gate = list(completion_status = "in_progress"),
+      errors = list()
+    ),
+    query = "test query",
+    schema = list(name = "character"),
+    config_dict = list(recursion_limit = 5L),
+    thread_id = "test-thread-run-research-from-state-recursion"
+  )
+
+  expect_equal(result$status, "complete")
+  expect_equal(result$stop_reason, "recursion_limit")
+  expect_equal(result$verification_status, "partial")
+  expect_equal(result$plan$stage, "resume-search")
+  expect_length(result$results, 1)
+  expect_equal(result$results[[1]]$row_id, "row_resume")
+  expect_true(isTRUE(result$completion_gate$should_stop))
+})
+
+test_that("stream_research emits complete event on GraphRecursionError after partial updates", {
+  research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
+
+  reticulate::py_run_string(paste0(
+    "from langgraph.errors import GraphRecursionError\n",
+    "\n",
+    "class _StreamingRecursionGraph:\n",
+    "    def stream(self, initial_state, config=None, stream_mode='updates'):\n",
+    "        yield {\n",
+    "            'planner': {\n",
+    "                'status': 'searching',\n",
+    "                'plan': {'stage': 'search'},\n",
+    "                'results': [{\n",
+    "                    'row_id': 'row_stream',\n",
+    "                    'fields': {'name': 'Carol'},\n",
+    "                    'source_url': 'https://example.com/c',\n",
+    "                    'confidence': 0.73,\n",
+    "                    'worker_id': 'worker-3',\n",
+    "                    'extraction_timestamp': 789.0,\n",
+    "                }],\n",
+    "                'round_number': 2,\n",
+    "                'queries_used': 3,\n",
+    "                'tokens_used': 9,\n",
+    "                'completion_gate': {'completion_status': 'in_progress'},\n",
+    "            }\n",
+    "        }\n",
+    "        raise GraphRecursionError('stream recursion hit')\n",
+    "\n",
+    "streaming_recursion_graph = _StreamingRecursionGraph()\n"
+  ))
+
+  events <- reticulate::iterate(research$stream_research(
+    graph = reticulate::py$streaming_recursion_graph,
+    query = "test query",
+    schema = list(name = "character"),
+    config_dict = list(recursion_limit = 9L),
+    thread_id = "test-thread-stream-research-recursion"
+  ))
+
+  expect_true(length(events) >= 2)
+  expect_equal(events[[1]]$event_type, "node_update")
+  last_event <- events[[length(events)]]
+  expect_equal(last_event$event_type, "complete")
+  expect_length(last_event$final_result$results, 1)
+  expect_equal(last_event$final_result$results[[1]]$row_id, "row_stream")
+  expect_equal(last_event$final_result$plan$stage, "search")
+})
+
 test_that("run_research rejects recursion_limit outside [4, 500]", {
   research <- asa_test_import_langgraph_module("workflows.research_graph_workflow", required_files = "workflows/research_graph_workflow.py", required_modules = ASA_TEST_LANGGRAPH_MODULES)
 

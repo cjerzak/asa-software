@@ -348,7 +348,8 @@ backend <- match.arg(backend)
       query = query,
       schema = schema_dict,
       known_universe = known_universe_list,
-      confidence_threshold = confidence_threshold
+      confidence_threshold = confidence_threshold,
+      checks = as.list(checks)
     )
   }, error = function(e) {
     stop("LangGraph audit failed: ", e$message, call. = FALSE)

@@ -6,7 +6,9 @@
 import json
 import logging
 import re
+from collections import Counter
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any, Annotated, Dict, List, Optional, TypedDict
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -15,6 +17,8 @@ from langgraph.graph import END, StateGraph
 from shared.state_graph_utils import add_to_list, hash_result, merge_dicts, parse_llm_json
 
 logger = logging.getLogger(__name__)
+_AUDIT_DEFAULT_CHECKS = ["completeness", "consistency", "gaps", "anomalies"]
+_AUDIT_REPRESENTATIVE_ROW_LIMIT = 25
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -45,6 +49,7 @@ class AuditState(TypedDict):
     known_universe: Optional[List[str]]
     checks: List[str]
     confidence_threshold: float
+    dataset_context: Dict[str, Any]
 
     # Results (accumulated)
     issues: Annotated[List[AuditIssue], add_to_list]
@@ -59,6 +64,320 @@ class AuditState(TypedDict):
     summary: str
     status: str  # "checking", "complete", "failed"
     errors: Annotated[List[Dict], add_to_list]
+
+
+def _normalize_audit_checks(checks: Optional[List[str]]) -> List[str]:
+    """Normalize checks into a plain list of strings."""
+    if checks is None:
+        return list(_AUDIT_DEFAULT_CHECKS)
+
+    if isinstance(checks, (list, tuple, set)):
+        items = list(checks)
+    else:
+        items = [checks]
+
+    normalized = []
+    for item in items:
+        token = str(item or "").strip()
+        if token:
+            normalized.append(token)
+    return normalized
+
+
+def _is_missing_audit_value(value: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip() == ""
+    return False
+
+
+def _audit_value_fingerprint(value: Any) -> str:
+    try:
+        return json.dumps(value, sort_keys=True, default=str)
+    except Exception:
+        return str(value)
+
+
+def _coerce_audit_number(value: Any) -> Optional[float]:
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        token = value.strip()
+        if not token:
+            return None
+        try:
+            return float(token)
+        except ValueError:
+            return None
+    return None
+
+
+def _coerce_audit_datetime(value: Any) -> Optional[datetime]:
+    if isinstance(value, datetime):
+        return value
+    if not isinstance(value, str):
+        return None
+
+    token = value.strip()
+    if not token:
+        return None
+
+    iso_candidate = token.replace("Z", "+00:00") if token.endswith("Z") else token
+    try:
+        return datetime.fromisoformat(iso_candidate)
+    except ValueError:
+        pass
+
+    for fmt in (
+        "%Y-%m-%d",
+        "%Y/%m/%d",
+        "%m/%d/%Y",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y/%m/%d %H:%M:%S",
+    ):
+        try:
+            return datetime.strptime(token, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def _ordered_audit_columns(schema: Dict[str, str], data: List[Dict[str, Any]]) -> List[str]:
+    seen = set()
+    ordered = []
+
+    for field in (schema or {}).keys():
+        if field not in seen:
+            seen.add(field)
+            ordered.append(field)
+
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        for field in row.keys():
+            if field not in seen:
+                seen.add(field)
+                ordered.append(field)
+
+    return ordered
+
+
+def _audit_key_fields(schema: Dict[str, str], data: Optional[List[Dict[str, Any]]] = None) -> List[str]:
+    schema_keys = list((schema or {}).keys())
+    if schema_keys:
+        return schema_keys[:3]
+
+    for row in data or []:
+        if isinstance(row, dict) and row:
+            return list(row.keys())[:3]
+
+    return []
+
+
+def _extract_row_confidence(row: Dict[str, Any]) -> Optional[float]:
+    for field in ("confidence", "_confidence"):
+        value = row.get(field)
+        if value is None:
+            continue
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def _find_duplicate_rows(data: List[Dict[str, Any]], schema: Dict[str, str]) -> List[Dict[str, int]]:
+    duplicates = []
+    seen_hashes = {}
+    audit_key_fields = _audit_key_fields(schema, data)
+
+    for idx, row in enumerate(data):
+        row_hash = hash_result(row, schema, key_fields=audit_key_fields)
+        if row_hash in seen_hashes:
+            duplicates.append({"index": idx, "duplicate_of": seen_hashes[row_hash]})
+        else:
+            seen_hashes[row_hash] = idx
+
+    return duplicates
+
+
+def _build_field_summary(
+    field: str,
+    expected_type: Optional[str],
+    data: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    values = [row.get(field) if isinstance(row, dict) else None for row in data]
+    missing_count = sum(1 for value in values if _is_missing_audit_value(value))
+    non_missing = [value for value in values if not _is_missing_audit_value(value)]
+
+    summary = {
+        "expected_type": expected_type,
+        "non_null_count": len(non_missing),
+        "missing_count": missing_count,
+        "missing_rate": (missing_count / len(values)) if values else 0.0,
+        "unique_count": len({_audit_value_fingerprint(value) for value in non_missing}),
+    }
+
+    expected_token = str(expected_type or "").strip().lower()
+    numeric_values = []
+    numeric_like = True
+    for value in non_missing:
+        numeric = _coerce_audit_number(value)
+        if numeric is None:
+            numeric_like = False
+            break
+        numeric_values.append(numeric)
+    if numeric_like and numeric_values:
+        summary["numeric_range"] = {
+            "min": min(numeric_values),
+            "max": max(numeric_values),
+            "mean": sum(numeric_values) / len(numeric_values),
+        }
+
+    parsed_dates = []
+    for value in non_missing:
+        parsed = _coerce_audit_datetime(value)
+        if parsed is not None:
+            parsed_dates.append(parsed)
+    if parsed_dates and ("date" in expected_token or "time" in expected_token or len(parsed_dates) == len(non_missing)):
+        summary["date_range"] = {
+            "earliest": min(parsed_dates).isoformat(),
+            "latest": max(parsed_dates).isoformat(),
+        }
+
+    string_like = (
+        expected_token in {"character", "str", "string"}
+        or all(isinstance(value, str) for value in non_missing)
+    )
+    if string_like and non_missing:
+        top_values = Counter(str(value).strip() for value in non_missing)
+        summary["top_values"] = [
+            {"value": value, "count": count}
+            for value, count in top_values.most_common(5)
+        ]
+
+    return summary
+
+
+def _build_representative_rows(
+    data: List[Dict[str, Any]],
+    schema: Dict[str, str],
+    confidence_threshold: float,
+    columns: List[str],
+) -> List[Dict[str, Any]]:
+    if not data:
+        return []
+
+    row_limit = _AUDIT_REPRESENTATIVE_ROW_LIMIT
+    head_count = min(5, len(data))
+    tail_count = min(5, len(data))
+
+    def _entry(index: int, bucket: str, **extra: Any) -> Dict[str, Any]:
+        entry = {
+            "row_index": index,
+            "bucket": bucket,
+            "row": data[index],
+        }
+        entry.update(extra)
+        return entry
+
+    missing_bucket = []
+    for idx, row in enumerate(data):
+        missing_fields = [field for field in columns if _is_missing_audit_value(row.get(field))]
+        if missing_fields:
+            missing_bucket.append((len(missing_fields), idx, missing_fields))
+    missing_bucket.sort(key=lambda item: (-item[0], item[1]))
+    missing_rows = [
+        _entry(idx, "missing_fields", missing_count=count, missing_fields=fields)
+        for count, idx, fields in missing_bucket[:5]
+    ]
+
+    low_conf_bucket = []
+    for idx, row in enumerate(data):
+        confidence = _extract_row_confidence(row)
+        if confidence is not None and confidence < confidence_threshold:
+            low_conf_bucket.append((confidence, idx))
+    low_conf_bucket.sort(key=lambda item: (item[0], item[1]))
+    low_conf_rows = [
+        _entry(idx, "low_confidence", confidence=confidence)
+        for confidence, idx in low_conf_bucket[:5]
+    ]
+
+    duplicate_rows = [
+        _entry(item["index"], "duplicate", duplicate_of=item["duplicate_of"])
+        for item in _find_duplicate_rows(data, schema)[:5]
+    ]
+
+    head_rows = [_entry(idx, "head") for idx in range(head_count)]
+    tail_rows = [_entry(idx, "tail") for idx in range(max(0, len(data) - tail_count), len(data))]
+
+    spread_indices = []
+    interior_count = min(10, max(0, len(data) - head_count - tail_count))
+    if interior_count > 0:
+        denominator = interior_count + 1
+        for step in range(1, interior_count + 1):
+            idx = int(round(step * (len(data) - 1) / denominator))
+            if idx < head_count or idx >= len(data) - tail_count:
+                continue
+            if idx not in spread_indices:
+                spread_indices.append(idx)
+    spread_rows = [_entry(idx, "spread") for idx in spread_indices]
+
+    representative_rows = []
+    seen_indices = set()
+    for bucket in (missing_rows, low_conf_rows, duplicate_rows, head_rows, tail_rows, spread_rows):
+        for row_entry in bucket:
+            idx = row_entry["row_index"]
+            if idx in seen_indices:
+                continue
+            seen_indices.add(idx)
+            representative_rows.append(row_entry)
+            if len(representative_rows) >= row_limit:
+                return representative_rows
+
+    return representative_rows
+
+
+def _build_audit_dataset_context(
+    data: List[Dict[str, Any]],
+    schema: Dict[str, str],
+    confidence_threshold: float,
+) -> Dict[str, Any]:
+    columns = _ordered_audit_columns(schema or {}, data)
+    field_summaries = {
+        field: _build_field_summary(field, (schema or {}).get(field), data)
+        for field in columns
+    }
+
+    return {
+        "row_count": len(data),
+        "schema": schema or {},
+        "columns": columns,
+        "confidence_threshold": confidence_threshold,
+        "duplicate_key_fields": _audit_key_fields(schema or {}, data),
+        "field_summaries": field_summaries,
+        "representative_rows": _build_representative_rows(
+            data,
+            schema or {},
+            confidence_threshold,
+            columns,
+        ),
+    }
+
+
+def _get_dataset_context(state: AuditState) -> Dict[str, Any]:
+    dataset_context = state.get("dataset_context")
+    if isinstance(dataset_context, dict):
+        return dataset_context
+
+    return _build_audit_dataset_context(
+        data=state.get("data", []),
+        schema=state.get("schema", {}),
+        confidence_threshold=state.get("confidence_threshold", 0.8),
+    )
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -76,6 +395,7 @@ def create_completeness_node(llm):
         query = state.get("query", "")
         known_universe = state.get("known_universe")
         schema = state.get("schema", {})
+        dataset_context = _get_dataset_context(state)
 
         issues = []
         recommendations = []
@@ -115,7 +435,7 @@ def create_completeness_node(llm):
             prompt = f"""Analyze this data for completeness.
 
 Query: {query}
-Data ({len(data)} rows): {json.dumps(data[:20], default=str)}
+Dataset context: {json.dumps(dataset_context, default=str)}
 
 Are there obvious gaps or missing items based on what you'd expect for this query?
 Return JSON: {{"completeness_score": 0.95, "issues": ["issue1"], "recommendations": ["rec1"]}}"""
@@ -222,6 +542,7 @@ def create_gaps_node(llm):
         data = state.get("data", [])
         query = state.get("query", "")
         schema = state.get("schema", {})
+        dataset_context = _get_dataset_context(state)
 
         issues = []
         recommendations = []
@@ -231,7 +552,7 @@ def create_gaps_node(llm):
 
 Query: {query}
 Schema: {json.dumps(schema)}
-Data ({len(data)} rows): {json.dumps(data[:30], default=str)}
+Dataset context: {json.dumps(dataset_context, default=str)}
 
 Look for:
 1. Geographic gaps (missing regions/states/countries)
@@ -288,25 +609,19 @@ def create_anomaly_node(llm):
         flagged_rows = []
 
         # Check for duplicates using hash (first 3 schema fields for audit)
-        seen_hashes = {}
-        audit_key_fields = list(schema.keys())[:3]
-        for idx, row in enumerate(data):
-            row_hash = hash_result(row, schema, key_fields=audit_key_fields)
-
-            if row_hash in seen_hashes:
-                prev_idx = seen_hashes[row_hash]
-                flagged_rows.append({
-                    "index": idx,
-                    "flag": "suspect",
-                    "note": f"Possible duplicate of row {prev_idx}",
-                    "confidence": None
-                })
-            else:
-                seen_hashes[row_hash] = idx
+        for duplicate in _find_duplicate_rows(data, schema):
+            prev_idx = duplicate["duplicate_of"]
+            idx = duplicate["index"]
+            flagged_rows.append({
+                "index": idx,
+                "flag": "suspect",
+                "note": f"Possible duplicate of row {prev_idx}",
+                "confidence": None
+            })
 
         # Check for low confidence items (if confidence field exists)
         for idx, row in enumerate(data):
-            conf = row.get("confidence") or row.get("_confidence")
+            conf = _extract_row_confidence(row)
             if conf is not None and conf < confidence_threshold:
                 # Don't double-flag
                 if not any(f["index"] == idx for f in flagged_rows):
@@ -400,8 +715,7 @@ def create_audit_graph(llm, checks: List[str] = None):
     Returns:
         Compiled LangGraph
     """
-    if checks is None:
-        checks = ["completeness", "consistency", "gaps", "anomalies"]
+    checks = _normalize_audit_checks(checks)
 
     workflow = StateGraph(AuditState)
 
@@ -457,8 +771,12 @@ def run_audit(
     Returns:
         Dictionary with audit results
     """
-    if checks is None:
-        checks = ["completeness", "consistency", "gaps", "anomalies"]
+    checks = _normalize_audit_checks(checks)
+    dataset_context = _build_audit_dataset_context(
+        data=data,
+        schema=schema,
+        confidence_threshold=confidence_threshold,
+    )
 
     initial_state = {
         "data": data,
@@ -467,6 +785,7 @@ def run_audit(
         "known_universe": known_universe,
         "checks": checks,
         "confidence_threshold": confidence_threshold,
+        "dataset_context": dataset_context,
         "issues": [],
         "flagged_rows": [],
         "recommendations": [],

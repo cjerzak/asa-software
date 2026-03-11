@@ -256,6 +256,181 @@ test_that(".build_audit_prompt creates valid prompt", {
   expect_true(grepl("Alice", prompt))
 })
 
+asa_test_audit_context_fixture <- function() {
+  schema <- list(
+    name = "character",
+    category = "character",
+    value = "numeric",
+    confidence = "numeric",
+    observed_at = "character"
+  )
+
+  data <- lapply(seq_len(35), function(i) {
+    list(
+      name = sprintf("Item %02d", i),
+      category = "common",
+      value = i,
+      confidence = 0.95,
+      observed_at = sprintf("2024-01-%02d", ((i - 1L) %% 28L) + 1L)
+    )
+  })
+
+  data[[5]]$name <- "Missing Category"
+  data[[5]]$category <- ""
+
+  data[[12]]$name <- "Low Confidence"
+  data[[12]]$confidence <- 0.21
+
+  data[[28]] <- data[[8]]
+
+  data[[35]]$name <- "Tail Rare"
+  data[[35]]$category <- "rare"
+  data[[35]]$value <- 999
+
+  list(data = data, schema = schema)
+}
+
+test_that(".audit_with_langgraph forwards checks to run_audit", {
+  ns_asa <- asNamespace("asa")
+  asa_env <- get("asa_env", envir = ns_asa)
+  audit_with_langgraph <- get(".audit_with_langgraph", envir = ns_asa)
+  captured_checks <- NULL
+  had_audit_graph <- exists("audit_graph", envir = asa_env, inherits = FALSE)
+  old_audit_graph <- if (had_audit_graph) get("audit_graph", envir = asa_env, inherits = FALSE) else NULL
+
+  on.exit({
+    if (had_audit_graph) {
+      assign("audit_graph", old_audit_graph, envir = asa_env)
+    } else if (exists("audit_graph", envir = asa_env, inherits = FALSE)) {
+      rm(list = "audit_graph", envir = asa_env)
+    }
+  }, add = TRUE)
+
+  assign("audit_graph", new.env(parent = emptyenv()), envir = asa_env)
+  asa_env$audit_graph$create_audit_graph <- function(llm, checks) {
+    expect_equal(unlist(checks), "consistency")
+    "fake_graph"
+  }
+  asa_env$audit_graph$run_audit <- function(graph, data, query, schema, known_universe, confidence_threshold, checks) {
+    captured_checks <<- checks
+    list(
+      summary = "ok",
+      issues = list(),
+      recommendations = character(),
+      completeness_score = 1.0,
+      consistency_score = 1.0,
+      flagged_rows = list(),
+      status = "complete"
+    )
+  }
+
+  local_mocked_bindings(
+    .import_audit_modules = function() NULL,
+    .env = ns_asa
+  )
+
+  audit_with_langgraph(
+    data = data.frame(name = "A", value = 1),
+    query = "test query",
+    schema = c(name = "character", value = "numeric"),
+    checks = "consistency",
+    known_universe = NULL,
+    confidence_threshold = 0.8,
+    timeout = 60,
+    model = "test-model",
+    agent = list(llm = "fake-llm"),
+    verbose = FALSE
+  )
+
+  expect_equal(unlist(captured_checks), "consistency")
+})
+
+test_that("audit dataset context includes tail, missing, low-confidence, and duplicate evidence", {
+  audit <- asa_test_import_langgraph_module(
+    "workflows.audit_graph_workflow",
+    required_files = "workflows/audit_graph_workflow.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  fixture <- asa_test_audit_context_fixture()
+
+  context <- reticulate::py_to_r(audit$`_build_audit_dataset_context`(
+    data = fixture$data,
+    schema = fixture$schema,
+    confidence_threshold = 0.8
+  ))
+
+  representative_rows <- context$representative_rows
+  row_names <- vapply(representative_rows, function(entry) {
+    if (is.null(entry$row$name)) "" else as.character(entry$row$name)
+  }, character(1))
+  buckets <- vapply(representative_rows, function(entry) {
+    as.character(entry$bucket)
+  }, character(1))
+
+  expect_equal(as.integer(context$row_count), 35L)
+  expect_true("Tail Rare" %in% row_names)
+  expect_true("missing_fields" %in% buckets)
+  expect_true("low_confidence" %in% buckets)
+  expect_true("duplicate" %in% buckets)
+  expect_true(as.numeric(context$field_summaries$category$missing_count) >= 1)
+  expect_true(as.numeric(context$field_summaries$value$unique_count) >= 30)
+})
+
+test_that("audit LLM prompts use representative dataset context instead of head-only slices", {
+  audit <- asa_test_import_langgraph_module(
+    "workflows.audit_graph_workflow",
+    required_files = "workflows/audit_graph_workflow.py",
+    required_modules = ASA_TEST_LANGGRAPH_MODULES
+  )
+  fixture <- asa_test_audit_context_fixture()
+
+  reticulate::py_run_string(paste0(
+    "class _AuditPromptResponse:\n",
+    "    def __init__(self, content):\n",
+    "        self.content = content\n",
+    "\n",
+    "class _RecordingAuditLLM:\n",
+    "    def __init__(self, response_content):\n",
+    "        self.response_content = response_content\n",
+    "        self.last_prompt = None\n",
+    "    def invoke(self, messages):\n",
+    "        self.last_prompt = messages[-1].content if messages else None\n",
+    "        return _AuditPromptResponse(self.response_content)\n",
+    "\n",
+    "audit_prompt_llm_completeness = _RecordingAuditLLM('{\"completeness_score\": 0.9, \"issues\": [], \"recommendations\": []}')\n",
+    "audit_prompt_llm_gaps = _RecordingAuditLLM('{\"gaps_found\": [], \"recommendations\": []}')\n"
+  ))
+
+  completeness_node <- audit$create_completeness_node(reticulate::py$audit_prompt_llm_completeness)
+  gaps_node <- audit$create_gaps_node(reticulate::py$audit_prompt_llm_gaps)
+
+  completeness_node(list(
+    data = fixture$data,
+    query = "Find all items",
+    schema = fixture$schema,
+    checks = list("completeness"),
+    known_universe = NULL,
+    confidence_threshold = 0.8
+  ))
+  gaps_node(list(
+    data = fixture$data,
+    query = "Find all items",
+    schema = fixture$schema,
+    checks = list("gaps"),
+    confidence_threshold = 0.8
+  ))
+
+  completeness_prompt <- reticulate::py_to_r(reticulate::py$audit_prompt_llm_completeness$last_prompt)
+  gaps_prompt <- reticulate::py_to_r(reticulate::py$audit_prompt_llm_gaps$last_prompt)
+
+  expect_match(completeness_prompt, "Dataset context:", fixed = TRUE)
+  expect_match(completeness_prompt, "\"representative_rows\"", fixed = TRUE)
+  expect_match(completeness_prompt, "Tail Rare", fixed = TRUE)
+  expect_match(gaps_prompt, "Dataset context:", fixed = TRUE)
+  expect_match(gaps_prompt, "\"representative_rows\"", fixed = TRUE)
+  expect_match(gaps_prompt, "Tail Rare", fixed = TRUE)
+})
+
 
 # ============================================================================
 # Integration Tests (require Claude Code CLI)

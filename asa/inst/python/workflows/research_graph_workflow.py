@@ -24,6 +24,7 @@ from langgraph.graph.message import add_messages
 from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import ToolNode, tools_condition
 
+from shared.graph_invoke_utils import invoke_graph_safely as _invoke_graph_safely
 from shared.state_graph_utils import (
     build_node_trace_entry,
     _token_usage_dict_from_message,
@@ -1472,6 +1473,52 @@ def _build_research_error_result(
     }
 
 
+def _finalize_recursion_research_state(state: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """Normalize recursion-limit states into a terminal research result."""
+    normalized = dict(state or {})
+    if str(normalized.get("stop_reason") or "").strip().lower() != "recursion_limit":
+        return normalized
+
+    if str(normalized.get("status") or "").strip().lower() not in {"complete", "failed"}:
+        normalized["status"] = "complete"
+
+    existing_gate = normalized.get("completion_gate")
+    gate = dict(existing_gate) if isinstance(existing_gate, dict) else {}
+    config = normalized.get("config", {})
+    if not isinstance(config, dict):
+        config = {}
+
+    evaluated_gate = evaluate_research_outcome(
+        round_number=int(normalized.get("round_number", 0) or 0),
+        queries_used=int(normalized.get("queries_used", 0) or 0),
+        tokens_used=int(normalized.get("tokens_used", 0) or 0),
+        elapsed_sec=_active_elapsed_seconds(normalized),
+        items_found=int(len(normalized.get("results", []) or [])),
+        novelty_history=normalized.get("novelty_history", [])
+        if isinstance(normalized.get("novelty_history", []), list)
+        else [],
+        max_rounds=config.get("max_rounds"),
+        budget_queries=config.get("budget_queries"),
+        budget_tokens=config.get("budget_tokens"),
+        budget_time_sec=config.get("budget_time_sec"),
+        target_items=config.get("target_items"),
+        plateau_rounds=config.get("plateau_rounds"),
+        novelty_min=config.get("novelty_min"),
+        recursion_stop=True,
+    )
+
+    merged_gate = dict(evaluated_gate)
+    merged_gate.update(gate)
+    merged_gate["should_stop"] = True
+    merged_gate["stop_reason"] = "recursion_limit"
+    if str(merged_gate.get("completion_status") or "").strip().lower() in {"", "in_progress", "searching", "running"}:
+        merged_gate["completion_status"] = evaluated_gate.get("completion_status")
+    merged_gate["goal_met"] = bool(evaluated_gate.get("goal_met", False))
+    merged_gate.setdefault("missing_constraints", evaluated_gate.get("missing_constraints", []))
+    normalized["completion_gate"] = merged_gate
+    return normalized
+
+
 def run_research(
     graph,
     query: str,
@@ -1487,7 +1534,13 @@ def run_research(
     start_time = time.time()
 
     try:
-        final_state = graph.invoke(initial_state, config)
+        final_state = _finalize_recursion_research_state(
+            _invoke_graph_safely(
+                graph,
+                initial_state,
+                config=config,
+            )
+        )
         elapsed = time.time() - start_time
 
         return _build_research_result(
@@ -1528,7 +1581,13 @@ def run_research_from_state(
     start_time = time.time()
 
     try:
-        final_state = graph.invoke(initial_state, config)
+        final_state = _finalize_recursion_research_state(
+            _invoke_graph_safely(
+                graph,
+                initial_state,
+                config=config,
+            )
+        )
         elapsed = time.time() - start_time
         return _build_research_result(
             final_state,
@@ -1666,6 +1725,29 @@ def _stream_research_impl(
             thread_id=thread_id,
         )
 
+        yield {
+            "event_type": "complete",
+            "elapsed": elapsed,
+            "thread_id": thread_id,
+            "state_snapshot": state_snapshot,
+            "final_result": final_result
+        }
+
+    except GraphRecursionError:
+        elapsed = time.time() - start_time
+        terminal_state = _finalize_recursion_research_state(accumulated_state)
+        state_snapshot = _state_snapshot_for_checkpoint(
+            terminal_state,
+            query=query,
+            schema=schema,
+            config_dict=config_dict,
+        )
+        final_result = _build_research_result(
+            terminal_state,
+            elapsed,
+            status_fallback="complete",
+            thread_id=thread_id,
+        )
         yield {
             "event_type": "complete",
             "elapsed": elapsed,
