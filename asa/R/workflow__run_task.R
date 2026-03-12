@@ -52,7 +52,8 @@
 #'   LangGraph state. Useful for resuming partially resolved schemas.
 #' @param budget_state Optional tool budget state seed passed into the LangGraph
 #'   state (e.g., to resume prior progress).
-#' @param search_budget_limit Optional integer tool-call budget limit for this run.
+#' @param search_budget_limit Optional integer maximum number of `Search` tool
+#'   calls for this run.
 #' @param unknown_after_searches Optional integer threshold after which unresolved
 #'   fields may be marked as unknown.
 #' @param finalize_on_all_fields_resolved Optional logical flag. When TRUE, the
@@ -479,11 +480,19 @@ run_task <- function(prompt,
   # Parse output based on format
   phase_marks$output_parse_started <- Sys.time()
   parsed <- NULL
-  status <- if (response$status_code == ASA_STATUS_SUCCESS) "success" else "error"
+  backend_status <- if (response$status_code == ASA_STATUS_SUCCESS) "success" else "error"
+  status <- backend_status
+  terminal_payload <- response$final_payload %||% NULL
+  terminal_payload_used <- isTRUE(response$terminal_valid %||% FALSE) && !is.null(terminal_payload)
+  terminal_payload_text <- if (terminal_payload_used) {
+    .serialize_terminal_payload(terminal_payload)
+  } else {
+    NA_character_
+  }
 
   # Detect CAPTCHA/block in response for adaptive rate limiting
-  adaptive_status <- status
-  if (status == "error" && !is.null(response$message)) {
+  adaptive_status <- backend_status
+  if (backend_status == "error" && !is.null(response$message)) {
     msg_lower <- tolower(response$message)
     if (grepl("captcha|robot|unusual traffic", msg_lower)) {
       adaptive_status <- "captcha"
@@ -494,7 +503,19 @@ run_task <- function(prompt,
   # Record result for adaptive rate limiting (adjusts delays dynamically)
   .adaptive_rate_record(adaptive_status, verbose = verbose)
 
-  if (status == "success" && !is.na(response$message)) {
+  if (isTRUE(terminal_payload_used)) {
+    status <- "success"
+    payload_r <- .try_or(reticulate::py_to_r(terminal_payload), terminal_payload)
+    if (identical(output_format, "json")) {
+      parsed <- payload_r
+    } else if (is.character(output_format) && length(output_format) > 1L &&
+               is.character(terminal_payload_text) && length(terminal_payload_text) > 0L &&
+               !is.na(terminal_payload_text[[1]]) && nzchar(terminal_payload_text[[1]])) {
+      parsed <- .extract_fields(terminal_payload_text[[1]], output_format)
+    }
+  }
+
+  if (is.null(parsed) && status == "success" && !is.na(response$message)) {
     if (identical(output_format, "json")) {
       parsed <- .parse_json_response(response$message)
     } else if (is.character(output_format) && length(output_format) > 1) {
@@ -513,6 +534,14 @@ run_task <- function(prompt,
   tool_calls_used <- .as_scalar_int(budget_state_out$tool_calls_used)
   tool_calls_limit <- .as_scalar_int(budget_state_out$tool_calls_limit)
   tool_calls_remaining <- .as_scalar_int(budget_state_out$tool_calls_remaining)
+  search_calls_used <- .as_scalar_int(budget_state_out$search_calls_used %||% budget_state_out$tool_calls_used)
+  search_calls_limit <- .as_scalar_int(budget_state_out$search_calls_limit %||% budget_state_out$tool_calls_limit)
+  search_calls_remaining <- .as_scalar_int(budget_state_out$search_calls_remaining %||% budget_state_out$tool_calls_remaining)
+  search_budget_exhausted <- isTRUE(budget_state_out$search_budget_exhausted %||% FALSE)
+  retrieval_block_summary <- .build_retrieval_block_summary(
+    tool_quality_events = response$tool_quality_events %||% list(),
+    budget_state = budget_state_out
+  )
   fold_count <- .as_scalar_int(response$fold_stats$fold_count)
   stop_reason <- .try_or(as.character(response$stop_reason), character(0))
   stop_reason <- if (length(stop_reason) > 0 && nzchar(stop_reason[[1]])) {
@@ -710,16 +739,23 @@ run_task <- function(prompt,
   execution <- list(
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
+    backend_status = backend_status,
     status_code = response$status_code %||% NA_integer_,
+    terminal_payload_used = terminal_payload_used,
     tool_calls_used = tool_calls_used,
     tool_calls_limit = tool_calls_limit,
     tool_calls_remaining = tool_calls_remaining,
+    search_calls_used = search_calls_used,
+    search_calls_limit = search_calls_limit,
+    search_calls_remaining = search_calls_remaining,
+    search_budget_exhausted = search_budget_exhausted,
     fold_count = fold_count,
     fold_stats = response$fold_stats %||% list(),
     budget_state = budget_state_out,
     field_status = response$field_status %||% list(),
     diagnostics = response$diagnostics %||% list(),
     retrieval_metrics = response$retrieval_metrics %||% list(),
+    retrieval_block_summary = retrieval_block_summary,
     tool_quality_events = response$tool_quality_events %||% list(),
     candidate_resolution = response$candidate_resolution %||% list(),
     finalization_status = response$finalization_status %||% list(),
@@ -809,10 +845,20 @@ run_task <- function(prompt,
     execution$raw_response <- response$raw_response
   }
 
+  result_message <- response$message
+  if (isTRUE(terminal_payload_used) &&
+      (identical(output_format, "json") || (is.character(output_format) && length(output_format) > 1L)) &&
+      is.character(terminal_payload_text) &&
+      length(terminal_payload_text) > 0L &&
+      !is.na(terminal_payload_text[[1]]) &&
+      nzchar(terminal_payload_text[[1]])) {
+    result_message <- terminal_payload_text[[1]]
+  }
+
   # Build result object - always return asa_result for consistent API
   result <- asa_result(
     prompt = prompt,
-    message = response$message,
+    message = result_message,
     parsed = parsed,
     raw_output = response$trace,
     trace_json = response$trace_json %||% "",
@@ -1189,7 +1235,9 @@ run_direct_task <- function(prompt,
 
   alias_defaults <- list(
     fold_stats = list(),
+    backend_status = NA_character_,
     status_code = NA_integer_,
+    terminal_payload_used = FALSE,
     final_payload = NULL,
     terminal_valid = FALSE,
     terminal_payload_hash = NA_character_,
@@ -1200,6 +1248,7 @@ run_direct_task <- function(prompt,
     token_stats = list(),
     diagnostics = list(),
     retrieval_metrics = list(),
+    retrieval_block_summary = list(),
     tool_quality_events = list(),
     candidate_resolution = list(),
     finalization_status = list(),
@@ -1214,6 +1263,10 @@ run_direct_task <- function(prompt,
     om_stats = list(),
     observations = list(),
     reflections = list(),
+    search_calls_used = NA_integer_,
+    search_calls_limit = NA_integer_,
+    search_calls_remaining = NA_integer_,
+    search_budget_exhausted = FALSE,
     action_steps = list(),
     action_ascii = "",
     action_investigator_summary = character(0),
@@ -1443,6 +1496,92 @@ build_prompt <- function(template, ...) {
   }
 
   result
+}
+
+#' Serialize canonical terminal payloads for downstream parsing
+#' @keywords internal
+.serialize_terminal_payload <- function(payload) {
+  payload_r <- .try_or(reticulate::py_to_r(payload), payload)
+  if (is.null(payload_r)) {
+    return(NA_character_)
+  }
+  payload_json <- .try_or(
+    jsonlite::toJSON(payload_r, auto_unbox = TRUE, null = "null"),
+    NA_character_
+  )
+  if (!is.character(payload_json) || length(payload_json) == 0L || is.na(payload_json[[1]])) {
+    return(NA_character_)
+  }
+  payload_text <- paste(payload_json, collapse = "")
+  if (!nzchar(payload_text)) {
+    return(NA_character_)
+  }
+  payload_text
+}
+
+#' Summarize real retrieval blocking events from runtime telemetry
+#' @keywords internal
+.build_retrieval_block_summary <- function(tool_quality_events = list(), budget_state = list()) {
+  events <- .try_or(reticulate::py_to_r(tool_quality_events), tool_quality_events)
+  if (is.data.frame(events)) {
+    events <- split(events, seq_len(nrow(events)))
+  }
+  if (!is.list(events)) {
+    events <- list()
+  }
+
+  as_bool <- function(x, default = FALSE) {
+    if (is.null(x) || length(x) == 0L) return(default)
+    out <- .try_or(as.logical(x[[1]] %||% x), NA)
+    if (is.na(out)) default else isTRUE(out)
+  }
+  as_chr <- function(x) {
+    out <- .try_or(as.character(x[[1]] %||% x), character(0))
+    out <- out[!is.na(out) & nzchar(out)]
+    if (length(out) == 0L) NA_character_ else out[[1]]
+  }
+
+  blocked_fetch_events <- 0L
+  blocked_hosts <- character(0)
+  for (event in events) {
+    event <- .try_or(reticulate::py_to_r(event), event)
+    if (!is.list(event)) next
+    if (!as_bool(event$is_error, default = FALSE)) next
+    error_type <- tolower(as_chr(event$error_type) %||% "")
+    if (!identical(error_type, "blocked")) next
+    blocked_fetch_events <- blocked_fetch_events + 1L
+    host <- as_chr(event$host)
+    if (!is.na(host) && !(host %in% blocked_hosts)) {
+      blocked_hosts <- c(blocked_hosts, host)
+    }
+  }
+
+  blocked_host_skip_events <- .as_scalar_int(budget_state$blocked_host_skip_events)
+  if (is.na(blocked_host_skip_events)) blocked_host_skip_events <- 0L
+
+  budget_hosts <- .try_or(reticulate::py_to_r(budget_state$blocked_openwebpage_hosts), budget_state$blocked_openwebpage_hosts)
+  if (is.null(budget_hosts)) {
+    budget_hosts <- list()
+  }
+  if (is.data.frame(budget_hosts)) {
+    budget_hosts <- as.list(budget_hosts)
+  }
+  budget_host_names <- names(budget_hosts) %||% character(0)
+  budget_host_names <- unique(budget_host_names[!is.na(budget_host_names) & nzchar(budget_host_names)])
+  blocked_hosts <- unique(c(blocked_hosts, budget_host_names))
+
+  search_snippet_timeout_count <- .as_scalar_int(budget_state$search_snippet_timeout_count)
+  if (is.na(search_snippet_timeout_count)) search_snippet_timeout_count <- 0L
+
+  list(
+    blocked_fetch_events = blocked_fetch_events,
+    blocked_host_skip_events = blocked_host_skip_events,
+    blocked_host_count = length(blocked_hosts),
+    blocked_hosts = blocked_hosts,
+    blocked_openwebpage_host_count = length(budget_host_names),
+    search_snippet_timeout_count = search_snippet_timeout_count,
+    search_snippet_timeout_circuit_open = isTRUE(budget_state$search_snippet_timeout_circuit_open)
+  )
 }
 
 #' Run Multiple Tasks in Batch

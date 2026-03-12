@@ -121,6 +121,158 @@ test_that("sensitive-field disclosure helper requires explicit disclosure marker
   expect_true(isTRUE(allowed$pass))
 })
 
+test_that("configured field rules support enum aliases for canonical labels", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  field_status <- list(
+    lgbtq_status = list(
+      status = "found",
+      value = "gay",
+      source_url = "https://example.org/profile",
+      descriptor = "Non-LGBTQ|Openly LGBTQ|Unknown"
+    ),
+    lgbtq_status_source = list(
+      status = "found",
+      value = "https://example.org/profile",
+      source_url = "https://example.org/profile",
+      descriptor = "string|null"
+    )
+  )
+  field_rules <- list(
+    lgbtq_status = list(
+      enum_aliases = list(gay = "Openly LGBTQ")
+    )
+  )
+
+  out <- reticulate::py_to_r(core$`_apply_configured_field_rules`(field_status, field_rules))
+
+  expect_identical(as.character(out$lgbtq_status$status), "found")
+  expect_identical(as.character(out$lgbtq_status$value), "Openly LGBTQ")
+  expect_identical(as.character(out$lgbtq_status$evidence), "field_rule_enum_alias")
+})
+
+test_that("enum coercion matches punctuation variants against schema labels", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  coerced <- reticulate::py_to_r(core$`_coerce_found_value_for_descriptor`(
+    "Master's degree",
+    "Bachelor's|Master's/Professional|Doctorate|Unknown"
+  ))
+
+  expect_identical(as.character(coerced), "Master's/Professional")
+})
+
+test_that("configured field rules can reject contaminated values", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  field_status <- list(
+    prior_occupation = list(
+      status = "found",
+      value = "Deputy, Chamber of Deputies",
+      source_url = "https://example.org/profile",
+      descriptor = "string|Unknown"
+    ),
+    prior_occupation_source = list(
+      status = "found",
+      value = "https://example.org/profile",
+      source_url = "https://example.org/profile",
+      descriptor = "string|null"
+    )
+  )
+  field_rules <- list(
+    prior_occupation = list(
+      reject_value_patterns = list("(?i)\\bdeputy\\b|\\bcouncilor\\b")
+    )
+  )
+
+  out <- reticulate::py_to_r(core$`_apply_configured_field_rules`(field_status, field_rules))
+
+  expect_identical(as.character(out$prior_occupation$status), "unknown")
+  expect_identical(as.character(out$prior_occupation$value), "Unknown")
+  expect_match(as.character(out$prior_occupation$evidence), "field_rule_reject_value_pattern")
+  expect_true(is.null(out$prior_occupation$source_url))
+  expect_identical(as.character(out$prior_occupation_source$status), "unknown")
+})
+
+test_that("finalization policy scrubs terminal fields backed by disallowed sources", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  field_status <- list(
+    birth_place = list(
+      status = "found",
+      value = "La Paz",
+      source_url = "https://www.facebook.com/profile.php?id=123",
+      descriptor = "string|Unknown"
+    ),
+    birth_place_source = list(
+      status = "found",
+      value = "https://www.facebook.com/profile.php?id=123",
+      source_url = "https://www.facebook.com/profile.php?id=123",
+      descriptor = "string|null"
+    )
+  )
+
+  scrubbed <- reticulate::py_to_r(core$`_enforce_finalization_policy_on_field_status`(
+    field_status,
+    list(require_verified_for_non_unknown = TRUE),
+    source_policy = list(
+      allow_tertiary_sources = FALSE,
+      min_source_tier_for_non_unknown = "secondary"
+    )
+  ))
+
+  expect_identical(as.character(scrubbed$birth_place$status), "unknown")
+  expect_identical(as.character(scrubbed$birth_place$value), "Unknown")
+  expect_match(
+    as.character(scrubbed$birth_place$evidence),
+    "^finalization_policy_demotion_source_"
+  )
+  expect_true(is.null(scrubbed$birth_place$source_url))
+  expect_identical(as.character(scrubbed$birth_place_source$status), "unknown")
+
+  diag <- reticulate::py_to_r(core$`_collect_field_status_diagnostics`(scrubbed))
+  expect_equal(as.integer(diag$terminal_source_policy_violations), 1L)
+  expect_equal(as.integer(diag$terminal_source_scrubbed_fields), 1L)
+  expect_true(any(grepl("facebook.com", unlist(diag$terminal_source_policy_violation_urls), fixed = TRUE)))
+})
+
+test_that("budget normalization tracks search budgets separately from all tool calls", {
+  core <- asa_test_import_langgraph_module(
+    "asa_backend.graph.agent_graph_core",
+    required_files = "asa_backend/graph/agent_graph_core.py"
+  )
+
+  budget <- reticulate::py_to_r(core$`_normalize_budget_state`(
+    list(
+      search_calls_used = 7L,
+      tool_calls_used = 20L,
+      all_tool_calls_used = 20L,
+      model_calls_used = 1L
+    ),
+    search_budget_limit = 8L,
+    unknown_after_searches = 4L,
+    model_budget_limit = 5L
+  ))
+
+  expect_equal(as.integer(budget$search_calls_used), 7L)
+  expect_equal(as.integer(budget$search_calls_remaining), 1L)
+  expect_false(isTRUE(as.logical(budget$search_budget_exhausted)))
+  expect_equal(as.integer(budget$tool_calls_used), 7L)
+  expect_equal(as.integer(budget$all_tool_calls_used), 20L)
+})
+
 test_that("finalization invariant ignores non-core unknown source fields in diagnostics snapshot", {
   core <- asa_test_import_langgraph_module(
     "asa_backend.graph.agent_graph_core",

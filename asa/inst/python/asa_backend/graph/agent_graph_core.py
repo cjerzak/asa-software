@@ -13,6 +13,7 @@ import re
 import sys
 import threading
 import time
+import unicodedata
 import uuid
 from datetime import datetime, timezone
 from urllib.parse import unquote, urlparse
@@ -1885,6 +1886,38 @@ def _normalize_regex_pattern_list(raw: Any, *, max_items: int = 64) -> List[str]
     return out
 
 
+def _normalize_enum_match_key(value: Any) -> str:
+    text = str(value or "").strip().lower()
+    if not text:
+        return ""
+    normalized = unicodedata.normalize("NFKD", text)
+    normalized = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]+", "", normalized)
+
+
+def _enum_value_tokens(value: Any) -> List[str]:
+    text = str(value or "").strip().lower()
+    if not text:
+        return []
+    normalized = unicodedata.normalize("NFKD", text)
+    normalized = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    return [tok for tok in re.findall(r"[a-z0-9]+", normalized) if tok]
+
+
+def _normalize_enum_alias_map(raw: Any, *, max_items: int = 128) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
+    if not isinstance(raw, dict):
+        return out
+    for raw_key, raw_value in raw.items():
+        key = _normalize_enum_match_key(raw_key)
+        if not key or _is_empty_like(raw_value):
+            continue
+        out[key] = raw_value
+        if len(out) >= max(1, int(max_items)):
+            break
+    return out
+
+
 def _normalize_source_tier_label(raw_value: Any, *, default: str = "secondary") -> str:
     token = str(raw_value or "").strip().lower()
     if token in {"primary", "secondary", "tertiary", "unknown"}:
@@ -2500,6 +2533,12 @@ def _normalize_field_rules(raw_rules: Any) -> Dict[str, Dict[str, Any]]:
         mappings = raw_rule.get("mappings")
         if isinstance(mappings, list):
             rule["mappings"] = [dict(item) for item in mappings if isinstance(item, dict)]
+        enum_aliases = _normalize_enum_alias_map(raw_rule.get("enum_aliases"))
+        if enum_aliases:
+            rule["enum_aliases"] = enum_aliases
+        reject_value_patterns = _normalize_regex_pattern_list(raw_rule.get("reject_value_patterns"))
+        if reject_value_patterns:
+            rule["reject_value_patterns"] = reject_value_patterns
         if rule:
             out[field_name] = rule
     return out
@@ -5516,10 +5555,83 @@ def _apply_configured_field_rules(
     field_rules: Any,
 ) -> Dict[str, Dict[str, Any]]:
     """Apply optional config-driven field derivation rules (task-agnostic)."""
-    normalized = _apply_field_status_derivations(field_status)
+    if not isinstance(field_status, dict):
+        return {}
+    normalized: Dict[str, Dict[str, Any]] = {}
+    for raw_key, raw_entry in field_status.items():
+        key = str(raw_key or "").strip()
+        if not key or not isinstance(raw_entry, dict):
+            continue
+        normalized[key] = dict(raw_entry)
     rules = _normalize_field_rules(field_rules)
     if not normalized or not rules:
-        return normalized
+        return _apply_field_status_derivations(normalized)
+
+    def _demote_field(field_name: str, reason: str) -> None:
+        entry = dict(normalized.get(field_name) or {})
+        if not isinstance(entry, dict) or not entry:
+            return
+        prior_source_url = _normalize_url_match(entry.get("source_url"))
+        entry["status"] = _FIELD_STATUS_UNKNOWN
+        entry["value"] = _unknown_value_for_descriptor(entry.get("descriptor"))
+        entry["source_url"] = None
+        entry["evidence"] = reason
+        entry["evidence_reason"] = reason
+        if prior_source_url:
+            entry["evidence_source_url"] = prior_source_url
+        normalized[field_name] = entry
+
+        source_key = f"{field_name}_source"
+        if source_key in normalized:
+            source_entry = dict(normalized.get(source_key) or {})
+            source_entry["status"] = _FIELD_STATUS_UNKNOWN
+            source_entry["value"] = _unknown_value_for_descriptor(source_entry.get("descriptor"))
+            source_entry["source_url"] = None
+            source_entry["evidence"] = reason
+            source_entry["evidence_reason"] = reason
+            normalized[source_key] = source_entry
+
+    def _apply_rule_to_existing_target(target_field: str, rule: Dict[str, Any]) -> None:
+        target_entry = normalized.get(target_field)
+        if not isinstance(target_entry, dict):
+            return
+        status = str(target_entry.get("status") or "").lower()
+        value = target_entry.get("value")
+        if status != _FIELD_STATUS_FOUND or _is_empty_like(value) or _is_unknown_marker(value):
+            return
+
+        reject_patterns = list(rule.get("reject_value_patterns") or [])
+        value_str = str(value).strip()
+        reject_hit = None
+        for pattern in reject_patterns:
+            try:
+                if re.search(pattern, value_str):
+                    reject_hit = pattern
+                    break
+            except Exception:
+                continue
+        if reject_hit:
+            _demote_field(
+                target_field,
+                f"field_rule_reject_value_pattern:{str(reject_hit)[:120]}",
+            )
+            return
+
+        enum_aliases = rule.get("enum_aliases") if isinstance(rule.get("enum_aliases"), dict) else {}
+        alias_value = enum_aliases.get(_normalize_enum_match_key(value))
+        if _is_empty_like(alias_value):
+            return
+        target_entry["value"] = alias_value
+        target_entry["evidence"] = "field_rule_enum_alias"
+        target_entry["evidence_reason"] = f"enum_alias:{_normalize_enum_match_key(value)}"
+        normalized[target_field] = target_entry
+
+    for target_field, rule in rules.items():
+        if not isinstance(rule, dict):
+            continue
+        _apply_rule_to_existing_target(target_field, rule)
+
+    normalized = _apply_field_status_derivations(normalized)
 
     for target_field, rule in rules.items():
         if not isinstance(rule, dict):
@@ -5582,6 +5694,13 @@ def _apply_configured_field_rules(
             source_entry_target["evidence"] = "derived_from_field_rule"
             normalized[source_key] = source_entry_target
 
+    normalized = _apply_field_status_derivations(normalized)
+
+    for target_field, rule in rules.items():
+        if not isinstance(rule, dict):
+            continue
+        _apply_rule_to_existing_target(target_field, rule)
+
     return _apply_field_status_derivations(normalized)
 
 
@@ -5604,12 +5723,65 @@ def _field_matches_any_pattern(field_name: str, patterns: Any) -> bool:
 def _enforce_finalization_policy_on_field_status(
     field_status: Dict[str, Dict[str, Any]],
     finalization_policy: Any,
+    source_policy: Any = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Apply finalization-time verification guardrails from policy."""
     normalized = _apply_field_status_derivations(field_status)
     policy = _normalize_finalization_policy(finalization_policy)
-    if not bool(policy.get("require_verified_for_non_unknown", True)):
-        return normalized
+    normalized_source_policy = _normalize_source_policy(source_policy)
+
+    def _demote_field(field_name: str, reason: str) -> None:
+        entry = dict(normalized.get(field_name) or {})
+        if not isinstance(entry, dict) or not entry:
+            return
+        prior_source_url = _normalize_url_match(entry.get("source_url"))
+        entry["status"] = _FIELD_STATUS_UNKNOWN
+        entry["value"] = _unknown_value_for_descriptor(entry.get("descriptor"))
+        entry["source_url"] = None
+        entry["evidence"] = reason
+        entry["evidence_reason"] = reason
+        if prior_source_url:
+            entry["evidence_source_url"] = prior_source_url
+        normalized[field_name] = entry
+
+        source_key = f"{field_name}_source"
+        if source_key in normalized:
+            source_entry = dict(normalized.get(source_key) or {})
+            source_entry["status"] = _FIELD_STATUS_UNKNOWN
+            source_entry["value"] = _unknown_value_for_descriptor(source_entry.get("descriptor"))
+            source_entry["source_url"] = None
+            source_entry["evidence"] = reason
+            source_entry["evidence_reason"] = reason
+            normalized[source_key] = source_entry
+
+    def _source_violation_reason(field_name: str, entry: Dict[str, Any]) -> Optional[str]:
+        source_url = _normalize_url_match(entry.get("source_url"))
+        if not source_url:
+            return None
+        host_allowed, host_reason = _source_policy_host_gate(source_url, normalized_source_policy)
+        if not host_allowed:
+            return host_reason or "source_policy_host_gate"
+        candidate = {
+            "source_url": source_url,
+            "source_tier": _get_source_tier(source_url),
+        }
+        tier_ok, tier_reason = _candidate_meets_source_tier_policy(
+            field_key=field_name,
+            candidate=candidate,
+            source_policy=normalized_source_policy,
+        )
+        if not tier_ok:
+            return tier_reason or "source_tier_policy"
+        source_quality = _source_quality_score_from_url(source_url)
+        if source_quality < float(normalized_source_policy.get("min_source_quality", 0.0) or 0.0):
+            return "source_quality_below_policy_threshold"
+        source_specificity = _clamp01(
+            (float(_source_specificity_score(source_url)) + 1.5) / 3.0,
+            default=0.0,
+        )
+        if source_specificity < float(normalized_source_policy.get("min_source_specificity", 0.0) or 0.0):
+            return "source_specificity_below_policy_threshold"
+        return None
 
     allowlist_patterns = list(policy.get("unsourced_allowlist_patterns") or [])
     for key, entry in list((normalized or {}).items()):
@@ -5628,23 +5800,12 @@ def _enforce_finalization_policy_on_field_status(
         source_url = _normalize_url_match(entry.get("source_url"))
         evidence = str(entry.get("evidence") or "").strip().lower()
         verified = bool(source_url) and not evidence.startswith("grounding_blocked")
-        if verified:
+        if bool(policy.get("require_verified_for_non_unknown", True)) and not verified:
+            _demote_field(key, "finalization_policy_demotion_unverified")
             continue
-
-        entry["status"] = _FIELD_STATUS_UNKNOWN
-        entry["value"] = _unknown_value_for_descriptor(entry.get("descriptor"))
-        entry["source_url"] = None
-        entry["evidence"] = "finalization_policy_demotion_unverified"
-        normalized[key] = entry
-
-        source_key = f"{key}_source"
-        if source_key in normalized:
-            source_entry = dict(normalized.get(source_key) or {})
-            source_entry["status"] = _FIELD_STATUS_UNKNOWN
-            source_entry["value"] = _unknown_value_for_descriptor(source_entry.get("descriptor"))
-            source_entry["source_url"] = None
-            source_entry["evidence"] = "finalization_policy_demotion_unverified"
-            normalized[source_key] = source_entry
+        violation_reason = _source_violation_reason(key, entry)
+        if violation_reason:
+            _demote_field(key, f"finalization_policy_demotion_{violation_reason}")
 
     return _apply_field_status_derivations(normalized)
 
@@ -9759,14 +9920,19 @@ def _normalize_budget_state(
     existing = budget_state if isinstance(budget_state, dict) else {}
     out = dict(existing)
     now_ts = float(time.time())
-    used = 0
+    search_used = 0
     try:
-        used = max(0, int(existing.get("tool_calls_used", 0)))
+        search_used = max(0, int(existing.get("search_calls_used", existing.get("tool_calls_used", 0))))
     except Exception:
-        used = 0
+        search_used = 0
+    all_tool_calls_used = 0
+    try:
+        all_tool_calls_used = max(0, int(existing.get("all_tool_calls_used", existing.get("tool_calls_used", 0))))
+    except Exception:
+        all_tool_calls_used = 0
     limit = _coerce_positive_int(
         search_budget_limit,
-        existing.get("tool_calls_limit"),
+        existing.get("search_calls_limit", existing.get("tool_calls_limit")),
         default=_DEFAULT_TOOL_CALL_BUDGET,
     )
     verify_reserve = existing.get("evidence_verify_reserve")
@@ -9778,7 +9944,6 @@ def _normalize_budget_state(
         verify_reserve = max(0, int(verify_reserve))
     except Exception:
         verify_reserve = int(_EVIDENCE_VERIFY_RESERVE)
-    effective_tool_limit = max(1, int(limit) + int(verify_reserve))
     unknown_after = _coerce_positive_int(
         unknown_after_searches,
         existing.get("unknown_after_searches"),
@@ -9794,12 +9959,13 @@ def _normalize_budget_state(
         existing.get("model_calls_limit"),
         default=_DEFAULT_MODEL_CALL_BUDGET,
     )
-    tool_budget_exhausted = bool(effective_tool_limit > 0 and used >= effective_tool_limit)
+    search_budget_exhausted = bool(limit > 0 and search_used >= limit)
+    tool_budget_exhausted = bool(search_budget_exhausted)
     model_budget_exhausted = bool(model_limit > 0 and model_used >= model_limit)
     low_signal_cap_exhausted = bool(existing.get("low_signal_cap_exhausted", False))
     budget_exhausted = bool(
         bool(existing.get("budget_exhausted", False))
-        or tool_budget_exhausted
+        or search_budget_exhausted
         or model_budget_exhausted
         or low_signal_cap_exhausted
     )
@@ -9820,17 +9986,24 @@ def _normalize_budget_state(
     if preferred_openwebpage_urls:
         preferred_openwebpage_url = preferred_openwebpage_urls[0]
     out.update({
-        "tool_calls_used": used,
+        "search_calls_used": search_used,
+        "search_calls_limit": limit,
+        "search_calls_limit_effective": limit,
+        "search_calls_remaining": max(0, limit - search_used),
+        "search_budget_exhausted": search_budget_exhausted,
+        "tool_calls_used": search_used,
         "tool_calls_limit": limit,
-        "tool_calls_limit_effective": effective_tool_limit,
-        "tool_calls_remaining_base": max(0, limit - used),
-        "tool_calls_remaining": max(0, effective_tool_limit - used),
+        "tool_calls_limit_effective": limit,
+        "tool_calls_remaining_base": max(0, limit - search_used),
+        "tool_calls_remaining": max(0, limit - search_used),
         "evidence_verify_reserve": verify_reserve,
-        "verification_reserve_remaining": max(0, effective_tool_limit - max(int(limit), int(used))),
+        "verification_reserve_remaining": 0,
+        "all_tool_calls_used": all_tool_calls_used,
         "model_calls_used": model_used,
         "model_calls_limit": model_limit,
         "model_calls_remaining": max(0, model_limit - model_used),
         "unknown_after_searches": unknown_after,
+        "search_budget_exhausted": search_budget_exhausted,
         "tool_budget_exhausted": tool_budget_exhausted,
         "model_budget_exhausted": model_budget_exhausted,
         "low_signal_cap_exhausted": low_signal_cap_exhausted,
@@ -10017,6 +10190,8 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
         "grounding_blocks_count",
         "source_consistency_fixes_count",
         "field_demotions_count",
+        "terminal_source_policy_violations",
+        "terminal_source_scrubbed_fields",
         "recovery_promotions_count",
         "recovery_rejections_count",
         "unknown_fields_count",
@@ -10127,6 +10302,14 @@ def _normalize_diagnostics(diagnostics: Any) -> Dict[str, Any]:
     out["grounding_blocked_fields"] = list(existing.get("grounding_blocked_fields") or [])[:64]
     out["source_consistency_fixes"] = list(existing.get("source_consistency_fixes") or [])[:64]
     out["field_demotion_fields"] = list(existing.get("field_demotion_fields") or [])[:64]
+    out["terminal_source_scrubbed_field_names"] = list(
+        existing.get("terminal_source_scrubbed_field_names") or []
+    )[:64]
+    out["terminal_source_policy_violation_urls"] = [
+        _normalize_url_match(url)
+        for url in list(existing.get("terminal_source_policy_violation_urls") or [])[:16]
+        if _normalize_url_match(url)
+    ]
     out["recovery_promoted_fields"] = list(existing.get("recovery_promoted_fields") or [])[:64]
     out["recovery_rejected_fields"] = list(existing.get("recovery_rejected_fields") or [])[:64]
     out["unknown_fields"] = list(existing.get("unknown_fields") or [])[:64]
@@ -10583,6 +10766,8 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
     consistency_fixes: List[str] = []
     demotion_fields: List[str] = []
     demotion_reason_counts: Dict[str, int] = {}
+    terminal_source_scrubbed_fields: List[str] = []
+    terminal_source_policy_violation_urls: List[str] = []
     recovery_promoted_fields: List[str] = []
     recovery_rejected_fields: List[str] = []
     recovery_reason_counts: Dict[str, int] = {}
@@ -10622,6 +10807,17 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         if "demotion" in evidence:
             demotion_fields.append(str(key))
             demotion_reason_counts[evidence] = int(demotion_reason_counts.get(evidence, 0)) + 1
+        if evidence.startswith("finalization_policy_demotion_source_") and key_str in resolvable_key_set:
+            if key_str not in terminal_source_scrubbed_fields:
+                terminal_source_scrubbed_fields.append(key_str)
+            violation_url = _normalize_url_match(
+                raw_entry.get("evidence_source_url")
+                or entry.get("evidence_source_url")
+                or raw_entry.get("source_url")
+                or entry.get("source_url")
+            )
+            if violation_url and violation_url not in terminal_source_policy_violation_urls:
+                terminal_source_policy_violation_urls.append(violation_url)
         if evidence.startswith("recovery_source_backed"):
             recovery_promoted_fields.append(str(key))
         if evidence.startswith("recovery_blocked"):
@@ -10695,6 +10891,10 @@ def _collect_field_status_diagnostics(field_status: Any) -> Dict[str, Any]:
         "field_demotions_count": len(demotion_fields),
         "field_demotion_fields": demotion_fields[:64],
         "field_demotion_reason_counts": demotion_reason_counts,
+        "terminal_source_policy_violations": len(terminal_source_scrubbed_fields),
+        "terminal_source_scrubbed_fields": len(terminal_source_scrubbed_fields),
+        "terminal_source_scrubbed_field_names": terminal_source_scrubbed_fields[:64],
+        "terminal_source_policy_violation_urls": terminal_source_policy_violation_urls[:16],
         "recovery_promotions_count": len(recovery_promoted_fields),
         "recovery_promoted_fields": recovery_promoted_fields[:64],
         "recovery_rejections_count": len(recovery_rejected_fields),
@@ -10730,6 +10930,14 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
         out.get("field_demotions_count", 0),
         field_diag.get("field_demotions_count", 0),
     ))
+    out["terminal_source_policy_violations"] = int(max(
+        out.get("terminal_source_policy_violations", 0),
+        field_diag.get("terminal_source_policy_violations", 0),
+    ))
+    out["terminal_source_scrubbed_fields"] = int(max(
+        out.get("terminal_source_scrubbed_fields", 0),
+        field_diag.get("terminal_source_scrubbed_fields", 0),
+    ))
     out["recovery_promotions_count"] = int(max(
         out.get("recovery_promotions_count", 0),
         field_diag.get("recovery_promotions_count", 0),
@@ -10763,6 +10971,18 @@ def _merge_field_status_diagnostics(diagnostics: Any, field_status: Any) -> Dict
             out.get("field_demotion_fields"),
             demoted_field,
             max_items=64,
+        )
+    for scrubbed_field in field_diag.get("terminal_source_scrubbed_field_names", []):
+        out["terminal_source_scrubbed_field_names"] = _append_limited_unique(
+            out.get("terminal_source_scrubbed_field_names"),
+            scrubbed_field,
+            max_items=64,
+        )
+    for violation_url in field_diag.get("terminal_source_policy_violation_urls", []):
+        out["terminal_source_policy_violation_urls"] = _append_limited_unique(
+            out.get("terminal_source_policy_violation_urls"),
+            violation_url,
+            max_items=16,
         )
     for promoted_field in field_diag.get("recovery_promoted_fields", []):
         out["recovery_promoted_fields"] = _append_limited_unique(
@@ -11870,15 +12090,20 @@ def _coerce_found_value_for_descriptor(value: Any, descriptor: Any) -> Any:
     options_concrete = [o for o in options if o.lower() not in type_keywords]
     if len(options_concrete) >= 2:
         val_str = str(value).strip()
+        val_key = _normalize_enum_match_key(val_str)
         # Exact match (case-insensitive)
         for opt in options_concrete:
             if opt.lower() == val_str.lower():
                 return opt
+        # Exact match after accent/punctuation/whitespace normalization.
+        for opt in options_concrete:
+            if _normalize_enum_match_key(opt) == val_key and val_key:
+                return opt
         # Fuzzy match via token overlap (Jaccard)
         best, best_score = None, 0.0
-        val_tokens = set(val_str.lower().split())
+        val_tokens = set(_enum_value_tokens(val_str))
         for opt in options_concrete:
-            opt_tokens = set(opt.lower().split())
+            opt_tokens = set(_enum_value_tokens(opt))
             if not val_tokens or not opt_tokens:
                 continue
             jaccard = len(val_tokens & opt_tokens) / len(val_tokens | opt_tokens)
@@ -13506,7 +13731,7 @@ def _base_system_prompt(
         "Use scratchpad as optional working notes only.\n"
         "When returning structured JSON, include per-field metadata siblings for every concrete field: "
         "'<field>_source' (URL or null) and '<field>_confidence' (numeric 0-1 or null).\n\n"
-        f"Tool-call budget: {budget['tool_calls_used']}/{budget['tool_calls_limit']} used. "
+        f"Search-call budget: {budget['search_calls_used']}/{budget['search_calls_limit']} used. "
         f"Model-call budget: {budget['model_calls_used']}/{budget['model_calls_limit']} used. "
         "Stop searching when budget is exhausted. "
         "After EVERY search result, save any discovered field values using save_finding before continuing.\n\n"
@@ -13557,7 +13782,7 @@ def _final_system_prompt(
     budget = _normalize_budget_state(budget_state)
     template = (
         "FINALIZE MODE \u2014 no tools available.\n\n"
-        "Remaining steps: {{remaining_steps}} | Tool budget: {{tool_budget}}\n\n"
+        "Remaining steps: {{remaining_steps}} | Search budget: {{tool_budget}}\n\n"
         "RULES:\n"
         "1. Output ONLY the format required by the conversation.\n"
         "2. If a JSON schema/skeleton was provided: output strict JSON (no fences, no prose).\n"
@@ -13581,7 +13806,7 @@ def _final_system_prompt(
     remaining_str = "" if remaining is None else str(remaining)
     base_prompt = template.replace("{{remaining_steps}}", remaining_str)
     budget_str = (
-        f"tools {budget['tool_calls_used']}/{budget['tool_calls_limit']} used; "
+        f"searches {budget['search_calls_used']}/{budget['search_calls_limit']} used; "
         f"model {budget['model_calls_used']}/{budget['model_calls_limit']} used"
     )
     base_prompt = base_prompt.replace("{{tool_budget}}", budget_str)
@@ -18872,10 +19097,15 @@ def _create_tool_node_with_scratchpad(
             int(round((time.perf_counter() - tool_round_started_at) * 1000.0)),
         )
 
-        search_calls_delta = sum(
+        external_tool_calls_delta = sum(
             1
             for m in tool_messages
             if _message_is_tool(m) and str(_tool_message_name(m) or "").lower() not in _INTERNAL_TOOL_NAMES
+        )
+        search_calls_delta = sum(
+            1
+            for m in tool_messages
+            if _message_is_tool(m) and str(_tool_message_name(m) or "").lower() == "search"
         )
         field_status, evidence_ledger, evidence_stats = _extract_field_status_updates(
             existing_field_status=field_status,
@@ -19215,7 +19445,13 @@ def _create_tool_node_with_scratchpad(
                 max_items=64,
             )
             no_payload_events += 1
-        budget_state["tool_calls_used"] = int(budget_state.get("tool_calls_used", 0)) + int(search_calls_delta)
+        budget_state["all_tool_calls_used"] = int(
+            budget_state.get("all_tool_calls_used", 0) or 0
+        ) + int(external_tool_calls_delta)
+        budget_state["search_calls_used"] = int(
+            budget_state.get("search_calls_used", budget_state.get("tool_calls_used", 0)) or 0
+        ) + int(search_calls_delta)
+        budget_state["tool_calls_used"] = int(budget_state.get("search_calls_used", 0) or 0)
         budget_state["tool_calls_remaining"] = max(
             0,
             int(budget_state.get("tool_calls_limit_effective", budget_state["tool_calls_limit"]))
@@ -19225,10 +19461,14 @@ def _create_tool_node_with_scratchpad(
             0,
             int(budget_state["tool_calls_limit"]) - int(budget_state["tool_calls_used"]),
         )
-        budget_state["verification_reserve_remaining"] = max(
-            0,
-            int(budget_state.get("tool_calls_limit_effective", budget_state["tool_calls_limit"]))
-            - max(int(budget_state["tool_calls_limit"]), int(budget_state["tool_calls_used"])),
+        budget_state["search_calls_limit_effective"] = int(
+            budget_state.get("tool_calls_limit_effective", budget_state["tool_calls_limit"])
+        )
+        budget_state["verification_reserve_remaining"] = 0
+        budget_state["search_calls_remaining"] = int(budget_state["tool_calls_remaining"])
+        budget_state["search_budget_exhausted"] = bool(
+            int(budget_state.get("search_calls_used", 0) or 0)
+            >= int(budget_state.get("search_calls_limit", budget_state["tool_calls_limit"]) or 0)
         )
         budget_state["tool_budget_exhausted"] = bool(
             int(budget_state["tool_calls_used"])
@@ -19631,15 +19871,13 @@ def _create_tool_node_with_scratchpad(
                 adaptive_reason = "diminishing_returns_budget_tighten"
                 adaptive_reduced_calls = int(effective_limit_before - adaptive_effective_limit)
                 budget_state["tool_calls_limit_effective"] = int(adaptive_effective_limit)
+                budget_state["search_calls_limit_effective"] = int(adaptive_effective_limit)
                 budget_state["tool_calls_remaining"] = max(
                     0,
                     int(adaptive_effective_limit) - int(tool_calls_used_now),
                 )
-                budget_state["verification_reserve_remaining"] = max(
-                    0,
-                    int(adaptive_effective_limit)
-                    - max(int(budget_state.get("tool_calls_limit", 0) or 0), int(tool_calls_used_now)),
-                )
+                budget_state["search_calls_remaining"] = int(budget_state["tool_calls_remaining"])
+                budget_state["verification_reserve_remaining"] = 0
                 budget_state["adaptive_budget_active"] = True
                 budget_state["adaptive_budget_reason"] = adaptive_reason
                 budget_state["adaptive_budget_reduction"] = int(adaptive_reduced_calls)
@@ -19661,6 +19899,7 @@ def _create_tool_node_with_scratchpad(
             int(budget_state.get("tool_calls_used", 0) or 0)
             >= int(budget_state.get("tool_calls_limit_effective", budget_state.get("tool_calls_limit", 0)) or 0)
         )
+        budget_state["search_budget_exhausted"] = bool(budget_state["tool_budget_exhausted"])
         if budget_state["tool_budget_exhausted"] and not budget_state.get("limit_trigger_reason"):
             budget_state["limit_trigger_reason"] = "tool_budget"
 
@@ -20291,6 +20530,7 @@ def _finalize_agent_node_response(
             field_status = _enforce_finalization_policy_on_field_status(
                 field_status,
                 finalization_policy,
+                source_policy=source_policy,
             )
         if force_fallback or cutoff:
             response, canonical_event = _apply_field_status_terminal_guard(
@@ -20721,6 +20961,7 @@ def _run_finalize_flow(
     field_status = _enforce_finalization_policy_on_field_status(
         field_status,
         finalization_policy,
+        source_policy=source_policy,
     )
     response, canonical_event = _apply_field_status_terminal_guard(
         response,
@@ -21370,7 +21611,11 @@ def create_memory_folding_agent(
         _sync_summary_facts_to_field_status(summary, field_status)
         _sync_scratchpad_to_field_status(scratchpad, field_status)
         field_status = _apply_configured_field_rules(field_status, field_rules)
-        field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
+        field_status = _enforce_finalization_policy_on_field_status(
+            field_status,
+            finalization_policy,
+            source_policy=source_policy,
+        )
 
         unknown_after_searches = state.get("unknown_after_searches")
         if unknown_after_searches is None:
@@ -23102,7 +23347,11 @@ def create_standard_agent(
         # Sync scratchpad findings into field_status.
         _sync_scratchpad_to_field_status(scratchpad, field_status)
         field_status = _apply_configured_field_rules(field_status, field_rules)
-        field_status = _enforce_finalization_policy_on_field_status(field_status, finalization_policy)
+        field_status = _enforce_finalization_policy_on_field_status(
+            field_status,
+            finalization_policy,
+            source_policy=source_policy,
+        )
 
         unknown_after_searches = state.get("unknown_after_searches")
         if unknown_after_searches is None:

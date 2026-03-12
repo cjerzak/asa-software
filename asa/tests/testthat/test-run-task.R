@@ -170,6 +170,110 @@ test_that("run_task accepts output_format = 'raw'", {
   expect_silent(asa:::.validate_run_task("test", "raw", NULL, FALSE))
 })
 
+test_that("run_task salvages canonical terminal payloads when backend status degrades", {
+  blocked_until <- as.numeric(Sys.time()) + 60
+  mocked_response <- list(
+    status_code = 500L,
+    message = "{\"status\":\"Unknown\"}",
+    trace = "trace text",
+    trace_json = "{}",
+    thread_id = "thread-1",
+    stop_reason = "done",
+    fold_stats = list(fold_count = 0L),
+    completion_gate = list(completion_status = "complete"),
+    diagnostics = list(finalization_blocking_fields = character(0)),
+    tokens_used = 12L,
+    input_tokens = 7L,
+    output_tokens = 5L,
+    token_trace = list(),
+    plan_history = list(),
+    plan = list(),
+    field_status = list(),
+    budget_state = list(
+      tool_calls_used = 4L,
+      tool_calls_limit = 4L,
+      tool_calls_remaining = 0L,
+      search_calls_used = 4L,
+      search_calls_limit = 4L,
+      search_calls_remaining = 0L,
+      search_budget_exhausted = TRUE,
+      blocked_host_skip_events = 2L,
+      blocked_openwebpage_hosts = list("example.org" = blocked_until),
+      search_snippet_timeout_count = 1L,
+      search_snippet_timeout_circuit_open = TRUE
+    ),
+    tool_quality_events = list(list(
+      tool_name = "openwebpage",
+      is_error = TRUE,
+      error_type = "blocked",
+      host = "example.org",
+      quality_version = "v1"
+    )),
+    payload_integrity = list(
+      released_from = "final_payload",
+      canonical_available = TRUE,
+      canonical_matches_message = FALSE
+    ),
+    final_payload = list(status = "ok", count = 3L),
+    terminal_valid = TRUE,
+    terminal_payload_hash = "payload-hash",
+    phase_timings = list(),
+    json_repair = list(),
+    retrieval_metrics = list(),
+    candidate_resolution = list(),
+    finalization_status = list(),
+    orchestration_options = list(),
+    artifact_status = list(),
+    trace_metadata = list(),
+    config_snapshot = list(),
+    om_stats = list(),
+    observations = list(),
+    reflections = list()
+  )
+
+  testthat::local_mocked_bindings(
+    .resolve_runtime_inputs = function(...) {
+      list(runtime = list(config_search = list()), temporal = NULL, allow_rw = FALSE)
+    },
+    .validate_run_task = function(...) NULL,
+    .resolve_agent_from_config = function(...) list(),
+    .validate_temporal = function(...) NULL,
+    .resolve_orchestration_options_for_run_task = function(...) list(),
+    .acquire_rate_limit_token = function(...) NULL,
+    .with_runtime_wrappers = function(runtime, agent, fn) fn(),
+    .run_agent = function(...) mocked_response,
+    .adaptive_rate_record = function(...) NULL,
+    .extract_search_tier = function(...) "primp",
+    .extract_action_trace = function(...) {
+      list(
+        steps = list(),
+        ascii = "",
+        step_count = 0L,
+        omitted_steps = 0L,
+        plan_summary = character(0),
+        investigator_summary = character(0),
+        field_metrics = list(),
+        overall_summary = character(0),
+        langgraph_step_timings = list()
+      )
+    },
+    .aggregate_langgraph_timings = function(...) list(),
+    .package = "asa"
+  )
+
+  out <- run_task("prompt", output_format = "json")
+
+  expect_identical(out$status, "success")
+  expect_identical(out$execution$backend_status, "error")
+  expect_true(isTRUE(out$execution$terminal_payload_used))
+  expect_identical(out$parsed$status, "ok")
+  expect_match(out$message, "\"status\":\"ok\"")
+  expect_equal(as.integer(out$execution$search_calls_used), 4L)
+  expect_true(isTRUE(out$execution$search_budget_exhausted))
+  expect_equal(as.integer(out$execution$retrieval_block_summary$blocked_fetch_events), 1L)
+  expect_equal(as.integer(out$execution$retrieval_block_summary$blocked_host_skip_events), 2L)
+})
+
 test_that(".has_invoke_exception_fallback detects model invoke fallback repairs", {
   expect_true(
     asa:::.has_invoke_exception_fallback(
