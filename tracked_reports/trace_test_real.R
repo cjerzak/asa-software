@@ -19,7 +19,7 @@
 options(error=NULL)
 # install.packages( "~/Documents/asa-software/asa",repos = NULL, type = "source",force = F);
 # devtools::load_all('~/Documents/asa-software/asa')
-# devtools::install_github( 'cjerzak/asa-software/asa' )
+# devtools::install_github( 'cjerzak/asa-software/asa' );  asa::build_backend(force = TRUE, fix_browser = TRUE)
 # asa::build_backend(force = TRUE, fix_browser = TRUE)
 
 # Prefer local package source so trace runs validate current repo code.
@@ -178,8 +178,7 @@ orchestration_options_override <- if (use_fast_emulation) {
     finalizer = list(
       enabled = TRUE,
       mode = "enforce"
-    ),
-    policy_version = "2026-02-24-trace-benchmark-v2"
+    )
   )
 } else {
   list(
@@ -232,8 +231,6 @@ finalization_policy_override <- list(
   quality_gate_min_found_fields = 2L,
   quality_gate_require_invariant_ok = TRUE
 )
-
-query_templates_override <- NULL
 
 # Heartbeat lifecycle is managed by package internals:
 # asa:::.heartbeat_start/.heartbeat_set_phase/.heartbeat_stop/.with_heartbeat
@@ -344,7 +341,7 @@ attempt <- asa:::.with_heartbeat(
       source_policy = source_policy_override,
       retry_policy = retry_policy_override,
       finalization_policy = finalization_policy_override,
-      query_templates = query_templates_override,
+      query_templates = NULL,
       orchestration_options = orchestration_options_override,
       agent = initialize_agent(
         #backend = "gemini", model = "gemini-2.5-pro",
