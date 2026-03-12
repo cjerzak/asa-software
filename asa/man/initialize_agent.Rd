@@ -132,6 +132,7 @@ The following environment variables should be set based on your backend:
   \item Bedrock: \code{AWS_ACCESS_KEY_ID} + \code{AWS_SECRET_ACCESS_KEY}
     (optionally \code{AWS_DEFAULT_REGION}, defaults to "us-east-1")
   \item OpenRouter: \code{OPENROUTER_API_KEY}
+  \item Exo: no API key required (local server)
 }
 }
 

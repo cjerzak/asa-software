@@ -121,7 +121,8 @@ state. Legacy v1 checkpoints return the saved result without continuation.}
 \item{agent}{An initialized \code{asa_agent} object. If NULL, uses the current
 agent or creates a new one with specified backend/model.}
 
-\item{backend}{LLM backend if creating new agent: "openai", "groq", "xai", "gemini", "exo", "openrouter".}
+\item{backend}{LLM backend if creating new agent: "openai", "groq", "xai",
+"gemini", "exo", "openrouter", "anthropic", or "bedrock".}
 
 \item{model}{Model identifier if creating new agent.}
 

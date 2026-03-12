@@ -31,7 +31,8 @@ asa_config(
 )
 }
 \arguments{
-\item{backend}{LLM backend: "openai", "groq", "xai", "gemini", "exo", "openrouter"}
+\item{backend}{LLM backend: "openai", "groq", "xai", "gemini", "exo",
+"openrouter", "anthropic", or "bedrock"}
 
 \item{model}{Model identifier (e.g., "gpt-4.1-mini")}
 
@@ -107,7 +108,7 @@ config <- asa_config(
 )
 
 # Use with run_task
-result <- run_task(prompt, config = config)
+result <- run_task("Find recent AI breakthroughs", config = config)
 }
 
 }

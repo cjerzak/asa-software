@@ -7,9 +7,8 @@
 extract_agent_results(raw_output)
 }
 \arguments{
-\item{raw_output}{Raw output string from agent invocation (the trace field
-from an asa_response object), or a structured JSON trace (asa_trace_v1)
-from \code{asa_result$trace_json}}
+\item{raw_output}{Raw trace string from \code{asa_result$raw_output}, or a
+structured JSON trace (asa_trace_v1) from \code{asa_result$trace_json}}
 }
 \value{
 A list with components:
@@ -32,8 +31,13 @@ for post-processing agent traces.
 }
 \examples{
 \dontrun{
-response <- run_agent("Who is the president of France?", agent)
-extracted <- extract_agent_results(response$trace)
+result <- run_task("Who is the president of France?", agent = agent)
+trace <- if (!is.null(result$trace_json) && nzchar(result$trace_json)) {
+  result$trace_json
+} else {
+  result$raw_output
+}
+extracted <- extract_agent_results(trace)
 print(extracted$search_snippets)
 print(extracted$search_tiers)  # Shows which search tier was used
 }

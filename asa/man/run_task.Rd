@@ -42,7 +42,8 @@ run_task(
 \itemize{
   \item "text": Returns response text (default)
   \item "json": Parse response as JSON
-  \item "raw": Include raw Python response object for debugging
+  \item "raw": Include the raw Python response object for low-level debugging
+    in addition to the normal trace fields
   \item Character vector: Extract specific fields from response
 }}
 
@@ -189,8 +190,9 @@ agent tasks.
 This function provides the primary interface for running research tasks.
 For simple text responses, use \code{output_format = "text"}. For structured
 outputs, use \code{output_format = "json"} or specify field names to extract.
-For debugging with full underlying response access, use
-\code{output_format = "raw"}.
+Full trace information is returned via \code{raw_output} (and
+\code{trace_json} when available) for every invocation. For low-level
+debugging with full underlying response access, use \code{output_format = "raw"}.
 
 When temporal filtering is specified, the search tool's time filter is
 temporarily set for this task and restored afterward. Date hints (after/before)
@@ -218,13 +220,19 @@ result <- run_task(
 )
 print(result$parsed)
 
-# Raw output for debugging (includes full trace in asa_result)
+# Full traces are always included in asa_result
+result <- run_task(
+  prompt = "Search for information",
+  agent = agent
+)
+cat(result$raw_output)
+
+# Use output_format = "raw" only when you also need raw_response
 result <- run_task(
   prompt = "Search for information",
   output_format = "raw",
   agent = agent
 )
-cat(result$raw_output)  # View full agent trace
 str(result$raw_response)  # Inspect full underlying Python response
 
 # With temporal filtering (past year only)
@@ -251,7 +259,7 @@ config <- asa_config(
   model = "gpt-4.1-mini",
   temporal = temporal_options(time_filter = "y")
 )
-result <- run_task(prompt, config = config)
+result <- run_task("Find recent AI research breakthroughs", config = config)
 }
 
 }

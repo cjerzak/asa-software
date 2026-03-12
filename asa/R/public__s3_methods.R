@@ -8,7 +8,8 @@
 #' This provides a unified way to configure backend, model, search, temporal,
 #' and resource settings in a single object.
 #'
-#' @param backend LLM backend: "openai", "groq", "xai", "gemini", "exo", "openrouter"
+#' @param backend LLM backend: "openai", "groq", "xai", "gemini", "exo",
+#'   "openrouter", "anthropic", or "bedrock"
 #' @param model Model identifier (e.g., "gpt-4.1-mini")
 #' @param conda_env Conda environment name. Defaults to the package option
 #'   \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
@@ -56,7 +57,7 @@
 #' )
 #'
 #' # Use with run_task
-#' result <- run_task(prompt, config = config)
+#' result <- run_task("Find recent AI breakthroughs", config = config)
 #' }
 #'
 #' @seealso \code{\link{temporal_options}}, \code{\link{search_options}}
@@ -1217,8 +1218,11 @@ summary.asa_response <- function(object, show_trace = FALSE, ...) {
 #'   reason ("ok", "parsing_failed", "not_object", "missing_fields", "null_values",
 #'   "no_validation"), and missing (character vector of missing/invalid fields).
 #' @param execution Optional operational metadata list. Common fields include
-#'   \code{thread_id}, \code{stop_reason}, \code{status_code}, and tool budget
-#'   counters extracted from agent state.
+#'   \code{thread_id}, \code{stop_reason}, \code{status_code}, tool budget
+#'   counters, \code{fold_count}, and action/plan metadata extracted from agent
+#'   state. When created via \code{\link{run_task}}, selected execution fields
+#'   are also attached as top-level aliases such as \code{token_stats},
+#'   \code{fold_stats}, \code{plan}, and \code{action_ascii}.
 #'
 #' @return An object of class \code{asa_result}
 #'

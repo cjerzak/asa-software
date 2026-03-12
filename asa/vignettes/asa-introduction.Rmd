@@ -30,7 +30,7 @@ This architecture enables complex research tasks that require multiple searches 
 
 ### Key Features
 
-- **Multiple LLM Backends**: Support for OpenAI, Groq, and xAI
+- **Multiple LLM Backends**: Support for OpenAI, Groq, xAI, Gemini, Anthropic, Bedrock, OpenRouter, and Exo
 - **Web Search Tools**: DuckDuckGo search with 4-tier fallback system and Wikipedia lookup
 - **Memory Folding**: DeepAgent-style context compression for long conversations
 - **Structured Outputs**: Extract JSON or specific fields from agent responses
@@ -74,6 +74,14 @@ Sys.setenv(GROQ_API_KEY = "your-groq-api-key")
 
 # For xAI
 Sys.setenv(XAI_API_KEY = "your-xai-api-key")
+
+# Also supported:
+# Sys.setenv(GOOGLE_API_KEY = "your-gemini-api-key")      # or GEMINI_API_KEY
+# Sys.setenv(ANTHROPIC_API_KEY = "your-anthropic-api-key")
+# Sys.setenv(OPENROUTER_API_KEY = "your-openrouter-api-key")
+# Sys.setenv(AWS_ACCESS_KEY_ID = "...")
+# Sys.setenv(AWS_SECRET_ACCESS_KEY = "...")
+# Exo uses a local server and does not require an API key.
 ```
 
 ## Quick Start
@@ -240,6 +248,8 @@ results <- run_task_batch(
 
 ### LLM Backend Options
 
+asa supports `openai`, `groq`, `xai`, `gemini`, `anthropic`, `bedrock`, `openrouter`, and `exo`. The examples below show a few common setups:
+
 ```{r backend-options}
 # OpenAI - Best for complex reasoning tasks
 agent_openai <- initialize_agent(
@@ -256,7 +266,13 @@ agent_groq <- initialize_agent(
 # xAI - Alternative provider
 agent_xai <- initialize_agent(
   backend = "xai",
-  model = "grok-beta"
+  model = "grok-3"
+)
+
+# OpenRouter - provider/model format
+agent_openrouter <- initialize_agent(
+  backend = "openrouter",
+  model = "anthropic/claude-3-sonnet"
 )
 ```
 
@@ -356,7 +372,8 @@ message("New Tor exit IP: ", new_ip)
 
 ### Understanding Agent Output
 
-Each agent response contains rich trace data showing the agent's reasoning:
+Each agent response includes a text trace in `raw_output` and, when available,
+a structured JSON trace in `trace_json`:
 
 ```{r trace-data}
 # Run a query
@@ -366,20 +383,30 @@ result <- run_task(
   agent = agent
 )
 
-# The trace shows all agent steps
-cat(substr(result$raw_output, 1, 500))  # First 500 characters
+# Prefer the structured trace when available
+trace <- if (!is.null(result$trace_json) && nzchar(result$trace_json)) {
+  result$trace_json
+} else {
+  result$raw_output
+}
+cat(substr(trace, 1, 500))  # First 500 characters
 ```
 
 ### Extracting Search Results
 
 ```{r extract-search}
-response <- run_agent(
+result <- run_task(
   prompt = "What are the main causes of climate change?",
   agent = agent
 )
 
-# Extract structured data from the trace
-extracted <- extract_agent_results(response$trace)
+# Extract structured data from the preferred trace representation
+trace <- if (!is.null(result$trace_json) && nzchar(result$trace_json)) {
+  result$trace_json
+} else {
+  result$raw_output
+}
+extracted <- extract_agent_results(trace)
 
 # Search snippets from DuckDuckGo
 print(extracted$search_snippets)
@@ -396,13 +423,13 @@ print(extracted$wikipedia_snippets)
 Process multiple raw outputs efficiently:
 
 ```{r process-outputs}
-# After running a batch
-results_df <- run_task_batch(prompts, agent = agent)
+# After running a batch on a data frame
+results_df <- run_task_batch(
+  data.frame(prompt = prompts),
+  agent = agent
+)
 
-# Add raw output column for processing
-results_df$raw_output <- sapply(results, function(r) r$raw_output)
-
-# Process all outputs to extract metadata
+# raw_output is included automatically and can be processed directly
 processed_df <- process_outputs(results_df)
 
 # Now contains search_count, wiki_count, and any JSON fields

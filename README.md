@@ -54,7 +54,7 @@ print(result)
 | `configure_search()` | Configure search timing and retry behavior |
 | `extract_search_tiers()` | Get which search tier was used from traces |
 
-> **Note:** `run_agent()` has been removed. Use `run_task(..., output_format = "raw")` for full trace access.
+> **Note:** `run_agent()` has been removed. Use `run_task()` and inspect `result$trace_json` (preferred) or `result$raw_output` for traces. Reserve `output_format = "raw"` for low-level debugging with `result$raw_response`.
 
 ## Structured Output
 
@@ -81,11 +81,16 @@ result$parsed$nationality
 | `$status` | `"success"` or `"error"` |
 | `$elapsed_time` | Execution time in minutes |
 | `$raw_output` | Full agent trace for debugging |
+| `$trace_json` | Structured JSON trace when available; preferred for downstream parsing |
+| `$execution` | Operational metadata including `thread_id`, `stop_reason`, `status_code`, and `fold_count` |
+| `$raw_response` | Full underlying Python response object (only when `output_format = "raw"`) |
 | `$token_stats` | Token usage breakdown (input, output, fold) |
 | `$fold_stats` | Memory folding statistics |
 | `$action_ascii` | ASCII visualization of agent actions |
 | `$action_steps` | Structured list of agent action steps |
 | `$plan` | Agent's execution plan |
+
+Every `run_task()` result includes `raw_output`; `trace_json` is included when the backend emits a structured trace. `output_format = "raw"` additionally exposes the underlying `raw_response`.
 
 ## Template-Based Prompts
 
@@ -142,7 +147,8 @@ df <- data.frame(
   prompt = c("Capital of France?", "Capital of Japan?")
 )
 df <- asa::run_task_batch(df, agent = agent)
-# Returns df with added columns: response, status, elapsed_time
+# Returns df with added columns including response, status, elapsed_time,
+# trace_json, raw_output, and execution metadata
 ```
 
 ## Open-Ended Enumeration
@@ -347,7 +353,7 @@ config <- asa::asa_config(
 )
 
 # Use with run_task
-result <- asa::run_task(prompt, config = config)
+result <- asa::run_task("Find recent AI breakthroughs", config = config)
 
 # Use with run_task_batch / asa_enumerate
 results <- asa::run_task_batch(prompts, config = config, parallel = TRUE)
@@ -417,10 +423,10 @@ agent <- asa::initialize_agent(
 # Monitor folding activity in responses
 result <- asa::run_task(
   "Complex multi-step research query...",
-  output_format = "raw",  # Returns asa_result with trace and fold_count
+  output_format = "raw",  # Adds result$raw_response for low-level debugging
   agent = agent
 )
-print(result$fold_count)  # Number of times memory was folded
+print(result$execution$fold_count)  # Number of times memory was folded
 
 # Disable memory folding for short, single-turn tasks
 agent_simple <- asa::initialize_agent(

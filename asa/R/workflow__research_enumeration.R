@@ -70,7 +70,8 @@
 #'   state. Legacy v1 checkpoints return the saved result without continuation.
 #' @param agent An initialized \code{asa_agent} object. If NULL, uses the current
 #'   agent or creates a new one with specified backend/model.
-#' @param backend LLM backend if creating new agent: "openai", "groq", "xai", "gemini", "exo", "openrouter".
+#' @param backend LLM backend if creating new agent: "openai", "groq", "xai",
+#'   "gemini", "exo", "openrouter", "anthropic", or "bedrock".
 #' @param model Model identifier if creating new agent.
 #' @param conda_env Conda environment name. Defaults to the package option
 #'   \code{asa.default_conda_env} (or \code{"asa_env"} if unset).

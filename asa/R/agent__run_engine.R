@@ -376,7 +376,8 @@
 }
 
 # NOTE: run_agent() has been removed from public API.
-# Use run_task(..., output_format = "raw") instead for full trace access.
+# Use run_task() and inspect raw_output/trace_json for traces; use
+# output_format = "raw" only when you also need the underlying raw_response.
 # The internal .run_agent() function above is used by run_task() internally.
 
 #' Resolve Thread ID for Agent Invocation
@@ -1683,4 +1684,5 @@
 }
 
 # NOTE: run_agent_batch() has been removed from public API.
-# Use run_task_batch(..., output_format = "raw") instead for full trace access.
+# Use run_task_batch() for traces via raw_output/trace_json; reserve
+# output_format = "raw" for raw_response debugging.

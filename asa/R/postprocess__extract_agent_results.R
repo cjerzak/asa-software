@@ -4,9 +4,8 @@
 #' URLs, JSON data, and search tier information. This is the main function
 #' for post-processing agent traces.
 #'
-#' @param raw_output Raw output string from agent invocation (the trace field
-#'   from an asa_response object), or a structured JSON trace (asa_trace_v1)
-#'   from \code{asa_result$trace_json}
+#' @param raw_output Raw trace string from \code{asa_result$raw_output}, or a
+#'   structured JSON trace (asa_trace_v1) from \code{asa_result$trace_json}
 #'
 #' @return A list with components:
 #' \itemize{
@@ -23,8 +22,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' response <- run_agent("Who is the president of France?", agent)
-#' extracted <- extract_agent_results(response$trace)
+#' result <- run_task("Who is the president of France?", agent = agent)
+#' trace <- if (!is.null(result$trace_json) && nzchar(result$trace_json)) {
+#'   result$trace_json
+#' } else {
+#'   result$raw_output
+#' }
+#' extracted <- extract_agent_results(trace)
 #' print(extracted$search_snippets)
 #' print(extracted$search_tiers)  # Shows which search tier was used
 #' }
@@ -58,4 +62,3 @@ extract_agent_results <- function(raw_output) {
     search_tiers = extract_search_tiers(raw_output)
   )
 }
-
