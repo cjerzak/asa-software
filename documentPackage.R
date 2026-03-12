@@ -37,6 +37,7 @@ if (is.null(opts$package_path) || !nzchar(opts$package_path)) {
 }
 
 package_path <- normalizePath(opts$package_path, mustWork = TRUE)
+package_parent <- normalizePath(dirname(package_path), mustWork = TRUE)
 desc_path <- file.path(package_path, "DESCRIPTION")
 if (!file.exists(desc_path)) {
   stop("DESCRIPTION not found at: ", desc_path)
@@ -45,6 +46,7 @@ if (!file.exists(desc_path)) {
 desc <- read.dcf(desc_path)
 pkg <- desc[1, "Package"]
 ver <- desc[1, "Version"]
+pdf_path <- file.path(package_parent, paste0(pkg, ".pdf"))
 
 cat("Documenting package:", pkg, ver, "\n")
 cat("Path:", package_path, "\n")
@@ -64,8 +66,58 @@ if (isTRUE(opts$run_tests) && requireNamespace("testthat", quietly = TRUE)) {
 }
 
 if (isTRUE(opts$build_pdf)) {
-  # Build a PDF manual into the package's parent directory.
-  try(tools::Rd2pdf(package_path), silent = TRUE)
+  r_bin <- file.path(R.home("bin"), "R")
+  rd2pdf_args <- c(
+    "CMD", "Rd2pdf", "--force",
+    paste0("--output=", pdf_path),
+    package_path
+  )
+  rd2pdf_cmd <- paste(c(shQuote(r_bin), shQuote(rd2pdf_args)), collapse = " ")
+
+  if (file.exists(pdf_path) && !isTRUE(file.remove(pdf_path))) {
+    stop("Unable to remove existing PDF manual: ", pdf_path)
+  }
+
+  cat("Building PDF manual:", pdf_path, "\n")
+  rd2pdf_output <- tryCatch(
+    suppressWarnings(system2(
+      r_bin,
+      args = rd2pdf_args,
+      stdout = TRUE,
+      stderr = TRUE
+    )),
+    error = function(e) {
+      stop(
+        "Failed to run PDF manual build.\n",
+        "Command: ", rd2pdf_cmd, "\n",
+        "Output path: ", pdf_path, "\n",
+        "Error: ", conditionMessage(e),
+        call. = FALSE
+      )
+    }
+  )
+  rd2pdf_status <- attr(rd2pdf_output, "status")
+  if (is.null(rd2pdf_status)) {
+    rd2pdf_status <- 0L
+  }
+
+  if (rd2pdf_status != 0L || !file.exists(pdf_path)) {
+    stop(
+      paste0(
+        "PDF manual generation failed.\n",
+        "Command: ", rd2pdf_cmd, "\n",
+        "Output path: ", pdf_path, "\n",
+        if (length(rd2pdf_output) > 0) {
+          paste0("Output:\n", paste(rd2pdf_output, collapse = "\n"))
+        } else {
+          "No command output captured."
+        }
+      ),
+      call. = FALSE
+    )
+  }
+
+  cat("PDF manual created:", pdf_path, "\n")
 }
 
 if (isTRUE(opts$run_check)) {
