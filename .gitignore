@@ -21,7 +21,6 @@ docs/
 # R build/check artifacts
 *.Rcheck/
 asa_*.tar.gz
-asa.pdf
 
 # Distribution / packaging
 .Python
