@@ -14,7 +14,7 @@ Description: Provides an LLM-powered research agent for performing AI search tas
     capabilities via DuckDuckGo and Wikipedia. Implements DeepAgent-style memory
     folding for context management. The agent is built on 'LangGraph' and supports
     multiple LLM backends including 'OpenAI', 'Groq', 'xAI', 'Gemini',
-    'Anthropic' (Claude), and 'AWS Bedrock'.
+    'Anthropic' (Claude), 'AWS Bedrock', 'OpenRouter', and 'Exo'.
 URL: https://github.com/cjerzak/asa-software
 BugReports: https://github.com/cjerzak/asa-software/issues
 Depends: R (>= 4.0.0)

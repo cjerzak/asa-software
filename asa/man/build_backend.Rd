@@ -25,15 +25,15 @@ option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 \item{force}{If TRUE, delete and recreate the conda environment if it already exists.}
 
 \item{check_browser}{If TRUE, performs a best-effort check for a system Chrome/Chromium
-binary and `chromedriver`, warning when major versions are incompatible. Set to
+binary and \code{chromedriver}, warning when major versions are incompatible. Set to
 FALSE to skip this check.}
 
-\item{fix_browser}{If TRUE and `check_browser = TRUE`, attempt to download a
-matching chromedriver for the detected Chrome version and prepend it to `PATH`
-for the current R session. The driver is stored under `chromedriver_dir`.}
+\item{fix_browser}{If TRUE and \code{check_browser = TRUE}, attempt to download a
+matching chromedriver for the detected Chrome version and prepend it to \code{PATH}
+for the current R session. The driver is stored under \code{chromedriver_dir}.}
 
 \item{chromedriver_dir}{Optional directory to store downloaded chromedriver
-binaries. Defaults to `~/.asa/chromedriver` when `fix_browser = TRUE`.}
+binaries. Defaults to \code{~/.asa/chromedriver} when \code{fix_browser = TRUE}.}
 }
 \value{
 Invisibly returns NULL; called for side effects.
@@ -59,7 +59,7 @@ Python packages:
 }
 
 Python compatibility note:
-Current LangChain releases still import parts of `pydantic.v1`, which emits
+Current LangChain releases still import parts of \code{pydantic.v1}, which emits
 warnings on Python 3.14+. Prefer Python 3.12 (or 3.13) until upstream
 dependencies remove that compatibility layer.
 }

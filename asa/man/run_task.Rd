@@ -90,7 +90,7 @@ LangGraph state. Useful for resuming partially resolved schemas.}
 \item{budget_state}{Optional tool budget state seed passed into the LangGraph
 state (e.g., to resume prior progress).}
 
-\item{search_budget_limit}{Optional integer maximum number of `Search` tool
+\item{search_budget_limit}{Optional integer maximum number of \code{Search} tool
 calls for this run.}
 
 \item{unknown_after_searches}{Optional integer threshold after which unresolved

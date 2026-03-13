@@ -1,0 +1,127 @@
+diff --git a/asa/DESCRIPTION b/asa/DESCRIPTION
+index 5fce797..291c6f5 100644
+--- a/asa/DESCRIPTION
++++ b/asa/DESCRIPTION
+@@ -14,7 +14,7 @@ Description: Provides an LLM-powered research agent for performing AI search tas
+     capabilities via DuckDuckGo and Wikipedia. Implements DeepAgent-style memory
+     folding for context management. The agent is built on 'LangGraph' and supports
+     multiple LLM backends including 'OpenAI', 'Groq', 'xAI', 'Gemini',
+-    'Anthropic' (Claude), and 'AWS Bedrock'.
++    'Anthropic' (Claude), 'AWS Bedrock', 'OpenRouter', and 'Exo'.
+ URL: https://github.com/cjerzak/asa-software
+ BugReports: https://github.com/cjerzak/asa-software/issues
+ Depends: R (>= 4.0.0)
+diff --git a/asa/R/infra__build_backend.R b/asa/R/infra__build_backend.R
+index 7e7683a..332f62c 100644
+--- a/asa/R/infra__build_backend.R
++++ b/asa/R/infra__build_backend.R
+@@ -9,13 +9,13 @@
+ #' @param python_version Python version to use (default: "3.12")
+ #' @param force If TRUE, delete and recreate the conda environment if it already exists.
+ #' @param check_browser If TRUE, performs a best-effort check for a system Chrome/Chromium
+-#'   binary and `chromedriver`, warning when major versions are incompatible. Set to
++#'   binary and \code{chromedriver}, warning when major versions are incompatible. Set to
+ #'   FALSE to skip this check.
+-#' @param fix_browser If TRUE and `check_browser = TRUE`, attempt to download a
+-#'   matching chromedriver for the detected Chrome version and prepend it to `PATH`
+-#'   for the current R session. The driver is stored under `chromedriver_dir`.
++#' @param fix_browser If TRUE and \code{check_browser = TRUE}, attempt to download a
++#'   matching chromedriver for the detected Chrome version and prepend it to \code{PATH}
++#'   for the current R session. The driver is stored under \code{chromedriver_dir}.
+ #' @param chromedriver_dir Optional directory to store downloaded chromedriver
+-#'   binaries. Defaults to `~/.asa/chromedriver` when `fix_browser = TRUE`.
++#'   binaries. Defaults to \code{~/.asa/chromedriver} when \code{fix_browser = TRUE}.
+ #'
+ #' @details
+ #' This function creates a new conda environment and installs the following
+@@ -35,7 +35,7 @@
+ #' }
+ #'
+ #' Python compatibility note:
+-#' Current LangChain releases still import parts of `pydantic.v1`, which emits
++#' Current LangChain releases still import parts of \code{pydantic.v1}, which emits
+ #' warnings on Python 3.14+. Prefer Python 3.12 (or 3.13) until upstream
+ #' dependencies remove that compatibility layer.
+ #'
+@@ -644,7 +644,7 @@ build_backend <- function(conda_env = NULL,
+ #'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
+ #' @param conda Path to conda executable (default: "auto")
+ #' @param strict If TRUE, also require optional packages used for Tor control and
+-#'   stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).
++#'   stealth Chrome support (e.g., \code{stem}, \code{undetected_chromedriver}).
+ #'
+ #' @return A list with components:
+ #' \itemize{
+diff --git a/asa/R/workflow__run_task.R b/asa/R/workflow__run_task.R
+index da9688b..f3268dc 100644
+--- a/asa/R/workflow__run_task.R
++++ b/asa/R/workflow__run_task.R
+@@ -52,7 +52,7 @@
+ #'   LangGraph state. Useful for resuming partially resolved schemas.
+ #' @param budget_state Optional tool budget state seed passed into the LangGraph
+ #'   state (e.g., to resume prior progress).
+-#' @param search_budget_limit Optional integer maximum number of `Search` tool
++#' @param search_budget_limit Optional integer maximum number of \code{Search} tool
+ #'   calls for this run.
+ #' @param unknown_after_searches Optional integer threshold after which unresolved
+ #'   fields may be marked as unknown.
+diff --git a/asa/man/build_backend.Rd b/asa/man/build_backend.Rd
+index 7bfcbeb..1dc948b 100644
+--- a/asa/man/build_backend.Rd
++++ b/asa/man/build_backend.Rd
+@@ -25,15 +25,15 @@ option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
+ \item{force}{If TRUE, delete and recreate the conda environment if it already exists.}
+ 
+ \item{check_browser}{If TRUE, performs a best-effort check for a system Chrome/Chromium
+-binary and `chromedriver`, warning when major versions are incompatible. Set to
++binary and \code{chromedriver}, warning when major versions are incompatible. Set to
+ FALSE to skip this check.}
+ 
+-\item{fix_browser}{If TRUE and `check_browser = TRUE`, attempt to download a
+-matching chromedriver for the detected Chrome version and prepend it to `PATH`
+-for the current R session. The driver is stored under `chromedriver_dir`.}
++\item{fix_browser}{If TRUE and \code{check_browser = TRUE}, attempt to download a
++matching chromedriver for the detected Chrome version and prepend it to \code{PATH}
++for the current R session. The driver is stored under \code{chromedriver_dir}.}
+ 
+ \item{chromedriver_dir}{Optional directory to store downloaded chromedriver
+-binaries. Defaults to `~/.asa/chromedriver` when `fix_browser = TRUE`.}
++binaries. Defaults to \code{~/.asa/chromedriver} when \code{fix_browser = TRUE}.}
+ }
+ \value{
+ Invisibly returns NULL; called for side effects.
+@@ -59,7 +59,7 @@ Python packages:
+ }
+ 
+ Python compatibility note:
+-Current LangChain releases still import parts of `pydantic.v1`, which emits
++Current LangChain releases still import parts of \code{pydantic.v1}, which emits
+ warnings on Python 3.14+. Prefer Python 3.12 (or 3.13) until upstream
+ dependencies remove that compatibility layer.
+ }
+diff --git a/asa/man/check_backend.Rd b/asa/man/check_backend.Rd
+index 39b4d8a..c51587f 100644
+--- a/asa/man/check_backend.Rd
++++ b/asa/man/check_backend.Rd
+@@ -13,7 +13,7 @@ option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
+ \item{conda}{Path to conda executable (default: "auto")}
+ 
+ \item{strict}{If TRUE, also require optional packages used for Tor control and
+-stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).}
++stealth Chrome support (e.g., \code{stem}, \code{undetected_chromedriver}).}
+ }
+ \value{
+ A list with components:
+diff --git a/asa/man/run_task.Rd b/asa/man/run_task.Rd
+index 5b8bdd7..cca28c4 100644
+--- a/asa/man/run_task.Rd
++++ b/asa/man/run_task.Rd
+@@ -90,7 +90,7 @@ LangGraph state. Useful for resuming partially resolved schemas.}
+ \item{budget_state}{Optional tool budget state seed passed into the LangGraph
+ state (e.g., to resume prior progress).}
+ 
+-\item{search_budget_limit}{Optional integer maximum number of `Search` tool
++\item{search_budget_limit}{Optional integer maximum number of \code{Search} tool
+ calls for this run.}
+ 
+ \item{unknown_after_searches}{Optional integer threshold after which unresolved

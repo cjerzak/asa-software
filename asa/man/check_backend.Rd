@@ -13,7 +13,7 @@ option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).}
 \item{conda}{Path to conda executable (default: "auto")}
 
 \item{strict}{If TRUE, also require optional packages used for Tor control and
-stealth Chrome support (e.g., `stem`, `undetected_chromedriver`).}
+stealth Chrome support (e.g., \code{stem}, \code{undetected_chromedriver}).}
 }
 \value{
 A list with components:

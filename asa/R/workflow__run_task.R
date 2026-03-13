@@ -52,7 +52,7 @@
 #'   LangGraph state. Useful for resuming partially resolved schemas.
 #' @param budget_state Optional tool budget state seed passed into the LangGraph
 #'   state (e.g., to resume prior progress).
-#' @param search_budget_limit Optional integer maximum number of `Search` tool
+#' @param search_budget_limit Optional integer maximum number of \code{Search} tool
 #'   calls for this run.
 #' @param unknown_after_searches Optional integer threshold after which unresolved
 #'   fields may be marked as unknown.
