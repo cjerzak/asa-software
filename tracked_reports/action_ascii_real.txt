@@ -1,13 +1,13 @@
 AGENT ACTION MAP
 ================
-Steps captured: 20
-LangGraph timed steps: 12
+Steps captured: 25
+LangGraph timed steps: 16
 
 INVESTIGATOR SIGNALS
 --------------------
   +-- Summary
-      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
-      Source-backed found values: 2 (across 12 tracked fields)
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 3 (across 12 tracked fields)
       Unresolved focus: education_level, education_institution, education_field, class_back...
       Risk signal: LOW_EVIDENCE_FINAL_ANSWER
 
@@ -15,26 +15,26 @@ WHAT HAPPENED OVERALL
 ---------------------
   +-- Summary
       Human prompts: 1
-      AI turns: 8 tool-call turn(s), 1 answer turn(s)
-      Tool results: 15 total (Tool Search=8, Tool OpenWebpage...finding=2, Tool update_plan=1)
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 14 total (Tool Search=6, Tool OpenWebpage...finding=2, Tool update_plan=2)
       Structured terminal answer emitted
-      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
       Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=1)
 
 START
-  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
   +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
-      tools: 2.8674m (tok=0, n=5)
-      agent: 0.5526m (tok=27767, n=5)
-      finalize: 0.4228m (tok=17347, n=1)
-      planner: 0.1771m (tok=1887, n=1)
+      tools: 2.3999m (tok=0, n=7)
+      agent: 0.5723m (tok=39863, n=7)
+      planner: 0.1661m (tok=1814, n=1)
+      finalize: 0.1325m (tok=9537, n=1)
   +-- [LANGGRAPH] Slowest timed invocations
-      #09 tools: 1.1530m (tok=0)
-      #11 tools: 0.6012m (tok=0)
-      #03 tools: 0.5741m (tok=0)
-      #12 finalize: 0.4228m (tok=17347)
-      #07 tools: 0.3201m (tok=0)
-  +-- [TIMING] wall=3.8434m nodes=4.0199m delta=-0.1765m (overlap likely)
+      #09 tools: 1.0377m (tok=0)
+      #15 tools: 0.3879m (tok=0)
+      #03 tools: 0.3395m (tok=0)
+      #13 tools: 0.2385m (tok=0)
+      #05 tools: 0.2353m (tok=0)
+  +-- [TIMING] wall=3.1060m nodes=3.2709m delta=-0.1648m (overlap likely)
   +-- [01] Submitted task prompt
       by: Human
       tok: in=0 out=0 total=0
@@ -77,9 +77,9 @@ START
       detail: URL: https://www.vicepresidencia.gob.bo/spip.php?page=p...Mujeres - Sub Central Sé...
   +-- [09] Requested 3 tool calls (save_finding, Search)
       by: AI
-      tok: in=1663 out=263 total=1926
-      min: 0.2116m
-      detail: save_finding(finding=birth_year = 1982 (source:...lamen...aconi biografía lugar de ...
+      tok: in=1663 out=273 total=1936
+      min: 0.2029m
+      detail: save_finding(finding=birth_year = 1982 (source:...lamen...aconi biografía educación...
   +-- [10] Returned 2 results
       by: Tool save_finding
       tok: in=0 out=0 total=0
@@ -89,51 +89,76 @@ START
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...za </URL> __END_OF_SOURCE...
+      detail: __START_OF_SOURCE 1__ <CONTENT> RamonaMoyeCamaconiis on...le </URL> __END_OF_SOURCE...
   +-- [12] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=3324 out=84 total=3408
-      min: 0.0203m
-      detail: OpenWebpage(url=https://ftierra.org/index....ca-de-fortaleza)
+      tok: in=3221 out=125 total=3346
+      min: 0.0337m
+      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
   +-- [13] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: URL: https://ftierra.org/index.php/tema/derechos-indige...iticas-publicas] Quiénes ...
-  +-- [14] Requested 3 tool calls (Search)
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
+  +-- [14] Requested 2 tool calls (update_plan, Search)
       by: AI
-      tok: in=3929 out=351 total=4280
-      min: 0.0453m
-      detail: Search(query="Ramona Moye Camaconi" "lugar de nacimien....maconi" Directorio Legisl...
-  +-- [15] Returned 3 results
+      tok: in=3867 out=350 total=4217
+      min: 0.0417m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...maconi" biografía estudio...
+  +-- [15] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [16] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
-      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Mónica Camaño - ...tml </URL> __END_OF_SOURC...
-  +-- [16] Requested 1 tool call (OpenWebpage)
+      detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...lle </URL> __END_OF_SOURC...
+  +-- [17] Requested 1 tool call (OpenWebpage)
       by: AI
-      tok: in=6118 out=1333 total=7451
-      min: 0.1640m
-      detail: OpenWebpage(url=https://sisin.oep.org.bo/m...s/14455/detalle)
-  +-- [17] Returned result
+      tok: in=5491 out=472 total=5963
+      min: 0.0564m
+      detail: OpenWebpage(url=https://ftierra.org/index....ca-de-fortaleza)
+  +-- [18] Returned result
       by: Tool OpenWebpage
       tok: in=0 out=0 total=0
       min: n/a
-      detail: {"ok":false,"tool":"OpenWebpage","error_type":"request_...null,"attempt":2,"attempt...
-  +-- [18] Requested 3 tool calls (Search)
+      detail: URL: https://ftierra.org/index.php/derechos-indigenas-y...iticas-publicas] Quiénes ...
+  +-- [19] Requested 1 tool call (Search)
       by: AI
-      tok: in=9868 out=834 total=10702
-      min: 0.1114m
-      detail: Search(query=site:diputados.bo "Ramona Moye Camaconi") ...maconi" "formación académ...
-  +-- [19] Returned 3 results
+      tok: in=7068 out=501 total=7569
+      min: 0.0765m
+      detail: Search(query=site:diputados.bo "Ramona Moye Camaconi")
+  +-- [20] Returned result
       by: Tool Search
       tok: in=0 out=0 total=0
       min: n/a
       detail: __START_OF_SOURCE 1__ <CONTENT> View the profiles of pe...oni </URL> __END_OF_SOURC...
-  +-- [20] Produced structured answer
+  +-- [21] Requested 1 tool call (Search)
       by: AI
-      tok: in=13277 out=4070 total=17347
-      min: 0.4228m
+      tok: in=7193 out=500 total=7693
+      min: 0.0691m
+      detail: Search(query="Ramona Moye Camaconi" lugar de nacimient...)
+  +-- [22] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Ramona-Wikipedia...ca </URL> __END_OF_SOURCE...
+  +-- [23] Requested 1 tool call (Search)
+      by: AI
+      tok: in=8540 out=599 total=9139
+      min: 0.0920m
+      detail: Search(query=site:oep.org.bo "Ramona Moye Camaconi")
+  +-- [24] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Costa formalizó su denu...lle </URL> __END_OF_SOURC...
+  +-- [25] Produced structured answer
+      by: AI
+      tok: in=8252 out=1285 total=9537
+      min: 0.1325m
       flag: LOW_EVIDENCE_FINAL_ANSWER
-      detail: {"education_level":"Unknown","education_level_source":n...licy_demotion_unverified(...
+      detail: {"education_level":"Unknown","education_level_source":n...ry_blocked_no_candidates(...
 END

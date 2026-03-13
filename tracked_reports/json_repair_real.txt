@@ -1,6 +1,56 @@
 [
   {
     "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 6,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "lgbtq_status", "lgbtq_details", "confidence"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2321,
+        "normalized_length": 2321,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2321,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "e6101b8fd0e4ae2c0b877ffeaa4e563244c4d766cc1399e85d994d37322e3c63",
+    "output_text_hash": "0396462eb12069b2cc17268451bb86fd6e07a06d5400857dd977a6ccb1048b89",
+    "input_text_length": 2321,
+    "output_text_length": 2321,
+    "input_text_preview": "{ \"educational_attainment\": { \"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\":...",
+    "output_text_preview": "{\"educational_attainment\": {\"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\": n...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,47 +1 @@\n-{\n-  \"educational_attainment\": {\n-    \"education_level\": null,\n-    \"education_level_source\": null,\n-    \"education_level_confidence\": null,\n-    \"education_field\": null,\n-    \"education_field_source\": null,\n-    \"education_field_confidence\": null,\n-    \"education_institution\": null,\n-    \"education_institution_source\": null,\n-    \"education_institution_confidence\": null\n-  },\n-  \"prior_occupation\": {\n-    \"prior_occupation\": \"Presidenta de la Organización de Mujeres - Sub Central Sécure\",\n-    \"prior_occupation_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-    \"prior_occupation_confidence\": 1.0\n-  },\n-  \"birth_year\": {\n-    \"birth_year\": 1982,\n-    \"birth_year_source\": \"https://www.vicepresidencia.gob.bo/spip.php?page=parlamentario&id_parlamentario=609\",\n-    \"birth_year_confidence\": 1.0\n-  },\n-  \"birth_place\": {\n-    \"birth_place\": \"Tipnis\",\n-    \"birth_place_source\": \"https://sisin.oep.org.bo/medios_digitales/34363/detalle\",\n-    \"birth_place_confidence\": 0.9\n-  },\n-  \"disability_status\": {\n-    \"disability_status\": \"Unknown\",\n-    \"disability_status_source\": null,\n-    \"disability_status_confidence\": null\n-  },\n-  \"sexual_orientation\": {\n-    \"lgbtq_status\": \"Unknown\",\n-    \"lgbtq_status_source\": null,\n-    \"lgbtq_status_confidence\": null,\n-    \"lgbtq_details\": null,",
+    "event_id": "500f2a06f5424f188536276ef86f00ce",
+    "ts_utc": "2026-03-13T12:52:53.152717Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
     "repair_reason": "field_status_canonical",
     "repair_variant": "canonical_overwrite",
     "preserved_model_values_count": 0,
@@ -10,8 +60,8 @@
     "fallback_on_failure": true,
     "schema_source": "explicit",
     "context": "finalize",
-    "event_id": "384465ed82904889a0ff26bddabce076",
-    "ts_utc": "2026-03-12T01:54:59.051578Z",
+    "event_id": "629eb108fba04843a5e75eab34a75b28",
+    "ts_utc": "2026-03-13T12:52:53.152744Z",
     "event_schema_version": "json_repair_event_v2",
     "trigger_context": "finalize",
     "outcome_status": "applied",
