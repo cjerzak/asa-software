@@ -25,7 +25,8 @@ Imports:
     reticulate (>= 1.28),
     jsonlite,
     rlang,
-    digest
+    digest,
+    yaml
 Suggests:
     testthat (>= 3.0.0),
     knitr,

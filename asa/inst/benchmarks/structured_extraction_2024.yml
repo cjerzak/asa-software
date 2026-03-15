@@ -1,0 +1,38 @@
+name: StructuredExtraction2024
+version: "1.0"
+description: Stable structured extraction benchmark for field-level deterministic scoring.
+citation: "Jerzak (2026). ASA Benchmarks."
+metadata:
+  domain: entity_extraction
+  task_family: structured_output
+tasks:
+  - id: ada_lovelace_profile
+    prompt: |
+      Return only the requested fields for Ada Lovelace.
+      Fields: birth_year, field_of_study
+    output_format:
+      - birth_year
+      - field_of_study
+    expected:
+      birth_year: "1815"
+      field_of_study: "math"
+    match: fields
+    field_matchers:
+      birth_year: exact
+      field_of_study: contains
+    category: biography
+  - id: marie_curie_profile
+    prompt: |
+      Return only the requested fields for Marie Curie.
+      Fields: birth_year, nationality
+    output_format:
+      - birth_year
+      - nationality
+    expected:
+      birth_year: "1867"
+      nationality: "Polish"
+    match: fields
+    field_matchers:
+      birth_year: exact
+      nationality: contains
+    category: biography

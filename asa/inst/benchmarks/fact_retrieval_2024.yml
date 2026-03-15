@@ -1,0 +1,26 @@
+name: FactRetrieval2024
+version: "1.0"
+description: Stable fact-retrieval benchmark for deterministic text scoring.
+citation: "Jerzak (2026). ASA Benchmarks."
+metadata:
+  domain: general_knowledge
+  task_family: text_retrieval
+tasks:
+  - id: r_release
+    prompt: "In what year was R first released? Return the year only."
+    output_format: text
+    expected: "1993"
+    match: exact
+    category: software_history
+  - id: pearl_book
+    prompt: "Who wrote 'Causal Inference in Statistics: A Primer'? Return the surname only."
+    output_format: text
+    expected: "Pearl"
+    match: contains
+    category: academic_attribution
+  - id: berlin_country
+    prompt: "Berlin is the capital of which country? Return the country name only."
+    output_format: text
+    expected: "Germany"
+    match: contains
+    category: geography

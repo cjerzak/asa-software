@@ -1831,3 +1831,214 @@ summary.asa_audit_result <- function(object, ...) {
 as.data.frame.asa_audit_result <- function(x, ...) {
   x$data
 }
+
+#' Constructor for asa_evaluation_result Objects
+#'
+#' Creates an S3 object representing the result of an agent evaluation run.
+#'
+#' @param benchmark Benchmark object used for the evaluation
+#' @param task_results data.frame with one row per task execution
+#' @param run_summaries data.frame with one row per evaluation run
+#' @param metrics Aggregate evaluation metrics
+#' @param agent_spec Named list describing the evaluated agent
+#' @param config_snapshot Configuration snapshot used during evaluation
+#' @param outputs Optional named list of retained raw outputs
+#' @param elapsed_time Total elapsed evaluation time in minutes
+#'
+#' @return An object of class \code{asa_evaluation_result}
+#'
+#' @export
+asa_evaluation_result <- function(benchmark,
+                                  task_results,
+                                  run_summaries,
+                                  metrics,
+                                  agent_spec,
+                                  config_snapshot,
+                                  outputs = NULL,
+                                  elapsed_time = NA_real_) {
+  structure(
+    list(
+      benchmark = benchmark,
+      task_results = task_results,
+      run_summaries = run_summaries,
+      metrics = metrics,
+      agent_spec = agent_spec,
+      config_snapshot = config_snapshot,
+      outputs = outputs,
+      elapsed_time = elapsed_time,
+      created_at = Sys.time()
+    ),
+    class = "asa_evaluation_result"
+  )
+}
+
+#' Print Method for asa_benchmark Objects
+#'
+#' @param x An asa_benchmark object
+#' @param ... Additional arguments (ignored)
+#'
+#' @return Invisibly returns the benchmark object
+#'
+#' @method print asa_benchmark
+#' @export
+print.asa_benchmark <- function(x, ...) {
+  task_count <- length(x$tasks %||% list())
+  categories <- unique(vapply(x$tasks %||% list(), function(task) {
+    as.character(task$category %||% "uncategorized")
+  }, character(1)))
+
+  cat("ASA Benchmark\n")
+  cat("=============\n")
+  cat("Name:        ", x$name, "\n", sep = "")
+  cat("Version:     ", x$version %||% "1.0", "\n", sep = "")
+  cat("Tasks:       ", task_count, "\n", sep = "")
+  cat("Categories:  ", paste(sort(categories), collapse = ", "), "\n", sep = "")
+  if (nzchar(x$description %||% "")) {
+    cat("Description: ", truncate_string(x$description, 80), "\n", sep = "")
+  }
+  if (nzchar(x$citation %||% "")) {
+    cat("Citation:    ", truncate_string(x$citation, 80), "\n", sep = "")
+  }
+
+  invisible(x)
+}
+
+#' Summary Method for asa_benchmark Objects
+#'
+#' @param object An asa_benchmark object
+#' @param ... Additional arguments (ignored)
+#'
+#' @return Invisibly returns a benchmark summary list
+#'
+#' @method summary asa_benchmark
+#' @export
+summary.asa_benchmark <- function(object, ...) {
+  task_count <- length(object$tasks %||% list())
+  categories <- unique(vapply(object$tasks %||% list(), function(task) {
+    as.character(task$category %||% "uncategorized")
+  }, character(1)))
+  matchers <- unique(vapply(object$tasks %||% list(), function(task) {
+    as.character(task$match %||% "exact")
+  }, character(1)))
+
+  cat("Benchmark Summary\n")
+  cat("-----------------\n")
+  cat("Name: ", object$name, "\n", sep = "")
+  cat("Version: ", object$version %||% "1.0", "\n", sep = "")
+  cat("Tasks: ", task_count, "\n", sep = "")
+  cat("Matchers: ", paste(sort(matchers), collapse = ", "), "\n", sep = "")
+  cat("Categories: ", paste(sort(categories), collapse = ", "), "\n", sep = "")
+
+  invisible(list(
+    name = object$name,
+    version = object$version %||% "1.0",
+    task_count = task_count,
+    categories = sort(categories),
+    matchers = sort(matchers),
+    metadata = object$metadata %||% list()
+  ))
+}
+
+#' Print Method for asa_evaluation_result Objects
+#'
+#' @param x An asa_evaluation_result object
+#' @param ... Additional arguments (ignored)
+#'
+#' @return Invisibly returns the evaluation result
+#'
+#' @method print asa_evaluation_result
+#' @export
+print.asa_evaluation_result <- function(x, ...) {
+  metrics <- x$metrics %||% list()
+  benchmark <- x$benchmark %||% list()
+
+  cat("ASA Evaluation Result\n")
+  cat("=====================\n")
+  cat("Benchmark:   ", benchmark$name %||% "[unknown]", "\n", sep = "")
+  cat("Version:     ", benchmark$version %||% "1.0", "\n", sep = "")
+  cat("Agent:       ", x$agent_spec$model %||% "[unknown]", " (", x$agent_spec$backend %||% "unknown", ")\n", sep = "")
+  cat("Runs:        ", metrics$runs %||% 0L, "\n", sep = "")
+  cat("Evaluations: ", metrics$evaluations %||% 0L, "\n", sep = "")
+  cat("Pass Rate:   ", if (is.finite(metrics$pass_rate)) sprintf("%.1f%%", metrics$pass_rate * 100) else "N/A", "\n", sep = "")
+  cat("Mean Score:  ", if (is.finite(metrics$mean_task_score)) sprintf("%.3f", metrics$mean_task_score) else "N/A", "\n", sep = "")
+  cat("Error Rate:  ", if (is.finite(metrics$error_rate)) sprintf("%.1f%%", metrics$error_rate * 100) else "N/A", "\n", sep = "")
+  cat("Elapsed:     ", format_duration(x$elapsed_time %||% NA_real_), "\n", sep = "")
+
+  if (is.finite(metrics$latency_seconds_mean %||% NA_real_)) {
+    cat("\nLatency:\n")
+    cat("  Mean: ", sprintf("%.2fs", metrics$latency_seconds_mean), "\n", sep = "")
+    cat("  p50:  ", sprintf("%.2fs", metrics$latency_seconds_p50 %||% NA_real_), "\n", sep = "")
+    cat("  p95:  ", sprintf("%.2fs", metrics$latency_seconds_p95 %||% NA_real_), "\n", sep = "")
+  }
+
+  if (is.finite(metrics$tokens_used_total %||% NA_real_)) {
+    cat("\nTokens:\n")
+    cat("  Total: ", metrics$tokens_used_total, "\n", sep = "")
+    cat("  Mean:  ", if (is.finite(metrics$tokens_used_mean %||% NA_real_)) round(metrics$tokens_used_mean, 1) else "N/A", "\n", sep = "")
+  }
+
+  invisible(x)
+}
+
+#' Summary Method for asa_evaluation_result Objects
+#'
+#' @param object An asa_evaluation_result object
+#' @param ... Additional arguments (ignored)
+#'
+#' @return Invisibly returns an evaluation summary list
+#'
+#' @method summary asa_evaluation_result
+#' @export
+summary.asa_evaluation_result <- function(object, ...) {
+  metrics <- object$metrics %||% list()
+  by_category <- metrics$pass_rate_by_category
+
+  cat("Evaluation Summary\n")
+  cat("------------------\n")
+  cat("Benchmark: ", object$benchmark$name %||% "[unknown]", "\n", sep = "")
+  cat("Agent: ", object$agent_spec$model %||% "[unknown]", " (", object$agent_spec$backend %||% "unknown", ")\n", sep = "")
+  cat("Runs: ", metrics$runs %||% 0L, "\n", sep = "")
+  cat("Pass Rate: ", if (is.finite(metrics$pass_rate)) sprintf("%.1f%%", metrics$pass_rate * 100) else "N/A", "\n", sep = "")
+  cat("Mean Task Score: ", if (is.finite(metrics$mean_task_score)) sprintf("%.3f", metrics$mean_task_score) else "N/A", "\n", sep = "")
+  cat("Error Rate: ", if (is.finite(metrics$error_rate)) sprintf("%.1f%%", metrics$error_rate * 100) else "N/A", "\n", sep = "")
+
+  if (is.data.frame(by_category) && nrow(by_category) > 0) {
+    cat("\nBy Category:\n")
+    for (i in seq_len(nrow(by_category))) {
+      cat(
+        "  ",
+        by_category$category[[i]],
+        ": ",
+        sprintf("%.1f%%", by_category$pass_rate[[i]] * 100),
+        " (n=",
+        by_category$n[[i]],
+        ")\n",
+        sep = ""
+      )
+    }
+  }
+
+  invisible(list(
+    benchmark = object$benchmark$name %||% "[unknown]",
+    runs = metrics$runs %||% 0L,
+    evaluations = metrics$evaluations %||% 0L,
+    pass_rate = metrics$pass_rate %||% NA_real_,
+    mean_task_score = metrics$mean_task_score %||% NA_real_,
+    error_rate = metrics$error_rate %||% NA_real_,
+    latency_seconds_mean = metrics$latency_seconds_mean %||% NA_real_,
+    tokens_used_total = metrics$tokens_used_total %||% NA_integer_
+  ))
+}
+
+#' Convert asa_evaluation_result to Data Frame
+#'
+#' @param x An asa_evaluation_result object
+#' @param ... Additional arguments (ignored)
+#'
+#' @return The per-task evaluation records as a data.frame
+#'
+#' @method as.data.frame asa_evaluation_result
+#' @export
+as.data.frame.asa_evaluation_result <- function(x, ...) {
+  x$task_results
+}
