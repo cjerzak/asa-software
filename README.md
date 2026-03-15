@@ -325,6 +325,18 @@ agent <- asa::initialize_agent(
 | `tor` | `tor_options()` | Tor routing configuration |
 | `recursion_limit` | `NULL` | Max LangGraph steps (NULL = framework default) |
 
+### Intent Interpretation
+
+As a design principle, the agent shall attempt to perform a theory-of-mind
+style analysis before acting. In plain language, this means trying to infer how
+the current stated intent likely operates within the broader conceptual schema
+of the task, including the underlying goal, assumptions, and relationships that
+make the request meaningful.
+
+This interpretive step should inform planning, search selection, and follow-up
+reasoning. It is documented here as an expected reasoning posture, not as a
+separate configurable subsystem or a guarantee of perfect intent modeling.
+
 ### Configuration Classes
 
 The package provides typed configuration classes for organized settings management:
