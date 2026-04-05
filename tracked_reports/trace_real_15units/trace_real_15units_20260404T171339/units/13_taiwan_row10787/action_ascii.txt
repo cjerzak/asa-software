@@ -1,0 +1,134 @@
+AGENT ACTION MAP
+================
+Steps captured: 19
+LangGraph timed steps: 10
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 4 found, 6 unknown, 0 pending (10 core fields)
+      Source-backed found values: 4 (across 12 tracked fields)
+      Unresolved focus: prior_occupation, class_background, disability_status, birth_place ...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 7 tool-call turn(s), 1 answer turn(s)
+      Tool results: 13 total (Tool save_finding=5, Tool OpenW...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      finalize: 3.0019m (tok=0, n=1)
+      tools: 2.0451m (tok=0, n=4)
+      agent: 0.3463m (tok=17646, n=4)
+      planner: 0.1764m (tok=1913, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #10 finalize: 3.0019m (tok=0)
+      #07 tools: 0.7733m (tok=0)
+      #09 tools: 0.7180m (tok=0)
+      #05 tools: 0.5413m (tok=0)
+      #02 agent: 0.2134m (tok=1941)
+  +-- [TIMING] wall=5.3938m nodes=5.5697m delta=-0.1760m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Shyh-Fang Liu)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Liu Shyh-fang Summary: Liu Shyh-fang (or Liu Shih-fang; Chinese: 劉世芳; pinyin:...
+  +-- [05] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1959 (source:.../Liu_...iography Taiwan Legislati...
+  +-- [06] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1959 (source: https:/...ipedia.org/wiki/Liu_Shyh-...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ^ "TheLegislativeYuanRe...03 </URL> __END_OF_SOURCE...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.igf.org.tw/twi...r/shyh-fang-liu)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.igf.org.tw/twigf2020/2020_speaker/shyh...g.tw/twigf2020/] / 與談人｜Sp...
+  +-- [10] Requested 4 tool calls (save_finding, Search)
+      by: AI
+      tok: in=1657 out=284 total=1941
+      min: 0.2134m
+      detail: save_finding(finding=education_level = Master's.../shyh... Shyh-fang birth place Ta...
+  +-- [11] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = Master's degree ...20/2020_speaker/shyh-fang...
+  +-- [12] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuS...603 </URL> __END_OF_SOURC...
+  +-- [13] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2230 out=256 total=2486
+      min: 0.0393m
+      detail: OpenWebpage(url=https://dbpedia.org/page/Liu_Shyh-fang)
+  +-- [14] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://dbpedia.org/page/Liu_Shyh-fang Final URL: ...at=text%2Fhtml] Embedded:...
+  +-- [15] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4944 out=618 total=5562
+      min: 0.0625m
+      detail: Search(query=劉世芳 經歷 工程師 (Liu Shyh-fang experience engi...)
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuS...ang </URL> __END_OF_SOURC...
+  +-- [17] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=7570 out=87 total=7657
+      min: 0.0312m
+      detail: OpenWebpage(url=https://en.wikipedia.org/wiki/Liu_Shyh-fang)
+  +-- [18] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Liu_Shyh-fang Final ...] Log in Personal tools D...
+  +-- [19] Produced structured answer
+      by: AI
+      tok: in=0 out=0 total=0
+      min: 3.0019m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Master's/Professional","education_l...ry_blocked_no_candidates(...
+END

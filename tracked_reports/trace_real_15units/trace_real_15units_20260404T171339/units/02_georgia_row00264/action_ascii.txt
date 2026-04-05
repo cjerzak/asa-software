@@ -1,0 +1,204 @@
+AGENT ACTION MAP
+================
+Steps captured: 33
+LangGraph timed steps: 26
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 13 tool-call turn(s), 1 answer turn(s)
+      Tool results: 21 total (Tool Search=8, Tool save_findin...date_plan=3, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 4.0462m (tok=0, n=12)
+      agent: 0.8979m (tok=80762, n=12)
+      planner: 0.1551m (tok=1643, n=1)
+      finalize: 0.1501m (tok=15043, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #19 tools: 1.2128m (tok=0)
+      #25 tools: 0.7899m (tok=0)
+      #05 tools: 0.6057m (tok=0)
+      #15 tools: 0.4733m (tok=0)
+      #07 tools: 0.4210m (tok=0)
+  +-- [TIMING] wall=5.0969m nodes=5.2493m delta=-0.1524m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Nona Mamulashvili)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Nona Mamulashvili Summary: Nona Mamulashvili (Georgian: ნონა მამულაშვილი; bor...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=1665 out=248 total=1913
+      min: 0.1840m
+      detail: save_finding(finding=birth_year = 1977 (source:...a_Mam...li biography education oc...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1977 (source: https:/...ia.org/wiki/Nona_Mamulash...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgi...low </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2223 out=190 total=2413
+      min: 0.0429m
+      detail: OpenWebpage(url=https://www.hks.harvard.ed...na-mamulashvili)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.hks.harvard.edu/about/nona-mamulashvil...Executive Education Admis...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4111 out=173 total=4284
+      min: 0.0427m
+      detail: OpenWebpage(url=https://parliament.ge/en/p.../2499/biography)
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://parliament.ge/en/parliament-members/2499/b...n/legislation/reglament] ...
+  +-- [12] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4754 out=67 total=4821
+      min: 0.0341m
+      detail: OpenWebpage(url=https://www.asiaglobalinst...na-mamulashvili)
+  +-- [13] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.asiaglobalinstitute.hku.hk/agf/fellows...fied, title:one moment, p...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4955 out=86 total=5041
+      min: 0.0212m
+      detail: OpenWebpage(url=https://cbw.ge/business/no...-program-fellow)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://cbw.ge/business/nona-mamulashvili-chairwom... https://cbw.ge/category/...
+  +-- [16] Requested 1 tool call (Search)
+      by: AI
+      tok: in=5638 out=124 total=5762
+      min: 0.0376m
+      detail: Search(query=Nona Mamulashvili LinkedIn education PhD ...)
+  +-- [17] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgi...ili </URL> __END_OF_SOURC...
+  +-- [18] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=5610 out=521 total=6131
+      min: 0.0655m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que....ge "Nona Mamulashvili" b...
+  +-- [19] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ნაჩვენებია 0 შედეგი, სა...eba </URL> __END_OF_SOURC...
+  +-- [21] Requested 1 tool call (Search)
+      by: AI
+      tok: in=6018 out=569 total=6587
+      min: 0.0636m
+      detail: Search(query=ნონა მამულაშვილი ბიოგრაფია დაბადების ადგილი)
+  +-- [22] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> სქოლიო „ქართველი პარლამ...ml </URL> __END_OF_SOURCE...
+  +-- [23] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7017 out=580 total=7597
+      min: 0.0656m
+      detail: Search(query=site:declaration.gov.ge "ნონა მამულაშვილი")
+  +-- [24] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Declaration. Feb.../en </URL> __END_OF_SOURC...
+  +-- [25] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=9500 out=1143 total=10643
+      min: 0.1243m
+      detail: save_finding(finding=education_level = PhD (sou...a-mam... მამულაშვილი დაბადების ად...
+  +-- [26] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = PhD (source: htt...bout/people/nona-mamulash...
+  +-- [27] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ნონამამულაშვილს საპარლა...ct </URL> __END_OF_SOURCE...
+  +-- [28] Requested 1 tool call (Search)
+      by: AI
+      tok: in=11309 out=1287 total=12596
+      min: 0.1259m
+      detail: Search(query=ნონა მამულაშვილი დაბადების ადგილი site:np...)
+  +-- [29] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> საქართველოს პარლამენტი,...32 </URL> __END_OF_SOURCE...
+  +-- [30] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=12195 out=779 total=12974
+      min: 0.0904m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...n.gov.ge "ნონა მამულაშვილ...
+  +-- [31] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [32] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: ThaiRestaurantTh...MA </URL> __END_OF_SOURCE...
+  +-- [33] Produced structured answer
+      by: AI
+      tok: in=13476 out=1567 total=15043
+      min: 0.1501m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...r_below_policy_threshold(...
+END

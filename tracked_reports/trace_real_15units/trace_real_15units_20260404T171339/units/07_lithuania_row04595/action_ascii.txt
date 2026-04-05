@@ -1,0 +1,180 @@
+AGENT ACTION MAP
+================
+Steps captured: 28
+LangGraph timed steps: 18
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 7 found, 3 unknown, 0 pending (10 core fields)
+      Source-backed found values: 7 (across 12 tracked fields)
+      Unresolved focus: disability_status, lgbtq_status, lgbtq_details
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 25 total (Tool save_finding=9, Tool Searc...te_plan=4, Tool OpenWebpage=3)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (3 completed, 0 in_progress, 1 pending)
+      Anomalies: 3 flagged step(s) (EMPTY_RESULT=3); diagnost..._RESULT=2, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (3 completed, 0 in_progress, 1 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 4.0513m (tok=0, n=8)
+      agent: 0.6445m (tok=53270, n=8)
+      finalize: 0.2808m (tok=20692, n=1)
+      planner: 0.1654m (tok=1678, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #17 tools: 1.4840m (tok=0)
+      #03 tools: 0.7621m (tok=0)
+      #11 tools: 0.6393m (tok=0)
+      #15 tools: 0.5598m (tok=0)
+      #09 tools: 0.3425m (tok=0)
+  +-- [TIMING] wall=4.9775m nodes=5.1419m delta=-0.1644m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...vičius Lithuania politici...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> JustinasUrbanavičiusŠį ...ius </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://lt.wikipedia.org/w...as_Urbanavičius)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://lt.wikipedia.org/wiki/Justinas_Urbanavičiu...us] Asmeniniai įrankiai P...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1663 out=267 total=1930
+      min: 0.2074m
+      detail: OpenWebpage(url=https://www.lrs.lt/sip/por...&p_asm_id=53910)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2..., captcha, cloudflare, bl...
+  +-- [09] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3153 out=263 total=3416
+      min: 0.0395m
+      detail: Search(query=Justinas Urbanavičius VRK biografija 2020)
+  +-- [10] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Lietuvos krikščionių de...tml </URL> __END_OF_SOURC...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3587 out=90 total=3677
+      min: 0.0208m
+      detail: OpenWebpage(url=https://www.vrk.lt/statini...Biografija.html)
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.vrk.lt/statiniai/puslapiai/rinkimai/44...d cookies, title:just a m...
+  +-- [13] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=4157 out=592 total=4749
+      min: 0.0572m
+      detail: save_finding(finding=birth_year = 1982 (source:...s_Urb...vičius išsilavinimas prof...
+  +-- [14] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...rg/wiki/Justinas_Urbanavi...
+  +-- [15] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> BiografijaGimė 1982 m. ...ml </URL> __END_OF_SOURCE...
+  +-- [16] Requested 7 tool calls (update_plan, save_finding, Search)
+      by: AI
+      tok: in=6292 out=989 total=7281
+      min: 0.0956m
+      detail: update_plan(status=in_progress, step_id=2) | save_findi...stinas Urbanavičius" biog...
+  +-- [17] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [18] Returned 5 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: education_level = Master's degree ...rg/wiki/Justinas_Urbanavi...
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Kab. I-420 Tel. (8 5) 2...=9 </URL> __END_OF_SOURCE...
+  +-- [20] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=8924 out=599 total=9523
+      min: 0.0729m
+      detail: update_plan(status=in_progress, step_id=3) | Search(que...vičius neįgalumas sveikat...
+  +-- [21] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 3 updated to 'in_progress'
+  +-- [22] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Intended as a companion...126 </URL> __END_OF_SOURC...
+  +-- [23] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=9903 out=407 total=10310
+      min: 0.0549m
+      detail: update_plan(status=in_progress, step_id=3) | Search(que...vičius "negalia" OR "neįg...
+  +-- [24] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 3 updated to 'in_progress'
+  +-- [25] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Projektas „Sveik...RU </URL> __END_OF_SOURCE...
+  +-- [26] Requested 3 tool calls (Search)
+      by: AI
+      tok: in=11511 out=873 total=12384
+      min: 0.0962m
+      detail: Search(query=Justinas Urbanavičius "seksualinė orienta....vičius "sveikatos būklė" ...
+  +-- [27] Returned 3 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: LGBTteisės. Gėju...je </URL> __END_OF_SOURCE...
+  +-- [28] Produced structured answer
+      by: AI
+      tok: in=17218 out=3474 total=20692
+      min: 0.2808m
+      detail: {"education_level":"Master's/Professional","education_l...isability or LGBTQ identi...
+END

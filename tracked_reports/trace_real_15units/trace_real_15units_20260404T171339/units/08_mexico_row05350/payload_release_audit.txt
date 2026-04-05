@@ -1,0 +1,18 @@
+{
+  "unit_key": "08_mexico_row05350",
+  "generated_at_utc": "2026-04-04T22:20:56Z",
+  "canonical_artifact_id": "839659edb1128d599ec67ad9c2179d4cc9674593638020fd945fa94a72ceaac2",
+  "released_artifact_id": "d174efaaf786fe01838621ca38180a2ebd771b75a23d77ac0c95b2ac1e0b7be8",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "d174efaaf786fe01838621ca38180a2ebd771b75a23d77ac0c95b2ac1e0b7be8",
+  "released_byte_hash": "d174efaaf786fe01838621ca38180a2ebd771b75a23d77ac0c95b2ac1e0b7be8",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "0fe4bb15c7dfdec0a924ddd7b72a48f38efa0831bd5e85963b266b459b9aec6d",
+  "released_semantic_hash": "0fe4bb15c7dfdec0a924ddd7b72a48f38efa0831bd5e85963b266b459b9aec6d",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": ["missing_keys", "field_status_canonical"]
+}

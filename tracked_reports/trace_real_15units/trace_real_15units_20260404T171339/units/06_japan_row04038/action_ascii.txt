@@ -1,0 +1,153 @@
+AGENT ACTION MAP
+================
+Steps captured: 23
+LangGraph timed steps: 18
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 7 found, 3 unknown, 0 pending (10 core fields)
+      Source-backed found values: 7 (across 12 tracked fields)
+      Unresolved focus: disability_status, lgbtq_status, lgbtq_details
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 16 total (Tool save_finding=7, Tool Searc...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (EMPTY_RESULT=1); diagnost..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 1.6425m (tok=0, n=8)
+      agent: 0.5274m (tok=51082, n=8)
+      finalize: 0.2826m (tok=12959, n=1)
+      planner: 0.1580m (tok=1834, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #07 tools: 0.8648m (tok=0)
+      #09 tools: 0.4023m (tok=0)
+      #15 tools: 0.3035m (tok=0)
+      #18 finalize: 0.2826m (tok=12959)
+      #02 agent: 0.1930m (tok=1982)
+  +-- [TIMING] wall=2.4533m nodes=2.6105m delta=-0.1572m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Kentaro Motomura)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Sagamihara Summary: Sagamihara (相模原市, Sagamihara-shi) is a city in Kanagawa P...
+  +-- [05] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Kentaro Motomura politician Japan DPJ 2009)
+  +-- [06] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> The Democratic Party of...50 </URL> __END_OF_SOURCE...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=1670 out=312 total=1982
+      min: 0.1930m
+      detail: Search(query=本村賢太郎 経歴 (Kentaro Motomura career))
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 本村賢太郎（もとむら けんたろう、 1970年...82 </URL> __END_OF_SOURCE...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2346 out=120 total=2466
+      min: 0.0275m
+      detail: OpenWebpage(url=https://asaikikaku.co.jp/t...motomurakentaro)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3785 out=141 total=3926
+      min: 0.0305m
+      detail: OpenWebpage(url=https://ja.wikipedia.org/wiki/本村賢太郎)
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://ja.wikipedia.org/wiki/本村賢太郎 Final URL: htt.../Help:%E7%9B%AE%E6%AC%A1]...
+  +-- [13] Requested 3 tool calls (save_finding)
+      by: AI
+      tok: in=5635 out=761 total=6396
+      min: 0.0756m
+      detail: save_finding(finding=birth_year = 1970 (source:...org/w...rg/wiki/本村賢太郎), category=...
+  +-- [14] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1970 (source: https:/...//ja.wikipedia.org/wiki/本...
+  +-- [15] Requested 4 tool calls (save_finding)
+      by: AI
+      tok: in=7305 out=614 total=7919
+      min: 0.0627m
+      detail: save_finding(finding=education_institution = Ao...org/w...rg/wiki/本村賢太郎), category=...
+  +-- [16] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: education_institution = Aoyama Gak...//ja.wikipedia.org/wiki/本...
+  +-- [17] Requested 1 tool call (Search)
+      by: AI
+      tok: in=8207 out=246 total=8453
+      min: 0.0301m
+      detail: Search(query=本村賢太郎 障害 障がい (Kentaro Motomura disability))
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 本村賢太郎（もとむら けんたろう、 1970年...ro </URL> __END_OF_SOURCE...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=8831 out=64 total=8895
+      min: 0.0442m
+      detail: OpenWebpage(url=https://www.speakers.jp/sp...otomura-kentaro)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.speakers.jp/speaker/motomura-kentaro F...jp/special/] スピーカーズ Newsl...
+  +-- [21] Requested 1 tool call (Search)
+      by: AI
+      tok: in=10705 out=340 total=11045
+      min: 0.0638m
+      detail: Search(query=本村賢太郎 LGBTQ 性自認 同性婚 (Kentaro Motomura LGBTQ))
+  +-- [22] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 受動喫煙防止対策が進んでいくとシガーバーにも影...20 </URL> __END_OF_SOURCE...
+  +-- [23] Produced structured answer
+      by: AI
+      tok: in=9510 out=3449 total=12959
+      min: 0.2826m
+      detail: {"education_level":"Bachelor's","education_level_source...ry_blocked_no_candidates(...
+END

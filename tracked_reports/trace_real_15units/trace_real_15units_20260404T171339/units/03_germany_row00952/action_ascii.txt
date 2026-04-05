@@ -1,0 +1,182 @@
+AGENT ACTION MAP
+================
+Steps captured: 29
+LangGraph timed steps: 16
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 5 found, 5 unknown, 0 pending (10 core fields)
+      Source-backed found values: 5 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, disability_status, lgbtq_st...
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 22 total (Tool save_finding=10, Tool Open...date_plan=2, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 0 flagged step(s); diagnostics(EMPTY_RESULT=2, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 3.6394m (tok=0, n=7)
+      agent: 1.7554m (tok=48769, n=7)
+      planner: 1.4014m (tok=1582, n=1)
+      finalize: 0.2044m (tok=14677, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #15 tools: 1.4548m (tok=0)
+      #02 agent: 1.4328m (tok=1910)
+      #01 planner: 1.4014m (tok=1582)
+      #11 tools: 0.8722m (tok=0)
+      #09 tools: 0.4396m (tok=0)
+  +-- [TIMING] wall=5.6001m nodes=7.0006m delta=-1.4005m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Nicole Gohlke)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Nicole Gohlke Summary: Nicole Stephanie Gohlke (born 15 November 1975) is a G...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1975 (source:.../Nico...ke Bundestag Profil Biogr...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1975 (source: https:/...ipedia.org/wiki/Nicole_Go...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)Nicol...tml </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://de.wikipedia.org/wiki/Nicole_Gohlke)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://de.wikipedia.org/wiki/Nicole_Gohlke Final ...ng=de] Benutzerkonto erst...
+  +-- [10] Requested 2 tool calls (save_finding, OpenWebpage)
+      by: AI
+      tok: in=1656 out=254 total=1910
+      min: 1.4328m
+      detail: save_finding(finding=birth_place = München (sou.../Nico...ipedia.org/wiki/Nicole_Go...
+  +-- [11] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = München (source: htt...ipedia.org/wiki/Nicole_Go...
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://de.wikipedia.org/wiki/Nicole_Gohlke Final ...ag. Im 21. Deutschen Bund...
+  +-- [13] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2217 out=180 total=2397
+      min: 0.0386m
+      detail: OpenWebpage(query=Werdegang Studium Abschluss Universit...ipedia.org/wiki/Nicole_Go...
+  +-- [14] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://de.wikipedia.org/wiki/Nicole_Gohlke Final ...wiki/Nicole_Gohlke] Disku...
+  +-- [15] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=3745 out=201 total=3946
+      min: 0.0460m
+      detail: save_finding(finding=education_field = Kommunik.../Nico...tudium Universität Münche...
+  +-- [16] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_field = Kommunikationswi...ipedia.org/wiki/Nicole_Go...
+  +-- [17] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)Nicol...ole </URL> __END_OF_SOURC...
+  +-- [18] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=6518 out=277 total=6795
+      min: 0.0485m
+      detail: OpenWebpage(url=https://www.bundestag.de/w...e_nicole-857380)
+  +-- [19] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [20] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=9332 out=470 total=9802
+      min: 0.0493m
+      detail: save_finding(finding=education_institution = LM...nicol...GBTQ queer lesbisch schwu...
+  +-- [21] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_institution = LMU Münche...afien/G/gohlke_nicole-104...
+  +-- [22] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NicoleStephanieGohlke(*...lke </URL> __END_OF_SOURC...
+  +-- [23] Requested 4 tool calls (update_plan, save_finding, Search)
+      by: AI
+      tok: in=11017 out=651 total=11668
+      min: 0.0726m
+      detail: update_plan(status=in_progress, step_id=2) | save_findi...de "Nicole Gohlke" Lebens...
+  +-- [24] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [25] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = Magister Artium ...ipedia.org/wiki/Nicole_Go...
+  +-- [26] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Nicole GohlkeNicole Goh.../10 </URL> __END_OF_SOURC...
+  +-- [27] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=11522 out=729 total=12251
+      min: 0.0678m
+      detail: OpenWebpage(url=https://www.bundestag.de/a..._nicole-1044540)
+  +-- [28] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [29] Produced structured answer
+      by: AI
+      tok: in=12413 out=2264 total=14677
+      min: 0.2044m
+      detail: {"education_level":"Unknown","education_level_source":n...r_below_policy_threshold(...
+END

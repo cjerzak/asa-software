@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "fold_summary",
+  "reason": "fold_summary_not_available",
+  "expected_empty": true,
+  "unit_key": "06_japan_row04038",
+  "generated_at_utc": "2026-04-04T22:17:28Z"
+}

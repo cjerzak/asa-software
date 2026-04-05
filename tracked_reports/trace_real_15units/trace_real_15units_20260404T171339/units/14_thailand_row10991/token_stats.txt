@@ -1,0 +1,152 @@
+{
+  "tokens_used": 33211,
+  "input_tokens": 28888,
+  "output_tokens": 4323,
+  "fold_tokens": 0,
+  "token_trace": [
+    {
+      "node": "planner",
+      "input_tokens": 630,
+      "output_tokens": 1301,
+      "total_tokens": 1931,
+      "elapsed_minutes": 0.1884,
+      "started_at_utc": "2026-04-04T22:14:51.589328Z",
+      "ended_at_utc": "2026-04-04T22:15:02.893583Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "agent",
+      "input_tokens": 1660,
+      "output_tokens": 294,
+      "total_tokens": 1954,
+      "elapsed_minutes": 0.2247,
+      "started_at_utc": "2026-04-04T22:14:51.589130Z",
+      "ended_at_utc": "2026-04-04T22:15:05.071513Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.7905,
+      "started_at_utc": "2026-04-04T22:15:05.072538Z",
+      "ended_at_utc": "2026-04-04T22:15:52.504081Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "mixed"
+    },
+    {
+      "node": "agent",
+      "input_tokens": 3421,
+      "output_tokens": 165,
+      "total_tokens": 3586,
+      "elapsed_minutes": 0.0421,
+      "started_at_utc": "2026-04-04T22:15:52.506639Z",
+      "ended_at_utc": "2026-04-04T22:15:55.030656Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.9513,
+      "started_at_utc": "2026-04-04T22:15:55.032021Z",
+      "ended_at_utc": "2026-04-04T22:16:52.112813Z",
+      "status": "error",
+      "error_type": "http_error",
+      "tool_name": "mixed"
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4284,
+      "output_tokens": 468,
+      "total_tokens": 4752,
+      "elapsed_minutes": 0.0544,
+      "started_at_utc": "2026-04-04T22:16:52.114527Z",
+      "ended_at_utc": "2026-04-04T22:16:55.377471Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.685,
+      "started_at_utc": "2026-04-04T22:16:55.378506Z",
+      "ended_at_utc": "2026-04-04T22:17:36.477055Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4693,
+      "output_tokens": 505,
+      "total_tokens": 5198,
+      "elapsed_minutes": 0.0659,
+      "started_at_utc": "2026-04-04T22:17:36.478667Z",
+      "ended_at_utc": "2026-04-04T22:17:40.434331Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.7413,
+      "started_at_utc": "2026-04-04T22:17:40.435868Z",
+      "ended_at_utc": "2026-04-04T22:18:24.915779Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "search"
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4821,
+      "output_tokens": 538,
+      "total_tokens": 5359,
+      "elapsed_minutes": 0.0584,
+      "started_at_utc": "2026-04-04T22:18:24.919900Z",
+      "ended_at_utc": "2026-04-04T22:18:28.423951Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 1.4902,
+      "started_at_utc": "2026-04-04T22:18:28.426059Z",
+      "ended_at_utc": "2026-04-04T22:19:57.839117Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "mixed"
+    },
+    {
+      "node": "finalize",
+      "input_tokens": 9379,
+      "output_tokens": 1052,
+      "total_tokens": 10431,
+      "elapsed_minutes": 0.1143,
+      "started_at_utc": "2026-04-04T22:19:57.843031Z",
+      "ended_at_utc": "2026-04-04T22:20:04.699780Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    }
+  ]
+}

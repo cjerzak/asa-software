@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 7,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 1892,
+        "normalized_length": 1892,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 1892,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "a7e3758ce2dcda3a94a80807634ad6475ec53d5d1a2513b991a61a5802e5f773",
+    "output_text_hash": "329414b64f3a523933ba58e43fbe5fb6fa60986b98a66f7a9195ec37b42ba32c",
+    "input_text_length": 1892,
+    "output_text_length": 1911,
+    "input_text_preview": "{ \"educational_attainment\": { \"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\":...",
+    "output_text_preview": "{\"educational_attainment\": {\"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": null, \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": null, \"education_institution_source\": null, \"education_institution_confidence\": n...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,47 +1 @@\n-{\n-  \"educational_attainment\": {\n-    \"education_level\": null,\n-    \"education_level_source\": null,\n-    \"education_level_confidence\": null,\n-    \"education_field\": null,\n-    \"education_field_source\": null,\n-    \"education_field_confidence\": null,\n-    \"education_institution\": null,\n-    \"education_institution_source\": null,\n-    \"education_institution_confidence\": null\n-  },\n-  \"prior_occupation\": {\n-    \"prior_occupation\": \"Operatore di sistemi informatici; Presidente nazionale CONFAVI; Segretario generale della Fondazione per la cultura rurale-ONLUS\",\n-    \"prior_occupation_source\": \"https://camera.it/leg18/29?idLegislatura=18&shadow_deputato=307573\",\n-    \"prior_occupation_confidence\": 1.0\n-  },\n-  \"birth_year\": {\n-    \"birth_year\": 1964,\n-    \"birth_year_source\": \"https://it.frwiki.wiki/wiki/Maria_Cristina_Caretta\",\n-    \"birth_year_confidence\": 1.0\n-  },\n-  \"birth_place\": {\n-    \"birth_place\": \"Thiene\",\n-    \"birth_place_source\": \"https://it.frwiki.wiki/wiki/Maria_Cristina_Caretta\",\n-    \"birth_place_confidence\": 1.0\n-  },\n-  \"disability_status\": {\n-    \"disability_status\": \"Unknown\",\n-    \"disability_status_source\": null,\n-    \"disability_status_confidence\": null\n-  },\n-  \"sexual_orientation\": {\n-    \"lgbtq_status\": \"Unknown\",\n-    \"lgbtq_status_source\": null,\n-    \"lgbtq_status_confidence\": null,\n-    \"lgbtq_details\": null,",
+    "event_id": "b7bef16b09ab44deba76d1a077d6d1eb",
+    "ts_utc": "2026-04-04T22:22:15.395378Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "9fb6fc8c10ab490489a59d6fb612e7ba",
+    "ts_utc": "2026-04-04T22:22:15.395390Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

@@ -1,0 +1,143 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
+      Source-backed found values: 1 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 13 total (Tool Search=4, Tool OpenWebpage...date_plan=2, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=2, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 3.7093m (tok=0, n=5)
+      agent: 0.4705m (tok=22482, n=5)
+      planner: 0.2075m (tok=2458, n=1)
+      finalize: 0.0601m (tok=6761, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #07 tools: 1.5174m (tok=0)
+      #11 tools: 0.8803m (tok=0)
+      #09 tools: 0.6893m (tok=0)
+      #05 tools: 0.6069m (tok=0)
+      #02 agent: 0.2515m (tok=2044)
+  +-- [TIMING] wall=4.2404m nodes=4.4474m delta=-0.2070m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(...y=Leonid Slutsky (politic...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Leonid Slutsky (politician) Summary: Leonid Eduardovich Slutsky ( SLOOT-ski; ...
+  +-- [05] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Leonid Eduardovich Slutsky United Russia ...)
+  +-- [06] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LeonidEduardovichSlutsk...108 </URL> __END_OF_SOURC...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://en.wikipedia.org/w...Leonid_Slutsky_)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Leonid_Slutsky_ Fina...] Log in Personal tools D...
+  +-- [09] Requested 1 tool call (Search)
+      by: AI
+      tok: in=1660 out=384 total=2044
+      min: 0.2515m
+      detail: Search(query="Leonid Slutsky" "United Russia")
+  +-- [10] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Leonid Slutsky (...ds </URL> __END_OF_SOURCE...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2364 out=245 total=2609
+      min: 0.0307m
+      detail: OpenWebpage(url=https://meduza.io/en/featu...not-charismatic)
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://meduza.io/en/feature/2024/01/16/he-s-just-...eadership who spoke to Me...
+  +-- [13] Requested 5 tool calls (save_finding, update_plan, Search)
+      by: AI
+      tok: in=4206 out=217 total=4423
+      min: 0.0382m
+      detail: save_finding(finding=birth_year = 1968 (source:...y_(po...u "Слуцкий Леонид Эдуардо...
+  +-- [14] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1968 (source: https:/...ps://lslutsky.ru/en/home-...
+  +-- [15] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [17] Requested 1 tool call (Search)
+      by: AI
+      tok: in=5703 out=862 total=6565
+      min: 0.0900m
+      detail: Search(query=site:duma.gov.ru "Слуцкий Леонид Эдуардов...)
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Архивировано 22 ноября ...075 </URL> __END_OF_SOURC...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=6304 out=537 total=6841
+      min: 0.0601m
+      detail: OpenWebpage(url=https://duma.gov.ru/en/news/53576)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=6226 out=535 total=6761
+      min: 0.0601m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n..., high_conflict_demotion(...
+END

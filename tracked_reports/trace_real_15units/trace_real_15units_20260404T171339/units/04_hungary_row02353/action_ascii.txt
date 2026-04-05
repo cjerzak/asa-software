@@ -1,0 +1,144 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 16 total (Tool save_finding=7, Tool Searc...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.8235m (tok=0, n=5)
+      agent: 0.4772m (tok=24323, n=5)
+      finalize: 0.2596m (tok=11604, n=1)
+      planner: 0.1910m (tok=1985, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #09 tools: 1.6239m (tok=0)
+      #05 tools: 0.4735m (tok=0)
+      #07 tools: 0.4158m (tok=0)
+      #11 tools: 0.2975m (tok=0)
+      #12 finalize: 0.2596m (tok=11604)
+  +-- [TIMING] wall=3.5608m nodes=3.7513m delta=-0.1905m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Gergely Gulyás)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Gergely Gulyás Summary: Gergely Gulyás (born 21 September 1981) is a Hungaria...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1981 (source:...ly_Gu...biography birth place edu...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1981 (source: https:/....org/wiki/Gergely_Guly%C3...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> GergelyGulyás(born 21 S...28 </URL> __END_OF_SOURCE...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.wikidata.org/wiki/Q5550584)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.wikidata.org/wiki/Q5550584 Final URL: ...org&uselang=en] Create ac...
+  +-- [10] Requested 1 tool call (Search)
+      by: AI
+      tok: in=1667 out=234 total=1901
+      min: 0.2181m
+      detail: Search(query=Gergely Gulyás CV parlament.hu education ...)
+  +-- [11] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> GergelyGulyás(born 21 S...jz </URL> __END_OF_SOURCE...
+  +-- [12] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2248 out=222 total=2470
+      min: 0.0506m
+      detail: OpenWebpage(url=https://en.wikipedia.org/wiki/Gergely_Gulyás)
+  +-- [13] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Gergely_Gulyás Final...] Log in Personal tools D...
+  +-- [14] Requested 7 tool calls (save_finding, Search)
+      by: AI
+      tok: in=4188 out=109 total=4297
+      min: 0.0299m
+      detail: save_finding(finding=birth_place = Budapest (so...C3%A1... "Gergely Gulyás" disabil...
+  +-- [15] Returned 6 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = Budapest (source: ht....org/wiki/Guly%C3%A1s_Ger...
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Kitüntetéseket adományo...ent </URL> __END_OF_SOURC...
+  +-- [17] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=6095 out=1073 total=7168
+      min: 0.1086m
+      detail: OpenWebpage(url=https://2015-2019.kormany....-the-government)
+  +-- [18] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [19] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7879 out=608 total=8487
+      min: 0.0700m
+      detail: Search(query=Gergely Gulyás "disability" "handicap" "i...)
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Adjustment to physicalh...706 </URL> __END_OF_SOURC...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=8678 out=2926 total=11604
+      min: 0.2596m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...ry_blocked_no_candidates(...
+END

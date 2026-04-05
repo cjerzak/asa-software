@@ -1,0 +1,18 @@
+{
+  "unit_key": "13_taiwan_row10787",
+  "generated_at_utc": "2026-04-04T22:20:15Z",
+  "canonical_artifact_id": "0e25d78559ff43c35c35d91f4faeba648a534c563e591404cda0c26f1c4f439a",
+  "released_artifact_id": "afeae39100bee82c1df46b49ff8ce439062b6525c83705465271de4efd4f3e7f",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "afeae39100bee82c1df46b49ff8ce439062b6525c83705465271de4efd4f3e7f",
+  "released_byte_hash": "afeae39100bee82c1df46b49ff8ce439062b6525c83705465271de4efd4f3e7f",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "f5e034f36a6f551ef1731f8b55a3c8a158752cbf8edb172e83b4d29610421af2",
+  "released_semantic_hash": "f5e034f36a6f551ef1731f8b55a3c8a158752cbf8edb172e83b4d29610421af2",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": ["invoke_exception_fallback", "field_status_canonical"]
+}

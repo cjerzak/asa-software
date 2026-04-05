@@ -1,0 +1,177 @@
+AGENT ACTION MAP
+================
+Steps captured: 28
+LangGraph timed steps: 18
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 7 found, 3 unknown, 0 pending (10 core fields)
+      Source-backed found values: 7 (across 12 tracked fields)
+      Unresolved focus: disability_status, lgbtq_status, lgbtq_details
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 11 tool-call turn(s), 1 answer turn(s)
+      Tool results: 21 total (Tool Search=7, Tool save_findin...date_plan=2, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 0 flagged step(s); diagnostics(EMPTY_RESULT=2, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 3.5093m (tok=0, n=8)
+      agent: 0.6657m (tok=59652, n=8)
+      finalize: 0.3638m (tok=18354, n=1)
+      planner: 0.1686m (tok=1730, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #15 tools: 1.3352m (tok=0)
+      #07 tools: 0.6735m (tok=0)
+      #09 tools: 0.4636m (tok=0)
+      #05 tools: 0.3969m (tok=0)
+      #18 finalize: 0.3638m (tok=18354)
+  +-- [TIMING] wall=4.5423m nodes=4.7074m delta=-0.1651m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Kim Han-gil)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Kim Han-gil Summary: Kim Han-gil (Korean: 김한길; born 17 September 1953) is a S...
+  +-- [05] Requested 3 tool calls (save_finding, OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1953 (source:...ki/Ki...ikipedia.org/wiki/Kim_Han...
+  +-- [06] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1953 (source: https:/...ikipedia.org/wiki/Kim_Han...
+  +-- [07] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Kim_Han-gil Final UR...] Log in Personal tools D...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(query=birth place, education, university, d...ikipedia.org/wiki/Kim_Han...
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Kim_Han-gil Final UR...a.org/wiki/Floor_leaders]...
+  +-- [10] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=1658 out=223 total=1881
+      min: 0.1986m
+      detail: save_finding(finding=birth_place = Tokyo, Japan...ki/Ki...th Korea politician birth...
+  +-- [11] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = Tokyo, Japan (source...ikipedia.org/wiki/Kim_Han...
+  +-- [12] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> KimHan-gil(Korean: 김한길;...il </URL> __END_OF_SOURCE...
+  +-- [13] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2236 out=229 total=2465
+      min: 0.0449m
+      detail: OpenWebpage(url=https://dbpedia.org/page/Kim_Han-gil)
+  +-- [14] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://dbpedia.org/page/Kim_Han-gil Final URL: ht...at=text%2Fhtml] Embedded:...
+  +-- [15] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3141 out=119 total=3260
+      min: 0.0294m
+      detail: Search(query=Kim Han-gil South Korea politician educat...)
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> KimHan-gil(Korean: 김한길;...생애 </URL> __END_OF_SOURCE...
+  +-- [17] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5934 out=556 total=6490
+      min: 0.0614m
+      detail: OpenWebpage(url=https://www.wikiwand.com/e...les/Kim_Han-gil)
+  +-- [18] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.wikiwand.com/en/articles/Kim_Han-gil F..., captcha, cloudflare, bl...
+  +-- [19] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=8780 out=143 total=8923
+      min: 0.0383m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...kuk University degree bac...
+  +-- [20] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> KimHan-gil(Korean: 김한길;...915 </URL> __END_OF_SOURC...
+  +-- [22] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=9555 out=651 total=10206
+      min: 0.0766m
+      detail: OpenWebpage(url=https://ksels.com/2023/dat...Han-Gil_Kim.pdf)
+  +-- [23] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"tls_erro...null,"attempt":2,"attempt...
+  +-- [24] Requested 3 tool calls (Search)
+      by: AI
+      tok: in=10858 out=606 total=11464
+      min: 0.0715m
+      detail: Search(query=site:assembly.go.kr "Kim Han-gil" educati....TQ sexual orientation dis...
+  +-- [25] Returned 3 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: https://www.asse...3-1 </URL> __END_OF_SOURC...
+  +-- [26] Requested 1 tool call (Search)
+      by: AI
+      tok: in=13897 out=1066 total=14963
+      min: 0.1449m
+      detail: Search(query=Kim Han-gil "Bachelor" degree Konkuk Univ...)
+  +-- [27] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> In this study, we appli...375 </URL> __END_OF_SOURC...
+  +-- [28] Produced structured answer
+      by: AI
+      tok: in=14401 out=3953 total=18354
+      min: 0.3638m
+      detail: {"education_level":"Bachelor's","education_level_source...ry_blocked_no_candidates(...
+END

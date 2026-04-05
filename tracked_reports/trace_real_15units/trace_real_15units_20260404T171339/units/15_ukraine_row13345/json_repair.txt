@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 6,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "lgbtq_status", "lgbtq_details", "confidence"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2325,
+        "normalized_length": 2325,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2325,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "689ed0e70a37ac6a9abc740dcc5fb9f3d6f57c5ffb3b7a6127ef7423f9541477",
+    "output_text_hash": "aedb78a1cf6c31b0502a1a3f11b47c5e88919f51473d0b1491d8e614ebbda428",
+    "input_text_length": 2325,
+    "output_text_length": 2312,
+    "input_text_preview": "{ \"educational_attainment\": [ { \"education_level\": \"Higher education\", \"education_level_source\": \"https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\", \"education_level_confidence\": 1.0, \"education_institution\": \"Yaroslav Mudryi National Law University; Kharkiv National University named after V. N. Karazin\", \"e...",
+    "output_text_preview": "{\"educational_attainment\": [{\"education_level\": \"Higher education\", \"education_level_source\": \"https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\", \"education_level_confidence\": 1.0, \"education_institution\": \"Yaroslav Mudryi National Law University; Kharkiv National University named after V. N. Karazin\", \"educ...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,45 +1 @@\n-{\n-  \"educational_attainment\": [\n-    {\n-      \"education_level\": \"Higher education\",\n-      \"education_level_source\": \"https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\",\n-      \"education_level_confidence\": 1.0,\n-      \"education_institution\": \"Yaroslav Mudryi National Law University; Kharkiv National University named after V. N. Karazin\",\n-      \"education_institution_source\": \"https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\",\n-      \"education_institution_confidence\": 1.0,\n-      \"education_field\": \"International Law; Administrative Management, Economics\",\n-      \"education_field_source\": \"https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\",\n-      \"education_field_confidence\": 1.0\n-    }\n-  ],\n-  \"prior_occupation\": [\n-    {\n-      \"occupation\": \"Forensic expert at the Kharkiv Research Forensic Center of the Ministry of Internal Affairs of Ukraine\",\n-      \"occupation_source\": \"https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\",\n-      \"occupation_confidence\": 1.0\n-    }\n-  ],\n-  \"birth_year\": 1994,\n-  \"birth_year_source\": \"https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\",\n-  \"birth_year_confidence\": 1.0,\n-  \"birth_place\": \"Lebedyn, Sumy Oblast, Ukraine\",\n-  \"birth_place_source\": \"https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\",\n-  \"birth_place_confidence\": 1.0,\n-  \"disability_status\": null,\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"sexual_orientation\": [\n-    {\n-      \"lgbtq_status\": \"Unknown\",\n-      \"lgbtq_status_source\": null,\n-      \"lgbtq_status_confidence\": null,\n-      \"lgbtq_details\": null,\n-      \"lgbtq_details_source\": null,",
+    "event_id": "96515c3b046e4f07a804ab6530c80205",
+    "ts_utc": "2026-04-04T22:17:21.288948Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "34941ca82c8249c19eb5a7c194833b56",
+    "ts_utc": "2026-04-04T22:17:21.288963Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

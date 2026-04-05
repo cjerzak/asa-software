@@ -1,0 +1,35 @@
+{
+  "goal": "Complete the task",
+  "steps": [
+    {
+      "id": 1,
+      "description": "Clarify scope and constraints: Clarify task objective",
+      "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+      "status": "completed",
+      "findings": "Starting search for Mónica Clara Molina, Mexican politician (PRI, 2012)."
+    },
+    {
+      "id": 2,
+      "description": "Collect high-signal evidence from relevant tools/sources",
+      "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+      "status": "completed",
+      "findings": "Identified SIL profile ID 9216686 for Mónica Clara Molina. She replaced María de las Nieves García Fernández in the LXII Legislature."
+    },
+    {
+      "id": 3,
+      "description": "Validate consistency and resolve conflicts/gaps",
+      "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 4,
+      "description": "Produce final structured output with traceable justification",
+      "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+      "status": "pending",
+      "findings": ""
+    }
+  ],
+  "version": 4,
+  "current_step": 3
+}

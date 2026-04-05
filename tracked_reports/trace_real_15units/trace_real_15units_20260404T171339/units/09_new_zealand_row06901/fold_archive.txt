@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "fold_archive",
+  "reason": "fold_archive_not_available",
+  "expected_empty": true,
+  "unit_key": "09_new_zealand_row06901",
+  "generated_at_utc": "2026-04-04T22:18:22Z"
+}

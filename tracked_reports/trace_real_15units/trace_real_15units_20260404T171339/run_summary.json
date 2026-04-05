@@ -1,0 +1,174 @@
+{
+  "run_id": "trace_real_15units_20260404T171339",
+  "generated_at_utc": "2026-04-04T22:22:18Z",
+  "n_units": 15,
+  "success_count": 14,
+  "error_count": 1,
+  "units": [
+    {
+      "unit_key": "01_bolivia_row00180",
+      "country": "Bolivia",
+      "row_id": 180,
+      "person_name": "Flora Largo Pumari",
+      "status": "success",
+      "elapsed_time": 4.2239,
+      "tokens_used": 51523,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/01_bolivia_row00180"
+    },
+    {
+      "unit_key": "02_georgia_row00264",
+      "country": "Georgia",
+      "row_id": 264,
+      "person_name": "Nona Mamulashvili",
+      "status": "success",
+      "elapsed_time": 5.2447,
+      "tokens_used": 97448,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/02_georgia_row00264"
+    },
+    {
+      "unit_key": "03_germany_row00952",
+      "country": "Germany",
+      "row_id": 952,
+      "person_name": "Nicole Gohlke",
+      "status": "success",
+      "elapsed_time": 5.9899,
+      "tokens_used": 65028,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/03_germany_row00952"
+    },
+    {
+      "unit_key": "04_hungary_row02353",
+      "country": "Hungary",
+      "row_id": 2353,
+      "person_name": "Gergely Gulyas",
+      "status": "success",
+      "elapsed_time": 3.9693,
+      "tokens_used": 37912,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/04_hungary_row02353"
+    },
+    {
+      "unit_key": "05_italy_row03389",
+      "country": "Italy",
+      "row_id": 3389,
+      "person_name": "Maria Cristina Caretta",
+      "status": "success",
+      "elapsed_time": 7.6468,
+      "tokens_used": 110786,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/05_italy_row03389"
+    },
+    {
+      "unit_key": "06_japan_row04038",
+      "country": "Japan",
+      "row_id": 4038,
+      "person_name": "Kentaro Motomura",
+      "status": "success",
+      "elapsed_time": 2.8233,
+      "tokens_used": 65875,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/06_japan_row04038"
+    },
+    {
+      "unit_key": "07_lithuania_row04595",
+      "country": "Lithuania",
+      "row_id": 4595,
+      "person_name": "Justinas URBANAVIČIUS",
+      "status": "success",
+      "elapsed_time": 5.0918,
+      "tokens_used": 75640,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/07_lithuania_row04595"
+    },
+    {
+      "unit_key": "08_mexico_row05350",
+      "country": "Mexico",
+      "row_id": 5350,
+      "person_name": "Monica Clara Molina",
+      "status": "success",
+      "elapsed_time": 6.2259,
+      "tokens_used": 67956,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/08_mexico_row05350"
+    },
+    {
+      "unit_key": "09_new_zealand_row06901",
+      "country": "New Zealand",
+      "row_id": 6901,
+      "person_name": "Winston Peters",
+      "status": "success",
+      "elapsed_time": 3.636,
+      "tokens_used": 75868,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/09_new_zealand_row06901"
+    },
+    {
+      "unit_key": "10_panama_row07366",
+      "country": "Panama",
+      "row_id": 7366,
+      "person_name": "Dalia Mirna Bernal Yanez",
+      "status": "error",
+      "elapsed_time": "NA",
+      "tokens_used": "NA",
+      "error_message": "Missing unit artifacts: prompt_example.txt, trace.txt, token_stats.txt, plan_output.txt, fold_stats.txt, fold_summary.txt, fold_archive.txt, execution_summary.txt, diagnostics.txt, completion_gate.txt, json_repair.txt, invoke_error.txt, action_ascii.txt, answer_pred.txt, payload_release_audit.txt",
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/10_panama_row07366"
+    },
+    {
+      "unit_key": "11_russian_federation_row08040",
+      "country": "Russian Federation",
+      "row_id": 8040,
+      "person_name": "Leonid Eduardovich Slutsky",
+      "status": "success",
+      "elapsed_time": 4.5701,
+      "tokens_used": 31701,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/11_russian_federation_row08040"
+    },
+    {
+      "unit_key": "12_south_korea_row10728",
+      "country": "South Korea",
+      "row_id": 10728,
+      "person_name": "KİM Han-gil",
+      "status": "success",
+      "elapsed_time": 4.6578,
+      "tokens_used": 79736,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/12_south_korea_row10728"
+    },
+    {
+      "unit_key": "13_taiwan_row10787",
+      "country": "Taiwan",
+      "row_id": 10787,
+      "person_name": "Shyh-Fang Liu",
+      "status": "success",
+      "elapsed_time": 5.4517,
+      "tokens_used": 19559,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/13_taiwan_row10787"
+    },
+    {
+      "unit_key": "14_thailand_row10991",
+      "country": "Thailand",
+      "row_id": 10991,
+      "person_name": "Chaj Kuldilok",
+      "status": "success",
+      "elapsed_time": 5.2691,
+      "tokens_used": 33211,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/14_thailand_row10991"
+    },
+    {
+      "unit_key": "15_ukraine_row13345",
+      "country": "Ukraine",
+      "row_id": 13345,
+      "person_name": "Anna Kolisnyk",
+      "status": "success",
+      "elapsed_time": 2.5301,
+      "tokens_used": 31480,
+      "error_message": null,
+      "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260404T171339/units/15_ukraine_row13345"
+    }
+  ]
+}

@@ -6,14 +6,14 @@
       "description": "Clarify scope and constraints: Clarify task objective",
       "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
       "status": "completed",
-      "findings": "Starting search for Ramona Moye Camaconi to identify her biographical details."
+      "findings": "Starting search for Ramona Moye Camaconi."
     },
     {
       "id": 2,
       "description": "Collect high-signal evidence from relevant tools/sources",
       "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
       "status": "completed",
-      "findings": "Already found birth_year (1982) and prior_occupation (Presidenta de la Organización de Mujeres - Sub Central Sécure). Need birth_place, education details, disability_status, and lgbtq_status."
+      "findings": "Found birth year (1982) and prior occupation (Presidenta de la Organización de Mujeres - Sub Central Sécure). Need birth place, education, and other statuses."
     },
     {
       "id": 3,

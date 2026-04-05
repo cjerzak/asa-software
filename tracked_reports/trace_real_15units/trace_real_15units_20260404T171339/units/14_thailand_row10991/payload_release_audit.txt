@@ -1,0 +1,18 @@
+{
+  "unit_key": "14_thailand_row10991",
+  "generated_at_utc": "2026-04-04T22:20:04Z",
+  "canonical_artifact_id": "48f15171e5963d984e8b7b98bf105d54bff438e912d405164c1c851997f13fd0",
+  "released_artifact_id": "9d95d4b13abe0289708eca3444ff116941062759fb76c0e84da813532c0da1d0",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "9d95d4b13abe0289708eca3444ff116941062759fb76c0e84da813532c0da1d0",
+  "released_byte_hash": "9d95d4b13abe0289708eca3444ff116941062759fb76c0e84da813532c0da1d0",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "7989c294a4bf0bbf8714248f10e53dac1dddd0f8995c8df0eea1fddb4ac6559f",
+  "released_semantic_hash": "7989c294a4bf0bbf8714248f10e53dac1dddd0f8995c8df0eea1fddb4ac6559f",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": "field_status_canonical"
+}

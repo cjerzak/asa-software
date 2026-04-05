@@ -1,0 +1,185 @@
+AGENT ACTION MAP
+================
+Steps captured: 29
+LangGraph timed steps: 20
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 6 found, 4 unknown, 0 pending (10 core fields)
+      Source-backed found values: 6 (across 12 tracked fields)
+      Unresolved focus: education_field, disability_status, lgbtq_status, lgbtq_details
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 11 tool-call turn(s), 1 answer turn(s)
+      Tool results: 21 total (Tool save_finding=8, Tool OpenW...date_plan=2, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 3 flagged step(s) (EMPTY_RESULT=3, OFF_TOPIC..._RESULT=2, OFF_TOPIC_RESULT=1)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.5559m (tok=0, n=9)
+      agent: 0.6081m (tok=56533, n=9)
+      finalize: 0.3163m (tok=16968, n=1)
+      planner: 0.2104m (tok=2367, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #13 tools: 0.7173m (tok=0)
+      #09 tools: 0.6708m (tok=0)
+      #07 tools: 0.4226m (tok=0)
+      #11 tools: 0.3901m (tok=0)
+      #20 finalize: 0.3163m (tok=16968)
+  +-- [TIMING] wall=3.4886m nodes=3.6907m delta=-0.2021m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Winston Peters)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Winston Peters Summary: Winston Raymond Peters (born 11 April 1945) is a New ...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1945 (source:...Winst...birth place education pri...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1945 (source: https:/...pedia.org/wiki/Winston_Pe...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: No good DuckDuckGo Search Result was found
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1657 out=229 total=1886
+      min: 0.2423m
+      detail: OpenWebpage(url=https://en.wikipedia.org/wiki/Winston_Peters)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Winston_Peters Final...] Log in Personal tools D...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2246 out=190 total=2436
+      min: 0.0363m
+      detail: OpenWebpage(query=early life education career occupatio...pedia.org/wiki/Winston_Pe...
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT, OFF_TOPIC_RESULT
+      detail: URL: https://en.wikipedia.org/wiki/Winston_Peters Final...arly life and education [...
+  +-- [12] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=2590 out=56 total=2646
+      min: 0.0196m
+      detail: save_finding(finding=education_institution = Au...Winst...birth place law degree un...
+  +-- [13] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_institution = Auckland T...pedia.org/wiki/Winston_Pe...
+  +-- [14] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> In 1970Petersreturned t...pdf </URL> __END_OF_SOURC...
+  +-- [15] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3085 out=86 total=3171
+      min: 0.0268m
+      detail: OpenWebpage(url=https://pubdef.lacounty.go...Winston19_2.pdf)
+  +-- [16] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://pubdef.lacounty.gov/wp-content/uploads/201... to Division Chief and th...
+  +-- [17] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=5722 out=416 total=6138
+      min: 0.0561m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...New Zealand birth place "...
+  +-- [18] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT, OFF_TOPIC_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> In 1970Petersreturned t...tml </URL> __END_OF_SOURC...
+  +-- [20] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=7375 out=475 total=7850
+      min: 0.0535m
+      detail: OpenWebpage(url=https://goodcountry.org/gl.../winston-peters)
+  +-- [21] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"http_err...null,"attempt":2,"attempt...
+  +-- [22] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=9340 out=97 total=9437
+      min: 0.0210m
+      detail: OpenWebpage(url=https://wbhsoba.co.nz/old-...-winston-peters)
+  +-- [23] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://wbhsoba.co.nz/old-boys/rt-hon-winston-pete...ewsletters/] Newsletter S...
+  +-- [24] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=9998 out=109 total=10107
+      min: 0.0584m
+      detail: OpenWebpage(query=biography birth place education caree....co.nz/old-...winston-pet...
+  +-- [25] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://wbhsoba.co.nz/old-boys/rt-hon-winston-pete...ol Old Boys' Association ...
+  +-- [26] Requested 6 tool calls (save_finding, Search)
+      by: AI
+      tok: in=11941 out=921 total=12862
+      min: 0.0941m
+      detail: save_finding(finding=birth_place = Whananaki, W...insto...New Zealand disability he...
+  +-- [27] Returned 5 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT, OFF_TOPIC_RESULT
+      detail: Saved to scratchpad: birth_place = Whananaki, Whangārei...d-boys/rt-hon-winston-pet...
+  +-- [28] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC ...59 </URL> __END_OF_SOURCE...
+  +-- [29] Produced structured answer
+      by: AI
+      tok: in=12150 out=4818 total=16968
+      min: 0.3163m
+      detail: {"education_level":"High School","education_level_sourc...r_below_policy_threshold(...
+END

@@ -1,0 +1,143 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
+      Source-backed found values: 0 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 15 total (Tool Search=8, Tool OpenWebpage...finding=2, Tool update_plan=2)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDE..._RESULT=4, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 4.6584m (tok=0, n=5)
+      agent: 0.4455m (tok=20849, n=5)
+      planner: 0.1884m (tok=1931, n=1)
+      finalize: 0.1143m (tok=10431, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #11 tools: 1.4902m (tok=0)
+      #05 tools: 0.9513m (tok=0)
+      #03 tools: 0.7905m (tok=0)
+      #09 tools: 0.7413m (tok=0)
+      #07 tools: 0.6850m (tok=0)
+  +-- [TIMING] wall=5.2186m nodes=5.4066m delta=-0.1880m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que... Pheu Thai Thailand biogr...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP o...pdf </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.iseas.edu.sg/w...ive_2024_52.pdf)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.iseas.edu.sg/wp-content/uploads/2024/0...ance on the status quo an...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query="Chatt Kuldiloke" Pheu Thai 2011)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> The group of keyPheuTha...560 </URL> __END_OF_SOURC...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1660 out=294 total=1954
+      min: 0.2247m
+      detail: OpenWebpage(url=https://www.bangkokpost.co...ms-of-extortion)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"http_err...null,"attempt":1,"attempt...
+  +-- [11] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=3421 out=165 total=3586
+      min: 0.0421m
+      detail: save_finding(finding=name_variant = Chatt Kuldi...focus...ชัช กุลดิลก" ประวัติ การศ...
+  +-- [12] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: name_variant = Chatt Kuldiloke (so...hailand.com/in-focus/3019...
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+  +-- [14] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=4284 out=468 total=4752
+      min: 0.0544m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...ิลก" ประวัติ วันเกิด การศ...
+  +-- [15] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [17] Requested 4 tool calls (Search)
+      by: AI
+      tok: in=4693 out=505 total=5198
+      min: 0.0659m
+      detail: Search(query=site:parliament.go.th "ชัช กุลดิลก") | Sea...=site:soc.go.th "ชัช กุลด...
+  +-- [18] Returned 4 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Portal HRIS - Pa...php </URL> __END_OF_SOURC...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4821 out=538 total=5359
+      min: 0.0584m
+      detail: OpenWebpage(url=https://web.parliament.go....รรมาธิการ/TH-TH)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://web.parliament.go.th/view/282/ที่ปรึกษาคณะ...ง รัฐธรรมนญูแห่งราชอาณาจั...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=9379 out=1052 total=10431
+      min: 0.1143m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":null,"education_level_confide...
+END

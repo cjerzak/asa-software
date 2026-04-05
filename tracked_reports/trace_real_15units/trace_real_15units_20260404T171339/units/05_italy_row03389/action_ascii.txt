@@ -1,0 +1,207 @@
+AGENT ACTION MAP
+================
+Steps captured: 34
+LangGraph timed steps: 26
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 14 tool-call turn(s), 1 answer turn(s)
+      Tool results: 20 total (Tool Search=8, Tool OpenWebpage...date_plan=2, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=4, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 6.4903m (tok=0, n=12)
+      agent: 0.8730m (tok=96005, n=12)
+      planner: 0.1577m (tok=1696, n=1)
+      finalize: 0.1383m (tok=13085, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #15 tools: 1.5218m (tok=0)
+      #19 tools: 1.0036m (tok=0)
+      #21 tools: 0.9708m (tok=0)
+      #07 tools: 0.8281m (tok=0)
+      #25 tools: 0.6532m (tok=0)
+  +-- [TIMING] wall=7.5048m nodes=7.6593m delta=-0.1545m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Maria Cristina Caretta)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Veneto 2 (Chamber of Deputies constituency) Summary: Veneto 2 is one of the 2...
+  +-- [05] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Maria Cristina Caretta biografia camera d...)
+  +-- [06] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche...39 </URL> __END_OF_SOURCE...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1661 out=172 total=1833
+      min: 0.1847m
+      detail: OpenWebpage(url=https://it.wikipedia.org/w...ristina_Caretta)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://it.wikipedia.org/wiki/Maria_Cristina_Caret...n=it.wikipedia.org&uselan...
+  +-- [09] Requested 3 tool calls (save_finding, OpenWebpage)
+      by: AI
+      tok: in=2159 out=60 total=2219
+      min: 0.0370m
+      detail: save_finding(finding=birth_year = 1964 (source:...istin...era.it/leg1...dLegislatur...
+  +-- [10] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1964 (source: https:/...i/wiki/Maria_Cristina_Car...
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.camera.it/leg18/29?shadow_deputato=307...TRANI BELGIO BELLUNO BENE...
+  +-- [12] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4082 out=291 total=4373
+      min: 0.0449m
+      detail: OpenWebpage(url=https://www.camera.it/leg1...dLegislatura=18)
+  +-- [13] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.camera.it/leg18/29?shadow_deputato=307...TRANI BELGIO BELLUNO BENE...
+  +-- [14] Requested 1 tool call (Search)
+      by: AI
+      tok: in=5187 out=152 total=5339
+      min: 0.0424m
+      detail: Search(query=Maria Cristina Caretta curriculum vitae c...)
+  +-- [15] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche...18 </URL> __END_OF_SOURCE...
+  +-- [16] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5907 out=85 total=5992
+      min: 0.0289m
+      detail: OpenWebpage(url=https://www.wikiwand.com/i...ristina_Caretta)
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.wikiwand.com/it/articles/Maria_Cristin..., captcha, cloudflare, bl...
+  +-- [18] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7042 out=404 total=7446
+      min: 0.0392m
+      detail: Search(query=site:camera.it "Maria Cristina Caretta" c...)
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche...-11 </URL> __END_OF_SOURC...
+  +-- [20] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7906 out=395 total=8301
+      min: 0.0458m
+      detail: Search(query=site:camera.it "Maria Cristina Caretta" C...)
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: XVIII Legislatur...39 </URL> __END_OF_SOURCE...
+  +-- [22] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=9526 out=732 total=10258
+      min: 0.0820m
+      detail: save_finding(finding=prior_occupation = Operato...eputa...Caretta titolo di studio ...
+  +-- [23] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: prior_occupation = Operatore di si...ura=18&shadow_deputato=30...
+  +-- [24] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche...18 </URL> __END_OF_SOURCE...
+  +-- [25] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=11410 out=563 total=11973
+      min: 0.0696m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...no.gov.it "Maria Cristina...
+  +-- [26] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [27] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [28] Requested 1 tool call (Search)
+      by: AI
+      tok: in=11523 out=706 total=12229
+      min: 0.0893m
+      detail: Search(query="Maria Cristina Caretta" curriculum vitae...)
+  +-- [29] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: MARIA CRISTINA C...pdf </URL> __END_OF_SOURC...
+  +-- [30] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=11841 out=566 total=12407
+      min: 0.0606m
+      detail: OpenWebpage(url=https://dait.interno.gov.i...25092022_cv.pdf)
+  +-- [31] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://dait.interno.gov.it/documenti/trasparenza/...us=403) Markers: access d...
+  +-- [32] Requested 1 tool call (Search)
+      by: AI
+      tok: in=12265 out=1370 total=13635
+      min: 0.1486m
+      detail: Search(query=Maria Cristina Caretta "titolo di studio"...)
+  +-- [33] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [34] Produced structured answer
+      by: AI
+      tok: in=11723 out=1362 total=13085
+      min: 0.1383m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...r_below_policy_threshold(...
+END

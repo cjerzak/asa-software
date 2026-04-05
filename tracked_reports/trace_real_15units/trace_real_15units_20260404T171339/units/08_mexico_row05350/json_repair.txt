@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 1,
+    "missing_keys_sample": "confidence",
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2005,
+        "normalized_length": 2005,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2005,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "0db2bc8fd770fc51b1761578ec525de5320ca0d435800fbe328833d9d4148bae",
+    "output_text_hash": "5ce8b25b399372b9ec591e91945bb1a6dc54b9d5d3af3a671444650a6a5d1df2",
+    "input_text_length": 2005,
+    "output_text_length": 1966,
+    "input_text_preview": "{ \"education_level\": \"Licenciatura\", \"education_level_source\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\", \"education_level_confidence\": 1.0, \"education_field\": \"Derecho\", \"education_field_source\": \"https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%...",
+    "output_text_preview": "{\"education_level\": \"Licenciatura\", \"education_level_source\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\", \"education_level_confidence\": 1.0, \"education_field\": \"Derecho\", \"education_field_source\": \"https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,33 +1 @@\n-{\n-  \"education_level\": \"Licenciatura\",\n-  \"education_level_source\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\",\n-  \"education_level_confidence\": 1.0,\n-  \"education_field\": \"Derecho\",\n-  \"education_field_source\": \"https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9216686%2F557126\",\n-  \"education_field_confidence\": 1.0,\n-  \"education_institution\": \"Universidad del Golfo de México Norte\",\n-  \"education_institution_source\": \"https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9216686%2F557126\",\n-  \"education_institution_confidence\": 1.0,\n-  \"prior_occupation\": \"Unknown\",\n-  \"prior_occupation_source\": null,\n-  \"prior_occupation_confidence\": null,\n-  \"class_background\": \"Unknown\",\n-  \"class_background_source\": null,\n-  \"class_background_confidence\": null,\n-  \"birth_year\": null,\n-  \"birth_year_source\": null,\n-  \"birth_year_confidence\": null,\n-  \"birth_place\": \"Oaxaca\",\n-  \"birth_place_source\": \"https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\",\n-  \"birth_place_confidence\": 1.0,\n-  \"disability_status\": \"Unknown\",\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_status_source\": null,\n-  \"lgbtq_status_confidence\": null,\n-  \"lgbtq_details\": null,\n-  \"lgbtq_details_source\": null,\n-  \"lgbtq_details_confidence\": null,\n-  \"justification\": \"Mónica Clara Molina served as a substitute Federal Deputy for the PRI in Mexico's LXII Legislature (2012-2015), representing the 3rd constituency (Oaxaca). Official legislative records (SIL) confirm her birthplace as Oaxaca and her educational background as a law graduate (Licenciatura en Derecho) from the Universidad del Golfo de México Norte, completed around 2001. However, her specific professional trajectory prior to entering the legislature is not detailed in public government profiles or accessible news archives, and her birth year is not disclosed in official records.\"\n-}\n+{\"education_level\": \"Licenciatura\", \"education_level_source\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\", \"education_level_confidence\": 1.0, \"education_field\": \"Derecho\", \"education_field_source\": \"https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9216686%2F557126\", \"education_field_confidence\": 1.0, \"education_institution\": \"Universidad del Golfo de México Norte\", \"education_institution_source\": \"https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9216686%2F557126\", \"education_institution_confidence\": 1.0, \"prior_occupation\": \"Unknown\", \"prior_occupation_source\": null, \"prior_occupation_confidence\": null, \"class_background\": \"Unknown\", \"class_background_source\": null, \"class_background_confidence\": null, \"birth_year\": \"Unknown\", \"birth_year_source\": null, \"birth_year_confidence\": null, \"birth_place\": \"Oaxaca\",\n...[diff truncated]",
+    "event_id": "ea3626c472c74a54b16b571a85c0999a",
+    "ts_utc": "2026-04-04T22:20:41.275291Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "7a5163feea204e85b5f3185aa95da3da",
+    "ts_utc": "2026-04-04T22:20:41.275310Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]
