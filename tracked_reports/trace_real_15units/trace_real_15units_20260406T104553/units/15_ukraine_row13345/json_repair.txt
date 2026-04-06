@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 4,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "confidence"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2155,
+        "normalized_length": 2155,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2155,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "1f6b82108ca678d584fbe1d37f76f046f7f3d35ddb8ffbf864292384f13ee44e",
+    "output_text_hash": "7bf131ac399ac831a42f7860f20c12b622a73cf86a593f6c47458a29bccad407",
+    "input_text_length": 2155,
+    "output_text_length": 2099,
+    "input_text_preview": "{ \"educational_attainment\": [ { \"education_level\": \"Master's Degree\", \"education_level_source\": \"https://dovidka.com.ua/user/?code=528264\", \"education_level_confidence\": 0.9, \"education_institution\": \"Yaroslav Mudryi National Law University; V. N. Karazin Kharkiv National University\", \"education_institution_source\": \"h...",
+    "output_text_preview": "{\"educational_attainment\": [{\"education_level\": \"Master's Degree\", \"education_level_source\": \"https://dovidka.com.ua/user/?code=528264\", \"education_level_confidence\": 0.9, \"education_institution\": \"Yaroslav Mudryi National Law University; V. N. Karazin Kharkiv National University\", \"education_institution_source\": \"http...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,46 +1 @@\n-{\n-  \"educational_attainment\": [\n-    {\n-      \"education_level\": \"Master's Degree\",\n-      \"education_level_source\": \"https://dovidka.com.ua/user/?code=528264\",\n-      \"education_level_confidence\": 0.9,\n-      \"education_institution\": \"Yaroslav Mudryi National Law University; V. N. Karazin Kharkiv National University\",\n-      \"education_institution_source\": \"https://dovidka.com.ua/user/?code=528264\",\n-      \"education_institution_confidence\": 1.0,\n-      \"education_field\": \"International Law; Administrative Management; Economics\",\n-      \"education_field_source\": \"https://dovidka.com.ua/user/?code=528264\",\n-      \"education_field_confidence\": 1.0\n-    }\n-  ],\n-  \"prior_occupation\": [\n-    {\n-      \"occupation_label\": \"Forensic Expert\",\n-      \"occupation_label_source\": \"https://www.chesno.org/politician/156352\",\n-      \"occupation_label_confidence\": 0.9\n-    },\n-    {\n-      \"occupation_label\": \"Lawyer\",\n-      \"occupation_label_source\": \"https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\",\n-      \"occupation_label_confidence\": 1.0\n-    }\n-  ],\n-  \"birth_year\": 1994,\n-  \"birth_year_source\": \"https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\",\n-  \"birth_year_confidence\": 1.0,\n-  \"birth_place\": \"Lebedyn, Sumy Oblast, Ukraine\",\n-  \"birth_place_source\": \"https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\",\n-  \"birth_place_confidence\": 1.0,\n-  \"disability_status\": \"Unknown\",\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_status_source\": null,",
+    "event_id": "fa2a1bb852a84bf6b46435af006649f1",
+    "ts_utc": "2026-04-06T15:50:38.580516Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "3f3ac638e5584c9096e4185d3f6a0dcb",
+    "ts_utc": "2026-04-06T15:50:38.580537Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

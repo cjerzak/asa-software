@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "fold_summary",
+  "reason": "fold_summary_not_available",
+  "expected_empty": true,
+  "unit_key": "11_russian_federation_row08040",
+  "generated_at_utc": "2026-04-06T15:51:12Z"
+}

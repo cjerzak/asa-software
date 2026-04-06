@@ -1,0 +1,140 @@
+AGENT ACTION MAP
+================
+Steps captured: 20
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 5 found, 5 unknown, 0 pending (10 core fields)
+      Source-backed found values: 5 (across 12 tracked fields)
+      Unresolved focus: education_field, disability_status, birth_place, lgbtq_status (+1 m...
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 12 total (Tool OpenWebpage=4, Tool Search...finding=3, Tool update_plan=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 3 flagged step(s) (EMPTY_RESULT=3); diagnost..._RESULT=2, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 1.3410m (tok=0, n=5)
+      finalize: 0.5025m (tok=13882, n=1)
+      agent: 0.4293m (tok=28083, n=5)
+      planner: 0.1888m (tok=1960, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #12 finalize: 0.5025m (tok=13882)
+      #05 tools: 0.4530m (tok=0)
+      #09 tools: 0.3873m (tok=0)
+      #03 tools: 0.3686m (tok=0)
+      #02 agent: 0.2266m (tok=2007)
+  +-- [TIMING] wall=2.2732m nodes=2.4616m delta=-0.1883m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...dilok Thailand Pheu Thai ...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty was fo...on </URL> __END_OF_SOURCE...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.loc.gov/collec...this-collection)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://www.loc.gov/collections/thai-elections-web...d cookies, title:just a m...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Chatt Kuldiloke Pheu Thai biography)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP o...27 </URL> __END_OF_SOURCE...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1660 out=347 total=2007
+      min: 0.2266m
+      detail: OpenWebpage(url=https://en.wikipedia.org/w...rupan_Kuldiloke)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Jarupan_Kuldiloke Fi...] Log in Personal tools D...
+  +-- [11] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3530 out=129 total=3659
+      min: 0.0256m
+      detail: Search(query=ชัจจ์ กุลดิลก ประวัติ การศึกษา วันเกิด)
+  +-- [12] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> พลตำรวจโทชัจจ์กุลดิลกเก...Z1 </URL> __END_OF_SOURCE...
+  +-- [13] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5081 out=452 total=5533
+      min: 0.0590m
+      detail: OpenWebpage(url=https://www.bangkokpost.co...defamation-case)
+  +-- [14] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"http_err...null,"attempt":1,"attempt...
+  +-- [15] Requested 4 tool calls (save_finding, OpenWebpage)
+      by: AI
+      tok: in=6479 out=803 total=7282
+      min: 0.0813m
+      detail: save_finding(finding=birth_year = 1943 (source:.../ชัจจ...ipedia.org/wiki/ชัจจ์_กุล...
+  +-- [16] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1943 (source: https:/...ipedia.org/wiki/ชัจจ์_กุล...
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://th.wikipedia.org/wiki/ชัจจ์_กุลดิลก Final ...1%E0%B8%B1%E0%B8%9A] ติดต...
+  +-- [18] Requested 1 tool call (Search)
+      by: AI
+      tok: in=9515 out=87 total=9602
+      min: 0.0368m
+      detail: Search(query=ชัจจ์ กุลดิลก เกิดที่ไหน ประวัติการศึกษา)
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> พลตำรวจโทชัจจ์กุลดิลกเก...ลก </URL> __END_OF_SOURCE...
+  +-- [20] Produced structured answer
+      by: AI
+      tok: in=8455 out=5427 total=13882
+      min: 0.5025m
+      detail: {"education_level":"Master's/Professional","education_l...licy_demotion_unverified(...
+END

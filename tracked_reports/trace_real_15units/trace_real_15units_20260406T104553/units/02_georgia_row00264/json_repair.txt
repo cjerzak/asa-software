@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 1,
+    "missing_keys_sample": "confidence",
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2033,
+        "normalized_length": 2033,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2033,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "67e2bd5d0e064ee0cf3afb73b37f80ce5c329971a5fb14f7b540381ff3e3a62e",
+    "output_text_hash": "d8e1364df4ef8baa6555836716ecffe1d432ea3c6866fff7dab21e49802ac7fc",
+    "input_text_length": 2033,
+    "output_text_length": 1988,
+    "input_text_preview": "{ \"educational_attainment\": \"PhD\", \"educational_attainment_source\": \"https://www.bpwgeorgia.com/team-4\", \"educational_attainment_confidence\": 1.0, \"education_field\": \"International Relations; Business Administration; Diplomatic Studies; Arab and Islamic Studies\", \"education_field_source\": \"https://www.bpwgeorgia.com/te...",
+    "output_text_preview": "{\"educational_attainment\": \"PhD\", \"educational_attainment_source\": \"https://www.bpwgeorgia.com/team-4\", \"educational_attainment_confidence\": 1.0, \"education_field\": \"International Relations; Business Administration; Diplomatic Studies; Arab and Islamic Studies\", \"education_field_source\": \"https://www.bpwgeorgia.com/tea...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,36 +1 @@\n-{\n-  \"educational_attainment\": \"PhD\",\n-  \"educational_attainment_source\": \"https://www.bpwgeorgia.com/team-4\",\n-  \"educational_attainment_confidence\": 1.0,\n-  \"education_field\": \"International Relations; Business Administration; Diplomatic Studies; Arab and Islamic Studies\",\n-  \"education_field_source\": \"https://www.bpwgeorgia.com/team-4\",\n-  \"education_field_confidence\": 1.0,\n-  \"education_institution\": \"University of Sorbonne; Harvard University; University of Westminster; International Black Sea University\",\n-  \"education_institution_source\": \"https://www.bpwgeorgia.com/team-4\",\n-  \"education_institution_confidence\": 1.0,\n-  \"education_level\": \"PhD\",\n-  \"education_level_source\": \"https://www.bpwgeorgia.com/team-4\",\n-  \"education_level_confidence\": 1.0,\n-  \"prior_occupation\": \"Member of the Georgian Parliament\",\n-  \"prior_occupation_source\": \"https://www.hks.harvard.edu/about/nona-mamulashvili\",\n-  \"prior_occupation_confidence\": 1.0,\n-  \"birth_year\": 1977,\n-  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Nona_Mamulashvili\",\n-  \"birth_year_confidence\": 1.0,\n-  \"birth_place\": null,\n-  \"birth_place_source\": null,\n-  \"birth_place_confidence\": null,\n-  \"disability_status\": \"Unknown\",\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_status_source\": null,\n-  \"lgbtq_status_confidence\": null,\n-  \"lgbtq_details\": null,\n-  \"lgbtq_details_source\": null,\n-  \"lgbtq_details_confidence\": null,\n-  \"class_background\": \"Middle class/professional\",\n-  \"class_background_source\": \"https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\",\n-  \"class_background_confidence\": 0.9,\n-  \"justification\": \"Nona Mamulashvili has an extensive background in international business management and policy advocacy, serving as President of the Georgian Swiss Business Association and Vice President of the International Chamber of Commerce in Georgia before her election to Parliament in 2020. These roles align with the 'Middle class/professional' category (managers/civil servants).\"\n-}\n+{\"educational_attainment\": \"PhD\", \"educational_attainment_source\": \"https://www.bpwgeorgia.com/team-4\", \"educational_attainment_confidence\": 1.0, \"education_field\": \"International Relations; Business Administration; Diplomatic Studies; Arab and Islamic Studies\", \"education_field_source\": \"https://www.bpwgeorgia.com/team-4\", \"education_field_confidence\": 1.0, \"education_institution\": \"University of Sorbonne; Harvard University; University of Westminster; International Black Sea University\", \"education_institution_source\": \"https://www.bpwgeorgia.com/team-4\", \"education_institution_confidence\": 1.0, \"education_level\": \"PhD\", \"education_level_source\": \"https://www.bpwgeorgia.com/team-4\", \"education_level_confidence\": 1.0, \"prior_occupation\": \"Member of the Georgian Parliament\", \"prior_occupation_source\": \"https://www.hks.harvard.edu/about/nona-mamulashvili\", \"prior_occupation_confide\n...[diff truncated]",
+    "event_id": "255c9d7b7fc84adfbdc0373695fe396b",
+    "ts_utc": "2026-04-06T15:49:57.769700Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "preserve_model_values",
+    "preserved_model_values_count": 2,
+    "preserved_model_values_sample": ["education_institution", "education_field"],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "ca42f5a6827b42528f6a54fb1a2ad143",
+    "ts_utc": "2026-04-06T15:49:57.769717Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

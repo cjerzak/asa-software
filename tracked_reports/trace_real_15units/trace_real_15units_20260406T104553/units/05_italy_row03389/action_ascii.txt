@@ -1,0 +1,144 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 12 total (Tool OpenWebpage=4, Tool save_f...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.4524m (tok=0, n=5)
+      agent: 0.3886m (tok=25288, n=5)
+      planner: 0.1691m (tok=1755, n=1)
+      finalize: 0.0874m (tok=9851, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #11 tools: 1.1756m (tok=0)
+      #07 tools: 0.6680m (tok=0)
+      #05 tools: 0.4188m (tok=0)
+      #02 agent: 0.2000m (tok=1901)
+      #01 planner: 0.1691m (tok=1755)
+  +-- [TIMING] wall=2.9314m nodes=3.0975m delta=-0.1661m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Maria Cristina Caretta)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Maria Cristina Caretta Summary: Maria Cristina Caretta (born 11 January 1964)...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1964 (source:...istin...Caretta biografia Camera ...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1964 (source: https:/...g/wiki/Maria_Cristina_Car...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche...tta </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://it.wikipedia.org/w...ristina_Caretta)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://it.wikipedia.org/wiki/Maria_Cristina_Caret...n=it.wikipedia.org&uselan...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1661 out=240 total=1901
+      min: 0.2000m
+      detail: OpenWebpage(query=biografia, istruzione, professione, l...pedia.org/w...ristina_Car...
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://it.wikipedia.org/wiki/Maria_Cristina_Caret...ection=2] | modifica wiki...
+  +-- [12] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=2232 out=208 total=2440
+      min: 0.0299m
+      detail: save_finding(finding=birth_place = Thiene (sour...istin...Caretta curriculum vitae ...
+  +-- [13] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = Thiene (source: http...g/wiki/Maria_Cristina_Car...
+  +-- [14] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche...na </URL> __END_OF_SOURCE...
+  +-- [15] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4400 out=71 total=4471
+      min: 0.0342m
+      detail: OpenWebpage(url=https://www.wikiwand.com/i...ristina_Caretta)
+  +-- [16] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.wikiwand.com/it/articles/Maria_Cristin..., captcha, cloudflare, bl...
+  +-- [17] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7054 out=345 total=7399
+      min: 0.0525m
+      detail: Search(query=site:camera.it "Maria Cristina Caretta" c...)
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche...701 </URL> __END_OF_SOURC...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=8594 out=483 total=9077
+      min: 0.0721m
+      detail: OpenWebpage(url=https://www.camera.it/depu...lenco/18-307573)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.camera.it/deputati/elenco/18-307573 Fi...A NELLE LEGISLATURE: XVII...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=9300 out=551 total=9851
+      min: 0.0874m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...ry_blocked_no_candidates(...
+END

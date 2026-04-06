@@ -1,0 +1,189 @@
+AGENT ACTION MAP
+================
+Steps captured: 30
+LangGraph timed steps: 22
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, disability...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 12 tool-call turn(s), 1 answer turn(s)
+      Tool results: 18 total (Tool Search=8, Tool OpenWebpage...finding=4, Tool update_plan=2)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDE..._RESULT=3, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 4.5806m (tok=0, n=10)
+      agent: 0.7984m (tok=76252, n=10)
+      finalize: 0.5899m (tok=18386, n=1)
+      planner: 0.1836m (tok=2012, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #21 tools: 1.2772m (tok=0)
+      #15 tools: 0.8650m (tok=0)
+      #19 tools: 0.7039m (tok=0)
+      #17 tools: 0.6254m (tok=0)
+      #22 finalize: 0.5899m (tok=18386)
+  +-- [TIMING] wall=5.9703m nodes=6.1524m delta=-0.1821m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...Bernal Yanez Panama biogr...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Informes de la ejecutiv...933 </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.laestrella.com...rnal-BDLE285712)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.laestrella.com.pa/panama/politica/dali...vida-y-cultura/farandula]...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1671 out=331 total=2002
+      min: 0.2211m
+      detail: OpenWebpage(url=https://www.tvn-2.com/tu-d..._1_2110989.html)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.tvn-2.com/tu-decision-2024/candidatos/...l-nacional/] LPF Somos La...
+  +-- [09] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3356 out=142 total=3498
+      min: 0.0405m
+      detail: Search(query=Dalia Mirna Bernal Yanez hoja de vida Asa...)
+  +-- [10] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Informesdela ejecutivaD...df </URL> __END_OF_SOURCE...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4137 out=85 total=4222
+      min: 0.0277m
+      detail: OpenWebpage(url=https://voto2024.espacioci...ia-bernal-yanez)
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://voto2024.espaciocivico.org/es/candidatos/d...fied, title:one moment, p...
+  +-- [13] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5360 out=565 total=5925
+      min: 0.0621m
+      detail: OpenWebpage(url=https://voto2024.maga.dev/...tados/cv_54.pdf)
+  +-- [14] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"pdf_pars...e=1","attempt":1,"attempt...
+  +-- [15] Requested 1 tool call (Search)
+      by: AI
+      tok: in=6407 out=71 total=6478
+      min: 0.0214m
+      detail: Search(query=Dalia Mirna Bernal Yanez estudios univers...)
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Informes de la ejecutiv...df </URL> __END_OF_SOURCE...
+  +-- [17] Requested 4 tool calls (save_finding, Search)
+      by: AI
+      tok: in=6703 out=550 total=7253
+      min: 0.0635m
+      detail: save_finding(finding=birth_year = 1956 (source: Task Ov...ob.pa "Dalia Bernal" hoja...
+  +-- [18] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1956 (source: Task Overview) | Saved to scratchpa...
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> La diputadaDalia Bernal...tml </URL> __END_OF_SOURC...
+  +-- [20] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=7627 out=773 total=8400
+      min: 0.0835m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...ob.pa "Dalia Bernal" biog...
+  +-- [21] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [22] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> José Edwin Sánchez M.je...036 </URL> __END_OF_SOURC...
+  +-- [23] Requested 1 tool call (Search)
+      by: AI
+      tok: in=8908 out=1082 total=9990
+      min: 0.1277m
+      detail: Search(query=site:asamblea.gob.pa "Dalia Bernal" biogr...)
+  +-- [24] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> La Subcomisión deEducac...tml </URL> __END_OF_SOURC...
+  +-- [25] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=13019 out=786 total=13805
+      min: 0.0817m
+      detail: save_finding(finding=prior_occupation = 'ASESOR...cion_...rnal Yanez" nacida en OR ...
+  +-- [26] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: prior_occupation = 'ASESORÍA LEGAL...sts/438/publicacion_438_0...
+  +-- [27] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [28] Requested 1 tool call (Search)
+      by: AI
+      tok: in=13947 out=732 total=14679
+      min: 0.0692m
+      detail: Search(query="Dalia Mirna Bernal Yanez" estudios OR un...)
+  +-- [29] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Bernal Rodríguez...to </URL> __END_OF_SOURCE...
+  +-- [30] Produced structured answer
+      by: AI
+      tok: in=12148 out=6238 total=18386
+      min: 0.5899m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...licy_demotion_unverified(...
+END

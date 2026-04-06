@@ -1,0 +1,168 @@
+AGENT ACTION MAP
+================
+Steps captured: 25
+LangGraph timed steps: 14
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
+      Source-backed found values: 0 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 21 total (Tool Search=11, Tool OpenWebpag...finding=4, Tool update_plan=2)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 5 flagged step(s) (EMPTY_RESULT=4, LOW_EVIDE..._RESULT=3, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 5.2098m (tok=0, n=6)
+      agent: 0.6305m (tok=33228, n=6)
+      planner: 0.2053m (tok=1989, n=1)
+      finalize: 0.0875m (tok=10323, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #09 tools: 1.2969m (tok=0)
+      #13 tools: 1.1402m (tok=0)
+      #07 tools: 1.0151m (tok=0)
+      #11 tools: 0.8903m (tok=0)
+      #05 tools: 0.4361m (tok=0)
+  +-- [TIMING] wall=5.9285m nodes=6.1331m delta=-0.2046m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...ari Bolivia MAS-IPSP biog...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> The 2010-2015 Plurinati...144 </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://elnuevocambio.com....oria-de-bolivia)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://elnuevocambio.com.bo/el-mas-ipsp-el-mas-gr...fied, title:one moment, p...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Flora Largo Pumari biografía diputada Pot...)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> The 2010-2015 Plurinati...com </URL> __END_OF_SOURC...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://anteriorportal.erb...ra_largo_pumari)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://anteriorportal.erbol.com.bo/podcast/biogra..._aguilar] hace 13 años 2 ...
+  +-- [11] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=1687 out=249 total=1936
+      min: 0.2404m
+      detail: save_finding(finding=birth_year = 1974 (source: Task Ov...encia.gob.bo "Flora Largo...
+  +-- [12] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: birth_year = 1974 (source: Task Overview) | Saved to scratchpa...
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Diputado plurinominal (...ari </URL> __END_OF_SOURC...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3061 out=118 total=3179
+      min: 0.0208m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=245)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Refusing to open URL (resolve_error:[Errno 8] nodename ...amentario&id_parlamentari...
+  +-- [16] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=4321 out=531 total=4852
+      min: 0.0762m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...mari" biografía educación...
+  +-- [17] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Flora Largo Pumari00:00...tml </URL> __END_OF_SOURC...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5144 out=518 total=5662
+      min: 0.0940m
+      detail: OpenWebpage(url=https://www.opinion.com.bo...4015330852.html)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://www.opinion.com.bo/articulo/el-pais/potosi...on/medio-ambiente/] Club ...
+  +-- [21] Requested 3 tool calls (Search)
+      by: AI
+      tok: in=6560 out=400 total=6960
+      min: 0.0602m
+      detail: Search(query="Flora Largo Pumari" "hoja de vida" Potos....mari" "lugar de nacimient...
+  +-- [22] Returned 3 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Capraria biflora...93 </URL> __END_OF_SOURCE...
+  +-- [23] Requested 4 tool calls (Search)
+      by: AI
+      tok: in=9498 out=1141 total=10639
+      min: 0.1388m
+      detail: Search(query=site:vicepresidencia.gob.bo "Flora Largo .... "Flora Largo Pumari" can...
+  +-- [24] Returned 4 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Diputado plurinominal (...245 </URL> __END_OF_SOURC...
+  +-- [25] Produced structured answer
+      by: AI
+      tok: in=9797 out=526 total=10323
+      min: 0.0875m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":null,"education_level_confide...
+END

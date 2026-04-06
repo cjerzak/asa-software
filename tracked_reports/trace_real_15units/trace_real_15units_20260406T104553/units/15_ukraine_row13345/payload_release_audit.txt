@@ -1,0 +1,18 @@
+{
+  "unit_key": "15_ukraine_row13345",
+  "generated_at_utc": "2026-04-06T15:50:53Z",
+  "canonical_artifact_id": "efd9d0f6729cae0a8e2110d76d94d0fa6d6d2317b28142a868997a60e0dce2d1",
+  "released_artifact_id": "1aeb14fec4e1cbd679e293df9ba66e1c2e93221356abf96750e8d1039835e723",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "1aeb14fec4e1cbd679e293df9ba66e1c2e93221356abf96750e8d1039835e723",
+  "released_byte_hash": "1aeb14fec4e1cbd679e293df9ba66e1c2e93221356abf96750e8d1039835e723",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "38e97acbf69ddac85480788e828740c735f68e33cc2eb47f636f0f9d45951094",
+  "released_semantic_hash": "38e97acbf69ddac85480788e828740c735f68e33cc2eb47f636f0f9d45951094",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": ["missing_keys", "field_status_canonical"]
+}

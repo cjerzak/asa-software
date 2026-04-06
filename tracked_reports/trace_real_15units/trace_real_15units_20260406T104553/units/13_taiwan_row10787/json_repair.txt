@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 7,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "lgbtq_status", "lgbtq_details", "confidence", "justification"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 1931,
+        "normalized_length": 1931,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 1931,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "a8221c2707b20ef014122dbd1a638a1cb4ef40d7892a325e2780660020650c59",
+    "output_text_hash": "c7d4468339e2b24ae9de8b6639d321782b95457693cd215cfcd0abc4978a5b13",
+    "input_text_length": 1931,
+    "output_text_length": 1950,
+    "input_text_preview": "{ \"educational_attainment\": { \"education_level\": \"Master's/Professional\", \"education_level_source\": \"https://www.moi.gov.tw/english/cp.aspx?n=7603\", \"education_level_confidence\": 1.0, \"education_institution\": \"Tamkang University (BS), Oklahoma State University (MS)\", \"education_institution_source\": \"https://www.moi.gov...",
+    "output_text_preview": "{\"educational_attainment\": {\"education_level\": \"Master's/Professional\", \"education_level_source\": \"https://www.moi.gov.tw/english/cp.aspx?n=7603\", \"education_level_confidence\": 1.0, \"education_institution\": \"Tamkang University (BS), Oklahoma State University (MS)\", \"education_institution_source\": \"https://www.moi.gov.t...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,47 +1 @@\n-{\n-  \"educational_attainment\": {\n-    \"education_level\": \"Master's/Professional\",\n-    \"education_level_source\": \"https://www.moi.gov.tw/english/cp.aspx?n=7603\",\n-    \"education_level_confidence\": 1.0,\n-    \"education_institution\": \"Tamkang University (BS), Oklahoma State University (MS)\",\n-    \"education_institution_source\": \"https://www.moi.gov.tw/english/cp.aspx?n=7603\",\n-    \"education_institution_confidence\": 1.0,\n-    \"education_field\": \"Environmental Engineering (MS), Chemical Engineering (BS)\",\n-    \"education_field_source\": \"https://www.moi.gov.tw/english/cp.aspx?n=7603\",\n-    \"education_field_confidence\": 1.0\n-  },\n-  \"prior_occupation\": {\n-    \"prior_occupation\": \"Environmental Engineer\",\n-    \"prior_occupation_source\": \"https://www.moi.gov.tw/english/cp.aspx?n=7603\",\n-    \"prior_occupation_confidence\": 0.85\n-  },\n-  \"birth_year\": {\n-    \"birth_year\": 1959,\n-    \"birth_year_source\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n-    \"birth_year_confidence\": 1.0\n-  },\n-  \"birth_place\": {\n-    \"birth_place\": \"Taipei\",\n-    \"birth_place_source\": \"https://www.wikidata.org/wiki/Q6653712\",\n-    \"birth_place_confidence\": 1.0\n-  },\n-  \"disability_status\": {\n-    \"disability_status\": \"Unknown\",\n-    \"disability_status_source\": null,\n-    \"disability_status_confidence\": null\n-  },\n-  \"sexual_orientation\": {\n-    \"lgbtq_status\": \"Unknown\",\n-    \"lgbtq_status_source\": null,\n-    \"lgbtq_status_confidence\": null,\n-    \"lgbtq_details\": null,",
+    "event_id": "89a6ae31b8724f6884fc7d5f5041bce5",
+    "ts_utc": "2026-04-06T15:51:40.424703Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "3d507a0f3b6d42e1b78ce425474f2cd9",
+    "ts_utc": "2026-04-06T15:51:40.424720Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

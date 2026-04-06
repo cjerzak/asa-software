@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "fold_archive",
+  "reason": "fold_archive_not_available",
+  "expected_empty": true,
+  "unit_key": "04_hungary_row02353",
+  "generated_at_utc": "2026-04-06T15:54:51Z"
+}

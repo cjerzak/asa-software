@@ -1,0 +1,124 @@
+AGENT ACTION MAP
+================
+Steps captured: 17
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 4 found, 6 unknown, 0 pending (10 core fields)
+      Source-backed found values: 4 (across 12 tracked fields)
+      Unresolved focus: education_level, disability_status, birth_place, birth_year (+2 more)
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 6 tool-call turn(s), 1 answer turn(s)
+      Tool results: 12 total (Tool save_finding=5, Tool OpenW... Search=3, Tool update_plan=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=0, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 3.3409m (tok=0, n=5)
+      finalize: 0.4849m (tok=14248, n=1)
+      agent: 0.3697m (tok=21280, n=5)
+      planner: 0.1722m (tok=1826, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #03 tools: 1.8961m (tok=0)
+      #07 tools: 0.7028m (tok=0)
+      #09 tools: 0.6787m (tok=0)
+      #12 finalize: 0.4849m (tok=14248)
+      #02 agent: 0.2071m (tok=1982)
+  +-- [TIMING] wall=4.1964m nodes=4.3677m delta=-0.1713m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...olina PRI Mexico 2012 Cir...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> El Presidente diputado ...197 </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1668 out=314 total=1982
+      min: 0.2071m
+      detail: OpenWebpage(url=https://sil.gobernacion.go..._1417546492.pdf)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://sil.gobernacion.gob.mx/Archivos/Documentos...ca Clara Molina: Sí, prot...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3220 out=224 total=3444
+      min: 0.0318m
+      detail: Search(query=Mónica Clara Molina SIL perfil legislador)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Experiencia: Confederac...686 </URL> __END_OF_SOURC...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3978 out=172 total=4150
+      min: 0.0286m
+      detail: OpenWebpage(url=https://sil.gobernacion.go...erencia=9216686)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://sil.gobernacion.gob.mx/Librerias/pp_Perfil...recho Experiencia legisla...
+  +-- [11] Requested 5 tool calls (save_finding, OpenWebpage)
+      by: AI
+      tok: in=4704 out=560 total=5264
+      min: 0.0582m
+      detail: save_finding(finding=education_level = Licencia...renci...ernacion.go...216686%2F55...
+  +-- [12] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = Licenciatura (so...encia=9216686) | ... (+1 ...
+  +-- [13] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://sil.gobernacion.gob.mx/movil/?pg=msil%2FML...dad del Golfo de México N...
+  +-- [14] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=6269 out=171 total=6440
+      min: 0.0440m
+      detail: save_finding(finding=education_institution = Un...16686...lina trayectoria profesio...
+  +-- [15] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_institution = Universida...rayectoria%2F9216686%2F55...
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Directorio de Presidenc...686 </URL> __END_OF_SOURC...
+  +-- [17] Produced structured answer
+      by: AI
+      tok: in=7335 out=6913 total=14248
+      min: 0.4849m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...ry_blocked_no_candidates(...
+END

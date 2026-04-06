@@ -1,0 +1,130 @@
+AGENT ACTION MAP
+================
+Steps captured: 18
+LangGraph timed steps: 10
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 4 found, 6 unknown, 0 pending (10 core fields)
+      Source-backed found values: 4 (across 12 tracked fields)
+      Unresolved focus: prior_occupation, class_background, disability_status, birth_year (...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 6 tool-call turn(s), 1 answer turn(s)
+      Tool results: 16 total (Tool Search=9, Tool OpenWebpage...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDE..._RESULT=3, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.6252m (tok=0, n=4)
+      agent: 0.3994m (tok=19501, n=4)
+      finalize: 0.2873m (tok=16004, n=1)
+      planner: 0.1613m (tok=1630, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #09 tools: 1.4750m (tok=0)
+      #07 tools: 0.6473m (tok=0)
+      #03 tools: 0.4764m (tok=0)
+      #10 finalize: 0.2873m (tok=16004)
+      #02 agent: 0.1943m (tok=1935)
+  +-- [TIMING] wall=3.3124m nodes=3.4732m delta=-0.1608m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 3 tool calls (update_plan, wikipedia, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(...Urbanavičius Seimas biogr...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Urbanavičius Summary: Urbanavičius is a Lithuanian-language surname, Lithuani...
+  +-- [05] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 2008 metų Lietuvos Resp...d=9 </URL> __END_OF_SOURC...
+  +-- [06] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://lt.wikipedia.org/w...as_Urbanavičius)
+  +-- [07] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://lt.wikipedia.org/wiki/Justinas_Urbanavičiu...us] Asmeniniai įrankiai P...
+  +-- [08] Requested 2 tool calls (OpenWebpage, Search)
+      by: AI
+      tok: in=1663 out=272 total=1935
+      min: 0.1943m
+      detail: OpenWebpage(url=https://www.lrs.lt/sip/por...910&p_kade...anavičius VRK 2020 biogra...
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2..., captcha, cloudflare, bl...
+  +-- [10] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Lietuvos krikščionių de...tml </URL> __END_OF_SOURC...
+  +-- [11] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=3179 out=234 total=3413
+      min: 0.0457m
+      detail: save_finding(finding=birth_year = 1982 (source:...d-243...avičius" neįgalumas orien...
+  +-- [12] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...iografija_rkndId-2436688....
+  +-- [13] Returned 3 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Justinas URBANAVIČIUSDa...tml </URL> __END_OF_SOURC...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3911 out=682 total=4593
+      min: 0.0609m
+      detail: OpenWebpage(url=https://www.vrk.lt/statini...Biografija.html)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.vrk.lt/statiniai/puslapiai/rinkimai/40...d cookies, title:just a m...
+  +-- [16] Requested 4 tool calls (Search)
+      by: AI
+      tok: in=8829 out=731 total=9560
+      min: 0.0985m
+      detail: Search(query=site:vrk.lt "Justinas Urbanavičius" biogr....banavičius" LGBTQ orienta...
+  +-- [17] Returned 4 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> The election programme ...tml </URL> __END_OF_SOURC...
+  +-- [18] Produced structured answer
+      by: AI
+      tok: in=12663 out=3341 total=16004
+      min: 0.2873m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Master's/Professional","education_l...ry_blocked_no_candidates(...
+END

@@ -1,0 +1,18 @@
+{
+  "unit_key": "03_germany_row00952",
+  "generated_at_utc": "2026-04-06T15:49:48Z",
+  "canonical_artifact_id": "1f8f30296d4b7067ef7e348eaf7a186c49087d87aceca785d7f3a17c740c55c3",
+  "released_artifact_id": "69881fc5895ff54d535f14ea23daad2315988f3dce85316cfd527f615f33d480",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "69881fc5895ff54d535f14ea23daad2315988f3dce85316cfd527f615f33d480",
+  "released_byte_hash": "69881fc5895ff54d535f14ea23daad2315988f3dce85316cfd527f615f33d480",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "ce8970a088aa022b31f021906e4135dc56b2bbe43e6c71b0caeb6b2c4c6792a9",
+  "released_semantic_hash": "ce8970a088aa022b31f021906e4135dc56b2bbe43e6c71b0caeb6b2c4c6792a9",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": ["residual_tool_calls_no_content", "field_status_canonical"]
+}

@@ -1,0 +1,144 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, class_back...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 14 total (Tool save_finding=5, Tool OpenW...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.4753m (tok=0, n=5)
+      agent: 0.4898m (tok=20659, n=5)
+      planner: 0.2361m (tok=2398, n=1)
+      finalize: 0.1090m (tok=8500, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #05 tools: 0.9337m (tok=0)
+      #11 tools: 0.6693m (tok=0)
+      #09 tools: 0.4342m (tok=0)
+      #07 tools: 0.4170m (tok=0)
+      #02 agent: 0.2664m (tok=1927)
+  +-- [TIMING] wall=3.0748m nodes=3.3102m delta=-0.2354m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Nona Mamulashvili)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Nona Mamulashvili Summary: Nona Mamulashvili (Georgian: ნონა მამულაშვილი; bor...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1977 (source:...a_Mam...li biography Parliament o...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1977 (source: https:/...ia.org/wiki/Nona_Mamulash...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgi...858 </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.hks.harvard.ed...na-mamulashvili)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.hks.harvard.edu/about/nona-mamulashvil...Executive Education Admis...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1665 out=262 total=1927
+      min: 0.2664m
+      detail: OpenWebpage(url=https://parliament.ge/en/p.../2499/biography)
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://parliament.ge/en/parliament-members/2499/b...n/legislation/reglament] ...
+  +-- [12] Requested 1 tool call (Search)
+      by: AI
+      tok: in=2237 out=194 total=2431
+      min: 0.0347m
+      detail: Search(query=Nona Mamulashvili education birth place p...)
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgi...-4 </URL> __END_OF_SOURCE...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4132 out=152 total=4284
+      min: 0.0434m
+      detail: OpenWebpage(url=https://en.wikipedia.org/w...na_Mamulashvili)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Nona_Mamulashvili Fi...] Log in Personal tools D...
+  +-- [16] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=4754 out=112 total=4866
+      min: 0.0369m
+      detail: save_finding(finding=education_institution = In...gia.c...ona Mamulashvili" birth p...
+  +-- [17] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_institution = Internatio...ia.com/team-4) | ... (+1 ...
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Nona Mamulashvili(Georg...ლი </URL> __END_OF_SOURCE...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=6011 out=1140 total=7151
+      min: 0.1084m
+      detail: OpenWebpage(url=https://www.wikiwand.com/e...na_Mamulashvili)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.wikiwand.com/en/articles/Nona_Mamulash..., captcha, cloudflare, bl...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=7232 out=1268 total=8500
+      min: 0.1090m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...r_below_policy_threshold(...
+END

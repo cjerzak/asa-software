@@ -1,0 +1,35 @@
+{
+  "goal": "Complete the task",
+  "steps": [
+    {
+      "id": 1,
+      "description": "Clarify scope and constraints: Clarify task objective",
+      "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+      "status": "completed",
+      "findings": "Starting search for Kentaro Motomura."
+    },
+    {
+      "id": 2,
+      "description": "Collect high-signal evidence from relevant tools/sources",
+      "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+      "status": "completed",
+      "findings": "Identified the correct Kentaro Motomura (politician, born 1970). Found birth year, birth place, prior occupation, and class background. Need to confirm education details and disability/LGBTQ status."
+    },
+    {
+      "id": 3,
+      "description": "Validate consistency and resolve conflicts/gaps",
+      "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+      "status": "completed",
+      "findings": "Collected all required fields for Kentaro Motomura (politician). Verified birth year (1970), birth place (Sagamihara), education (Aoyama Gakuin University, Economics), and prior occupations (Secretary, Corporate employee). Disability and LGBTQ status are unknown."
+    },
+    {
+      "id": 4,
+      "description": "Produce final structured output with traceable justification",
+      "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+      "status": "completed",
+      "findings": "Finalizing the structured output for Kentaro Motomura. All fields have been researched and verified. Justification for class background is based on his career as a political secretary and corporate employee before entering elected office. Disability and LGBTQ status are not publicly disclosed."
+    }
+  ],
+  "version": 6,
+  "current_step": null
+}

@@ -1,0 +1,144 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_institution, education_field, prior_occupation, class_bac...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 11 total (Tool OpenWebpage=4, Tool Search...e_finding=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.2680m (tok=0, n=5)
+      agent: 0.3746m (tok=21134, n=5)
+      planner: 0.1621m (tok=1742, n=1)
+      finalize: 0.0609m (tok=7038, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #07 tools: 0.6784m (tok=0)
+      #11 tools: 0.6455m (tok=0)
+      #05 tools: 0.4713m (tok=0)
+      #09 tools: 0.4574m (tok=0)
+      #02 agent: 0.1966m (tok=1941)
+  +-- [TIMING] wall=2.7072m nodes=2.8655m delta=-0.1583m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Winston Peters)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Winston Peters Summary: Winston Raymond Peters (born 11 April 1945) is a New ...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1945 (source:...Winst...education prior occupatio...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1945 (source: https:/...pedia.org/wiki/Winston_Pe...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC ...ers </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://en.wikipedia.org/wiki/Winston_Peters)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Winston_Peters Final...] Log in Personal tools D...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1657 out=284 total=1941
+      min: 0.1966m
+      detail: OpenWebpage(query=early life education occupation birth...pedia.org/wiki/Winston_Pe...
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Winston_Peters Final...arly life and education [...
+  +-- [12] Requested 1 tool call (Search)
+      by: AI
+      tok: in=2301 out=193 total=2494
+      min: 0.0334m
+      detail: Search(query=Winston Peters birth place law degree uni...)
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC ...ers </URL> __END_OF_SOURC...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3320 out=65 total=3385
+      min: 0.0283m
+      detail: OpenWebpage(url=https://simple.wikipedia.o.../Winston_Peters)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://simple.wikipedia.org/wiki/Winston_Peters F...org&uselang=en] Create ac...
+  +-- [16] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=5936 out=325 total=6261
+      min: 0.0406m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que... Peters birth place "born...
+  +-- [17] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Petershas led the popul...ers </URL> __END_OF_SOURC...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=6444 out=609 total=7053
+      min: 0.0757m
+      detail: OpenWebpage(url=https://thetopcelebrity.co...ligion-networth)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://thetopcelebrity.com/biography/winston-pete...fied, title:one moment, p...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=6589 out=449 total=7038
+      min: 0.0609m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"High School","education_level_sourc...ry_blocked_no_candidates(...
+END

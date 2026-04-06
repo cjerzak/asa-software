@@ -1,0 +1,163 @@
+AGENT ACTION MAP
+================
+Steps captured: 26
+LangGraph timed steps: 18
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 6 found, 4 unknown, 0 pending (10 core fields)
+      Source-backed found values: 6 (across 12 tracked fields)
+      Unresolved focus: class_background, disability_status, lgbtq_status, lgbtq_details
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 17 total (Tool save_finding=6, Tool Searc...date_plan=2, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 0 flagged step(s); diagnostics(EMPTY_RESULT=5, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 3.7680m (tok=0, n=8)
+      agent: 0.6530m (tok=40281, n=8)
+      planner: 0.2170m (tok=2457, n=1)
+      finalize: 0.0800m (tok=6423, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #15 tools: 0.9028m (tok=0)
+      #17 tools: 0.8317m (tok=0)
+      #13 tools: 0.7876m (tok=0)
+      #11 tools: 0.6906m (tok=0)
+      #05 tools: 0.4626m (tok=0)
+  +-- [TIMING] wall=4.5023m nodes=4.7179m delta=-0.2156m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Liu Shyh-fang)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Liu Shyh-fang Summary: Liu Shyh-fang (or Liu Shih-fang; Chinese: 劉世芳; pinyin:...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1959 (source:.../Liu_...iography Taiwan DPP educa...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1959 (source: https:/...ipedia.org/wiki/Liu_Shyh-...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuS...603 </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1657 out=262 total=1919
+      min: 0.2502m
+      detail: OpenWebpage(url=https://en.wikipedia.org/wiki/Liu_Shyh-fang)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Liu_Shyh-fang Final ...] Log in Personal tools D...
+  +-- [10] Requested 3 tool calls (save_finding)
+      by: AI
+      tok: in=2208 out=216 total=2424
+      min: 0.0298m
+      detail: save_finding(finding=birth_place = Taipei (sour.../wiki...p.aspx?n=7603), category=...
+  +-- [11] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = Taipei (source: http...gov.tw/english/cp.aspx?n=...
+  +-- [12] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4017 out=539 total=4556
+      min: 0.0727m
+      detail: Search(query=Liu Shyh-fang disability LGBTQ identity f...)
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Map Remove ads </CONTEN...F54 </URL> __END_OF_SOURC...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4870 out=270 total=5140
+      min: 0.0339m
+      detail: OpenWebpage(url=https://www.mac.gov.tw/en/...41228E73D252F54)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.mac.gov.tw/en/News_Content.aspx?n=A921...d cookies, title:just a m...
+  +-- [16] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=5576 out=547 total=6123
+      min: 0.0553m
+      detail: save_finding(finding=education_field = Environm...cp.as..."Liu Shyh-fang" biography...
+  +-- [17] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_field = Environmental En...gov.tw/english/cp.aspx?n=...
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [19] Requested 1 tool call (Search)
+      by: AI
+      tok: in=6013 out=643 total=6656
+      min: 0.0733m
+      detail: Search(query=site:ly.gov.tw "劉世芳" 經歷 OR "Liu Shyh-fang...)
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [21] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=6060 out=597 total=6657
+      min: 0.0644m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que..."劉世芳" 經歷 OR "Liu Shyh-fan...
+  +-- [22] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [23] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [24] Requested 1 tool call (Search)
+      by: AI
+      tok: in=6181 out=625 total=6806
+      min: 0.0734m
+      detail: Search(query=site:ly.gov.tw "劉世芳" 經歷 OR "Liu Shih-fang...)
+  +-- [25] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [26] Produced structured answer
+      by: AI
+      tok: in=5420 out=1003 total=6423
+      min: 0.0800m
+      detail: {"education_level":"Master's/Professional","education_l...ry_blocked_no_candidates(...
+END

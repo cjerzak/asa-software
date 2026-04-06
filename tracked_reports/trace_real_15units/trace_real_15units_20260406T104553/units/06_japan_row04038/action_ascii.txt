@@ -1,0 +1,226 @@
+AGENT ACTION MAP
+================
+Steps captured: 36
+LangGraph timed steps: 24
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 4 found, 6 unknown, 0 pending (10 core fields)
+      Source-backed found values: 4 (across 12 tracked fields)
+      Unresolved focus: prior_occupation, class_background, disability_status, birth_place ...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 2
+      AI turns: 14 tool-call turn(s), 2 answer turn(s)
+      Tool results: 28 total (Tool save_finding=10, Tool Open...date_plan=4, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (4 completed, 0 in_progress, 0 pending)
+      Anomalies: 7 flagged step(s) (EMPTY_RESULT=6, LOW_EVIDE..._RESULT=3, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (4 completed, 0 in_progress, 0 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 3.6255m (tok=0, n=10)
+      finalize: 3.0061m (tok=0, n=1)
+      agent: 0.7887m (tok=102200, n=11)
+      planner: 0.2069m (tok=2417, n=1)
+      nudge: 0.0000m (tok=0, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #24 finalize: 3.0061m (tok=0)
+      #09 tools: 0.9885m (tok=0)
+      #07 tools: 0.9046m (tok=0)
+      #11 tools: 0.4533m (tok=0)
+      #13 tools: 0.4248m (tok=0)
+  +-- [TIMING] wall=7.4323m nodes=7.6271m delta=-0.1948m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Kentaro Motomura)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Sagamihara Summary: Sagamihara (相模原市, Sagamihara-shi) is a city in Kanagawa P...
+  +-- [05] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Kentaro Motomura politician Japan DPJ 2009)
+  +-- [06] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> The Democratic Party of...df </URL> __END_OF_SOURCE...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.jstor.org/stab...as.2010.50.1.40)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.jstor.org/stable/10.1525/as.2010.50.1....kers: captcha, unusual tr...
+  +-- [09] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=本村賢太郎 経歴 プロフィール (Kentaro Motomura profile))
+  +-- [10] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 本村賢太郎（もとむら けんたろう、 1970年...00 </URL> __END_OF_SOURCE...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1670 out=312 total=1982
+      min: 0.2434m
+      detail: OpenWebpage(url=https://asaikikaku.co.jp/t...motomurakentaro)
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [13] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2346 out=122 total=2468
+      min: 0.0291m
+      detail: OpenWebpage(url=https://asianwiki.com/Kentaro_Motomura)
+  +-- [14] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://asianwiki.com/Kentaro_Motomura Final URL: ..., captcha, cloudflare, bl...
+  +-- [15] Requested 6 tool calls (save_finding, update_plan, Search)
+      by: AI
+      tok: in=4072 out=125 total=4197
+      min: 0.0235m
+      detail: save_finding(finding=birth_year = 1970 (source:...org/w...(Kentaro Motomura educati...
+  +-- [16] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1970 (source: https:/...ra.jp/profile) | ... (+1 ...
+  +-- [17] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 青山学院大学在学中から伯父の 参議院議員 ・ ...82 </URL> __END_OF_SOURCE...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5594 out=998 total=6592
+      min: 0.0872m
+      detail: OpenWebpage(url=https://hinoe.mexia.net/hi...otomura-kentaro)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://hinoe.mexia.net/hinoelist/motomura-kentaro...mexia.net/genres/manga/] ...
+  +-- [21] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=9869 out=95 total=9964
+      min: 0.0284m
+      detail: OpenWebpage(url=https://seijinomura.townne...ile.html?aid=82)
+  +-- [22] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://seijinomura.townnews.co.jp/profile.html?ai...ection/2019.html] 2018年以前...
+  +-- [23] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=10631 out=87 total=10718
+      min: 0.0365m
+      detail: OpenWebpage(url=https://ja.wikipedia.org/wiki/本村賢太郎)
+  +-- [24] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://ja.wikipedia.org/wiki/本村賢太郎 Final URL: htt.../Help:%E7%9B%AE%E6%AC%A1]...
+  +-- [25] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=11627 out=97 total=11724
+      min: 0.0361m
+      detail: OpenWebpage(query=学歴 (education), url=https://ja.wikipedia.org/wiki/本村賢太郎)
+  +-- [26] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://ja.wikipedia.org/wiki/本村賢太郎 Final URL: htt.../Help:%E7%9B%AE%E6%AC%A1]...
+  +-- [27] Requested 7 tool calls (save_finding, update_plan)
+      by: AI
+      tok: in=12633 out=418 total=13051
+      min: 0.1088m
+      detail: save_finding(finding=education_institution = Ao...org/w...n(status=completed, step_...
+  +-- [28] Returned 6 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: education_institution = Aoyama Gak...rg/wiki/本村賢太郎) | ... (+3 ...
+  +-- [29] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 3 updated to 'completed'
+  +-- [30] Requested 1 tool call (update_plan)
+      by: AI
+      tok: in=13625 out=138 total=13763
+      min: 0.0312m
+      detail: update_plan(status=in_progress, step_id=4)
+  +-- [31] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 4 updated to 'in_progress'
+  +-- [32] Produced structured answer
+      by: AI
+      tok: in=13781 out=753 total=14534
+      min: 0.1094m
+      detail: {"education_level":"Bachelor's","education_level_source...ry_blocked_no_candidates(...
+  +-- [33] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: CONTINUE SEARCHING — 4 fields are still unresolved: dis...urce: URL)', category='fa...
+  +-- [34] Requested 3 tool calls (Search)
+      by: AI
+      tok: in=12865 out=342 total=13207
+      min: 0.0551m
+      detail: Search(query=本村賢太郎 障害 disability status) | Search(query...=本村賢太郎 職歴 経歴 prior occupa...
+  +-- [35] Returned 3 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> 本村賢太郎（もとむら けんたろう、 1970年...pdf </URL> __END_OF_SOURC...
+  +-- [36] Produced structured answer
+      by: AI
+      tok: in=0 out=0 total=0
+      min: 3.0061m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Bachelor's","education_level_source...isability or LGBTQ identi...
+END

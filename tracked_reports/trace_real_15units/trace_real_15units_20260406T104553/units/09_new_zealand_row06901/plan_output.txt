@@ -1,0 +1,35 @@
+{
+  "goal": "Complete the task",
+  "steps": [
+    {
+      "id": 1,
+      "description": "Clarify scope and constraints: Clarify task objective",
+      "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+      "status": "completed",
+      "findings": "Starting research on Winston Peters (NZ politician)."
+    },
+    {
+      "id": 2,
+      "description": "Collect high-signal evidence from relevant tools/sources",
+      "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+      "status": "completed",
+      "findings": "Refining search for birth place, university education, and prior occupations to determine class background."
+    },
+    {
+      "id": 3,
+      "description": "Validate consistency and resolve conflicts/gaps",
+      "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 4,
+      "description": "Produce final structured output with traceable justification",
+      "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+      "status": "pending",
+      "findings": ""
+    }
+  ],
+  "version": 4,
+  "current_step": 3
+}

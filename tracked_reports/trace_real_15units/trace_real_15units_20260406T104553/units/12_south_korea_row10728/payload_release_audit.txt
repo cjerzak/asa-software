@@ -1,0 +1,18 @@
+{
+  "unit_key": "12_south_korea_row10728",
+  "generated_at_utc": "2026-04-06T15:48:54Z",
+  "canonical_artifact_id": "b9d3a5193239253942ab00b4d2b387a80d575e975bff2a552de0d2e8522d5c90",
+  "released_artifact_id": "bdc3a87dc1ebd8b29591bad7e2b8e88ae96dc1c895e63f0f36072af2154ec98b",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "bdc3a87dc1ebd8b29591bad7e2b8e88ae96dc1c895e63f0f36072af2154ec98b",
+  "released_byte_hash": "bdc3a87dc1ebd8b29591bad7e2b8e88ae96dc1c895e63f0f36072af2154ec98b",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "3fe61b9954caa011af52505d2a874ddaacd85bc4ac08cda69e1fbb5219cc88d6",
+  "released_semantic_hash": "3fe61b9954caa011af52505d2a874ddaacd85bc4ac08cda69e1fbb5219cc88d6",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": ["residual_tool_calls_no_content", "field_status_canonical"]
+}

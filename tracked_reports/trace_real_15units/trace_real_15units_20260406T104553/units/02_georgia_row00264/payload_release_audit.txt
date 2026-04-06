@@ -1,0 +1,18 @@
+{
+  "unit_key": "02_georgia_row00264",
+  "generated_at_utc": "2026-04-06T15:49:57Z",
+  "canonical_artifact_id": "18d7b9b977268e5549a23c7b6e5d7d02006ef9e320f7a6e8bf5853cbe712029d",
+  "released_artifact_id": "cdd8e7f4db34aafefb59c073e34c07ba7dd955a122178a28bb842eac2881e1c5",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "cdd8e7f4db34aafefb59c073e34c07ba7dd955a122178a28bb842eac2881e1c5",
+  "released_byte_hash": "cdd8e7f4db34aafefb59c073e34c07ba7dd955a122178a28bb842eac2881e1c5",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "f0f9c60b3814a6453903813545a1311efcab1ade687521d246984bcd4c2ae093",
+  "released_semantic_hash": "f0f9c60b3814a6453903813545a1311efcab1ade687521d246984bcd4c2ae093",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": ["missing_keys", "field_status_canonical"]
+}

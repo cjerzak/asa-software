@@ -1,0 +1,22 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "e628bbb637c64b1ca5e0476daff5d5af",
+    "ts_utc": "2026-04-06T15:51:10.352110Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

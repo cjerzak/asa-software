@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "invoke_error",
+  "reason": "invoke_exception_absent",
+  "expected_empty": true,
+  "unit_key": "01_bolivia_row00180",
+  "generated_at_utc": "2026-04-06T15:52:49Z"
+}

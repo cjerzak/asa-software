@@ -1,0 +1,7 @@
+{
+  "error_type": "_ModelInvokeHardTimeoutError",
+  "error_message": "Model invoke exceeded hard timeout (180.0s).",
+  "retry_attempts": 1,
+  "retry_max_attempts": 3,
+  "retryable_error": false
+}

@@ -1,0 +1,149 @@
+AGENT ACTION MAP
+================
+Steps captured: 22
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, class_back...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 13 total (Tool Search=4, Tool OpenWebpage...date_plan=2, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 1.3909m (tok=0, n=5)
+      agent: 0.4501m (tok=21757, n=5)
+      planner: 0.1985m (tok=2234, n=1)
+      finalize: 0.0525m (tok=6569, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #05 tools: 0.4729m (tok=0)
+      #07 tools: 0.4594m (tok=0)
+      #09 tools: 0.4131m (tok=0)
+      #02 agent: 0.2289m (tok=1901)
+      #01 planner: 0.1985m (tok=2234)
+  +-- [TIMING] wall=1.8940m nodes=2.0919m delta=-0.1979m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Kim Han-gil)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Kim Han-gil Summary: Kim Han-gil (Korean: 김한길; born 17 September 1953) is a S...
+  +-- [05] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Kim Han-gil South Korea politician biogra...)
+  +-- [06] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> KimHan-gil(Korean: 김한길;...생애 </URL> __END_OF_SOURCE...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://en.wikipedia.org/wiki/Kim_Han-gil)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Kim_Han-gil Final UR...] Log in Personal tools D...
+  +-- [09] Requested 1 tool call (Search)
+      by: AI
+      tok: in=1658 out=243 total=1901
+      min: 0.2289m
+      detail: Search(query=Kim Han-gil South Korea politician educat...)
+  +-- [10] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> KimHan-gil(Korean: 김한길;...한길 </URL> __END_OF_SOURCE...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2247 out=158 total=2405
+      min: 0.0373m
+      detail: OpenWebpage(url=https://dbpedia.org/page/Kim_Han-gil)
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://dbpedia.org/page/Kim_Han-gil Final URL: ht...at=text%2Fhtml] Embedded:...
+  +-- [13] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=4095 out=190 total=4285
+      min: 0.0386m
+      detail: save_finding(finding=birth_year = 1953 (source:...ki/Ki...(query=site:rokps.or.kr "...
+  +-- [14] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1953 (source: https:/...ikipedia.org/wiki/Kim_Han...
+  +-- [15] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 뒤로인쇄김한길(金한길) 출생 1953년 0...374 </URL> __END_OF_SOURC...
+  +-- [16] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5604 out=751 total=6355
+      min: 0.0842m
+      detail: OpenWebpage(url=https://www.rokps.or.kr/pr...ew.asp?idx=2374)
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"tls_erro...null,"attempt":2,"attempt...
+  +-- [18] Requested 3 tool calls (save_finding, update_plan, Search)
+      by: AI
+      tok: in=6326 out=485 total=6811
+      min: 0.0611m
+      detail: save_finding(finding=birth_place = Tokyo, Japan...w.asp...ery=site:rokps.or.kr "김한길...
+  +-- [19] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = Tokyo, Japan (source...ile/profile_view.asp?idx=...
+  +-- [20] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 뒤로인쇄김한길(金한길) 출생 1953년 0...374 </URL> __END_OF_SOURC...
+  +-- [22] Produced structured answer
+      by: AI
+      tok: in=6106 out=463 total=6569
+      min: 0.0525m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...ry_blocked_no_candidates(...
+END

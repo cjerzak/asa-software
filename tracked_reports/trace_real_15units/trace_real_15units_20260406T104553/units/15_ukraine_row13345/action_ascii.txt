@@ -1,0 +1,148 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 10
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 3 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 17 total (Tool Search=6, Tool save_findin...Webpage=4, Tool update_plan=2)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 5 flagged step(s) (EMPTY_RESULT=4, LOW_EVIDE..._RESULT=2, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.9002m (tok=0, n=4)
+      agent: 0.3888m (tok=20056, n=4)
+      finalize: 0.1688m (tok=12118, n=1)
+      planner: 0.1576m (tok=1735, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #09 tools: 1.0170m (tok=0)
+      #07 tools: 0.9417m (tok=0)
+      #05 tools: 0.8830m (tok=0)
+      #02 agent: 0.1922m (tok=1945)
+      #10 finalize: 0.1688m (tok=12118)
+  +-- [TIMING] wall=3.4582m nodes=3.6154m delta=-0.1572m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...kraine MP Servant of the ...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> TheVerkhovna Rada voted...nyk </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://ukranews.com/en/ne...-party-kolisnyk)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://ukranews.com/en/news/1112477-rada-early-te...loudflare, title:just a m...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Колісник Анна Сергіївна біографія Слуга н...)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> АннаСергіївнаКолісник(н...25 </URL> __END_OF_SOURCE...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://itd.rada.gov.ua/mps/info/page/21144)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [11] Requested 7 tool calls (save_finding, update_plan, Search)
+      by: AI
+      tok: in=1658 out=287 total=1945
+      min: 0.1922m
+      detail: save_finding(finding=birth_year = 1994 (source:...Анна_... "Анна Колісник" трудова ...
+  +-- [12] Returned 5 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: birth_year = 1994 (source: https:/.../?code=528264) | ... (+2 ...
+  +-- [13] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [14] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Анна(фильм, 2019...10 </URL> __END_OF_SOURCE...
+  +-- [15] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3490 out=127 total=3617
+      min: 0.0232m
+      detail: OpenWebpage(url=https://www.fair.org.ua/an...tyng-u-detalyah)
+  +-- [16] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.fair.org.ua/anna-kolisnyk-biografiya-o...a-ta-sekrety-yany-glushhe...
+  +-- [17] Requested 3 tool calls (Search)
+      by: AI
+      tok: in=4925 out=842 total=5767
+      min: 0.0803m
+      detail: Search(query=Колісник Анна Сергіївна "трудова діяльніс....ергіївна декларація про д...
+  +-- [18] Returned 3 results
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Основні причини ...df </URL> __END_OF_SOURCE...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=7866 out=861 total=8727
+      min: 0.0931m
+      detail: OpenWebpage(url=https://news.liga.net/en/p...-of-mp-kolisnyk)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://news.liga.net/en/politics/news/rada-early-...People MP Tetiana Lanchuk...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=10586 out=1532 total=12118
+      min: 0.1688m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...licy_demotion_unverified(...
+END

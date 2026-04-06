@@ -1,0 +1,128 @@
+{
+  "tokens_used": 33909,
+  "input_tokens": 29153,
+  "output_tokens": 4756,
+  "fold_tokens": 0,
+  "token_trace": [
+    {
+      "node": "planner",
+      "input_tokens": 628,
+      "output_tokens": 1107,
+      "total_tokens": 1735,
+      "elapsed_minutes": 0.1576,
+      "started_at_utc": "2026-04-06T15:47:11.095133Z",
+      "ended_at_utc": "2026-04-06T15:47:20.551973Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "agent",
+      "input_tokens": 1658,
+      "output_tokens": 287,
+      "total_tokens": 1945,
+      "elapsed_minutes": 0.1922,
+      "started_at_utc": "2026-04-06T15:47:11.095124Z",
+      "ended_at_utc": "2026-04-06T15:47:22.629192Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.0584,
+      "started_at_utc": "2026-04-06T15:47:22.630208Z",
+      "ended_at_utc": "2026-04-06T15:47:26.132321Z",
+      "status": "error",
+      "error_type": "blocked",
+      "tool_name": "mixed"
+    },
+    {
+      "node": "agent",
+      "input_tokens": 3490,
+      "output_tokens": 127,
+      "total_tokens": 3617,
+      "elapsed_minutes": 0.0232,
+      "started_at_utc": "2026-04-06T15:47:26.137165Z",
+      "ended_at_utc": "2026-04-06T15:47:27.527280Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.883,
+      "started_at_utc": "2026-04-06T15:47:27.529626Z",
+      "ended_at_utc": "2026-04-06T15:48:20.511992Z",
+      "status": "error",
+      "error_type": "timeout",
+      "tool_name": "mixed"
+    },
+    {
+      "node": "agent",
+      "input_tokens": 4925,
+      "output_tokens": 842,
+      "total_tokens": 5767,
+      "elapsed_minutes": 0.0803,
+      "started_at_utc": "2026-04-06T15:48:20.514649Z",
+      "ended_at_utc": "2026-04-06T15:48:25.332292Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 0.9417,
+      "started_at_utc": "2026-04-06T15:48:25.333579Z",
+      "ended_at_utc": "2026-04-06T15:49:21.838406Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "mixed"
+    },
+    {
+      "node": "agent",
+      "input_tokens": 7866,
+      "output_tokens": 861,
+      "total_tokens": 8727,
+      "elapsed_minutes": 0.0931,
+      "started_at_utc": "2026-04-06T15:49:21.841327Z",
+      "ended_at_utc": "2026-04-06T15:49:27.424905Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    },
+    {
+      "node": "tools",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "elapsed_minutes": 1.017,
+      "started_at_utc": "2026-04-06T15:49:27.426975Z",
+      "ended_at_utc": "2026-04-06T15:50:28.448756Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": "mixed"
+    },
+    {
+      "node": "finalize",
+      "input_tokens": 10586,
+      "output_tokens": 1532,
+      "total_tokens": 12118,
+      "elapsed_minutes": 0.1688,
+      "started_at_utc": "2026-04-06T15:50:28.451968Z",
+      "ended_at_utc": "2026-04-06T15:50:38.580263Z",
+      "status": "ok",
+      "error_type": null,
+      "tool_name": null
+    }
+  ]
+}

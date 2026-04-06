@@ -1,0 +1,35 @@
+{
+  "goal": "Complete the task",
+  "steps": [
+    {
+      "id": 1,
+      "description": "Clarify scope and constraints: Clarify task objective",
+      "completion_criteria": "Concrete objective, constraints, and required output format are explicit.",
+      "status": "completed",
+      "findings": "Starting research on Gergely Gulyás."
+    },
+    {
+      "id": 2,
+      "description": "Collect high-signal evidence from relevant tools/sources",
+      "completion_criteria": "At least one source-backed finding captured for key task dimensions.",
+      "status": "completed",
+      "findings": "Confirmed birth_year (1981), birth_place (Budapest), education_institution (Pázmány Péter Katolikus Egyetem), education_field (Law), and prior_occupation (Lawyer). Class background is middle class/professional (father was a lawyer). Education level is likely a Master's (undivided law degree), but needs formal confirmation. Disability and LGBTQ status remain pending."
+    },
+    {
+      "id": 3,
+      "description": "Validate consistency and resolve conflicts/gaps",
+      "completion_criteria": "Conflicts documented, unresolved gaps marked, and weak claims demoted.",
+      "status": "pending",
+      "findings": ""
+    },
+    {
+      "id": 4,
+      "description": "Produce final structured output with traceable justification",
+      "completion_criteria": "Final output is schema-compliant and grounded in collected evidence.",
+      "status": "pending",
+      "findings": ""
+    }
+  ],
+  "version": 4,
+  "current_step": 3
+}

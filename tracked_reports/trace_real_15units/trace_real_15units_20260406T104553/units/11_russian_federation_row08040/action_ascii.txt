@@ -1,0 +1,194 @@
+AGENT ACTION MAP
+================
+Steps captured: 31
+LangGraph timed steps: 24
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 3 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, class_back...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 14 tool-call turn(s), 1 answer turn(s)
+      Tool results: 15 total (Tool save_finding=6, Tool OpenW...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.9783m (tok=0, n=11)
+      agent: 0.8048m (tok=71966, n=11)
+      planner: 0.2145m (tok=2260, n=1)
+      finalize: 0.1505m (tok=8863, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #23 tools: 1.5310m (tok=0)
+      #09 tools: 0.7484m (tok=0)
+      #05 tools: 0.4421m (tok=0)
+      #02 agent: 0.2516m (tok=1998)
+      #11 tools: 0.2395m (tok=0)
+  +-- [TIMING] wall=3.9356m nodes=4.1480m delta=-0.2124m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(...y=Leonid Slutsky (politic...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Leonid Slutsky (politician) Summary: Leonid Eduardovich Slutsky ( SLOOT-ski; ...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://en.wikipedia.org/w...ky_(politician))
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Leonid_Slutsky_(poli...] Log in Personal tools D...
+  +-- [07] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1968 (source:...y_(politician)), category=fact)
+  +-- [08] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1968 (source: https:/...i/Leonid_Slutsky_(politic...
+  +-- [09] Requested 1 tool call (Search)
+      by: AI
+      tok: in=1660 out=338 total=1998
+      min: 0.2516m
+      detail: Search(query=Leonid Eduardovich Slutsky biography educ...)
+  +-- [10] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LeonidEduardovichSlutsk...ky </URL> __END_OF_SOURCE...
+  +-- [11] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2337 out=175 total=2512
+      min: 0.0295m
+      detail: OpenWebpage(url=https://www.spisok-putina....ersonas/slutsky)
+  +-- [12] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.spisok-putina.org/en/personas/slutsky ...up/propagandists/] Accomp...
+  +-- [13] Requested 1 tool call (Search)
+      by: AI
+      tok: in=2979 out=171 total=3150
+      min: 0.0362m
+      detail: Search(query=Leonid Slutsky United Russia politician 2016)
+  +-- [14] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LeonidEduardovich Sluts...ky </URL> __END_OF_SOURCE...
+  +-- [15] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3299 out=40 total=3339
+      min: 0.0402m
+      detail: OpenWebpage(url=https://reference.org/fact...tician/tasPv0W9)
+  +-- [16] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://reference.org/facts/leonid_slutsky_politic...arty being associated wit...
+  +-- [17] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=5144 out=767 total=5911
+      min: 0.0897m
+      detail: save_finding(finding=birth_place = Moscow (sour...ician/tasPv0W9), category=fact)
+  +-- [18] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = Moscow (source: http...d_slutsky_politician/tasP...
+  +-- [19] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=7825 out=819 total=8644
+      min: 0.0860m
+      detail: save_finding(finding=education_institution = Mo...u/en/home-page), category=fact)
+  +-- [20] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_institution = Moscow Ins...ps://lslutsky.ru/en/home-...
+  +-- [21] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=8729 out=106 total=8835
+      min: 0.0299m
+      detail: save_finding(finding=education_field = Economic...u/en/home-page), category=fact)
+  +-- [22] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_field = Economics (sourc...ps://lslutsky.ru/en/home-...
+  +-- [23] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=8934 out=101 total=9035
+      min: 0.0509m
+      detail: save_finding(finding=education_level = Doctorat...u/en/home-page), category=fact)
+  +-- [24] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = Doctorate (Docto...ps://lslutsky.ru/en/home-...
+  +-- [25] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=9120 out=106 total=9226
+      min: 0.0575m
+      detail: save_finding(finding=prior_occupation = Banking...rsonas/slutsky), category=fact)
+  +-- [26] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: prior_occupation = Banking executi...ina.org/en/personas/sluts...
+  +-- [27] Requested 1 tool call (Search)
+      by: AI
+      tok: in=9303 out=141 total=9444
+      min: 0.0609m
+      detail: Search(query="Leonid Slutsky" "United Russia" deputy 2016)
+  +-- [28] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> In the list of Senators...738 </URL> __END_OF_SOURC...
+  +-- [29] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=9591 out=281 total=9872
+      min: 0.0724m
+      detail: OpenWebpage(url=https://duma.gov.ru/en/news/56738)
+  +-- [30] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [31] Produced structured answer
+      by: AI
+      tok: in=7039 out=1824 total=8863
+      min: 0.1505m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n..., high_conflict_demotion(...
+END

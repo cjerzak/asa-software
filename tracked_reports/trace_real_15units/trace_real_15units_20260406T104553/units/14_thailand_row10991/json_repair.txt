@@ -1,0 +1,22 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "preserve_model_values",
+    "preserved_model_values_count": 1,
+    "preserved_model_values_sample": "education_field",
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "9303bae2482844b89c5dd2f9032d0938",
+    "ts_utc": "2026-04-06T15:49:27.087047Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

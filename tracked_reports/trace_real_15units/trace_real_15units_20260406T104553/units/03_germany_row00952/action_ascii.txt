@@ -1,0 +1,144 @@
+AGENT ACTION MAP
+================
+Steps captured: 21
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 4 found, 6 unknown, 0 pending (10 core fields)
+      Source-backed found values: 4 (across 12 tracked fields)
+      Unresolved focus: education_institution, prior_occupation, class_background, disabili...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 8 tool-call turn(s), 1 answer turn(s)
+      Tool results: 14 total (Tool save_finding=5, Tool OpenW...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.1794m (tok=0, n=5)
+      agent: 0.3890m (tok=24673, n=5)
+      planner: 0.1872m (tok=1729, n=1)
+      finalize: 0.0868m (tok=9403, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #11 tools: 0.8696m (tok=0)
+      #05 tools: 0.4782m (tok=0)
+      #07 tools: 0.4080m (tok=0)
+      #09 tools: 0.4078m (tok=0)
+      #02 agent: 0.2208m (tok=1900)
+  +-- [TIMING] wall=2.6559m nodes=2.8425m delta=-0.1866m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Nicole Gohlke)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Nicole Gohlke Summary: Nicole Stephanie Gohlke (born 15 November 1975) is a G...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1975 (source:.../Nico...e Gohlke Lebenslauf Bunde...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1975 (source: https:/...ipedia.org/wiki/Nicole_Go...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NicoleStephanieGohlke(*...le </URL> __END_OF_SOURCE...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://de.wikipedia.org/wiki/Nicole_Gohlke)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://de.wikipedia.org/wiki/Nicole_Gohlke Final ...ng=de] Benutzerkonto erst...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1656 out=244 total=1900
+      min: 0.2208m
+      detail: OpenWebpage(query=Ausbildung Beruf Privatleben, url=htt...ipedia.org/wiki/Nicole_Go...
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://de.wikipedia.org/wiki/Nicole_Gohlke Final .... [ 16 ] Privates [ Bearb...
+  +-- [12] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=2207 out=173 total=2380
+      min: 0.0330m
+      detail: save_finding(finding=birth_place = München (sou.../Nico...le Gohlke Studium Univers...
+  +-- [13] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = München (source: htt...ipedia.org/wiki/Nicole_Go...
+  +-- [14] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Politisiert wurdeGohlke...207 </URL> __END_OF_SOURC...
+  +-- [15] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4198 out=71 total=4269
+      min: 0.0343m
+      detail: OpenWebpage(url=https://de-academic.com/di.../dewiki/2523207)
+  +-- [16] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://de-academic.com/dic.nsf/dewiki/2523207 Fin...ische Northern Sami Norwe...
+  +-- [17] Requested 1 tool call (Search)
+      by: AI
+      tok: in=6883 out=439 total=7322
+      min: 0.0591m
+      detail: Search(query=Nicole Gohlke Studium LMU München)
+  +-- [18] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Gohlkelegte 1995 ihr Ab...ole </URL> __END_OF_SOURC...
+  +-- [19] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=8700 out=102 total=8802
+      min: 0.0419m
+      detail: OpenWebpage(url=https://www.bundestag.de/w...e_nicole-519802)
+  +-- [20] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [21] Produced structured answer
+      by: AI
+      tok: in=8761 out=642 total=9403
+      min: 0.0868m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"High School","education_level_sourc...ry_blocked_no_candidates(...
+END
