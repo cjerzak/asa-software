@@ -1,0 +1,212 @@
+AGENT ACTION MAP
+================
+Steps captured: 35
+LangGraph timed steps: 24
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 5 found, 5 unknown, 0 pending (10 core fields)
+      Source-backed found values: 5 (across 12 tracked fields)
+      Unresolved focus: prior_occupation, class_background, disability_status, lgbtq_status...
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 15 tool-call turn(s), 1 answer turn(s)
+      Tool results: 18 total (Tool save_finding=5, Tool Searc...date_plan=3, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 0 flagged step(s); diagnostics(EMPTY_RESULT=0, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 5.2708m (tok=0, n=11)
+      agent: 0.6834m (tok=68786, n=11)
+      finalize: 0.2855m (tok=16139, n=1)
+      planner: 0.1530m (tok=1581, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #23 tools: 2.2436m (tok=0)
+      #15 tools: 1.4962m (tok=0)
+      #05 tools: 0.7772m (tok=0)
+      #13 tools: 0.7073m (tok=0)
+      #24 finalize: 0.2855m (tok=16139)
+  +-- [TIMING] wall=6.2414m nodes=6.3927m delta=-0.1513m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Shyh-Fang Liu)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Liu Shyh-fang Summary: Liu Shyh-fang (or Liu Shih-fang; Chinese: 劉世芳; pinyin:...
+  +-- [05] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Liu Shyh-fang biography Taiwan DPP)
+  +-- [06] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuS...03 </URL> __END_OF_SOURCE...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://news.ltn.com.tw/ne...ingnews/4504573)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://news.ltn.com.tw/news/focus/breakingnews/45...滿18歲 或不同意本條款 離開 我同意 我已年滿1...
+  +-- [09] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 15 August 195.../Liu_Shyh-fang), category=fact)
+  +-- [10] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 15 August 1959 (sourc...ipedia.org/wiki/Liu_Shyh-...
+  +-- [11] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=1657 out=270 total=1927
+      min: 0.1867m
+      detail: save_finding(finding=education_level = Master's...cp.aspx?n=7603), category=fact)
+  +-- [12] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = Master's degree ...gov.tw/english/cp.aspx?n=...
+  +-- [13] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=2216 out=176 total=2392
+      min: 0.0342m
+      detail: save_finding(finding=education_institution = Ta...cp.aspx?n=7603), category=fact)
+  +-- [14] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_institution = Tamkang Un...gov.tw/english/cp.aspx?n=...
+  +-- [15] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4438 out=326 total=4764
+      min: 0.0402m
+      detail: Search(query=Liu Shyh-fang birth place Taiwan)
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuS...603 </URL> __END_OF_SOURC...
+  +-- [17] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4871 out=66 total=4937
+      min: 0.0352m
+      detail: OpenWebpage(url=https://dbpedia.org/page/Liu_Shyh-fang)
+  +-- [18] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://dbpedia.org/page/Liu_Shyh-fang Final URL: ...at=text%2Fhtml] Embedded:...
+  +-- [19] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=5079 out=72 total=5151
+      min: 0.0584m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...ite:ly.gov.tw "劉世芳" biogr...
+  +-- [20] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: 國會圖書館. 立法院第11屆第5...596 </URL> __END_OF_SOURC...
+  +-- [22] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5294 out=32 total=5326
+      min: 0.0509m
+      detail: OpenWebpage(url=https://lis.ly.gov.tw/lymo...40%401397153195)
+  +-- [23] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://lis.ly.gov.tw/lymobiletpc/mobiletp?ID=28&S...SS No readable text extra...
+  +-- [24] Requested 1 tool call (save_finding)
+      by: AI
+      tok: in=6286 out=433 total=6719
+      min: 0.0575m
+      detail: save_finding(finding=education_field = Chemical...cp.aspx?n=7603), category=fact)
+  +-- [25] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_field = Chemical Enginee...gov.tw/english/cp.aspx?n=...
+  +-- [26] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7745 out=507 total=8252
+      min: 0.0746m
+      detail: Search(query="劉世芳" 出生地 經歷)
+  +-- [27] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 ...區落後 </URL> __END_OF_SOURC...
+  +-- [28] Requested 2 tool calls (update_plan, save_finding)
+      by: AI
+      tok: in=9411 out=33 total=9444
+      min: 0.0172m
+      detail: update_plan(status=in_progress, step_id=2) | save_findi.../wikis.tw/劉世芳), category=...
+  +-- [29] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [30] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = Taipei City, Taiwan (source: https://wikis.tw/劉世芳)
+  +-- [31] Requested 1 tool call (Search)
+      by: AI
+      tok: in=8469 out=489 total=8958
+      min: 0.0706m
+      detail: Search(query="劉世芳" 經歷 職業 早期)
+  +-- [32] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: 劉世芳 - 維基百科，自由的百科...08 </URL> __END_OF_SOURCE...
+  +-- [33] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=10542 out=374 total=10916
+      min: 0.0580m
+      detail: OpenWebpage(url=https://www.ly.gov.tw/EngP...spx?nodeid=1894)
+  +-- [34] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.ly.gov.tw/EngPages/List.aspx?nodeid=18...EngPages/List.aspx?nodeid...
+  +-- [35] Produced structured answer
+      by: AI
+      tok: in=12331 out=3808 total=16139
+      min: 0.2855m
+      detail: {"education_level":"Master's/Professional","education_l...r_below_policy_threshold(...
+END

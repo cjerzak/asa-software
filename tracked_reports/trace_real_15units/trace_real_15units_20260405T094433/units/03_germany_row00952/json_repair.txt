@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 1,
+    "missing_keys_sample": "confidence",
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 1910,
+        "normalized_length": 1910,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 1910,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "71478aad7894ffef1c3fb5ae8fbb55da0b98df65a95e411c325d345cf1d955f9",
+    "output_text_hash": "3b2a869c41cba0f4090091f2de32cdeeba8ccfebabe3485da09d247751c4ef38",
+    "input_text_length": 1910,
+    "output_text_length": 1876,
+    "input_text_preview": "{ \"birth_place\": \"München\", \"birth_place_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\", \"birth_place_confidence\": 1.0, \"birth_year\": 1975, \"birth_year_source\": \"https://en.wikipedia.org/wiki/Nicole_Gohlke\", \"birth_year_confidence\": 1.0, \"class_background\": \"Middle class/professional\", \"class_background_source\"...",
+    "output_text_preview": "{\"birth_place\": \"München\", \"birth_place_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\", \"birth_place_confidence\": 1.0, \"birth_year\": 1975, \"birth_year_source\": \"https://en.wikipedia.org/wiki/Nicole_Gohlke\", \"birth_year_confidence\": 1.0, \"class_background\": \"Middle class/professional\", \"class_background_source\":...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,33 +1 @@\n-{\n-  \"birth_place\": \"München\",\n-  \"birth_place_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n-  \"birth_place_confidence\": 1.0,\n-  \"birth_year\": 1975,\n-  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Nicole_Gohlke\",\n-  \"birth_year_confidence\": 1.0,\n-  \"class_background\": \"Middle class/professional\",\n-  \"class_background_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n-  \"class_background_confidence\": 0.9,\n-  \"disability_status\": null,\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"education_field\": \"Kommunikationswissenschaft\",\n-  \"education_field_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n-  \"education_field_confidence\": 1.0,\n-  \"education_institution\": \"LMU München\",\n-  \"education_institution_source\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\",\n-  \"education_institution_confidence\": 1.0,\n-  \"education_level\": \"Magister artium\",\n-  \"education_level_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n-  \"education_level_confidence\": 1.0,\n-  \"lgbtq_details\": null,\n-  \"lgbtq_details_source\": null,\n-  \"lgbtq_details_confidence\": null,\n-  \"lgbtq_status\": null,\n-  \"lgbtq_status_source\": null,\n-  \"lgbtq_status_confidence\": null,\n-  \"prior_occupation\": \"Projektleiterin in der Beratung sowie in der Markt- und Meinungsforschung\",\n-  \"prior_occupation_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n-  \"prior_occupation_confidence\": 1.0,\n-  \"justification\": \"Nicole Gohlke was born in Munich in 1975. She completed her studies in Communication Science at the Ludwig Maximilian University of Munich (LMU), earning a Magister Artium. Prior to her political career in the Bundestag, she worked as a project manager in consulting and market research, which categorizes her class background as middle class/professional. There is no publicly disclosed information regarding her disability status or sexual orientation.\"\n-}\n+{\"birth_place\": \"München\", \"birth_place_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\", \"birth_place_confidence\": 1.0, \"birth_year\": 1975, \"birth_year_source\": \"https://en.wikipedia.org/wiki/Nicole_Gohlke\", \"birth_year_confidence\": 1.0, \"class_background\": \"Middle class/professional\", \"class_background_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\", \"class_background_confidence\": 0.9, \"disability_status\": \"Unknown\", \"disability_status_source\": null, \"disability_status_confidence\": null, \"education_field\": \"Kommunikationswissenschaft\", \"education_field_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\", \"education_field_confidence\": 1.0, \"education_institution\": \"LMU München\", \"education_institution_source\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\", \"education_institution_confidence\": 1.0, \"education_level\": \"Magister artium\", \"education_level_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\", \"education_level_confidence\": 1.0, \"lgbtq_details\": nul\n...[diff truncated]",
+    "event_id": "67a570f902b145ff8aeea8bec028c0e1",
+    "ts_utc": "2026-04-05T14:48:18.391685Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "48c342f957434faa86625056860635c6",
+    "ts_utc": "2026-04-05T14:48:18.391702Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

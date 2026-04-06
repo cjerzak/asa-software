@@ -1,0 +1,18 @@
+{
+  "unit_key": "05_italy_row03389",
+  "generated_at_utc": "2026-04-05T14:49:57Z",
+  "canonical_artifact_id": "ae671bda54a5e73fd1aa3a3efed0d72f3a317672d55b85e88af62c292d71e0b6",
+  "released_artifact_id": "9359be7656b28276cffb96961a852807289e68a3ebebf43440c8979e3090b174",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "9359be7656b28276cffb96961a852807289e68a3ebebf43440c8979e3090b174",
+  "released_byte_hash": "9359be7656b28276cffb96961a852807289e68a3ebebf43440c8979e3090b174",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "4d322db343afb1217e747b2996000f6c99dd4489c4a6544ebb1a1700cb0ecc24",
+  "released_semantic_hash": "4d322db343afb1217e747b2996000f6c99dd4489c4a6544ebb1a1700cb0ecc24",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": ["missing_keys", "field_status_canonical"]
+}

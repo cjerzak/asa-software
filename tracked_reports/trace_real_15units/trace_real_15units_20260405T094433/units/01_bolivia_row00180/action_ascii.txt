@@ -1,0 +1,189 @@
+AGENT ACTION MAP
+================
+Steps captured: 30
+LangGraph timed steps: 18
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 0 found, 10 unknown, 0 pending (10 core fields)
+      Source-backed found values: 0 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 12 tool-call turn(s), 1 answer turn(s)
+      Tool results: 19 total (Tool Search=8, Tool save_findin...Webpage=4, Tool update_plan=2)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 1 flagged step(s) (LOW_EVIDENCE_FINAL_ANSWER..._RESULT=1, OFF_TOPIC_RESULT=1)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 4.7231m (tok=0, n=8)
+      agent: 0.7563m (tok=47276, n=8)
+      finalize: 0.1743m (tok=8754, n=1)
+      planner: 0.1570m (tok=1712, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #11 tools: 1.6550m (tok=0)
+      #17 tools: 0.8148m (tok=0)
+      #09 tools: 0.6856m (tok=0)
+      #05 tools: 0.6744m (tok=0)
+      #03 tools: 0.5179m (tok=0)
+  +-- [TIMING] wall=5.6545m nodes=5.8106m delta=-0.1561m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...ari Bolivia MAS-IPSP Poto...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Movimiento al Socialism...smo </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://anteriorportal.erb...ra_largo_pumari)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://anteriorportal.erbol.com.bo/podcast/biogra..._aguilar] hace 13 años 2 ...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Flora Largo Pumari biografía Vicepresiden...)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> El vicepresidente del E...ptx </URL> __END_OF_SOURC...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=245)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Refusing to open URL (resolve_error:[Errno 8] nodename ...amentario&id_parlamentari...
+  +-- [11] Requested 1 tool call (Search)
+      by: AI
+      tok: in=1687 out=302 total=1989
+      min: 0.1958m
+      detail: Search(query=site:vicepresidencia.gob.bo "Flora Largo ...)
+  +-- [12] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Diputado plurinominal (...ari </URL> __END_OF_SOURC...
+  +-- [13] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=3639 out=129 total=3768
+      min: 0.0291m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...encia.gob.bo "Flora Largo...
+  +-- [14] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [15] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Diputado plurinominal (...245 </URL> __END_OF_SOURC...
+  +-- [16] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4696 out=576 total=5272
+      min: 0.0836m
+      detail: OpenWebpage(url=https://www.vicepresidenci...rlamentario=107)
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Refusing to open URL (resolve_error:[Errno 8] nodename ...amentario&id_parlamentari...
+  +-- [18] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=4939 out=772 total=5711
+      min: 0.0813m
+      detail: save_finding(finding=Flora Largo Pumari was a P...a_lar...mari" biografía estudios ...
+  +-- [19] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: Flora Largo Pumari was a Plurinomi...rinacional/flora_largo_pu...
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Flora Largo Pumari00:00...tml </URL> __END_OF_SOURC...
+  +-- [21] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5292 out=812 total=6104
+      min: 0.1029m
+      detail: OpenWebpage(url=https://www.opinion.com.bo...4015330852.html)
+  +-- [22] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.opinion.com.bo/articulo/el-pais/potosi...on/medio-ambiente/] Club ...
+  +-- [23] Requested 4 tool calls (save_finding, Search)
+      by: AI
+      tok: in=7050 out=725 total=7775
+      min: 0.0885m
+      detail: save_finding(finding=birth_year = 1974 (source: Task Ov...encia.gob.bo "Flora Largo...
+  +-- [24] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1974 (source: Task Overview) | Saved to scratchpa...
+  +-- [25] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Diputado plurinominal (...245 </URL> __END_OF_SOURC...
+  +-- [26] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7463 out=686 total=8149
+      min: 0.0790m
+      detail: Search(query=site:vicepresidencia.gob.bo "Flora Largo ...)
+  +-- [27] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Diputado plurinominal (...245 </URL> __END_OF_SOURC...
+  +-- [28] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7595 out=913 total=8508
+      min: 0.0959m
+      detail: Search(query="Flora Largo Pumari" "Universidad Tomás F...)
+  +-- [29] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: No good DuckDuckGo Search Result was found
+  +-- [30] Produced structured answer
+      by: AI
+      tok: in=6817 out=1937 total=8754
+      min: 0.1743m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":null,"education_level_confide...
+END

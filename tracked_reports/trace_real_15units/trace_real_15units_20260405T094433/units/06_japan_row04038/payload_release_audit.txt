@@ -1,0 +1,18 @@
+{
+  "unit_key": "06_japan_row04038",
+  "generated_at_utc": "2026-04-05T14:52:44Z",
+  "canonical_artifact_id": "13ccb2a0e044e2537475f066bbc81090b70bcd26cb873810281e2a33e7373632",
+  "released_artifact_id": "6a2ea8a23195a3b042d8795b742807d392c3755263aa90863f61855051378f20",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "6a2ea8a23195a3b042d8795b742807d392c3755263aa90863f61855051378f20",
+  "released_byte_hash": "6a2ea8a23195a3b042d8795b742807d392c3755263aa90863f61855051378f20",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "7c939a483d15f0b1332e7defc872210bd2e680108fbf028f6dcd867dbfae7bcc",
+  "released_semantic_hash": "7c939a483d15f0b1332e7defc872210bd2e680108fbf028f6dcd867dbfae7bcc",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": "field_status_canonical"
+}

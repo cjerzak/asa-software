@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 1,
+    "missing_keys_sample": "confidence",
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 1803,
+        "normalized_length": 1803,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 1803,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "95759945827c1a28377c142948fdcfead2cbab5dde602089ef105e6711fefe12",
+    "output_text_hash": "8c1b74cad73bb9877256e3459410c74f65e141ca40556ea3ba2c753fe1539797",
+    "input_text_length": 1803,
+    "output_text_length": 1759,
+    "input_text_preview": "{ \"education_level\": \"Bachelor's Degree\", \"education_level_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\", \"education_level_confidence\": 0.9, \"education_institution\": \"Konkuk University\", \"education_institution_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\", \"education_institution_confiden...",
+    "output_text_preview": "{\"education_level\": \"Bachelor's Degree\", \"education_level_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\", \"education_level_confidence\": 0.9, \"education_institution\": \"Konkuk University\", \"education_institution_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\", \"education_institution_confidenc...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,33 +1 @@\n-{\n-  \"education_level\": \"Bachelor's Degree\",\n-  \"education_level_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\",\n-  \"education_level_confidence\": 0.9,\n-  \"education_institution\": \"Konkuk University\",\n-  \"education_institution_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\",\n-  \"education_institution_confidence\": 0.9,\n-  \"education_field\": \"Political Science and Diplomacy\",\n-  \"education_field_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\",\n-  \"education_field_confidence\": 0.9,\n-  \"prior_occupation\": \"journalist, writer\",\n-  \"prior_occupation_source\": \"https://en.wikipedia.org/wiki/Kim_Han-gil\",\n-  \"prior_occupation_confidence\": 1.0,\n-  \"class_background\": \"middle class/professional\",\n-  \"class_background_source\": \"https://en.wikipedia.org/wiki/Kim_Han-gil\",\n-  \"class_background_confidence\": 0.85,\n-  \"birth_year\": 1953,\n-  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Kim_Han-gil\",\n-  \"birth_year_confidence\": 1.0,\n-  \"birth_place\": \"Tokyo, Japan\",\n-  \"birth_place_source\": \"https://celebrity-birthdays.com/people/kim-han-gil\",\n-  \"birth_place_confidence\": 0.8,\n-  \"disability_status\": \"Unknown\",\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_status_source\": null,\n-  \"lgbtq_status_confidence\": null,\n-  \"lgbtq_details\": \"Unknown\",\n-  \"lgbtq_details_source\": null,\n-  \"lgbtq_details_confidence\": null,\n-  \"justification\": \"Kim Han-gil is a prominent South Korean politician who served in the 15th, 17th, and 19th National Assemblies. Before entering politics, he established a career as a journalist and writer, which classifies his background as middle class/professional. He was born in Tokyo, Japan, in 1953. He graduated from Konkuk University with a degree in Political Science and Diplomacy.\"\n-}\n+{\"education_level\": \"Bachelor's Degree\", \"education_level_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\", \"education_level_confidence\": 0.9, \"education_institution\": \"Konkuk University\", \"education_institution_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\", \"education_institution_confidence\": 0.9, \"education_field\": \"Political Science and Diplomacy\", \"education_field_source\": \"https://en.namu.wiki/w/%EA%B9%80%ED%95%9C%EA%B8%B8\", \"education_field_confidence\": 0.9, \"prior_occupation\": \"journalist, writer\", \"prior_occupation_source\": \"https://en.wikipedia.org/wiki/Kim_Han-gil\", \"prior_occupation_confidence\": 1.0, \"class_background\": \"middle class/professional\", \"class_background_source\": \"https://en.wikipedia.org/wiki/Kim_Han-gil\", \"class_background_confidence\": 0.85, \"birth_year\": 1953, \"birth_year_source\": \"https://en.wikipedia.org/wiki/Kim_Han-gil\", \"birth_year_confidence\": 1.0, \"birth_place\": \"Tokyo, Japan\", \"birth_place_source\": \"https://celebrity-birthdays.com/people/kim-han-gil\", \"birth_place_confidence\": 0.8, \"disability_status\": \"Unknown\", \"disability_status_source\": null,\n...[diff truncated]",
+    "event_id": "6ffee3bdd3d44ff8a339742c59f87f8e",
+    "ts_utc": "2026-04-05T14:48:46.488270Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "f4702e0689334928a245f190c5277447",
+    "ts_utc": "2026-04-05T14:48:46.488281Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

@@ -1,39 +1,97 @@
 # Rscript: trace_test_real_15units.R
 
-options(error = NULL)
-Sys.setenv(ASA_IGNORE_PATH_CHROMEDRIVER = "1")
-Sys.setenv(ASA_DISABLE_UC = "1")
-readRenviron("~/.Renviron")
+.normalize_required_path <- function(path, label) {
+  tryCatch(
+    normalizePath(path.expand(path), mustWork = TRUE),
+    error = function(e) {
+      stop(sprintf("Cannot resolve %s: %s", label, conditionMessage(e)), call. = FALSE)
+    }
+  )
+}
 
 current_script_path <- function() {
   file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
   if (length(file_arg) > 0L) {
-    return(normalizePath(sub("^--file=", "", file_arg[[1]]), mustWork = FALSE))
+    return(.normalize_required_path(sub("^--file=", "", file_arg[[1]]), "trace script path"))
   }
-  normalizePath("tracked_reports/trace_test_real_15units.R", mustWork = FALSE)
+
+  frame_count <- sys.nframe()
+  if (frame_count > 0L) {
+    for (i in seq_len(frame_count)) {
+      frame_i <- sys.frame(i)
+      if (!("file" %in% ls(frame_i, all.names = TRUE))) {
+        next
+      }
+      sourced_path <- tryCatch(frame_i$file, error = function(e) NULL)
+      if (is.character(sourced_path) && length(sourced_path) == 1L && nzchar(sourced_path)) {
+        return(.normalize_required_path(sourced_path, "trace script path"))
+      }
+    }
+  }
+
+  NA_character_
 }
 
 resolve_trace_repo_root <- function() {
   env_root <- trimws(Sys.getenv("ASA_TRACE_REPO_ROOT", unset = ""))
   if (nzchar(env_root)) {
-    return(normalizePath(path.expand(env_root), mustWork = FALSE))
+    return(.normalize_required_path(env_root, "ASA_TRACE_REPO_ROOT"))
   }
-  normalizePath(file.path(dirname(current_script_path()), ".."), mustWork = FALSE)
+
+  script_path <- current_script_path()
+  if (!is.character(script_path) || length(script_path) != 1L || is.na(script_path) || !nzchar(script_path)) {
+    stop(
+      "Cannot resolve trace repo root automatically. Set ASA_TRACE_REPO_ROOT to the repository root.",
+      call. = FALSE
+    )
+  }
+
+  repo_root <- .normalize_required_path(file.path(dirname(script_path), ".."), "trace repo root")
+  description_path <- file.path(repo_root, "asa", "DESCRIPTION")
+  if (!file.exists(description_path)) {
+    stop(
+      sprintf(
+        "Resolved trace repo root does not contain asa/DESCRIPTION: %s. Set ASA_TRACE_REPO_ROOT to the repository root.",
+        repo_root
+      ),
+      call. = FALSE
+    )
+  }
+
+  repo_root
 }
 
 TRACE_REPO_ROOT <- resolve_trace_repo_root()
 TRACE_SCRIPT_PATH <- current_script_path()
+.trace_runtime_bootstrapped <- FALSE
 
-# Prefer local package source so trace runs validate current repo code.
-devtools::load_all(file.path(TRACE_REPO_ROOT, "asa"))
+bootstrap_trace_runtime <- function() {
+  if (isTRUE(.trace_runtime_bootstrapped)) {
+    return(invisible(TRUE))
+  }
 
-suppressPackageStartupMessages({
-  library(DBI)
-  library(RSQLite)
-  library(jsonlite)
-  library(readr)
-  library(asa)
-})
+  options(error = NULL)
+  Sys.setenv(ASA_IGNORE_PATH_CHROMEDRIVER = "1")
+  Sys.setenv(ASA_DISABLE_UC = "1")
+
+  renviron_path <- path.expand("~/.Renviron")
+  if (file.exists(renviron_path)) {
+    readRenviron(renviron_path)
+  }
+
+  package_root <- .normalize_required_path(file.path(TRACE_REPO_ROOT, "asa"), "local asa package root")
+  description_path <- file.path(package_root, "DESCRIPTION")
+  if (!file.exists(description_path)) {
+    stop(
+      sprintf("Cannot bootstrap local asa package source; missing DESCRIPTION at %s", description_path),
+      call. = FALSE
+    )
+  }
+
+  devtools::load_all(package_root, quiet = TRUE)
+  .trace_runtime_bootstrapped <<- TRUE
+  invisible(TRUE)
+}
 
 TRACE_SOURCE_TABLE <- "InputMESData"
 TRACE_INPUT_DB_PATH <- {
@@ -1018,12 +1076,12 @@ initialize_trace_agent <- function(run_context, verbose = TRUE) {
     auto_openwebpage_policy
   ))
 
-  initialize_agent(
+  asa::initialize_agent(
     backend = "gemini",
     model = "gemini-3-flash-preview",
     conda_env = TRACE_CONDA_ENV,
     proxy = NA,
-    tor = tor_options(registry_path = run_context$tor_registry_path),
+    tor = asa::tor_options(registry_path = run_context$tor_registry_path),
     use_browser = FALSE,
     use_memory_folding = TRUE,
     recursion_limit = agent_recursion_limit,
@@ -1033,7 +1091,7 @@ initialize_trace_agent <- function(run_context, verbose = TRUE) {
     rate_limit = 0.3,
     timeout = 180L,
     verbose = verbose,
-    search = search_options(
+    search = asa::search_options(
       max_results = search_max_results,
       timeout = search_timeout_s,
       max_retries = search_max_retries,
@@ -1108,7 +1166,7 @@ run_trace_worker <- function(run_id,
   tryCatch({
     attempt <- asa:::.with_heartbeat(
       fn = function() {
-        run_task(
+        asa::run_task(
           prompt = prompt,
           output_format = "raw",
           expected_fields = NULL,
@@ -1404,6 +1462,8 @@ main <- function() {
     print_trace_usage()
     return(invisible(NULL))
   }
+
+  bootstrap_trace_runtime()
 
   mode <- args$mode %||% "sequential"
   run_id <- trim_or_na(args$run_id)

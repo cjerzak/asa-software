@@ -1,0 +1,209 @@
+AGENT ACTION MAP
+================
+Steps captured: 34
+LangGraph timed steps: 24
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 3 found, 7 unknown, 0 pending (10 core fields)
+      Source-backed found values: 3 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, prior_occupation, class_bac...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 13 tool-call turn(s), 1 answer turn(s)
+      Tool results: 24 total (Tool save_finding=8, Tool Searc...date_plan=3, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 2 flagged step(s) (EMPTY_RESULT=1, LOW_EVIDE..._RESULT=3, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 4.8868m (tok=0, n=11)
+      agent: 1.0421m (tok=77008, n=11)
+      finalize: 0.2383m (tok=15109, n=1)
+      planner: 0.2090m (tok=2192, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #23 tools: 1.2125m (tok=0)
+      #19 tools: 0.8669m (tok=0)
+      #07 tools: 0.8467m (tok=0)
+      #17 tools: 0.7079m (tok=0)
+      #05 tools: 0.4280m (tok=0)
+  +-- [TIMING] wall=6.1692m nodes=6.3762m delta=-0.2070m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Gergely Gulyás)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Gergely Gulyás Summary: Gergely Gulyás (born 21 September 1981) is a Hungaria...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1981 (source:...ly_Gu...biography education prior...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1981 (source: https:/....org/wiki/Gergely_Guly%C3...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> GergelyGulyás(born 21 S...ml </URL> __END_OF_SOURCE...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1667 out=232 total=1899
+      min: 0.2431m
+      detail: OpenWebpage(url=https://www.wikidata.org/wiki/Q5550584)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.wikidata.org/wiki/Q5550584 Final URL: ...org&uselang=en] Create ac...
+  +-- [10] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=2246 out=233 total=2479
+      min: 0.0396m
+      detail: OpenWebpage(url=https://kormany.hu/en/gove...urriculum-vitae)
+  +-- [11] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [12] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4540 out=188 total=4728
+      min: 0.0357m
+      detail: OpenWebpage(url=https://static.valasztas.h...7cbe8bf718.html)
+  +-- [13] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://static.valasztas.hu/ep09vt/fenykepcv/inter... (status=403) Markers: bl...
+  +-- [14] Requested 1 tool call (Search)
+      by: AI
+      tok: in=4866 out=202 total=5068
+      min: 0.0322m
+      detail: Search(query=Gergely Gulyás birth place education leve...)
+  +-- [15] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> GergelyGulyás(born 21 S...ml </URL> __END_OF_SOURCE...
+  +-- [16] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=5241 out=246 total=5487
+      min: 0.0422m
+      detail: OpenWebpage(url=https://hu.wikipedia.org/wiki/Gulyás_Gergely)
+  +-- [17] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://hu.wikipedia.org/wiki/Gulyás_Gergely Final...] Keresés Megjelenés Adom...
+  +-- [18] Requested 7 tool calls (save_finding, Search)
+      by: AI
+      tok: in=6687 out=1159 total=7846
+      min: 0.1161m
+      detail: save_finding(finding=birth_place = Budapest (so...C3%A1...disability status sexual ...
+  +-- [19] Returned 6 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: birth_place = Budapest (source: ht....org/wiki/Guly%C3%A1s_Ger...
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> GergelyGulyás(born 21 S...yás </URL> __END_OF_SOURC...
+  +-- [21] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=8161 out=436 total=8597
+      min: 0.0724m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...fogyatékosság betegség "d...
+  +-- [22] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [23] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> A person with psychosoc...908 </URL> __END_OF_SOURC...
+  +-- [24] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=8746 out=840 total=9586
+      min: 0.1028m
+      detail: save_finding(finding=education_level = Law degr...rricu....hu "Gulyás Gergely" élet...
+  +-- [25] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = Law degree (dr. ...zterelnokseg/curriculum-v...
+  +-- [26] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Gulyás Gergely2018 és 2...tai </URL> __END_OF_SOURC...
+  +-- [27] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=9267 out=1021 total=10288
+      min: 0.1211m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que..."dr. jur." education leve...
+  +-- [28] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [29] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+  +-- [30] Requested 1 tool call (Search)
+      by: AI
+      tok: in=9401 out=629 total=10030
+      min: 0.1109m
+      detail: Search(query=site:parlament.hu "Gulyás Gergely" életra...)
+  +-- [31] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Gulyás Gergely2018 és 2...tai </URL> __END_OF_SOURC...
+  +-- [32] Requested 1 tool call (Search)
+      by: AI
+      tok: in=9765 out=1235 total=11000
+      min: 0.1260m
+      detail: Search(query=Gulyás Gergely "szexuális irányultság" OR...)
+  +-- [33] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: A fogyatékosságü...sa </URL> __END_OF_SOURCE...
+  +-- [34] Produced structured answer
+      by: AI
+      tok: in=12442 out=2667 total=15109
+      min: 0.2383m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...r_below_policy_threshold(...
+END

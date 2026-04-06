@@ -1,0 +1,157 @@
+AGENT ACTION MAP
+================
+Steps captured: 24
+LangGraph timed steps: 12
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 5 found, 5 unknown, 0 pending (10 core fields)
+      Source-backed found values: 5 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, disability_status, lgbtq_st...
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 9 tool-call turn(s), 1 answer turn(s)
+      Tool results: 18 total (Tool save_finding=8, Tool OpenW...date_plan=1, Tool wikipedia=1)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+      Anomalies: 0 flagged step(s); diagnostics(EMPTY_RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (1 completed, 0 in_progress, 3 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 2.1165m (tok=0, n=5)
+      agent: 0.4398m (tok=20879, n=5)
+      planner: 0.1766m (tok=1912, n=1)
+      finalize: 0.1471m (tok=10840, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #09 tools: 0.8669m (tok=0)
+      #05 tools: 0.4418m (tok=0)
+      #07 tools: 0.4206m (tok=0)
+      #11 tools: 0.3722m (tok=0)
+      #02 agent: 0.2084m (tok=1896)
+  +-- [TIMING] wall=2.7040m nodes=2.8800m delta=-0.1760m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, wikipedia)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | wikipedia(query=Nicole Gohlke)
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool wikipedia
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Page: Nicole Gohlke Summary: Nicole Stephanie Gohlke (born 15 November 1975) is a G...
+  +-- [05] Requested 2 tool calls (save_finding, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: save_finding(finding=birth_year = 1975 (source:.../Nico...ke Bundestag Profil Biogr...
+  +-- [06] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1975 (source: https:/...ipedia.org/wiki/Nicole_Go...
+  +-- [07] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)Nicol...tml </URL> __END_OF_SOURC...
+  +-- [08] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://de.wikipedia.org/wiki/Nicole_Gohlke)
+  +-- [09] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://de.wikipedia.org/wiki/Nicole_Gohlke Final ...ng=de] Benutzerkonto erst...
+  +-- [10] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Nicole Gohlke Ausbildung Studium Beruf)
+  +-- [11] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Gohlkelegte 1995 ihr Ab...lke </URL> __END_OF_SOURC...
+  +-- [12] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1656 out=240 total=1896
+      min: 0.2084m
+      detail: OpenWebpage(url=https://www.dielinkebt.de/...l/nicole-gohlke)
+  +-- [13] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.dielinkebt.de/abgeordnete/profil/nicol...t.de/service/ausschreibun...
+  +-- [14] Requested 6 tool calls (save_finding, Search)
+      by: AI
+      tok: in=2203 out=176 total=2379
+      min: 0.0387m
+      detail: save_finding(finding=birth_place = München (sou.../Nico...de "Nicole Gohlke" Studiu...
+  +-- [15] Returned 5 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_place = München (source: htt...ipedia.org/wiki/Nicole_Go...
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Nicole Gohlke(2020) Nic.../10 </URL> __END_OF_SOURC...
+  +-- [17] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3727 out=90 total=3817
+      min: 0.0395m
+      detail: OpenWebpage(url=https://www.bundestag.de/a..._nicole-1044540)
+  +-- [18] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"timeout"...null,"attempt":2,"attempt...
+  +-- [19] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=4525 out=1008 total=5533
+      min: 0.0924m
+      detail: save_finding(finding=education_institution = LM...nicol...Behinderung disability st...
+  +-- [20] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_institution = LMU Münche...afien/G/gohlke_nicole-104...
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)Nicol...54 </URL> __END_OF_SOURCE...
+  +-- [22] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=6688 out=566 total=7254
+      min: 0.0609m
+      detail: OpenWebpage(url=https://www.abgeordnetenwa...ragen-antworten)
+  +-- [23] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.abgeordnetenwatch.de/profile/nicole-go...rdnetenwatch.de/niedersac...
+  +-- [24] Produced structured answer
+      by: AI
+      tok: in=9321 out=1519 total=10840
+      min: 0.1471m
+      detail: {"education_level":"Unknown","education_level_source":n...r_below_policy_threshold(...
+END

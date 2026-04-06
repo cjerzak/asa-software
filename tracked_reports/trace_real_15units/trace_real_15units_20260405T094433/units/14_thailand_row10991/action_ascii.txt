@@ -1,0 +1,174 @@
+AGENT ACTION MAP
+================
+Steps captured: 26
+LangGraph timed steps: 16
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
+      Source-backed found values: 1 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 10 tool-call turn(s), 1 answer turn(s)
+      Tool results: 17 total (Tool Search=6, Tool save_findin...Webpage=4, Tool update_plan=2)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 8 flagged step(s) (EMPTY_RESULT=7, LOW_EVIDE..._RESULT=5, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 3.9810m (tok=0, n=7)
+      agent: 0.5869m (tok=38297, n=7)
+      planner: 0.1606m (tok=1700, n=1)
+      finalize: 0.0944m (tok=8589, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #07 tools: 1.2748m (tok=0)
+      #13 tools: 1.0272m (tok=0)
+      #09 tools: 0.6480m (tok=0)
+      #15 tools: 0.5442m (tok=0)
+      #05 tools: 0.3742m (tok=0)
+  +-- [TIMING] wall=4.6629m nodes=4.8228m delta=-0.1599m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que... Kuldilok Pheu Thai biogr...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP o...95 </URL> __END_OF_SOURCE...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://rupp.edu.kh/iispp/...Party_as_People)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"http_err...null,"attempt":1,"attempt...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Chat Kuldiloke Pheu Thai biography)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP o...ty </URL> __END_OF_SOURCE...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1660 out=304 total=1964
+      min: 0.1979m
+      detail: OpenWebpage(url=https://www.bangkokpost.co...a-happy-society)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"http_err...null,"attempt":1,"attempt...
+  +-- [11] Requested 1 tool call (Search)
+      by: AI
+      tok: in=3602 out=252 total=3854
+      min: 0.0390m
+      detail: Search(query="Chat Kuldiloke" biography Pheu Thai educ...)
+  +-- [12] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+  +-- [13] Requested 3 tool calls (update_plan, save_finding, Search)
+      by: AI
+      tok: in=4788 out=435 total=5223
+      min: 0.0519m
+      detail: update_plan(status=in_progress, step_id=2) | save_findi...ke" biography education b...
+  +-- [14] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [15] Returned result
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: prior_occupation = Police Officer ...le/273603/for-a-happy-soc...
+  +-- [16] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Chatt Kuldilokeis on Fa...ase </URL> __END_OF_SOURC...
+  +-- [17] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4824 out=579 total=5403
+      min: 0.0700m
+      detail: OpenWebpage(url=https://www.bangkokpost.co...defamation-case)
+  +-- [18] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: {"ok":false,"tool":"OpenWebpage","error_type":"http_err...null,"attempt":1,"attempt...
+  +-- [19] Requested 1 tool call (Search)
+      by: AI
+      tok: in=5622 out=413 total=6035
+      min: 0.0572m
+      detail: Search(query=ชัชจ์ กุลดิลก ประวัติ การศึกษา)
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> พลตำรวจโท ชัจจ์กุลดิลกเ...ลก </URL> __END_OF_SOURCE...
+  +-- [21] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=6715 out=709 total=7424
+      min: 0.0716m
+      detail: save_finding(finding=birth_year = 1943 (source:.../ชัจจ...์ กุลดิลก" เกิดที่จังหวัด...
+  +-- [22] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: birth_year = 1943 (source: https:/...ipedia.org/wiki/ชัจจ์_กุล...
+  +-- [23] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+  +-- [24] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=7447 out=947 total=8394
+      min: 0.0994m
+      detail: OpenWebpage(url=https://www.cops-magazine.com/topic/123631)
+  +-- [25] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: URL: https://www.cops-magazine.com/topic/123631 Final U...gory/cops-award/] COP’S S...
+  +-- [26] Produced structured answer
+      by: AI
+      tok: in=7470 out=1119 total=8589
+      min: 0.0944m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...licy_demotion_unverified(...
+END

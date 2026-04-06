@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 6,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "lgbtq_status", "lgbtq_details", "confidence"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2365,
+        "normalized_length": 2365,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2365,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "5053a2c59a8f58d9b1221f15b04907b1dfa430c1ac590c521e794d39b39df2af",
+    "output_text_hash": "5f9635ff9d9d0897c8146394812c699c33ebeb161201acabf35cfa15d8249e94",
+    "input_text_length": 2365,
+    "output_text_length": 2365,
+    "input_text_preview": "{ \"educational_attainment\": { \"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": \"Computer systems / Information technology\", \"education_field_source\": \"https://www.camera.it/leg18/29?shadow_deputato=307573&idLegislatura=18\", \"education_field_confidence\": 0.9...",
+    "output_text_preview": "{\"educational_attainment\": {\"education_level\": null, \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": \"Computer systems / Information technology\", \"education_field_source\": \"https://www.camera.it/leg18/29?shadow_deputato=307573&idLegislatura=18\", \"education_field_confidence\": 0.9,...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,47 +1 @@\n-{\n-  \"educational_attainment\": {\n-    \"education_level\": null,\n-    \"education_level_source\": null,\n-    \"education_level_confidence\": null,\n-    \"education_field\": \"Computer systems / Information technology\",\n-    \"education_field_source\": \"https://www.camera.it/leg18/29?shadow_deputato=307573&idLegislatura=18\",\n-    \"education_field_confidence\": 0.9,\n-    \"education_institution\": null,\n-    \"education_institution_source\": null,\n-    \"education_institution_confidence\": null\n-  },\n-  \"prior_occupation\": {\n-    \"prior_occupation\": \"Computer systems operator; President of CONFAVI; Secretary General of the Foundation for Rural Culture\",\n-    \"prior_occupation_source\": \"https://www.camera.it/leg18/29?shadow_deputato=307573&idLegislatura=18\",\n-    \"prior_occupation_confidence\": 1.0\n-  },\n-  \"birth_year\": {\n-    \"birth_year\": 1964,\n-    \"birth_year_source\": \"https://en.wikipedia.org/wiki/Maria_Cristina_Caretta\",\n-    \"birth_year_confidence\": 1.0\n-  },\n-  \"birth_place\": {\n-    \"birth_place\": \"Thiene (Vicenza)\",\n-    \"birth_place_source\": \"https://www.amministrazionicomunali.it/camera/caretta-maria-cristina\",\n-    \"birth_place_confidence\": 1.0\n-  },\n-  \"disability_status\": {\n-    \"disability_status\": \"Unknown\",\n-    \"disability_status_source\": null,\n-    \"disability_status_confidence\": null\n-  },\n-  \"sexual_orientation\": {\n-    \"lgbtq_status\": \"Unknown\",\n-    \"lgbtq_status_source\": null,\n-    \"lgbtq_status_confidence\": null,\n-    \"lgbtq_details\": null,",
+    "event_id": "2ddbcb446399400a825942bf8c990e4c",
+    "ts_utc": "2026-04-05T14:49:57.122694Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "20db5c2b326040fca4b87fa02c9880a2",
+    "ts_utc": "2026-04-05T14:49:57.122704Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

@@ -1,0 +1,207 @@
+AGENT ACTION MAP
+================
+Steps captured: 33
+LangGraph timed steps: 22
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 1 found, 9 unknown, 0 pending (10 core fields)
+      Source-backed found values: 1 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 12 tool-call turn(s), 1 answer turn(s)
+      Tool results: 23 total (Tool Search=8, Tool save_findin...te_plan=5, Tool OpenWebpage=4)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 4 flagged step(s) (EMPTY_RESULT=3, LOW_EVIDE..._RESULT=1, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 4.8398m (tok=0, n=10)
+      agent: 0.7673m (tok=66630, n=10)
+      finalize: 0.2695m (tok=15944, n=1)
+      planner: 0.1691m (tok=2235, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #15 tools: 0.8038m (tok=0)
+      #17 tools: 0.6570m (tok=0)
+      #13 tools: 0.6228m (tok=0)
+      #19 tools: 0.6096m (tok=0)
+      #21 tools: 0.5076m (tok=0)
+  +-- [TIMING] wall=5.8778m nodes=6.0456m delta=-0.1678m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...li Georgia politician bio...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgi...ლი </URL> __END_OF_SOURCE...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://www.hks.harvard.ed...na-mamulashvili)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.hks.harvard.edu/about/nona-mamulashvil...Executive Education Admis...
+  +-- [07] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1665 out=242 total=1907
+      min: 0.2030m
+      detail: OpenWebpage(url=https://www.asiaglobalinst...na-mamulashvili)
+  +-- [08] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.asiaglobalinstitute.hku.hk/agf/fellows...fied, title:one moment, p...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3555 out=226 total=3781
+      min: 0.0409m
+      detail: OpenWebpage(url=https://parliament.ge/en/p.../2499/biography)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://parliament.ge/en/parliament-members/2499/b...n/legislation/reglament] ...
+  +-- [11] Requested 3 tool calls (save_finding, Search)
+      by: AI
+      tok: in=3915 out=54 total=3969
+      min: 0.0177m
+      detail: save_finding(finding=birth_year = 1977 (source:...a_Mam...li education background b...
+  +-- [12] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: birth_year = 1977 (source: https:/...ia.org/wiki/Nona_Mamulash...
+  +-- [13] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgi...ლი </URL> __END_OF_SOURCE...
+  +-- [14] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=4439 out=263 total=4702
+      min: 0.0374m
+      detail: OpenWebpage(url=https://en.wikipedia.org/w...na_Mamulashvili)
+  +-- [15] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://en.wikipedia.org/wiki/Nona_Mamulashvili Fi...] Log in Personal tools D...
+  +-- [16] Requested 1 tool call (Search)
+      by: AI
+      tok: in=6205 out=505 total=6710
+      min: 0.0825m
+      detail: Search(query=site:parliament.ge "ნონა მამულაშვილი")
+  +-- [17] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> დეპუტატებინონა მამულაშვ...eba </URL> __END_OF_SOURC...
+  +-- [18] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=6675 out=553 total=7228
+      min: 0.0625m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que....ge "ნონა მამულაშვილი" ბი...
+  +-- [19] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [20] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> დეპუტატებინონა მამულაშვ...ion </URL> __END_OF_SOURC...
+  +-- [21] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=7129 out=565 total=7694
+      min: 0.0689m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...ლი" დაბადების ადგილი განა...
+  +-- [22] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [23] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> სქოლიო „ქართველი პარლამ...act </URL> __END_OF_SOURC...
+  +-- [24] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=8241 out=399 total=8640
+      min: 0.0579m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...ili" education Sorbonne P...
+  +-- [25] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [26] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Nona obtained a bachelo...m-4 </URL> __END_OF_SOURC...
+  +-- [27] Requested 5 tool calls (save_finding, Search)
+      by: AI
+      tok: in=9170 out=1169 total=10339
+      min: 0.1099m
+      detail: save_finding(finding=education_level = PhD (sou...a-mam...ion.gov.ge "ნონა მამულაშვ...
+  +-- [28] Returned 4 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: education_level = PhD (source: htt...bout/people/nona-mamulash...
+  +-- [29] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: Hoy | Spanish to...ay </URL> __END_OF_SOURCE...
+  +-- [30] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=10906 out=754 total=11660
+      min: 0.0865m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...n.acb.gov.ge "ნონა მამულა...
+  +-- [31] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [32] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Title: ნინო ენუქიძე დეკ...42 </URL> __END_OF_SOURCE...
+  +-- [33] Produced structured answer
+      by: AI
+      tok: in=12634 out=3310 total=15944
+      min: 0.2695m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...r_below_policy_threshold(...
+END

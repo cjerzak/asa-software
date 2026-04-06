@@ -1,0 +1,16 @@
+country,row_id,person_name,election_year,pol_party,region,person_bday,gender_character,ethnic,unit_index
+Bolivia,180,Flora Largo Pumari,2009,Movement Towards Socialism-Political Instrument for the People's Soveriengty (MAS-IPSP),Potosi,1974-01-01,Female,Mestizo,1
+Georgia,264,Nona Mamulashvili,2020,Strength is in Unity (DE-GO),,,Female,Georgian,2
+Germany,952,Nicole Gohlke,2017,The Left,Bayern,,Female,German,3
+Hungary,2353,Gergely Gulyas,2022,Fidesz-Christian Democratic People's Party,,,Male,Hungarian,4
+Italy,3389,Maria Cristina Caretta,2018,Fratelli d'Italia,Veneto 2,,Female,Italian,5
+Japan,4038,Kentaro Motomura,2009,Democratic Party of Japan,Southern Kanto,1970-01-01,Male,Japanese,6
+Lithuania,4595,Justinas URBANAVIČIUS,2020,Homeland Union - Lithuanian Christian Democrats,,,Male,Lithuanian,7
+Mexico,5350,Monica Clara Molina,2012,Partido Revolucionario Institucional - PRI,Circ. 3,,Female,White/Mestizo,8
+New Zealand,6901,Winston Peters,1999,NZ First Party,,,Male,Maori,9
+Panama,7366,Dalia Mirna Bernal Yanez,2009,Democratic Change,Panama,1956-01-01,Female,Afro Panamanian,10
+Russian Federation,8040, Leonid Eduardovich Slutsky,2016,United Russia,,,Male,Russian,11
+South Korea,10728,KİM Han-gil,2012,Democratic Party,National,,Male,Korean,12
+Taiwan,10787,Shyh-Fang Liu,2016,DPP,,,Female,Chinese,13
+Thailand,10991,Chaj Kuldilok,2011,Pheu Thai,,,Male,Thai,14
+Ukraine,13345,Anna Kolisnyk,2019,Servant of the People,National,,Female,Ukrainian,15

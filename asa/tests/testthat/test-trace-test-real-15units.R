@@ -8,6 +8,62 @@ local_trace_15units_env <- function() {
   env
 }
 
+local_trace_15units_shell_path <- function() {
+  normalizePath(
+    testthat::test_path("..", "..", "..", "tracked_reports", "trace_test_real_15units.sh"),
+    mustWork = TRUE
+  )
+}
+
+run_trace_15units_shell <- function(shell_cmd, script_arg, workdir) {
+  old_wd <- setwd(workdir)
+  on.exit(setwd(old_wd), add = TRUE)
+
+  stdout_file <- tempfile("trace15_shell_stdout_")
+  stderr_file <- tempfile("trace15_shell_stderr_")
+  on.exit(unlink(c(stdout_file, stderr_file), force = TRUE), add = TRUE)
+
+  status <- suppressWarnings(system2(
+    command = shell_cmd,
+    args = c(script_arg, "--help"),
+    stdout = stdout_file,
+    stderr = stderr_file
+  ))
+  status_int <- suppressWarnings(as.integer(status))
+  if (is.na(status_int)) {
+    status_int <- 0L
+  }
+
+  list(
+    status = status_int,
+    stdout = paste(readLines(stdout_file, warn = FALSE), collapse = "\n"),
+    stderr = paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
+  )
+}
+
+restore_envvar <- function(name, value) {
+  if (is.na(value)) {
+    Sys.unsetenv(name)
+    return(invisible(NULL))
+  }
+
+  do.call(Sys.setenv, stats::setNames(list(value), name))
+  invisible(NULL)
+}
+
+create_fake_trace_repo_root <- function() {
+  root <- tempfile("trace-root-")
+  dir.create(file.path(root, "asa"), recursive = TRUE, showWarnings = FALSE)
+  writeLines(
+    c(
+      "Package: asa",
+      "Version: 0.0.0"
+    ),
+    file.path(root, "asa", "DESCRIPTION")
+  )
+  root
+}
+
 create_trace_15units_input_db <- function(path) {
   countries <- c(
     "Argentina", "Bolivia", "Canada", "Denmark", "Estonia",
@@ -32,6 +88,117 @@ create_trace_15units_input_db <- function(path) {
   on.exit(DBI::dbDisconnect(conn), add = TRUE)
   DBI::dbWriteTable(conn, "InputMESData", payload, overwrite = TRUE)
 }
+
+test_that("trace shell launcher supports invocation from different locations", {
+  shell_path <- local_trace_15units_shell_path()
+  temp_wd <- tempfile("trace15-shell-wd-")
+  dir.create(temp_wd, recursive = TRUE, showWarnings = FALSE)
+
+  bash_result <- run_trace_15units_shell(
+    shell_cmd = "bash",
+    script_arg = shell_path,
+    workdir = temp_wd
+  )
+  expect_equal(bash_result$status, 0L)
+  expect_match(bash_result$stdout, "Usage:")
+  expect_match(bash_result$stdout, "trace_test_real_15units\\.sh")
+
+  sh_result <- run_trace_15units_shell(
+    shell_cmd = "sh",
+    script_arg = shell_path,
+    workdir = temp_wd
+  )
+  expect_equal(sh_result$status, 0L)
+  expect_match(sh_result$stdout, "Usage:")
+
+  relative_result <- run_trace_15units_shell(
+    shell_cmd = "sh",
+    script_arg = basename(shell_path),
+    workdir = dirname(shell_path)
+  )
+  expect_equal(relative_result$status, 0L)
+  expect_match(relative_result$stdout, "Usage:")
+})
+
+test_that("trace shell launcher uses canonical script path for supervisor relaunch", {
+  shell_path <- local_trace_15units_shell_path()
+  script_lines <- readLines(shell_path, warn = FALSE)
+  script_text <- paste(script_lines, collapse = "\n")
+
+  expect_match(script_text, 'SCRIPT_PATH="\\$\\{SCRIPT_DIR\\}/\\$\\(basename "\\$\\{SCRIPT_SOURCE\\}"\\)"')
+  expect_match(script_text, 'supervisor_cmd=\\(bash "\\$\\{SCRIPT_PATH\\}" --supervisor --run-id "\\$\\{RUN_ID\\}"\\)')
+})
+
+test_that("trace shell launcher passes bash syntax check", {
+  shell_path <- local_trace_15units_shell_path()
+  status <- suppressWarnings(system2("bash", c("-n", shell_path)))
+  status_int <- suppressWarnings(as.integer(status))
+  if (is.na(status_int)) {
+    status_int <- 0L
+  }
+
+  expect_equal(status_int, 0L)
+})
+
+test_that("sourcing the trace script is hermetic", {
+  original_error <- getOption("error")
+  original_ignore <- Sys.getenv("ASA_IGNORE_PATH_CHROMEDRIVER", unset = NA_character_)
+  original_disable <- Sys.getenv("ASA_DISABLE_UC", unset = NA_character_)
+  on.exit({
+    options(error = original_error)
+    restore_envvar("ASA_IGNORE_PATH_CHROMEDRIVER", original_ignore)
+    restore_envvar("ASA_DISABLE_UC", original_disable)
+  }, add = TRUE)
+
+  sentinel_error <- function() "keep-existing-error-handler"
+  options(error = sentinel_error)
+  expected_error <- getOption("error")
+  Sys.setenv(
+    ASA_IGNORE_PATH_CHROMEDRIVER = "keep-ignore",
+    ASA_DISABLE_UC = "keep-disable"
+  )
+
+  env <- local_trace_15units_env()
+
+  expect_identical(getOption("error"), expected_error)
+  expect_identical(Sys.getenv("ASA_IGNORE_PATH_CHROMEDRIVER"), "keep-ignore")
+  expect_identical(Sys.getenv("ASA_DISABLE_UC"), "keep-disable")
+  expect_false(isTRUE(env$.trace_runtime_bootstrapped))
+})
+
+test_that("ASA_TRACE_REPO_ROOT override takes precedence when sourcing", {
+  fake_root <- create_fake_trace_repo_root()
+  original_root <- Sys.getenv("ASA_TRACE_REPO_ROOT", unset = NA_character_)
+  on.exit(restore_envvar("ASA_TRACE_REPO_ROOT", original_root), add = TRUE)
+
+  Sys.setenv(ASA_TRACE_REPO_ROOT = fake_root)
+  env <- local_trace_15units_env()
+
+  expect_identical(env$TRACE_REPO_ROOT, normalizePath(fake_root, mustWork = TRUE))
+  expect_identical(
+    env$TRACE_ARTIFACT_BASE_DIR,
+    file.path(normalizePath(fake_root, mustWork = TRUE), "tracked_reports", "trace_real_15units")
+  )
+  expect_false(isTRUE(env$.trace_runtime_bootstrapped))
+})
+
+test_that("resolve_trace_repo_root fails clearly when no root can be inferred", {
+  env <- local_trace_15units_env()
+  original_root <- Sys.getenv("ASA_TRACE_REPO_ROOT", unset = NA_character_)
+  original_current_script_path <- env$current_script_path
+  on.exit({
+    restore_envvar("ASA_TRACE_REPO_ROOT", original_root)
+    env$current_script_path <- original_current_script_path
+  }, add = TRUE)
+
+  Sys.unsetenv("ASA_TRACE_REPO_ROOT")
+  env$current_script_path <- function() NA_character_
+
+  expect_error(
+    env$resolve_trace_repo_root(),
+    "Cannot resolve trace repo root automatically\\. Set ASA_TRACE_REPO_ROOT"
+  )
+})
 
 test_that("setup_trace_run creates a frozen 15-unit manifest", {
   env <- local_trace_15units_env()

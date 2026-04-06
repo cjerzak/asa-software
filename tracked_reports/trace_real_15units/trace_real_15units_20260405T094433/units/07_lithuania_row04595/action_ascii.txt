@@ -1,0 +1,202 @@
+AGENT ACTION MAP
+================
+Steps captured: 32
+LangGraph timed steps: 18
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- Summary
+      Field resolution: 2 found, 8 unknown, 0 pending (10 core fields)
+      Source-backed found values: 2 (across 12 tracked fields)
+      Unresolved focus: education_level, education_institution, education_field, prior_occu...
+      Risk signal: LOW_EVIDENCE_FINAL_ANSWER
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      Human prompts: 1
+      AI turns: 11 tool-call turn(s), 1 answer turn(s)
+      Tool results: 23 total (Tool Search=8, Tool save_findin...te_plan=5, Tool OpenWebpage=3)
+      Structured terminal answer emitted
+      Plan status: Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+      Anomalies: 4 flagged step(s) (EMPTY_RESULT=3, LOW_EVIDE..._RESULT=2, OFF_TOPIC_RESULT=0)
+
+START
+  +-- [PLAN] Plan steps: 4 total (2 completed, 0 in_progress, 2 pending)
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      tools: 1.9651m (tok=0, n=8)
+      agent: 0.7744m (tok=56128, n=8)
+      finalize: 0.2978m (tok=14347, n=1)
+      planner: 0.1610m (tok=1624, n=1)
+  +-- [LANGGRAPH] Slowest timed invocations
+      #03 tools: 0.7409m (tok=0)
+      #07 tools: 0.3920m (tok=0)
+      #13 tools: 0.3582m (tok=0)
+      #11 tools: 0.3437m (tok=0)
+      #18 finalize: 0.2978m (tok=14347)
+  +-- [TIMING] wall=3.0381m nodes=3.1983m delta=-0.1601m (overlap likely)
+  +-- [01] Submitted task prompt
+      by: Human
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: TASK OVERVIEW: You are a search-enabled research agent specializing in biographical...
+  +-- [02] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: update_plan(status=in_progress, step_id=1) | Search(que...vičius Lithuania politici...
+  +-- [03] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 1 updated to 'in_progress'
+  +-- [04] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> JustinasUrbanavičiusŠį ...tml </URL> __END_OF_SOURC...
+  +-- [05] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: OpenWebpage(url=https://lt.wikipedia.org/w...as_Urbanavičius)
+  +-- [06] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://lt.wikipedia.org/wiki/Justinas_Urbanavičiu...us] Asmeniniai įrankiai P...
+  +-- [07] Requested 1 tool call (Search)
+      by: AI
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Search(query=Justinas Urbanavičius VRK 2020 biography)
+  +-- [08] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Lietuvos krikščionių de...tml </URL> __END_OF_SOURC...
+  +-- [09] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=1663 out=295 total=1958
+      min: 0.1972m
+      detail: OpenWebpage(url=https://www.vrk.lt/2020-se...Id-2419400.html)
+  +-- [10] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.vrk.lt/2020-seimo/rezultatai?srcUrl=%2...d cookies, title:just a m...
+  +-- [11] Requested 4 tool calls (save_finding, update_plan, Search)
+      by: AI
+      tok: in=3109 out=217 total=3326
+      min: 0.0311m
+      detail: save_finding(finding=birth_year = 1982 (source:...s_Urb...stinas Urbanavičius" biog...
+  +-- [12] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: birth_year = 1982 (source: https:/...rg/wiki/Justinas_Urbanavi...
+  +-- [13] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [14] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Member of the Seimas fr...=1 </URL> __END_OF_SOURCE...
+  +-- [15] Requested 1 tool call (OpenWebpage)
+      by: AI
+      tok: in=3568 out=561 total=4129
+      min: 0.0684m
+      detail: OpenWebpage(url=https://www.lrs.lt/pls/int...910&p_kade_id=6)
+  +-- [16] Returned result
+      by: Tool OpenWebpage
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: URL: https://www.lrs.lt/pls/inter/w5_show?p_r=6113&p_k=..., captcha, cloudflare, bl...
+  +-- [17] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=6236 out=481 total=6717
+      min: 0.0628m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...vičius išsilavinimas univ...
+  +-- [18] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [19] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Studijuodamas universit...ml </URL> __END_OF_SOURCE...
+  +-- [20] Requested 1 tool call (Search)
+      by: AI
+      tok: in=7763 out=770 total=8533
+      min: 0.0816m
+      detail: Search(query=Justinas Urbanavičius išsilavinimas "Liet...)
+  +-- [21] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> UrbanavičiusJ. Medynų t...oad </URL> __END_OF_SOURC...
+  +-- [22] Requested 4 tool calls (save_finding, Search)
+      by: AI
+      tok: in=7954 out=1093 total=9047
+      min: 0.1062m
+      detail: save_finding(finding=education_level = Master's...86028...vičius "darbo patirtis" i...
+  +-- [23] Returned 3 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: Saved to scratchpad: education_level = Master's degree ...c5-a9e8-88cb37086028/down...
+  +-- [24] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> 4. Užsienio kalbų mokėj...pdf </URL> __END_OF_SOURC...
+  +-- [25] Requested 4 tool calls (update_plan, save_finding, Search)
+      by: AI
+      tok: in=9250 out=816 total=10066
+      min: 0.0830m
+      detail: update_plan(status=in_progress, step_id=2) | save_findi...vičius neįgalumas disabil...
+  +-- [26] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [27] Returned 2 results
+      by: Tool save_finding
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Saved to scratchpad: prior_occupation = Forester / Depu...lsas.lt/Justinas-Urbanavi...
+  +-- [28] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      flag: EMPTY_RESULT
+      detail: __START_OF_SOURCE 1__ <CONTENT> JustinasUrbanavičius(gi...19 </URL> __END_OF_SOURCE...
+  +-- [29] Requested 2 tool calls (update_plan, Search)
+      by: AI
+      tok: in=11168 out=1184 total=12352
+      min: 0.1440m
+      detail: update_plan(status=in_progress, step_id=2) | Search(que...vičius "darbo patirtis" 2...
+  +-- [30] Returned result
+      by: Tool update_plan
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: Plan step 2 updated to 'in_progress'
+  +-- [31] Returned result
+      by: Tool Search
+      tok: in=0 out=0 total=0
+      min: n/a
+      detail: __START_OF_SOURCE 1__ <CONTENT> Darbo patirtis: 2006-20...ba5 </URL> __END_OF_SOURC...
+  +-- [32] Produced structured answer
+      by: AI
+      tok: in=10759 out=3588 total=14347
+      min: 0.2978m
+      flag: LOW_EVIDENCE_FINAL_ANSWER
+      detail: {"education_level":"Unknown","education_level_source":n...ry_blocked_no_candidates(...
+END

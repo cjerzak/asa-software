@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "fold_archive",
+  "reason": "fold_archive_not_available",
+  "expected_empty": true,
+  "unit_key": "02_georgia_row00264",
+  "generated_at_utc": "2026-04-05T14:51:27Z"
+}

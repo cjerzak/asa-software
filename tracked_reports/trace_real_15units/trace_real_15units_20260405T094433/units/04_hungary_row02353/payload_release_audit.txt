@@ -1,0 +1,18 @@
+{
+  "unit_key": "04_hungary_row02353",
+  "generated_at_utc": "2026-04-05T14:52:03Z",
+  "canonical_artifact_id": "89a9bdde3aab051cd8a4515f93d7837d4139212fe150812ce3f29beef26f2e3b",
+  "released_artifact_id": "ec23055913941972d2c8f97bfda3b06aa302b3caa8bd89facbddc2900251bf6e",
+  "released_from": "final_payload",
+  "canonical_available": true,
+  "canonical_matches_message": true,
+  "canonical_byte_hash": "ec23055913941972d2c8f97bfda3b06aa302b3caa8bd89facbddc2900251bf6e",
+  "released_byte_hash": "ec23055913941972d2c8f97bfda3b06aa302b3caa8bd89facbddc2900251bf6e",
+  "byte_hash_matches": true,
+  "canonical_semantic_hash": "4b19fba5a496f86f52d5ea35afee8954ae18242ca2339cad196fa5538058b30b",
+  "released_semantic_hash": "4b19fba5a496f86f52d5ea35afee8954ae18242ca2339cad196fa5538058b30b",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "none",
+  "truncation_signals": [],
+  "json_repair_reasons": "field_status_canonical"
+}

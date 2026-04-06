@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec bash "$0" "$@"
+fi
+
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_SOURCE="${BASH_SOURCE[0]}"
+SCRIPT_DIR="$(cd "$(dirname "${SCRIPT_SOURCE}")" && pwd -P)"
+SCRIPT_PATH="${SCRIPT_DIR}/$(basename "${SCRIPT_SOURCE}")"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 R_SCRIPT="${SCRIPT_DIR}/trace_test_real_15units.R"
 CONDA_EXE="$(command -v conda)"
@@ -38,6 +44,7 @@ usage() {
   cat <<'EOF'
 Usage:
   ./tracked_reports/trace_test_real_15units.sh
+  bash ./tracked_reports/trace_test_real_15units.sh
   ./tracked_reports/trace_test_real_15units.sh --restart --run-id <trace_real_15units_...>
 EOF
 }
@@ -380,7 +387,7 @@ launch_background_supervisor() {
   fetch_run_metadata
   assert_no_active_supervisor
 
-  supervisor_cmd=("${BASH_SOURCE[0]}" --supervisor --run-id "${RUN_ID}")
+  supervisor_cmd=(bash "${SCRIPT_PATH}" --supervisor --run-id "${RUN_ID}")
   if [[ "${RESTART_MODE}" == true ]]; then
     supervisor_cmd+=(--restart)
   fi
@@ -409,8 +416,8 @@ EOF
 }
 
 main() {
-  require_commands
   parse_args "$@"
+  require_commands
 
   if [[ "${SUPERVISOR_MODE}" == true ]]; then
     run_supervisor

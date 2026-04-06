@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "invoke_error",
+  "reason": "invoke_exception_absent",
+  "expected_empty": true,
+  "unit_key": "14_thailand_row10991",
+  "generated_at_utc": "2026-04-05T14:50:26Z"
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 4,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "confidence"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 2070,
+        "normalized_length": 2070,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 2070,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "2a1bd063c524b73771ec026378f3f772d46e4e530fcecdc3793a7bfe83e5cb39",
+    "output_text_hash": "ec30beda4e4ffa87f3b376965a9ee8c6953da3b6712606e1edaba0b2b7b934d0",
+    "input_text_length": 2070,
+    "output_text_length": 2019,
+    "input_text_preview": "{ \"educational_attainment\": [ { \"education_level\": \"Bachelor's Degree\", \"education_level_source\": \"https://hilight.kapook.com/view/59599\", \"education_level_confidence\": 1.0, \"education_institution\": \"Royal Police Cadet Academy\", \"education_institution_source\": \"https://hilight.kapook.com/view/59599\", \"education_institu...",
+    "output_text_preview": "{\"educational_attainment\": [{\"education_level\": \"Bachelor's Degree\", \"education_level_source\": \"https://hilight.kapook.com/view/59599\", \"education_level_confidence\": 1.0, \"education_institution\": \"Royal Police Cadet Academy\", \"education_institution_source\": \"https://hilight.kapook.com/view/59599\", \"education_institutio...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,45 +1 @@\n-{\n-  \"educational_attainment\": [\n-    {\n-      \"education_level\": \"Bachelor's Degree\",\n-      \"education_level_source\": \"https://hilight.kapook.com/view/59599\",\n-      \"education_level_confidence\": 1.0,\n-      \"education_institution\": \"Royal Police Cadet Academy\",\n-      \"education_institution_source\": \"https://hilight.kapook.com/view/59599\",\n-      \"education_institution_confidence\": 1.0,\n-      \"education_field\": \"Public Administration\",\n-      \"education_field_source\": \"https://hilight.kapook.com/view/59599\",\n-      \"education_field_confidence\": 1.0\n-    }\n-  ],\n-  \"prior_occupation\": [\n-    {\n-      \"occupation\": \"Police Officer\",\n-      \"occupation_source\": \"https://www.bangkokpost.com/life/social-and-lifestyle/273603/for-a-happy-society\",\n-      \"occupation_confidence\": 1.0\n-    }\n-  ],\n-  \"birth_year\": 1943,\n-  \"birth_year_source\": \"https://th.wikipedia.org/wiki/ชัจจ์_กุลดิลก\",\n-  \"birth_year_confidence\": 1.0,\n-  \"birth_place\": null,\n-  \"birth_place_source\": null,\n-  \"birth_place_confidence\": null,\n-  \"disability_status\": \"Unknown\",\n-  \"disability_status_source\": null,\n-  \"disability_status_confidence\": null,\n-  \"lgbtq_status\": \"Unknown\",\n-  \"lgbtq_status_source\": null,\n-  \"lgbtq_status_confidence\": null,\n-  \"lgbtq_details\": null,\n-  \"lgbtq_details_source\": null,\n-  \"lgbtq_details_confidence\": null,\n-  \"class_background\": [",
+    "event_id": "3b8ffb090b4e4f62aaec0409809a7ea7",
+    "ts_utc": "2026-04-05T14:50:26.381320Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "9ae0d87b0e0243b88319120200e1f270",
+    "ts_utc": "2026-04-05T14:50:26.381334Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]

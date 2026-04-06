@@ -1,0 +1,72 @@
+[
+  {
+    "repair_applied": true,
+    "repair_reason": "missing_keys",
+    "repair_severity": "structural",
+    "missing_keys_count": 5,
+    "missing_keys_sample": ["education_level", "education_institution", "education_field", "lgbtq_details", "confidence"],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "parse_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "content_length": 1947,
+        "normalized_length": 1935,
+        "attempt_count": 1
+      }
+    },
+    "repair_diagnostics": {
+      "ok": true,
+      "error_reason": null,
+      "exception_type": null,
+      "exception_message": null,
+      "context": {
+        "output_length": 1947,
+        "schema_type": "dict",
+        "expected_shape": "dict",
+        "parsed_type": "dict",
+        "coerced_input_shape": false,
+        "fallback_on_failure": true
+      }
+    },
+    "repair_attempt_count": 1,
+    "repair_retry_used": false,
+    "input_text_hash": "3884483b3ec24b2cee4bc4b5e3d167db53716d928d6d16d057f10c18b7897acc",
+    "output_text_hash": "bca23acaf5d06ea5f40eb0b26015cfcc9cbe5f743eda587a82c6072c7a8074bd",
+    "input_text_length": 1947,
+    "output_text_length": 1916,
+    "input_text_preview": "```json { \"educational_attainment\": { \"education_level\": \"Unknown\", \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": \"Unknown\", \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": \"Unknown\", \"education_institution_source\": null, \"education_i...",
+    "output_text_preview": "{\"educational_attainment\": {\"education_level\": \"Unknown\", \"education_level_source\": null, \"education_level_confidence\": null, \"education_field\": \"Unknown\", \"education_field_source\": null, \"education_field_confidence\": null, \"education_institution\": \"Unknown\", \"education_institution_source\": null, \"education_institution...",
+    "payload_diff_summary": "--- before\n+++ after\n@@ -1,47 +1 @@\n-```json\n-{\n-  \"educational_attainment\": {\n-    \"education_level\": \"Unknown\",\n-    \"education_level_source\": null,\n-    \"education_level_confidence\": null,\n-    \"education_field\": \"Unknown\",\n-    \"education_field_source\": null,\n-    \"education_field_confidence\": null,\n-    \"education_institution\": \"Unknown\",\n-    \"education_institution_source\": null,\n-    \"education_institution_confidence\": null\n-  },\n-  \"prior_occupation\": {\n-    \"prior_occupation\": \"Unknown\",\n-    \"prior_occupation_source\": null,\n-    \"prior_occupation_confidence\": null\n-  },\n-  \"birth_year\": {\n-    \"birth_year\": 1974,\n-    \"birth_year_source\": \"https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\",\n-    \"birth_year_confidence\": 0.9\n-  },\n-  \"birth_place\": {\n-    \"birth_place\": \"Unknown\",\n-    \"birth_place_source\": null,\n-    \"birth_place_confidence\": null\n-  },\n-  \"disability_status\": {\n-    \"disability_status\": \"Unknown\",\n-    \"disability_status_source\": null,\n-    \"disability_status_confidence\": null\n-  },\n-  \"lgbtq_status\": {\n-    \"lgbtq_status\": \"Unknown\",\n-    \"lgbtq_details\": null,\n-    \"lgbtq_status_source\": null,",
+    "event_id": "32157c908c654994bc2c950b69b6e2d9",
+    "ts_utc": "2026-04-05T14:51:11.752345Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "payload_diff_available": true
+  },
+  {
+    "repair_applied": true,
+    "repair_reason": "field_status_canonical",
+    "repair_variant": "canonical_overwrite",
+    "preserved_model_values_count": 0,
+    "preserved_model_values_sample": [],
+    "missing_keys_count": 0,
+    "missing_keys_sample": [],
+    "fallback_on_failure": true,
+    "schema_source": "explicit",
+    "context": "finalize",
+    "event_id": "26a65d0379bd419a927f7da126f95717",
+    "ts_utc": "2026-04-05T14:51:11.752356Z",
+    "event_schema_version": "json_repair_event_v2",
+    "trigger_context": "finalize",
+    "outcome_status": "applied",
+    "repair_attempt_count": 0,
+    "repair_retry_used": false,
+    "payload_diff_available": false
+  }
+]
