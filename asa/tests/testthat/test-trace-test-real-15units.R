@@ -15,6 +15,13 @@ local_trace_15units_shell_path <- function() {
   )
 }
 
+local_trace_15units_repo_root <- function() {
+  normalizePath(
+    testthat::test_path("..", "..", ".."),
+    mustWork = TRUE
+  )
+}
+
 run_trace_15units_shell <- function(shell_cmd, script_arg, workdir) {
   old_wd <- setwd(workdir)
   on.exit(setwd(old_wd), add = TRUE)
@@ -26,6 +33,45 @@ run_trace_15units_shell <- function(shell_cmd, script_arg, workdir) {
   status <- suppressWarnings(system2(
     command = shell_cmd,
     args = c(script_arg, "--help"),
+    stdout = stdout_file,
+    stderr = stderr_file
+  ))
+  status_int <- suppressWarnings(as.integer(status))
+  if (is.na(status_int)) {
+    status_int <- 0L
+  }
+
+  list(
+    status = status_int,
+    stdout = paste(readLines(stdout_file, warn = FALSE), collapse = "\n"),
+    stderr = paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
+  )
+}
+
+run_trace_15units_rscript_wrapper <- function(script_lines, script_name = "documentPackage.R") {
+  repo_root <- local_trace_15units_repo_root()
+  wrapper_dir <- file.path(
+    repo_root,
+    "Tmp",
+    sprintf("trace15-wrapper-%s-%s", Sys.getpid(), as.integer(Sys.time()))
+  )
+  dir.create(wrapper_dir, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(wrapper_dir, recursive = TRUE, force = TRUE), add = TRUE)
+
+  wrapper_path <- file.path(wrapper_dir, script_name)
+  wrapper_rel_path <- file.path("Tmp", basename(wrapper_dir), script_name)
+  writeLines(script_lines, wrapper_path)
+
+  old_wd <- setwd(repo_root)
+  on.exit(setwd(old_wd), add = TRUE)
+
+  stdout_file <- tempfile("trace15_rscript_stdout_")
+  stderr_file <- tempfile("trace15_rscript_stderr_")
+  on.exit(unlink(c(stdout_file, stderr_file), force = TRUE), add = TRUE)
+
+  status <- suppressWarnings(system2(
+    command = "Rscript",
+    args = wrapper_rel_path,
     stdout = stdout_file,
     stderr = stderr_file
   ))
@@ -164,6 +210,38 @@ test_that("sourcing the trace script is hermetic", {
   expect_identical(Sys.getenv("ASA_IGNORE_PATH_CHROMEDRIVER"), "keep-ignore")
   expect_identical(Sys.getenv("ASA_DISABLE_UC"), "keep-disable")
   expect_false(isTRUE(env$.trace_runtime_bootstrapped))
+})
+
+test_that("trace script resolves itself when launched from a wrapper that changes directories", {
+  repo_root <- local_trace_15units_repo_root()
+  wrapper_result <- run_trace_15units_rscript_wrapper(c(
+    "setwd(\"asa\")",
+    "trace_script <- normalizePath(\"../tracked_reports/trace_test_real_15units.R\", mustWork = TRUE)",
+    "env <- new.env(parent = globalenv())",
+    "tryCatch(",
+    "  sys.source(trace_script, envir = env),",
+    "  error = function(e) {",
+    "    message(\"SOURCE_ERR: \", conditionMessage(e))",
+    "    quit(status = 1L)",
+    "  }",
+    ")",
+    "cat(\"TRACE_SCRIPT_PATH=\", env$TRACE_SCRIPT_PATH, \"\\n\", sep = \"\")",
+    "cat(\"TRACE_REPO_ROOT=\", env$TRACE_REPO_ROOT, \"\\n\", sep = \"\")"
+  ))
+
+  expect_equal(wrapper_result$status, 0L)
+  expect_match(
+    wrapper_result$stdout,
+    "TRACE_SCRIPT_PATH=.*/tracked_reports/trace_test_real_15units\\.R"
+  )
+  expect_match(
+    wrapper_result$stdout,
+    paste0(
+      "TRACE_REPO_ROOT=",
+      gsub("([.|()\\^{}+$*?\\[\\]\\\\])", "\\\\\\1", repo_root)
+    )
+  )
+  expect_false(grepl("SOURCE_ERR:", wrapper_result$stderr, fixed = TRUE))
 })
 
 test_that("ASA_TRACE_REPO_ROOT override takes precedence when sourcing", {

@@ -9,10 +9,32 @@
   )
 }
 
+TRACE_SCRIPT_BASENAME <- "trace_test_real_15units.R"
+
+.normalize_optional_path <- function(path) {
+  if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
+    return(NA_character_)
+  }
+
+  tryCatch(
+    normalizePath(path.expand(path), mustWork = TRUE),
+    error = function(e) NA_character_
+  )
+}
+
+.is_trace_script_path <- function(path) {
+  is.character(path) &&
+    length(path) == 1L &&
+    !is.na(path) &&
+    nzchar(path) &&
+    identical(basename(path), TRACE_SCRIPT_BASENAME)
+}
+
 current_script_path <- function() {
-  file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
-  if (length(file_arg) > 0L) {
-    return(.normalize_required_path(sub("^--file=", "", file_arg[[1]]), "trace script path"))
+  candidate_paths <- character(0)
+
+  if (exists("TRACE_SCRIPT_PATH", inherits = FALSE)) {
+    candidate_paths <- c(candidate_paths, get("TRACE_SCRIPT_PATH", inherits = FALSE))
   }
 
   frame_count <- sys.nframe()
@@ -24,8 +46,21 @@ current_script_path <- function() {
       }
       sourced_path <- tryCatch(frame_i$file, error = function(e) NULL)
       if (is.character(sourced_path) && length(sourced_path) == 1L && nzchar(sourced_path)) {
-        return(.normalize_required_path(sourced_path, "trace script path"))
+        candidate_paths <- c(candidate_paths, sourced_path)
       }
+    }
+  }
+
+  file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+  if (length(file_arg) > 0L) {
+    candidate_paths <- c(candidate_paths, sub("^--file=", "", file_arg[[1]]))
+  }
+
+  candidate_paths <- unique(candidate_paths)
+  for (candidate_path in candidate_paths) {
+    normalized_path <- .normalize_optional_path(candidate_path)
+    if (.is_trace_script_path(normalized_path)) {
+      return(normalized_path)
     }
   }
 
