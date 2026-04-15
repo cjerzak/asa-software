@@ -832,6 +832,7 @@
                                 performance_profile = NULL,
                                 webpage_policy = NULL,
                                 query_templates = NULL,
+                                allow_read_webpages = NULL,
                                 use_plan_mode = NULL) {
   .validate_string(prompt, "prompt")
 
@@ -858,6 +859,9 @@
   }
   .validate_webpage_policy(webpage_policy, "webpage_policy")
   .validate_expected_schema(query_templates, param_name = "query_templates", allow_empty_list = TRUE)
+  if (!is.null(allow_read_webpages)) {
+    .validate_logical(allow_read_webpages, "allow_read_webpages")
+  }
 
   if (!is.null(search_budget_limit)) {
     .validate_positive(search_budget_limit, "search_budget_limit", integer_only = TRUE)

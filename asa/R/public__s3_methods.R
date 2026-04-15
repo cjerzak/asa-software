@@ -8,6 +8,9 @@
 #' This provides a unified way to configure backend, model, search, temporal,
 #' and resource settings in a single object.
 #'
+#' @param agent_backend Agent runtime backend: "agent" (default ASA LangGraph
+#'   pipeline) or "free-code" (headless free-code backend with ASA-managed
+#'   provider routing and search MCP tools).
 #' @param backend LLM backend: "openai", "groq", "xai", "gemini", "exo",
 #'   "openrouter", "anthropic", or "bedrock"
 #' @param model Model identifier (e.g., "gpt-4.1-mini")
@@ -63,7 +66,8 @@
 #' @seealso \code{\link{temporal_options}}, \code{\link{search_options}}
 #'
 #' @export
-asa_config <- function(backend = NULL,
+asa_config <- function(agent_backend = NULL,
+                       backend = NULL,
                        model = NULL,
                        conda_env = NULL,
                        proxy = NA,
@@ -88,6 +92,7 @@ asa_config <- function(backend = NULL,
                        recursion_limit = NULL) {
 
   # Use defaults from constants.R if not specified
+  agent_backend <- agent_backend %||% ASA_DEFAULT_AGENT_BACKEND
   backend <- backend %||% .get_default_backend()
   model <- model %||% .get_default_model_for_backend(backend)
   conda_env <- conda_env %||% .get_default_conda_env()
@@ -107,6 +112,12 @@ asa_config <- function(backend = NULL,
   om_async_prebuffer <- om_async_prebuffer %||% ASA_DEFAULT_OM_ASYNC_PREBUFFER
   om_cross_thread_memory <- om_cross_thread_memory %||% ASA_DEFAULT_OM_CROSS_THREAD_MEMORY
   tor <- tor %||% tor_options()
+
+  if (!agent_backend %in% ASA_SUPPORTED_AGENT_BACKENDS) {
+    stop(sprintf("`agent_backend` must be one of: %s",
+                 paste(ASA_SUPPORTED_AGENT_BACKENDS, collapse = ", ")),
+         call. = FALSE)
+  }
 
   # Validate backend
   if (!backend %in% ASA_SUPPORTED_BACKENDS) {
@@ -167,6 +178,7 @@ asa_config <- function(backend = NULL,
 
   structure(
     list(
+      agent_backend = agent_backend,
       backend = backend,
       model = model,
       conda_env = conda_env,
@@ -207,6 +219,7 @@ asa_config <- function(backend = NULL,
 print.asa_config <- function(x, ...) {
   cat("ASA Configuration\n")
   cat("=================\n")
+  cat("Agent Backend:   ", x$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND, "\n", sep = "")
   cat("Backend:         ", x$backend, "\n", sep = "")
   cat("Model:           ", x$model, "\n", sep = "")
   cat("Conda Env:       ", x$conda_env, "\n", sep = "")
@@ -983,6 +996,7 @@ asa_agent <- function(python_agent, backend, model, config, llm = NULL, tools = 
 print.asa_agent <- function(x, ...) {
   cat("ASA Search Agent\n")
   cat("================\n")
+  cat("Agent Backend:  ", x$config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND, "\n", sep = "")
   cat("Backend:        ", x$backend, "\n", sep = "")
   cat("Model:          ", x$model, "\n", sep = "")
 
@@ -1021,6 +1035,7 @@ summary.asa_agent <- function(object, ...) {
   print(object$config)
 
   invisible(list(
+    agent_backend = object$config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND,
     backend = object$backend,
     model = object$model,
     config = object$config

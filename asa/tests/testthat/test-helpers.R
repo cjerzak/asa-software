@@ -35,6 +35,7 @@ test_that("truncate_string works correctly", {
 
 test_that(".agent_matches_config compares recursion_limit", {
   cfg <- asa_config(
+    agent_backend = "agent",
     backend = "openai",
     model = "gpt-4.1-mini",
     conda_env = "asa_env",
@@ -53,6 +54,7 @@ test_that(".agent_matches_config compares recursion_limit", {
     model = cfg$model,
     config = list(
       conda_env = cfg$conda_env,
+      agent_backend = cfg$agent_backend,
       proxy = cfg$proxy,
       use_browser = cfg$use_browser,
       use_memory_folding = cfg$memory_folding,
@@ -71,6 +73,42 @@ test_that(".agent_matches_config compares recursion_limit", {
 
   cfg_diff <- cfg
   cfg_diff$recursion_limit <- 34L
+  expect_false(asa:::.agent_matches_config(agent, cfg_diff))
+})
+
+test_that(".agent_matches_config compares agent_backend", {
+  cfg <- asa_config(
+    agent_backend = "free-code",
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    proxy = NULL,
+    use_browser = FALSE
+  )
+
+  agent <- asa_test_mock_agent(
+    backend = cfg$backend,
+    model = cfg$model,
+    config = list(
+      agent_backend = "free-code",
+      conda_env = cfg$conda_env,
+      proxy = cfg$proxy,
+      use_browser = cfg$use_browser,
+      use_memory_folding = cfg$memory_folding,
+      memory_folding = cfg$memory_folding,
+      memory_threshold = cfg$memory_threshold,
+      memory_keep_recent = cfg$memory_keep_recent,
+      rate_limit = cfg$rate_limit,
+      timeout = cfg$timeout,
+      recursion_limit = cfg$recursion_limit,
+      search = cfg$search,
+      tor = cfg$tor
+    )
+  )
+
+  expect_true(asa:::.agent_matches_config(agent, cfg))
+
+  cfg_diff <- cfg
+  cfg_diff$agent_backend <- "agent"
   expect_false(asa:::.agent_matches_config(agent, cfg_diff))
 })
 

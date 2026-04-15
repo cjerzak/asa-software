@@ -284,6 +284,7 @@ NULL
   }
 
   initialize_agent(
+    agent_backend = config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND,
     backend = config$backend,
     model = config$model,
     conda_env = config$conda_env,
@@ -469,6 +470,7 @@ run_task <- function(prompt,
       performance_profile = resolved_performance_profile,
       webpage_policy = resolved_webpage_policy,
       query_templates = query_templates,
+      allow_read_webpages = allow_rw,
       use_plan_mode = use_plan_mode,
       verbose = verbose
     )

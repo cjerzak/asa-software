@@ -5,6 +5,7 @@
 \title{Create ASA Configuration Object}
 \usage{
 asa_config(
+  agent_backend = NULL,
   backend = NULL,
   model = NULL,
   conda_env = NULL,
@@ -31,6 +32,10 @@ asa_config(
 )
 }
 \arguments{
+\item{agent_backend}{Agent runtime backend: "agent" (default ASA LangGraph
+pipeline) or "free-code" (headless free-code backend with ASA-managed
+provider routing and search MCP tools).}
+
 \item{backend}{LLM backend: "openai", "groq", "xai", "gemini", "exo",
 "openrouter", "anthropic", or "bedrock"}
 

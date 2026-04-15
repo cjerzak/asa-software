@@ -22,6 +22,10 @@
   agent_use_browser <- agent$config$use_browser %||% ASA_DEFAULT_USE_BROWSER
   config_use_browser <- config$use_browser %||% ASA_DEFAULT_USE_BROWSER
 
+  same_agent_backend <- identical(
+    agent$config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND,
+    config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND
+  )
   same_backend <- identical(agent$backend, config$backend)
   same_model <- identical(agent$model, config$model)
   same_conda <- identical(agent$config$conda_env, config$conda_env)
@@ -109,7 +113,7 @@
     identical(agent_langgraph_node_retries, config_langgraph_node_retries) &&
     identical(agent_langgraph_cache_enabled, config_langgraph_cache_enabled)
 
-  isTRUE(same_backend && same_model && same_conda && same_proxy && same_browser &&
+  isTRUE(same_agent_backend && same_backend && same_model && same_conda && same_proxy && same_browser &&
            same_folding && same_threshold && same_keep &&
            same_om_enabled && same_om_cross_thread && same_om_obs_budget &&
            same_om_ref_budget && same_om_buffer && same_om_activation &&

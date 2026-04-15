@@ -173,9 +173,12 @@ test_that("asa_result stores execution metadata and token_stats", {
 test_that("asa_config defaults and printing are consistent", {
   cfg <- asa_config()
   expect_s3_class(cfg, "asa_config")
+  expect_identical(cfg$agent_backend, "agent")
   expect_true(isTRUE(is.na(cfg$proxy)))
   expect_null(cfg$recursion_limit)
   output <- capture.output(print(cfg))
+  expect_true(any(grepl("^Agent Backend:", output)))
+  expect_true(any(grepl("agent", output)))
   expect_true(any(grepl("^Proxy:", output)))
   expect_true(any(grepl("Auto", output)))
   expect_true(any(grepl("^Recursion Limit:", output)))
@@ -188,6 +191,11 @@ test_that("asa_config defaults and printing are consistent", {
   expect_equal(cfg_rl$recursion_limit, 42L)
   output_rl <- capture.output(print(cfg_rl))
   expect_true(any(grepl("^Recursion Limit:.*42", output_rl)))
+
+  cfg_fc <- asa_config(agent_backend = "free-code")
+  expect_identical(cfg_fc$agent_backend, "free-code")
+  output_fc <- capture.output(print(cfg_fc))
+  expect_true(any(grepl("^Agent Backend:.*free-code", output_fc)))
 })
 
 test_that("print methods produce expected headers", {

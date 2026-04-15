@@ -4,6 +4,9 @@
 #' search tools (Wikipedia, DuckDuckGo). The agent can use multiple LLM
 #' backends and supports DeepAgent-style memory folding.
 #'
+#' @param agent_backend Agent runtime backend. Use \code{"agent"} (default) for
+#'   the built-in ASA LangGraph pipeline, or \code{"free-code"} to run the
+#'   external free-code agent behind ASA-managed provider and search wrappers.
 #' @param backend LLM backend to use. One of: "openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock"
 #' @param model Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")
 #' @param conda_env Name of the conda environment with Python dependencies
@@ -116,7 +119,8 @@
 #' @seealso \code{\link{run_task}}, \code{\link{run_task_batch}}
 #'
 #' @export
-initialize_agent <- function(backend = NULL,
+initialize_agent <- function(agent_backend = NULL,
+                             backend = NULL,
                              model = NULL,
                              conda_env = NULL,
                              proxy = NA,
@@ -141,9 +145,12 @@ initialize_agent <- function(backend = NULL,
                              recursion_limit = NULL) {
 
   # Apply defaults (option-aware where available)
+  agent_backend <- agent_backend %||% ASA_DEFAULT_AGENT_BACKEND
   backend <- backend %||% .get_default_backend()
   model <- model %||% .get_default_model_for_backend(backend)
   conda_env <- conda_env %||% .get_default_conda_env()
+
+  agent_backend <- match.arg(agent_backend, ASA_SUPPORTED_AGENT_BACKENDS)
 
   # Validate backend
   backend <- match.arg(backend, ASA_SUPPORTED_BACKENDS)
@@ -241,6 +248,71 @@ initialize_agent <- function(backend = NULL,
     warning("OpenRouter models should be in 'provider/model-name' format ",
             "(e.g., 'openai/gpt-4o', 'anthropic/claude-3-sonnet'). ",
             "Got: '", model, "'", call. = FALSE)
+  }
+
+  if (identical(agent_backend, "free-code")) {
+    .free_code_require_processx()
+    .free_code_command_spec()
+    .free_code_python_binary(conda_env)
+    .free_code_python_path()
+
+    if (verbose) message("Initializing ASA agent...")
+
+    asa_env$init_count <- (asa_env$init_count %||% 0L) + 1L
+    if (asa_env$init_count > 1L && isTRUE(verbose)) {
+      message("  Note: Re-initializing agent (init #", asa_env$init_count, ")")
+    }
+
+    .close_http_clients()
+    .runtime_control_reset()
+
+    asa_env$initialized <- TRUE
+    asa_env$agent <- NULL
+    asa_env$llm <- NULL
+    asa_env$tools <- NULL
+    asa_env$config <- list(
+      agent_backend = agent_backend,
+      backend = backend,
+      model = model,
+      conda_env = conda_env,
+      proxy = proxy,
+      proxy_mode = proxy_mode,
+      proxy_source = proxy_source,
+      use_browser = use_browser,
+      rate_limit = rate_limit,
+      timeout = timeout,
+      recursion_limit = recursion_limit,
+      use_memory_folding = use_memory_folding,
+      memory_folding = use_memory_folding,
+      memory_threshold = memory_threshold,
+      memory_keep_recent = memory_keep_recent,
+      use_observational_memory = om_config$enabled,
+      om_cross_thread_memory = om_config$cross_thread_memory,
+      om_observation_token_budget = om_config$observation_message_tokens,
+      om_reflection_token_budget = om_config$reflection_observation_tokens,
+      om_buffer_tokens = om_config$buffer_tokens,
+      om_buffer_activation = om_config$buffer_activation,
+      om_block_after = om_config$block_after,
+      om_async_prebuffer = om_config$async_prebuffer,
+      om_config = om_config,
+      search = search,
+      stability_profile = search$stability_profile %||% "stealth_first",
+      auto_openwebpage_policy = search$auto_openwebpage_policy %||% "auto",
+      langgraph_node_retries = isTRUE(search$langgraph_node_retries %||% FALSE),
+      langgraph_cache_enabled = isTRUE(search$langgraph_cache_enabled %||% FALSE),
+      tor = tor
+    )
+
+    if (verbose) message("  Using free-code agent backend.")
+
+    return(asa_agent(
+      python_agent = NULL,
+      backend = backend,
+      model = model,
+      config = asa_env$config,
+      llm = NULL,
+      tools = NULL
+    ))
   }
 
   if (verbose) message("Initializing ASA agent...")
@@ -371,6 +443,7 @@ initialize_agent <- function(backend = NULL,
   asa_env$llm <- llm
   asa_env$tools <- tools
   asa_env$config <- list(
+    agent_backend = agent_backend,
     backend = backend,
     model = model,
     conda_env = conda_env,

@@ -15,6 +15,10 @@
 #' @keywords internal
 ASA_DEFAULT_BACKEND <- "openai"
 
+#' Default Agent Backend
+#' @keywords internal
+ASA_DEFAULT_AGENT_BACKEND <- "agent"
+
 #' Default Model
 #' @keywords internal
 ASA_DEFAULT_MODEL <- "gpt-4.1-mini"
@@ -42,6 +46,14 @@ ASA_DEFAULT_PROXY <- "socks5h://127.0.0.1:9050"
 #' Supported Backends
 #' @keywords internal
 ASA_SUPPORTED_BACKENDS <- c("openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock")
+
+#' Supported Agent Backends
+#' @keywords internal
+ASA_SUPPORTED_AGENT_BACKENDS <- c("agent", "free-code")
+
+#' Fixed Outer Model for free-code Anthropic-Compatible Gateway
+#' @keywords internal
+ASA_FREE_CODE_OUTER_MODEL <- "claude-sonnet-4-6"
 
 # ============================================================================
 # API ENDPOINTS

@@ -5,6 +5,7 @@
 \title{Initialize the ASA Search Agent}
 \usage{
 initialize_agent(
+  agent_backend = NULL,
   backend = NULL,
   model = NULL,
   conda_env = NULL,
@@ -31,6 +32,10 @@ initialize_agent(
 )
 }
 \arguments{
+\item{agent_backend}{Agent runtime backend. Use \code{"agent"} (default) for
+the built-in ASA LangGraph pipeline, or \code{"free-code"} to run the
+external free-code agent behind ASA-managed provider and search wrappers.}
+
 \item{backend}{LLM backend to use. One of: "openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock"}
 
 \item{model}{Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")}

@@ -30,6 +30,7 @@
                        performance_profile = NULL,
                        webpage_policy = NULL,
                        query_templates = NULL,
+                       allow_read_webpages = NULL,
                        use_plan_mode = FALSE,
                        verbose = FALSE) {
 
@@ -52,6 +53,7 @@
     performance_profile = performance_profile,
     webpage_policy = webpage_policy,
     query_templates = query_templates,
+    allow_read_webpages = allow_read_webpages,
     use_plan_mode = use_plan_mode,
     verbose = verbose,
     thread_id = thread_id
@@ -68,7 +70,23 @@
 
   # Get config
   config <- agent$config
+  agent_backend <- config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND
   use_memory_folding <- (config$use_memory_folding %||% config$memory_folding) %||% TRUE
+
+  if (identical(agent_backend, "free-code")) {
+    return(.run_free_code_agent(
+      prompt = prompt,
+      agent = agent,
+      recursion_limit = recursion_limit,
+      expected_schema = expected_schema,
+      thread_id = thread_id,
+      auto_openwebpage_policy = auto_openwebpage_policy,
+      performance_profile = performance_profile,
+      webpage_policy = webpage_policy,
+      allow_read_webpages = allow_read_webpages,
+      verbose = verbose
+    ))
+  }
 
   # Resolve recursion limit with precedence:
   # run_task arg > agent/config default > mode-specific fallback.
