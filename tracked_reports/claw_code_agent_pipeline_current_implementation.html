@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claw Code Agent Pipeline Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ea;
+      --panel: #fffdf8;
+      --ink: #1f2328;
+      --muted: #5d6773;
+      --line: #d7cfbf;
+      --accent: #0f766e;
+      --accent-soft: #d8f0ec;
+      --warn: #9a3412;
+      --warn-soft: #fde7d8;
+      --bad: #991b1b;
+      --bad-soft: #f9dddd;
+      --good: #166534;
+      --good-soft: #dcfce7;
+      --shadow: 0 10px 24px rgba(36, 32, 25, 0.08);
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, #e6efe6 0, transparent 30%),
+        radial-gradient(circle at top left, #efe7d5 0, transparent 32%),
+        var(--bg);
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px 56px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #173b3a, #244f4c 58%, #87623e);
+      color: #f9f7f2;
+      border-radius: 22px;
+      padding: 28px 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.12;
+    }
+
+    .hero p {
+      margin: 6px 0;
+      max-width: 960px;
+      color: rgba(249, 247, 242, 0.92);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ul {
+      margin: 10px 0 0 18px;
+      padding: 0;
+    }
+
+    li + li {
+      margin-top: 6px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .callout {
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .callout.high {
+      border-color: #e4b2b2;
+      background: var(--bad-soft);
+    }
+
+    .callout.medium {
+      border-color: #efc9a5;
+      background: var(--warn-soft);
+    }
+
+    .callout.low {
+      border-color: #c9d9b4;
+      background: #eff8e6;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-size: 0.94em;
+      word-break: break-word;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .node {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 150px;
+      position: relative;
+    }
+
+    .node .tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .arrowline {
+      margin: 16px 0 2px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px dashed var(--line);
+      background: #faf7ef;
+      font-family: var(--mono);
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .sequence {
+      background: #1e2527;
+      color: #eaf2ef;
+      border-radius: 18px;
+      padding: 18px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.52;
+      border: 1px solid #334044;
+    }
+
+    .tablewrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      padding: 11px 10px;
+    }
+
+    th {
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .swatch.green { background: var(--good); }
+    .swatch.orange { background: var(--warn); }
+    .swatch.red { background: var(--bad); }
+    .swatch.teal { background: var(--accent); }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 18px 14px 40px;
+      }
+
+      .hero {
+        padding: 22px 18px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <h1>Claw Code Agent Pipeline Review</h1>
+      <p>
+        Current-state review of the canonical implementation in
+        <span class="mono">/Users/cjerzak/Documents/claw-code/rust/</span>, with emphasis on
+        the main agent workflow, sub-agent path, MCP plumbing, and internet-facing logic.
+      </p>
+      <p>
+        Important scoping note: the Python files under <span class="mono">src/</span> are a
+        companion/reference workspace. The runtime that actually executes the agent pipeline is the
+        Rust workspace described in <span class="mono">README.md</span> and <span class="mono">CLAUDE.md</span>.
+      </p>
+      <div class="meta">
+        <span class="chip">Generated 2026-04-07</span>
+        <span class="chip">Canonical runtime: rust/</span>
+        <span class="chip">Primary loop: conversation.rs</span>
+        <span class="chip">Internet tools: WebSearch, WebFetch</span>
+        <span class="chip">Secondary surfaces: MCP, Agent, Worker, Task, Team, Cron</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid two">
+        <div class="callout">
+          <div class="eyebrow">What the runtime actually is</div>
+          <p>
+            The core agent is not a graph executor. It is a sequential conversation loop:
+            user message into session state, provider stream produces assistant text and tool-use
+            blocks, each tool-use is permission-checked and executed, tool results are appended back
+            into session state, and the cycle repeats until the assistant stops without more tools.
+          </p>
+        </div>
+        <div class="callout">
+          <div class="eyebrow">Where internet logic lives</div>
+          <p>
+            Internet access is implemented as built-in tools, not as a separate orchestration graph.
+            <span class="mono">WebSearch</span> uses DuckDuckGo HTML search by default and parses links from returned HTML.
+            <span class="mono">WebFetch</span> performs direct HTTP fetches, converts HTML to stripped text, and returns a prompt-conditioned summary.
+          </p>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i class="swatch red"></i> confirmed review finding</span>
+        <span><i class="swatch teal"></i> implemented runtime component</span>
+        <span><i class="swatch green"></i> implemented and actively wired path</span>
+        <span><i class="swatch orange"></i> implemented surface with weaker or partial wiring</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Review Findings</h2>
+      <div class="grid two">
+        <div class="callout high">
+          <div class="eyebrow">High</div>
+          <h3>Built-in MCP tools are exposed, but they are not wired to the live CLI MCP state</h3>
+          <p>
+            The built-in tools <span class="mono">ListMcpResources</span>,
+            <span class="mono">ReadMcpResource</span>, <span class="mono">McpAuth</span>, and
+            <span class="mono">MCP</span> are part of the default tool manifest, but their handlers use
+            <span class="mono">global_mcp_registry()</span> in the tools crate instead of the live
+            <span class="mono">RuntimeMcpState</span> created by the CLI.
+          </p>
+          <ul>
+            <li><span class="mono">tools/src/lib.rs:1058-1125</span> defines the built-in MCP tool surface.</li>
+            <li><span class="mono">tools/src/lib.rs:1237-1243</span> dispatches those names to the built-in handlers.</li>
+            <li><span class="mono">tools/src/lib.rs:1586-1654</span> resolves them through <span class="mono">global_mcp_registry()</span>, defaults omitted server to <span class="mono">"default"</span>, and <span class="mono">McpAuth</span> only reports registry metadata instead of authenticating.</li>
+            <li><span class="mono">rusty-claude-cli/src/main.rs:2821-2899</span> builds the actual connected MCP path as separate runtime tools: direct qualified tool names plus <span class="mono">MCPTool</span>, <span class="mono">ListMcpResourcesTool</span>, and <span class="mono">ReadMcpResourceTool</span>.</li>
+          </ul>
+          <p>
+            Impact: the model can see and call a dead or misleading MCP surface even when the real MCP path is available elsewhere. This is both a correctness issue and a tool-selection hazard.
+          </p>
+        </div>
+
+        <div class="callout medium">
+          <div class="eyebrow">Medium</div>
+          <h3>Task APIs are described as background execution, but the implementation is only an in-memory registry</h3>
+          <p>
+            <span class="mono">TaskCreate</span> and <span class="mono">RunTaskPacket</span> are described as background task launchers,
+            but the handlers only allocate task records and return metadata. There is no subprocess spawn,
+            worker thread, provider runtime, or scheduler integration behind these APIs.
+          </p>
+          <ul>
+            <li><span class="mono">tools/src/lib.rs:746-843</span> describes background-task semantics.</li>
+            <li><span class="mono">tools/src/lib.rs:1314-1425</span> shows the handlers only create, list, stop, update, and read records.</li>
+            <li><span class="mono">runtime/src/task_registry.rs:1-190</span> is an in-memory registry with status and output fields, but no execution path.</li>
+          </ul>
+          <p>
+            Impact: higher-level orchestration can believe it has delegated work when it has only created bookkeeping entries. This is especially risky if later logic treats task status as operational truth.
+          </p>
+        </div>
+
+        <div class="callout low">
+          <div class="eyebrow">Low</div>
+          <h3>Team and cron surfaces are metadata registries, not actual schedulers or parallel runners</h3>
+          <p>
+            The naming suggests operational behavior, but the current implementation only stores metadata.
+            <span class="mono">TeamCreate</span> extracts incoming <span class="mono">task_id</span> values and creates a record; it does not launch sub-agents.
+            <span class="mono">CronCreate</span> creates a schedule record; it does not install a scheduler or execute recurring work.
+          </p>
+          <ul>
+            <li><span class="mono">tools/src/lib.rs:966-1010</span> advertises team and cron semantics.</li>
+            <li><span class="mono">tools/src/lib.rs:1482-1528</span> shows the handlers just write registry state.</li>
+            <li><span class="mono">runtime/src/team_cron_registry.rs:1-210</span> is registry-only backing.</li>
+          </ul>
+          <p>
+            Impact: this is less severe than the MCP mismatch because the behavior is at least internally consistent, but the tool descriptions currently overstate capability.
+          </p>
+        </div>
+
+        <div class="callout">
+          <div class="eyebrow">Design Note</div>
+          <h3>The actual sub-agent path is implemented and materially different from the task/team abstractions</h3>
+          <p>
+            The <span class="mono">Agent</span> tool is the real delegated execution path today. It writes an agent manifest,
+            spawns a background thread, builds a dedicated provider-backed runtime with an allowed-tool subset,
+            and persists terminal state on completion or failure.
+          </p>
+          <ul>
+            <li><span class="mono">tools/src/lib.rs:3240-3358</span> shows manifest creation, thread spawn, and runtime execution.</li>
+            <li><span class="mono">tools/src/lib.rs:3360-3478</span> shows sub-agent runtime assembly and per-agent tool allowlists.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Canonical Runtime Topology</h2>
+      <div class="flow">
+        <div class="node">
+          <div class="tag">Entry</div>
+          <h3>CLI entrypoint</h3>
+          <p class="mono">rust/crates/rusty-claude-cli/src/main.rs</p>
+          <p>Parses command mode, selects prompt vs REPL vs slash-command behavior, loads config, plugin state, and MCP state.</p>
+        </div>
+        <div class="node">
+          <div class="tag">Prompt</div>
+          <h3>System prompt assembly</h3>
+          <p class="mono">runtime/src/prompt.rs</p>
+          <p>Builds static instructions, environment context, git snapshot, discovered CLAUDE files, and rendered runtime config.</p>
+        </div>
+        <div class="node">
+          <div class="tag">Policy</div>
+          <h3>Config and permissions</h3>
+          <p class="mono">runtime/src/config.rs</p>
+          <p class="mono">runtime/src/permissions.rs</p>
+          <p>Merges user, project, and local settings, resolves permission mode, MCP config, hooks, sandbox, and allow/deny/ask rules.</p>
+        </div>
+        <div class="node">
+          <div class="tag">Loop</div>
+          <h3>Conversation runtime</h3>
+          <p class="mono">runtime/src/conversation.rs</p>
+          <p>Owns session state, streams assistant events, executes tools, records usage, and optionally auto-compacts context.</p>
+        </div>
+        <div class="node">
+          <div class="tag">Providers</div>
+          <h3>LLM transport</h3>
+          <p class="mono">api/src/providers/anthropic.rs</p>
+          <p class="mono">api/src/providers/openai_compat.rs</p>
+          <p>Converts session messages into provider requests, streams text/tool events back into the runtime, and tracks usage.</p>
+        </div>
+        <div class="node">
+          <div class="tag">Tools</div>
+          <h3>Built-in, runtime, and plugin tools</h3>
+          <p class="mono">tools/src/lib.rs</p>
+          <p>Defines built-in tools, merges plugin/runtime tools, enforces permissions, and executes the selected tool path.</p>
+        </div>
+      </div>
+      <div class="arrowline">CLI action -> load prompt/config/plugins/MCP -> build ConversationRuntime -> provider stream -> assistant events -> permission gate -> tool execution -> tool_result messages -> repeat until MessageStop without more tool uses</div>
+    </section>
+
+    <section class="section">
+      <h2>Main Turn Workflow</h2>
+      <div class="sequence">User
+  |
+  | text prompt
+  v
+ConversationRuntime::run_turn
+  |  push user message into Session
+  |  build ApiRequest { system_prompt, messages }
+  v
+ApiClient::stream
+  |  CLI path: AnthropicRuntimeClient
+  |  Sub-agent path: ProviderRuntimeClient
+  |  both translate Session -> provider messages + tool definitions
+  v
+Provider SSE / streaming response
+  |  text deltas
+  |  tool-use blocks
+  |  usage
+  |  message stop
+  v
+build_assistant_message(...)
+  |  append assistant message to Session
+  |  extract pending tool uses
+  v
+for each tool use in assistant message
+  |  pre-tool hook
+  |  permission authorize / ask / deny
+  |  execute tool
+  |  post-tool or failure hook
+  |  append tool_result to Session
+  v
+loop again if tool uses were present
+  |
+  | no more tool uses
+  v
+TurnSummary + optional auto compaction</div>
+      <p class="small">
+        Confirmed in <span class="mono">runtime/src/conversation.rs:296-420</span>. The loop is sequential over pending tool uses inside a single assistant message.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>Internet Logic</h2>
+      <div class="grid two">
+        <div class="callout">
+          <div class="eyebrow">WebSearch</div>
+          <h3>Current search path</h3>
+          <ul>
+            <li><span class="mono">tools/src/lib.rs:2544-2595</span> fetches search HTML and builds the result payload.</li>
+            <li><span class="mono">tools/src/lib.rs:2622-2632</span> targets <span class="mono">https://html.duckduckgo.com/html/</span> by default, unless <span class="mono">CLAWD_WEB_SEARCH_BASE_URL</span> overrides it.</li>
+            <li><span class="mono">tools/src/lib.rs:2555-2568</span> parses hits from DuckDuckGo markup, falls back to generic link scraping if needed, applies allowed/blocked domain filters, dedupes, and truncates to 8 hits.</li>
+            <li>The tool returns both human commentary and a structured hit list in one JSON object.</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <div class="eyebrow">WebFetch</div>
+          <h3>Current fetch path</h3>
+          <ul>
+            <li><span class="mono">tools/src/lib.rs:2510-2541</span> performs direct fetch, captures final URL, status, content-type, byte count, and a text summary.</li>
+            <li><span class="mono">tools/src/lib.rs:2607-2619</span> upgrades <span class="mono">http</span> to <span class="mono">https</span> for non-localhost targets.</li>
+            <li><span class="mono">tools/src/lib.rs:2635-2640</span> converts HTML bodies to plain text via a lightweight stripper; non-HTML is passed through as trimmed text.</li>
+            <li><span class="mono">tools/src/lib.rs:2643-2650</span> and below make the returned summary depend on the prompt, mainly special-casing title and summary requests.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid three" style="margin-top:14px;">
+        <div class="callout">
+          <div class="eyebrow">HTTP client defaults</div>
+          <p><span class="mono">tools/src/lib.rs:2598-2604</span> builds a blocking reqwest client with a 20 second timeout, redirect limit 10, and a fixed user-agent string.</p>
+        </div>
+        <div class="callout">
+          <div class="eyebrow">Provider network path</div>
+          <p>The built-in internet tools are separate from model-provider transport. Provider calls happen in <span class="mono">api/</span>; web search and fetch happen in the tools crate.</p>
+        </div>
+        <div class="callout">
+          <div class="eyebrow">Boundary</div>
+          <p>There is no separate research graph. Internet access is just another tool-use branch inside the same conversation loop and permission model.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>MCP Logic</h2>
+      <div class="grid two">
+        <div class="callout">
+          <div class="eyebrow">Actively wired MCP path</div>
+          <p>
+            The CLI loads MCP config, creates a live <span class="mono">RuntimeMcpState</span>, and turns discovered MCP tools into runtime tool definitions.
+            When servers are present, it also exposes wrapper tools for generic MCP invocation and resource access.
+          </p>
+          <ul>
+            <li><span class="mono">rusty-claude-cli/src/main.rs:2821-2899</span></li>
+            <li><span class="mono">rusty-claude-cli/src/main.rs:6570-6688</span> executes runtime MCP tools through live state.</li>
+          </ul>
+        </div>
+        <div class="callout">
+          <div class="eyebrow">Partially wired MCP bridge</div>
+          <p>
+            The runtime crate also contains <span class="mono">runtime/src/mcp_tool_bridge.rs</span>, a stateful registry abstraction that can register servers, list resources,
+            and call tools through an <span class="mono">McpServerManager</span>. In the current CLI path, that bridge is not the object actually feeding model-visible MCP tools.
+          </p>
+        </div>
+      </div>
+      <div class="arrowline">config -> RuntimeMcpState::new(...) -> discovered qualified MCP tool names + MCPTool/ListMcpResourcesTool/ReadMcpResourceTool -> CliToolExecutor runtime tool path</div>
+    </section>
+
+    <section class="section">
+      <h2>Sub-agents, Workers, and Auxiliary Surfaces</h2>
+      <div class="grid two">
+        <div class="callout">
+          <div class="eyebrow">Agent tool</div>
+          <p>
+            This is the real delegated execution path. The tool writes an agent manifest, spawns a background thread,
+            builds a provider-backed runtime, constrains tools by subagent type, and persists terminal state.
+          </p>
+          <ul>
+            <li><span class="mono">tools/src/lib.rs:3240-3358</span> manifest and spawn path</li>
+            <li><span class="mono">tools/src/lib.rs:3360-3478</span> per-subagent runtime and allowlists</li>
+          </ul>
+        </div>
+        <div class="callout">
+          <div class="eyebrow">Worker boot control plane</div>
+          <p>
+            Worker tools are not themselves coding agents. They are a startup and delivery state machine for external coding workers:
+            trust-gate detection, ready-for-prompt handshakes, prompt misdelivery detection, replay arming, restart, and terminate.
+          </p>
+          <ul>
+            <li><span class="mono">runtime/src/worker_boot.rs</span></li>
+            <li>Statuses include <span class="mono">spawning</span>, <span class="mono">trust_required</span>, <span class="mono">ready_for_prompt</span>, <span class="mono">running</span>, <span class="mono">finished</span>, and <span class="mono">failed</span>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Current Implementation Map</h2>
+      <div class="flow">
+        <div class="node">
+          <div class="tag">1</div>
+          <h3>Command selection</h3>
+          <p><span class="mono">main.rs</span> chooses prompt, REPL, slash command, status, auth, or support surface.</p>
+        </div>
+        <div class="node">
+          <div class="tag">2</div>
+          <h3>Context assembly</h3>
+          <p><span class="mono">prompt.rs</span> discovers instruction files up the directory tree and embeds git snapshots plus merged config.</p>
+        </div>
+        <div class="node">
+          <div class="tag">3</div>
+          <h3>Tool catalog build</h3>
+          <p><span class="mono">tools/src/lib.rs</span> combines built-in tools with plugin tools and runtime MCP tools.</p>
+        </div>
+        <div class="node">
+          <div class="tag">4</div>
+          <h3>Permission policy build</h3>
+          <p><span class="mono">main.rs:6704-6713</span> folds tool requirements and config-driven allow/deny/ask rules into one policy.</p>
+        </div>
+        <div class="node">
+          <div class="tag">5</div>
+          <h3>Provider stream</h3>
+          <p>The runtime sends the current session plus tool definitions to Anthropic or another provider-compatible adapter.</p>
+        </div>
+        <div class="node">
+          <div class="tag">6</div>
+          <h3>Assistant event translation</h3>
+          <p>Streaming responses are normalized into text deltas, tool-use events, usage records, and message stop markers.</p>
+        </div>
+        <div class="node">
+          <div class="tag">7</div>
+          <h3>Tool execution</h3>
+          <p>Each tool call is hook-checked, permission-gated, executed, and written back as a tool_result conversation block.</p>
+        </div>
+        <div class="node">
+          <div class="tag">8</div>
+          <h3>Loop or finish</h3>
+          <p>If tool-use blocks were present, the runtime loops. Otherwise it returns a turn summary and may auto-compact session history.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Source of Truth Files</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Primary file(s)</th>
+              <th>What it controls</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CLI dispatch</td>
+              <td class="mono">rust/crates/rusty-claude-cli/src/main.rs</td>
+              <td>Program entry, command mode selection, runtime assembly, live MCP integration, interactive permission prompting.</td>
+            </tr>
+            <tr>
+              <td>Prompt/context</td>
+              <td class="mono">rust/crates/runtime/src/prompt.rs</td>
+              <td>System prompt scaffold, environment section, instruction-file discovery, git status/diff snapshots, rendered config section.</td>
+            </tr>
+            <tr>
+              <td>Settings merge</td>
+              <td class="mono">rust/crates/runtime/src/config.rs</td>
+              <td>User/project/local settings precedence, sandbox config, plugin config, MCP config, permission-mode decoding.</td>
+            </tr>
+            <tr>
+              <td>Permission engine</td>
+              <td class="mono">rust/crates/runtime/src/permissions.rs</td>
+              <td>Required tool modes, allow/deny/ask rules, prompt escalation, hook overrides.</td>
+            </tr>
+            <tr>
+              <td>Conversation loop</td>
+              <td class="mono">rust/crates/runtime/src/conversation.rs</td>
+              <td>Turn execution, session updates, hook callbacks, tool execution cycle, usage tracking, auto compaction.</td>
+            </tr>
+            <tr>
+              <td>Built-in tools</td>
+              <td class="mono">rust/crates/tools/src/lib.rs</td>
+              <td>WebSearch, WebFetch, file/search tools, Agent, Worker, Task, Team, Cron, MCP built-ins, REPL, config, notebook editing.</td>
+            </tr>
+            <tr>
+              <td>Provider adapters</td>
+              <td class="mono">rust/crates/api/src/providers/anthropic.rs</td>
+              <td>Anthropic transport and SSE event normalization.</td>
+            </tr>
+            <tr>
+              <td>Provider adapters</td>
+              <td class="mono">rust/crates/api/src/providers/openai_compat.rs</td>
+              <td>OpenAI/xAI-compatible transport, tool-definition translation, streaming normalization.</td>
+            </tr>
+            <tr>
+              <td>Live MCP bridge</td>
+              <td class="mono">rust/crates/runtime/src/mcp_stdio.rs</td>
+              <td>Configured stdio MCP server launch, discovery, tool calling, and manager lifecycle.</td>
+            </tr>
+            <tr>
+              <td>Worker boot plane</td>
+              <td class="mono">rust/crates/runtime/src/worker_boot.rs</td>
+              <td>Trust-gate detection, ready state, prompt replay, failure classification for external coding workers.</td>
+            </tr>
+            <tr>
+              <td>Reference-only graph</td>
+              <td class="mono">src/bootstrap_graph.py, src/command_graph.py</td>
+              <td>Useful for conceptual orientation, but not the canonical runtime path used by the Rust CLI.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Bottom Line</h2>
+      <p>
+        The current Claw Code implementation is a session-centric, tool-augmented conversational runtime rather than a LangGraph-style planner.
+        The core turn loop is coherent and the sub-agent path is real. The most important correctness gap today is the duplicated MCP surface:
+        model-visible built-in MCP tools do not line up with the live CLI MCP plumbing. The next most important gap is naming fidelity:
+        task, team, and cron APIs currently promise operational behavior that their implementations do not yet perform.
+      </p>
+    </section>
+  </div>
+</body>
+</html>

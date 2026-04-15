@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASA Agent Pipeline - Current Implementation</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --panel: #fffdf8;
+      --ink: #1d2733;
+      --muted: #5d6a76;
+      --line: #d7cfc1;
+      --navy: #14324a;
+      --blue: #2e5f8a;
+      --teal: #2d7b76;
+      --sand: #e8ddc6;
+      --amber: #b87318;
+      --rose: #a14b57;
+      --mint: #dff2ea;
+      --gold: #f1e2b8;
+      --slate: #dde6ee;
+      --shadow: 0 18px 40px rgba(20, 50, 74, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(46, 95, 138, 0.10), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(184, 115, 24, 0.10), transparent 28%),
+        linear-gradient(180deg, #f8f5ed 0%, var(--bg) 100%);
+      line-height: 1.45;
+    }
+
+    .wrap {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(20, 50, 74, 0.96), rgba(34, 84, 110, 0.96)),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent);
+      color: #f9f6ef;
+      padding: 34px 36px 30px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      right: -120px;
+      top: -160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(241, 226, 184, 0.20), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2.0rem, 4vw, 3.2rem);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      max-width: 950px;
+      margin: 0 0 18px;
+      color: rgba(249, 246, 239, 0.90);
+      font-size: 1.05rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #f9f6ef;
+      font-size: 0.94rem;
+      letter-spacing: 0.01em;
+    }
+
+    .section {
+      margin-top: 26px;
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 1.55rem;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+
+    .section > p {
+      margin-top: 0;
+      color: var(--muted);
+      max-width: 1020px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: linear-gradient(180deg, #fffefb, #fbf7ef);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      color: var(--navy);
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .card ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin: 14px 0 10px;
+    }
+
+    .node {
+      min-width: 132px;
+      max-width: 220px;
+      padding: 14px 14px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fffdfa;
+      box-shadow: 0 10px 18px rgba(20, 50, 74, 0.05);
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--navy);
+      font-size: 0.98rem;
+    }
+
+    .node small {
+      color: var(--muted);
+      display: block;
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .node.agent { background: #eef5fb; }
+    .node.tools { background: #eef8f1; }
+    .node.guard { background: #fdf2e4; }
+    .node.memory { background: #f6eef8; }
+    .node.research { background: #eef7f7; }
+    .node.net { background: #f8f3ea; }
+    .node.end { background: #f5e9ea; }
+
+    .arrow {
+      color: var(--amber);
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0 2px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(20, 50, 74, 0.12);
+      display: inline-block;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border-left: 4px solid var(--blue);
+      background: #f3f8fc;
+      color: var(--muted);
+    }
+
+    .path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.88rem;
+      color: var(--navy);
+      background: rgba(20, 50, 74, 0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    thead th {
+      text-align: left;
+      background: #edf3f8;
+      color: var(--navy);
+      font-size: 0.92rem;
+      letter-spacing: 0.01em;
+    }
+
+    th, td {
+      padding: 12px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 0.94rem;
+    }
+
+    td {
+      color: var(--muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stack .lane {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(20, 50, 74, 0.16);
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(248, 243, 234, 0.95));
+    }
+
+    .lane h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: var(--navy);
+    }
+
+    .tier-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid rgba(20, 50, 74, 0.08);
+    }
+
+    .tier-row:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--sand);
+      color: var(--navy);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .foot {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .grid.cols-2,
+      .grid.cols-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .tier-row {
+        grid-template-columns: 1fr;
+      }
+
+      .flow {
+        align-items: stretch;
+      }
+
+      .arrow {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>ASA Agent Pipeline: Current Implementation</h1>
+      <p>
+        This report represents the current agent pipeline as implemented in the workspace on
+        <strong>2026-04-07</strong>. It is based on the code paths that actually construct,
+        invoke, and constrain the agent runtime: the R entrypoints, the LangGraph agent core,
+        the research workflow graph, the DuckDuckGo transport stack, and the OpenWebpage tool.
+      </p>
+      <div class="meta">
+        <span class="pill">Repo: /Users/cjerzak/Documents/asa-software</span>
+        <span class="pill">Primary package: asa/</span>
+        <span class="pill">Report type: implementation visualization</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>Implementation Summary</h2>
+      <p>
+        The current pipeline is layered. R builds the toolset and selects either the standard
+        ReAct graph or the memory-folding graph. Per run, R injects budgets and policies into
+        Python state. The LangGraph core then decides when to use tools, when to automatically
+        open webpages, when to compress context, and when to force finalization. Separately,
+        the research enumeration workflow wraps a planner/searcher/deduper/stopper loop with
+        optional temporal verification and low-yield webpage escalation.
+      </p>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>R orchestration layer</h3>
+          <p>
+            <span class="path">asa/R/agent__initialize.R</span> builds the tool list and picks
+            either <code>create_standard_agent()</code> or
+            <code>create_memory_folding_agent()</code>. <span class="path">asa/R/agent__run_engine.R</span>
+            seeds recursion limits, search budgets, auto-open-webpage policy, field rules,
+            source policy, retry policy, finalization policy, and performance profile.
+          </p>
+        </div>
+        <div class="card">
+          <h3>LangGraph core</h3>
+          <p>
+            <span class="path">asa/inst/python/asa_backend/graph/agent_graph_core.py</span>
+            implements the main agent state machine, tool node wrapper, budget accounting,
+            structured-output repair, finalization rules, memory folding, observational memory,
+            and automatic webpage follow-up.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Internet access layer</h3>
+          <p>
+            Search uses a multi-tier DuckDuckGo stack in
+            <span class="path">asa/inst/python/asa_backend/search/ddg_transport.py</span>.
+            Full-page reading uses <span class="path">asa/inst/python/tools/webpage_reader_tool.py</span>,
+            which enforces SSRF checks, supports HTML and PDF extraction, caches blocked fetches,
+            and returns relevance-filtered excerpts.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Runtime Layers</h2>
+      <p>
+        The base agent path and the research path share tools but not the same graph. The base
+        agent is the general run-task pipeline; the research workflow is a higher-level
+        enumeration graph that internally runs its own bounded tool loop inside the searcher.
+      </p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>General run-task path</h3>
+          <div class="flow">
+            <div class="node agent">
+              <strong>initialize_agent()</strong>
+              <small>Build Wikipedia, Search, optional OpenWebpage tools; choose memory-folding or standard graph.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node guard">
+              <strong>.run_agent()</strong>
+              <small>Resolve recursion limit, budgets, policies, thread id, expected schema.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node tools">
+              <strong>Python graph invoke</strong>
+              <small>Invoke compiled LangGraph with seeded state via reticulate bridge.</small>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Research enumeration path</h3>
+          <div class="flow">
+            <div class="node research">
+              <strong>asa_enumerate()</strong>
+              <small>Collect config, schema, temporal settings, webpage policy, checkpoint options.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node guard">
+              <strong>create_research_graph()</strong>
+              <small>Compile planner/searcher/deduper/stopper workflow.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node tools">
+              <strong>run_research()</strong>
+              <small>Invoke graph; searcher runs a bounded internal tool loop using the same tool family.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:#eef5fb"></i>Agent/control nodes</span>
+        <span><i class="swatch" style="background:#eef8f1"></i>Tool execution</span>
+        <span><i class="swatch" style="background:#fdf2e4"></i>Budgets/policies/finalization</span>
+        <span><i class="swatch" style="background:#f6eef8"></i>Memory and observation stages</span>
+        <span><i class="swatch" style="background:#eef7f7"></i>Research graph stages</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Base Agent Graphs</h2>
+      <p>
+        The standard and memory-folding agents are distinct LangGraph workflows in the same
+        core module. Both are RemainingSteps-aware. Both can route to <code>finalize</code> when
+        recursion or budget conditions make another tool/model turn unsafe.
+      </p>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Standard agent graph</h3>
+          <div class="flow">
+            <div class="node agent">
+              <strong>agent</strong>
+              <small>Model call with tools bound unless at finalization cutoff.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node tools">
+              <strong>tools</strong>
+              <small>ToolNode wrapper, scratchpad extraction, diagnostics, auto-open-webpage.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node agent">
+              <strong>agent</strong>
+              <small>Continue reasoning on tool outputs.</small>
+            </div>
+          </div>
+          <div class="flow">
+            <div class="node guard">
+              <strong>nudge</strong>
+              <small>Inject a continuation prompt when the agent tries to end too early with unresolved fields.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node agent">
+              <strong>agent</strong>
+              <small>Retry with more explicit continuation pressure.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node end">
+              <strong>finalize -&gt; END</strong>
+              <small>Best-effort terminal response when cut off by recursion, budget, or policy.</small>
+            </div>
+          </div>
+          <div class="callout">
+            Key routes come from <code>should_continue()</code> and <code>after_tools()</code> in
+            <span class="path">agent_graph_core.py</span>. The graph shape is
+            <code>agent -&gt; tools/finalize/nudge/end</code>,
+            <code>tools -&gt; agent/finalize/end</code>,
+            <code>nudge -&gt; agent</code>,
+            <code>finalize -&gt; END</code>.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Memory-folding agent graph</h3>
+          <div class="flow">
+            <div class="node agent">
+              <strong>agent</strong>
+              <small>Same core reasoning loop, but with summary/archive state and retrieval context injection.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node tools">
+              <strong>tools</strong>
+              <small>Execute tools, then check fold budget before returning to the model.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node memory">
+              <strong>observe / summarize</strong>
+              <small>Compress transcript when fold budget is exceeded.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node memory">
+              <strong>reflect</strong>
+              <small>Optional observational-memory reflection path.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node agent">
+              <strong>agent</strong>
+              <small>Resume with summary, archive, observations, reflections.</small>
+            </div>
+          </div>
+          <div class="flow">
+            <div class="node guard">
+              <strong>forced finalize</strong>
+              <small>Used near cutoff or when terminal budget must be reserved.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node end">
+              <strong>END</strong>
+              <small>Final response emitted or recursion edge reached.</small>
+            </div>
+          </div>
+          <div class="callout">
+            Folding is not just message-count based. The implementation checks character budget,
+            estimated tokens, safe fold boundaries, and preserves critical terminal exchanges near
+            the finalization edge.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Research Workflow Graph</h2>
+      <p>
+        The research workflow in <span class="path">asa/inst/python/workflows/research_graph_workflow.py</span>
+        is a separate StateGraph tuned for open-ended enumeration. It uses a planner, a bounded
+        searcher round, deduplication, and a deterministic outcome gate.
+      </p>
+      <div class="flow">
+        <div class="node research">
+          <strong>entry_router</strong>
+          <small>Fresh runs start at planner; resumed runs can jump straight to searcher.</small>
+        </div>
+        <div class="arrow">&rarr;</div>
+        <div class="node research">
+          <strong>planner</strong>
+          <small>Infer entity type, optional Wikidata type, and planned search queries.</small>
+        </div>
+        <div class="arrow">&rarr;</div>
+        <div class="node research">
+          <strong>searcher</strong>
+          <small>Try Wikidata first when type is supported, then fall back to tool-driven web search.</small>
+        </div>
+        <div class="arrow">&rarr;</div>
+        <div class="node research">
+          <strong>deduper</strong>
+          <small>Hash on schema fields plus fuzzy match on the first schema field.</small>
+        </div>
+        <div class="arrow">&rarr;</div>
+        <div class="node research">
+          <strong>stopper</strong>
+          <small>Evaluate round, query, token, time, target-items, and novelty stop conditions.</small>
+        </div>
+        <div class="arrow">&rarr;</div>
+        <div class="node end">
+          <strong>searcher or END</strong>
+          <small>Loop until the completion gate says stop, or until recursion protection cuts off another round.</small>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Research node</th>
+            <th>Current implementation detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Planner</td>
+            <td>Prompts for entity type, optional supported Wikidata type, and up to several search sub-queries.</td>
+          </tr>
+          <tr>
+            <td>Searcher</td>
+            <td>Runs a minimal internal tool loop built as <code>agent -&gt; tools -&gt; agent</code> with a hard <code>max_tool_calls</code> per round.</td>
+          </tr>
+          <tr>
+            <td>Webpage enablement</td>
+            <td><code>allow_read_webpages="auto"</code> turns on OpenWebpage after low-yield rounds: current logic checks for two weak novelty rounds or too few existing results after round 2.</td>
+          </tr>
+          <tr>
+            <td>Temporal logic</td>
+            <td>Time filter can be pushed into DDG. Strict temporal mode also verifies page dates in parallel and can optionally accept Wayback snapshots within the requested range.</td>
+          </tr>
+          <tr>
+            <td>Stopping</td>
+            <td>Stopper delegates to <code>evaluate_research_outcome()</code> using rounds, queries, tokens, elapsed time, target items, and novelty history.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Internet Logic: Search and Web Access</h2>
+      <p>
+        The internet path is not a single tool call. It is a layered search transport plus a
+        separate full-page reader, both wrapped by policy logic in the agent core. The diagrams
+        below show the actual fallback order and where policy gates are applied.
+      </p>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Search path</h3>
+          <div class="flow">
+            <div class="node net">
+              <strong>Search tool call</strong>
+              <small>Triggered explicitly by the model or inside the research searcher loop.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node guard">
+              <strong>Preflight</strong>
+              <small>Inter-search delay, session reset, proactive Tor rotation, clean-exit selection, proxy blocklist checks.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node tools">
+              <strong>Tiered transport</strong>
+              <small>Try successive DDG access strategies until one yields usable results.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node research">
+              <strong>Normalize + rerank</strong>
+              <small>Add <code>_tier</code> marker, clean URLs, rerank, compact result rows.</small>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="lane">
+              <h3>DuckDuckGo tier order</h3>
+              <div class="tier-row">
+                <div><span class="tier-badge">Tier 0</span></div>
+                <div><strong>curl_cffi</strong> on <code>https://html.duckduckgo.com/html</code> with rotating browser impersonation. Captcha or rate-limit detection triggers Tor rotation and retry.</div>
+              </div>
+              <div class="tier-row">
+                <div><span class="tier-badge">Tier 1</span></div>
+                <div><strong>primp</strong> with rotating impersonation profiles and the same captcha-aware retry logic.</div>
+              </div>
+              <div class="tier-row">
+                <div><span class="tier-badge">Tier 2</span></div>
+                <div><strong>selenium browser</strong>, only when <code>use_browser=TRUE</code>. Engine order is policy-driven: Firefox-first by default, Chrome-first when configured.</div>
+              </div>
+              <div class="tier-row">
+                <div><span class="tier-badge">Tier 3</span></div>
+                <div><strong>ddgs HTTP API</strong>, with retries and polite user-agent defaults.</div>
+              </div>
+              <div class="tier-row">
+                <div><span class="tier-badge">Tier 4</span></div>
+                <div><strong>requests scrape</strong> against the DDG HTML endpoint, plus a relaxed-query retry when the first scrape yields nothing usable.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>OpenWebpage path</h3>
+          <div class="flow">
+            <div class="node net">
+              <strong>OpenWebpage</strong>
+              <small>Can be explicit, research-enabled, or added automatically after search snippet analysis.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node guard">
+              <strong>URL guard</strong>
+              <small>Reject non-http(s), credentials in URL, localhost, private IPs, and resolvable internal hosts.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node tools">
+              <strong>Fetch</strong>
+              <small>Stream HTML or PDF with byte caps, blocked-response detection, retry/backoff, and cache.</small>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="node research">
+              <strong>Extract excerpts</strong>
+              <small>Inline useful links, chunk content, then choose lexical or embedding-ranked excerpts.</small>
+            </div>
+          </div>
+          <div class="callout">
+            If HTTPS fails with a TLS-style error, the tool can retry as HTTP only for some government domains
+            (<code>.gov</code> or <code>.gob</code>). PDF extraction is enabled and uses <code>pdftotext</code>
+            when available.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Current Policy Defaults Observed in Code</h2>
+      <p>
+        These are the defaults that materially shape internet behavior when not overridden by R-side
+        options or per-run state.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Current default</th>
+            <th>Operational effect</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DDG search config</td>
+            <td><code>timeout=30s</code>, <code>max_retries=3</code>, <code>inter_search_delay=1.5s</code>, <code>humanize_timing=TRUE</code>, <code>allow_direct_fallback=FALSE</code></td>
+            <td>Search prefers Tor/proxy anonymity, waits between calls, and avoids direct-IP fallback unless explicitly enabled.</td>
+          </tr>
+          <tr>
+            <td>Selenium browser order</td>
+            <td><code>firefox_first</code></td>
+            <td>Browser tier attempts Firefox, then UC Chrome, then standard Chrome unless config flips it.</td>
+          </tr>
+          <tr>
+            <td>OpenWebpage base config</td>
+            <td><code>allow_read_webpages=FALSE</code>, <code>max_chars=8000</code>, <code>max_chunks=6</code>, <code>chunk_chars=1200</code>, <code>relevance_mode=auto</code></td>
+            <td>Full-page reading is opt-in and excerpt-oriented rather than full-document dumping.</td>
+          </tr>
+          <tr>
+            <td>OpenWebpage content caps</td>
+            <td><code>max_bytes=2,000,000</code>, PDF enabled, <code>pdf_max_bytes=8,000,000</code>, <code>pdf_max_pages=8</code></td>
+            <td>Large fetches are bounded; PDFs are allowed but clipped.</td>
+          </tr>
+          <tr>
+            <td>Performance profile</td>
+            <td><code>balanced</code></td>
+            <td>Feeds the default webpage policy in the agent core.</td>
+          </tr>
+          <tr>
+            <td>Balanced webpage policy</td>
+            <td><code>max_open_calls=3</code>, <code>host_cooldown_seconds=45</code>, <code>blocked_host_ttl_seconds=900</code>, <code>open_only_if_score_ge=0.40</code>, <code>parallel_open_limit=1</code></td>
+            <td>Auto follow-up only opens a few high-scoring pages and cools down failing hosts.</td>
+          </tr>
+          <tr>
+            <td>Research workflow defaults</td>
+            <td><code>max_workers=4</code>, <code>max_rounds=8</code>, <code>budget_queries=50</code>, <code>allow_read_webpages=FALSE</code>, <code>temporal_strictness=best_effort</code></td>
+            <td>Research starts conservative and only escalates webpage reading when explicitly requested or in low-yield auto mode.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Automatic Internet Escalation Logic</h2>
+      <p>
+        The current implementation uses both explicit and automatic webpage expansion. The automatic
+        path lives in the tool-node wrapper in the LangGraph core; it is separate from the research
+        workflow's <code>allow_read_webpages="auto"</code> switch.
+      </p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Agent-core auto-open-webpage follow-up</h3>
+          <ul>
+            <li>Only considered when the last tool round produced Search tool messages containing <code>__START_OF_SOURCE</code> blocks and <code>&lt;URL&gt;</code> markers.</li>
+            <li>Disabled if <code>auto_openwebpage_policy</code> resolves to off, if webpage policy is disabled, if no tool budget remains, or if <code>max_open_calls</code> has already been reached.</li>
+            <li>Uses preferred URLs from snippet extraction first, then generic ranked candidates.</li>
+            <li>Applies host cooldown and blocked-host TTL so repeated hard failures on the same host are suppressed.</li>
+            <li>Can be forced by snippet-recovery logic when structured extraction from search snippets failed but escalation candidates were found.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Research-workflow webpage auto mode</h3>
+          <ul>
+            <li>If <code>allow_read_webpages</code> is the string <code>"auto"</code>, the searcher delays webpage reading until results are low-yield.</li>
+            <li>The current low-yield trigger is: at least round 2, plus either the last two novelty rates are each below 0.2 or the run still has fewer than two results after round 2.</li>
+            <li>When enabled, the per-round tool-call cap increases from 3 to 5.</li>
+            <li>The search prompt then explicitly allows <code>OpenWebpage</code> and asks for focused queries when opening pages.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Stopping, Finalization, and Budget Logic</h2>
+      <p>
+        The current implementation tries hard to stop cleanly instead of letting LangGraph die at
+        the raw recursion limit. This is one of the main reasons the pipeline has explicit
+        <code>finalize</code> and <code>nudge</code> nodes.
+      </p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Base agent stop controls</h3>
+          <ul>
+            <li><code>remaining_steps</code> is checked throughout routing; the graph may reserve terminal budget after tools.</li>
+            <li><code>search_budget_limit</code> and tool/model counters are normalized into <code>budget_state</code>.</li>
+            <li><code>unknown_after_searches</code> caps how long unresolved schema fields stay eligible before being treated as exhausted.</li>
+            <li><code>finalize_on_all_fields_resolved</code> can force an end once all resolvable fields are complete.</li>
+            <li>The tool wrapper also tightens budgets on repeated low-signal, low-efficiency, dedupe-heavy, or empty-round behavior.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Research stop controls</h3>
+          <ul>
+            <li>The stopper uses <code>evaluate_research_outcome()</code> rather than only checking round counts.</li>
+            <li>It combines rounds, query count, token use, elapsed time, target-items goal, plateau rounds, and novelty minimum.</li>
+            <li>Recursion-limit protection is treated as a first-class stop signal and is passed into the completion gate.</li>
+            <li>Strict temporal mode can also fail fast if the temporal verifier module is unavailable.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Source-of-Truth Files</h2>
+      <p>
+        These files define the current implementation shown above. If the pipeline changes, these
+        are the files to diff first.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="path">asa/R/agent__initialize.R</span></td>
+            <td>Creates Search, Wikipedia, and OpenWebpage tools; chooses standard vs memory-folding agent; configures proxy/Tor and search defaults.</td>
+          </tr>
+          <tr>
+            <td><span class="path">asa/R/agent__run_engine.R</span></td>
+            <td>Injects per-run runtime state such as recursion limit, schema, search budget, auto-open-webpage policy, webpage policy, and finalization settings.</td>
+          </tr>
+          <tr>
+            <td><span class="path">asa/inst/python/asa_backend/graph/agent_graph_core.py</span></td>
+            <td>Main LangGraph agent implementation, tool wrapper, memory folding, observational memory, automatic webpage follow-up, diagnostics, and budget control.</td>
+          </tr>
+          <tr>
+            <td><span class="path">asa/inst/python/workflows/research_graph_workflow.py</span></td>
+            <td>Planner/searcher/deduper/stopper workflow for enumeration-style research, including temporal filtering and low-yield webpage auto mode.</td>
+          </tr>
+          <tr>
+            <td><span class="path">asa/inst/python/asa_backend/search/ddg_transport.py</span></td>
+            <td>Tiered DDG transport, anti-detection timing, Tor rotation, proxy blocklist, Selenium fallback, DDGS fallback, and raw scrape fallback.</td>
+          </tr>
+          <tr>
+            <td><span class="path">asa/inst/python/tools/webpage_reader_tool.py</span></td>
+            <td>OpenWebpage implementation: SSRF guard, blocked-fetch detection, cache, PDF extraction, excerpt selection, and error payload formatting.</td>
+          </tr>
+          <tr>
+            <td><span class="path">asa/tests/testthat/test-search-tiers.R</span></td>
+            <td>Confirms the expected DDG tier markers exposed in traces: <code>curl_cffi</code>, <code>primp</code>, <code>selenium</code>, <code>ddgs</code>, <code>requests</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Practical Read of the Current Design</h2>
+      <p>
+        The current system is not just a search tool attached to a model. It is a controlled
+        graph runtime with explicit retry and finalization nodes, a transport stack built to
+        survive DDG blocking, and a second layer of webpage escalation that is constrained by
+        scored URL selection, host cooldowns, and budgets. The research workflow is a separate
+        planner/search loop, but it still relies on the same search and webpage primitives.
+      </p>
+      <div class="callout">
+        In short: R selects and seeds the graph, Python runs the state machine, search uses a
+        five-tier DuckDuckGo fallback ladder, and webpage reading is optional, cached, relevance-
+        filtered, and policy-gated rather than always-on.
+      </div>
+    </section>
+
+    <div class="foot">
+      Generated from code inspection in the local workspace. No external sources were used.
+    </div>
+  </div>
+</body>
+</html>
