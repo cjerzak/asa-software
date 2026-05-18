@@ -1,0 +1,28 @@
+{
+  "status": "error",
+  "unit": {
+    "unit_index": 13,
+    "unit_key": "13_taiwan_row10787",
+    "country": "Taiwan",
+    "row_id": 10787,
+    "person_name": "Shyh-Fang Liu",
+    "election_year": "2016",
+    "pol_party": "DPP",
+    "region": "National level",
+    "person_bday": "Not available",
+    "gender_character": "Female",
+    "ethnic": "Chinese"
+  },
+  "started_at_utc": "2026-05-18T19:09:44Z",
+  "finished_at_utc": "2026-05-18T19:10:53Z",
+  "elapsed_time": 1.0061,
+  "error_message": null,
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260518T150640/units/13_taiwan_row10787",
+  "field_status": [],
+  "diagnostics": {
+    "free_code_cli_status": 1,
+    "free_code_permission_denials": []
+  },
+  "completion_gate": []
+}

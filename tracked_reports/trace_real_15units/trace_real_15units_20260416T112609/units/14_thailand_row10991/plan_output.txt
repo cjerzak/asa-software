@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "plan_output",
+  "reason": "plan_not_generated",
+  "expected_empty": true,
+  "unit_key": "14_thailand_row10991",
+  "generated_at_utc": "2026-04-16T16:30:27Z"
+}

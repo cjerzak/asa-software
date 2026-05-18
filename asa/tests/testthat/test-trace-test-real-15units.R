@@ -1,6 +1,37 @@
+local_trace_15units_fixture_path <- function(filename) {
+  normalizePath(
+    testthat::test_path("..", "..", "..", "tracked_reports", filename),
+    winslash = "/",
+    mustWork = FALSE
+  )
+}
+
+skip_if_no_trace_15units_fixtures <- function(required = c("r", "sh")) {
+  fixture_files <- c(
+    r = "trace_test_real_15units.R",
+    sh = "trace_test_real_15units.sh"
+  )
+  required <- match.arg(required, names(fixture_files), several.ok = TRUE)
+  paths <- vapply(
+    fixture_files[required],
+    local_trace_15units_fixture_path,
+    character(1),
+    USE.NAMES = TRUE
+  )
+  missing <- !file.exists(paths)
+  if (any(missing)) {
+    testthat::skip(sprintf(
+      "Repo-level trace 15-unit fixtures not available: %s",
+      paste(basename(paths[missing]), collapse = ", ")
+    ))
+  }
+
+  invisible(paths)
+}
+
 local_trace_15units_env <- function() {
   script_path <- normalizePath(
-    testthat::test_path("..", "..", "..", "tracked_reports", "trace_test_real_15units.R"),
+    local_trace_15units_fixture_path("trace_test_real_15units.R"),
     mustWork = TRUE
   )
   env <- new.env(parent = globalenv())
@@ -10,7 +41,7 @@ local_trace_15units_env <- function() {
 
 local_trace_15units_shell_path <- function() {
   normalizePath(
-    testthat::test_path("..", "..", "..", "tracked_reports", "trace_test_real_15units.sh"),
+    local_trace_15units_fixture_path("trace_test_real_15units.sh"),
     mustWork = TRUE
   )
 }
@@ -136,6 +167,8 @@ create_trace_15units_input_db <- function(path) {
 }
 
 test_that("trace shell launcher supports invocation from different locations", {
+  skip_if_no_trace_15units_fixtures("sh")
+
   shell_path <- local_trace_15units_shell_path()
   temp_wd <- tempfile("trace15-shell-wd-")
   dir.create(temp_wd, recursive = TRUE, showWarnings = FALSE)
@@ -167,6 +200,8 @@ test_that("trace shell launcher supports invocation from different locations", {
 })
 
 test_that("trace shell launcher uses canonical script path for supervisor relaunch", {
+  skip_if_no_trace_15units_fixtures("sh")
+
   shell_path <- local_trace_15units_shell_path()
   script_lines <- readLines(shell_path, warn = FALSE)
   script_text <- paste(script_lines, collapse = "\n")
@@ -176,6 +211,8 @@ test_that("trace shell launcher uses canonical script path for supervisor relaun
 })
 
 test_that("trace shell launcher passes bash syntax check", {
+  skip_if_no_trace_15units_fixtures("sh")
+
   shell_path <- local_trace_15units_shell_path()
   status <- suppressWarnings(system2("bash", c("-n", shell_path)))
   status_int <- suppressWarnings(as.integer(status))
@@ -187,6 +224,8 @@ test_that("trace shell launcher passes bash syntax check", {
 })
 
 test_that("sourcing the trace script is hermetic", {
+  skip_if_no_trace_15units_fixtures("r")
+
   original_error <- getOption("error")
   original_ignore <- Sys.getenv("ASA_IGNORE_PATH_CHROMEDRIVER", unset = NA_character_)
   original_disable <- Sys.getenv("ASA_DISABLE_UC", unset = NA_character_)
@@ -213,6 +252,8 @@ test_that("sourcing the trace script is hermetic", {
 })
 
 test_that("trace script resolves itself when launched from a wrapper that changes directories", {
+  skip_if_no_trace_15units_fixtures("r")
+
   repo_root <- local_trace_15units_repo_root()
   wrapper_result <- run_trace_15units_rscript_wrapper(c(
     "setwd(\"asa\")",
@@ -245,6 +286,8 @@ test_that("trace script resolves itself when launched from a wrapper that change
 })
 
 test_that("ASA_TRACE_REPO_ROOT override takes precedence when sourcing", {
+  skip_if_no_trace_15units_fixtures("r")
+
   fake_root <- create_fake_trace_repo_root()
   original_root <- Sys.getenv("ASA_TRACE_REPO_ROOT", unset = NA_character_)
   on.exit(restore_envvar("ASA_TRACE_REPO_ROOT", original_root), add = TRUE)
@@ -261,6 +304,8 @@ test_that("ASA_TRACE_REPO_ROOT override takes precedence when sourcing", {
 })
 
 test_that("resolve_trace_repo_root fails clearly when no root can be inferred", {
+  skip_if_no_trace_15units_fixtures("r")
+
   env <- local_trace_15units_env()
   original_root <- Sys.getenv("ASA_TRACE_REPO_ROOT", unset = NA_character_)
   original_current_script_path <- env$current_script_path
@@ -279,6 +324,8 @@ test_that("resolve_trace_repo_root fails clearly when no root can be inferred", 
 })
 
 test_that("setup_trace_run creates a frozen 15-unit manifest", {
+  skip_if_no_trace_15units_fixtures("r")
+
   env <- local_trace_15units_env()
   artifact_dir <- tempfile("trace-real-15units-artifacts-")
   dir.create(artifact_dir, recursive = TRUE, showWarnings = FALSE)
@@ -306,6 +353,8 @@ test_that("setup_trace_run creates a frozen 15-unit manifest", {
 })
 
 test_that("aggregate_trace_run preserves order and flags missing bundles", {
+  skip_if_no_trace_15units_fixtures("r")
+
   env <- local_trace_15units_env()
   artifact_dir <- tempfile("trace-real-15units-artifacts-")
   dir.create(artifact_dir, recursive = TRUE, showWarnings = FALSE)

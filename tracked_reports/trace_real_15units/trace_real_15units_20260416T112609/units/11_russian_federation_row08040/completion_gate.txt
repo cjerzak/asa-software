@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "completion_gate",
+  "reason": "completion_gate_not_available",
+  "expected_empty": true,
+  "unit_key": "11_russian_federation_row08040",
+  "generated_at_utc": "2026-04-16T16:30:19Z"
+}

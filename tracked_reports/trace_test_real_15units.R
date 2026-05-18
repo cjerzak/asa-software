@@ -114,6 +114,11 @@ bootstrap_trace_runtime <- function() {
     readRenviron(renviron_path)
   }
 
+  default_free_code_repo <- "/Users/cjerzak/Documents/free-code"
+  if (!nzchar(Sys.getenv("ASA_FREE_CODE_REPO", unset = "")) && dir.exists(default_free_code_repo)) {
+    Sys.setenv(ASA_FREE_CODE_REPO = default_free_code_repo)
+  }
+
   package_root <- .normalize_required_path(file.path(TRACE_REPO_ROOT, "asa"), "local asa package root")
   description_path <- file.path(package_root, "DESCRIPTION")
   if (!file.exists(description_path)) {
@@ -919,7 +924,9 @@ EXPECTED_SCHEMA <- list(
 
 build_agent_config_summary <- function(tor_registry_path) {
   list(
-    agent_backend = "free-code",
+    #agent_backend = "agent", # custom
+    #agent_backend = "free-code", # claude-code open-sourced
+    agent_backend = "opencode", # opencode
     backend = "gemini",
     model = "gemini-3-flash-preview",
     proxy = "ASA_PROXY (per-worker)",

@@ -1,0 +1,28 @@
+{
+  "status": "error",
+  "unit": {
+    "unit_index": 8,
+    "unit_key": "08_mexico_row05350",
+    "country": "Mexico",
+    "row_id": 5350,
+    "person_name": "Monica Clara Molina",
+    "election_year": "2012",
+    "pol_party": "Partido Revolucionario Institucional - PRI",
+    "region": "Circ. 3",
+    "person_bday": "Not available",
+    "gender_character": "Female",
+    "ethnic": "White/Mestizo"
+  },
+  "started_at_utc": "2026-04-16T16:26:58Z",
+  "finished_at_utc": "2026-04-16T16:30:13Z",
+  "elapsed_time": 3.1497,
+  "error_message": "API Error: 500 {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"1 validation error for ChatGoogleGenerativeAI\\n Value error, API key required for Gemini Developer API. Provide api_key parameter or set GOOGLE_API_KEY/GEMINI_API_KEY environment variable. [type=value_error, input_value={'model': 'gemini-3-flash...000, 'model_kwargs': {}}, input_type=dict]\\n For further information visit https://errors.pydantic.dev/2.12/v/value_error\"}}",
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260416T112609/units/08_mexico_row05350",
+  "field_status": [],
+  "diagnostics": {
+    "free_code_cli_status": 1,
+    "free_code_permission_denials": []
+  },
+  "completion_gate": []
+}

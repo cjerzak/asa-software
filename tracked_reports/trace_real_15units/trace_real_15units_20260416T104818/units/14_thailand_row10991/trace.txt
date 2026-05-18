@@ -1,0 +1,5 @@
+{
+  "is_error": true,
+  "result": "free-code did not return valid JSON: free-code returned empty stdout. ",
+  "stop_reason": "free_code_output_parse_error"
+}

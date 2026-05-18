@@ -1,0 +1,47 @@
+{
+  "type": "result",
+  "subtype": "error_max_structured_output_retries",
+  "duration_ms": 23702,
+  "duration_api_ms": 16445,
+  "is_error": true,
+  "num_turns": 10,
+  "stop_reason": "tool_use",
+  "session_id": "e71688bb-668d-4b34-b146-7b379c5875e5",
+  "total_cost_usd": 0.1837,
+  "usage": {
+    "input_tokens": 50419,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 2164,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 50419,
+      "outputTokens": 2164,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.1837,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "fast_mode_state": "off",
+  "uuid": "11c8c035-0453-4977-942c-700e6d7b3709",
+  "errors": [
+    "Failed to provide valid structured output after 5 attempts"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "inputTokens": 13714588,
+  "outputTokens": 22523,
+  "cacheReadInputTokens": 0,
+  "cacheCreationInputTokens": 0,
+  "webSearchRequests": 0,
+  "costUSD": 41.4816,
+  "contextWindow": 200000,
+  "maxOutputTokens": 32000
+}

@@ -49,11 +49,19 @@ ASA_SUPPORTED_BACKENDS <- c("openai", "groq", "xai", "gemini", "exo", "openroute
 
 #' Supported Agent Backends
 #' @keywords internal
-ASA_SUPPORTED_AGENT_BACKENDS <- c("agent", "free-code")
+ASA_SUPPORTED_AGENT_BACKENDS <- c("agent", "free-code", "opencode")
 
 #' Fixed Outer Model for free-code Anthropic-Compatible Gateway
 #' @keywords internal
 ASA_FREE_CODE_OUTER_MODEL <- "claude-sonnet-4-6"
+
+#' Fixed Outer Model for OpenCode Anthropic-Compatible Gateway
+#' @keywords internal
+ASA_OPENCODE_OUTER_MODEL <- "claude-sonnet-4-6"
+
+#' Default OpenCode Agent Name
+#' @keywords internal
+ASA_OPENCODE_DEFAULT_AGENT <- "build"
 
 # ============================================================================
 # API ENDPOINTS

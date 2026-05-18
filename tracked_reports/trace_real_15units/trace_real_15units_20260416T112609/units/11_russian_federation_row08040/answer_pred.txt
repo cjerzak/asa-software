@@ -1,0 +1,4 @@
+{
+  "ephemeral_1h_input_tokens": 0,
+  "ephemeral_5m_input_tokens": 0
+}

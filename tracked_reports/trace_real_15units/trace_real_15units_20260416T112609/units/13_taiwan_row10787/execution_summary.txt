@@ -1,0 +1,28 @@
+{
+  "status": "error",
+  "unit": {
+    "unit_index": 13,
+    "unit_key": "13_taiwan_row10787",
+    "country": "Taiwan",
+    "row_id": 10787,
+    "person_name": "Shyh-Fang Liu",
+    "election_year": "2016",
+    "pol_party": "DPP",
+    "region": "National level",
+    "person_bday": "Not available",
+    "gender_character": "Female",
+    "ethnic": "Chinese"
+  },
+  "started_at_utc": "2026-04-16T16:27:06Z",
+  "finished_at_utc": "2026-04-16T16:30:24Z",
+  "elapsed_time": 3.2095,
+  "error_message": "API Error: 500 {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"1 validation error for ChatGoogleGenerativeAI\\n Value error, API key required for Gemini Developer API. Provide api_key parameter or set GOOGLE_API_KEY/GEMINI_API_KEY environment variable. [type=value_error, input_value={'model': 'gemini-3-flash...000, 'model_kwargs': {}}, input_type=dict]\\n For further information visit https://errors.pydantic.dev/2.12/v/value_error\"}}",
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260416T112609/units/13_taiwan_row10787",
+  "field_status": [],
+  "diagnostics": {
+    "free_code_cli_status": 1,
+    "free_code_permission_denials": []
+  },
+  "completion_gate": []
+}

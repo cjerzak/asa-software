@@ -1,0 +1,28 @@
+{
+  "status": "error",
+  "unit": {
+    "unit_index": 11,
+    "unit_key": "11_russian_federation_row08040",
+    "country": "Russian Federation",
+    "row_id": 8040,
+    "person_name": "Leonid Eduardovich Slutsky",
+    "election_year": "2016",
+    "pol_party": "United Russia",
+    "region": "National level",
+    "person_bday": "Not available",
+    "gender_character": "Male",
+    "ethnic": "Russian"
+  },
+  "started_at_utc": "2026-04-16T17:04:06Z",
+  "finished_at_utc": "2026-04-16T17:06:48Z",
+  "elapsed_time": 2.6581,
+  "error_message": null,
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260416T120319/units/11_russian_federation_row08040",
+  "field_status": [],
+  "diagnostics": {
+    "free_code_cli_status": 1,
+    "free_code_permission_denials": []
+  },
+  "completion_gate": []
+}

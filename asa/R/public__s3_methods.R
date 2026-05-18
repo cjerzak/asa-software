@@ -9,8 +9,9 @@
 #' and resource settings in a single object.
 #'
 #' @param agent_backend Agent runtime backend: "agent" (default ASA LangGraph
-#'   pipeline) or "free-code" (headless free-code backend with ASA-managed
-#'   provider routing and search MCP tools).
+#'   pipeline), "free-code" (headless free-code backend with ASA-managed
+#'   provider routing and search MCP tools), or "opencode" (OpenCode CLI backend
+#'   with ASA-managed provider routing and search MCP tools).
 #' @param backend LLM backend: "openai", "groq", "xai", "gemini", "exo",
 #'   "openrouter", "anthropic", or "bedrock"
 #' @param model Model identifier (e.g., "gpt-4.1-mini")

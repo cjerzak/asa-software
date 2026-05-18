@@ -1,0 +1,14 @@
+{
+  "confidence": 0.9,
+  "birth_place": "Unknown",
+  "class_background": "Middle class/professional",
+  "lgbtq_status": "Unknown",
+  "lgbtq_details": null,
+  "education_level": "Unknown",
+  "education_field": "Unknown",
+  "disability_status": "Unknown",
+  "education_institution": "Unknown",
+  "birth_year": 1974,
+  "prior_occupation": "Technical Advisor (Asesora Técnica) for the Chamber of Deputies; Corporación Agropecuaria Campesina (CORACA) staff",
+  "justification": "Flora Largo Pumari was a Plurinational Deputy for Potosí (MAS-IPSP) elected in 2009. Her birth date is recorded as December 22, 1974. Prior to her election, she served as a Technical Advisor (Asesora Técnica) for the Chamber of Deputies in 2004 and worked with the Corporación Agropecuaria Campesina (CORACA) in Potosí in 2003. These roles as a technical advisor and in an agricultural corporation indicate a professional/middle-class background. Specific details on her education level, institution, and field are not publicly disclosed in available parliamentary or biographical records. No information regarding disability status or LGBTQ identity is publicly available."
+}

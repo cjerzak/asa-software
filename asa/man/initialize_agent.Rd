@@ -33,8 +33,10 @@ initialize_agent(
 }
 \arguments{
 \item{agent_backend}{Agent runtime backend. Use \code{"agent"} (default) for
-the built-in ASA LangGraph pipeline, or \code{"free-code"} to run the
-external free-code agent behind ASA-managed provider and search wrappers.}
+the built-in ASA LangGraph pipeline, \code{"free-code"} to run the
+external free-code agent behind ASA-managed provider and search wrappers,
+or \code{"opencode"} to run the OpenCode CLI behind the same ASA-managed
+provider and search wrappers.}
 
 \item{backend}{LLM backend to use. One of: "openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock"}
 

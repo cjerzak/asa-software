@@ -1,0 +1,59 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 49494,
+  "duration_api_ms": 14314,
+  "num_turns": 9,
+  "result": "```json\n{\n  \"education_level\": \"PhD\",\n  \"education_institution\": \"University of Sorbonne, University of Westminster, International Black Sea University\",\n  \"education_field\": \"International Relations, Diplomatic Studies, Business Administration\",\n  \"prior_occupation\": \"Regional Director at Pfizer, Senior Advisor to the President of Georgia\",\n  \"class_background\": \"Middle class/professional\",\n  \"disability_status\": \"Unknown\",\n  \"birth_place\": \"Tbilisi, Georgia\",\n  \"birth_year\": 1977,\n  \"lgbtq_status\": \"Unknown\",\n  \"lgbtq_details\": null,\n  \"confidence\": 1,\n  \"justification\": \"Nona Mamulashvili's biographical details are well-documented through official sources. Her birth date (March 13, 1977) and birth place (Tbilisi) are confirmed by her official asset declaration from the Parliament of Georgia. Her educational background is extensive, including a PhD from the Sorbonne, an MA from Westminster, and a BA from International Black Sea University, as cited by the Asia Global Institute and the Middle East Institute. Her prior occupation involved high-level professional roles, including Regional Director at Pfizer and Senior Advisor to the President of Georgia, which maps to a middle class/professional background. There is no public information regarding disability status or LGBTQ identity.\"\n}\n```",
+  "stop_reason": "end_turn",
+  "session_id": "c9e324a3-8bef-4de3-a841-0ff826dcc3a4",
+  "total_cost_usd": 0.1528,
+  "usage": {
+    "input_tokens": 43418,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 1503,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 43418,
+      "outputTokens": 1503,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.1528,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "structured_output": {
+    "lgbtq_status": "Unknown",
+    "lgbtq_details": null,
+    "education_level": "PhD",
+    "birth_year": 1977,
+    "justification": "Nona Mamulashvili's biographical details are well-documented through official sources. Her birth date (March 13, 1977) and birth place (Tbilisi) are confirmed by her official asset declaration from the Parliament of Georgia. Her educational background is extensive, including a PhD from the Sorbonne, an MA from Westminster, and a BA from International Black Sea University, as cited by the Asia Global Institute and the Middle East Institute. Her prior occupation involved high-level professional roles, including Regional Director at Pfizer and Senior Advisor to the President of Georgia, which maps to a middle class/professional background. There is no public information regarding disability status or LGBTQ identity.",
+    "prior_occupation": "Regional Director at Pfizer, Senior Advisor to the President of Georgia",
+    "education_field": "International Relations, Diplomatic Studies, Business Administration",
+    "confidence": 1,
+    "disability_status": "Unknown",
+    "class_background": "Middle class/professional",
+    "education_institution": "University of Sorbonne, University of Westminster, International Black Sea University",
+    "birth_place": "Tbilisi, Georgia"
+  },
+  "fast_mode_state": "off",
+  "uuid": "a3520392-025d-4b82-8800-0be8c9da40b1"
+}
