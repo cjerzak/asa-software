@@ -1,0 +1,611 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779218491271,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afa786001Yd91bjRyEUhbFz",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41af9bc1001A8cQW6OOYzs3xQ",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218493309,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afa787001NAwciqE4nzWW2x",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41af9bc1001A8cQW6OOYzs3xQ",
+        "type": "tool",
+        "callID": "b7c6a255-98de-4675-8dce-d2e430b2748d",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Mirna Bernal Yanez Panama biografía"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> DaliaMirnaBernalYañez,PanamáMirnaTeresaBernalNuñez, MéxicoMirnaLuz Argelia GuillenBernal,PanamáBernalBernal,PanamáMirnaKhattar, Reino UnidoMirnaShah, Reino UnidoMirnaConway, Reino UnidoMirnaMaric, Reino Unido Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo 6.1 del RGPD. <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministro de Educación Juan BoscoBernal.DaliaBernal, una de las figuras más importantes del oficialismo en el distrito de San Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Guía de políticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> dalia_bernal Location:PANAMA, Dist Sanmiguelito Joined: Aug 3, 2011 147Posts 146Following 938Followers <\/CONTENT> <URL> https://x.com/dalia_bernal <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20 de febrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DaliaBernalMujeres en la AN siguen siendo minoría De las 16 diputadas del pasado periodo legislativo, solo dos lograron reelegirse <\/CONTENT> <URL> https://www.laestrella.com.pa/tag/-/meta/dalia-bernal <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> De figuras emblemáticas a marginados del poder. Esta es la nueva realidad de los diputadosDaliaBernal, Roberto Ábrego, Francisco Pancho Alemán, Leandro Ávila, Marylín Vallarino y Tito ... <\/CONTENT> <URL> https://www.prensa.com/politica/de-legendarios-a-desterrados-los-diputados-que-recibieron-el-castigo-del-no-vas <\/URL> __END_OF_SOURCE 7__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218491273,
+            "end": 1779218493307
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218494839,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afa78a001kSRl3rNzA6FrD7",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41af9bc1001A8cQW6OOYzs3xQ",
+        "type": "tool",
+        "callID": "561f2032-ea34-4140-9d49-a4574860fd60",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Bernal Cambio Democrático Panamá educación ocupación"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> CambioDemocráticoexpulsa a 15 diputados La decisión tomada durante el proceso disciplinario seguido a estos diputados, destaca que la expulsión es \"inmediata\", y que los señalados pueden ejercer su derecho a apelar esta posición, en… <\/CONTENT> <URL> https://destinopanama.com.pa/tag/dalia-bernal <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministro deEducaciónJuan BoscoBernal.DaliaBernal, una de las figuras más importantes del oficialismo en el distrito de San Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DaliaBernal, del circuito 8-2 (San Miguelito) y postulada por el partido Realizando Metas (RM), tenía 20 años en la Asamblea con la bandera deCambioDemocrático(desde 2004 hasta 2024). <\/CONTENT> <URL> https://www.prensa.com/politica/de-legendarios-a-desterrados-los-diputados-que-recibieron-el-castigo-del-no-vas <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> DaliaBernal- Página 1CambioDemocrático. DiputadaBernalinforma que Yanibel Ábrego aspira a la presidencia deCambioDemocráticodiputados. <\/CONTENT> <URL> https://www.telemetro.com/tags/dalia-bernal <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20 de febrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La Subcomisión deEducación, Cultura y Deportes, presidida por la H.DDaliaBernal, se reunió para continuar el estudio y análisis del Proyecto de Ley No. 482, que regula el funcionamiento y articulación de los Centros de Enseñanza Superior o Institutos Superiores. <\/CONTENT> <URL> https://www.facebook.com/asambleapa/posts/la-subcomisión-de-educación-cultura-y-deportes-presidida-por-la-hd-dalia-bernal-/4198271036873623 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Guía de políticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Más de 1,800 miembros inscritos en CD participaron en San Miguelito en el evento organizado por la primera diputada que tuvo CD,DaliaBernal. Una jornada de intensa actividad encabezó la ... <\/CONTENT> <URL> https://www.panamaamerica.com.pa/politica/yanibel-abrego-defiende-alianza-entre-cd-y-realizando-metas-1217830 <\/URL> __END_OF_SOURCE 8__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218491274,
+            "end": 1779218494838
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218494841,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afb578001oNCIQH12aOLNX8",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41af9bc1001A8cQW6OOYzs3xQ",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0235,
+        "tokens": {
+          "total": 6605,
+          "input": 6297,
+          "output": 308,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218496394,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afbb89001QfcoHuIEM7z8Ty",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afb57a001YRekQ2NsUogTza",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218498641,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afbb8a0017rL6UhHHffMKXM",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afb57a001YRekQ2NsUogTza",
+        "type": "tool",
+        "callID": "2e2fc182-78b4-42f5-ae3b-3c9ea96ce4ae",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"tls_error\",\"retryable\":true,\"url\":\"https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez\",\"final_url\":null,\"status_code\":null,\"error\":\"Failed to perform, curl: (60) SSL certificate problem: certificate has expired. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\",\"error_detail\":null,\"attempt\":2,\"attempts\":2}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218496394,
+            "end": 1779218498641
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218500124,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afbb8a002R15x7bjQKsjG3V",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afb57a001YRekQ2NsUogTza",
+        "type": "tool",
+        "callID": "3fd79673-9323-4360-8fda-603d48c12e56",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html"
+          },
+          "output": "URL: https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html\nFinal URL: https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html\nTitle: Dalia Bernal - Candidatos | Tvn Panamá\nBytes read: 377976\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nES NOTICIA\nÚltimas noticias\n[link: https://www.tvn-2.com/ultimo/]\nJosé Raúl Mulino\n[link: https://www.tvn-2.com/temas/jose-raul-mulino/]\nCepanim\n[link: https://www.tvn-2.com/temas/cepanim/]\nIfarhu\n[link: https://www.tvn-2.com/temas/ifarhu/]\nToque de queda\n[link: https://www.tvn-2.com/temas/toque-de-queda/]\nVenezuela\n[link: https://www.tvn-2.com/temas/venezuela/]\nAsamblea Nacional\n[link: https://www.tvn-2.com/temas/asamblea-nacional/]\nCombustibles en Panamá\n[link: https://www.tvn-2.com/temas/combustibles/]\nDonald Trump\n[link: https://www.tvn-2.com/temas/donald-trump/]\nEn vivo\n[link: https://www.tvnpass.com/]\nIr al contenido\nObrir navegació\nNoticias\nNacionales\n[link: https://www.tvn-2.com/nacionales/]\nMundo\n[link: https://www.tvn-2.com/mundo/]\nContenido Exclusivo\n[link: https://www.tvn-2.com/contenido-exclusivo/]\nVideos\n[link: https://www.tvn-2.com/videos/]\nShow TVN\n[link: https://www.tvn-2.com/entretenimiento/]\nTVN Radio\n[link: https://www.tvn-2.com/tvn-radio/]\nDeportes\n[link: https://www.tvn-2.com/tvmax/]\nMundial 2026\n[link: https://www.tvn-2.com/tvmax/copa-mundial-fifa-2026/]\nCopa Nestlé\n[link: https://www.tvn-2.com/especiales/copa-nestle/]\nBeisbol Nacional\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218496395,
+            "end": 1779218500124
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218500125,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afca1c001gaXyzrHRTNIwLW",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afb57a001YRekQ2NsUogTza",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.027,
+        "tokens": {
+          "total": 8337,
+          "input": 8174,
+          "output": 163,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218501546,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afcfaa001LyQq4necrJor58",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afca1e001IG8Uo32wxRvxlL",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218502946,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afcfaa002fzscfM5Q3wVoAM",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afca1e001IG8Uo32wxRvxlL",
+        "type": "tool",
+        "callID": "dd4809a2-cf4e-4e11-973a-5fe4d97ac9db",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Mirna Bernal Yanez hoja de vida Panamá Asamblea Nacional"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> La SubcomisióndeEconomía y Finanzas que preside la H.DDaliaBernal, realizó una última reunión para analizar el ProyectodeLey 827, que regula la reparacióndevehículos del Estado con menosde... <\/CONTENT> <URL> https://www.facebook.com/asambleapa/posts/la-subcomisión-de-economía-y-finanzas-que-preside-la-hd-dalia-bernal-realizó-una/5793827103984667 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informesdela ejecutivaDaliaMirnaBernalYañezen 1 empresa y como mínimo 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal-Yañez.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> En el Repositorio DigitaldelaAsambleaNacionaldePanamáestán depositados materiales en formato digital frutodela producción científica o académica,deesta manera permite almacenar, difundir y preservar informacióndevital importancia. <\/CONTENT> <URL> https://repositorio.asamblea.gob.pa/?locale-attribute=es <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> LaAsambleaNacionaljuega un rol fundamental para el desarrollo y proteccióndenuestra democracia. Más alládesus funciones legislativas, laAsambleaNacionaltiene funciones judiciales y administrativas, que incluyen la fiscalizacióndeotras instituciones del Estado. <\/CONTENT> <URL> https://voto2024.espaciocivico.org/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BATISTA RODRÍGUEZDEGUERRA LILIA EMÉRITA Partido Partido Realizando Metas Circuito 13-4 HDs Suplentes OrtegaDeLeón, Ariel Augusto H.D. <\/CONTENT> <URL> https://asamblea.gob.pa/Page/diputados?Menu-Type=NavBar <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> GuíadepolíticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte SupremadeJusticia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministrodeEducación Juan BoscoBernal.DaliaBernal, unadelas figuras más importantes del oficialismo en el distritodeSan Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Aqui puedes descargar lahojadevidadela candidata: <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> También citan a altas autoridades para que expliquen públicamente las políticas públicas adoptadas en sus entidades. que cumplen individualmente y como partedeAsambleaNacional. Artículos 159, 160, 161, 313 y 314dela Constitución Política y Reglamento Orgánico del Régimen InternodelaAsambleaNacional, entre otras referencias. <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218501547,
+            "end": 1779218502945
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218504406,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afcfab001N9CYJv0S0ilxcH",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afca1e001IG8Uo32wxRvxlL",
+        "type": "tool",
+        "callID": "0c999811-7339-4faf-90df-eeb29b3848b1",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Bernal Yanez profesión antes de política"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral PropuestaPolíticaCorresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministrodeEducación Juan BoscoBernal.DaliaBernal, unadelas figuras más importantes del oficialismo en el distritodeSan Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20defebrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Experiencia: AyuntamientodeMexicali · Ubicación: México. Ver el perfildeDaliaBernalen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/dalia-bernal-a72913181 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Curriculum cv_54.pdf PropuestapolíticaTemas prioritarios Inclusión social y equidaddegénero Patrimonio e intereses La presentacióndeestas declaraciones es un acto totalmente voluntario por parte del candidato Para presentar tus declaraciones voluntariasdepatrimonio e intereses, descarga los archivos, llénalos y súbelos a tu perfil ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> HONORABLE DIPUTADADALIABERNAL. CURRICULUM. ESTUDIOSDEDOCTORADO EN EDUCACION SUPERIOR CON ENFASIS EN CURRICULUM (2000). MAESTRIA EN DOCENCIA SUPERIOR (1998). POSTGRADO EN DOCENCIA UNIVERSITARIA (1998). POSTGRADO EN PLANIFICACION Y ADMINISTRACIONDELA EDUCACION SUPERIOR (1992). <\/CONTENT> <URL> https://www.slideserve.com/yannis/curriculum <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> #Historias |DaliaM.Bernalno solamente es la directoradeuna prestigiosa emisora del país, sino que también lidera campañas sociales como 'La ruta por la vida' que hace más loable su labor profesional. <\/CONTENT> <URL> https://www.facebook.com/kienyke/posts/historias-dalia-m-bernal-no-solamente-es-la-directora-de-una-prestigiosa-emisora/4188279431235114 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Experiencia: CamaradeDiputados del Congresodela UnióndeMexico · Ubicación: CiudaddeMéxico. Ver el perfildedaliafigueroabernalen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/dalia-figueroa-bernal-0247a93b <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> En el marcodela conmemoración del natalicio 229 del libertador Simón Bolívar, y ser la diputadaDaliaBernalla primera mujer en ocupar la Presidenciadela ComisióndeRelaciones Exterioresdela Asamblea Nacional, quedó instalada formalmente en la Cancilleríadela República dicha instancia parlamentaria y sus miembros juramentados. <\/CONTENT> <URL> https://amigosdedaliabernal.blogspot.com/2013/12/la-diputada-bernal-primera-mujer-en.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> También citan a altas autoridades para que expliquen públicamente laspolíticaspúblicas adoptadas en sus entidades. que cumplen individualmente y como partedeAsamblea Nacional. Artículos 159, 160, 161, 313 y 314dela ConstituciónPolíticay Reglamento Orgánico del Régimen Internodela Asamblea Nacional, entre otras referencias. <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218501547,
+            "end": 1779218504406
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218504408,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afdad6001lz7TJeO6yN5pPC",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afca1e001IG8Uo32wxRvxlL",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0291,
+        "tokens": {
+          "total": 9240,
+          "input": 9122,
+          "output": 118,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218506154,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afe1a9001v7T4E76cR6X8Bx",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afdad9001frhybSL1qZCYyw",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218510982,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afe1aa0013aiHAXlbDze4sY",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afdad9001frhybSL1qZCYyw",
+        "type": "tool",
+        "callID": "5b62e84b-4ba1-4122-82b8-4efe52687fcc",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"pdf_parse_failed\",\"retryable\":false,\"url\":\"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\",\"final_url\":\"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\",\"status_code\":null,\"error\":\"pdf_parse_failed\",\"error_detail\":\"returncode=1\",\"attempt\":1,\"attempts\":2}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218506155,
+            "end": 1779218510981
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218511808,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41afe1ab001yLlobGi15P8nGk",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afdad9001frhybSL1qZCYyw",
+        "type": "tool",
+        "callID": "b337c575-0917-4590-ad08-9b7ab118cafc",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.slideserve.com/yannis/curriculum"
+          },
+          "output": "URL: https://www.slideserve.com/yannis/curriculum\nFinal URL: https://www.slideserve.com/yannis/curriculum\nTitle: PPT - HONORABLE DIPUTADA DALIA BERNAL PowerPoint Presentation, free download - ID:892197\nBytes read: 120396\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nBrowse\nRecent Presentations\n[link: https://www.slideserve.com/presentations]\nRecent Articles\n[link: https://www.slideserve.com/articles]\nContent Topics\n[link: https://www.slideserve.com/topics]\nUpdated Contents\n[link: https://www.slideserve.com/updates]\nFeatured Contents\n[link: https://www.slideserve.com/featured]\nPowerPoint Templates\n[link: https://www.slideserve.com/powerpoint-templates]\nCreate\nPresentation\n[link: https://www.slideserve.com/create]\nArticle\n[link: https://www.slideserve.com/online-article]\nSurvey\n[link: https://www.slideserve.com/online-survey]\nQuiz\n[link: https://www.slideserve.com/online-quiz]\nLead-form\n[link: https://www.slideserve.com/lead-generation]\nE-Book\n[link: https://www.slideserve.com/create?type=ebook]\nPro\n[link: https://www.slideserve.com/pro]\nUpload\n[link: https://www.slideserve.com/upload]\nUploaded by\nyannis\n[link: https://www.slideserve.com/yannis]\n53\nSLIDES\n1065\nVIEWS\n560\nLIKES\nHONORABLE DIPUTADA DALIA BERNAL\nDESCRIPTION\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218506156,
+            "end": 1779218511808
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218511809,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41aff7c0001u0v6YL4EMfU7R1",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41afdad9001frhybSL1qZCYyw",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0368,
+        "tokens": {
+          "total": 11686,
+          "input": 11542,
+          "output": 144,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218513501,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41affe5d001useUYw7GIcFU25",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41aff7c30019v1WT2s1jmJCwX",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218519081,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41affe5d0022FwR1Oel2S0UPD",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41aff7c30019v1WT2s1jmJCwX",
+        "type": "tool",
+        "callID": "2bb1db61-8a44-4cc7-8a41-13f19a1e6694",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Bernal Yanez lugar de nacimiento Panamá"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministrodeEducación Juan BoscoBernal.DaliaBernal, unadelas figuras más importantes del oficialismo en el distritodeSan Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informesdela ejecutivaDaliaMirnaBernalYañezen 1 empresa y como mínimo 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal-Yañez.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Personas Cédula, Padrón Electoral Conoce cómo buscar datosdepersonas enPanamá. Guía para encontrar informacióndepersonas Panameñas por cédula, nombre, apellidos y otros documentosdeidentificación. <\/CONTENT> <URL> https://registronacional.com/panama/buscar-personas-por-nombre-y-apellidos-en-panama.htm <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Cómo encontrar a una persona enPanama? Puede buscar personas al consultar teléfonos y direcciones en la guía telefónicadela ciudad o contactosdefamiliares y amigos. Encuentra a una persona enPanamabuscando los datos como nombre y apellido, edad, fecha,lugardenacimientoy la última dirección conocida donde vive o trabajaba. Para localizar a una persona puede buscar el nombre y ... <\/CONTENT> <URL> https://registronacional.com/panama/personas.htm <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Registro DemográficodePanamá- Certificado y DatosdePersonas Registro Demográfico enPanamá- GuíadeTrámitesdeCertificaciones. Teléfono y DireccióndeOficinas. Servicios y DocumentosdePersonas. Certificación y DatosdeNacimiento, Matrimonio, Divorcio, Defunción. Estadísticasdela Población. <\/CONTENT> <URL> https://registro-demografico.com/panama/panama.htm <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Consulta enPanamá- Registro Público ConsultasdeDatos Consultas enPanamáRegistro Público, DGI, Idaan, Registro Civil. Consultar datos en línea. Buscar Información en Registro Nacional. ConsultadeDatosdePersonas, Teléfonos, Vehículos, Propiedades, Empresas, Trámites del Gobierno. Certificaciones en Línea. Dónde Votar. Tribunal Electoral. IDAAN ConsultadeSaldo - Agua Lista ... <\/CONTENT> <URL> https://registronacional.com/panama/consulta.htm <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Sexo: ☐ F ☐ M Fechadenacimiento: D 14 M A 10 54Lugardenacimiento: Antón Profesión u ocupación: Diputadadela Rep. Candidato(a) por el Partido Realizando Metas (RM) al cargode: Diputada Circunscripción electoral: 8-2 Jonmiguelito Circuito: 8-2. Corregimiento: José A Espinar Distrito: San miguelito Provincia/Comarca:Panamá <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Como buscar datosdeuna persona enPanamá? - Consulta informacióndepersonas en redes sociales, sitiosdenoticias, guía telefónica y en las instituciones públicas. Actadenacimientodel Registro Civil y CertificadosdeRegistros Públicos. - CéduladeIdentidad Personal - Cedulacion - Registro Público - Tribunal Electoral - Registro ... <\/CONTENT> <URL> https://personasbuscar.com/panama/buscar-personas-panama.htm <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> El Registro CivildePanamáes una dependencia del Tribunal Electoral y realiza los trámitesdeinscripcióndelosnacimientos, defunciones, naturalizaciones, matrimonios y demás hechos y actos jurídicos relacionados con el estado civildelas personas y realiza las anotaciones procedentes en las respectivas inscripciones. <\/CONTENT> <URL> https://registropersonas.com/panama/registro-de-personas-en-panama.htm <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218513502,
+            "end": 1779218519081
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218522748,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41affe5e001Jc4mkMwZo0bPjX",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41aff7c30019v1WT2s1jmJCwX",
+        "type": "tool",
+        "callID": "f5505087-13d9-4eeb-aa63-c5a52a37ed64",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Bernal Yanez ocupación previa política docente"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> PolíticaCorresponde al documento con prioridades, formas y acciones de gobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listado de los procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> docenteen particular · Experiencia: particular · Ubicación: Hidalgo · 1 contacto en LinkedIn. Mira el perfil deDaliaBernalen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/dalia-bernal-57119a137 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Curriculum cv_54.pdf PropuestapolíticaTemas prioritarios Inclusión social y equidad de género Patrimonio e intereses La presentación de estas declaraciones es un acto totalmente voluntario por parte del candidato Para presentar tus declaraciones voluntarias de patrimonio e intereses, descarga los archivos, llénalos y súbelos a tu perfil ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> A partir de las indagaciones realizadas, se puede afirmar que cuando la planificación de unapolíticapública parte de los contextos locales, tiene en cuenta a los sujetos, es participativa y propone el trabajo en red entre instituciones, la misma perdura en el tiempo y se vuelve pedagógicamente significativa. <\/CONTENT> <URL> https://www.academia.edu/121887581/Docencia_y_territorios_asunto_de_política_pública_de_política_educativa_o_de_política_docente <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> HONORABLE DIPUTADADALIABERNAL. CURRICULUM. ESTUDIOS DE DOCTORADO EN EDUCACION SUPERIOR CON ENFASIS EN CURRICULUM (2000). MAESTRIA EN DOCENCIA SUPERIOR (1998). POSTGRADO EN DOCENCIA UNIVERSITARIA (1998). POSTGRADO EN PLANIFICACION Y ADMINISTRACION DE LA EDUCACION SUPERIOR (1992). <\/CONTENT> <URL> https://www.slideserve.com/yannis/curriculum <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> En América Latina la cuestióndocenteha ocupado un lugar relevante en la agenda pública. Los países movilizan gran cantidad de sus recursos para sostener al sistema educativo en su conjunto, y una parte significativa, la orientan a formar, evaluar, acreditar y sostener el ejercicio de la docencia. Este documento ofrece información relevante para dimensionar y caracterizar lapolítica... <\/CONTENT> <URL> https://siteal.iiep.unesco.org/eje/docentes <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Para la elaboración de este informe, OREALC/UNESCO Santiago definió un método de trabajo basado en la contribución de expertos latinoamericanos enpolíticasdocentes, como en el aporte de ocho grupos nacionales de consulta y deliberación de Argentina, Brasil, Chile, Colombia, Guatemala, México, Perú y Trinidad y Tobago, constituidos por actores representativos de los ámbitos ... <\/CONTENT> <URL> https://www.oas.org/cotep/GetAttach.aspx?lang=es&cId=1&aid=1 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Políticasdocentesante la emergencia sanitaria Cuando este número comenzó a definirse, no había evidencia de lo que iba a suceder en el mundo, el cambio en nuestras formas de vida, así como el impacto que todo ello iba a tener en la escuela. En marzo de 2020, los sistemas de educación del mundo, y de América Latina en particular, tomaron la decisión de cerrar las escuelas para cumplir ... <\/CONTENT> <URL> https://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S1405-66662021000200351 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> El Volumen 1 de estas Directrices se centra en la educación primaria y secundaria, proporcionando una guía para la integración de laspolíticasdocentesen los planes ypolíticasdel sector de la educación.35 Guía para el desarrollo depolíticasdocentesReferencias Normas internacionales OIT/UNESCO. 1966. <\/CONTENT> <URL> https://unesdoc.unesco.org/ark:/48223/pf0000374226 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> También citan a altas autoridades para que expliquen públicamente laspolíticaspúblicas adoptadas en sus entidades. que cumplen individualmente y como parte de Asamblea Nacional. Artículos 159, 160, 161, 313 y 314 de la ConstituciónPolíticay Reglamento Orgánico del Régimen Interno de la Asamblea Nacional, entre otras referencias. <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218513502,
+            "end": 1779218522747
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218522750,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b0227d001NLcISeaaNBykkb",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41aff7c30019v1WT2s1jmJCwX",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0385,
+        "tokens": {
+          "total": 12381,
+          "input": 12266,
+          "output": 115,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218524147,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b027f2001ml7H1wjVM8pMCL",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41b02280001N8AJtiQ0RWO8uE",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218525980,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b027f2002BCIOWFd446YG0J",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41b02280001N8AJtiQ0RWO8uE",
+        "type": "tool",
+        "callID": "5f0fd474-8bc0-46fc-a63e-a4f762fe2b68",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Bernal Yanez discapacidad orientación sexual"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> La Asamblea Nacional juega un rol fundamental para el desarrollo y protección de nuestra democracia. Más allá de sus funciones legislativas, la Asamblea Nacional tiene funciones judiciales y administrativas, que incluyen la fiscalización de otras instituciones del Estado. Las preguntas para los candidatos a Diputado (a) fueron formuladas tomando en cuenta temas de interés ciudadano, y los ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Las personas condiscapacidadintelectual LGTBIsufren una doble discriminación, por el hecho de ser personas condiscapacidadyvivir identidades u orientaciones no normativas. Si la atención a la Sexualidad debeestar dentro de todos los Planes Personales de Apoyo, la DiversidadSexualdebeconsiderarse como un derecho. <\/CONTENT> <URL> https://dialnet.unirioja.es/servlet/articulo?codigo=8859655 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Sexualidad ydiscapacidadintelectual: inclusión y educación. Más de 7 millones en México enfrentan desafíos. <\/CONTENT> <URL> https://unamglobal.unam.mx/global_revista/rompiendo-barreras-sexualidad-y-discapacidad-intelectual <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> La sexualidad sigue siendo un enorme tabú en nuestra sociedad. Un tabú que lleva, incluso, a malentender y limitar el propio término haciendo un uso inadecuado del mismo. La mayoría de las consultas en torno a sexualidad ydiscapacidad(física, psíquica o sensorial) giran en torno a la masturbación (Walsh y Phty, 2000). Sin embargo, la sexualidad y su educación abarca un espectro mucho ... <\/CONTENT> <URL> https://oji.fundacion-sm.org/descifrando-la-juventud/inclusion-social/sexualidad-y-discapacidad-una-perspectiva-educativa <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Con ella se sintetiza lo que ha sido el devenir de ladiscapacidadcomo producción social, po- lítica, económica, cultural y simbólica en las sociedades modernas desde fines del siglo XIX. <\/CONTENT> <URL> https://www.researchgate.net/publication/343604959_Mirar_con_otros_ojos_sexualidad_y_discapacidad <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> A su vez, la planificación de programas de educaciónsexualdeben resguardar a las personas condiscapacidadcomo agentes activos de su propio bienestar, tanto en el sistema de salud, social e institucional. <\/CONTENT> <URL> https://aprofaeduca.cl/wp-content/uploads/2024/05/Sexualidad-e-Inclusion-de-personas-con-discapacidad-2019-segunda-version.pdf <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Este mito conlleva negar la educaciónsexualpor temor a que pueda incitar e incrementar su práctica, reduciendo las oportunidades de aprendizaje para el correcto desarrollo de su sexualidad (Federación de Asociaciones a favor de las personas condiscapacidadintelectual y/o del desarrollo de la Comunidad Valenciana [FEAPS], 2015). <\/CONTENT> <URL> https://scielo.isciii.es/scielo.php?script=sci_arttext&pid=S0210-16962023000300003 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Las personas condiscapacidadintelectual aportan una perspectiva única en el análisis de las barreras que les dificultan gozar de unas relaciones afectivo-sexuales que contribuyan a su bienestar personal y, con ello, a una mejor calidad de vida. <\/CONTENT> <URL> https://scielo.isciii.es/scielo.php?script=sci_arttext&pid=S0210-16962024000300003 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Información del artículo ¿Hay diferencias entre las actitudes hacia la conductasexualque tienen las personas condiscapacidadintelectual y las de los profesionales que trabajan con ellos? <\/CONTENT> <URL> https://dialnet.unirioja.es/servlet/articulo?codigo=7756147 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> En los entornos clínicos y educativos, la educaciónsexualo relacional se incluye de forma cada vez más consistente en la planificación futura de las personas con discapacidades. Muchos programas de educación secundaria para personas con discapacidades están añadiendo componentes de educación para las relaciones a sus programas. <\/CONTENT> <URL> https://publications.ici.umn.edu/impact/36-2-es/belonging-and-community <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218524147,
+            "end": 1779218525979
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218528143,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b027f4001QsUWcly3TdHQ4s",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41b02280001N8AJtiQ0RWO8uE",
+        "type": "tool",
+        "callID": "88a4e922-782b-4ff1-9ce4-4a8be7bfc9f2",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Dalia Bernal Yanez biografía completa Panamá"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministro de Educación Juan BoscoBernal.DaliaBernal, una de las figuras más importantes del oficialismo en el distrito de San Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20 de febrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DaliaBernalMujeres en la AN siguen siendo minoría De las 16 diputadas del pasado periodo legislativo, solo dos lograron reelegirse <\/CONTENT> <URL> https://www.laestrella.com.pa/tag/-/meta/dalia-bernal <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Informes de la ejecutivaDaliaMirnaBernalYañezen 1 empresa y como mínimo 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal-Yañez.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Guía de políticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> De figuras emblemáticas a marginados del poder. Esta es la nueva realidad de los diputadosDaliaBernal, Roberto Ábrego, Francisco Pancho Alemán, Leandro Ávila, Marylín Vallarino y Tito ... <\/CONTENT> <URL> https://www.prensa.com/politica/de-legendarios-a-desterrados-los-diputados-que-recibieron-el-castigo-del-no-vas <\/URL> __END_OF_SOURCE 6__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218524148,
+            "end": 1779218528142
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218528144,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b0378f001rM2y07eJGZ12JT",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41b02280001N8AJtiQ0RWO8uE",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0463,
+        "tokens": {
+          "total": 14988,
+          "input": 14875,
+          "output": 113,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218531203,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b04382001X5TZEmFJ05DrU3",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41b03791001eGx567AODDycIr",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779218531204,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b04382002pIkaignE1zp6XZ",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41b03791001eGx567AODDycIr",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Doctorate in Higher Education with emphasis on Curriculum (2000); Master's in Higher Education (1998); Postgraduate in University Teaching (1998); Postgraduate in Planning and Administration of Higher Education (1992).\",\n  \"prior_occupation\": \"Educator/Professor\",\n  \"class_background\": \"Middle class/professional\",\n  \"birth_year\": \"1954\",\n  \"birth_place\": \"Antón, Panama\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sources\": {\n    \"educational_attainment\": \"https://www.slideserve.com/yannis/curriculum\",\n    \"prior_occupation\": \"https://www.slideserve.com/yannis/curriculum\",\n    \"class_background\": \"https://www.slideserve.com/yannis/curriculum\",\n    \"birth_year\": \"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\",\n    \"birth_place\": \"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\",\n    \"disability_status\": \"https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez\",\n    \"sexual_orientation\": \"https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez\"\n  }\n}\n```",
+        "time": {
+          "start": 1779218531203,
+          "end": 1779218531203
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218531206,
+      "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+      "part": {
+        "id": "prt_e41b04384001YQhKjNQBptQbgB",
+        "sessionID": "ses_1be506461ffe175HNKdXdtssMM",
+        "messageID": "msg_e41b03791001eGx567AODDycIr",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0574,
+        "tokens": {
+          "total": 17335,
+          "input": 16887,
+          "output": 448,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779218491271,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afa786001Yd91bjRyEUhbFz\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41af9bc1001A8cQW6OOYzs3xQ\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218493309,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afa787001NAwciqE4nzWW2x\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41af9bc1001A8cQW6OOYzs3xQ\",\"type\":\"tool\",\"callID\":\"b7c6a255-98de-4675-8dce-d2e430b2748d\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Mirna Bernal Yanez Panama biografía\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> DaliaMirnaBernalYañez,PanamáMirnaTeresaBernalNuñez, MéxicoMirnaLuz Argelia GuillenBernal,PanamáBernalBernal,PanamáMirnaKhattar, Reino UnidoMirnaShah, Reino UnidoMirnaConway, Reino UnidoMirnaMaric, Reino Unido Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo 6.1 del RGPD. <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministro de Educación Juan BoscoBernal.DaliaBernal, una de las figuras más importantes del oficialismo en el distrito de San Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Guía de políticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> dalia_bernal Location:PANAMA, Dist Sanmiguelito Joined: Aug 3, 2011 147Posts 146Following 938Followers <\/CONTENT> <URL> https://x.com/dalia_bernal <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20 de febrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DaliaBernalMujeres en la AN siguen siendo minoría De las 16 diputadas del pasado periodo legislativo, solo dos lograron reelegirse <\/CONTENT> <URL> https://www.laestrella.com.pa/tag/-/meta/dalia-bernal <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> De figuras emblemáticas a marginados del poder. Esta es la nueva realidad de los diputadosDaliaBernal, Roberto Ábrego, Francisco Pancho Alemán, Leandro Ávila, Marylín Vallarino y Tito ... <\/CONTENT> <URL> https://www.prensa.com/politica/de-legendarios-a-desterrados-los-diputados-que-recibieron-el-castigo-del-no-vas <\/URL> __END_OF_SOURCE 7__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218491273,\"end\":1779218493307},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779218494839,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afa78a001kSRl3rNzA6FrD7\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41af9bc1001A8cQW6OOYzs3xQ\",\"type\":\"tool\",\"callID\":\"561f2032-ea34-4140-9d49-a4574860fd60\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Bernal Cambio Democrático Panamá educación ocupación\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> CambioDemocráticoexpulsa a 15 diputados La decisión tomada durante el proceso disciplinario seguido a estos diputados, destaca que la expulsión es \\\"inmediata\\\", y que los señalados pueden ejercer su derecho a apelar esta posición, en… <\/CONTENT> <URL> https://destinopanama.com.pa/tag/dalia-bernal <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministro deEducaciónJuan BoscoBernal.DaliaBernal, una de las figuras más importantes del oficialismo en el distrito de San Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DaliaBernal, del circuito 8-2 (San Miguelito) y postulada por el partido Realizando Metas (RM), tenía 20 años en la Asamblea con la bandera deCambioDemocrático(desde 2004 hasta 2024). <\/CONTENT> <URL> https://www.prensa.com/politica/de-legendarios-a-desterrados-los-diputados-que-recibieron-el-castigo-del-no-vas <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> DaliaBernal- Página 1CambioDemocrático. DiputadaBernalinforma que Yanibel Ábrego aspira a la presidencia deCambioDemocráticodiputados. <\/CONTENT> <URL> https://www.telemetro.com/tags/dalia-bernal <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20 de febrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La Subcomisión deEducación, Cultura y Deportes, presidida por la H.DDaliaBernal, se reunió para continuar el estudio y análisis del Proyecto de Ley No. 482, que regula el funcionamiento y articulación de los Centros de Enseñanza Superior o Institutos Superiores. <\/CONTENT> <URL> https://www.facebook.com/asambleapa/posts/la-subcomisión-de-educación-cultura-y-deportes-presidida-por-la-hd-dalia-bernal-/4198271036873623 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Guía de políticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Más de 1,800 miembros inscritos en CD participaron en San Miguelito en el evento organizado por la primera diputada que tuvo CD,DaliaBernal. Una jornada de intensa actividad encabezó la ... <\/CONTENT> <URL> https://www.panamaamerica.com.pa/politica/yanibel-abrego-defiende-alianza-entre-cd-y-realizando-metas-1217830 <\/URL> __END_OF_SOURCE 8__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218491274,\"end\":1779218494838},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218494841,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afb578001oNCIQH12aOLNX8\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41af9bc1001A8cQW6OOYzs3xQ\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023511,\"tokens\":{\"total\":6605,\"input\":6297,\"output\":308,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218496394,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afbb89001QfcoHuIEM7z8Ty\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afb57a001YRekQ2NsUogTza\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218498641,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afbb8a0017rL6UhHHffMKXM\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afb57a001YRekQ2NsUogTza\",\"type\":\"tool\",\"callID\":\"2e2fc182-78b4-42f5-ae3b-3c9ea96ce4ae\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"tls_error\\\",\\\"retryable\\\":true,\\\"url\\\":\\\"https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez\\\",\\\"final_url\\\":null,\\\"status_code\\\":null,\\\"error\\\":\\\"Failed to perform, curl: (60) SSL certificate problem: certificate has expired. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\\\",\\\"error_detail\\\":null,\\\"attempt\\\":2,\\\"attempts\\\":2}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218496394,\"end\":1779218498641},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779218500124,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afbb8a002R15x7bjQKsjG3V\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afb57a001YRekQ2NsUogTza\",\"type\":\"tool\",\"callID\":\"3fd79673-9323-4360-8fda-603d48c12e56\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html\"},\"output\":\"URL: https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html\\nFinal URL: https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html\\nTitle: Dalia Bernal - Candidatos | Tvn Panamá\\nBytes read: 377976\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nES NOTICIA\\nÚltimas noticias\\n[link: https://www.tvn-2.com/ultimo/]\\nJosé Raúl Mulino\\n[link: https://www.tvn-2.com/temas/jose-raul-mulino/]\\nCepanim\\n[link: https://www.tvn-2.com/temas/cepanim/]\\nIfarhu\\n[link: https://www.tvn-2.com/temas/ifarhu/]\\nToque de queda\\n[link: https://www.tvn-2.com/temas/toque-de-queda/]\\nVenezuela\\n[link: https://www.tvn-2.com/temas/venezuela/]\\nAsamblea Nacional\\n[link: https://www.tvn-2.com/temas/asamblea-nacional/]\\nCombustibles en Panamá\\n[link: https://www.tvn-2.com/temas/combustibles/]\\nDonald Trump\\n[link: https://www.tvn-2.com/temas/donald-trump/]\\nEn vivo\\n[link: https://www.tvnpass.com/]\\nIr al contenido\\nObrir navegació\\nNoticias\\nNacionales\\n[link: https://www.tvn-2.com/nacionales/]\\nMundo\\n[link: https://www.tvn-2.com/mundo/]\\nContenido Exclusivo\\n[link: https://www.tvn-2.com/contenido-exclusivo/]\\nVideos\\n[link: https://www.tvn-2.com/videos/]\\nShow TVN\\n[link: https://www.tvn-2.com/entretenimiento/]\\nTVN Radio\\n[link: https://www.tvn-2.com/tvn-radio/]\\nDeportes\\n[link: https://www.tvn-2.com/tvmax/]\\nMundial 2026\\n[link: https://www.tvn-2.com/tvmax/copa-mundial-fifa-2026/]\\nCopa Nestlé\\n[link: https://www.tvn-2.com/especiales/copa-nestle/]\\nBeisbol Nacional\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218496395,\"end\":1779218500124},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218500125,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afca1c001gaXyzrHRTNIwLW\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afb57a001YRekQ2NsUogTza\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026967,\"tokens\":{\"total\":8337,\"input\":8174,\"output\":163,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218501546,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afcfaa001LyQq4necrJor58\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afca1e001IG8Uo32wxRvxlL\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218502946,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afcfaa002fzscfM5Q3wVoAM\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afca1e001IG8Uo32wxRvxlL\",\"type\":\"tool\",\"callID\":\"dd4809a2-cf4e-4e11-973a-5fe4d97ac9db\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Mirna Bernal Yanez hoja de vida Panamá Asamblea Nacional\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> La SubcomisióndeEconomía y Finanzas que preside la H.DDaliaBernal, realizó una última reunión para analizar el ProyectodeLey 827, que regula la reparacióndevehículos del Estado con menosde... <\/CONTENT> <URL> https://www.facebook.com/asambleapa/posts/la-subcomisión-de-economía-y-finanzas-que-preside-la-hd-dalia-bernal-realizó-una/5793827103984667 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informesdela ejecutivaDaliaMirnaBernalYañezen 1 empresa y como mínimo 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal-Yañez.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> En el Repositorio DigitaldelaAsambleaNacionaldePanamáestán depositados materiales en formato digital frutodela producción científica o académica,deesta manera permite almacenar, difundir y preservar informacióndevital importancia. <\/CONTENT> <URL> https://repositorio.asamblea.gob.pa/?locale-attribute=es <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> LaAsambleaNacionaljuega un rol fundamental para el desarrollo y proteccióndenuestra democracia. Más alládesus funciones legislativas, laAsambleaNacionaltiene funciones judiciales y administrativas, que incluyen la fiscalizacióndeotras instituciones del Estado. <\/CONTENT> <URL> https://voto2024.espaciocivico.org/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BATISTA RODRÍGUEZDEGUERRA LILIA EMÉRITA Partido Partido Realizando Metas Circuito 13-4 HDs Suplentes OrtegaDeLeón, Ariel Augusto H.D. <\/CONTENT> <URL> https://asamblea.gob.pa/Page/diputados?Menu-Type=NavBar <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> GuíadepolíticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte SupremadeJusticia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministrodeEducación Juan BoscoBernal.DaliaBernal, unadelas figuras más importantes del oficialismo en el distritodeSan Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Aqui puedes descargar lahojadevidadela candidata: <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> También citan a altas autoridades para que expliquen públicamente las políticas públicas adoptadas en sus entidades. que cumplen individualmente y como partedeAsambleaNacional. Artículos 159, 160, 161, 313 y 314dela Constitución Política y Reglamento Orgánico del Régimen InternodelaAsambleaNacional, entre otras referencias. <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218501547,\"end\":1779218502945},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779218504406,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afcfab001N9CYJv0S0ilxcH\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afca1e001IG8Uo32wxRvxlL\",\"type\":\"tool\",\"callID\":\"0c999811-7339-4faf-90df-eeb29b3848b1\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Bernal Yanez profesión antes de política\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral PropuestaPolíticaCorresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministrodeEducación Juan BoscoBernal.DaliaBernal, unadelas figuras más importantes del oficialismo en el distritodeSan Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20defebrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Experiencia: AyuntamientodeMexicali · Ubicación: México. Ver el perfildeDaliaBernalen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/dalia-bernal-a72913181 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Curriculum cv_54.pdf PropuestapolíticaTemas prioritarios Inclusión social y equidaddegénero Patrimonio e intereses La presentacióndeestas declaraciones es un acto totalmente voluntario por parte del candidato Para presentar tus declaraciones voluntariasdepatrimonio e intereses, descarga los archivos, llénalos y súbelos a tu perfil ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> HONORABLE DIPUTADADALIABERNAL. CURRICULUM. ESTUDIOSDEDOCTORADO EN EDUCACION SUPERIOR CON ENFASIS EN CURRICULUM (2000). MAESTRIA EN DOCENCIA SUPERIOR (1998). POSTGRADO EN DOCENCIA UNIVERSITARIA (1998). POSTGRADO EN PLANIFICACION Y ADMINISTRACIONDELA EDUCACION SUPERIOR (1992). <\/CONTENT> <URL> https://www.slideserve.com/yannis/curriculum <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> #Historias |DaliaM.Bernalno solamente es la directoradeuna prestigiosa emisora del país, sino que también lidera campañas sociales como 'La ruta por la vida' que hace más loable su labor profesional. <\/CONTENT> <URL> https://www.facebook.com/kienyke/posts/historias-dalia-m-bernal-no-solamente-es-la-directora-de-una-prestigiosa-emisora/4188279431235114 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Experiencia: CamaradeDiputados del Congresodela UnióndeMexico · Ubicación: CiudaddeMéxico. Ver el perfildedaliafigueroabernalen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/dalia-figueroa-bernal-0247a93b <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> En el marcodela conmemoración del natalicio 229 del libertador Simón Bolívar, y ser la diputadaDaliaBernalla primera mujer en ocupar la Presidenciadela ComisióndeRelaciones Exterioresdela Asamblea Nacional, quedó instalada formalmente en la Cancilleríadela República dicha instancia parlamentaria y sus miembros juramentados. <\/CONTENT> <URL> https://amigosdedaliabernal.blogspot.com/2013/12/la-diputada-bernal-primera-mujer-en.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> También citan a altas autoridades para que expliquen públicamente laspolíticaspúblicas adoptadas en sus entidades. que cumplen individualmente y como partedeAsamblea Nacional. Artículos 159, 160, 161, 313 y 314dela ConstituciónPolíticay Reglamento Orgánico del Régimen Internodela Asamblea Nacional, entre otras referencias. <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218501547,\"end\":1779218504406},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218504408,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afdad6001lz7TJeO6yN5pPC\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afca1e001IG8Uo32wxRvxlL\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.029136,\"tokens\":{\"total\":9240,\"input\":9122,\"output\":118,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218506154,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afe1a9001v7T4E76cR6X8Bx\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afdad9001frhybSL1qZCYyw\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218510982,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afe1aa0013aiHAXlbDze4sY\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afdad9001frhybSL1qZCYyw\",\"type\":\"tool\",\"callID\":\"5b62e84b-4ba1-4122-82b8-4efe52687fcc\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"pdf_parse_failed\\\",\\\"retryable\\\":false,\\\"url\\\":\\\"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\\\",\\\"final_url\\\":\\\"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\\\",\\\"status_code\\\":null,\\\"error\\\":\\\"pdf_parse_failed\\\",\\\"error_detail\\\":\\\"returncode=1\\\",\\\"attempt\\\":1,\\\"attempts\\\":2}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218506155,\"end\":1779218510981},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779218511808,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41afe1ab001yLlobGi15P8nGk\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afdad9001frhybSL1qZCYyw\",\"type\":\"tool\",\"callID\":\"b337c575-0917-4590-ad08-9b7ab118cafc\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.slideserve.com/yannis/curriculum\"},\"output\":\"URL: https://www.slideserve.com/yannis/curriculum\\nFinal URL: https://www.slideserve.com/yannis/curriculum\\nTitle: PPT - HONORABLE DIPUTADA DALIA BERNAL PowerPoint Presentation, free download - ID:892197\\nBytes read: 120396\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nBrowse\\nRecent Presentations\\n[link: https://www.slideserve.com/presentations]\\nRecent Articles\\n[link: https://www.slideserve.com/articles]\\nContent Topics\\n[link: https://www.slideserve.com/topics]\\nUpdated Contents\\n[link: https://www.slideserve.com/updates]\\nFeatured Contents\\n[link: https://www.slideserve.com/featured]\\nPowerPoint Templates\\n[link: https://www.slideserve.com/powerpoint-templates]\\nCreate\\nPresentation\\n[link: https://www.slideserve.com/create]\\nArticle\\n[link: https://www.slideserve.com/online-article]\\nSurvey\\n[link: https://www.slideserve.com/online-survey]\\nQuiz\\n[link: https://www.slideserve.com/online-quiz]\\nLead-form\\n[link: https://www.slideserve.com/lead-generation]\\nE-Book\\n[link: https://www.slideserve.com/create?type=ebook]\\nPro\\n[link: https://www.slideserve.com/pro]\\nUpload\\n[link: https://www.slideserve.com/upload]\\nUploaded by\\nyannis\\n[link: https://www.slideserve.com/yannis]\\n53\\nSLIDES\\n1065\\nVIEWS\\n560\\nLIKES\\nHONORABLE DIPUTADA DALIA BERNAL\\nDESCRIPTION\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218506156,\"end\":1779218511808},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218511809,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41aff7c0001u0v6YL4EMfU7R1\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41afdad9001frhybSL1qZCYyw\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.036786,\"tokens\":{\"total\":11686,\"input\":11542,\"output\":144,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218513501,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41affe5d001useUYw7GIcFU25\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41aff7c30019v1WT2s1jmJCwX\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218519081,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41affe5d0022FwR1Oel2S0UPD\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41aff7c30019v1WT2s1jmJCwX\",\"type\":\"tool\",\"callID\":\"2bb1db61-8a44-4cc7-8a41-13f19a1e6694\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Bernal Yanez lugar de nacimiento Panamá\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministrodeEducación Juan BoscoBernal.DaliaBernal, unadelas figuras más importantes del oficialismo en el distritodeSan Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informesdela ejecutivaDaliaMirnaBernalYañezen 1 empresa y como mínimo 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal-Yañez.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Personas Cédula, Padrón Electoral Conoce cómo buscar datosdepersonas enPanamá. Guía para encontrar informacióndepersonas Panameñas por cédula, nombre, apellidos y otros documentosdeidentificación. <\/CONTENT> <URL> https://registronacional.com/panama/buscar-personas-por-nombre-y-apellidos-en-panama.htm <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Cómo encontrar a una persona enPanama? Puede buscar personas al consultar teléfonos y direcciones en la guía telefónicadela ciudad o contactosdefamiliares y amigos. Encuentra a una persona enPanamabuscando los datos como nombre y apellido, edad, fecha,lugardenacimientoy la última dirección conocida donde vive o trabajaba. Para localizar a una persona puede buscar el nombre y ... <\/CONTENT> <URL> https://registronacional.com/panama/personas.htm <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Registro DemográficodePanamá- Certificado y DatosdePersonas Registro Demográfico enPanamá- GuíadeTrámitesdeCertificaciones. Teléfono y DireccióndeOficinas. Servicios y DocumentosdePersonas. Certificación y DatosdeNacimiento, Matrimonio, Divorcio, Defunción. Estadísticasdela Población. <\/CONTENT> <URL> https://registro-demografico.com/panama/panama.htm <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Consulta enPanamá- Registro Público ConsultasdeDatos Consultas enPanamáRegistro Público, DGI, Idaan, Registro Civil. Consultar datos en línea. Buscar Información en Registro Nacional. ConsultadeDatosdePersonas, Teléfonos, Vehículos, Propiedades, Empresas, Trámites del Gobierno. Certificaciones en Línea. Dónde Votar. Tribunal Electoral. IDAAN ConsultadeSaldo - Agua Lista ... <\/CONTENT> <URL> https://registronacional.com/panama/consulta.htm <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Sexo: ☐ F ☐ M Fechadenacimiento: D 14 M A 10 54Lugardenacimiento: Antón Profesión u ocupación: Diputadadela Rep. Candidato(a) por el Partido Realizando Metas (RM) al cargode: Diputada Circunscripción electoral: 8-2 Jonmiguelito Circuito: 8-2. Corregimiento: José A Espinar Distrito: San miguelito Provincia/Comarca:Panamá <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Como buscar datosdeuna persona enPanamá? - Consulta informacióndepersonas en redes sociales, sitiosdenoticias, guía telefónica y en las instituciones públicas. Actadenacimientodel Registro Civil y CertificadosdeRegistros Públicos. - CéduladeIdentidad Personal - Cedulacion - Registro Público - Tribunal Electoral - Registro ... <\/CONTENT> <URL> https://personasbuscar.com/panama/buscar-personas-panama.htm <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> El Registro CivildePanamáes una dependencia del Tribunal Electoral y realiza los trámitesdeinscripcióndelosnacimientos, defunciones, naturalizaciones, matrimonios y demás hechos y actos jurídicos relacionados con el estado civildelas personas y realiza las anotaciones procedentes en las respectivas inscripciones. <\/CONTENT> <URL> https://registropersonas.com/panama/registro-de-personas-en-panama.htm <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218513502,\"end\":1779218519081},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779218522748,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41affe5e001Jc4mkMwZo0bPjX\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41aff7c30019v1WT2s1jmJCwX\",\"type\":\"tool\",\"callID\":\"f5505087-13d9-4eeb-aa63-c5a52a37ed64\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Bernal Yanez ocupación previa política docente\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> PolíticaCorresponde al documento con prioridades, formas y acciones de gobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listado de los procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> docenteen particular · Experiencia: particular · Ubicación: Hidalgo · 1 contacto en LinkedIn. Mira el perfil deDaliaBernalen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/dalia-bernal-57119a137 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Curriculum cv_54.pdf PropuestapolíticaTemas prioritarios Inclusión social y equidad de género Patrimonio e intereses La presentación de estas declaraciones es un acto totalmente voluntario por parte del candidato Para presentar tus declaraciones voluntarias de patrimonio e intereses, descarga los archivos, llénalos y súbelos a tu perfil ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> A partir de las indagaciones realizadas, se puede afirmar que cuando la planificación de unapolíticapública parte de los contextos locales, tiene en cuenta a los sujetos, es participativa y propone el trabajo en red entre instituciones, la misma perdura en el tiempo y se vuelve pedagógicamente significativa. <\/CONTENT> <URL> https://www.academia.edu/121887581/Docencia_y_territorios_asunto_de_política_pública_de_política_educativa_o_de_política_docente <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> HONORABLE DIPUTADADALIABERNAL. CURRICULUM. ESTUDIOS DE DOCTORADO EN EDUCACION SUPERIOR CON ENFASIS EN CURRICULUM (2000). MAESTRIA EN DOCENCIA SUPERIOR (1998). POSTGRADO EN DOCENCIA UNIVERSITARIA (1998). POSTGRADO EN PLANIFICACION Y ADMINISTRACION DE LA EDUCACION SUPERIOR (1992). <\/CONTENT> <URL> https://www.slideserve.com/yannis/curriculum <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> En América Latina la cuestióndocenteha ocupado un lugar relevante en la agenda pública. Los países movilizan gran cantidad de sus recursos para sostener al sistema educativo en su conjunto, y una parte significativa, la orientan a formar, evaluar, acreditar y sostener el ejercicio de la docencia. Este documento ofrece información relevante para dimensionar y caracterizar lapolítica... <\/CONTENT> <URL> https://siteal.iiep.unesco.org/eje/docentes <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Para la elaboración de este informe, OREALC/UNESCO Santiago definió un método de trabajo basado en la contribución de expertos latinoamericanos enpolíticasdocentes, como en el aporte de ocho grupos nacionales de consulta y deliberación de Argentina, Brasil, Chile, Colombia, Guatemala, México, Perú y Trinidad y Tobago, constituidos por actores representativos de los ámbitos ... <\/CONTENT> <URL> https://www.oas.org/cotep/GetAttach.aspx?lang=es&cId=1&aid=1 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Políticasdocentesante la emergencia sanitaria Cuando este número comenzó a definirse, no había evidencia de lo que iba a suceder en el mundo, el cambio en nuestras formas de vida, así como el impacto que todo ello iba a tener en la escuela. En marzo de 2020, los sistemas de educación del mundo, y de América Latina en particular, tomaron la decisión de cerrar las escuelas para cumplir ... <\/CONTENT> <URL> https://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S1405-66662021000200351 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> El Volumen 1 de estas Directrices se centra en la educación primaria y secundaria, proporcionando una guía para la integración de laspolíticasdocentesen los planes ypolíticasdel sector de la educación.35 Guía para el desarrollo depolíticasdocentesReferencias Normas internacionales OIT/UNESCO. 1966. <\/CONTENT> <URL> https://unesdoc.unesco.org/ark:/48223/pf0000374226 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> También citan a altas autoridades para que expliquen públicamente laspolíticaspúblicas adoptadas en sus entidades. que cumplen individualmente y como parte de Asamblea Nacional. Artículos 159, 160, 161, 313 y 314 de la ConstituciónPolíticay Reglamento Orgánico del Régimen Interno de la Asamblea Nacional, entre otras referencias. <\/CONTENT> <URL> https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218513502,\"end\":1779218522747},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218522750,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b0227d001NLcISeaaNBykkb\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41aff7c30019v1WT2s1jmJCwX\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.038523,\"tokens\":{\"total\":12381,\"input\":12266,\"output\":115,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218524147,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b027f2001ml7H1wjVM8pMCL\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41b02280001N8AJtiQ0RWO8uE\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218525980,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b027f2002BCIOWFd446YG0J\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41b02280001N8AJtiQ0RWO8uE\",\"type\":\"tool\",\"callID\":\"5f0fd474-8bc0-46fc-a63e-a4f762fe2b68\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Bernal Yanez discapacidad orientación sexual\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> La Asamblea Nacional juega un rol fundamental para el desarrollo y protección de nuestra democracia. Más allá de sus funciones legislativas, la Asamblea Nacional tiene funciones judiciales y administrativas, que incluyen la fiscalización de otras instituciones del Estado. Las preguntas para los candidatos a Diputado (a) fueron formuladas tomando en cuenta temas de interés ciudadano, y los ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Las personas condiscapacidadintelectual LGTBIsufren una doble discriminación, por el hecho de ser personas condiscapacidadyvivir identidades u orientaciones no normativas. Si la atención a la Sexualidad debeestar dentro de todos los Planes Personales de Apoyo, la DiversidadSexualdebeconsiderarse como un derecho. <\/CONTENT> <URL> https://dialnet.unirioja.es/servlet/articulo?codigo=8859655 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Sexualidad ydiscapacidadintelectual: inclusión y educación. Más de 7 millones en México enfrentan desafíos. <\/CONTENT> <URL> https://unamglobal.unam.mx/global_revista/rompiendo-barreras-sexualidad-y-discapacidad-intelectual <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> La sexualidad sigue siendo un enorme tabú en nuestra sociedad. Un tabú que lleva, incluso, a malentender y limitar el propio término haciendo un uso inadecuado del mismo. La mayoría de las consultas en torno a sexualidad ydiscapacidad(física, psíquica o sensorial) giran en torno a la masturbación (Walsh y Phty, 2000). Sin embargo, la sexualidad y su educación abarca un espectro mucho ... <\/CONTENT> <URL> https://oji.fundacion-sm.org/descifrando-la-juventud/inclusion-social/sexualidad-y-discapacidad-una-perspectiva-educativa <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Con ella se sintetiza lo que ha sido el devenir de ladiscapacidadcomo producción social, po- lítica, económica, cultural y simbólica en las sociedades modernas desde fines del siglo XIX. <\/CONTENT> <URL> https://www.researchgate.net/publication/343604959_Mirar_con_otros_ojos_sexualidad_y_discapacidad <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> A su vez, la planificación de programas de educaciónsexualdeben resguardar a las personas condiscapacidadcomo agentes activos de su propio bienestar, tanto en el sistema de salud, social e institucional. <\/CONTENT> <URL> https://aprofaeduca.cl/wp-content/uploads/2024/05/Sexualidad-e-Inclusion-de-personas-con-discapacidad-2019-segunda-version.pdf <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Este mito conlleva negar la educaciónsexualpor temor a que pueda incitar e incrementar su práctica, reduciendo las oportunidades de aprendizaje para el correcto desarrollo de su sexualidad (Federación de Asociaciones a favor de las personas condiscapacidadintelectual y/o del desarrollo de la Comunidad Valenciana [FEAPS], 2015). <\/CONTENT> <URL> https://scielo.isciii.es/scielo.php?script=sci_arttext&pid=S0210-16962023000300003 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Las personas condiscapacidadintelectual aportan una perspectiva única en el análisis de las barreras que les dificultan gozar de unas relaciones afectivo-sexuales que contribuyan a su bienestar personal y, con ello, a una mejor calidad de vida. <\/CONTENT> <URL> https://scielo.isciii.es/scielo.php?script=sci_arttext&pid=S0210-16962024000300003 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Información del artículo ¿Hay diferencias entre las actitudes hacia la conductasexualque tienen las personas condiscapacidadintelectual y las de los profesionales que trabajan con ellos? <\/CONTENT> <URL> https://dialnet.unirioja.es/servlet/articulo?codigo=7756147 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> En los entornos clínicos y educativos, la educaciónsexualo relacional se incluye de forma cada vez más consistente en la planificación futura de las personas con discapacidades. Muchos programas de educación secundaria para personas con discapacidades están añadiendo componentes de educación para las relaciones a sus programas. <\/CONTENT> <URL> https://publications.ici.umn.edu/impact/36-2-es/belonging-and-community <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218524147,\"end\":1779218525979},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779218528143,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b027f4001QsUWcly3TdHQ4s\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41b02280001N8AJtiQ0RWO8uE\",\"type\":\"tool\",\"callID\":\"88a4e922-782b-4ff1-9ce4-4a8be7bfc9f2\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Dalia Bernal Yanez biografía completa Panamá\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Es diputada por el circuito 8-6 y hermana del exministro de Educación Juan BoscoBernal.DaliaBernal, una de las figuras más importantes del oficialismo en el distrito de San Miguelito.Bernal... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/politica/dalia-bernal-BDLE285712 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> DaliaBernalLa informacion colocada aquí proviene del sitio web: voto informado del tribunal electoralDaliaBernal/ tribunal electoral 20 de febrero 2024 - 05:56 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/dalia-bernal_1_2110989.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DaliaBernalMujeres en la AN siguen siendo minoría De las 16 diputadas del pasado periodo legislativo, solo dos lograron reelegirse <\/CONTENT> <URL> https://www.laestrella.com.pa/tag/-/meta/dalia-bernal <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Informes de la ejecutivaDaliaMirnaBernalYañezen 1 empresa y como mínimo 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Dalia-Mirna-Bernal-Yañez.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Guía de políticosPanamáTipo: La candidata no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para esta candidata en los últimos 10 años. <\/CONTENT> <URL> https://www.candidatos.espaciocivico.org/profile/dalia-bernal-yanez <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> De figuras emblemáticas a marginados del poder. Esta es la nueva realidad de los diputadosDaliaBernal, Roberto Ábrego, Francisco Pancho Alemán, Leandro Ávila, Marylín Vallarino y Tito ... <\/CONTENT> <URL> https://www.prensa.com/politica/de-legendarios-a-desterrados-los-diputados-que-recibieron-el-castigo-del-no-vas <\/URL> __END_OF_SOURCE 6__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218524148,\"end\":1779218528142},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218528144,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b0378f001rM2y07eJGZ12JT\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41b02280001N8AJtiQ0RWO8uE\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.04632,\"tokens\":{\"total\":14988,\"input\":14875,\"output\":113,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218531203,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b04382001X5TZEmFJ05DrU3\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41b03791001eGx567AODDycIr\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779218531204,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b04382002pIkaignE1zp6XZ\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41b03791001eGx567AODDycIr\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Doctorate in Higher Education with emphasis on Curriculum (2000); Master's in Higher Education (1998); Postgraduate in University Teaching (1998); Postgraduate in Planning and Administration of Higher Education (1992).\\\",\\n  \\\"prior_occupation\\\": \\\"Educator/Professor\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"birth_year\\\": \\\"1954\\\",\\n  \\\"birth_place\\\": \\\"Antón, Panama\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sources\\\": {\\n    \\\"educational_attainment\\\": \\\"https://www.slideserve.com/yannis/curriculum\\\",\\n    \\\"prior_occupation\\\": \\\"https://www.slideserve.com/yannis/curriculum\\\",\\n    \\\"class_background\\\": \\\"https://www.slideserve.com/yannis/curriculum\\\",\\n    \\\"birth_year\\\": \\\"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\\\",\\n    \\\"birth_place\\\": \\\"https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf\\\",\\n    \\\"disability_status\\\": \\\"https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez\\\",\\n    \\\"sexual_orientation\\\": \\\"https://voto2024.maga.dev/es/candidatos/diputado/dalia-bernal-yanez\\\"\\n  }\\n}\\n```\",\"time\":{\"start\":1779218531203,\"end\":1779218531203}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218531206,\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"part\":{\"id\":\"prt_e41b04384001YQhKjNQBptQbgB\",\"sessionID\":\"ses_1be506461ffe175HNKdXdtssMM\",\"messageID\":\"msg_e41b03791001eGx567AODDycIr\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.057381,\"tokens\":{\"total\":17335,\"input\":16887,\"output\":448,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

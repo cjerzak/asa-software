@@ -1,0 +1,21 @@
+{
+  "name": "Maria Cristina Caretta",
+  "country": "Italy",
+  "election_year": 2018,
+  "political_party": "Fratelli d'Italia",
+  "region_constituency": "Veneto 2",
+  "educational_attainment": "Operatore di sistemi informatici (IT Systems Operator)",
+  "educational_attainment_source": "https://www.amministrazionicomunali.it/camera/caretta-maria-cristina",
+  "prior_occupation": "IT Systems Operator; President of CONF.A.V.I. (Confederation of Italian Hunting Associations)",
+  "prior_occupation_source": "https://it.wikipedia.org/wiki/Maria_Cristina_Caretta",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.amministrazionicomunali.it/camera/caretta-maria-cristina",
+  "birth_year": 1964,
+  "birth_year_source": "https://en.wikipedia.org/wiki/Maria_Cristina_Caretta",
+  "birth_place": "Thiene, Italy",
+  "birth_place_source": "https://it.wikipedia.org/wiki/Maria_Cristina_Caretta",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://it.wikipedia.org/wiki/Maria_Cristina_Caretta",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://it.wikipedia.org/wiki/Maria_Cristina_Caretta"
+}

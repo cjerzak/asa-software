@@ -121,6 +121,93 @@
   out
 }
 
+#' Build shared loop-guard configuration for free-code style backends
+#' @keywords internal
+.free_code_loop_guard_config <- function(config,
+                                         recursion_limit = NULL,
+                                         search_budget_limit = NULL,
+                                         unknown_after_searches = NULL) {
+  search_opts <- .try_or(unclass(config$search), list())
+  if (!is.list(search_opts)) {
+    search_opts <- list()
+  }
+
+  search_timeout <- suppressWarnings(as.numeric(search_opts$timeout %||% 30))
+  if (is.na(search_timeout) || !is.finite(search_timeout) || search_timeout <= 0) {
+    search_timeout <- 30
+  }
+
+  webpage_timeout <- suppressWarnings(as.numeric(search_opts$webpage_timeout %||% search_timeout))
+  if (is.na(webpage_timeout) || !is.finite(webpage_timeout) || webpage_timeout <= 0) {
+    webpage_timeout <- search_timeout
+  }
+
+  tool_deadline <- min(25, max(5, min(search_timeout, webpage_timeout)))
+  mcp_timeout_ms <- as.integer((tool_deadline + 5) * 1000)
+
+  unknown_after <- suppressWarnings(as.integer(unknown_after_searches %||% NA_integer_))
+  total_timeout_limit <- if (!is.na(unknown_after) && unknown_after > 0L) {
+    max(3L, unknown_after)
+  } else {
+    6L
+  }
+
+  list(
+    recursion_limit = .normalize_recursion_limit(recursion_limit),
+    search_budget_limit = if (is.null(search_budget_limit)) NULL else as.integer(search_budget_limit),
+    unknown_after_searches = if (is.null(unknown_after_searches)) NULL else as.integer(unknown_after_searches),
+    repeated_timeout_limit = 2L,
+    repeated_fetch_timeout_limit = 1L,
+    total_timeout_limit = total_timeout_limit,
+    repeated_invalid_tool_limit = 2L,
+    total_invalid_tool_limit = 4L,
+    repeated_tool_request_limit = 4L,
+    tool_deadline_seconds = tool_deadline,
+    mcp_timeout_ms = mcp_timeout_ms
+  )
+}
+
+#' Serialize shared loop-guard configuration for helper processes
+#' @keywords internal
+.free_code_loop_guard_json <- function(config,
+                                       recursion_limit = NULL,
+                                       search_budget_limit = NULL,
+                                       unknown_after_searches = NULL) {
+  paste(jsonlite::toJSON(
+    .free_code_loop_guard_config(
+      config = config,
+      recursion_limit = recursion_limit,
+      search_budget_limit = search_budget_limit,
+      unknown_after_searches = unknown_after_searches
+    ),
+    auto_unbox = TRUE,
+    null = "null"
+  ), collapse = "")
+}
+
+#' Temporarily expose shared loop-guard configuration to child processes
+#' @keywords internal
+.free_code_with_loop_guard_env <- function(config,
+                                           recursion_limit = NULL,
+                                           search_budget_limit = NULL,
+                                           unknown_after_searches = NULL) {
+  old <- Sys.getenv("ASA_FREE_CODE_LOOP_GUARD_JSON", unset = NA_character_)
+  Sys.setenv(ASA_FREE_CODE_LOOP_GUARD_JSON = .free_code_loop_guard_json(
+    config = config,
+    recursion_limit = recursion_limit,
+    search_budget_limit = search_budget_limit,
+    unknown_after_searches = unknown_after_searches
+  ))
+  function() {
+    if (is.na(old)) {
+      Sys.unsetenv("ASA_FREE_CODE_LOOP_GUARD_JSON")
+    } else {
+      Sys.setenv(ASA_FREE_CODE_LOOP_GUARD_JSON = old)
+    }
+    invisible(NULL)
+  }
+}
+
 #' Build environment for the gateway process
 #' @keywords internal
 .free_code_gateway_env <- function(config, python_path, port_file) {
@@ -470,7 +557,8 @@
                                             stderr = "",
                                             thread_id = NULL,
                                             target_backend = NULL,
-                                            target_model = NULL) {
+                                            target_model = NULL,
+                                            loop_guard = NULL) {
   structured_output <- output$structured_output %||% NULL
   result_text <- output$result %||% ""
   result_text <- as.character(result_text %||% "")
@@ -536,11 +624,16 @@
     prompt = prompt,
     thread_id = output$session_id %||% thread_id,
     stop_reason = stop_reason,
-    budget_state = list(),
+    budget_state = list(
+      search_calls_limit = loop_guard$search_budget_limit %||% NA_integer_,
+      search_calls_remaining = loop_guard$search_budget_limit %||% NA_integer_,
+      search_budget_exhausted = FALSE
+    ),
     field_status = list(),
     diagnostics = list(
       free_code_cli_status = as.integer(cli_status),
-      free_code_permission_denials = output$permission_denials %||% list()
+      free_code_permission_denials = output$permission_denials %||% list(),
+      tool_loop_guard = loop_guard %||% list()
     ),
     json_repair = list(),
     final_payload = structured_output,
@@ -586,6 +679,8 @@
                                  recursion_limit = NULL,
                                  expected_schema = NULL,
                                  thread_id = NULL,
+                                 search_budget_limit = NULL,
+                                 unknown_after_searches = NULL,
                                  auto_openwebpage_policy = NULL,
                                  performance_profile = NULL,
                                  webpage_policy = NULL,
@@ -597,6 +692,19 @@
   python_path <- .free_code_python_path()
   workdir <- tempfile("asa_free_code_work_")
   dir.create(workdir, recursive = TRUE, showWarnings = FALSE)
+  loop_guard <- .free_code_loop_guard_config(
+    config = agent$config,
+    recursion_limit = recursion_limit,
+    search_budget_limit = search_budget_limit,
+    unknown_after_searches = unknown_after_searches
+  )
+  restore_loop_guard <- .free_code_with_loop_guard_env(
+    config = agent$config,
+    recursion_limit = recursion_limit,
+    search_budget_limit = search_budget_limit,
+    unknown_after_searches = unknown_after_searches
+  )
+  on.exit(restore_loop_guard(), add = TRUE)
 
   gateway <- .free_code_launch_gateway(
     config = agent$config,
@@ -673,6 +781,7 @@
     stderr = result$stderr,
     thread_id = thread_id,
     target_backend = agent$backend,
-    target_model = agent$model
+    target_model = agent$model,
+    loop_guard = loop_guard
   )
 }

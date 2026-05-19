@@ -1,0 +1,7 @@
+{
+  "tokens_used": 122618,
+  "input_tokens": 121141,
+  "output_tokens": 1477,
+  "fold_tokens": 0,
+  "token_trace": []
+}

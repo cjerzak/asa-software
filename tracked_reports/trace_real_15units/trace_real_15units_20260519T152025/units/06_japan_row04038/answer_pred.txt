@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Bachelor's degree in Economics from Aoyama Gakuin University (Second Section, Department of Economics)",
+  "educational_attainment_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "prior_occupation": "Employee at Totetsu Kogyo Co., Ltd. and Secretary to a Member of the House of Councillors (Kazuki Motomura)",
+  "prior_occupation_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "birth_year": 1970,
+  "birth_year_source": "https://www.city.sagamihara.kanagawa.jp/shisei/1026709/mayor/1009600.html",
+  "birth_place": "Nakano, Tokyo (raised in Sagamihara, Kanagawa)",
+  "birth_place_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E"
+}

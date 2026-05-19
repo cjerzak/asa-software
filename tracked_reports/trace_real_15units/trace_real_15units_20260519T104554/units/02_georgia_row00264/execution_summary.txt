@@ -1,0 +1,30 @@
+{
+  "status": "success",
+  "unit": {
+    "unit_index": 2,
+    "unit_key": "02_georgia_row00264",
+    "country": "Georgia",
+    "row_id": 264,
+    "person_name": "Nona Mamulashvili",
+    "election_year": "2020",
+    "pol_party": "Strength is in Unity (DE-GO)",
+    "region": "National level",
+    "person_bday": "Not available",
+    "gender_character": "Female",
+    "ethnic": "Georgian"
+  },
+  "started_at_utc": "2026-05-19T14:46:38Z",
+  "finished_at_utc": "2026-05-19T14:48:18Z",
+  "elapsed_time": 1.611,
+  "error_message": null,
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260519T104554/units/02_georgia_row00264",
+  "field_status": [],
+  "diagnostics": {
+    "opencode_cli_status": 0,
+    "opencode_errors": [],
+    "opencode_parse_error": false,
+    "opencode_stderr": ""
+  },
+  "completion_gate": []
+}

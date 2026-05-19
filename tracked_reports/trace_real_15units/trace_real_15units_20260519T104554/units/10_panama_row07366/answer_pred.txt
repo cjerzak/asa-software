@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Doctorate in Higher Education with emphasis on Curriculum (2000); Master's in Higher Education (1998); Postgraduate in University Teaching (1998); Postgraduate in Planning and Administration of Higher Education (1992).",
+  "educational_attainment_url": "https://www.slideserve.com/yannis/curriculum",
+  "prior_occupation": "Professor / Educator",
+  "prior_occupation_url": "https://www.slideserve.com/yannis/curriculum",
+  "birth_year": "1954",
+  "birth_year_url": "https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf",
+  "birth_place": "Antón, Panama",
+  "birth_place_url": "https://voto2024.maga.dev/sites/default/files/candidatos_diputados/cv_54.pdf",
+  "disability_status": "Unknown",
+  "disability_status_url": "https://voto2024.espaciocivico.org/es/candidatos/diputado/dalia-bernal-yanez",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_url": "https://voto2024.espaciocivico.org/es/candidatos/diputado/dalia-bernal-yanez",
+  "class_background": "Middle class/professional",
+  "class_background_url": "https://www.slideserve.com/yannis/curriculum"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Winston Peters",
+  "educational_attainment": "Bachelor of Arts (BA) and Bachelor of Laws (LLB)",
+  "educational_attainment_source": "https://www.nzfirst.nz/winston-peters",
+  "prior_occupation": "Teacher and Lawyer (Barrister and Solicitor)",
+  "prior_occupation_source": "https://www.nzfirst.nz/winston-peters",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.nzfirst.nz/winston-peters",
+  "birth_year": 1945,
+  "birth_year_source": "https://en.wikipedia.org/wiki/Winston_Peters",
+  "birth_place": "Whangarei, New Zealand",
+  "birth_place_source": "https://www.bornglorious.com/person/?pi=1396178",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Winston_Peters",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Winston_Peters"
+}

@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "PhD in International Relations from the University of Sorbonne (France); Master's degree in Diplomatic Studies from the University of Westminster (UK); Bachelor's degree in Business Administration from the International Black Sea University (Georgia).",
+  "educational_attainment_source": "https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili",
+  "prior_occupation": "Regional Director for Pfizer (Caucasus and Central Asian countries); Senior Advisor to the Analytical Group of the President of Georgia (2005-2007); Political Analyst at the Ministry of Foreign Affairs of Georgia.",
+  "prior_occupation_source": "https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili",
+  "birth_year": "1977",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Nona_Mamulashvili",
+  "birth_place": "Unknown",
+  "birth_place_source": "https://en.wikipedia.org/wiki/Nona_Mamulashvili",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://parliament.ge/en/parliament-members/2499/biography",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Nona_Mamulashvili"
+}

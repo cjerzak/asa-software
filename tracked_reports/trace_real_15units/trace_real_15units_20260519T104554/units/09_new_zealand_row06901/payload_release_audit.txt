@@ -1,0 +1,18 @@
+{
+  "unit_key": "09_new_zealand_row06901",
+  "generated_at_utc": "2026-05-19T14:47:18Z",
+  "canonical_artifact_id": "119ba13ea8a9a3a6ae96596c35dc95213cb942f6b0651c5f52c0cafdf0fdf143",
+  "released_artifact_id": "71af7f8c7c5f9c610dbe10635a269b876f7fff58cd74d831165f04f1f434635c",
+  "released_from": "opencode_final_text_json",
+  "canonical_available": true,
+  "canonical_matches_message": false,
+  "canonical_byte_hash": "119ba13ea8a9a3a6ae96596c35dc95213cb942f6b0651c5f52c0cafdf0fdf143",
+  "released_byte_hash": "71af7f8c7c5f9c610dbe10635a269b876f7fff58cd74d831165f04f1f434635c",
+  "byte_hash_matches": false,
+  "canonical_semantic_hash": "74566e76db31c097964ea0374a7914d72596df80d9c6887ef7f0203efa4dfe51",
+  "released_semantic_hash": null,
+  "semantic_hash_matches": false,
+  "hash_mismatch_type": null,
+  "truncation_signals": [],
+  "json_repair_reasons": []
+}

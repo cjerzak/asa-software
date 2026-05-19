@@ -73,6 +73,14 @@
   agent_backend <- config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND
   use_memory_folding <- (config$use_memory_folding %||% config$memory_folding) %||% TRUE
 
+  # Resolve recursion limit with precedence:
+  # run_task arg > agent/config default > mode-specific fallback.
+  recursion_limit <- .resolve_effective_recursion_limit(
+    recursion_limit = recursion_limit,
+    config = config,
+    use_memory_folding = use_memory_folding
+  )
+
   if (identical(agent_backend, "opencode")) {
     return(.run_opencode_agent(
       prompt = prompt,
@@ -80,6 +88,8 @@
       recursion_limit = recursion_limit,
       expected_schema = expected_schema,
       thread_id = thread_id,
+      search_budget_limit = search_budget_limit,
+      unknown_after_searches = unknown_after_searches,
       auto_openwebpage_policy = auto_openwebpage_policy,
       performance_profile = performance_profile,
       webpage_policy = webpage_policy,
@@ -95,6 +105,8 @@
       recursion_limit = recursion_limit,
       expected_schema = expected_schema,
       thread_id = thread_id,
+      search_budget_limit = search_budget_limit,
+      unknown_after_searches = unknown_after_searches,
       auto_openwebpage_policy = auto_openwebpage_policy,
       performance_profile = performance_profile,
       webpage_policy = webpage_policy,
@@ -102,14 +114,6 @@
       verbose = verbose
     ))
   }
-
-  # Resolve recursion limit with precedence:
-  # run_task arg > agent/config default > mode-specific fallback.
-  recursion_limit <- .resolve_effective_recursion_limit(
-    recursion_limit = recursion_limit,
-    config = config,
-    use_memory_folding = use_memory_folding
-  )
 
   if (verbose) message("Running agent...")
   t0 <- Sys.time()

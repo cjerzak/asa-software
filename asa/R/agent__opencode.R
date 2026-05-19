@@ -109,19 +109,29 @@
 .opencode_mcp_server_config <- function(config,
                                         python,
                                         python_path,
+                                        loop_guard = NULL,
                                         allow_read_webpages = NULL,
                                         auto_openwebpage_policy = NULL) {
+  environment <- as.list(.free_code_mcp_env(
+    config = config,
+    python_path = python_path,
+    allow_read_webpages = allow_read_webpages,
+    auto_openwebpage_policy = auto_openwebpage_policy
+  ))
+  if (!is.null(loop_guard)) {
+    environment$ASA_FREE_CODE_LOOP_GUARD_JSON <- paste(jsonlite::toJSON(
+      loop_guard,
+      auto_unbox = TRUE,
+      null = "null"
+    ), collapse = "")
+  }
+
   list(
     type = "local",
     command = unname(c(python, "-m", "asa_backend.free_code.mcp_search_server")),
     enabled = TRUE,
-    environment = as.list(.free_code_mcp_env(
-      config = config,
-      python_path = python_path,
-      allow_read_webpages = allow_read_webpages,
-      auto_openwebpage_policy = auto_openwebpage_policy
-    )),
-    timeout = 30000L
+    environment = environment,
+    timeout = as.integer(loop_guard$mcp_timeout_ms %||% 30000L)
   )
 }
 
@@ -134,6 +144,7 @@
                                      target_backend,
                                      target_model,
                                      outer_model = ASA_OPENCODE_OUTER_MODEL,
+                                     loop_guard = NULL,
                                      allow_read_webpages = NULL,
                                      auto_openwebpage_policy = NULL) {
   model_ref <- .opencode_model_ref(outer_model)
@@ -188,6 +199,7 @@
       config = config,
       python = python,
       python_path = python_path,
+      loop_guard = loop_guard,
       allow_read_webpages = allow_read_webpages,
       auto_openwebpage_policy = auto_openwebpage_policy
     )
@@ -350,6 +362,83 @@
   )
 }
 
+#' Summarize OpenCode tool-loop signals from JSONL events
+#' @keywords internal
+.opencode_tool_loop_diagnostics <- function(events, loop_guard = NULL) {
+  tool_calls <- 0L
+  search_calls <- 0L
+  invalid_calls <- 0L
+  tool_errors <- 0L
+  timeout_errors <- 0L
+  guard_errors <- 0L
+  cache_hits <- 0L
+  signatures <- character(0)
+
+  for (event in events %||% list()) {
+    if (!identical(event$type %||% NULL, "tool_use")) {
+      next
+    }
+    part <- event$part %||% list()
+    state <- part$state %||% list()
+    tool <- .opencode_scalar_text(part$tool %||% state$tool %||% "")
+    input <- state$input %||% list()
+    error <- .opencode_scalar_text(state$error %||% "")
+    output <- .opencode_scalar_text(state$output %||% "")
+    status <- .opencode_scalar_text(state$status %||% "")
+    sig <- paste0(tool, ":", .try_or(
+      paste(jsonlite::toJSON(input, auto_unbox = TRUE, null = "null"), collapse = ""),
+      ""
+    ))
+
+    tool_calls <- tool_calls + 1L
+    signatures <- c(signatures, sig)
+    if (grepl("web_search|web_fetch|asa_search", tool, ignore.case = TRUE)) {
+      search_calls <- search_calls + 1L
+    }
+    if (identical(tool, "invalid") || grepl("unavailable tool|invalid tool", paste(error, output), ignore.case = TRUE)) {
+      invalid_calls <- invalid_calls + 1L
+    }
+    if (identical(status, "error") || nzchar(error)) {
+      tool_errors <- tool_errors + 1L
+    }
+    if (grepl("timeout|timed out|-32001", paste(error, output), ignore.case = TRUE)) {
+      timeout_errors <- timeout_errors + 1L
+    }
+    if (grepl("ASA_TOOL_ERROR", output, fixed = TRUE)) {
+      guard_errors <- guard_errors + 1L
+    }
+    if (grepl("ASA_TOOL_CACHE_HIT", output, fixed = TRUE)) {
+      cache_hits <- cache_hits + 1L
+    }
+  }
+
+  signature_counts <- sort(table(signatures), decreasing = TRUE)
+  repeated_signature_count <- if (length(signature_counts) > 0L) {
+    as.integer(signature_counts[[1]])
+  } else {
+    0L
+  }
+
+  search_limit <- .as_scalar_int(loop_guard$search_budget_limit %||% NA_integer_)
+  remaining <- if (!is.na(search_limit)) max(0L, search_limit - search_calls) else NA_integer_
+
+  list(
+    config = loop_guard %||% list(),
+    tool_calls = tool_calls,
+    search_calls = search_calls,
+    invalid_tool_calls = invalid_calls,
+    tool_errors = tool_errors,
+    timeout_errors = timeout_errors,
+    guard_errors = guard_errors,
+    cache_hits = cache_hits,
+    repeated_signature_count = repeated_signature_count,
+    most_repeated_signature = if (length(signature_counts) > 0L) names(signature_counts)[[1L]] else NA_character_,
+    search_calls_limit = search_limit,
+    search_calls_remaining = remaining,
+    search_budget_exhausted = !is.na(search_limit) && search_calls >= search_limit
+  )
+}
+
 #' Parse OpenCode JSONL stdout
 #' @keywords internal
 .opencode_parse_output <- function(stdout) {
@@ -418,7 +507,8 @@
                                            thread_id = NULL,
                                            target_backend = NULL,
                                            target_model = NULL,
-                                           outer_model = ASA_OPENCODE_OUTER_MODEL) {
+                                           outer_model = ASA_OPENCODE_OUTER_MODEL,
+                                           loop_guard = NULL) {
   result_text <- .opencode_scalar_text(output$text %||% "")
   stderr_text <- .opencode_scalar_text(stderr %||% "")
   errors <- as.character(output$errors %||% character(0))
@@ -479,6 +569,7 @@
   tokens_used <- .as_scalar_int(usage$total_tokens)
   input_tokens <- .as_scalar_int(usage$input_tokens)
   output_tokens <- .as_scalar_int(usage$output_tokens)
+  tool_loop_guard <- .opencode_tool_loop_diagnostics(output$events %||% list(), loop_guard = loop_guard)
 
   resp <- asa_response(
     message = result_text,
@@ -491,13 +582,26 @@
     prompt = prompt,
     thread_id = output$session_id %||% thread_id,
     stop_reason = output$stop_reason %||% if (isTRUE(terminal$valid)) "structured_output" else "end_turn",
-    budget_state = list(),
+    budget_state = list(
+      tool_calls_used = tool_loop_guard$tool_calls %||% NA_integer_,
+      tool_calls_limit = loop_guard$recursion_limit %||% NA_integer_,
+      tool_calls_remaining = if (!is.null(loop_guard$recursion_limit)) {
+        max(0L, as.integer(loop_guard$recursion_limit) - as.integer(tool_loop_guard$tool_calls %||% 0L))
+      } else {
+        NA_integer_
+      },
+      search_calls_used = tool_loop_guard$search_calls %||% NA_integer_,
+      search_calls_limit = tool_loop_guard$search_calls_limit %||% NA_integer_,
+      search_calls_remaining = tool_loop_guard$search_calls_remaining %||% NA_integer_,
+      search_budget_exhausted = isTRUE(tool_loop_guard$search_budget_exhausted %||% FALSE)
+    ),
     field_status = list(),
     diagnostics = list(
       opencode_cli_status = cli_status,
       opencode_errors = errors,
       opencode_parse_error = parse_error,
-      opencode_stderr = stderr_text
+      opencode_stderr = stderr_text,
+      tool_loop_guard = tool_loop_guard
     ),
     json_repair = list(),
     final_payload = if (isTRUE(terminal$valid)) terminal$payload else NULL,
@@ -543,6 +647,8 @@
                                 recursion_limit = NULL,
                                 expected_schema = NULL,
                                 thread_id = NULL,
+                                search_budget_limit = NULL,
+                                unknown_after_searches = NULL,
                                 auto_openwebpage_policy = NULL,
                                 performance_profile = NULL,
                                 webpage_policy = NULL,
@@ -554,6 +660,19 @@
   python_path <- .opencode_python_path()
   workdir <- tempfile("asa_opencode_work_")
   dir.create(workdir, recursive = TRUE, showWarnings = FALSE)
+  loop_guard <- .free_code_loop_guard_config(
+    config = agent$config,
+    recursion_limit = recursion_limit,
+    search_budget_limit = search_budget_limit,
+    unknown_after_searches = unknown_after_searches
+  )
+  restore_loop_guard <- .free_code_with_loop_guard_env(
+    config = agent$config,
+    recursion_limit = recursion_limit,
+    search_budget_limit = search_budget_limit,
+    unknown_after_searches = unknown_after_searches
+  )
+  on.exit(restore_loop_guard(), add = TRUE)
 
   gateway <- .free_code_launch_gateway(
     config = agent$config,
@@ -576,6 +695,7 @@
     target_backend = agent$backend,
     target_model = agent$model,
     outer_model = outer_model,
+    loop_guard = loop_guard,
     allow_read_webpages = allow_read_webpages,
     auto_openwebpage_policy = auto_openwebpage_policy
   )
@@ -635,6 +755,7 @@
     thread_id = thread_id,
     target_backend = agent$backend,
     target_model = agent$model,
-    outer_model = outer_model
+    outer_model = outer_model,
+    loop_guard = loop_guard
   )
 }

@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Doctor of Economic Sciences; Graduated from the Moscow Institute of Economics and Statistics (1996) and the Moscow Machine-Tool Institute (1990).",
+  "educational_attainment_source": "https://www.spisok-putina.org/en/personas/slutsky; https://lslutsky.ru/en/biography",
+  "prior_occupation": "Banking executive (Chairman of the Board of Directors of Prominvestbank, Deputy Chairman of the Board of Unicombank); Government official (Head of sector in the Presidium of the Supreme Soviet of the RSFSR).",
+  "prior_occupation_source": "https://lenta.ru/articles/2024/01/15/kto-takoy-leonid-slutskiy; https://stuki-druki.com/authors/sluckiy-leonid-eduardovich.php",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://lenta.ru/articles/2024/01/15/kto-takoy-leonid-slutskiy; https://www.spisok-putina.org/en/personas/slutsky",
+  "birth_year": "1968",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Leonid_Slutsky_(politician)",
+  "birth_place": "Moscow, Russian SFSR, Soviet Union",
+  "birth_place_source": "https://interkomitet.com/about-the-committee/committee-staff/leonid-slutsky-chairman-of-the-committee",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Leonid_Slutsky_(politician)",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Leonid_Slutsky_(politician)"
+}

@@ -1,0 +1,563 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779218488571,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41af9cfa001VabDRSd0Mxoi38",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41af9260001NGM5kVFmrAlmAC",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218494995,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41af9cfb001Gg6Pegf6GRIsMZ",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41af9260001NGM5kVFmrAlmAC",
+        "type": "tool",
+        "callID": "74bc2ce6-6fcf-44f9-8cf7-7777b480a66c",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Justinas Urbanavičius Lithuania politician biography Seimas TS-LKD"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Lietuvos krikščionių demokratų partija.JustinasUrbanavičius(g. 1982 m. sausio 1 d. Kaune) - Lietuvos ir Kauno rajono politinis bei visuomenės veikėjas. Gimė 1982 m. Garliavoje Alfonso ir IrenosUrbanavičių šeimoje. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Naujienos Renginiai KontaktaiTS-LKDcentrinė būstinė J. Jasinskio g. 17, Vilnius Įmonės kodas: 301753623 Banko sąskaita: LT 237044060006452512 <\/CONTENT> <URL> https://tsajunga.lt/meras/justinas-urbanavicius <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> JustinasUrbanavičius(gimė 1982 metais sausio 1 dieną) - miškininkas, buvęs Kauno rajono savivaldybės tarybos narys. Nuo 2003 metų yraTS-LKDpartijos narys. 2020 metais vienmandatėje ... <\/CONTENT> <URL> https://www.delfi.lt/temos/justinas-urbanavicius <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Galite balsuoti vienmandatėje ir daugiamandatėje apygardose. Jei nesu Jūsų vienmandatės (Garliavos) sąraše - galite reitinguoti maneTS-LKDsąraše - Nr. 17. 𝑲𝒗𝒊𝒆č𝒊𝒖 𝒔𝒖𝒔𝒊𝒑𝒂ž𝒊𝒏𝒕𝒊 𝒔𝒖 𝒕𝒓𝒂𝒅𝒊𝒄𝒊𝒏𝒆 𝒎𝒂𝒏𝒐 𝒎𝒆𝒕ų 𝒗𝒆𝒊𝒌𝒍𝒐𝒔 <\/CONTENT> <URL> https://www.facebook.com/people/Justinas-Urbanavičius/100065003772827 <\/URL> __END_OF_SOURCE 4__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218488573,
+            "end": 1779218494994
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218494998,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afb6140019i5zBRoPmJXzq2",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41af9260001NGM5kVFmrAlmAC",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0225,
+        "tokens": {
+          "total": 6528,
+          "input": 6288,
+          "output": 240,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218496225,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afbae00017g1aDRmurHSqtp",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afb618001pKOBdxywoW8CtD",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218499077,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afbae1001X5TzGqQyBHJ4xA",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afb618001pKOBdxywoW8CtD",
+        "type": "tool",
+        "callID": "9334314a-c99e-4589-8fb0-00aafe0b82a6",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.lrs.lt/sip/portal.show?p_k=1&p_t=272814"
+          },
+          "output": "URL: https://www.lrs.lt/sip/portal.show?p_k=1&p_t=272814\nFinal URL: https://www.lrs.lt/sip/portal.show?p_k=1&p_t=272814\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_403_bot_marker (status=403)\nMarkers: attention required, captcha, cloudflare, blocked",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218496225,
+            "end": 1779218499077
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218499080,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afc605001fMnOHo0flJMvnP",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afb618001pKOBdxywoW8CtD",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0224,
+        "tokens": {
+          "total": 7049,
+          "input": 6941,
+          "output": 108,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218500145,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afca300019p33vq3TIFGqSw",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afc60b00108e6waITEwCxN9",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218501730,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afca31001z5TYoJCS3t4ZUp",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afc60b00108e6waITEwCxN9",
+        "type": "tool",
+        "callID": "83288de1-0ed1-475a-963c-7948feb7b0e9",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Justinas Urbanavičius Seimas biography education occupation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> JustinasUrbanavičiusŠį biografinį straipsnį reikėtų sutvarkyti pagal Vikipedijos standartus. Kviečiame prisidėti prie Vikipedijos. Peržiūrėkite straipsnio struktūrą, formatavimą, išnašų naudojimą, enciklopedinį stilių ir t. t. ...JustinasUrbanavičius(g. 1982 m. sausio 1 d. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Member of theSeimasfrom 11/13/2020 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai Elected: Garliavos (No: 66) in the electoral constituency Elected to theSeimas2008 2012 Contacts Room: I-420 Tel: +370 5 239 6607 E-mail:justinas.urbanavicius@lrs.lt Advisers and assistants Position |Biography| Activities | Press releases | Reports <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Member of theSeimasfrom 11/13/2020 till 11/14/2024 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai Elected: Garliavos (No: 66) in the electoral constituency Elected to theSeimas2008—2012 Position |Biography <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 1. Gimimo data, vieta: 1982-01-01, Kauno rajonas 2. Tautybė: Lietuvis 3. Mokslo laipsnis magistras 4. Užsienio kalbų mokėjimas: Anglų, Rusų 5. Darbo patirtis: 2006-2008 VĮ Kazlų Rūdos mokomoji miškų urėdija, eigulys/girininko pavaduotojas 2008-2012 Lietuvos RespublikosSeimas, Seimo narys 2012-2016 VĮ Kazlų Rūdos mokomoji miškų urėdija, vyriausiasis miškininkas 2016-2018 VĮ ... <\/CONTENT> <URL> https://www.manobalsas.lt/Justinas-Urbanavicius <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> JustinasUrbanavičius(1982-) was a Lithuanian Homeland Union politician who served in theSeimasfrom 2020. <\/CONTENT> <URL> https://historica.fandom.com/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 5__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218500146,
+            "end": 1779218501729
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218501731,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afd062001uq1Er6NG1u9rk4",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afc60b00108e6waITEwCxN9",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0229,
+        "tokens": {
+          "total": 7273,
+          "input": 7186,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218502962,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afd531001PrsxPI4OopDzCA",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afd064001rWH5yAfwbBRCUE",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218506592,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afd532001Krz2qTmUNKXyVr",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afd064001rWH5yAfwbBRCUE",
+        "type": "tool",
+        "callID": "a8d3244c-d643-4f19-b333-fa45d6a2b0e0",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.manobalsas.lt/Justinas-Urbanavicius"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"http_error\",\"retryable\":false,\"url\":\"https://www.manobalsas.lt/Justinas-Urbanavicius\",\"final_url\":\"https://www.manobalsas.lt/Justinas-Urbanavicius\",\"status_code\":404,\"error\":\"http_error\",\"error_detail\":null,\"attempt\":1,\"attempts\":2}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218502962,
+            "end": 1779218506591
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218506594,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afe360001IsVtlcjDT8l65o",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afd064001rWH5yAfwbBRCUE",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0258,
+        "tokens": {
+          "total": 8228,
+          "input": 8134,
+          "output": 94,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218508215,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afe9b20013qWGPrV5Ge8s3v",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afe3640016tgYEPVCrmcHi6",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218509746,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afe9b5001GXtkRcnLJr5xrB",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afe3640016tgYEPVCrmcHi6",
+        "type": "tool",
+        "callID": "2f322bce-604b-45f9-afd5-4d7c13bb69a3",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Justinas Urbanavičius išsilavinimas biografija VRK 2020"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Lietuvos krikščionių demokratų partija.JustinasUrbanavičius(g. 1982 m. sausio 1 d. Kaune) - Lietuvos ir Kauno rajono politinis bei visuomenės veikėjas. Gimė 1982 m. Garliavoje Alfonso ir IrenosUrbanavičių šeimoje. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> JustinasURBANAVIČIUSDarbovietė ir pareigos valstybinėje tarnyboje: VĮ Kazlų Rūdos mokomoji miškų urėdija, Braziūkų girininkija, girininko pavaduotojas Kitos darbovietės, pareigos: Kauno rajono savivaldybės tarybos narys Deklaruojančiojo asmens sutuoktinis (partneris): Vardas: Jurga Pavardė: Urbanavičienė Darbovietė (-ės ... <\/CONTENT> <URL> https://www.vrk.lt/statiniai/puslapiai/rinkimai/400_lt/Kandidatai/Kandidatas19645/Kandidato19645InteresuDeklaracija.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Kandidatas į Seimo narius (dokumentai pateikti 2024-07-22) ... AnketaBiografijaTurto ir pajamų deklaracijos Privačių interesų deklaracijos Politinės kampanijos dalyvio duomenys Kita <\/CONTENT> <URL> https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html <\/URL> __END_OF_SOURCE 3__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218508217,
+            "end": 1779218509739
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218509748,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41afefb2001HS8H0uLrwmSRFh",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afe3640016tgYEPVCrmcHi6",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0265,
+        "tokens": {
+          "total": 8438,
+          "input": 8343,
+          "output": 95,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218511418,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41aff63a0018ZnUIIMKnxaio7",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afefb8001uTD6mX3Of60f2R",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218514782,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41aff63a002p7UrF0rmVsFwYB",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afefb8001uTD6mX3Of60f2R",
+        "type": "tool",
+        "callID": "0c72780c-ef73-47d7-bf47-7f5a25056e79",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html"
+          },
+          "output": "URL: https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html\nFinal URL: https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_403_bot_marker (status=403)\nMarkers: enable javascript and cookies, cloudflare, title:just a moment",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218511419,
+            "end": 1779218514781
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218514783,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b0035e001bCkdbkuRvv73mh",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41afefb8001uTD6mX3Of60f2R",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.029,
+        "tokens": {
+          "total": 9088,
+          "input": 8940,
+          "output": 148,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218516155,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b008af001VANgqG5E45AsZq",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b00360001RRu79PtrJdFO5b",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218517566,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b008b0001u4MQIge5POncvf",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b00360001RRu79PtrJdFO5b",
+        "type": "tool",
+        "callID": "90287c8d-64f3-4bec-9631-95d9f8da287c",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Justinas Urbanavičius education degree university forestry"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Nach dem Abitur 2001 in Garliava absolvierte er das Bachelor- und 2007 Masterstudium der Forstwissenschaft am Lietuvos žemės ūkio universitetas und 2005 das Studium als Leutnant der Dimmission bei Divizijos generolo Stasio Raštikio puskarininkių mokykla. Er arbeitete im Forstamt Kazlų Rūda als Waldhüter und in Braziūkai als stellvertretender Revierförster. Von 2008 bis 2012 war er ... <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Learn aboutJustinasUrbanavičiusand their impact on world history. Explore key life events, achievements, and their historical context. <\/CONTENT> <URL> https://www.oldmapsonline.org/en/history/people/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> JustinasUrbanavičiusan Member of the Lithuanian Parliament,birthplace is Kaunas Lithuania,date of birth January 1 1982,age 42,sign of the zodiac Capricorn,E <\/CONTENT> <URL> https://www.xwhos.com/person/justinas_urbanavicius-whois.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Member of the Seimas from 11/13/2020 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai Elected: Garliavos (No: 66) in the electoral constituency Elected to the Seimas 2008 2012 Contacts Room: I-420 Tel: +370 5 239 6607 E-mail:justinas.urbanavicius@lrs.lt Advisers and assistants Position | Biography | Activities | Press releases | Reports <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> JustinasUrbanavičiusSeimas 2020-2024 Member of the Seimas from 11/13/2020 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> All A Ą B Č D F G H J K L M N O P R S Š T U V Z ŽJustinasUrbanavičiusSeimas 2020-2024 Member of the Seimas from 11/13/2020 till 11/14/2024 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 2008 2012 m. kadencijos Seimo narysJustinasURBANAVIČIUSAsmeninė svetainė (Seimo kanceliarija neatsako už asmeninių Seimo narių svetainių turinį) <\/CONTENT> <URL> https://www.lrs.lt/pls/inter/w5_show?p_r=6113&p_k=1&p_a=5&p_asm_id=53910&p_kade_id=6 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Seimo interneto svetainėje skelbiamos Seimo narių biografijos yra sudarytos ir tikslinamos pagal Seimo narių pateiktą ir su jais suderintą informaciją. <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=53910&p_kade_id=9 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> JustinasUrbanavičius2020-2024 m. kadencija Seimo narys nuo 2020-11-13 iki 2024-11-14 Iškėlė: Tėvynės sąjunga - Lietuvos krikščionys demokratai <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 1. Gimimo data, vieta: 1982-01-01, Kauno rajonas 2. Tautybė: Lietuvis 3. Mokslo laipsnis magistras 4. Užsienio kalbų mokėjimas: Anglų, Rusų 5. Darbo patirtis: 2006-2008 VĮ Kazlų Rūdos mokomoji miškų urėdija, eigulys/girininko pavaduotojas 2008-2012 Lietuvos Respublikos Seimas, Seimo narys 2012-2016 VĮ Kazlų Rūdos mokomoji miškų urėdija, vyriausiasis miškininkas 2016-2018 VĮ ... <\/CONTENT> <URL> https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5 <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218516155,
+            "end": 1779218517565
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218517567,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b00e3e001GG3L5eWUvek3Yd",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b00360001RRu79PtrJdFO5b",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0292,
+        "tokens": {
+          "total": 9395,
+          "input": 9309,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218518755,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b012e0001APtvvcI5BK4v55",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b00e40001lroErQILWQn5v9",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779218529137,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b012e10013HGNFb16TANLlo",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b00e40001lroErQILWQn5v9",
+        "type": "tool",
+        "callID": "ea4c9467-b5ab-4788-bbeb-5cb7d5a78178",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Justinas Urbanavičius disability sexual orientation LGBTQ identity"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> realities. Schools need to ensure that support is provided to students living at the intersection of LGBTQ+identityanddisability. Implications for school leaders, educational professionals, <\/CONTENT> <URL> https://www.researchgate.net/publication/382955377_The_Intersection_of_LGBTQ_Identity_and_Disability_A_Need_for_School_Based_Support <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> This short article exploresidentityexploration among LGBTQ+ young people withdisability, highlighting research insights and practice considerations for wellbeing. <\/CONTENT> <URL> https://aifs.gov.au/resources/short-articles/understanding-identity-exploration-among-lgbtq-young-people-disability <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Abstract Background People with disabilities andsexualorientationand genderidentityminority individuals are both considered health disparity populations, but there has been limited work assessing the prevalence of lesbian, gay, bisexual, transgender, and queer (LGBTQ+)identityamong people with disabilities. <\/CONTENT> <URL> https://pmc.ncbi.nlm.nih.gov/articles/PMC12723858 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Background People with disabilities andsexualorientationand genderidentityminority individuals are both considered health disparity populations, but there has been limited work assessing the prevalence of lesbian, gay, bisexual, transgender, and queer (LGBTQ+)identityamong people with disabilities. This study examines the prevalence of LGBTQ+identityamong people with disabilities ... <\/CONTENT> <URL> https://link.springer.com/article/10.1186/s12889-025-25605-9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> For the purposes of this study, the lesbian, gay, bisexual, and transgender (LGBT) community is used as LGBT (rather thanLGBTQ+ or LGBTQIA+) while excluding queer, questioning, and intersex because United States Census Bureau (2021) only specifically measuressexualorientationand genderidentityin the survey questions. <\/CONTENT> <URL> https://www.tandfonline.com/doi/full/10.1080/2330443X.2023.2188056 <\/URL> __END_OF_SOURCE 5__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779218518756,
+            "end": 1779218529136
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218529138,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b03b71001NY2UtQB2imHF04",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b00e40001lroErQILWQn5v9",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0343,
+        "tokens": {
+          "total": 11101,
+          "input": 11014,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779218532454,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b04865001cSfnJVYW0kuZSS",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b03b73001G0hZYmG7C2g55H",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779218532454,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b04865002G6I2Iz5R6yVmp9",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b03b73001G0hZYmG7C2g55H",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Master's degree in Forestry (Lietuvos žemės ūkio universitetas, 2007)\",\n  \"educational_attainment_source\": \"https://de.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius\",\n  \"prior_occupation\": \"Forester (Deputy Forest Ranger, Chief Forester)\",\n  \"prior_occupation_source\": \"https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5\",\n  \"birth_year\": \"1982\",\n  \"birth_year_source\": \"https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius\",\n  \"birth_place\": \"Kaunas (Garliava), Lithuania\",\n  \"birth_place_source\": \"https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1\"\n}\n```",
+        "time": {
+          "start": 1779218532454,
+          "end": 1779218532454
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779218532455,
+      "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+      "part": {
+        "id": "prt_e41b048660014Sox3AR4fSRSdC",
+        "sessionID": "ses_1be506dc7ffeSCGIsCoQaOKeO0",
+        "messageID": "msg_e41b03b73001G0hZYmG7C2g55H",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0437,
+        "tokens": {
+          "total": 12267,
+          "input": 11691,
+          "output": 576,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779218488571,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41af9cfa001VabDRSd0Mxoi38\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41af9260001NGM5kVFmrAlmAC\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218494995,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41af9cfb001Gg6Pegf6GRIsMZ\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41af9260001NGM5kVFmrAlmAC\",\"type\":\"tool\",\"callID\":\"74bc2ce6-6fcf-44f9-8cf7-7777b480a66c\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Justinas Urbanavičius Lithuania politician biography Seimas TS-LKD\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Lietuvos krikščionių demokratų partija.JustinasUrbanavičius(g. 1982 m. sausio 1 d. Kaune) - Lietuvos ir Kauno rajono politinis bei visuomenės veikėjas. Gimė 1982 m. Garliavoje Alfonso ir IrenosUrbanavičių šeimoje. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Naujienos Renginiai KontaktaiTS-LKDcentrinė būstinė J. Jasinskio g. 17, Vilnius Įmonės kodas: 301753623 Banko sąskaita: LT 237044060006452512 <\/CONTENT> <URL> https://tsajunga.lt/meras/justinas-urbanavicius <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> JustinasUrbanavičius(gimė 1982 metais sausio 1 dieną) - miškininkas, buvęs Kauno rajono savivaldybės tarybos narys. Nuo 2003 metų yraTS-LKDpartijos narys. 2020 metais vienmandatėje ... <\/CONTENT> <URL> https://www.delfi.lt/temos/justinas-urbanavicius <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Galite balsuoti vienmandatėje ir daugiamandatėje apygardose. Jei nesu Jūsų vienmandatės (Garliavos) sąraše - galite reitinguoti maneTS-LKDsąraše - Nr. 17. 𝑲𝒗𝒊𝒆č𝒊𝒖 𝒔𝒖𝒔𝒊𝒑𝒂ž𝒊𝒏𝒕𝒊 𝒔𝒖 𝒕𝒓𝒂𝒅𝒊𝒄𝒊𝒏𝒆 𝒎𝒂𝒏𝒐 𝒎𝒆𝒕ų 𝒗𝒆𝒊𝒌𝒍𝒐𝒔 <\/CONTENT> <URL> https://www.facebook.com/people/Justinas-Urbanavičius/100065003772827 <\/URL> __END_OF_SOURCE 4__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218488573,\"end\":1779218494994},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218494998,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afb6140019i5zBRoPmJXzq2\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41af9260001NGM5kVFmrAlmAC\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022464,\"tokens\":{\"total\":6528,\"input\":6288,\"output\":240,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218496225,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afbae00017g1aDRmurHSqtp\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afb618001pKOBdxywoW8CtD\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218499077,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afbae1001X5TzGqQyBHJ4xA\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afb618001pKOBdxywoW8CtD\",\"type\":\"tool\",\"callID\":\"9334314a-c99e-4589-8fb0-00aafe0b82a6\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.lrs.lt/sip/portal.show?p_k=1&p_t=272814\"},\"output\":\"URL: https://www.lrs.lt/sip/portal.show?p_k=1&p_t=272814\\nFinal URL: https://www.lrs.lt/sip/portal.show?p_k=1&p_t=272814\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_403_bot_marker (status=403)\\nMarkers: attention required, captcha, cloudflare, blocked\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218496225,\"end\":1779218499077},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218499080,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afc605001fMnOHo0flJMvnP\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afb618001pKOBdxywoW8CtD\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022443,\"tokens\":{\"total\":7049,\"input\":6941,\"output\":108,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218500145,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afca300019p33vq3TIFGqSw\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afc60b00108e6waITEwCxN9\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218501730,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afca31001z5TYoJCS3t4ZUp\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afc60b00108e6waITEwCxN9\",\"type\":\"tool\",\"callID\":\"83288de1-0ed1-475a-963c-7948feb7b0e9\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Justinas Urbanavičius Seimas biography education occupation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> JustinasUrbanavičiusŠį biografinį straipsnį reikėtų sutvarkyti pagal Vikipedijos standartus. Kviečiame prisidėti prie Vikipedijos. Peržiūrėkite straipsnio struktūrą, formatavimą, išnašų naudojimą, enciklopedinį stilių ir t. t. ...JustinasUrbanavičius(g. 1982 m. sausio 1 d. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Member of theSeimasfrom 11/13/2020 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai Elected: Garliavos (No: 66) in the electoral constituency Elected to theSeimas2008 2012 Contacts Room: I-420 Tel: +370 5 239 6607 E-mail:justinas.urbanavicius@lrs.lt Advisers and assistants Position |Biography| Activities | Press releases | Reports <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Member of theSeimasfrom 11/13/2020 till 11/14/2024 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai Elected: Garliavos (No: 66) in the electoral constituency Elected to theSeimas2008—2012 Position |Biography <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 1. Gimimo data, vieta: 1982-01-01, Kauno rajonas 2. Tautybė: Lietuvis 3. Mokslo laipsnis magistras 4. Užsienio kalbų mokėjimas: Anglų, Rusų 5. Darbo patirtis: 2006-2008 VĮ Kazlų Rūdos mokomoji miškų urėdija, eigulys/girininko pavaduotojas 2008-2012 Lietuvos RespublikosSeimas, Seimo narys 2012-2016 VĮ Kazlų Rūdos mokomoji miškų urėdija, vyriausiasis miškininkas 2016-2018 VĮ ... <\/CONTENT> <URL> https://www.manobalsas.lt/Justinas-Urbanavicius <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> JustinasUrbanavičius(1982-) was a Lithuanian Homeland Union politician who served in theSeimasfrom 2020. <\/CONTENT> <URL> https://historica.fandom.com/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 5__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218500146,\"end\":1779218501729},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218501731,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afd062001uq1Er6NG1u9rk4\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afc60b00108e6waITEwCxN9\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022863,\"tokens\":{\"total\":7273,\"input\":7186,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218502962,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afd531001PrsxPI4OopDzCA\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afd064001rWH5yAfwbBRCUE\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218506592,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afd532001Krz2qTmUNKXyVr\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afd064001rWH5yAfwbBRCUE\",\"type\":\"tool\",\"callID\":\"a8d3244c-d643-4f19-b333-fa45d6a2b0e0\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.manobalsas.lt/Justinas-Urbanavicius\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"http_error\\\",\\\"retryable\\\":false,\\\"url\\\":\\\"https://www.manobalsas.lt/Justinas-Urbanavicius\\\",\\\"final_url\\\":\\\"https://www.manobalsas.lt/Justinas-Urbanavicius\\\",\\\"status_code\\\":404,\\\"error\\\":\\\"http_error\\\",\\\"error_detail\\\":null,\\\"attempt\\\":1,\\\"attempts\\\":2}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218502962,\"end\":1779218506591},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218506594,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afe360001IsVtlcjDT8l65o\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afd064001rWH5yAfwbBRCUE\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.025812,\"tokens\":{\"total\":8228,\"input\":8134,\"output\":94,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218508215,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afe9b20013qWGPrV5Ge8s3v\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afe3640016tgYEPVCrmcHi6\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218509746,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afe9b5001GXtkRcnLJr5xrB\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afe3640016tgYEPVCrmcHi6\",\"type\":\"tool\",\"callID\":\"2f322bce-604b-45f9-afd5-4d7c13bb69a3\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Justinas Urbanavičius išsilavinimas biografija VRK 2020\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Lietuvos krikščionių demokratų partija.JustinasUrbanavičius(g. 1982 m. sausio 1 d. Kaune) - Lietuvos ir Kauno rajono politinis bei visuomenės veikėjas. Gimė 1982 m. Garliavoje Alfonso ir IrenosUrbanavičių šeimoje. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> JustinasURBANAVIČIUSDarbovietė ir pareigos valstybinėje tarnyboje: VĮ Kazlų Rūdos mokomoji miškų urėdija, Braziūkų girininkija, girininko pavaduotojas Kitos darbovietės, pareigos: Kauno rajono savivaldybės tarybos narys Deklaruojančiojo asmens sutuoktinis (partneris): Vardas: Jurga Pavardė: Urbanavičienė Darbovietė (-ės ... <\/CONTENT> <URL> https://www.vrk.lt/statiniai/puslapiai/rinkimai/400_lt/Kandidatai/Kandidatas19645/Kandidato19645InteresuDeklaracija.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Kandidatas į Seimo narius (dokumentai pateikti 2024-07-22) ... AnketaBiografijaTurto ir pajamų deklaracijos Privačių interesų deklaracijos Politinės kampanijos dalyvio duomenys Kita <\/CONTENT> <URL> https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html <\/URL> __END_OF_SOURCE 3__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218508217,\"end\":1779218509739},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218509748,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41afefb2001HS8H0uLrwmSRFh\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afe3640016tgYEPVCrmcHi6\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026454,\"tokens\":{\"total\":8438,\"input\":8343,\"output\":95,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218511418,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41aff63a0018ZnUIIMKnxaio7\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afefb8001uTD6mX3Of60f2R\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218514782,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41aff63a002p7UrF0rmVsFwYB\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afefb8001uTD6mX3Of60f2R\",\"type\":\"tool\",\"callID\":\"0c72780c-ef73-47d7-bf47-7f5a25056e79\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html\"},\"output\":\"URL: https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html\\nFinal URL: https://www.vrk.lt/2024-seimo/rezultatai?srcUrl=%2Frinkimai%2F1544%2Frnk1870%2Fkandidatai%2FKandidatasBiografija_rkndId-2436688.html\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_403_bot_marker (status=403)\\nMarkers: enable javascript and cookies, cloudflare, title:just a moment\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218511419,\"end\":1779218514781},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218514783,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b0035e001bCkdbkuRvv73mh\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41afefb8001uTD6mX3Of60f2R\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.02904,\"tokens\":{\"total\":9088,\"input\":8940,\"output\":148,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218516155,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b008af001VANgqG5E45AsZq\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b00360001RRu79PtrJdFO5b\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218517566,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b008b0001u4MQIge5POncvf\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b00360001RRu79PtrJdFO5b\",\"type\":\"tool\",\"callID\":\"90287c8d-64f3-4bec-9631-95d9f8da287c\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Justinas Urbanavičius education degree university forestry\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Nach dem Abitur 2001 in Garliava absolvierte er das Bachelor- und 2007 Masterstudium der Forstwissenschaft am Lietuvos žemės ūkio universitetas und 2005 das Studium als Leutnant der Dimmission bei Divizijos generolo Stasio Raštikio puskarininkių mokykla. Er arbeitete im Forstamt Kazlų Rūda als Waldhüter und in Braziūkai als stellvertretender Revierförster. Von 2008 bis 2012 war er ... <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Learn aboutJustinasUrbanavičiusand their impact on world history. Explore key life events, achievements, and their historical context. <\/CONTENT> <URL> https://www.oldmapsonline.org/en/history/people/Justinas_Urbanavičius <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> JustinasUrbanavičiusan Member of the Lithuanian Parliament,birthplace is Kaunas Lithuania,date of birth January 1 1982,age 42,sign of the zodiac Capricorn,E <\/CONTENT> <URL> https://www.xwhos.com/person/justinas_urbanavicius-whois.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Member of the Seimas from 11/13/2020 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai Elected: Garliavos (No: 66) in the electoral constituency Elected to the Seimas 2008 2012 Contacts Room: I-420 Tel: +370 5 239 6607 E-mail:justinas.urbanavicius@lrs.lt Advisers and assistants Position | Biography | Activities | Press releases | Reports <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> JustinasUrbanavičiusSeimas 2020-2024 Member of the Seimas from 11/13/2020 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> All A Ą B Č D F G H J K L M N O P R S Š T U V Z ŽJustinasUrbanavičiusSeimas 2020-2024 Member of the Seimas from 11/13/2020 till 11/14/2024 Nominated by: Tėvynės sąjunga - Lietuvos krikščionys demokratai <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 2008 2012 m. kadencijos Seimo narysJustinasURBANAVIČIUSAsmeninė svetainė (Seimo kanceliarija neatsako už asmeninių Seimo narių svetainių turinį) <\/CONTENT> <URL> https://www.lrs.lt/pls/inter/w5_show?p_r=6113&p_k=1&p_a=5&p_asm_id=53910&p_kade_id=6 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Seimo interneto svetainėje skelbiamos Seimo narių biografijos yra sudarytos ir tikslinamos pagal Seimo narių pateiktą ir su jais suderintą informaciją. <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=53910&p_kade_id=9 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> JustinasUrbanavičius2020-2024 m. kadencija Seimo narys nuo 2020-11-13 iki 2024-11-14 Iškėlė: Tėvynės sąjunga - Lietuvos krikščionys demokratai <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 1. Gimimo data, vieta: 1982-01-01, Kauno rajonas 2. Tautybė: Lietuvis 3. Mokslo laipsnis magistras 4. Užsienio kalbų mokėjimas: Anglų, Rusų 5. Darbo patirtis: 2006-2008 VĮ Kazlų Rūdos mokomoji miškų urėdija, eigulys/girininko pavaduotojas 2008-2012 Lietuvos Respublikos Seimas, Seimo narys 2012-2016 VĮ Kazlų Rūdos mokomoji miškų urėdija, vyriausiasis miškininkas 2016-2018 VĮ ... <\/CONTENT> <URL> https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5 <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218516155,\"end\":1779218517565},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218517567,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b00e3e001GG3L5eWUvek3Yd\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b00360001RRu79PtrJdFO5b\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.029217,\"tokens\":{\"total\":9395,\"input\":9309,\"output\":86,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218518755,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b012e0001APtvvcI5BK4v55\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b00e40001lroErQILWQn5v9\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779218529137,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b012e10013HGNFb16TANLlo\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b00e40001lroErQILWQn5v9\",\"type\":\"tool\",\"callID\":\"ea4c9467-b5ab-4788-bbeb-5cb7d5a78178\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Justinas Urbanavičius disability sexual orientation LGBTQ identity\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> realities. Schools need to ensure that support is provided to students living at the intersection of LGBTQ+identityanddisability. Implications for school leaders, educational professionals, <\/CONTENT> <URL> https://www.researchgate.net/publication/382955377_The_Intersection_of_LGBTQ_Identity_and_Disability_A_Need_for_School_Based_Support <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> This short article exploresidentityexploration among LGBTQ+ young people withdisability, highlighting research insights and practice considerations for wellbeing. <\/CONTENT> <URL> https://aifs.gov.au/resources/short-articles/understanding-identity-exploration-among-lgbtq-young-people-disability <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Abstract Background People with disabilities andsexualorientationand genderidentityminority individuals are both considered health disparity populations, but there has been limited work assessing the prevalence of lesbian, gay, bisexual, transgender, and queer (LGBTQ+)identityamong people with disabilities. <\/CONTENT> <URL> https://pmc.ncbi.nlm.nih.gov/articles/PMC12723858 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Background People with disabilities andsexualorientationand genderidentityminority individuals are both considered health disparity populations, but there has been limited work assessing the prevalence of lesbian, gay, bisexual, transgender, and queer (LGBTQ+)identityamong people with disabilities. This study examines the prevalence of LGBTQ+identityamong people with disabilities ... <\/CONTENT> <URL> https://link.springer.com/article/10.1186/s12889-025-25605-9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> For the purposes of this study, the lesbian, gay, bisexual, and transgender (LGBT) community is used as LGBT (rather thanLGBTQ+ or LGBTQIA+) while excluding queer, questioning, and intersex because United States Census Bureau (2021) only specifically measuressexualorientationand genderidentityin the survey questions. <\/CONTENT> <URL> https://www.tandfonline.com/doi/full/10.1080/2330443X.2023.2188056 <\/URL> __END_OF_SOURCE 5__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779218518756,\"end\":1779218529136},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218529138,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b03b71001NY2UtQB2imHF04\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b00e40001lroErQILWQn5v9\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.034347,\"tokens\":{\"total\":11101,\"input\":11014,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779218532454,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b04865001cSfnJVYW0kuZSS\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b03b73001G0hZYmG7C2g55H\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779218532454,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b04865002G6I2Iz5R6yVmp9\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b03b73001G0hZYmG7C2g55H\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Master's degree in Forestry (Lietuvos žemės ūkio universitetas, 2007)\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://de.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius\\\",\\n  \\\"prior_occupation\\\": \\\"Forester (Deputy Forest Ranger, Chief Forester)\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5\\\",\\n  \\\"birth_year\\\": \\\"1982\\\",\\n  \\\"birth_year_source\\\": \\\"https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius\\\",\\n  \\\"birth_place\\\": \\\"Kaunas (Garliava), Lithuania\\\",\\n  \\\"birth_place_source\\\": \\\"https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=53910&p_kade_id=9&printVersion=1\\\"\\n}\\n```\",\"time\":{\"start\":1779218532454,\"end\":1779218532454}}}\n{\"type\":\"step_finish\",\"timestamp\":1779218532455,\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"part\":{\"id\":\"prt_e41b048660014Sox3AR4fSRSdC\",\"sessionID\":\"ses_1be506dc7ffeSCGIsCoQaOKeO0\",\"messageID\":\"msg_e41b03b73001G0hZYmG7C2g55H\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.043713,\"tokens\":{\"total\":12267,\"input\":11691,\"output\":576,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

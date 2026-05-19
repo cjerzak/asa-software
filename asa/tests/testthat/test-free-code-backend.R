@@ -96,6 +96,33 @@ test_that("free-code MCP config wires the stdio search server", {
   expect_identical(search_opts$search_doc_content_chars_max, 321L)
 })
 
+test_that("free-code loop guard config derives bounded tool deadlines and budgets", {
+  cfg <- asa::asa_config(
+    agent_backend = "free-code",
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    proxy = NULL,
+    search = asa::search_options(
+      timeout = 11,
+      webpage_timeout = 20
+    )
+  )
+
+  guard <- asa:::.free_code_loop_guard_config(
+    config = cfg,
+    recursion_limit = 40L,
+    search_budget_limit = 8L,
+    unknown_after_searches = 3L
+  )
+
+  expect_identical(guard$recursion_limit, 40L)
+  expect_identical(guard$search_budget_limit, 8L)
+  expect_identical(guard$unknown_after_searches, 3L)
+  expect_identical(guard$total_timeout_limit, 3L)
+  expect_equal(guard$tool_deadline_seconds, 11)
+  expect_identical(guard$mcp_timeout_ms, 16000L)
+})
+
 test_that("free-code CLI env routes API locally without inheriting proxy env", {
   cfg <- asa::asa_config(
     agent_backend = "free-code",

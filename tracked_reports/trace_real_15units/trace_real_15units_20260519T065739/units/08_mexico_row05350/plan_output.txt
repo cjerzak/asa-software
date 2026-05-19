@@ -1,8 +1,0 @@
-{
-  "status": "empty",
-  "artifact": "plan_output",
-  "reason": "plan_not_generated",
-  "expected_empty": true,
-  "unit_key": "08_mexico_row05350",
-  "generated_at_utc": "2026-05-19T11:09:37Z"
-}

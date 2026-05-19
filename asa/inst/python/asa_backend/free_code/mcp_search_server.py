@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import sys
+import threading
+import time
+from contextlib import contextmanager
 from typing import Any, Dict, Optional
 
 from asa_backend.search import (
@@ -53,12 +57,299 @@ def _env_bool(name: str, default: bool = False) -> bool:
     return raw in {"1", "true", "t", "yes", "y", "on"}
 
 
+def _as_int(value: Any, default: Optional[int] = None) -> Optional[int]:
+    try:
+        if value is None:
+            return default
+        out = int(value)
+        return out if out > 0 else default
+    except Exception:
+        return default
+
+
+def _as_float(value: Any, default: Optional[float] = None) -> Optional[float]:
+    try:
+        if value is None:
+            return default
+        out = float(value)
+        return out if out > 0 else default
+    except Exception:
+        return default
+
+
+def _loop_guard_config() -> Dict[str, Any]:
+    cfg = _env_json("ASA_FREE_CODE_LOOP_GUARD_JSON")
+    unknown_after = _as_int(cfg.get("unknown_after_searches"), None)
+    return {
+        "recursion_limit": _as_int(cfg.get("recursion_limit"), None),
+        "search_budget_limit": _as_int(cfg.get("search_budget_limit"), None),
+        "unknown_after_searches": unknown_after,
+        "repeated_timeout_limit": _as_int(cfg.get("repeated_timeout_limit"), 2) or 2,
+        "repeated_fetch_timeout_limit": _as_int(cfg.get("repeated_fetch_timeout_limit"), 1) or 1,
+        "total_timeout_limit": _as_int(
+            cfg.get("total_timeout_limit"),
+            max(3, unknown_after) if unknown_after is not None else 6,
+        )
+        or 6,
+        "tool_deadline_seconds": _as_float(cfg.get("tool_deadline_seconds"), 25.0) or 25.0,
+    }
+
+
 def _stringify(value: Any) -> str:
     if value is None:
         return ""
     if isinstance(value, str):
         return value
     return json.dumps(value, ensure_ascii=False)
+
+
+LOOP_GUARD = _loop_guard_config()
+TOOL_STATE: Dict[str, Any] = {
+    "requests": 0,
+    "network_calls": 0,
+    "timeouts": 0,
+    "errors": 0,
+    "timeout_by_signature": {},
+    "error_by_signature": {},
+    "terminal_failures": {},
+    "cache": {},
+}
+
+
+class _ToolDeadlineExpired(TimeoutError):
+    pass
+
+
+@contextmanager
+def _tool_deadline(seconds: Optional[float]):
+    if (
+        seconds is None
+        or seconds <= 0
+        or not hasattr(signal, "SIGALRM")
+        or threading.current_thread() is not threading.main_thread()
+    ):
+        yield
+        return
+
+    def _raise_timeout(signum: int, frame: Any) -> None:
+        raise _ToolDeadlineExpired(f"ASA tool deadline exceeded after {seconds:.1f}s")
+
+    old_handler = signal.getsignal(signal.SIGALRM)
+    signal.signal(signal.SIGALRM, _raise_timeout)
+    old_timer = signal.setitimer(signal.ITIMER_REAL, float(seconds))
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, old_timer[0], old_timer[1])
+        signal.signal(signal.SIGALRM, old_handler)
+
+
+def _progress_token(value: Any, default: str = "na", max_chars: int = 72) -> str:
+    text = str(value or default)
+    text = "_".join(text.split())
+    text = "".join(ch for ch in text if ch.isalnum() or ch in "_.:/-")
+    if not text:
+        text = default
+    return text[:max_chars]
+
+
+def _write_progress(phase: str, tool: str = "na", error: str = "none") -> None:
+    path = str(os.getenv("ASA_PROGRESS_STATE_FILE", "") or "").strip()
+    if not path:
+        return
+    limit = LOOP_GUARD.get("search_budget_limit")
+    used = int(TOOL_STATE.get("network_calls", 0) or 0)
+    remaining = max(0, int(limit) - used) if isinstance(limit, int) else "na"
+    parts = {
+        "phase": phase,
+        "node": "mcp_search",
+        "tool_used": used,
+        "tool_limit": limit if isinstance(limit, int) else "na",
+        "tool_rem": remaining,
+        "pending_tool_calls": "1" if phase == "tool_call" else "0",
+        "pending_tool": _progress_token(tool),
+        "error": _progress_token(error, default="none"),
+        "ts": int(time.time()),
+    }
+    line = " ".join(f"{key}={value}" for key, value in parts.items())
+    try:
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(line)
+    except Exception:
+        return
+
+
+def _canonical_tool_name(name: str) -> str:
+    normalized = str(name or "").strip()
+    lowered = normalized.lower()
+    if lowered.endswith("web_search") or lowered in {"search", "websearch"}:
+        return "web_search"
+    if lowered.endswith("web_fetch") or lowered in {"fetch", "webfetch", "openwebpage"}:
+        return "web_fetch"
+    return normalized
+
+
+def _normalize_text(value: Any, *, lowercase: bool = False) -> str:
+    text = " ".join(str(value or "").strip().split())
+    return text.lower() if lowercase else text
+
+
+def _tool_signature(name: str, arguments: Dict[str, Any]) -> str:
+    canonical = _canonical_tool_name(name)
+    if canonical == "web_search":
+        payload = {"query": _normalize_text(arguments.get("query"), lowercase=True)}
+    elif canonical == "web_fetch":
+        payload = {
+            "url": _normalize_text(arguments.get("url")),
+            "query": _normalize_text(arguments.get("query"), lowercase=True),
+        }
+    else:
+        payload = arguments
+    return f"{canonical}:{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+
+
+def _guard_payload(
+    *,
+    error_type: str,
+    message: str,
+    name: str,
+    arguments: Dict[str, Any],
+    signature: str,
+    retryable: bool = False,
+) -> str:
+    payload = {
+        "error_type": error_type,
+        "message": message,
+        "tool": _canonical_tool_name(name),
+        "signature": signature,
+        "retryable": bool(retryable),
+        "instruction": (
+            "Do not retry this exact tool input when retryable is false. "
+            "Use existing evidence, try a materially different source if budget remains, "
+            "or return Unknown for unresolved fields."
+        ),
+        "budget_state": {
+            "network_calls": TOOL_STATE.get("network_calls", 0),
+            "search_budget_limit": LOOP_GUARD.get("search_budget_limit"),
+            "timeouts": TOOL_STATE.get("timeouts", 0),
+            "total_timeout_limit": LOOP_GUARD.get("total_timeout_limit"),
+        },
+        "input": arguments,
+    }
+    return "ASA_TOOL_ERROR " + json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def _error_result(
+    *,
+    error_type: str,
+    message: str,
+    name: str,
+    arguments: Dict[str, Any],
+    signature: str,
+    retryable: bool = False,
+) -> Dict[str, Any]:
+    _write_progress("tool_error", tool=name, error=error_type)
+    return {
+        "content": [
+            {
+                "type": "text",
+                "text": _guard_payload(
+                    error_type=error_type,
+                    message=message,
+                    name=name,
+                    arguments=arguments,
+                    signature=signature,
+                    retryable=retryable,
+                ),
+            }
+        ],
+        "isError": True,
+    }
+
+
+def _same_input_timeout_limit(name: str) -> int:
+    if _canonical_tool_name(name) == "web_fetch":
+        return int(LOOP_GUARD.get("repeated_fetch_timeout_limit", 1) or 1)
+    return int(LOOP_GUARD.get("repeated_timeout_limit", 2) or 2)
+
+
+def _terminal_failure(signature: str) -> Optional[str]:
+    failure = TOOL_STATE["terminal_failures"].get(signature)
+    return str(failure) if failure else None
+
+
+def _preflight_guard(name: str, arguments: Dict[str, Any], signature: str) -> Optional[Dict[str, Any]]:
+    terminal_failure = _terminal_failure(signature)
+    if terminal_failure:
+        return _error_result(
+            error_type=terminal_failure,
+            message="This tool input already reached a terminal loop guard condition.",
+            name=name,
+            arguments=arguments,
+            signature=signature,
+            retryable=False,
+        )
+
+    if signature in TOOL_STATE["cache"]:
+        _write_progress("tool_cache_hit", tool=name)
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": "ASA_TOOL_CACHE_HIT\n" + str(TOOL_STATE["cache"][signature]),
+                }
+            ],
+            "isError": False,
+        }
+
+    limit = LOOP_GUARD.get("search_budget_limit")
+    if isinstance(limit, int) and int(TOOL_STATE.get("network_calls", 0) or 0) >= limit:
+        return _error_result(
+            error_type="tool_budget_exhausted",
+            message="The configured web search/fetch budget has been exhausted.",
+            name=name,
+            arguments=arguments,
+            signature=signature,
+            retryable=False,
+        )
+
+    total_timeout_limit = int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
+    if int(TOOL_STATE.get("timeouts", 0) or 0) >= total_timeout_limit:
+        return _error_result(
+            error_type="timeout_budget_exhausted",
+            message="The configured transport timeout budget has been exhausted.",
+            name=name,
+            arguments=arguments,
+            signature=signature,
+            retryable=False,
+        )
+
+    repeated_timeouts = int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0)
+    if repeated_timeouts >= _same_input_timeout_limit(name):
+        return _error_result(
+            error_type="same_input_timeout_exhausted",
+            message="This exact tool input has timed out too many times.",
+            name=name,
+            arguments=arguments,
+            signature=signature,
+            retryable=False,
+        )
+
+    return None
+
+
+def _record_tool_error(name: str, signature: str, error_type: str) -> None:
+    TOOL_STATE["errors"] = int(TOOL_STATE.get("errors", 0) or 0) + 1
+    TOOL_STATE["error_by_signature"][signature] = int(
+        TOOL_STATE["error_by_signature"].get(signature, 0) or 0
+    ) + 1
+    if error_type == "tool_timeout":
+        TOOL_STATE["timeouts"] = int(TOOL_STATE.get("timeouts", 0) or 0) + 1
+        TOOL_STATE["timeout_by_signature"][signature] = int(
+            TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0
+        ) + 1
+        if TOOL_STATE["timeout_by_signature"][signature] >= _same_input_timeout_limit(name):
+            TOOL_STATE["terminal_failures"][signature] = "same_input_timeout_exhausted"
 
 
 def _build_tools() -> Dict[str, Any]:
@@ -190,46 +481,116 @@ def _tool_definitions() -> list[dict[str, Any]]:
 
 
 def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    original_name = name
+    name = _canonical_tool_name(name)
+    signature = _tool_signature(name, arguments)
+    TOOL_STATE["requests"] = int(TOOL_STATE.get("requests", 0) or 0) + 1
     _mcp_log("tools/call", name, json.dumps(arguments, ensure_ascii=False, sort_keys=True))
+
+    if name not in {"web_search", "web_fetch"}:
+        return _error_result(
+            error_type="unknown_tool",
+            message=f"Unknown tool: {original_name}",
+            name=name,
+            arguments=arguments,
+            signature=signature,
+            retryable=False,
+        )
+
     if name == "web_search":
         query = str(arguments.get("query") or "").strip()
         if not query:
-            return {
-                "content": [{"type": "text", "text": "web_search requires a non-empty `query`."}],
-                "isError": True,
-            }
-        result = TOOLS["search"].invoke(query)
-        return {
-            "content": [{"type": "text", "text": _stringify(result)}],
-            "isError": False,
-        }
+            return _error_result(
+                error_type="invalid_tool_input",
+                message="web_search requires a non-empty `query`.",
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=False,
+            )
+        guarded = _preflight_guard(name, arguments, signature)
+        if guarded is not None:
+            return guarded
+        TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
+        _write_progress("tool_call", tool=name)
+        try:
+            with _tool_deadline(LOOP_GUARD.get("tool_deadline_seconds")):
+                result = TOOLS["search"].invoke(query)
+        except Exception as exc:
+            text = str(exc)
+            error_type = "tool_timeout" if isinstance(exc, _ToolDeadlineExpired) or "timeout" in text.lower() or "timed out" in text.lower() else "tool_exception"
+            _record_tool_error(name, signature, error_type)
+            retryable = (
+                error_type == "tool_timeout"
+                and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
+                and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
+            )
+            return _error_result(
+                error_type=error_type,
+                message=text,
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=retryable,
+            )
+        text = _stringify(result)
+        TOOL_STATE["cache"][signature] = text
+        _write_progress("tool_result", tool=name)
+        return {"content": [{"type": "text", "text": text}], "isError": False}
 
     if name == "web_fetch":
         if not TOOLS["allow_read_webpages"]:
-            return {
-                "content": [{"type": "text", "text": "web_fetch is disabled for this run."}],
-                "isError": True,
-            }
+            return _error_result(
+                error_type="tool_disabled",
+                message="web_fetch is disabled for this run.",
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=False,
+            )
         url = str(arguments.get("url") or "").strip()
         if not url:
-            return {
-                "content": [{"type": "text", "text": "web_fetch requires a non-empty `url`."}],
-                "isError": True,
-            }
+            return _error_result(
+                error_type="invalid_tool_input",
+                message="web_fetch requires a non-empty `url`.",
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=False,
+            )
+        guarded = _preflight_guard(name, arguments, signature)
+        if guarded is not None:
+            return guarded
         payload = {"url": url}
         query = str(arguments.get("query") or "").strip()
         if query:
             payload["query"] = query
-        result = TOOLS["webpage"].invoke(payload)
-        return {
-            "content": [{"type": "text", "text": _stringify(result)}],
-            "isError": False,
-        }
-
-    return {
-        "content": [{"type": "text", "text": f"Unknown tool: {name}"}],
-        "isError": True,
-    }
+        TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
+        _write_progress("tool_call", tool=name)
+        try:
+            with _tool_deadline(LOOP_GUARD.get("tool_deadline_seconds")):
+                result = TOOLS["webpage"].invoke(payload)
+        except Exception as exc:
+            text = str(exc)
+            error_type = "tool_timeout" if isinstance(exc, _ToolDeadlineExpired) or "timeout" in text.lower() or "timed out" in text.lower() else "tool_exception"
+            _record_tool_error(name, signature, error_type)
+            retryable = (
+                error_type == "tool_timeout"
+                and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
+                and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
+            )
+            return _error_result(
+                error_type=error_type,
+                message=text,
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=retryable,
+            )
+        text = _stringify(result)
+        TOOL_STATE["cache"][signature] = text
+        _write_progress("tool_result", tool=name)
+        return {"content": [{"type": "text", "text": text}], "isError": False}
 
 
 def _read_message() -> Optional[Dict[str, Any]]:

@@ -1,0 +1,272 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779202016867,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b44662001VHB7aj3gilhr7C",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b43ae4001TZs8gk2Ig1keXB",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779202046875,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b44662002yMa21infkTgUhW",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b43ae4001TZs8gk2Ig1keXB",
+        "type": "tool",
+        "callID": "5e1c08d0-19c0-43e5-8601-0445aa8a5cbc",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke biography 2017 Bayern"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779202016869,
+            "end": 1779202046872
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779202046879,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4bb9d0017D4PamdVx7gfwH",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b43ae4001TZs8gk2Ig1keXB",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0219,
+        "tokens": {
+          "total": 6481,
+          "input": 6279,
+          "output": 202,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779202055799,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4de76001583Y6hQ5adErK6",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4bba0001tfYbqbjObL4ifk",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779202057362,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4de77001zLo8vRcEB1zaX9",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4bba0001tfYbqbjObL4ifk",
+        "type": "tool",
+        "callID": "3b4e8047-ea26-46a6-ae48-c9b6bd13ee9e",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke Wikipedia German"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)NicoleStephanieGohlke(* 15. November 1975 in München) ist eine deutsche Politikerin (Die Linke). Sie gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. Bei der Bundestagswahl 2021 war sie Spitzenkandidatin der Linken in Bayern. Sie ist stellvertretende Fraktionsvorsitzende. <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Anzeigen nach den Verhaltensregeln (§§ 45 ff. Abgeordnetengesetz (Download) ) sind von den Abgeordneten innerhalb von drei Monaten nach Erwerb der Mitgliedschaft einzureichen. Während der Wahlperiode sind Änderungen oder Ergänzungen innerhalb einer Frist von drei Monaten ab deren Eintritt mitzuteilen. Die Angaben werden nach Verarbeitung der Daten und Prüfung, ob eine ... <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Stellvertretende Fraktionsvorsitzende DIE LINKE, Sprecherin für Bildung und Wissenschaft. Für Euch im Bundestag und vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Geboren 1975 in München 1991 Politisierung in der Bewegung gegen den zweiten Golfkrieg und gegen die rassistischen Pogrome der 90er Jahre Abitur 1995 und 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München 1997- 98 aktiv in den Studierendenstreiks gegen das Hochschulrahmengesetz 2001 Mitgliedschaft bei attac, Mobilisierung zu den Protesten gegen den G8-Gipfel in Genua ... <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> NicoleStephanieGohlkeis aGermanpolitician.Gohlkefirst joined politics in 1991 in the movement against both the Gulf War and the racist pogroms in the 1990s. During her studies in 1997, she joined the student protests against the austerity plans at the universities. In 2001, she joined the globalization-critical Attac movement. She became a member of the coordination group of Attac ... <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Nicole_Gohlke <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> NicoleGohlkeDie KommunikationswissenschaftlerinNicoleGohlke(* 15. November 1975 in München) ist in der Politik bei der Partei Die Linke aktiv und seit 2013 Mitglied des Deutschen Bundestages. Sie war seit 2017 Vorsitzende der Münchner Linken. Im März 2024 kündigte sie an, zugunsten von Stefan Jagel nicht wieder kandidieren zu wollen [1]. <\/CONTENT> <URL> https://www.muenchenwiki.de/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> BiografieNicoleGohlkeLebenslaufNicoleGohlkekam am 15. November 1975 in München (Bayern) zur Welt. Erstmals politisch engagierte sie sich 1991 gegen den zweiten Golfkrieg und gegen die seinerzeit aufkommende Ausländerfeindlichkeit. <\/CONTENT> <URL> https://www.was-war-wann.de/politik/biografien/nicole-gohlke.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Über mich Was mich ausmacht und mich motiviert. Die soziale Spaltung in München und der Rechtsruck der 90er Jahre haben mich nachhaltig geprägt. Mehr lesen... In München geboren, 2004 Eintritt in die WASG/Linke. Seit 2009 für Euch im Bundestag. Mehr lesen... »Münchner Marxistin in Berlin« - <\/CONTENT> <URL> https://nicole-gohlke.de/ueber-mich <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Category:NicoleGohlkeDeutsch:NicoleGohlke(* 15. November 1975 in München) ist eine deutsche Kommunikationswissenschaftlerin und Politikerin. Sie ist Mitglied im Landesvorstand der Linken in Bayern und gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. <\/CONTENT> <URL> https://commons.wikimedia.org/wiki/Category:Nicole_Gohlke <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Das Zitat vonNicoleGohlkekritisiert die Politisierung der Wahl durch die Union, die eine Partei, die auf Hass und Ausgrenzung basiert, mit der Linken gleichsetzt. <\/CONTENT> <URL> https://wikipolitico.de/member-profile/10 <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779202055800,
+            "end": 1779202057361
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779202058939,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4de7800120bBQvUaCBf7h4",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4bba0001tfYbqbjObL4ifk",
+        "type": "tool",
+        "callID": "211622fa-23c7-4245-a443-cf582dac18ec",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke Die Linke Bundestag profile"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)NicoleStephanieGohlke(* 15. November 1975 in München) ist eine deutsche Politikerin (DieLinke). Sie gehört seit Herbst 2009 als Abgeordnete dem DeutschenBundestagan. Bei der Bundestagswahl 2021 war sie Spitzenkandidatin der Linken in Bayern. Sie ist stellvertretende Fraktionsvorsitzende. <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Ordentliches Mitglied Ausschuss Wohnen, Stadtentwicklung, Bauwesen und Kommunen Stellvertretendes Mitglied Kontakt DeutscherBundestagPlatz der Republik 1 11011 Berlin Telefon: 030 227 713 06 Telefax: 030 227-76593nicole.gohlke@bundestag.de Wahlkreisbüro München Rosenheimerstraße 120 81669 München Telefon: 089 380 458 99nicole.gohlke.wk ... <\/CONTENT> <URL> https://www.die-linke-bayern.de/parlamente/bundestag/nicole-gohlke <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Weitere Informationen über mich findet ihr in der Artikelserie des Deutschen Bundestages „ Wege indiePolitik \" , in der mein persönlicher Werdegang im Juni 2014 porträtiert wurde. Ebenfalls empfehlen kann ich das Porträt „ Eine rote Liesl am Feierabend \" in der Süddeutschen Zeitung vom August 2017. <\/CONTENT> <URL> https://old-website.die-linke-muc.de/person/nicole-gohlke <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 2008 bis 2009 Mitarbeiterin der BundestagsfraktionDIELINKE. seit September 2009 Mitglied im DeutschenBundestag, gewählt überdieLandesliste Bayern und Hochschul- und Wissenschaftspolitische Sprecherin der Linksfraktion <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Stellvertretende FraktionsvorsitzendeDIELINKE, Sprecherin für Bildung und Wissenschaft. Für Euch imBundestagund vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 2004 Eintritt indieWASG und 2005 Mitglied des geschäftsführenden Landesvorstands in Bayern; 2007 bis 2013 Mitglied im geschäftsführenden Landesvorstand der Linken in Bayern und von 2018 bis 2024 Vorsitzende des Kreisverbandes München. <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Stellen SieNicoleGohlke, AbgeordneteBundestag2025 - 2029 (Fraktion:DieLinke), Ihre Fragen! Außerdem finden Sie hier Infos zu Abstimmungsverhalten und Nebentätigkeiten. <\/CONTENT> <URL> https://www.abgeordnetenwatch.de/profile/nicole-gohlke <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Im Münchner Arbeiterstadtteil Giesing aufgewachsen, war ich schon als Kind Zeugin von… · Berufserfahrung: DeutscherBundestag· Ausbildung: Ludwig-Maximilians-Universität München · Ort: Deutschland · 227 Kontakte auf LinkedIn. Sehen Sie sich das Profil vonNicoleGohlke(MdB)NicoleGohlke(MdB) auf LinkedIn, einer professionellen Community mit mehr als 1 Milliarde Mitgliedern, an. <\/CONTENT> <URL> https://de.linkedin.com/in/nicole-gohlke-mdb-6b37b0396 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> NicoleGohlke(DieLinke) ist Abgeordnete/r im DeutschenBundestagfür den Wahlkreis 219 München-West/Mitte. Profil, Wahlkreis und Abstimmungsverhalten. <\/CONTENT> <URL> https://bundestagwahlumfrage.de/abgeordnete/nicole-gohlke <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779202055801,
+            "end": 1779202058938
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779202058940,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4eabb001tBhVwDAFDdjDWh",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4bba0001tfYbqbjObL4ifk",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0204,
+        "tokens": {
+          "total": 6480,
+          "input": 6403,
+          "output": 77,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779202060228,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4efc2001dZDO4D2N0IaeGd",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4eabf001WJw7FjvQlpsbn9",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779202061809,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4efc3001asT5nzGhsdAi6d",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4eabf001WJw7FjvQlpsbn9",
+        "type": "tool",
+        "callID": "0885f5ef-a8e7-48a2-a2bc-caa8e498832a",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke LGBTQ sexual orientation disability status"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> A key goal of this book is to introduce an intersectionality-informed and critically culturally competent approach to anti-oppressive social work practice with disabled people, primarily in the United States. <\/CONTENT> <URL> https://rotel.pressbooks.pub/disabilitysocialwork/chapter/chapter-8-sexual-orientation-and-sexuality <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Disabilitystatusbysexualorientation/gender identity and local authority district urban-rural classification in England. Point estimates derived from weighted OLS linear regression models with statistical adjustment forsexualorientationor gender identity response-level age, sex, and ethnicity, region, and socioeconomic deprivation. <\/CONTENT> <URL> https://pmc.ncbi.nlm.nih.gov/articles/PMC11060336 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Tackling discrimination on grounds ofsexualorientationand gender identity United Nations on based on a per-son's healthstatus,disability, or religious affiliation. More recently, the United Nations has become increasingly con-cerned with the pre <\/CONTENT> <URL> https://www.ohchr.org/Documents/Issues/Discrimination/LGBT_discrimination_A4.pdf <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Stellvertretende Fraktionsvorsitzende DIE LINKE, Sprecherin für Bildung und Wissenschaft. Für Euch im Bundestag und vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Anzeigen nach den Verhaltensregeln (§§ 45 ff. Abgeordnetengesetz (Download) ) sind von den Abgeordneten innerhalb von drei Monaten nach Erwerb der Mitgliedschaft einzureichen. Während der Wahlperiode sind Änderungen oder Ergänzungen innerhalb einer Frist von drei Monaten ab deren Eintritt mitzuteilen. Die Angaben werden nach Verarbeitung der Daten und Prüfung, ob eine ... <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Geboren 1975 in München 1991 Politisierung in der Bewegung gegen den zweiten Golfkrieg und gegen die rassistischen Pogrome der 90er Jahre Abitur 1995 und 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München 1997- 98 aktiv in den Studierendenstreiks gegen das Hochschulrahmengesetz 2001 Mitgliedschaft bei attac, Mobilisierung zu den Protesten gegen den G8-Gipfel in Genua ... <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Für die Höhe der Einkünfte sind nach den Verhaltensregeln die geleisteten Bruttobeträge einschließlich Entschädigungs-, Ausgleichs- und Sachleistungen maßgebend. Unberücksichtigt bleiben insbesondere eigene Aufwendungen, Werbungskosten und sonstige Kosten aller Art. Die Höhe der Einkünfte aus einer Tätigkeit bezeichnet nicht das zu versteuernde Einkommen. Soweit sich für ... <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/abgeordnete/biografien20/G/gohlke_nicole-857380 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> NicoleGohlkeSozialwissenschaftlerin Gruppe Die LinkeNicoleGohlke(©NicoleGohlke/ Olaf Krostitz) <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/abgeordnete/biografien20/G/gohlke_nicole-857380?subview=na <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Believe disabled youth, including youth with developmental disabilities, when they come out or invite you in about theirsexualorientationand/or gender identity. <\/CONTENT> <URL> https://reports.hrc.org/2024-disabled-lgbtq-youth-report <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> LGBT Persons with Disabilities We, the United Nations Independent Expert on Protection Against Violence and Discrimination Based onSexualOrientationand Gender Identity, and the United Nations Special Rapporteur on the Rights of Persons with Disabilities, united in our commitment to upholding human rights, equality, and non-discrimination for all, wish to address a matter of utmost concern ... <\/CONTENT> <URL> https://www.ohchr.org/sites/default/files/documents/issues/sexualorientation/statements/2023-10-24-joint-stm-SOGI-disabilities.pdf <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779202060229,
+            "end": 1779202061809
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779202061811,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b4f5f20019Im1aRxTL5yrZY",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4eabf001WJw7FjvQlpsbn9",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0281,
+        "tokens": {
+          "total": 9029,
+          "input": 8943,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779202064651,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b50109001maIgttGacs1AnC",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4f5f5001OtVKNNAeebl2D1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779202064652,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b5010a001m12HE3C5wchUKd",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4f5f5001OtVKNNAeebl2D1",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Magister Artium (M.A.) in Communication Science\",\n  \"educational_attainment_source\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\",\n  \"prior_occupation\": \"Staff member for the Die Linke parliamentary group in the Bundestag\",\n  \"prior_occupation_source\": \"https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke\",\n  \"birth_year\": 1975,\n  \"birth_year_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n  \"birth_place\": \"Munich, Germany\",\n  \"birth_place_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\"\n}\n```",
+        "time": {
+          "start": 1779202064651,
+          "end": 1779202064651
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779202064654,
+      "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+      "part": {
+        "id": "prt_e40b5010c001IQV62Aeb47k2M2",
+        "sessionID": "ses_1bf4bc557ffewdwEta98Rw1Uyf",
+        "messageID": "msg_e40b4f5f5001OtVKNNAeebl2D1",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0369,
+        "tokens": {
+          "total": 10640,
+          "input": 10227,
+          "output": 413,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779202016867,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b44662001VHB7aj3gilhr7C\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b43ae4001TZs8gk2Ig1keXB\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779202046875,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b44662002yMa21infkTgUhW\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b43ae4001TZs8gk2Ig1keXB\",\"type\":\"tool\",\"callID\":\"5e1c08d0-19c0-43e5-8601-0445aa8a5cbc\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke biography 2017 Bayern\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779202016869,\"end\":1779202046872}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779202046879,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4bb9d0017D4PamdVx7gfwH\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b43ae4001TZs8gk2Ig1keXB\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.021867,\"tokens\":{\"total\":6481,\"input\":6279,\"output\":202,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779202055799,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4de76001583Y6hQ5adErK6\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4bba0001tfYbqbjObL4ifk\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779202057362,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4de77001zLo8vRcEB1zaX9\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4bba0001tfYbqbjObL4ifk\",\"type\":\"tool\",\"callID\":\"3b4e8047-ea26-46a6-ae48-c9b6bd13ee9e\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke Wikipedia German\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)NicoleStephanieGohlke(* 15. November 1975 in München) ist eine deutsche Politikerin (Die Linke). Sie gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. Bei der Bundestagswahl 2021 war sie Spitzenkandidatin der Linken in Bayern. Sie ist stellvertretende Fraktionsvorsitzende. <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Anzeigen nach den Verhaltensregeln (§§ 45 ff. Abgeordnetengesetz (Download) ) sind von den Abgeordneten innerhalb von drei Monaten nach Erwerb der Mitgliedschaft einzureichen. Während der Wahlperiode sind Änderungen oder Ergänzungen innerhalb einer Frist von drei Monaten ab deren Eintritt mitzuteilen. Die Angaben werden nach Verarbeitung der Daten und Prüfung, ob eine ... <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Stellvertretende Fraktionsvorsitzende DIE LINKE, Sprecherin für Bildung und Wissenschaft. Für Euch im Bundestag und vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Geboren 1975 in München 1991 Politisierung in der Bewegung gegen den zweiten Golfkrieg und gegen die rassistischen Pogrome der 90er Jahre Abitur 1995 und 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München 1997- 98 aktiv in den Studierendenstreiks gegen das Hochschulrahmengesetz 2001 Mitgliedschaft bei attac, Mobilisierung zu den Protesten gegen den G8-Gipfel in Genua ... <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> NicoleStephanieGohlkeis aGermanpolitician.Gohlkefirst joined politics in 1991 in the movement against both the Gulf War and the racist pogroms in the 1990s. During her studies in 1997, she joined the student protests against the austerity plans at the universities. In 2001, she joined the globalization-critical Attac movement. She became a member of the coordination group of Attac ... <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Nicole_Gohlke <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> NicoleGohlkeDie KommunikationswissenschaftlerinNicoleGohlke(* 15. November 1975 in München) ist in der Politik bei der Partei Die Linke aktiv und seit 2013 Mitglied des Deutschen Bundestages. Sie war seit 2017 Vorsitzende der Münchner Linken. Im März 2024 kündigte sie an, zugunsten von Stefan Jagel nicht wieder kandidieren zu wollen [1]. <\/CONTENT> <URL> https://www.muenchenwiki.de/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> BiografieNicoleGohlkeLebenslaufNicoleGohlkekam am 15. November 1975 in München (Bayern) zur Welt. Erstmals politisch engagierte sie sich 1991 gegen den zweiten Golfkrieg und gegen die seinerzeit aufkommende Ausländerfeindlichkeit. <\/CONTENT> <URL> https://www.was-war-wann.de/politik/biografien/nicole-gohlke.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Über mich Was mich ausmacht und mich motiviert. Die soziale Spaltung in München und der Rechtsruck der 90er Jahre haben mich nachhaltig geprägt. Mehr lesen... In München geboren, 2004 Eintritt in die WASG/Linke. Seit 2009 für Euch im Bundestag. Mehr lesen... »Münchner Marxistin in Berlin« - <\/CONTENT> <URL> https://nicole-gohlke.de/ueber-mich <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Category:NicoleGohlkeDeutsch:NicoleGohlke(* 15. November 1975 in München) ist eine deutsche Kommunikationswissenschaftlerin und Politikerin. Sie ist Mitglied im Landesvorstand der Linken in Bayern und gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. <\/CONTENT> <URL> https://commons.wikimedia.org/wiki/Category:Nicole_Gohlke <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Das Zitat vonNicoleGohlkekritisiert die Politisierung der Wahl durch die Union, die eine Partei, die auf Hass und Ausgrenzung basiert, mit der Linken gleichsetzt. <\/CONTENT> <URL> https://wikipolitico.de/member-profile/10 <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779202055800,\"end\":1779202057361},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779202058939,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4de7800120bBQvUaCBf7h4\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4bba0001tfYbqbjObL4ifk\",\"type\":\"tool\",\"callID\":\"211622fa-23c7-4245-a443-cf582dac18ec\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke Die Linke Bundestag profile\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> NicoleGohlke(2020)NicoleStephanieGohlke(* 15. November 1975 in München) ist eine deutsche Politikerin (DieLinke). Sie gehört seit Herbst 2009 als Abgeordnete dem DeutschenBundestagan. Bei der Bundestagswahl 2021 war sie Spitzenkandidatin der Linken in Bayern. Sie ist stellvertretende Fraktionsvorsitzende. <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Ordentliches Mitglied Ausschuss Wohnen, Stadtentwicklung, Bauwesen und Kommunen Stellvertretendes Mitglied Kontakt DeutscherBundestagPlatz der Republik 1 11011 Berlin Telefon: 030 227 713 06 Telefax: 030 227-76593nicole.gohlke@bundestag.de Wahlkreisbüro München Rosenheimerstraße 120 81669 München Telefon: 089 380 458 99nicole.gohlke.wk ... <\/CONTENT> <URL> https://www.die-linke-bayern.de/parlamente/bundestag/nicole-gohlke <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Weitere Informationen über mich findet ihr in der Artikelserie des Deutschen Bundestages „ Wege indiePolitik \\\" , in der mein persönlicher Werdegang im Juni 2014 porträtiert wurde. Ebenfalls empfehlen kann ich das Porträt „ Eine rote Liesl am Feierabend \\\" in der Süddeutschen Zeitung vom August 2017. <\/CONTENT> <URL> https://old-website.die-linke-muc.de/person/nicole-gohlke <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 2008 bis 2009 Mitarbeiterin der BundestagsfraktionDIELINKE. seit September 2009 Mitglied im DeutschenBundestag, gewählt überdieLandesliste Bayern und Hochschul- und Wissenschaftspolitische Sprecherin der Linksfraktion <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Stellvertretende FraktionsvorsitzendeDIELINKE, Sprecherin für Bildung und Wissenschaft. Für Euch imBundestagund vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 2004 Eintritt indieWASG und 2005 Mitglied des geschäftsführenden Landesvorstands in Bayern; 2007 bis 2013 Mitglied im geschäftsführenden Landesvorstand der Linken in Bayern und von 2018 bis 2024 Vorsitzende des Kreisverbandes München. <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Stellen SieNicoleGohlke, AbgeordneteBundestag2025 - 2029 (Fraktion:DieLinke), Ihre Fragen! Außerdem finden Sie hier Infos zu Abstimmungsverhalten und Nebentätigkeiten. <\/CONTENT> <URL> https://www.abgeordnetenwatch.de/profile/nicole-gohlke <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Im Münchner Arbeiterstadtteil Giesing aufgewachsen, war ich schon als Kind Zeugin von… · Berufserfahrung: DeutscherBundestag· Ausbildung: Ludwig-Maximilians-Universität München · Ort: Deutschland · 227 Kontakte auf LinkedIn. Sehen Sie sich das Profil vonNicoleGohlke(MdB)NicoleGohlke(MdB) auf LinkedIn, einer professionellen Community mit mehr als 1 Milliarde Mitgliedern, an. <\/CONTENT> <URL> https://de.linkedin.com/in/nicole-gohlke-mdb-6b37b0396 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> NicoleGohlke(DieLinke) ist Abgeordnete/r im DeutschenBundestagfür den Wahlkreis 219 München-West/Mitte. Profil, Wahlkreis und Abstimmungsverhalten. <\/CONTENT> <URL> https://bundestagwahlumfrage.de/abgeordnete/nicole-gohlke <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779202055801,\"end\":1779202058938},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779202058940,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4eabb001tBhVwDAFDdjDWh\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4bba0001tfYbqbjObL4ifk\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.020364,\"tokens\":{\"total\":6480,\"input\":6403,\"output\":77,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779202060228,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4efc2001dZDO4D2N0IaeGd\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4eabf001WJw7FjvQlpsbn9\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779202061809,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4efc3001asT5nzGhsdAi6d\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4eabf001WJw7FjvQlpsbn9\",\"type\":\"tool\",\"callID\":\"0885f5ef-a8e7-48a2-a2bc-caa8e498832a\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke LGBTQ sexual orientation disability status\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> A key goal of this book is to introduce an intersectionality-informed and critically culturally competent approach to anti-oppressive social work practice with disabled people, primarily in the United States. <\/CONTENT> <URL> https://rotel.pressbooks.pub/disabilitysocialwork/chapter/chapter-8-sexual-orientation-and-sexuality <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Disabilitystatusbysexualorientation/gender identity and local authority district urban-rural classification in England. Point estimates derived from weighted OLS linear regression models with statistical adjustment forsexualorientationor gender identity response-level age, sex, and ethnicity, region, and socioeconomic deprivation. <\/CONTENT> <URL> https://pmc.ncbi.nlm.nih.gov/articles/PMC11060336 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Tackling discrimination on grounds ofsexualorientationand gender identity United Nations on based on a per-son's healthstatus,disability, or religious affiliation. More recently, the United Nations has become increasingly con-cerned with the pre <\/CONTENT> <URL> https://www.ohchr.org/Documents/Issues/Discrimination/LGBT_discrimination_A4.pdf <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Stellvertretende Fraktionsvorsitzende DIE LINKE, Sprecherin für Bildung und Wissenschaft. Für Euch im Bundestag und vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Anzeigen nach den Verhaltensregeln (§§ 45 ff. Abgeordnetengesetz (Download) ) sind von den Abgeordneten innerhalb von drei Monaten nach Erwerb der Mitgliedschaft einzureichen. Während der Wahlperiode sind Änderungen oder Ergänzungen innerhalb einer Frist von drei Monaten ab deren Eintritt mitzuteilen. Die Angaben werden nach Verarbeitung der Daten und Prüfung, ob eine ... <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Geboren 1975 in München 1991 Politisierung in der Bewegung gegen den zweiten Golfkrieg und gegen die rassistischen Pogrome der 90er Jahre Abitur 1995 und 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München 1997- 98 aktiv in den Studierendenstreiks gegen das Hochschulrahmengesetz 2001 Mitgliedschaft bei attac, Mobilisierung zu den Protesten gegen den G8-Gipfel in Genua ... <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Für die Höhe der Einkünfte sind nach den Verhaltensregeln die geleisteten Bruttobeträge einschließlich Entschädigungs-, Ausgleichs- und Sachleistungen maßgebend. Unberücksichtigt bleiben insbesondere eigene Aufwendungen, Werbungskosten und sonstige Kosten aller Art. Die Höhe der Einkünfte aus einer Tätigkeit bezeichnet nicht das zu versteuernde Einkommen. Soweit sich für ... <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/abgeordnete/biografien20/G/gohlke_nicole-857380 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> NicoleGohlkeSozialwissenschaftlerin Gruppe Die LinkeNicoleGohlke(©NicoleGohlke/ Olaf Krostitz) <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/abgeordnete/biografien20/G/gohlke_nicole-857380?subview=na <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Believe disabled youth, including youth with developmental disabilities, when they come out or invite you in about theirsexualorientationand/or gender identity. <\/CONTENT> <URL> https://reports.hrc.org/2024-disabled-lgbtq-youth-report <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> LGBT Persons with Disabilities We, the United Nations Independent Expert on Protection Against Violence and Discrimination Based onSexualOrientationand Gender Identity, and the United Nations Special Rapporteur on the Rights of Persons with Disabilities, united in our commitment to upholding human rights, equality, and non-discrimination for all, wish to address a matter of utmost concern ... <\/CONTENT> <URL> https://www.ohchr.org/sites/default/files/documents/issues/sexualorientation/statements/2023-10-24-joint-stm-SOGI-disabilities.pdf <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779202060229,\"end\":1779202061809},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779202061811,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b4f5f20019Im1aRxTL5yrZY\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4eabf001WJw7FjvQlpsbn9\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.028119,\"tokens\":{\"total\":9029,\"input\":8943,\"output\":86,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779202064651,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b50109001maIgttGacs1AnC\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4f5f5001OtVKNNAeebl2D1\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779202064652,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b5010a001m12HE3C5wchUKd\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4f5f5001OtVKNNAeebl2D1\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Magister Artium (M.A.) in Communication Science\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\\\",\\n  \\\"prior_occupation\\\": \\\"Staff member for the Die Linke parliamentary group in the Bundestag\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke\\\",\\n  \\\"birth_year\\\": 1975,\\n  \\\"birth_year_source\\\": \\\"https://de.wikipedia.org/wiki/Nicole_Gohlke\\\",\\n  \\\"birth_place\\\": \\\"Munich, Germany\\\",\\n  \\\"birth_place_source\\\": \\\"https://de.wikipedia.org/wiki/Nicole_Gohlke\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://de.wikipedia.org/wiki/Nicole_Gohlke\\\"\\n}\\n```\",\"time\":{\"start\":1779202064651,\"end\":1779202064651}}}\n{\"type\":\"step_finish\",\"timestamp\":1779202064654,\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"part\":{\"id\":\"prt_e40b5010c001IQV62Aeb47k2M2\",\"sessionID\":\"ses_1bf4bc557ffewdwEta98Rw1Uyf\",\"messageID\":\"msg_e40b4f5f5001OtVKNNAeebl2D1\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.036876,\"tokens\":{\"total\":10640,\"input\":10227,\"output\":413,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

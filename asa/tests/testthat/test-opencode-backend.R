@@ -258,9 +258,16 @@ test_that("OpenCode config content wires provider, headers, tools, and MCP", {
     use_browser = FALSE,
     search = asa::search_options(
       max_results = 7L,
+      timeout = 12,
       search_doc_content_chars_max = 321L,
       allow_read_webpages = TRUE
     )
+  )
+  loop_guard <- asa:::.free_code_loop_guard_config(
+    config = cfg,
+    recursion_limit = 40L,
+    search_budget_limit = 8L,
+    unknown_after_searches = 3L
   )
 
   content <- asa:::.opencode_config_content(
@@ -271,6 +278,7 @@ test_that("OpenCode config content wires provider, headers, tools, and MCP", {
     target_backend = "groq",
     target_model = "llama-3.3-70b-versatile",
     outer_model = "claude-test",
+    loop_guard = loop_guard,
     allow_read_webpages = TRUE
   )
   parsed <- jsonlite::fromJSON(content, simplifyVector = FALSE)
@@ -295,14 +303,20 @@ test_that("OpenCode config content wires provider, headers, tools, and MCP", {
   server <- parsed$mcp$asa_search
   expect_identical(server$type, "local")
   expect_true(isTRUE(server$enabled))
+  expect_identical(server$timeout, 17000L)
   expect_identical(unlist(server$command, use.names = FALSE), c("/usr/bin/python3", "-m", "asa_backend.free_code.mcp_search_server"))
   expect_identical(server$environment$PYTHONPATH, "/tmp/asa-python")
   expect_identical(server$environment$ASA_FREE_CODE_PROXY, "socks5h://127.0.0.1:9050")
   expect_identical(server$environment$ASA_FREE_CODE_USE_BROWSER, "false")
   expect_identical(server$environment$ASA_FREE_CODE_ALLOW_READ_WEBPAGES, "true")
+  guard_env <- jsonlite::fromJSON(server$environment$ASA_FREE_CODE_LOOP_GUARD_JSON, simplifyVector = FALSE)
+  expect_identical(guard_env$recursion_limit, 40L)
+  expect_identical(guard_env$search_budget_limit, 8L)
+  expect_identical(guard_env$unknown_after_searches, 3L)
 
   search_opts <- jsonlite::fromJSON(server$environment$ASA_FREE_CODE_SEARCH_OPTIONS_JSON, simplifyVector = FALSE)
   expect_identical(search_opts$max_results, 7L)
+  expect_equal(search_opts$timeout, 12)
   expect_identical(search_opts$search_doc_content_chars_max, 321L)
 })
 
@@ -387,6 +401,56 @@ test_that("OpenCode final payload accepts raw and fenced JSON", {
   expect_identical(fenced$payload_json, raw$payload_json)
 })
 
+test_that("OpenCode tool-loop diagnostics count timeout, invalid, and guard events", {
+  events <- list(
+    list(
+      type = "tool_use",
+      part = list(
+        tool = "asa_search_web_search",
+        state = list(
+          status = "error",
+          input = list(query = "same query"),
+          error = "McpError: MCP error -32001: Request timed out"
+        )
+      )
+    ),
+    list(
+      type = "tool_use",
+      part = list(
+        tool = "invalid",
+        state = list(
+          status = "completed",
+          input = list(tool = "web_search"),
+          output = "Model tried to call unavailable tool 'web_search'."
+        )
+      )
+    ),
+    list(
+      type = "tool_use",
+      part = list(
+        tool = "asa_search_web_search",
+        state = list(
+          status = "completed",
+          input = list(query = "same query"),
+          output = "ASA_TOOL_ERROR {\"error_type\":\"same_input_timeout_exhausted\"}"
+        )
+      )
+    )
+  )
+
+  diag <- asa:::.opencode_tool_loop_diagnostics(
+    events,
+    loop_guard = list(search_budget_limit = 2L, recursion_limit = 4L)
+  )
+
+  expect_identical(diag$tool_calls, 3L)
+  expect_identical(diag$search_calls, 2L)
+  expect_identical(diag$invalid_tool_calls, 1L)
+  expect_identical(diag$timeout_errors, 2L)
+  expect_identical(diag$guard_errors, 1L)
+  expect_true(isTRUE(diag$search_budget_exhausted))
+})
+
 test_that("OpenCode response maps fenced JSON into final_payload", {
   text <- "```json\n{\"status\":\"complete\",\"answer\":42}\n```"
   resp <- asa:::.opencode_response_from_output(
@@ -409,6 +473,50 @@ test_that("OpenCode response maps fenced JSON into final_payload", {
   expect_identical(resp$final_payload$status, "complete")
   expect_identical(resp$final_payload$answer, 42L)
   expect_false(isTRUE(resp$payload_integrity$canonical_matches_message))
+})
+
+test_that("run_task marks successful OpenCode non-JSON text as JSON output error", {
+  response <- asa:::.opencode_response_from_output(
+    output = list(
+      events = list(list(type = "text", part = list(type = "text", text = "I cannot access web search."))),
+      text = "I cannot access web search.",
+      session_id = "oc-non-json",
+      errors = character(0),
+      stop_reason = "stop",
+      usage = list(input_tokens = 1L, output_tokens = 2L, reasoning_tokens = 0L, total_tokens = 3L),
+      raw_stdout = "",
+      parse_error = FALSE
+    ),
+    prompt = "Return structured output.",
+    elapsed_minutes = 0.1
+  )
+  agent <- asa_test_mock_agent(
+    config = asa::asa_config(
+      agent_backend = "opencode",
+      backend = "openai",
+      model = "gpt-4.1-mini",
+      proxy = NULL,
+      rate_limit = 1000
+    )
+  )
+
+  testthat::local_mocked_bindings(
+    .run_agent = function(...) response,
+    .acquire_rate_limit_token = function(verbose = FALSE) invisible(TRUE),
+    .adaptive_rate_record = function(status, verbose = FALSE) invisible(TRUE),
+    .package = "asa"
+  )
+
+  result <- asa::run_task(
+    "Return structured output.",
+    agent = agent,
+    output_format = "json",
+    verbose = FALSE
+  )
+
+  expect_identical(result$status, "error")
+  expect_true(isTRUE(result$execution$json_output_missing))
+  expect_false(isTRUE(result$parsing_status$valid))
 })
 
 test_that("run_opencode_agent maps fake CLI output into asa_response and run_task JSON", {

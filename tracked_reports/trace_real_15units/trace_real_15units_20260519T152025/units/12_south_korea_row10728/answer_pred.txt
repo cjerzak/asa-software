@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Bachelor's degree in Political Science and International Relations from Konkuk University",
+  "educational_attainment_source": "https://ko.wikipedia.org/wiki/%EA%B9%80%ED%95%9C%EA%B8%B8",
+  "prior_occupation": "Journalist and Novelist",
+  "prior_occupation_source": "https://ko.wikipedia.org/wiki/%EA%B9%80%ED%95%9C%EA%B8%B8",
+  "birth_year": "1953",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+  "birth_place": "Tokyo, Japan",
+  "birth_place_source": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://ko.wikipedia.org/wiki/%EA%B9%80%ED%95%9C%EA%B8%B8"
+}

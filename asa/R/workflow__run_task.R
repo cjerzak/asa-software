@@ -528,6 +528,16 @@ run_task <- function(prompt,
 
   # Validate parsed JSON against expected schema (if expected_fields provided)
   parsing_status <- .validate_json_schema(parsed, expected_fields)
+  json_output_missing <- identical(output_format, "json") &&
+    identical(backend_status, "success") &&
+    is.null(parsed) &&
+    !isTRUE(terminal_payload_used)
+  if (isTRUE(json_output_missing)) {
+    status <- "error"
+    parsing_status$valid <- FALSE
+    parsing_status$error <- parsing_status$error %||%
+      "Backend completed without parseable JSON output."
+  }
   phase_marks$output_parse_finished <- Sys.time()
 
   # Extract search tier from trace (if search was used)
@@ -742,7 +752,9 @@ run_task <- function(prompt,
     thread_id = response$thread_id %||% thread_id %||% NA_character_,
     stop_reason = stop_reason,
     backend_status = backend_status,
+    result_status = status,
     status_code = response$status_code %||% NA_integer_,
+    json_output_missing = isTRUE(json_output_missing),
     terminal_payload_used = terminal_payload_used,
     tool_calls_used = tool_calls_used,
     tool_calls_limit = tool_calls_limit,
