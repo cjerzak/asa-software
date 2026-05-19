@@ -394,6 +394,9 @@
     jsonlite::fromJSON(text, simplifyVector = FALSE),
     error = function(e) NULL
   )
+  if (is.null(payload) && startsWith(text, "```")) {
+    payload <- .try_or(.parse_json_response(text))
+  }
   if (is.null(payload)) {
     return(list(valid = FALSE, payload = NULL, payload_json = NA_character_))
   }

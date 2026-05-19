@@ -372,6 +372,45 @@ test_that("OpenCode JSONL parser handles text, errors, sessions, usage, and malf
   expect_error(asa:::.opencode_parse_output(""), "empty stdout")
 })
 
+test_that("OpenCode final payload accepts raw and fenced JSON", {
+  raw <- asa:::.opencode_final_payload("{\"status\":\"complete\",\"answer\":42}")
+  expect_true(isTRUE(raw$valid))
+  expect_identical(raw$payload$status, "complete")
+  expect_identical(raw$payload$answer, 42L)
+
+  fenced <- asa:::.opencode_final_payload(
+    "```json\n{\"status\":\"complete\",\"answer\":42}\n```"
+  )
+  expect_true(isTRUE(fenced$valid))
+  expect_identical(fenced$payload$status, "complete")
+  expect_identical(fenced$payload$answer, 42L)
+  expect_identical(fenced$payload_json, raw$payload_json)
+})
+
+test_that("OpenCode response maps fenced JSON into final_payload", {
+  text <- "```json\n{\"status\":\"complete\",\"answer\":42}\n```"
+  resp <- asa:::.opencode_response_from_output(
+    output = list(
+      events = list(list(type = "text", part = list(type = "text", text = text))),
+      text = text,
+      session_id = "oc-fenced",
+      errors = character(0),
+      stop_reason = "stop",
+      usage = list(input_tokens = 1L, output_tokens = 2L, reasoning_tokens = 0L, total_tokens = 3L),
+      raw_stdout = "",
+      parse_error = FALSE
+    ),
+    prompt = "Return structured output.",
+    elapsed_minutes = 0.1
+  )
+
+  expect_s3_class(resp, "asa_response")
+  expect_true(isTRUE(resp$terminal_valid))
+  expect_identical(resp$final_payload$status, "complete")
+  expect_identical(resp$final_payload$answer, 42L)
+  expect_false(isTRUE(resp$payload_integrity$canonical_matches_message))
+})
+
 test_that("run_opencode_agent maps fake CLI output into asa_response and run_task JSON", {
   skip_if_not_installed("withr")
 

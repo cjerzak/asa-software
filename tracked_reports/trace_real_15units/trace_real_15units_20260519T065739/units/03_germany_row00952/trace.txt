@@ -1,0 +1,2603 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779188332136,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe376640014I2rcUHrzYNg0k",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe3671d001pssniIIXNr3EAK",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188334771,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe37667001i2OxCvDrB7Or7T",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe3671d001pssniIIXNr3EAK",
+        "type": "tool",
+        "callID": "3d8e9863-7577-4ce9-8f23-a0d9b4490709",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke Die Linke biography 2017 educational attainment prior occupation birth year birth place disability status sexual orientation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> NicoleStephanieGohlke(born 15 November 1975) is a German politician (DieLinke). She has been a member of the Bundestag since autumn 2009. She was one of her party's eight top candidates for the 2013 Bundestag elections. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> NicoleGohlke(2020)NicoleStephanieGohlke(* 15. November 1975 in München) ist eine deutsche Politikerin (DieLinke). Sie gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. Bei der Bundestagswahl 2021 war sie Spitzenkandidatin der Linken in Bayern. Sie ist stellvertretende Fraktionsvorsitzende. <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Ebenfalls empfehlen kann ich das Porträt „ Eine rote Liesl am Feierabend \" in der Süddeutschen Zeitung vom August2017. Einen kleinen Einblick in meine Arbeit aus meiner ersten Legislaturperiode (2009- 2013) bietet diese Broschüre,dieihr hier als pdf herunterladen könnt. <\/CONTENT> <URL> https://old-website.die-linke-muc.de/person/nicole-gohlke <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Stellvertretende FraktionsvorsitzendeDIELINKE, Sprecherin für Bildung und Wissenschaft. Für Euch im Bundestag und vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Eintritt indieWASG 2004, 2005 Mitglied des geschäftsführenden Landesvorstands der WASG in Bayern, von 2007 bis 2014 der LINKEN in Bayern 2008 bis 2009 Mitarbeiterin der BundestagsfraktionDIELINKE. <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DieAngaben werden nach Verarbeitung der Daten und Prüfung, ob eine Veröffentlichungspflicht besteht, an dieser Stelle veröffentlicht. Für weiterführende Informationen wird aufdie\"Hinweise zur Veröffentlichung der Angaben nach den Verhaltensregeln\" (Download) auf den Internetseiten des Deutschen Bundestages verwiesen. <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> PositionsGohlkecriticizes university tuition fees, the Bologna Process, and expensive housing for students. [3] As a spokeswoman on higher education policy for her parliamentary group and a member of the Education Committee of the German Bundestag, she advocates improvements in study conditions. <\/CONTENT> <URL> https://everything.explained.today/Nicole_Gohlke <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> BiografieNicoleGohlkeLebenslaufNicoleGohlkekam am 15. November 1975 in München (Bayern) zur Welt. Erstmals politisch engagierte sie sich 1991 gegen den zweiten Golfkrieg und gegendieseinerzeit aufkommende Ausländerfeindlichkeit. <\/CONTENT> <URL> https://www.was-war-wann.de/politik/biografien/nicole-gohlke.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DIELINKEparliamentary group in the Federal Assembly20172 references reference URL member of Committee on Education, Research and Technology Assessment start time 15 January 2014 0 references Socialist Left 0 references catalog code 11004041 catalog basic data about the members of the Bundestag 1 reference stated in basic data about the ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q1987000 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> DieKommunikationswissenschaftlerinNicoleGohlke(* 15. November 1975 in München) ist in der Politik bei der ParteiDieLinkeaktiv und seit 2013 Mitglied des Deutschen Bundestages. <\/CONTENT> <URL> https://www.muenchenwiki.de/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188332141,
+            "end": 1779188334770
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188334774,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe380b4001fCKCHqZrzaoJAN",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe3671d001pssniIIXNr3EAK",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0231,
+        "tokens": {
+          "total": 6567,
+          "input": 6281,
+          "output": 286,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188336616,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe387e7001vHrw3fE67jAodB",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe380b7001FQSTA0bSVudO4k",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188366620,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe387e7002x7Blm4u0QvDTF9",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe380b7001FQSTA0bSVudO4k",
+        "type": "tool",
+        "callID": "2a5f3a1c-1362-429d-b570-16c6cf30c117",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "error",
+          "input": {
+            "url": "https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188336616,
+            "end": 1779188366619
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188366622,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe3fd1d001B0aKjorrCbqxtE",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe380b7001FQSTA0bSVudO4k",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0243,
+        "tokens": {
+          "total": 7646,
+          "input": 7534,
+          "output": 112,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188388500,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe45291001ZEUHKxSTWrWce7",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe3fd1f001io0Pcpkwn4Auqt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188389731,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe45293001kRlWPCcBYtAQMr",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe3fd1f001io0Pcpkwn4Auqt",
+        "type": "tool",
+        "callID": "03442e9d-d9ed-465f-aa58-2c721b8e1337",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://de.wikipedia.org/wiki/Nicole_Gohlke"
+          },
+          "output": "URL: https://de.wikipedia.org/wiki/Nicole_Gohlke\nFinal URL: https://de.wikipedia.org/wiki/Nicole_Gohlke\nTitle: Nicole Gohlke – Wikipedia\nBytes read: 147527\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nZum Inhalt springen\nHauptmenü\nHauptmenü\nIn die Seitenleiste verschieben\nVerbergen\nNavigation\nHauptseite\n[link: https://de.wikipedia.org/wiki/Wikipedia:Hauptseite]\nThemenportale\n[link: https://de.wikipedia.org/wiki/Portal:Wikipedia_nach_Themen]\nZufälliger Artikel\n[link: https://de.wikipedia.org/wiki/Spezial:Zuf%C3%A4llige_Seite]\nSpezialseiten\n[link: https://de.wikipedia.org/wiki/Spezial:Spezialseiten]\nMitmachen\nArtikel verbessern\n[link: https://de.wikipedia.org/wiki/Wikipedia:Beteiligen]\nNeuen Artikel anlegen\n[link: https://de.wikipedia.org/wiki/Hilfe:Neuen_Artikel_anlegen]\nAutorenportal\n[link: https://de.wikipedia.org/wiki/Wikipedia:Autorenportal]\nHilfe\n[link: https://de.wikipedia.org/wiki/Hilfe:%C3%9Cbersicht]\nLetzte Änderungen\n[link: https://de.wikipedia.org/wiki/Spezial:Letzte_%C3%84nderungen]\nKontakt\n[link: https://de.wikipedia.org/wiki/Wikipedia:Kontakt]\nSuche\n[link: https://de.wikipedia.org/wiki/Spezial:Suche]\nSuchen\nErscheinungsbild\nJetzt spenden\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=de.wikipedia.org&uselang=de]\nBenutzerkonto erstellen\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188388502,
+            "end": 1779188389731
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188389733,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe45763001WHdjqMTi0y2Voh",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe3fd1f001io0Pcpkwn4Auqt",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0244,
+        "tokens": {
+          "total": 7771,
+          "input": 7679,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188391228,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe45d3a0016OMhZ4OA4a0hXT",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe45767001jJhrrgv2pUHK44",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188392265,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe45d3b001Bnux1buWUed2nV",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe45767001jJhrrgv2pUHK44",
+        "type": "tool",
+        "callID": "114bb44f-f82e-49d9-8c54-a30110a36eba",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke/"
+          },
+          "output": "URL: https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke/\nFinal URL: https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke/\nTitle: Profil - Fraktion Die Linke im Bundestag\nBytes read: 80901\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nZum Hauptinhalt springen\nFraktion\nAbgeordnete\n[link: https://www.dielinkebt.de/abgeordnete/]\nVorstand\n[link: https://www.dielinkebt.de/vorstand/]\nSprecher*innen\n[link: https://www.dielinkebt.de/sprecherinnen/]\nThemen\nReden\n[link: https://www.dielinkebt.de/themen/reden/]\nA-Z\n[link: https://www.dielinkebt.de/themen/a-z/a-bis-e/]\nNachrichten\n[link: https://www.dielinkebt.de/themen/nachrichten/]\nParlamentarische Initiativen\n[link: https://www.dielinkebt.de/themen/parlamentarische-initiativen/]\nPositionspapiere\n[link: https://www.dielinkebt.de/themen/positionspapiere/]\nPublikationen\n[link: https://www.dielinkebt.de/themen/publikationen/]\nPresse\nPressemitteilungen\n[link: https://www.dielinkebt.de/presse/pressemitteilungen/]\nPressedownload\n[link: https://www.dielinkebt.de/presse/pressedownload/]\nPressekontakt\n[link: https://www.dielinkebt.de/presse/pressekontakt/]\nService\nKontakt\n[link: https://www.dielinkebt.de/service/kontakt/]\nTermine\n[link: https://www.dielinkebt.de/service/termine/]\nAusschreibungen\n[link: https://www.dielinkebt.de/service/ausschreibungen/]\nImpressum\n[link: https://www.dielinkebt.de/service/impressum/]\nDatenschutz\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188391230,
+            "end": 1779188392264
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188392266,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe46149001DzRjC3tpIM6TDh",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe45767001jJhrrgv2pUHK44",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0263,
+        "tokens": {
+          "total": 8347,
+          "input": 8244,
+          "output": 103,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188393905,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe467ad0016A5AOzDUFW1p78",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe4614c001X7c2lra2PCqvt6",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188423909,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe467af001zxjyIYfJHKs2xu",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe4614c001X7c2lra2PCqvt6",
+        "type": "tool",
+        "callID": "6e62b3ea-e0aa-4d4b-b7e0-24e72b97f6c1",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "error",
+          "input": {
+            "url": "https://www.was-war-wann.de/politik/biografien/nicole-gohlke.html"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188393907,
+            "end": 1779188423908
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188423910,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe4dce5001Tjz5off52DmDek",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe4614c001X7c2lra2PCqvt6",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0283,
+        "tokens": {
+          "total": 9011,
+          "input": 8908,
+          "output": 103,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188427367,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe4ea64001crvp7NSBoKxW34",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe4dce7001n8LcXaxmGhyCR1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188457376,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe4ea65001A6ggf87aJx4Vq9",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe4dce7001n8LcXaxmGhyCR1",
+        "type": "tool",
+        "callID": "dda8d4bc-f04a-40c9-8f5d-0ec30eecf7f3",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188427369,
+            "end": 1779188457374
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188457381,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe55fa1001RcY6R6N1TeDMtw",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe4dce7001n8LcXaxmGhyCR1",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0285,
+        "tokens": {
+          "total": 9135,
+          "input": 9044,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188462184,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe57265001K2iTmRPwSD4l6g",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe55fab001GfOR6zikAROtAr",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188492190,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe57267001IV7nmLv9P2JZJn",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe55fab001GfOR6zikAROtAr",
+        "type": "tool",
+        "callID": "dc83a92e-8be6-4d7c-b3d4-3b1225cb7f74",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188462185,
+            "end": 1779188492188
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188492196,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe5e79f0012o3xVeFvi2ew5C",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe55fab001GfOR6zikAROtAr",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0289,
+        "tokens": {
+          "total": 9259,
+          "input": 9168,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188501107,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe60a72001LhgQszAtoL9Zf6",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe5e7a7001mMYYUvf81F40fL",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188531110,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe60a72002DSd1DFdArScB1I",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe5e7a7001mMYYUvf81F40fL",
+        "type": "tool",
+        "callID": "51131b1b-82e2-475e-919e-2506bf5f2d5e",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188501107,
+            "end": 1779188531110
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188531111,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe67fa6001n7nxl572dfTHy7",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe5e7a7001mMYYUvf81F40fL",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0292,
+        "tokens": {
+          "total": 9383,
+          "input": 9292,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188555039,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe6dd1e001ppkxxKIxYttn1L",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe67fa9001PS6RIbGjqU6cA1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188585048,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe6dd1f001dHid2pqTSUhIm9",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe67fa9001PS6RIbGjqU6cA1",
+        "type": "tool",
+        "callID": "56573347-6d5b-415c-a62b-bed1331776c0",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188555039,
+            "end": 1779188585045
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188585054,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe75259001wGaHlGMt1jV5PL",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe67fa9001PS6RIbGjqU6cA1",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0296,
+        "tokens": {
+          "total": 9507,
+          "input": 9416,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188624284,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe7eb9c001o5OvPsFXhXx01b",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe7526200104uN1qbpCyKf1b",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188654287,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe7eb9c002RBMNZhyheEc0aY",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe7526200104uN1qbpCyKf1b",
+        "type": "tool",
+        "callID": "f828a4ef-455d-4289-8963-cd06a47d5d6e",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188624285,
+            "end": 1779188654286
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188654288,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe860cf001vb9ZSjd4eBPzhE",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe7526200104uN1qbpCyKf1b",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.03,
+        "tokens": {
+          "total": 9631,
+          "input": 9540,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188683261,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe8d1f9001dMIitscFdlnmq8",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe860d1001Mz1gG0Y9okFALa",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188713269,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe8d1fc001A02wlMGZtMhn5w",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe860d1001Mz1gG0Y9okFALa",
+        "type": "tool",
+        "callID": "e78217fe-04ae-49a8-bdd7-425698c14d51",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188683263,
+            "end": 1779188713267
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188713276,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe94735001AluXTSO7CE4BXp",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe860d1001Mz1gG0Y9okFALa",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0304,
+        "tokens": {
+          "total": 9755,
+          "input": 9664,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188743983,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe9bf2e001Qs9Ai5BsYfjxfF",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe94742001LzpvpWaAhpkPqn",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188773985,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fe9bf2f001gD6GRWkFt9XSsx",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe94742001LzpvpWaAhpkPqn",
+        "type": "tool",
+        "callID": "7bc18b62-3233-42cc-954d-ae00988226e2",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188743983,
+            "end": 1779188773984
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188773987,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fea3462001yCrUXq2IBJfIrK",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fe94742001LzpvpWaAhpkPqn",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0307,
+        "tokens": {
+          "total": 9879,
+          "input": 9788,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188794205,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fea835d001J5OCLHBflBim6W",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fea3465001odcO3LJ5dcxdCt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188824208,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fea835d0027Py0uhMKMrO5h9",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fea3465001odcO3LJ5dcxdCt",
+        "type": "tool",
+        "callID": "1ef70b6b-35c9-4b8c-9598-fa7eeff8110a",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188794206,
+            "end": 1779188824207
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188824209,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3feaf89000113sdmBPxLv1bqD",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fea3465001odcO3LJ5dcxdCt",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0311,
+        "tokens": {
+          "total": 10003,
+          "input": 9912,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188853493,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3feb6ae50012s4tfI21YJHNGK",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3feaf893001tQ0Cs9H51WgeCp",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188876487,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3feb6aee001OCdPsmxCcqfbqT",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3feaf893001tQ0Cs9H51WgeCp",
+        "type": "tool",
+        "callID": "95add380-6ab3-49f8-8428-48b4723a9b76",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"sexual orientation\" LGBTQ disability status"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Title: Fluidity and diversity in sexual orientations - Intro to... | Fiveable. An individual's sexual orientation does not exist in isolation but intersects with other aspects of their identity. Examples include race, ethnicity, gender, socioeconomic status, disability status, and religion. <\/CONTENT> <URL> https://fiveable.me/introduction-lgbtq-studies/unit-4/fluidity-diversity-sexual-orientations/study-guide/tLtLB9KCnbnPXlWn <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Title: Disability Pride Month: Disabled LGBTQ+ people can be sexual too. \"See disabled LGBTQ+ people as individuals who are also sexual beings,” states Dr Ju Gosling in Disability Pride Month. <\/CONTENT> <URL> https://www.thepinknews.com/2025/07/16/disability-pride-month-disabled-lgbtq-people-can-be-sexual-too <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Title: LGBT and Disability: Information, News, Fact Sheets | DW. Significant associations exist between sexual orientation and covariates of disability. The age-adjusted likelihoods of current smoking, frequent mental distress and arthritis for both lesbians and women who are bisexual are notably higher than for heterosexual women. <\/CONTENT> <URL> https://www.disabled-world.com/disability/sexuality/lgbt <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Title: LGBTQ Info For Teens | Sexual Orientation & Gender Identity. Sexual orientation describes who you’re attracted to. You may already know your sexual orientation, or you might still be figuring it out — both are normal. <\/CONTENT> <URL> https://www.goodjobsamerica.org/learn/teens/sexual-orientation <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Title: Is LGBTQ a Mental Illness? What the Science Says - ScienceInsights. When medical professionals did treat sexual orientation as a disorder, the results were catastrophic. Conversion therapy, sometimes called “reparative therapy,” attempted to change a person’s sexual orientation or gender identity through psychological or spiritual interventions. <\/CONTENT> <URL> https://scienceinsights.org/is-lgbtq-a-mental-illness-what-the-science-says <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Title: Can I know my sexual orientation without having any... | 7 Cups. Your sexual orientation has nothing to do with sexual experiences. If you're bi for example you do not have to have had intimate relations with a boy and a girl to know that you're attracted to both sexs. <\/CONTENT> <URL> https://www.7cups.com/qa/lgbtq-issues-17/can-i-know-my-sexual-orientation-without-having-any-romantic-or-sexual-experiences-5416 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Title: Understanding sexual orientation and homosexuality. Sexual orientation refers to an enduring pattern of emotional, romantic, and/or sexual attractions to men, women, or both sexes. Date created: October 29, 2008 19 min read. <\/CONTENT> <URL> https://www.apa.org/topics/lgbtq/orientation <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Title: Intersectionality and Sexual Orientation: Understanding... - PSYFORU. The term \"intersectionality,\" coined by legal scholar Kimberlé Crenshaw, refers to the way different aspects of a person’s identity—such as race, gender, class, and sexual orientation—interact and influence their life experiences. When we discuss intersectionality. <\/CONTENT> <URL> https://psyforu.com/intersectionality-and-sexual-orientation-understanding-diverse-experiences <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Title: Can I touch you? Guess My Sexual Orientation | Living as... - YouTube. Hello, this is SHINETEEN If you liked the reaction,Please give likes and subscribe the channel :DDon't forget to follow our instagram a... <\/CONTENT> <URL> https://www.youtube.com/watch?v=Kp3G7w8K4rQ <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Title: Did Texas Remove Discrimination Protections for LGBTQ and.... In October 2020, Snopes readers asked for verification of news stories circulating online that reported a new rule in Texas would allow social workers in that state to refuse services to disabled people and members of the LGBTQ community. These reports refer to a rule change made on Oct. <\/CONTENT> <URL> https://www.snopes.com/fact-check/texas-social-workers <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188853494,
+            "end": 1779188876487
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188876489,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febc4c8001iqPtXORARFAH93",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3feaf893001tQ0Cs9H51WgeCp",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0315,
+        "tokens": {
+          "total": 10127,
+          "input": 10036,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188878456,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febcc77001VSmFOgdtmteUBJ",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febc4ca001ttUVIUkszgmfmY",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188884684,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febcc77002ZfNX1fXYaqkBHD",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febc4ca001ttUVIUkszgmfmY",
+        "type": "tool",
+        "callID": "592e2b71-5503-4602-ad5a-6caba3264401",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"Studium\" \"Beruf\" \"Lebenslauf\""
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Lerne mit Quizlet und merke dir Karteikarten mit Begriffen wie studieren, ein Wirtschaftsstudium machen,dieUniversität (-en) und mehr. <\/CONTENT> <URL> https://quizlet.com/ch/319688309/teil-1-lebenslauf-und-beruf-das-studium-flash-cards <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Ich möchte in meinemLebenslauffür eine Bewerbung angeben, dass ich Schülern und Studenten Nachhilfeunterricht in verschiedenen Fremdsprachen gebe. Ich habe meine Berufserfahrungen imLebenslaufalle nach dem Schema \"Berufsbezeichnung, Firma, Tätigkeit\" aufgebaut. <\/CONTENT> <URL> https://www.gutefrage.net/frage/angabe-studium-im-lebenslauf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Normalerweise sinddieDaten des Beschäftigungsverhältnisses relevant für denLebenslauf, nicht, ob es ruhend war oder man krankgeschrieben war. Problematisch ist aberdiegleichzeitige Meldung beim Arbeitsamt. <\/CONTENT> <URL> https://www.finanzfrage.net/g/frage/lebenslauf-ruhendes-arbeitsverhaeltnis <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> KostenlosLebenslauferstellen: https://youbot.ausbildungspark.com/#/modules?newCv=trueDu willst dich bewerben - fürs Praktikum,dieAusbildung, ein duales S... <\/CONTENT> <URL> https://www.youtube.com/watch?v=yDHVoSmwzTM <\/URL> __END_OF_SOURCE 4__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188878456,
+            "end": 1779188884683
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188884685,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febe4cc0016MwYYgnCRVEFhI",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febc4ca001ttUVIUkszgmfmY",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0353,
+        "tokens": {
+          "total": 11379,
+          "input": 11282,
+          "output": 97,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188886533,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febec04001VFARx03oCfu9hj",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febe4cf001OyMjPtEjqULZx9",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188887983,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febec04002J31BQEIsYfiyPw",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febe4cf001OyMjPtEjqULZx9",
+        "type": "tool",
+        "callID": "f7e7ca11-ff29-4632-b7e4-af8aa4543cb9",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"Kommunikationswissenschaftlerin\" Studium Beruf"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Sprecherin für Bildung und Wissenschaft. Geboren am 15.11.1975.Beruf:Kommunikationswissenschaftlerin. Eingezogen überdieLandesliste Bayern.nicole-gohlke.de.nicole.gohlke@bundestag.de. <\/CONTENT> <URL> https://www.die-linke-bayern.de/parlamente/bundestag/nicole-gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Geboren am 15. November 1975,Beruf:Kommunikationswissenschaftlerin. 2008 bis 2009 Mitarbeiterin der BundestagsfraktionDIELINKE. <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DieKommunikationswissenschaftlerinNicoleGohlke(* 15. November 1975 in München) ist in der Politik bei der ParteiDieLinkeaktiv und seit 2013 Mitglied des Deutschen Bundestages. <\/CONTENT> <URL> https://www.muenchenwiki.de/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> NicoleGohlkeistKommunikationswissenschaftlerinsowie Hochschul- und Wissenschaftspolitische Sprecherin der FraktiondieLINKEim Bundestag. <\/CONTENT> <URL> https://www.zeitschrift-luxemburg.de/autorinnen/nicolegohlke <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Category:NicoleGohlkeDeutsch:NicoleGohlke(* 15. November 1975 in München) ist eine deutscheKommunikationswissenschaftlerinund Politikerin. Sie ist Mitglied im Landesvorstand der Linken in Bayern und gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. <\/CONTENT> <URL> https://commons.wikimedia.org/wiki/Category:Nicole_Gohlke?uselang=de <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> KommunikationswissenschaftlerinNicoleGohlkeist seit 2008 Mitarbeiterin der BundestagsfraktionDIELINKEund seit 2009 Mitglied des Deutschen Bundestags. Sie wurde am 15. November 1975 in... <\/CONTENT> <URL> https://mail.freenet.de/nachrichten/topnews/pictureshow/die-schonsten-politikerinnen-der-welt-40341046.html <\/URL> __END_OF_SOURCE 6__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188886533,
+            "end": 1779188887983
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188887984,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febf1af001AgnvI1vAOkolvs",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febe4cf001OyMjPtEjqULZx9",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0368,
+        "tokens": {
+          "total": 11907,
+          "input": 11814,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188889963,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febf968001kF0FWOV8bKGdeb",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febf1b2001J5c1zBykaqikFc",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188891285,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febf96a001fFwWuMJPCpnrTS",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febf1b2001J5c1zBykaqikFc",
+        "type": "tool",
+        "callID": "b1af81c3-1432-441b-b7ae-b3f0e04fa58f",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke Die Linke \"Studium\" \"Magister\" \"Universität\" München"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MagisterKatholische Theologie | Mag. theol. Text der Ordnung in der Fassung vom 6. August 2010 | PDF geändert durch Satzung vom 1. März 2012 | PDF Text der Ordnung in der Fassung der Änderungssatzung vom 1. März 2012 | PDF gilt für alle Studierenden,dieihrStudiumab dem WS 2018/2019 aufnehmen: Text der Ordnung in der Fassung vom 8 ... <\/CONTENT> <URL> https://www.uni-regensburg.de/universitaet/organisation/rechtsgrundlagen/studium/pruefungsordnungen/magister/eee <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Abschnitt I: Allgemeines 1 Geltungsbereich Diese Prüfungs- und Studienordnung regelt dasStudiumder Evangelischen Theolo-gie mit dem AbschlussMagisterTheologiae an der Theologischen Fakultät derUniversi-tätHeidelberg. Das Fakultätsexamen des StudiengangsMagisterTheologiae bildet einen berufsqua-lifizierenden Abschluss. <\/CONTENT> <URL> https://www.eth.uni-heidelberg.de/md/studium/download/magister_theologiae_po.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Deshalb sollen in diesem Bereichdiewichtigsten Informationen für einen guten Start insStudiumbereitgestellt werden: Zur Erleichterung des Studieneinstiegs wird Ihnen seitens der Fachschaft im Rahmen der Orientierungseinheit (OE) eine mehrtägige Einführung indieStrukturen und Abläufe derUniversitätund des Fachbereichs angeboten. <\/CONTENT> <URL> https://www.uni-marburg.de/de/fb05/studium/studiengaenge/kirchliches-examen-magister-evangelische-theologie <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Studienordnung der Ludwig-Maximilians-UniversitätMünchenfür das Fach Volkskunde für dasStudiumzum Erwerb des akademischen Grades einesMagisterArtium (M.A.) im Haupt- und Nebenfach (StudienordnungMagisterVolkskunde) <\/CONTENT> <URL> https://www.ekwee.uni-muenchen.de/vkee_download/2007-2023-dowload/magpo_1994.pdf <\/URL> __END_OF_SOURCE 4__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188889964,
+            "end": 1779188891284
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188891286,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3febfe95001Tr7QCDDdhITxIW",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febf1b2001J5c1zBykaqikFc",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0392,
+        "tokens": {
+          "total": 12668,
+          "input": 12572,
+          "output": 96,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188892643,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec03e2001ilYMsD5U9Sb0KD",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febfe97001C04jRDxl9Fv9hY",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188904545,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec03e3001sagXC61abzLSAy",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febfe97001C04jRDxl9Fv9hY",
+        "type": "tool",
+        "callID": "14ec731d-3e98-46a6-80e4-be82785a841c",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Studium 2023 hre als führender Standort im deutschsprachigen Raum. Über 750 Absolventinnen und Absolventen haben den Master-Studiengang Communication Management (seit 2007) oder zuvor den Schwerpunkt Public Relations imMagisterKommunikationswissenschaftsowie den früheren Bachelo <\/CONTENT> <URL> https://www.sozphil.uni-leipzig.de/fileadmin/Fakultät_SozPhil/Institut_KMW/Communication_Management/2024/Jahresbericht_2023_final_Web.pdf <\/URL> __END_OF_SOURCE 1__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188892643,
+            "end": 1779188904543
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188904549,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec3262001v9hXjoJC01rLAg",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3febfe97001C04jRDxl9Fv9hY",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0412,
+        "tokens": {
+          "total": 13360,
+          "input": 13266,
+          "output": 94,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188905934,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec37cc0017H7pq8AXSjQ28d",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fec326a001HgZcekoAKBlhHX",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188909802,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec37cd001SpbPcdkWdiENhT",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fec326a001HgZcekoAKBlhHX",
+        "type": "tool",
+        "callID": "74d52f52-05ee-4569-82b8-97973ce453c0",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Publikation finden zu:Kommunikationswissenschaft; Studium; Studienführer; Magisterstudiengang <\/CONTENT> <URL> https://www.fachportal-paedagogik.de/literatur/vollanzeige.html?FId=2262455 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Absolventen, deren Abschlussarbeit im HauptfachKommunikationswissenschaftmindestens mit der Note 2,0 bewertet wurde, können sich bis zum 31. März 2013 um den Preis bewerben. <\/CONTENT> <URL> https://www.uni-muenster.de/Kowi/mitteilungen/2013/beste-abschlussarbeit-2012.shtml <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Ich habe an der Ludwig-Maximilians-UniversitätMünchenKommunikationswissenschaft, Amerikanische Kulturgeschichte und Psychologie studiert, mit demMagisterArtium (M.A.) abgeschlossen und danach ein Aufbaustudium in Buchwissenschaft absolviert. <\/CONTENT> <URL> https://www.lauff.org/MF/person.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Als Diplom-Ökonom undMagisterArtium in Publizistik- undKommunikationswissenschaftbin ich seit über 20 Jahren erfolgreich an der Schnittstelle zwischen Wirtschaft und Öffentlichkeit tätig. Ebenso lang bin ich Mitglied im Deutschen Journalistenverband (DJV). <\/CONTENT> <URL> https://www.wirtschaftspublizist.de/about <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Insgesamt 110 Absolventinnen und Absolventen erhielten im vergangenen Jahr ihrMagister- oder Bachelorzeugnis. DieKommunikationswissenschaftgehört damit zu den beliebtesten Fächern der Friedrich-Schiller-Universität. <\/CONTENT> <URL> https://www.fsv.uni-jena.de/15980/absolventinnenfeier-2011 <\/URL> __END_OF_SOURCE 5__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188905935,
+            "end": 1779188909802
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188909803,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec46ea001lx1wjIDLQXq25H",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fec326a001HgZcekoAKBlhHX",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.042,
+        "tokens": {
+          "total": 13626,
+          "input": 13531,
+          "output": 95,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188911309,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec4ccc001GlQP34HcLT2uVy",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fec46ed00184RvzOEJ6s7ujo",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188941318,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fec4ccc002vfAol7aY9UAfDX",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fec46ed00184RvzOEJ6s7ujo",
+        "type": "tool",
+        "callID": "988f4038-6024-4e96-a22c-ced550d1b927",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188911309,
+            "end": 1779188941316
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188941324,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fecc207001J7ny5bsuCG9abT",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fec46ed00184RvzOEJ6s7ujo",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.044,
+        "tokens": {
+          "total": 14247,
+          "input": 14146,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188945248,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fecd15d001c2XNwgfF3D9wVs",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fecc21100175Je4BMY8x9aD3",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188975253,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fecd15f001Bku6fC35Fa18Vy",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fecc21100175Je4BMY8x9aD3",
+        "type": "tool",
+        "callID": "d6ed8d01-1e6c-4b07-8b5a-924a43cb7d3c",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188945249,
+            "end": 1779188975251
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188975258,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fed4695001k2RS4hhJsy8ic6",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fecc21100175Je4BMY8x9aD3",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0444,
+        "tokens": {
+          "total": 14381,
+          "input": 14280,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188992427,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fed89aa001bFncDoYIHqliPC",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fed46a1001QSCPMdRn5J3a9Z",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189022431,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fed89ab001Qe5M5S9QiflUGc",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fed46a1001QSCPMdRn5J3a9Z",
+        "type": "tool",
+        "callID": "d56900d6-32e4-413e-b965-565076296b82",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779188992428,
+            "end": 1779189022431
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189022434,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fedfee00018LSlYJodfC2b37",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fed46a1001QSCPMdRn5J3a9Z",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0448,
+        "tokens": {
+          "total": 14515,
+          "input": 14414,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189024852,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fee0852001C9T5jX6Fpp534H",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fedfee4001JgrFMfGn8fduYm",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189054859,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fee0853001OdoDenjQjrpY1v",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fedfee4001JgrFMfGn8fduYm",
+        "type": "tool",
+        "callID": "9390fdef-9b85-40e0-9ada-7eb36bd3cd1a",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189024852,
+            "end": 1779189054857
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189054864,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fee7d8b001Z37Y0RqmCh66cU",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fedfee4001JgrFMfGn8fduYm",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0452,
+        "tokens": {
+          "total": 14649,
+          "input": 14548,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189094207,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fef173c001dEZMAb7t8vwEOC",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fee7d9300179hxPYYwWAn82l",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189124213,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fef173d0012X44E3a8nqc6yP",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fee7d9300179hxPYYwWAn82l",
+        "type": "tool",
+        "callID": "c4e722bc-8f3b-4014-8ad2-67d5d24f1f44",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189094208,
+            "end": 1779189124210
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189124220,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3fef8c75001pGGQvo6zS21rts",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fee7d9300179hxPYYwWAn82l",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0456,
+        "tokens": {
+          "total": 14783,
+          "input": 14682,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189162753,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff022fd001tYFPMCDFBRZCsz",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fef8c82001Do5KyT0004Ihop",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189192763,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff022ff001wEd5Ax88WBZd4m",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fef8c82001Do5KyT0004Ihop",
+        "type": "tool",
+        "callID": "4c3f3121-90fe-4093-af8f-b7dc3188fc50",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189162754,
+            "end": 1779189192760
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189192770,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff0983b0011PL2sqScvHF6nN",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3fef8c82001Do5KyT0004Ihop",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.046,
+        "tokens": {
+          "total": 14917,
+          "input": 14816,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189201731,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff0bb40001gGQqCxtB8jrkSw",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff09849001qJOkLuA1Eh8yY1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189231738,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff0bb42001JmDkbCLRe9jWW2",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff09849001qJOkLuA1Eh8yY1",
+        "type": "tool",
+        "callID": "dcd470a7-ae8c-45e0-89e8-cb813df431c9",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189201732,
+            "end": 1779189231735
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189231745,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff1307a001FAU7g6S245XFdw",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff09849001qJOkLuA1Eh8yY1",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0464,
+        "tokens": {
+          "total": 15051,
+          "input": 14950,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189274271,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff1d69c001hE15aZ7tdY7UWq",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff1308700115PSU4nccFPUft",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189304274,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff1d69e001x8AD8vUUKvd7A4",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff1308700115PSU4nccFPUft",
+        "type": "tool",
+        "callID": "1b8e3553-90e7-4628-a570-5a5dd66aa72d",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189274272,
+            "end": 1779189304273
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189304275,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff24bd2001r0AqXcz6yA4DC3",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff1308700115PSU4nccFPUft",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0468,
+        "tokens": {
+          "total": 15185,
+          "input": 15084,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189342587,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff2e175001WoiXi5KGLTB6a7",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff24bd5001xayu6o1LJR7Q5T",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189372596,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff2e17a001Xnjj4JH5pmDavv",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff24bd5001xayu6o1LJR7Q5T",
+        "type": "tool",
+        "callID": "9d727669-92f7-492a-a395-a0054403a73f",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189342587,
+            "end": 1779189372593
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189372601,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff356b4001Vc4PGFOSrf6JMM",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff24bd5001xayu6o1LJR7Q5T",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0472,
+        "tokens": {
+          "total": 15319,
+          "input": 15218,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189383648,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff381de001Cgfe0NdvudBlja",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff356bf001oZQfJN5E1Lvcb6",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189413651,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff381df001z4P750tdF1ZigM",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff356bf001oZQfJN5E1Lvcb6",
+        "type": "tool",
+        "callID": "66ab4ac2-1c14-4b48-bc85-07e99dc6c0e4",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189383649,
+            "end": 1779189413651
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189413653,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff3f713001cgAiWWnp1smB7r",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff356bf001oZQfJN5E1Lvcb6",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0476,
+        "tokens": {
+          "total": 15453,
+          "input": 15352,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189436100,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff44ec3001ZABFEfNZCgU7AM",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff3f716001B6AN9lodjFmlDs",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189466102,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff44ec4001gDLW9n6OBbEgO3",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff3f716001B6AN9lodjFmlDs",
+        "type": "tool",
+        "callID": "b59daae6-1833-48e2-ad5a-67b686e67a18",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189436100,
+            "end": 1779189466102
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189466103,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff4c3f60013zdyHVjq03ryFo",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff3f716001B6AN9lodjFmlDs",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.048,
+        "tokens": {
+          "total": 15587,
+          "input": 15486,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189489972,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff52132001schQVUwczLhwXp",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff4c3f900172zDSCKIbi7KzQ",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189519974,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff521330010bOlD6vmEYJ8Y3",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff4c3f900172zDSCKIbi7KzQ",
+        "type": "tool",
+        "callID": "e5e2e183-9932-431f-9678-72fa40abdddd",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189489972,
+            "end": 1779189519974
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189519976,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff5966700193lqC7ZlRLrNu9",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff4c3f900172zDSCKIbi7KzQ",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0484,
+        "tokens": {
+          "total": 15721,
+          "input": 15620,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189526217,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff5aec8001wCtviwwESvYvxv",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff596690012vDCstEmbnK6Lb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189556221,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff5aec90012Crj7GtXnA8JM8",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff596690012vDCstEmbnK6Lb",
+        "type": "tool",
+        "callID": "d17de9cc-a073-4a67-a60a-34bb84bbcfdf",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189526217,
+            "end": 1779189556219
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189556225,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff623fd001NG3ou76hCuVoGs",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff596690012vDCstEmbnK6Lb",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0488,
+        "tokens": {
+          "total": 15855,
+          "input": 15754,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189586468,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff69a21001G9JAik4nxECnkz",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff62406001bn72VofxDNrZWF",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189616474,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff69a22001q1CfS0xN540KBh",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff62406001bn72VofxDNrZWF",
+        "type": "tool",
+        "callID": "77de72d6-1742-4578-8774-8effda39f3b8",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189586469,
+            "end": 1779189616472
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189616480,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff70f5b001BE62XSKf63q0ya",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff62406001bn72VofxDNrZWF",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0492,
+        "tokens": {
+          "total": 15989,
+          "input": 15888,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189638268,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff7647a001JhLj9zjfkO5GCk",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff70f640010EQw2dBVZeddo0",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189668273,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff7647b001Bc92FOeqcEr6vn",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff70f640010EQw2dBVZeddo0",
+        "type": "tool",
+        "callID": "0c437a03-906d-4c33-99c6-ae0c22594b4e",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189638268,
+            "end": 1779189668271
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189668278,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff7d9b2001dJ1rZ4N17Pjy1L",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff70f640010EQw2dBVZeddo0",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0496,
+        "tokens": {
+          "total": 16123,
+          "input": 16022,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189686444,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff820ac001mYCTvMwQA7hgH7",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff7d9b9001JOYAe2ZbP8pk4d",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189716451,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff820ac002xxptEqdY1iREag",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff7d9b9001JOYAe2ZbP8pk4d",
+        "type": "tool",
+        "callID": "9ca7e4e9-548d-4947-acdf-8748dcf79385",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189686445,
+            "end": 1779189716449
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189716457,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff895e3001z0verENI4tkz6F",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff7d9b9001JOYAe2ZbP8pk4d",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.05,
+        "tokens": {
+          "total": 16257,
+          "input": 16156,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189721528,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff8a9b7001WyjZtz2TLDTr8B",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff895ed001PQvkYfHPAhBHwL",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189751531,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff8a9b8001GPI3qJONrLP6vF",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff895ed001PQvkYfHPAhBHwL",
+        "type": "tool",
+        "callID": "f6762f26-a1c3-4c2a-83c8-cc2172a6b0b4",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189721529,
+            "end": 1779189751530
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189751532,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff91eeb001wdeYEneANB7Mjb",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff895ed001PQvkYfHPAhBHwL",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0504,
+        "tokens": {
+          "total": 16391,
+          "input": 16290,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189754150,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff92923001MtDaerdKy5da8q",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff91eee0018FkG1rzbGLD2Wi",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189784155,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff92925001Xo5Ar14mcUrTj0",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff91eee0018FkG1rzbGLD2Wi",
+        "type": "tool",
+        "callID": "92e419f3-c102-4bbc-a7e7-f212a97a7cfd",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189754151,
+            "end": 1779189784153
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189784160,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff99e5b001rNZQCoqmvCqlJG",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff91eee0018FkG1rzbGLD2Wi",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0508,
+        "tokens": {
+          "total": 16525,
+          "input": 16424,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189790686,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff9b7db0011G1MfNnU7M6W0M",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff99e63001zky6COpfDhHEca",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189820696,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ff9b7dc0015AMlDSsxeekfKs",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff99e63001zky6COpfDhHEca",
+        "type": "tool",
+        "callID": "0375ca4d-a06b-4b74-b823-c0a816d50a70",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189790687,
+            "end": 1779189820693
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189820701,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffa2d18001L5Xzr1Rf2s9pjX",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ff99e63001zky6COpfDhHEca",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0512,
+        "tokens": {
+          "total": 16659,
+          "input": 16558,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189834009,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffa6117001VBbafw9P1fBakB",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffa2d230017KK2m3yfYJZe5c",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189864018,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffa6118001G0qZjYdAtTW2U0",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffa2d230017KK2m3yfYJZe5c",
+        "type": "tool",
+        "callID": "81f637fe-63d2-4650-baf1-d398d6cfe801",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189834010,
+            "end": 1779189864016
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189864023,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffad652001RjEqPIfUBFNh0H",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffa2d230017KK2m3yfYJZe5c",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0516,
+        "tokens": {
+          "total": 16793,
+          "input": 16692,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189897720,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffb59f7001hpaFe0Qj38uDiZ",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffad65d001o45mC2n7qIFIOv",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189927731,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffb59f8001MQwHEqLjvrM0Zh",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffad65d001o45mC2n7qIFIOv",
+        "type": "tool",
+        "callID": "1c1b9200-1966-4a46-9522-bd5ef85ea939",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189897720,
+            "end": 1779189927729
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189927737,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffbcf33001FXyHPG2rDKh4v8",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffad65d001o45mC2n7qIFIOv",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.052,
+        "tokens": {
+          "total": 16927,
+          "input": 16826,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779189957673,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffc4426001tXWqBKU558gDgs",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffbcf40001yOsSFs8QZ4m8MY",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779189987679,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffc4428001tP96O0josnoVIx",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffbcf40001yOsSFs8QZ4m8MY",
+        "type": "tool",
+        "callID": "b94e0c8f-2366-496b-a230-9278408a419e",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779189957673,
+            "end": 1779189987678
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779189987682,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffcb95f001MWPRI6vEqh8xEW",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffbcf40001yOsSFs8QZ4m8MY",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0524,
+        "tokens": {
+          "total": 17061,
+          "input": 16960,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779190013767,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffd1f46001sX70dgIsB7XdOS",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffcb964001Fosvoo3S454gYJ",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779190043772,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffd1f470017s0cHDsFMkmmAy",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffcb964001Fosvoo3S454gYJ",
+        "type": "tool",
+        "callID": "9d4a99f2-bc52-4edb-80f5-98fb9928f6cf",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779190013768,
+            "end": 1779190043771
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779190043775,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffd947c001fl1xaEtlwJ1PLy",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffcb964001Fosvoo3S454gYJ",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0528,
+        "tokens": {
+          "total": 17195,
+          "input": 17094,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779190056747,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffdc72a0017t3g4F0aniXM5j",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffd9481001EPW7pgzhuNIGMS",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779190085443,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffdc72b001Pb1B11Z4yEeSlr",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffd9481001EPW7pgzhuNIGMS",
+        "type": "tool",
+        "callID": "9daa0b58-38be-4fef-b8b3-cb57eb8b895b",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nicole Gohlke \"Magister\" \"Kommunikationswissenschaft\" LMU München site:bundestag.de"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke. 1995 Abitur; 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München; 2004 bis 2008 Angestellte im Marketing und in der Beratung. <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke. 1995 Abitur; 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München; 2004 bis 2008 Angestellte in Marketing-Agenturen und Beratung. <\/CONTENT> <URL> https://bundestag.de/abgeordnete/biografien20/G/gohlke_nicole-857380 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke, LINKE. 1995 Abitur. 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München. <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/abgeordnete/biografien18/G/gohlke_nicole-258410 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke, LINKE. 1995 Abitur; 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München; 2004 bis 2008 Angestellte bei verschiedenen Event-Agenturen; seit 2008 Mitarbeiterin der Bundestagsfraktion Die Linke. <\/CONTENT> <URL> https://webarchiv.bundestag.de/archive/2013/0412/mobil/mdb/biografien/G/gohlke_nicole.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Title: German Bundestag - Nicole Gohlke, LINKE. 1995 Abitur. 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München. <\/CONTENT> <URL> https://webarchiv.bundestag.de/archive/2015/0626/htdocs_e/bundestag/members18/biographies/G/gohlke_nicole/258410.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Title: Deutscher Bundestag - Münchner Marxistin in Berlin: Nicole Gohlke. In seiner Jugend war Süssmayr Punk, gehörte Anfang der 1980er-Jahre der linksextremen Gruppe „Freizeit81“ an. Auch Gohlke engagierte sich während ihres Studiums der Kommunikationswissenschaften in München bei linken Gruppen, so etwa beim trotzkistischen „Linksruck“. <\/CONTENT> <URL> https://webarchiv.bundestag.de/archive/2015/0717/dokumente/textarchiv/2014/kw27_wege_politik_gohlke/286442.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Title: Deutscher Bundestag - Münchner Marxistin in Berlin: Nicole Gohlke. In seiner Jugend war Süssmayr Punk, gehörte Anfang der 1980er-Jahre der linksextremen Gruppe „Freizeit81“ an. Auch Gohlke engagierte sich während ihres Studiums der Kommunikationswissenschaften in München bei linken Gruppen, so etwa beim trotzkistischen „Linksruck“. <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/textarchiv/2014/kw27_wege_politik_gohlke-286442 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Title: Nicole Gohlke, MdB, DIE LINKE - DIP Bundestag. If you're seeing this message, that means JavaScript has been disabled on your browser, please enable JS to make this app work <\/CONTENT> <URL> https://dip.bundestag.de/aktivität/nicole-gohlke-mdb-die-linke/1567583?f.deskriptor=Wissenschaftlicher+Mitarbeiter&start=175&rows=25&pos=184&ctx=d <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke wird stellvertretende Vorsitzende. June 25, 2025 - Gohlke ist seit 2009 Mitglied des Deutschen Bundestages und Sprecherin der Linken für Bildung und Wissenschaft. <\/CONTENT> <URL> https://www.bundestag.de/presse/hib/kurzmeldungen-1096296 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Title: Bundestag. February 4, 2019 - Frau Dr. Nicole Prehn, <\/CONTENT> <URL> https://dipbt.bundestag.de/doc/btd/19/075/1907520.pdf <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779190056748,
+            "end": 1779190085441
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779190085448,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffe3743001BlqRX9eaH6rZUZ",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffd9481001EPW7pgzhuNIGMS",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0532,
+        "tokens": {
+          "total": 17329,
+          "input": 17228,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779190088834,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffe447f001Vs14Ia9e2f9U2I",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffe374c001rfg67Zs5brcQRO",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779190088835,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffe4480001UmJdziJg9wjlX0",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffe374c001rfg67Zs5brcQRO",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Magister Artium (M.A.) in Communication Science (Kommunikationswissenschaften) from Ludwig Maximilian University of Munich (LMU München), 2003.\",\n  \"prior_occupation\": \"Employee in marketing and consulting (2004–2008); staff member for the Die Linke parliamentary group in the Bundestag (2008–2009).\",\n  \"birth_year\": \"1975\",\n  \"birth_place\": \"Munich, Germany\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\",\n    \"prior_occupation\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\",\n    \"birth_year\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n    \"birth_place\": \"https://de.wikipedia.org/wiki/Nicole_Gohlke\",\n    \"disability_status\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\",\n    \"sexual_orientation\": \"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\"\n  }\n}\n```",
+        "time": {
+          "start": 1779190088834,
+          "end": 1779190088834
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779190088838,
+      "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+      "part": {
+        "id": "prt_e3ffe4483001k73gc947qpTAnN",
+        "sessionID": "ses_1c01c995fffeH2R5DQ8K2BTUrB",
+        "messageID": "msg_e3ffe374c001rfg67Zs5brcQRO",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0628,
+        "tokens": {
+          "total": 19109,
+          "input": 18655,
+          "output": 454,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779188332136,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe376640014I2rcUHrzYNg0k\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe3671d001pssniIIXNr3EAK\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188334771,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe37667001i2OxCvDrB7Or7T\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe3671d001pssniIIXNr3EAK\",\"type\":\"tool\",\"callID\":\"3d8e9863-7577-4ce9-8f23-a0d9b4490709\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke Die Linke biography 2017 educational attainment prior occupation birth year birth place disability status sexual orientation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> NicoleStephanieGohlke(born 15 November 1975) is a German politician (DieLinke). She has been a member of the Bundestag since autumn 2009. She was one of her party's eight top candidates for the 2013 Bundestag elections. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> NicoleGohlke(2020)NicoleStephanieGohlke(* 15. November 1975 in München) ist eine deutsche Politikerin (DieLinke). Sie gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. Bei der Bundestagswahl 2021 war sie Spitzenkandidatin der Linken in Bayern. Sie ist stellvertretende Fraktionsvorsitzende. <\/CONTENT> <URL> https://de.wikipedia.org/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Ebenfalls empfehlen kann ich das Porträt „ Eine rote Liesl am Feierabend \\\" in der Süddeutschen Zeitung vom August2017. Einen kleinen Einblick in meine Arbeit aus meiner ersten Legislaturperiode (2009- 2013) bietet diese Broschüre,dieihr hier als pdf herunterladen könnt. <\/CONTENT> <URL> https://old-website.die-linke-muc.de/person/nicole-gohlke <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Stellvertretende FraktionsvorsitzendeDIELINKE, Sprecherin für Bildung und Wissenschaft. Für Euch im Bundestag und vor Ort in Bayern. <\/CONTENT> <URL> https://nicole-gohlke.de <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Eintritt indieWASG 2004, 2005 Mitglied des geschäftsführenden Landesvorstands der WASG in Bayern, von 2007 bis 2014 der LINKEN in Bayern 2008 bis 2009 Mitarbeiterin der BundestagsfraktionDIELINKE. <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DieAngaben werden nach Verarbeitung der Daten und Prüfung, ob eine Veröffentlichungspflicht besteht, an dieser Stelle veröffentlicht. Für weiterführende Informationen wird aufdie\\\"Hinweise zur Veröffentlichung der Angaben nach den Verhaltensregeln\\\" (Download) auf den Internetseiten des Deutschen Bundestages verwiesen. <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> PositionsGohlkecriticizes university tuition fees, the Bologna Process, and expensive housing for students. [3] As a spokeswoman on higher education policy for her parliamentary group and a member of the Education Committee of the German Bundestag, she advocates improvements in study conditions. <\/CONTENT> <URL> https://everything.explained.today/Nicole_Gohlke <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> BiografieNicoleGohlkeLebenslaufNicoleGohlkekam am 15. November 1975 in München (Bayern) zur Welt. Erstmals politisch engagierte sie sich 1991 gegen den zweiten Golfkrieg und gegendieseinerzeit aufkommende Ausländerfeindlichkeit. <\/CONTENT> <URL> https://www.was-war-wann.de/politik/biografien/nicole-gohlke.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DIELINKEparliamentary group in the Federal Assembly20172 references reference URL member of Committee on Education, Research and Technology Assessment start time 15 January 2014 0 references Socialist Left 0 references catalog code 11004041 catalog basic data about the members of the Bundestag 1 reference stated in basic data about the ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q1987000 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> DieKommunikationswissenschaftlerinNicoleGohlke(* 15. November 1975 in München) ist in der Politik bei der ParteiDieLinkeaktiv und seit 2013 Mitglied des Deutschen Bundestages. <\/CONTENT> <URL> https://www.muenchenwiki.de/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188332141,\"end\":1779188334770},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188334774,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe380b4001fCKCHqZrzaoJAN\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe3671d001pssniIIXNr3EAK\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023133,\"tokens\":{\"total\":6567,\"input\":6281,\"output\":286,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188336616,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe387e7001vHrw3fE67jAodB\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe380b7001FQSTA0bSVudO4k\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188366620,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe387e7002x7Blm4u0QvDTF9\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe380b7001FQSTA0bSVudO4k\",\"type\":\"tool\",\"callID\":\"2a5f3a1c-1362-429d-b570-16c6cf30c117\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"error\",\"input\":{\"url\":\"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188336616,\"end\":1779188366619}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188366622,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe3fd1d001B0aKjorrCbqxtE\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe380b7001FQSTA0bSVudO4k\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.024282,\"tokens\":{\"total\":7646,\"input\":7534,\"output\":112,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188388500,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe45291001ZEUHKxSTWrWce7\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe3fd1f001io0Pcpkwn4Auqt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188389731,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe45293001kRlWPCcBYtAQMr\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe3fd1f001io0Pcpkwn4Auqt\",\"type\":\"tool\",\"callID\":\"03442e9d-d9ed-465f-aa58-2c721b8e1337\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://de.wikipedia.org/wiki/Nicole_Gohlke\"},\"output\":\"URL: https://de.wikipedia.org/wiki/Nicole_Gohlke\\nFinal URL: https://de.wikipedia.org/wiki/Nicole_Gohlke\\nTitle: Nicole Gohlke – Wikipedia\\nBytes read: 147527\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nZum Inhalt springen\\nHauptmenü\\nHauptmenü\\nIn die Seitenleiste verschieben\\nVerbergen\\nNavigation\\nHauptseite\\n[link: https://de.wikipedia.org/wiki/Wikipedia:Hauptseite]\\nThemenportale\\n[link: https://de.wikipedia.org/wiki/Portal:Wikipedia_nach_Themen]\\nZufälliger Artikel\\n[link: https://de.wikipedia.org/wiki/Spezial:Zuf%C3%A4llige_Seite]\\nSpezialseiten\\n[link: https://de.wikipedia.org/wiki/Spezial:Spezialseiten]\\nMitmachen\\nArtikel verbessern\\n[link: https://de.wikipedia.org/wiki/Wikipedia:Beteiligen]\\nNeuen Artikel anlegen\\n[link: https://de.wikipedia.org/wiki/Hilfe:Neuen_Artikel_anlegen]\\nAutorenportal\\n[link: https://de.wikipedia.org/wiki/Wikipedia:Autorenportal]\\nHilfe\\n[link: https://de.wikipedia.org/wiki/Hilfe:%C3%9Cbersicht]\\nLetzte Änderungen\\n[link: https://de.wikipedia.org/wiki/Spezial:Letzte_%C3%84nderungen]\\nKontakt\\n[link: https://de.wikipedia.org/wiki/Wikipedia:Kontakt]\\nSuche\\n[link: https://de.wikipedia.org/wiki/Spezial:Suche]\\nSuchen\\nErscheinungsbild\\nJetzt spenden\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=de.wikipedia.org&uselang=de]\\nBenutzerkonto erstellen\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188388502,\"end\":1779188389731},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188389733,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe45763001WHdjqMTi0y2Voh\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe3fd1f001io0Pcpkwn4Auqt\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.024417,\"tokens\":{\"total\":7771,\"input\":7679,\"output\":92,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188391228,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe45d3a0016OMhZ4OA4a0hXT\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe45767001jJhrrgv2pUHK44\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188392265,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe45d3b001Bnux1buWUed2nV\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe45767001jJhrrgv2pUHK44\",\"type\":\"tool\",\"callID\":\"114bb44f-f82e-49d9-8c54-a30110a36eba\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke/\"},\"output\":\"URL: https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke/\\nFinal URL: https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke/\\nTitle: Profil - Fraktion Die Linke im Bundestag\\nBytes read: 80901\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nZum Hauptinhalt springen\\nFraktion\\nAbgeordnete\\n[link: https://www.dielinkebt.de/abgeordnete/]\\nVorstand\\n[link: https://www.dielinkebt.de/vorstand/]\\nSprecher*innen\\n[link: https://www.dielinkebt.de/sprecherinnen/]\\nThemen\\nReden\\n[link: https://www.dielinkebt.de/themen/reden/]\\nA-Z\\n[link: https://www.dielinkebt.de/themen/a-z/a-bis-e/]\\nNachrichten\\n[link: https://www.dielinkebt.de/themen/nachrichten/]\\nParlamentarische Initiativen\\n[link: https://www.dielinkebt.de/themen/parlamentarische-initiativen/]\\nPositionspapiere\\n[link: https://www.dielinkebt.de/themen/positionspapiere/]\\nPublikationen\\n[link: https://www.dielinkebt.de/themen/publikationen/]\\nPresse\\nPressemitteilungen\\n[link: https://www.dielinkebt.de/presse/pressemitteilungen/]\\nPressedownload\\n[link: https://www.dielinkebt.de/presse/pressedownload/]\\nPressekontakt\\n[link: https://www.dielinkebt.de/presse/pressekontakt/]\\nService\\nKontakt\\n[link: https://www.dielinkebt.de/service/kontakt/]\\nTermine\\n[link: https://www.dielinkebt.de/service/termine/]\\nAusschreibungen\\n[link: https://www.dielinkebt.de/service/ausschreibungen/]\\nImpressum\\n[link: https://www.dielinkebt.de/service/impressum/]\\nDatenschutz\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188391230,\"end\":1779188392264},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188392266,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe46149001DzRjC3tpIM6TDh\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe45767001jJhrrgv2pUHK44\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026277,\"tokens\":{\"total\":8347,\"input\":8244,\"output\":103,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188393905,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe467ad0016A5AOzDUFW1p78\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe4614c001X7c2lra2PCqvt6\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188423909,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe467af001zxjyIYfJHKs2xu\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe4614c001X7c2lra2PCqvt6\",\"type\":\"tool\",\"callID\":\"6e62b3ea-e0aa-4d4b-b7e0-24e72b97f6c1\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"error\",\"input\":{\"url\":\"https://www.was-war-wann.de/politik/biografien/nicole-gohlke.html\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188393907,\"end\":1779188423908}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188423910,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe4dce5001Tjz5off52DmDek\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe4614c001X7c2lra2PCqvt6\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.028269,\"tokens\":{\"total\":9011,\"input\":8908,\"output\":103,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188427367,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe4ea64001crvp7NSBoKxW34\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe4dce7001n8LcXaxmGhyCR1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188457376,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe4ea65001A6ggf87aJx4Vq9\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe4dce7001n8LcXaxmGhyCR1\",\"type\":\"tool\",\"callID\":\"dda8d4bc-f04a-40c9-8f5d-0ec30eecf7f3\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188427369,\"end\":1779188457374}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188457381,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe55fa1001RcY6R6N1TeDMtw\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe4dce7001n8LcXaxmGhyCR1\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.028497,\"tokens\":{\"total\":9135,\"input\":9044,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188462184,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe57265001K2iTmRPwSD4l6g\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe55fab001GfOR6zikAROtAr\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188492190,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe57267001IV7nmLv9P2JZJn\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe55fab001GfOR6zikAROtAr\",\"type\":\"tool\",\"callID\":\"dc83a92e-8be6-4d7c-b3d4-3b1225cb7f74\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188462185,\"end\":1779188492188}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188492196,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe5e79f0012o3xVeFvi2ew5C\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe55fab001GfOR6zikAROtAr\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.028869,\"tokens\":{\"total\":9259,\"input\":9168,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188501107,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe60a72001LhgQszAtoL9Zf6\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe5e7a7001mMYYUvf81F40fL\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188531110,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe60a72002DSd1DFdArScB1I\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe5e7a7001mMYYUvf81F40fL\",\"type\":\"tool\",\"callID\":\"51131b1b-82e2-475e-919e-2506bf5f2d5e\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188501107,\"end\":1779188531110}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188531111,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe67fa6001n7nxl572dfTHy7\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe5e7a7001mMYYUvf81F40fL\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.029241,\"tokens\":{\"total\":9383,\"input\":9292,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188555039,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe6dd1e001ppkxxKIxYttn1L\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe67fa9001PS6RIbGjqU6cA1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188585048,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe6dd1f001dHid2pqTSUhIm9\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe67fa9001PS6RIbGjqU6cA1\",\"type\":\"tool\",\"callID\":\"56573347-6d5b-415c-a62b-bed1331776c0\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188555039,\"end\":1779188585045}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188585054,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe75259001wGaHlGMt1jV5PL\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe67fa9001PS6RIbGjqU6cA1\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.029613,\"tokens\":{\"total\":9507,\"input\":9416,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188624284,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe7eb9c001o5OvPsFXhXx01b\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe7526200104uN1qbpCyKf1b\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188654287,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe7eb9c002RBMNZhyheEc0aY\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe7526200104uN1qbpCyKf1b\",\"type\":\"tool\",\"callID\":\"f828a4ef-455d-4289-8963-cd06a47d5d6e\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188624285,\"end\":1779188654286}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188654288,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe860cf001vb9ZSjd4eBPzhE\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe7526200104uN1qbpCyKf1b\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.029985,\"tokens\":{\"total\":9631,\"input\":9540,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188683261,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe8d1f9001dMIitscFdlnmq8\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe860d1001Mz1gG0Y9okFALa\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188713269,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe8d1fc001A02wlMGZtMhn5w\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe860d1001Mz1gG0Y9okFALa\",\"type\":\"tool\",\"callID\":\"e78217fe-04ae-49a8-bdd7-425698c14d51\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188683263,\"end\":1779188713267}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188713276,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe94735001AluXTSO7CE4BXp\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe860d1001Mz1gG0Y9okFALa\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.030357,\"tokens\":{\"total\":9755,\"input\":9664,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188743983,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe9bf2e001Qs9Ai5BsYfjxfF\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe94742001LzpvpWaAhpkPqn\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188773985,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fe9bf2f001gD6GRWkFt9XSsx\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe94742001LzpvpWaAhpkPqn\",\"type\":\"tool\",\"callID\":\"7bc18b62-3233-42cc-954d-ae00988226e2\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188743983,\"end\":1779188773984}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188773987,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fea3462001yCrUXq2IBJfIrK\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fe94742001LzpvpWaAhpkPqn\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.030729,\"tokens\":{\"total\":9879,\"input\":9788,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188794205,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fea835d001J5OCLHBflBim6W\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fea3465001odcO3LJ5dcxdCt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188824208,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fea835d0027Py0uhMKMrO5h9\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fea3465001odcO3LJ5dcxdCt\",\"type\":\"tool\",\"callID\":\"1ef70b6b-35c9-4b8c-9598-fa7eeff8110a\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188794206,\"end\":1779188824207}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188824209,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3feaf89000113sdmBPxLv1bqD\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fea3465001odcO3LJ5dcxdCt\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031101,\"tokens\":{\"total\":10003,\"input\":9912,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188853493,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3feb6ae50012s4tfI21YJHNGK\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3feaf893001tQ0Cs9H51WgeCp\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188876487,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3feb6aee001OCdPsmxCcqfbqT\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3feaf893001tQ0Cs9H51WgeCp\",\"type\":\"tool\",\"callID\":\"95add380-6ab3-49f8-8428-48b4723a9b76\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"sexual orientation\\\" LGBTQ disability status\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Title: Fluidity and diversity in sexual orientations - Intro to... | Fiveable. An individual's sexual orientation does not exist in isolation but intersects with other aspects of their identity. Examples include race, ethnicity, gender, socioeconomic status, disability status, and religion. <\/CONTENT> <URL> https://fiveable.me/introduction-lgbtq-studies/unit-4/fluidity-diversity-sexual-orientations/study-guide/tLtLB9KCnbnPXlWn <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Title: Disability Pride Month: Disabled LGBTQ+ people can be sexual too. \\\"See disabled LGBTQ+ people as individuals who are also sexual beings,” states Dr Ju Gosling in Disability Pride Month. <\/CONTENT> <URL> https://www.thepinknews.com/2025/07/16/disability-pride-month-disabled-lgbtq-people-can-be-sexual-too <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Title: LGBT and Disability: Information, News, Fact Sheets | DW. Significant associations exist between sexual orientation and covariates of disability. The age-adjusted likelihoods of current smoking, frequent mental distress and arthritis for both lesbians and women who are bisexual are notably higher than for heterosexual women. <\/CONTENT> <URL> https://www.disabled-world.com/disability/sexuality/lgbt <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Title: LGBTQ Info For Teens | Sexual Orientation & Gender Identity. Sexual orientation describes who you’re attracted to. You may already know your sexual orientation, or you might still be figuring it out — both are normal. <\/CONTENT> <URL> https://www.goodjobsamerica.org/learn/teens/sexual-orientation <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Title: Is LGBTQ a Mental Illness? What the Science Says - ScienceInsights. When medical professionals did treat sexual orientation as a disorder, the results were catastrophic. Conversion therapy, sometimes called “reparative therapy,” attempted to change a person’s sexual orientation or gender identity through psychological or spiritual interventions. <\/CONTENT> <URL> https://scienceinsights.org/is-lgbtq-a-mental-illness-what-the-science-says <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Title: Can I know my sexual orientation without having any... | 7 Cups. Your sexual orientation has nothing to do with sexual experiences. If you're bi for example you do not have to have had intimate relations with a boy and a girl to know that you're attracted to both sexs. <\/CONTENT> <URL> https://www.7cups.com/qa/lgbtq-issues-17/can-i-know-my-sexual-orientation-without-having-any-romantic-or-sexual-experiences-5416 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Title: Understanding sexual orientation and homosexuality. Sexual orientation refers to an enduring pattern of emotional, romantic, and/or sexual attractions to men, women, or both sexes. Date created: October 29, 2008 19 min read. <\/CONTENT> <URL> https://www.apa.org/topics/lgbtq/orientation <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Title: Intersectionality and Sexual Orientation: Understanding... - PSYFORU. The term \\\"intersectionality,\\\" coined by legal scholar Kimberlé Crenshaw, refers to the way different aspects of a person’s identity—such as race, gender, class, and sexual orientation—interact and influence their life experiences. When we discuss intersectionality. <\/CONTENT> <URL> https://psyforu.com/intersectionality-and-sexual-orientation-understanding-diverse-experiences <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Title: Can I touch you? Guess My Sexual Orientation | Living as... - YouTube. Hello, this is SHINETEEN If you liked the reaction,Please give likes and subscribe the channel :DDon't forget to follow our instagram a... <\/CONTENT> <URL> https://www.youtube.com/watch?v=Kp3G7w8K4rQ <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Title: Did Texas Remove Discrimination Protections for LGBTQ and.... In October 2020, Snopes readers asked for verification of news stories circulating online that reported a new rule in Texas would allow social workers in that state to refuse services to disabled people and members of the LGBTQ community. These reports refer to a rule change made on Oct. <\/CONTENT> <URL> https://www.snopes.com/fact-check/texas-social-workers <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188853494,\"end\":1779188876487},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188876489,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febc4c8001iqPtXORARFAH93\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3feaf893001tQ0Cs9H51WgeCp\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031473,\"tokens\":{\"total\":10127,\"input\":10036,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188878456,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febcc77001VSmFOgdtmteUBJ\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febc4ca001ttUVIUkszgmfmY\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188884684,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febcc77002ZfNX1fXYaqkBHD\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febc4ca001ttUVIUkszgmfmY\",\"type\":\"tool\",\"callID\":\"592e2b71-5503-4602-ad5a-6caba3264401\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"Studium\\\" \\\"Beruf\\\" \\\"Lebenslauf\\\"\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Lerne mit Quizlet und merke dir Karteikarten mit Begriffen wie studieren, ein Wirtschaftsstudium machen,dieUniversität (-en) und mehr. <\/CONTENT> <URL> https://quizlet.com/ch/319688309/teil-1-lebenslauf-und-beruf-das-studium-flash-cards <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Ich möchte in meinemLebenslauffür eine Bewerbung angeben, dass ich Schülern und Studenten Nachhilfeunterricht in verschiedenen Fremdsprachen gebe. Ich habe meine Berufserfahrungen imLebenslaufalle nach dem Schema \\\"Berufsbezeichnung, Firma, Tätigkeit\\\" aufgebaut. <\/CONTENT> <URL> https://www.gutefrage.net/frage/angabe-studium-im-lebenslauf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Normalerweise sinddieDaten des Beschäftigungsverhältnisses relevant für denLebenslauf, nicht, ob es ruhend war oder man krankgeschrieben war. Problematisch ist aberdiegleichzeitige Meldung beim Arbeitsamt. <\/CONTENT> <URL> https://www.finanzfrage.net/g/frage/lebenslauf-ruhendes-arbeitsverhaeltnis <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> KostenlosLebenslauferstellen: https://youbot.ausbildungspark.com/#/modules?newCv=trueDu willst dich bewerben - fürs Praktikum,dieAusbildung, ein duales S... <\/CONTENT> <URL> https://www.youtube.com/watch?v=yDHVoSmwzTM <\/URL> __END_OF_SOURCE 4__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188878456,\"end\":1779188884683},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188884685,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febe4cc0016MwYYgnCRVEFhI\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febc4ca001ttUVIUkszgmfmY\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.035301,\"tokens\":{\"total\":11379,\"input\":11282,\"output\":97,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188886533,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febec04001VFARx03oCfu9hj\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febe4cf001OyMjPtEjqULZx9\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188887983,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febec04002J31BQEIsYfiyPw\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febe4cf001OyMjPtEjqULZx9\",\"type\":\"tool\",\"callID\":\"f7e7ca11-ff29-4632-b7e4-af8aa4543cb9\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"Kommunikationswissenschaftlerin\\\" Studium Beruf\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Sprecherin für Bildung und Wissenschaft. Geboren am 15.11.1975.Beruf:Kommunikationswissenschaftlerin. Eingezogen überdieLandesliste Bayern.nicole-gohlke.de.nicole.gohlke@bundestag.de. <\/CONTENT> <URL> https://www.die-linke-bayern.de/parlamente/bundestag/nicole-gohlke <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Geboren am 15. November 1975,Beruf:Kommunikationswissenschaftlerin. 2008 bis 2009 Mitarbeiterin der BundestagsfraktionDIELINKE. <\/CONTENT> <URL> https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> DieKommunikationswissenschaftlerinNicoleGohlke(* 15. November 1975 in München) ist in der Politik bei der ParteiDieLinkeaktiv und seit 2013 Mitglied des Deutschen Bundestages. <\/CONTENT> <URL> https://www.muenchenwiki.de/wiki/Nicole_Gohlke <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> NicoleGohlkeistKommunikationswissenschaftlerinsowie Hochschul- und Wissenschaftspolitische Sprecherin der FraktiondieLINKEim Bundestag. <\/CONTENT> <URL> https://www.zeitschrift-luxemburg.de/autorinnen/nicolegohlke <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Category:NicoleGohlkeDeutsch:NicoleGohlke(* 15. November 1975 in München) ist eine deutscheKommunikationswissenschaftlerinund Politikerin. Sie ist Mitglied im Landesvorstand der Linken in Bayern und gehört seit Herbst 2009 als Abgeordnete dem Deutschen Bundestag an. <\/CONTENT> <URL> https://commons.wikimedia.org/wiki/Category:Nicole_Gohlke?uselang=de <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> KommunikationswissenschaftlerinNicoleGohlkeist seit 2008 Mitarbeiterin der BundestagsfraktionDIELINKEund seit 2009 Mitglied des Deutschen Bundestags. Sie wurde am 15. November 1975 in... <\/CONTENT> <URL> https://mail.freenet.de/nachrichten/topnews/pictureshow/die-schonsten-politikerinnen-der-welt-40341046.html <\/URL> __END_OF_SOURCE 6__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188886533,\"end\":1779188887983},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188887984,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febf1af001AgnvI1vAOkolvs\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febe4cf001OyMjPtEjqULZx9\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.036837,\"tokens\":{\"total\":11907,\"input\":11814,\"output\":93,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188889963,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febf968001kF0FWOV8bKGdeb\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febf1b2001J5c1zBykaqikFc\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188891285,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febf96a001fFwWuMJPCpnrTS\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febf1b2001J5c1zBykaqikFc\",\"type\":\"tool\",\"callID\":\"b1af81c3-1432-441b-b7ae-b3f0e04fa58f\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke Die Linke \\\"Studium\\\" \\\"Magister\\\" \\\"Universität\\\" München\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MagisterKatholische Theologie | Mag. theol. Text der Ordnung in der Fassung vom 6. August 2010 | PDF geändert durch Satzung vom 1. März 2012 | PDF Text der Ordnung in der Fassung der Änderungssatzung vom 1. März 2012 | PDF gilt für alle Studierenden,dieihrStudiumab dem WS 2018/2019 aufnehmen: Text der Ordnung in der Fassung vom 8 ... <\/CONTENT> <URL> https://www.uni-regensburg.de/universitaet/organisation/rechtsgrundlagen/studium/pruefungsordnungen/magister/eee <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Abschnitt I: Allgemeines 1 Geltungsbereich Diese Prüfungs- und Studienordnung regelt dasStudiumder Evangelischen Theolo-gie mit dem AbschlussMagisterTheologiae an der Theologischen Fakultät derUniversi-tätHeidelberg. Das Fakultätsexamen des StudiengangsMagisterTheologiae bildet einen berufsqua-lifizierenden Abschluss. <\/CONTENT> <URL> https://www.eth.uni-heidelberg.de/md/studium/download/magister_theologiae_po.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Deshalb sollen in diesem Bereichdiewichtigsten Informationen für einen guten Start insStudiumbereitgestellt werden: Zur Erleichterung des Studieneinstiegs wird Ihnen seitens der Fachschaft im Rahmen der Orientierungseinheit (OE) eine mehrtägige Einführung indieStrukturen und Abläufe derUniversitätund des Fachbereichs angeboten. <\/CONTENT> <URL> https://www.uni-marburg.de/de/fb05/studium/studiengaenge/kirchliches-examen-magister-evangelische-theologie <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Studienordnung der Ludwig-Maximilians-UniversitätMünchenfür das Fach Volkskunde für dasStudiumzum Erwerb des akademischen Grades einesMagisterArtium (M.A.) im Haupt- und Nebenfach (StudienordnungMagisterVolkskunde) <\/CONTENT> <URL> https://www.ekwee.uni-muenchen.de/vkee_download/2007-2023-dowload/magpo_1994.pdf <\/URL> __END_OF_SOURCE 4__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188889964,\"end\":1779188891284},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188891286,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3febfe95001Tr7QCDDdhITxIW\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febf1b2001J5c1zBykaqikFc\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.039156,\"tokens\":{\"total\":12668,\"input\":12572,\"output\":96,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188892643,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec03e2001ilYMsD5U9Sb0KD\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febfe97001C04jRDxl9Fv9hY\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188904545,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec03e3001sagXC61abzLSAy\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febfe97001C04jRDxl9Fv9hY\",\"type\":\"tool\",\"callID\":\"14ec731d-3e98-46a6-80e4-be82785a841c\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Studium 2023 hre als führender Standort im deutschsprachigen Raum. Über 750 Absolventinnen und Absolventen haben den Master-Studiengang Communication Management (seit 2007) oder zuvor den Schwerpunkt Public Relations imMagisterKommunikationswissenschaftsowie den früheren Bachelo <\/CONTENT> <URL> https://www.sozphil.uni-leipzig.de/fileadmin/Fakultät_SozPhil/Institut_KMW/Communication_Management/2024/Jahresbericht_2023_final_Web.pdf <\/URL> __END_OF_SOURCE 1__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188892643,\"end\":1779188904543},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188904549,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec3262001v9hXjoJC01rLAg\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3febfe97001C04jRDxl9Fv9hY\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.041208,\"tokens\":{\"total\":13360,\"input\":13266,\"output\":94,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188905934,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec37cc0017H7pq8AXSjQ28d\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fec326a001HgZcekoAKBlhHX\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188909802,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec37cd001SpbPcdkWdiENhT\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fec326a001HgZcekoAKBlhHX\",\"type\":\"tool\",\"callID\":\"74d52f52-05ee-4569-82b8-97973ce453c0\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Publikation finden zu:Kommunikationswissenschaft; Studium; Studienführer; Magisterstudiengang <\/CONTENT> <URL> https://www.fachportal-paedagogik.de/literatur/vollanzeige.html?FId=2262455 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Absolventen, deren Abschlussarbeit im HauptfachKommunikationswissenschaftmindestens mit der Note 2,0 bewertet wurde, können sich bis zum 31. März 2013 um den Preis bewerben. <\/CONTENT> <URL> https://www.uni-muenster.de/Kowi/mitteilungen/2013/beste-abschlussarbeit-2012.shtml <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Ich habe an der Ludwig-Maximilians-UniversitätMünchenKommunikationswissenschaft, Amerikanische Kulturgeschichte und Psychologie studiert, mit demMagisterArtium (M.A.) abgeschlossen und danach ein Aufbaustudium in Buchwissenschaft absolviert. <\/CONTENT> <URL> https://www.lauff.org/MF/person.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Als Diplom-Ökonom undMagisterArtium in Publizistik- undKommunikationswissenschaftbin ich seit über 20 Jahren erfolgreich an der Schnittstelle zwischen Wirtschaft und Öffentlichkeit tätig. Ebenso lang bin ich Mitglied im Deutschen Journalistenverband (DJV). <\/CONTENT> <URL> https://www.wirtschaftspublizist.de/about <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Insgesamt 110 Absolventinnen und Absolventen erhielten im vergangenen Jahr ihrMagister- oder Bachelorzeugnis. DieKommunikationswissenschaftgehört damit zu den beliebtesten Fächern der Friedrich-Schiller-Universität. <\/CONTENT> <URL> https://www.fsv.uni-jena.de/15980/absolventinnenfeier-2011 <\/URL> __END_OF_SOURCE 5__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188905935,\"end\":1779188909802},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188909803,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec46ea001lx1wjIDLQXq25H\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fec326a001HgZcekoAKBlhHX\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.042018,\"tokens\":{\"total\":13626,\"input\":13531,\"output\":95,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188911309,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec4ccc001GlQP34HcLT2uVy\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fec46ed00184RvzOEJ6s7ujo\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188941318,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fec4ccc002vfAol7aY9UAfDX\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fec46ed00184RvzOEJ6s7ujo\",\"type\":\"tool\",\"callID\":\"988f4038-6024-4e96-a22c-ced550d1b927\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188911309,\"end\":1779188941316}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188941324,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fecc207001J7ny5bsuCG9abT\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fec46ed00184RvzOEJ6s7ujo\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.043953,\"tokens\":{\"total\":14247,\"input\":14146,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188945248,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fecd15d001c2XNwgfF3D9wVs\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fecc21100175Je4BMY8x9aD3\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188975253,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fecd15f001Bku6fC35Fa18Vy\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fecc21100175Je4BMY8x9aD3\",\"type\":\"tool\",\"callID\":\"d6ed8d01-1e6c-4b07-8b5a-924a43cb7d3c\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188945249,\"end\":1779188975251}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188975258,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fed4695001k2RS4hhJsy8ic6\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fecc21100175Je4BMY8x9aD3\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.044355,\"tokens\":{\"total\":14381,\"input\":14280,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188992427,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fed89aa001bFncDoYIHqliPC\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fed46a1001QSCPMdRn5J3a9Z\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189022431,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fed89ab001Qe5M5S9QiflUGc\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fed46a1001QSCPMdRn5J3a9Z\",\"type\":\"tool\",\"callID\":\"d56900d6-32e4-413e-b965-565076296b82\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779188992428,\"end\":1779189022431}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189022434,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fedfee00018LSlYJodfC2b37\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fed46a1001QSCPMdRn5J3a9Z\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.044757,\"tokens\":{\"total\":14515,\"input\":14414,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189024852,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fee0852001C9T5jX6Fpp534H\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fedfee4001JgrFMfGn8fduYm\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189054859,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fee0853001OdoDenjQjrpY1v\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fedfee4001JgrFMfGn8fduYm\",\"type\":\"tool\",\"callID\":\"9390fdef-9b85-40e0-9ada-7eb36bd3cd1a\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189024852,\"end\":1779189054857}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189054864,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fee7d8b001Z37Y0RqmCh66cU\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fedfee4001JgrFMfGn8fduYm\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.045159,\"tokens\":{\"total\":14649,\"input\":14548,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189094207,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fef173c001dEZMAb7t8vwEOC\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fee7d9300179hxPYYwWAn82l\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189124213,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fef173d0012X44E3a8nqc6yP\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fee7d9300179hxPYYwWAn82l\",\"type\":\"tool\",\"callID\":\"c4e722bc-8f3b-4014-8ad2-67d5d24f1f44\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189094208,\"end\":1779189124210}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189124220,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3fef8c75001pGGQvo6zS21rts\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fee7d9300179hxPYYwWAn82l\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.045561,\"tokens\":{\"total\":14783,\"input\":14682,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189162753,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff022fd001tYFPMCDFBRZCsz\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fef8c82001Do5KyT0004Ihop\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189192763,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff022ff001wEd5Ax88WBZd4m\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fef8c82001Do5KyT0004Ihop\",\"type\":\"tool\",\"callID\":\"4c3f3121-90fe-4093-af8f-b7dc3188fc50\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189162754,\"end\":1779189192760}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189192770,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff0983b0011PL2sqScvHF6nN\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3fef8c82001Do5KyT0004Ihop\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.045963,\"tokens\":{\"total\":14917,\"input\":14816,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189201731,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff0bb40001gGQqCxtB8jrkSw\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff09849001qJOkLuA1Eh8yY1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189231738,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff0bb42001JmDkbCLRe9jWW2\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff09849001qJOkLuA1Eh8yY1\",\"type\":\"tool\",\"callID\":\"dcd470a7-ae8c-45e0-89e8-cb813df431c9\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189201732,\"end\":1779189231735}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189231745,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff1307a001FAU7g6S245XFdw\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff09849001qJOkLuA1Eh8yY1\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.046365,\"tokens\":{\"total\":15051,\"input\":14950,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189274271,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff1d69c001hE15aZ7tdY7UWq\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff1308700115PSU4nccFPUft\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189304274,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff1d69e001x8AD8vUUKvd7A4\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff1308700115PSU4nccFPUft\",\"type\":\"tool\",\"callID\":\"1b8e3553-90e7-4628-a570-5a5dd66aa72d\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189274272,\"end\":1779189304273}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189304275,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff24bd2001r0AqXcz6yA4DC3\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff1308700115PSU4nccFPUft\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.046767,\"tokens\":{\"total\":15185,\"input\":15084,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189342587,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff2e175001WoiXi5KGLTB6a7\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff24bd5001xayu6o1LJR7Q5T\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189372596,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff2e17a001Xnjj4JH5pmDavv\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff24bd5001xayu6o1LJR7Q5T\",\"type\":\"tool\",\"callID\":\"9d727669-92f7-492a-a395-a0054403a73f\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189342587,\"end\":1779189372593}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189372601,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff356b4001Vc4PGFOSrf6JMM\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff24bd5001xayu6o1LJR7Q5T\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.047169,\"tokens\":{\"total\":15319,\"input\":15218,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189383648,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff381de001Cgfe0NdvudBlja\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff356bf001oZQfJN5E1Lvcb6\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189413651,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff381df001z4P750tdF1ZigM\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff356bf001oZQfJN5E1Lvcb6\",\"type\":\"tool\",\"callID\":\"66ab4ac2-1c14-4b48-bc85-07e99dc6c0e4\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189383649,\"end\":1779189413651}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189413653,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff3f713001cgAiWWnp1smB7r\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff356bf001oZQfJN5E1Lvcb6\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.047571,\"tokens\":{\"total\":15453,\"input\":15352,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189436100,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff44ec3001ZABFEfNZCgU7AM\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff3f716001B6AN9lodjFmlDs\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189466102,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff44ec4001gDLW9n6OBbEgO3\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff3f716001B6AN9lodjFmlDs\",\"type\":\"tool\",\"callID\":\"b59daae6-1833-48e2-ad5a-67b686e67a18\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189436100,\"end\":1779189466102}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189466103,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff4c3f60013zdyHVjq03ryFo\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff3f716001B6AN9lodjFmlDs\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.047973,\"tokens\":{\"total\":15587,\"input\":15486,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189489972,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff52132001schQVUwczLhwXp\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff4c3f900172zDSCKIbi7KzQ\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189519974,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff521330010bOlD6vmEYJ8Y3\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff4c3f900172zDSCKIbi7KzQ\",\"type\":\"tool\",\"callID\":\"e5e2e183-9932-431f-9678-72fa40abdddd\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189489972,\"end\":1779189519974}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189519976,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff5966700193lqC7ZlRLrNu9\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff4c3f900172zDSCKIbi7KzQ\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.048375,\"tokens\":{\"total\":15721,\"input\":15620,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189526217,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff5aec8001wCtviwwESvYvxv\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff596690012vDCstEmbnK6Lb\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189556221,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff5aec90012Crj7GtXnA8JM8\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff596690012vDCstEmbnK6Lb\",\"type\":\"tool\",\"callID\":\"d17de9cc-a073-4a67-a60a-34bb84bbcfdf\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189526217,\"end\":1779189556219}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189556225,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff623fd001NG3ou76hCuVoGs\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff596690012vDCstEmbnK6Lb\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.048777,\"tokens\":{\"total\":15855,\"input\":15754,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189586468,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff69a21001G9JAik4nxECnkz\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff62406001bn72VofxDNrZWF\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189616474,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff69a22001q1CfS0xN540KBh\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff62406001bn72VofxDNrZWF\",\"type\":\"tool\",\"callID\":\"77de72d6-1742-4578-8774-8effda39f3b8\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189586469,\"end\":1779189616472}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189616480,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff70f5b001BE62XSKf63q0ya\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff62406001bn72VofxDNrZWF\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.049179,\"tokens\":{\"total\":15989,\"input\":15888,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189638268,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff7647a001JhLj9zjfkO5GCk\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff70f640010EQw2dBVZeddo0\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189668273,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff7647b001Bc92FOeqcEr6vn\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff70f640010EQw2dBVZeddo0\",\"type\":\"tool\",\"callID\":\"0c437a03-906d-4c33-99c6-ae0c22594b4e\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189638268,\"end\":1779189668271}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189668278,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff7d9b2001dJ1rZ4N17Pjy1L\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff70f640010EQw2dBVZeddo0\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.049581,\"tokens\":{\"total\":16123,\"input\":16022,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189686444,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff820ac001mYCTvMwQA7hgH7\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff7d9b9001JOYAe2ZbP8pk4d\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189716451,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff820ac002xxptEqdY1iREag\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff7d9b9001JOYAe2ZbP8pk4d\",\"type\":\"tool\",\"callID\":\"9ca7e4e9-548d-4947-acdf-8748dcf79385\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189686445,\"end\":1779189716449}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189716457,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff895e3001z0verENI4tkz6F\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff7d9b9001JOYAe2ZbP8pk4d\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.049983,\"tokens\":{\"total\":16257,\"input\":16156,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189721528,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff8a9b7001WyjZtz2TLDTr8B\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff895ed001PQvkYfHPAhBHwL\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189751531,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff8a9b8001GPI3qJONrLP6vF\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff895ed001PQvkYfHPAhBHwL\",\"type\":\"tool\",\"callID\":\"f6762f26-a1c3-4c2a-83c8-cc2172a6b0b4\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189721529,\"end\":1779189751530}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189751532,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff91eeb001wdeYEneANB7Mjb\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff895ed001PQvkYfHPAhBHwL\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.050385,\"tokens\":{\"total\":16391,\"input\":16290,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189754150,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff92923001MtDaerdKy5da8q\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff91eee0018FkG1rzbGLD2Wi\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189784155,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff92925001Xo5Ar14mcUrTj0\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff91eee0018FkG1rzbGLD2Wi\",\"type\":\"tool\",\"callID\":\"92e419f3-c102-4bbc-a7e7-f212a97a7cfd\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189754151,\"end\":1779189784153}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189784160,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff99e5b001rNZQCoqmvCqlJG\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff91eee0018FkG1rzbGLD2Wi\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.050787,\"tokens\":{\"total\":16525,\"input\":16424,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189790686,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff9b7db0011G1MfNnU7M6W0M\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff99e63001zky6COpfDhHEca\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189820696,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ff9b7dc0015AMlDSsxeekfKs\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff99e63001zky6COpfDhHEca\",\"type\":\"tool\",\"callID\":\"0375ca4d-a06b-4b74-b823-c0a816d50a70\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189790687,\"end\":1779189820693}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189820701,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffa2d18001L5Xzr1Rf2s9pjX\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ff99e63001zky6COpfDhHEca\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.051189,\"tokens\":{\"total\":16659,\"input\":16558,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189834009,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffa6117001VBbafw9P1fBakB\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffa2d230017KK2m3yfYJZe5c\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189864018,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffa6118001G0qZjYdAtTW2U0\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffa2d230017KK2m3yfYJZe5c\",\"type\":\"tool\",\"callID\":\"81f637fe-63d2-4650-baf1-d398d6cfe801\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189834010,\"end\":1779189864016}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189864023,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffad652001RjEqPIfUBFNh0H\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffa2d230017KK2m3yfYJZe5c\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.051591,\"tokens\":{\"total\":16793,\"input\":16692,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189897720,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffb59f7001hpaFe0Qj38uDiZ\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffad65d001o45mC2n7qIFIOv\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189927731,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffb59f8001MQwHEqLjvrM0Zh\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffad65d001o45mC2n7qIFIOv\",\"type\":\"tool\",\"callID\":\"1c1b9200-1966-4a46-9522-bd5ef85ea939\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189897720,\"end\":1779189927729}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189927737,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffbcf33001FXyHPG2rDKh4v8\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffad65d001o45mC2n7qIFIOv\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.051993,\"tokens\":{\"total\":16927,\"input\":16826,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779189957673,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffc4426001tXWqBKU558gDgs\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffbcf40001yOsSFs8QZ4m8MY\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779189987679,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffc4428001tP96O0josnoVIx\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffbcf40001yOsSFs8QZ4m8MY\",\"type\":\"tool\",\"callID\":\"b94e0c8f-2366-496b-a230-9278408a419e\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779189957673,\"end\":1779189987678}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779189987682,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffcb95f001MWPRI6vEqh8xEW\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffbcf40001yOsSFs8QZ4m8MY\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.052395,\"tokens\":{\"total\":17061,\"input\":16960,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779190013767,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffd1f46001sX70dgIsB7XdOS\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffcb964001Fosvoo3S454gYJ\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779190043772,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffd1f470017s0cHDsFMkmmAy\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffcb964001Fosvoo3S454gYJ\",\"type\":\"tool\",\"callID\":\"9d4a99f2-bc52-4edb-80f5-98fb9928f6cf\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779190013768,\"end\":1779190043771}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779190043775,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffd947c001fl1xaEtlwJ1PLy\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffcb964001Fosvoo3S454gYJ\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.052797,\"tokens\":{\"total\":17195,\"input\":17094,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779190056747,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffdc72a0017t3g4F0aniXM5j\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffd9481001EPW7pgzhuNIGMS\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779190085443,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffdc72b001Pb1B11Z4yEeSlr\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffd9481001EPW7pgzhuNIGMS\",\"type\":\"tool\",\"callID\":\"9daa0b58-38be-4fef-b8b3-cb57eb8b895b\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nicole Gohlke \\\"Magister\\\" \\\"Kommunikationswissenschaft\\\" LMU München site:bundestag.de\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke. 1995 Abitur; 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München; 2004 bis 2008 Angestellte im Marketing und in der Beratung. <\/CONTENT> <URL> https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke. 1995 Abitur; 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München; 2004 bis 2008 Angestellte in Marketing-Agenturen und Beratung. <\/CONTENT> <URL> https://bundestag.de/abgeordnete/biografien20/G/gohlke_nicole-857380 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke, LINKE. 1995 Abitur. 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München. <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/abgeordnete/biografien18/G/gohlke_nicole-258410 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke, LINKE. 1995 Abitur; 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München; 2004 bis 2008 Angestellte bei verschiedenen Event-Agenturen; seit 2008 Mitarbeiterin der Bundestagsfraktion Die Linke. <\/CONTENT> <URL> https://webarchiv.bundestag.de/archive/2013/0412/mobil/mdb/biografien/G/gohlke_nicole.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Title: German Bundestag - Nicole Gohlke, LINKE. 1995 Abitur. 1996 bis 2003 Studium der Kommunikationswissenschaften an der LMU München. <\/CONTENT> <URL> https://webarchiv.bundestag.de/archive/2015/0626/htdocs_e/bundestag/members18/biographies/G/gohlke_nicole/258410.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Title: Deutscher Bundestag - Münchner Marxistin in Berlin: Nicole Gohlke. In seiner Jugend war Süssmayr Punk, gehörte Anfang der 1980er-Jahre der linksextremen Gruppe „Freizeit81“ an. Auch Gohlke engagierte sich während ihres Studiums der Kommunikationswissenschaften in München bei linken Gruppen, so etwa beim trotzkistischen „Linksruck“. <\/CONTENT> <URL> https://webarchiv.bundestag.de/archive/2015/0717/dokumente/textarchiv/2014/kw27_wege_politik_gohlke/286442.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Title: Deutscher Bundestag - Münchner Marxistin in Berlin: Nicole Gohlke. In seiner Jugend war Süssmayr Punk, gehörte Anfang der 1980er-Jahre der linksextremen Gruppe „Freizeit81“ an. Auch Gohlke engagierte sich während ihres Studiums der Kommunikationswissenschaften in München bei linken Gruppen, so etwa beim trotzkistischen „Linksruck“. <\/CONTENT> <URL> https://www.bundestag.de/webarchiv/textarchiv/2014/kw27_wege_politik_gohlke-286442 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Title: Nicole Gohlke, MdB, DIE LINKE - DIP Bundestag. If you're seeing this message, that means JavaScript has been disabled on your browser, please enable JS to make this app work <\/CONTENT> <URL> https://dip.bundestag.de/aktivität/nicole-gohlke-mdb-die-linke/1567583?f.deskriptor=Wissenschaftlicher+Mitarbeiter&start=175&rows=25&pos=184&ctx=d <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Title: Deutscher Bundestag - Nicole Gohlke wird stellvertretende Vorsitzende. June 25, 2025 - Gohlke ist seit 2009 Mitglied des Deutschen Bundestages und Sprecherin der Linken für Bildung und Wissenschaft. <\/CONTENT> <URL> https://www.bundestag.de/presse/hib/kurzmeldungen-1096296 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Title: Bundestag. February 4, 2019 - Frau Dr. Nicole Prehn, <\/CONTENT> <URL> https://dipbt.bundestag.de/doc/btd/19/075/1907520.pdf <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779190056748,\"end\":1779190085441},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779190085448,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffe3743001BlqRX9eaH6rZUZ\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffd9481001EPW7pgzhuNIGMS\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.053199,\"tokens\":{\"total\":17329,\"input\":17228,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779190088834,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffe447f001Vs14Ia9e2f9U2I\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffe374c001rfg67Zs5brcQRO\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779190088835,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffe4480001UmJdziJg9wjlX0\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffe374c001rfg67Zs5brcQRO\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Magister Artium (M.A.) in Communication Science (Kommunikationswissenschaften) from Ludwig Maximilian University of Munich (LMU München), 2003.\\\",\\n  \\\"prior_occupation\\\": \\\"Employee in marketing and consulting (2004–2008); staff member for the Die Linke parliamentary group in the Bundestag (2008–2009).\\\",\\n  \\\"birth_year\\\": \\\"1975\\\",\\n  \\\"birth_place\\\": \\\"Munich, Germany\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"sources\\\": {\\n    \\\"educational_attainment\\\": \\\"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\\\",\\n    \\\"prior_occupation\\\": \\\"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\\\",\\n    \\\"birth_year\\\": \\\"https://de.wikipedia.org/wiki/Nicole_Gohlke\\\",\\n    \\\"birth_place\\\": \\\"https://de.wikipedia.org/wiki/Nicole_Gohlke\\\",\\n    \\\"disability_status\\\": \\\"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\\\",\\n    \\\"sexual_orientation\\\": \\\"https://www.bundestag.de/abgeordnete/biografien/G/gohlke_nicole-1044540\\\"\\n  }\\n}\\n```\",\"time\":{\"start\":1779190088834,\"end\":1779190088834}}}\n{\"type\":\"step_finish\",\"timestamp\":1779190088838,\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"part\":{\"id\":\"prt_e3ffe4483001k73gc947qpTAnN\",\"sessionID\":\"ses_1c01c995fffeH2R5DQ8K2BTUrB\",\"messageID\":\"msg_e3ffe374c001rfg67Zs5brcQRO\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.062775,\"tokens\":{\"total\":19109,\"input\":18655,\"output\":454,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

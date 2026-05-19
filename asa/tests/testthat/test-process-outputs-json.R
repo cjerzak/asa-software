@@ -103,6 +103,79 @@ test_that(".extract_json_from_trace parses structured traces with terminal AI JS
   expect_equal(as.integer(extracted$json_data_canonical$birth_year), 1982L)
 })
 
+test_that(".extract_json_from_trace parses terminal OpenCode text events", {
+  terminal <- paste(
+    "```json",
+    jsonlite::toJSON(
+      list(name = "Gergely Gulyas", country = "Hungary", answer = 42L),
+      auto_unbox = TRUE
+    ),
+    "```",
+    sep = "\n"
+  )
+  trace_json <- jsonlite::toJSON(
+    list(
+      events = list(
+        list(type = "text", part = list(type = "text", text = terminal)),
+        list(
+          type = "step_finish",
+          part = list(
+            type = "step-finish",
+            tokens = list(input = 1L, output = 2L, cache = list(read = 0L, write = 0L))
+          )
+        )
+      ),
+      cli_status = 0L,
+      stderr = "",
+      errors = character(0),
+      parse_error = FALSE,
+      raw_stdout = ""
+    ),
+    auto_unbox = TRUE,
+    pretty = FALSE,
+    null = "null"
+  )
+
+  parsed <- asa:::.extract_json_from_trace(trace_json)
+  expect_true(is.list(parsed) && length(parsed) > 0)
+  expect_equal(as.character(parsed$name), "Gergely Gulyas")
+  expect_equal(as.character(parsed$country), "Hungary")
+  expect_equal(as.integer(parsed$answer), 42L)
+  expect_null(parsed$read)
+
+  extracted <- extract_agent_results(trace_json)
+  expect_equal(as.character(extracted$json_data_canonical$name), "Gergely Gulyas")
+  expect_null(extracted$json_data_canonical$write)
+})
+
+test_that(".extract_json_from_trace does not mine OpenCode token cache as answer", {
+  trace_json <- jsonlite::toJSON(
+    list(
+      events = list(
+        list(type = "text", part = list(type = "text", text = "No JSON answer.")),
+        list(
+          type = "step_finish",
+          part = list(
+            type = "step-finish",
+            tokens = list(input = 1L, output = 2L, cache = list(read = 0L, write = 0L))
+          )
+        )
+      ),
+      cli_status = 0L,
+      stderr = "",
+      errors = character(0),
+      parse_error = FALSE,
+      raw_stdout = ""
+    ),
+    auto_unbox = TRUE,
+    pretty = FALSE,
+    null = "null"
+  )
+
+  parsed <- asa:::.extract_json_from_trace(trace_json)
+  expect_null(parsed)
+})
+
 test_that(".extract_json_from_trace ignores ToolMessage envelope payloads", {
   legacy_trace <- paste(
     "ToolMessage(content=",

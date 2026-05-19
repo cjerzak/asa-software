@@ -2095,6 +2095,63 @@ extract_search_tiers <- function(text) {
   isTRUE(has_content && (has_tool_name || has_tool_calls))
 }
 
+#' Extract terminal JSON from OpenCode trace_json payloads
+#' @param text Raw trace text
+#' @return List with recognized flag and parsed data
+#' @keywords internal
+.extract_opencode_trace_json <- function(text) {
+  out <- list(recognized = FALSE, data = NULL)
+  if (!is.character(text) || length(text) != 1 || is.na(text) || !nzchar(text)) {
+    return(out)
+  }
+
+  txt <- trimws(text)
+  if (!startsWith(txt, "{") || !grepl("\"events\"\\s*:", txt)) {
+    return(out)
+  }
+
+  parsed <- .try_or(jsonlite::fromJSON(txt, simplifyVector = FALSE))
+  if (!is.list(parsed) || !is.list(parsed$events)) {
+    return(out)
+  }
+
+  opencode_fields <- c("raw_stdout", "cli_status", "parse_error", "stderr", "errors")
+  if (!any(opencode_fields %in% names(parsed))) {
+    return(out)
+  }
+  out$recognized <- TRUE
+
+  text_events <- character(0)
+  for (event in parsed$events) {
+    if (!is.list(event) || !identical(as.character(event$type %||% ""), "text")) {
+      next
+    }
+    if (!is.list(event$part)) {
+      next
+    }
+    content <- as.character(event$part$text %||% "")
+    if (length(content) == 0L) {
+      next
+    }
+    if (length(content) > 1L) {
+      content <- paste(content, collapse = "\n")
+    }
+    if (!is.na(content[[1]]) && nzchar(content[[1]])) {
+      text_events <- c(text_events, content[[1]])
+    }
+  }
+
+  for (i in rev(seq_along(text_events))) {
+    data <- .try_or(.parse_json_response(text_events[[i]]))
+    if (is.list(data) && length(data) > 0L && !isTRUE(.is_tool_message_envelope(data))) {
+      out$data <- data
+      return(out)
+    }
+  }
+
+  out
+}
+
 #' Count the ratio of Unknown/empty fields in a parsed JSON list
 #' @param parsed A named list from JSON extraction
 #' @return Numeric ratio between 0 and 1
@@ -2233,6 +2290,11 @@ extract_search_tiers <- function(text) {
     # Structured traces are authoritative: if no AI terminal JSON is found,
     # do not fall back to generic brace-matching over tool payloads.
     return(NULL)
+  }
+
+  opencode <- .extract_opencode_trace_json(text)
+  if (isTRUE(opencode$recognized)) {
+    return(opencode$data)
   }
 
   tryCatch({
