@@ -1,0 +1,14 @@
+{
+  "education_institution": "Unknown",
+  "education_level": "Unknown",
+  "birth_place": "Unknown",
+  "lgbtq_details": null,
+  "education_field": "Education (Higher Education, Curriculum, Special Education)",
+  "confidence": 0.9,
+  "lgbtq_status": "Unknown",
+  "prior_occupation": "Professor / Educator",
+  "class_background": "Middle class/professional",
+  "disability_status": "Unknown",
+  "justification": "Dalia Mirna Bernal Yanez is a Panamanian politician and former deputy for the San Miguelito district (Circuit 8-6). Her educational background includes a Master's in Higher Education (1998), a Postgraduate degree in University Teaching (1998), and a Postgraduate degree in Planning and Administration of Higher Education (1992). She also pursued doctoral studies in Higher Education with an emphasis on Curriculum (2000). Before entering politics, she was a professor (docente), which categorizes her class background as middle class/professional. Her birth year is confirmed as 1956. Information regarding her specific birth place, disability status, and sexual orientation is not publicly disclosed in the reviewed sources.",
+  "birth_year": 1956
+}
