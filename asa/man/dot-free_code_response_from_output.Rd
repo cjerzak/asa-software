@@ -12,7 +12,8 @@
   stderr = "",
   thread_id = NULL,
   target_backend = NULL,
-  target_model = NULL
+  target_model = NULL,
+  loop_guard = NULL
 )
 }
 \description{

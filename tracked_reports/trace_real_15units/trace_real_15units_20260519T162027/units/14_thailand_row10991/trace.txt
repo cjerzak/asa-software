@@ -1,0 +1,432 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779222099617,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6b69f001AQE01uMs76L8kh",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6ac7f001wAG0HuBEW4xN4n",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222101726,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6b6a00013xjRObnZP0Z1FN",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6ac7f001wAG0HuBEW4xN4n",
+        "type": "tool",
+        "callID": "fe031674-e742-4b82-971f-4034eecb80e5",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Chaj Kuldilok Pheu Thai Thailand biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP or PT; / ˌpʌˈtaɪ / PUH TY;Thai: พรรคเพื่อไทย, RTGS: Phak PhueaThai[pʰǎk pʰɯ̂a tʰāj], lit. 'ForThaisParty') is a major populist, liberal conservative political party inThailand. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Pheu_Thai_Party <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> AsThailand'snext election approaches, political dynamics between the People's Party andPheuThaiParty intensify, highlighting past local elections and ongoing controversies. <\/CONTENT> <URL> https://thaitimes.com/thailand-s-political-landscape-people-s-party-and-pheu-thai-party-in-the-spotlight <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> PheuThaiParty: A major political party inThailand, with its headquarters in Bangkok, thePheuThaiParty is dedicated to improving the quality of life for its citizens and protecting national ... <\/CONTENT> <URL> https://www.scmp.com/topics/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ThePheuThaiParty is a majorThaipolitical force known for populist policies and ties to Thaksin Shinawatra. Explore its history, elections, and challenges. <\/CONTENT> <URL> https://stewardshipreport.org/wiki/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> This led to a major realignment inThaipolitics, withPheuThaidiscarding its long-held anti-establishment position and becoming a party upholding the status quo. This article analyses the causes and consequences ofPheuThai'sgrand compromise withThailand'sconservative parties. <\/CONTENT> <URL> https://www.iseas.edu.sg/articles-commentaries/iseas-perspective/2024-52-causes-and-effects-of-pheu-thais-grand-compromise-the-lurking-instability-of-thailands-post-2023-party-system-by-mathis-lohatepanont-and-napon-jatusripitak <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> •PheuThaiParty is appointing political officials to assist ministers across various ministries including Higher Education, Agriculture and Cooperatives, Education, Labour, and Social Development and Human Security. •The goal of these appointments is to bring in new generation talent to assist the party's ministerial work. <\/CONTENT> <URL> https://thailandedition.com/i/pheu-thai-appoints-new-generation-political-00a369db97823c155714785d <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Thailand'sBhumjaithai Party has moved closer to forming a new government after thePheuThaiParty agreed to join it in a proposed coalition. <\/CONTENT> <URL> https://apnews.com/article/thailand-election-politics-anutin-pheu-thai-da7463d98b137cd40261f9a55526005a <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> KRITDIKORN WONGSWANGPANICH The results ofThailand's2023 general elections came as a shock. ThePheuThaiParty (PTP), which had won the five previous ballots, came second to a relative newcomer, the Move Forward Party (MFP). As soon as the polls closed, local and international media was saturated with articles that tried to make sense of the defeat,1 while condemnations of the party's ... <\/CONTENT> <URL> https://www.jstor.org/stable/pdf/27278479.pdf <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> For the past few weeks an irresistibly catchy tune has been playing in neighbourhoods acrossThailand, from campaign trucks sent out by thePheuThaiparty, the frontrunner in this Sunday's ... <\/CONTENT> <URL> https://www.bbc.com/news/world-asia-65531574 <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222099620,
+            "end": 1779222101725
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222101728,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6bedf001NkKZ8IiltAg421",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6ac7f001wAG0HuBEW4xN4n",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0228,
+        "tokens": {
+          "total": 6545,
+          "input": 6284,
+          "output": 261,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222103900,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6c75b00174Qa167ou0C5Be",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6bee2001jgV0aCX4vNCPMn",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222105315,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6c75c001SiUSDhc66I6FFW",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6bee2001jgV0aCX4vNCPMn",
+        "type": "tool",
+        "callID": "73f6cce6-0244-4f96-945d-ac06b9e91674",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Chat Kuldilok Pheu Thai biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP or PT; / ˌpʌˈtaɪ / PUH TY;Thai: พรรคเพื่อไทย, RTGS: Phak PhueaThai[pʰǎk pʰɯ̂a tʰāj], lit. 'ForThaisParty') is a major populist, liberal conservative political party in Thailand. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Pheu_Thai_Party <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> PheuThaiParty: A major political party in Thailand, with its headquarters in Bangkok, thePheuThaiParty is dedicated to improving the quality of life for its citizens and protecting national ... <\/CONTENT> <URL> https://www.scmp.com/topics/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ThePheuThaiparty has to tread a delicate balance between its coalition with conservatives and fulfilling reformist expectations. <\/CONTENT> <URL> https://fulcrum.sg/pheu-thai-between-a-rock-and-a-hard-place <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ThePheuThaiParty is a majorThaipolitical force known for populist policies and ties to Thaksin Shinawatra. Explore its history, elections, and challenges. <\/CONTENT> <URL> https://stewardshipreport.org/wiki/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> The coming months will tell whetherPheuThaistays faithful to its campaign promises and successfully implements these policies under its compromised new government. If not, the party could be heading toward a downward trajectory and face public condemnation as opportunists who betrayed those who believed in their promises of change. <\/CONTENT> <URL> https://cambodianess.com/article/legitimacy-of-pheu-thai-party-as-peoples-champion-in-question <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ThePheuThaiParty[a] (PTP or PT) is a major populist political party in Thailand. It is the third incarnation of theThaiRakThaiParty, a political party founded by former prime minister Thaksin Shinawatra in 1998. Like the previous incarnations,PheuThaiis the main political vehicle for the Shinawatra family. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Pheu_Thai <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> PheuThai'sgrip on rural provinces is weakening and voters are switching allegiance to powerful individual candidates. Read more at straitstimes.com. <\/CONTENT> <URL> https://www.straitstimes.com/asia/se-asia/rural-thai-voters-shift-old-loyalties-testing-pheu-thais-populist-machine <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Several formerPheuThaiMPs reported to the National Council for Peace and Order at the Army Club Monday. They included JaruphanKuldilok, Jirayu Huangsup, Khattiya Sawasdiphol , and Anusorn Eamsa-ard. <\/CONTENT> <URL> https://www.nationthailand.com/in-focus/30234622 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> PheuThairestructures its deputy party leadership by promoting Somsak Thepsutin's daughter to deputy party leader overseeing the lower northern region, while Jiraporn Sindhupr advances to deputy party leader managing the central northeastern region. <\/CONTENT> <URL> https://en.thairath.co.th/news/politic/2927507 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ThePheuChartThaiParty (Thai: พรรคเพื่อชาติไทย; RTGS:Phak PhueaChatThai; ForThaiNation Party) is aThaipolitical party founded by Ampapan Thanetdejsunthorn in 2018. [1] Ampapan was the \"minor wife\" of the late former Army chief, Armed Forces Headquarters Supreme Commander, and coup leader Sunthorn Kongsompong. <\/CONTENT> <URL> https://en.everybodywiki.com/Pheu_Chart_Thai_Party <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222103901,
+            "end": 1779222105315
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222105317,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6cce40010acs8i26IeXruP",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6bee2001jgV0aCX4vNCPMn",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0263,
+        "tokens": {
+          "total": 7716,
+          "input": 7452,
+          "output": 264,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222106680,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6d237001BDbNbZ920BJLfW",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6cce8001LMTY4YhyLNdrxI",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222126683,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e6d238001PO77NNvS8f4hqO",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6cce8001LMTY4YhyLNdrxI",
+        "type": "tool",
+        "callID": "df03e58f-8baa-47a9-be2a-3f05a365c513",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "\"Chat Kuldilok\" Pheu Thai"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779222106680,
+            "end": 1779222126682
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222126684,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e7205b001DoPzc7pYzkGLu1",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e6cce8001LMTY4YhyLNdrxI",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0272,
+        "tokens": {
+          "total": 8705,
+          "input": 8618,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222132212,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e735f4001RXLqMAcC5VnZPb",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e7205d001Obz3UUTXyU90oD",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222132214,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e735f4002U31xRqbSpL5zDd",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e7205d001Obz3UUTXyU90oD",
+        "type": "tool",
+        "callID": "2715eb57-ff7b-4c7a-952b-baaf8a588b5e",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Chat Kuldilok\" Pheu Thai"
+          },
+          "output": "ASA_TOOL_CACHE_HIT\n__START_OF_SOURCE 1__ <CONTENT> Title: ChatGPT. ChatGPT is your AI chatbot for everyday use. Chat with the most advanced AI to explore ideas, solve problems, and learn faster. <\/CONTENT> <URL> https://chatgpt.com <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Title: Google Chat - Sign In | Google Workspace. Sign in to Google Chat and access powerful group messaging for personal and professional collaboration from Google Workspace. <\/CONTENT> <URL> https://chat.google.com <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Title: Chatiwi | Private Anonymous Chat Rooms - No Registration Required. Chat privately on Chatiwi with anonymous chat rooms and one-to-one messaging. No registration, encryption-first, built for fast and safe conversations. <\/CONTENT> <URL> https://chatiwi.com/chat <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Title: Chitchat - Talk to strangers. Chat with strangers and meet new friends in modern, free and random chat rooms, anonymous text or video chats. Perfect for Mobile Chats, Girls Chat, Stranger Chats - a great one-on-one chats alternative to Omegle and OmeTV. <\/CONTENT> <URL> https://www.chitchat.gg <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Title: #1 Chatiw - Free chat rooms online with no registration , online .... free chat website that lets you connect with people quickly and easily. Featuring mobile chat rooms as well, helps you find and connect with single women and men throughout the globe. All you have to do is answer a couple of simple questions and you’re ready to go. <\/CONTENT> <URL> https://chatiw.com <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Title: Moco | Free Online Chat Rooms. Moco's free chat rooms are the perfect online chat solution for all devices. Choose a chat room and start to find new friends around the world. The strangers you meet may turn into friends or even people that you can't live without. Join a Chat Room & Send Messages The way to start is to take your time and check out the free chat rooms and use the features that make it easy have conversations ... <\/CONTENT> <URL> https://www.mocospace.com/chat <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Title: WeChat - Connects with over 1 billion users | Chats · Calls ·.... WeChat is a social communication app serving over 1 billion users, supporting free chat, HD voice and video calls, Moments, and mobile payments, making communication and life more convenient. <\/CONTENT> <URL> https://www.wechat.com/en <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Title: ChatGPT - Free download and install on Windows | Microsoft Store. 5 days ago · Chat with your computer—Use Advanced Voice to chat with your computer in real-time and get hands-free advice and answers while you work. Search the web—Get fast, timely answers with links to relevant web sources. <\/CONTENT> <URL> https://apps.microsoft.com/detail/9nt1r1c2hh7j <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Title: Grok. Grok is an AI assistant built by xAI. Chat, create images, write code, and get real-time answers from the web and X. <\/CONTENT> <URL> https://grok.com <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Title: Introducing ChatGPT - OpenAI. Nov 30, 2022 · We’ve trained a model called ChatGPT which interacts in a conversational way. The dialogue format makes it possible for ChatGPT to answer followup questions, admit its mistakes, challenge incorrect premises, and reject inappropriate requests. <\/CONTENT> <URL> https://openai.com/index/chatgpt <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222132213,
+            "end": 1779222132214
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222132215,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e735f60010rAJbnFhyukZmq",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e7205d001Obz3UUTXyU90oD",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0275,
+        "tokens": {
+          "total": 8825,
+          "input": 8738,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222133441,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e73abf001tcuFzIJS8F1jyv",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e735f8001pyN1n73KtFp7i8",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222148451,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e73ac0001uqhppEUfOKE32j",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e735f8001pyN1n73KtFp7i8",
+        "type": "tool",
+        "callID": "34ce29a4-63bc-49ac-a6a0-ed97619ae3b6",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Chat Kuldilok\" Thailand Pheu Thai"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 4, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"\\\"Chat Kuldilok\\\" Thailand Pheu Thai\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"\\\\\\\"chat kuldilok\\\\\\\" thailand pheu thai\\\"}\", \"tool\": \"web_search\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222133442,
+            "end": 1779222148450
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222148453,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e775630010eCWzLWA0BMs3M",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e735f8001pyN1n73KtFp7i8",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0307,
+        "tokens": {
+          "total": 9881,
+          "input": 9793,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222150046,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e77b9d001GXR9cLHhdmv9UK",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e77567001vFmNvmjDgMg0ap",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222165052,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e77b9e001zysY1f4xFbHsti",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e77567001vFmNvmjDgMg0ap",
+        "type": "tool",
+        "callID": "9ef7af3e-7a3c-4c16-9cc8-bfc4954cbdc0",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Chat Kuldilok\" Pheu Thai 2011"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 5, \"search_budget_limit\": 8, \"timeouts\": 2, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"\\\"Chat Kuldilok\\\" Pheu Thai 2011\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"\\\\\\\"chat kuldilok\\\\\\\" pheu thai 2011\\\"}\", \"tool\": \"web_search\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222150046,
+            "end": 1779222165051
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222165055,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e7b63c001SmmTgaUb6WytKw",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e77567001vFmNvmjDgMg0ap",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0316,
+        "tokens": {
+          "total": 10155,
+          "input": 10063,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222175898,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e7e099001wJCqhShD2LoLwH",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e7b6430012bdu0yXT6DJ9mB",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779222175898,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e7e09a001iqL0nTkCXJQW56",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e7b6430012bdu0yXT6DJ9mB",
+        "type": "text",
+        "text": "```json\n{\n  \"name\": \"Chaj Kuldilok\",\n  \"educational_attainment\": \"Unknown\",\n  \"prior_occupation\": \"Unknown\",\n  \"birth_year\": \"Unknown\",\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Unknown\",\n  \"sources\": {\n    \"educational_attainment\": \"Unknown\",\n    \"prior_occupation\": \"Unknown\",\n    \"birth_year\": \"Unknown\",\n    \"birth_place\": \"Unknown\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\"\n  }\n}\n```",
+        "time": {
+          "start": 1779222175898,
+          "end": 1779222175898
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222175899,
+      "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+      "part": {
+        "id": "prt_e41e7e09a002GdVtUpeTd19S2G",
+        "sessionID": "ses_1be19539effeKp0BPQQriv32KO",
+        "messageID": "msg_e41e7b6430012bdu0yXT6DJ9mB",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0442,
+        "tokens": {
+          "total": 7815,
+          "input": 6088,
+          "output": 1727,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779222099617,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6b69f001AQE01uMs76L8kh\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6ac7f001wAG0HuBEW4xN4n\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222101726,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6b6a00013xjRObnZP0Z1FN\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6ac7f001wAG0HuBEW4xN4n\",\"type\":\"tool\",\"callID\":\"fe031674-e742-4b82-971f-4034eecb80e5\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Chaj Kuldilok Pheu Thai Thailand biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP or PT; / ˌpʌˈtaɪ / PUH TY;Thai: พรรคเพื่อไทย, RTGS: Phak PhueaThai[pʰǎk pʰɯ̂a tʰāj], lit. 'ForThaisParty') is a major populist, liberal conservative political party inThailand. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Pheu_Thai_Party <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> AsThailand'snext election approaches, political dynamics between the People's Party andPheuThaiParty intensify, highlighting past local elections and ongoing controversies. <\/CONTENT> <URL> https://thaitimes.com/thailand-s-political-landscape-people-s-party-and-pheu-thai-party-in-the-spotlight <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> PheuThaiParty: A major political party inThailand, with its headquarters in Bangkok, thePheuThaiParty is dedicated to improving the quality of life for its citizens and protecting national ... <\/CONTENT> <URL> https://www.scmp.com/topics/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ThePheuThaiParty is a majorThaipolitical force known for populist policies and ties to Thaksin Shinawatra. Explore its history, elections, and challenges. <\/CONTENT> <URL> https://stewardshipreport.org/wiki/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> This led to a major realignment inThaipolitics, withPheuThaidiscarding its long-held anti-establishment position and becoming a party upholding the status quo. This article analyses the causes and consequences ofPheuThai'sgrand compromise withThailand'sconservative parties. <\/CONTENT> <URL> https://www.iseas.edu.sg/articles-commentaries/iseas-perspective/2024-52-causes-and-effects-of-pheu-thais-grand-compromise-the-lurking-instability-of-thailands-post-2023-party-system-by-mathis-lohatepanont-and-napon-jatusripitak <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> •PheuThaiParty is appointing political officials to assist ministers across various ministries including Higher Education, Agriculture and Cooperatives, Education, Labour, and Social Development and Human Security. •The goal of these appointments is to bring in new generation talent to assist the party's ministerial work. <\/CONTENT> <URL> https://thailandedition.com/i/pheu-thai-appoints-new-generation-political-00a369db97823c155714785d <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Thailand'sBhumjaithai Party has moved closer to forming a new government after thePheuThaiParty agreed to join it in a proposed coalition. <\/CONTENT> <URL> https://apnews.com/article/thailand-election-politics-anutin-pheu-thai-da7463d98b137cd40261f9a55526005a <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> KRITDIKORN WONGSWANGPANICH The results ofThailand's2023 general elections came as a shock. ThePheuThaiParty (PTP), which had won the five previous ballots, came second to a relative newcomer, the Move Forward Party (MFP). As soon as the polls closed, local and international media was saturated with articles that tried to make sense of the defeat,1 while condemnations of the party's ... <\/CONTENT> <URL> https://www.jstor.org/stable/pdf/27278479.pdf <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> For the past few weeks an irresistibly catchy tune has been playing in neighbourhoods acrossThailand, from campaign trucks sent out by thePheuThaiparty, the frontrunner in this Sunday's ... <\/CONTENT> <URL> https://www.bbc.com/news/world-asia-65531574 <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222099620,\"end\":1779222101725},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222101728,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6bedf001NkKZ8IiltAg421\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6ac7f001wAG0HuBEW4xN4n\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022767,\"tokens\":{\"total\":6545,\"input\":6284,\"output\":261,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222103900,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6c75b00174Qa167ou0C5Be\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6bee2001jgV0aCX4vNCPMn\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222105315,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6c75c001SiUSDhc66I6FFW\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6bee2001jgV0aCX4vNCPMn\",\"type\":\"tool\",\"callID\":\"73f6cce6-0244-4f96-945d-ac06b9e91674\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Chat Kuldilok Pheu Thai biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP or PT; / ˌpʌˈtaɪ / PUH TY;Thai: พรรคเพื่อไทย, RTGS: Phak PhueaThai[pʰǎk pʰɯ̂a tʰāj], lit. 'ForThaisParty') is a major populist, liberal conservative political party in Thailand. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Pheu_Thai_Party <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> PheuThaiParty: A major political party in Thailand, with its headquarters in Bangkok, thePheuThaiParty is dedicated to improving the quality of life for its citizens and protecting national ... <\/CONTENT> <URL> https://www.scmp.com/topics/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ThePheuThaiparty has to tread a delicate balance between its coalition with conservatives and fulfilling reformist expectations. <\/CONTENT> <URL> https://fulcrum.sg/pheu-thai-between-a-rock-and-a-hard-place <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ThePheuThaiParty is a majorThaipolitical force known for populist policies and ties to Thaksin Shinawatra. Explore its history, elections, and challenges. <\/CONTENT> <URL> https://stewardshipreport.org/wiki/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> The coming months will tell whetherPheuThaistays faithful to its campaign promises and successfully implements these policies under its compromised new government. If not, the party could be heading toward a downward trajectory and face public condemnation as opportunists who betrayed those who believed in their promises of change. <\/CONTENT> <URL> https://cambodianess.com/article/legitimacy-of-pheu-thai-party-as-peoples-champion-in-question <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ThePheuThaiParty[a] (PTP or PT) is a major populist political party in Thailand. It is the third incarnation of theThaiRakThaiParty, a political party founded by former prime minister Thaksin Shinawatra in 1998. Like the previous incarnations,PheuThaiis the main political vehicle for the Shinawatra family. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Pheu_Thai <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> PheuThai'sgrip on rural provinces is weakening and voters are switching allegiance to powerful individual candidates. Read more at straitstimes.com. <\/CONTENT> <URL> https://www.straitstimes.com/asia/se-asia/rural-thai-voters-shift-old-loyalties-testing-pheu-thais-populist-machine <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Several formerPheuThaiMPs reported to the National Council for Peace and Order at the Army Club Monday. They included JaruphanKuldilok, Jirayu Huangsup, Khattiya Sawasdiphol , and Anusorn Eamsa-ard. <\/CONTENT> <URL> https://www.nationthailand.com/in-focus/30234622 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> PheuThairestructures its deputy party leadership by promoting Somsak Thepsutin's daughter to deputy party leader overseeing the lower northern region, while Jiraporn Sindhupr advances to deputy party leader managing the central northeastern region. <\/CONTENT> <URL> https://en.thairath.co.th/news/politic/2927507 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ThePheuChartThaiParty (Thai: พรรคเพื่อชาติไทย; RTGS:Phak PhueaChatThai; ForThaiNation Party) is aThaipolitical party founded by Ampapan Thanetdejsunthorn in 2018. [1] Ampapan was the \\\"minor wife\\\" of the late former Army chief, Armed Forces Headquarters Supreme Commander, and coup leader Sunthorn Kongsompong. <\/CONTENT> <URL> https://en.everybodywiki.com/Pheu_Chart_Thai_Party <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222103901,\"end\":1779222105315},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222105317,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6cce40010acs8i26IeXruP\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6bee2001jgV0aCX4vNCPMn\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026316,\"tokens\":{\"total\":7716,\"input\":7452,\"output\":264,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222106680,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6d237001BDbNbZ920BJLfW\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6cce8001LMTY4YhyLNdrxI\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222126683,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e6d238001PO77NNvS8f4hqO\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6cce8001LMTY4YhyLNdrxI\",\"type\":\"tool\",\"callID\":\"df03e58f-8baa-47a9-be2a-3f05a365c513\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"\\\"Chat Kuldilok\\\" Pheu Thai\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779222106680,\"end\":1779222126682}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222126684,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e7205b001DoPzc7pYzkGLu1\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e6cce8001LMTY4YhyLNdrxI\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.027159,\"tokens\":{\"total\":8705,\"input\":8618,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222132212,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e735f4001RXLqMAcC5VnZPb\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e7205d001Obz3UUTXyU90oD\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222132214,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e735f4002U31xRqbSpL5zDd\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e7205d001Obz3UUTXyU90oD\",\"type\":\"tool\",\"callID\":\"2715eb57-ff7b-4c7a-952b-baaf8a588b5e\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Chat Kuldilok\\\" Pheu Thai\"},\"output\":\"ASA_TOOL_CACHE_HIT\\n__START_OF_SOURCE 1__ <CONTENT> Title: ChatGPT. ChatGPT is your AI chatbot for everyday use. Chat with the most advanced AI to explore ideas, solve problems, and learn faster. <\/CONTENT> <URL> https://chatgpt.com <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Title: Google Chat - Sign In | Google Workspace. Sign in to Google Chat and access powerful group messaging for personal and professional collaboration from Google Workspace. <\/CONTENT> <URL> https://chat.google.com <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Title: Chatiwi | Private Anonymous Chat Rooms - No Registration Required. Chat privately on Chatiwi with anonymous chat rooms and one-to-one messaging. No registration, encryption-first, built for fast and safe conversations. <\/CONTENT> <URL> https://chatiwi.com/chat <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Title: Chitchat - Talk to strangers. Chat with strangers and meet new friends in modern, free and random chat rooms, anonymous text or video chats. Perfect for Mobile Chats, Girls Chat, Stranger Chats - a great one-on-one chats alternative to Omegle and OmeTV. <\/CONTENT> <URL> https://www.chitchat.gg <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Title: #1 Chatiw - Free chat rooms online with no registration , online .... free chat website that lets you connect with people quickly and easily. Featuring mobile chat rooms as well, helps you find and connect with single women and men throughout the globe. All you have to do is answer a couple of simple questions and you’re ready to go. <\/CONTENT> <URL> https://chatiw.com <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Title: Moco | Free Online Chat Rooms. Moco's free chat rooms are the perfect online chat solution for all devices. Choose a chat room and start to find new friends around the world. The strangers you meet may turn into friends or even people that you can't live without. Join a Chat Room & Send Messages The way to start is to take your time and check out the free chat rooms and use the features that make it easy have conversations ... <\/CONTENT> <URL> https://www.mocospace.com/chat <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Title: WeChat - Connects with over 1 billion users | Chats · Calls ·.... WeChat is a social communication app serving over 1 billion users, supporting free chat, HD voice and video calls, Moments, and mobile payments, making communication and life more convenient. <\/CONTENT> <URL> https://www.wechat.com/en <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Title: ChatGPT - Free download and install on Windows | Microsoft Store. 5 days ago · Chat with your computer—Use Advanced Voice to chat with your computer in real-time and get hands-free advice and answers while you work. Search the web—Get fast, timely answers with links to relevant web sources. <\/CONTENT> <URL> https://apps.microsoft.com/detail/9nt1r1c2hh7j <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Title: Grok. Grok is an AI assistant built by xAI. Chat, create images, write code, and get real-time answers from the web and X. <\/CONTENT> <URL> https://grok.com <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Title: Introducing ChatGPT - OpenAI. Nov 30, 2022 · We’ve trained a model called ChatGPT which interacts in a conversational way. The dialogue format makes it possible for ChatGPT to answer followup questions, admit its mistakes, challenge incorrect premises, and reject inappropriate requests. <\/CONTENT> <URL> https://openai.com/index/chatgpt <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222132213,\"end\":1779222132214},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222132215,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e735f60010rAJbnFhyukZmq\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e7205d001Obz3UUTXyU90oD\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.027519,\"tokens\":{\"total\":8825,\"input\":8738,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222133441,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e73abf001tcuFzIJS8F1jyv\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e735f8001pyN1n73KtFp7i8\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222148451,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e73ac0001uqhppEUfOKE32j\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e735f8001pyN1n73KtFp7i8\",\"type\":\"tool\",\"callID\":\"34ce29a4-63bc-49ac-a6a0-ed97619ae3b6\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Chat Kuldilok\\\" Thailand Pheu Thai\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 4, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"\\\\\\\"Chat Kuldilok\\\\\\\" Thailand Pheu Thai\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"chat kuldilok\\\\\\\\\\\\\\\" thailand pheu thai\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222133442,\"end\":1779222148450},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222148453,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e775630010eCWzLWA0BMs3M\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e735f8001pyN1n73KtFp7i8\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.030699,\"tokens\":{\"total\":9881,\"input\":9793,\"output\":88,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222150046,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e77b9d001GXR9cLHhdmv9UK\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e77567001vFmNvmjDgMg0ap\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222165052,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e77b9e001zysY1f4xFbHsti\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e77567001vFmNvmjDgMg0ap\",\"type\":\"tool\",\"callID\":\"9ef7af3e-7a3c-4c16-9cc8-bfc4954cbdc0\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Chat Kuldilok\\\" Pheu Thai 2011\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 5, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 2, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"\\\\\\\"Chat Kuldilok\\\\\\\" Pheu Thai 2011\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"chat kuldilok\\\\\\\\\\\\\\\" pheu thai 2011\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222150046,\"end\":1779222165051},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222165055,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e7b63c001SmmTgaUb6WytKw\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e77567001vFmNvmjDgMg0ap\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031569,\"tokens\":{\"total\":10155,\"input\":10063,\"output\":92,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222175898,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e7e099001wJCqhShD2LoLwH\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e7b6430012bdu0yXT6DJ9mB\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779222175898,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e7e09a001iqL0nTkCXJQW56\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e7b6430012bdu0yXT6DJ9mB\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"name\\\": \\\"Chaj Kuldilok\\\",\\n  \\\"educational_attainment\\\": \\\"Unknown\\\",\\n  \\\"prior_occupation\\\": \\\"Unknown\\\",\\n  \\\"birth_year\\\": \\\"Unknown\\\",\\n  \\\"birth_place\\\": \\\"Unknown\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"class_background\\\": \\\"Unknown\\\",\\n  \\\"sources\\\": {\\n    \\\"educational_attainment\\\": \\\"Unknown\\\",\\n    \\\"prior_occupation\\\": \\\"Unknown\\\",\\n    \\\"birth_year\\\": \\\"Unknown\\\",\\n    \\\"birth_place\\\": \\\"Unknown\\\",\\n    \\\"disability_status\\\": \\\"Unknown\\\",\\n    \\\"sexual_orientation\\\": \\\"Unknown\\\"\\n  }\\n}\\n```\",\"time\":{\"start\":1779222175898,\"end\":1779222175898}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222175899,\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"part\":{\"id\":\"prt_e41e7e09a002GdVtUpeTd19S2G\",\"sessionID\":\"ses_1be19539effeKp0BPQQriv32KO\",\"messageID\":\"msg_e41e7b6430012bdu0yXT6DJ9mB\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.044169,\"tokens\":{\"total\":7815,\"input\":6088,\"output\":1727,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

@@ -1,0 +1,57 @@
+{
+  "status": "success",
+  "unit": {
+    "unit_index": 4,
+    "unit_key": "04_hungary_row02353",
+    "country": "Hungary",
+    "row_id": 2353,
+    "person_name": "Gergely Gulyas",
+    "election_year": "2022",
+    "pol_party": "Fidesz-Christian Democratic People's Party",
+    "region": "National level",
+    "person_bday": "Not available",
+    "gender_character": "Male",
+    "ethnic": "Hungarian"
+  },
+  "started_at_utc": "2026-05-19T20:21:12Z",
+  "finished_at_utc": "2026-05-19T20:21:55Z",
+  "elapsed_time": 0.6579,
+  "error_message": null,
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260519T162027/units/04_hungary_row02353",
+  "field_status": [],
+  "diagnostics": {
+    "opencode_cli_status": 0,
+    "opencode_errors": [],
+    "opencode_parse_error": false,
+    "opencode_stderr": "",
+    "tool_loop_guard": {
+      "config": {
+        "recursion_limit": 40,
+        "search_budget_limit": 8,
+        "unknown_after_searches": 3,
+        "repeated_timeout_limit": 2,
+        "repeated_fetch_timeout_limit": 1,
+        "total_timeout_limit": 3,
+        "repeated_invalid_tool_limit": 2,
+        "total_invalid_tool_limit": 4,
+        "repeated_tool_request_limit": 4,
+        "tool_deadline_seconds": 15,
+        "mcp_timeout_ms": 20000
+      },
+      "tool_calls": 4,
+      "search_calls": 4,
+      "invalid_tool_calls": 0,
+      "tool_errors": 0,
+      "timeout_errors": 0,
+      "guard_errors": 0,
+      "cache_hits": 0,
+      "repeated_signature_count": 1,
+      "most_repeated_signature": "asa_search_web_fetch:{\"url\":\"https://hu.wikipedia.org/wiki/Gulyás_Gergely\"}",
+      "search_calls_limit": 8,
+      "search_calls_remaining": 4,
+      "search_budget_exhausted": false
+    }
+  },
+  "completion_gate": []
+}

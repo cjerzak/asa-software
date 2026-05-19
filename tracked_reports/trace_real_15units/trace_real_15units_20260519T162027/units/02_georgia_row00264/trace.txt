@@ -1,0 +1,626 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779222086747,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e68457001ctQUvgBL3LeFuh",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e67a49001LBqFoHHaMHSYpS",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222089076,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e68459001VdZnmrcvgCUXaz",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e67a49001LBqFoHHaMHSYpS",
+        "type": "tool",
+        "callID": "b5c51dc3-fddf-4c36-ad89-924a50209971",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nona Mamulashvili Georgia politician biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgian: ნონა მამულაშვილი; born 13 March 1977) is a Georgian political figure. In November 2020Nonawas elected a member of Parliament ofGeorgiaby party list, bloc: \"United National Movement - United Opposition, Strength is in Unity\". <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Nona_Mamulashvili <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> The Supreme Representative Body ofGeorgiaadministering the legislative authority, determining the main directions of the domestic and foreign policy of the country and overseeing the Government <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/2499/biography <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Previously,Nonaworked as the regional director for Pfizer covering Caucasus and Central Asian countries. She also has extensive experience working in the public sector and was the senior advisor to the Analytical Group of the president ofGeorgiain 2005-2007, as well as a political analyst at the Ministry of Foreign Affairs ofGeorgiaat a ... <\/CONTENT> <URL> https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Amidst to the experience of working in the public sector,NonaMamulashviliwas a senior advisor to the Presidential Analytical Group of the President ofGeorgiain 2005-2007, and later became a political analyst at the Ministry of Foreign Affairs ofGeorgia. <\/CONTENT> <URL> https://cbw.ge/culture/nona-mamulashvili-becomes-a-georgian-winner-of-asiaglobal-fellows-program <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> NonaMamulashviliis a former Member of the Georgian Parliament and a civic leader with over two decades of experience spanning government, international business, and global policy advocacy. Her career bridges the public and private sectors, with a strong focus on diplomacy, strategic communication, and regional development across the Caucasus, Central Asia, Eastern Europe, Mongolia, and ... <\/CONTENT> <URL> https://www.hks.harvard.edu/about/nona-mamulashvili <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> NonaMamulashviliis a prominentpolitician, business leader, political analyst and former member of the parliament ofGeorgiaSince November 2020 representing party group \"United National Movement - United Opposition, Strength is in Unity\". <\/CONTENT> <URL> https://bpur.org/personality/nona-mamulashvili <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Ms.NonaMamulashviliis a former Member of the Parliament ofGeorgia, where she served on the Foreign Affairs Committee and the NATO Parliamentary Assembly. She is currently a Fellow at the Harvard Kennedy School's Carr Center for Human Rights Policy, focusing on authoritarian surveillance systems and their impact on democracy and civil society. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-nona-mamulashvili-116 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Previously, she worked as the Regional Director for Pfizer covering Caucasus and Central Asian countries.Nonaalso has extensive experience working in the public sector; she served as the Senior Advisor to the Analytical Group of President ofGeorgiabetween 2005-2007, and later as a political analyst at the Ministry of Foreign Affairs ofGeorgia. <\/CONTENT> <URL> https://www.mei.edu/person/nona-mamulashvili <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> NonaMamulashviliis the co-founder of the Gamziri platform, and she has dedicated her life to improving the civil society and politics ofGeorgia. Until recently, she was a member of the Georgian Parliament until she resigned. <\/CONTENT> <URL> https://www.hudson.org/events/georgia-ukraine-euro-atlantic-community-update-front-lines-freedom-mamuka-nona-mamulashvili <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> An expert in the public policy development process, as well as an accomplished business strategist and skilled diplomat, with a history of achievement at leading companies in diverse industries through the ever-increasing maze of legislative and regulatory challenges. Developing and implementing stakeholder engagement strategies with key government stakeholders in the USA, Eastern Europe and ... <\/CONTENT> <URL> https://app.onfrontiers.com/profile/nmamulashvili1 <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222086750,
+            "end": 1779222089075
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222089080,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e68d75001n8J0FYMYktKtG5",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e67a49001LBqFoHHaMHSYpS",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0218,
+        "tokens": {
+          "total": 6484,
+          "input": 6290,
+          "output": 194,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222090117,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e69185001AH7rLzlStJozyT",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e68d7c001aOtmB8PREcWT2f",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222091387,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e69185002kXO1J0SPg07dsi",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e68d7c001aOtmB8PREcWT2f",
+        "type": "tool",
+        "callID": "8cd77cf6-f35a-445f-986a-95ea415b8eed",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://parliament.ge/en/parliament-members/2499/biography"
+          },
+          "output": "URL: https://parliament.ge/en/parliament-members/2499/biography\nFinal URL: https://parliament.ge/en/parliament-members/2499/biography\nTitle: Nona Mamulashvili - Parliament of Georgia\nBytes read: 145833\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nUseful Links\n[link: https://parliament.ge/en/useful-links]\nParliament\n[link: https://parliament.ge/en/parliament]\nPlenary Sessions\n[link: https://parliament.ge/en/parliament/plenary-sessions]\nBureau\n[link: https://parliament.ge/en/parliament/bureau]\nCommittees\n[link: https://parliament.ge/en/parliament/committees]\nFactions\n[link: https://parliament.ge/en/parliament/factions]\nPolitical Groups\n[link: https://parliament.ge/en/parliament/political-groups]\nMajority\n[link: https://parliament.ge/en/parliament/majority]\nParliamentary Opposition\n[link: https://parliament.ge/en/parliament/parliamentary-opposition]\nMembers of the Parliament without the faction\n[link: https://parliament.ge/en/parliament/deputies-without-faction]\nCommissions, Councils\n[link: https://parliament.ge/en/parliament/commissions]\nParliamentary Diplomacy\n[link: https://parliament.ge/en/parliament/parliamentary-diplomacy]\nStaff\n[link: https://parliament.ge/en/parliament/staff/structure]\nTraining Center\n[link: https://parliament.ge/en/parliament/staff/training-center/about]\nParliament Members\n[link: https://parliament.ge/en/parliament-members]\nLegislation\n[link: https://parliament.ge/en/legislation/reglament]\nMedia\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222090118,
+            "end": 1779222091386
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222091388,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6967b001Qy49FaNSw9KAsG",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e68d7c001aOtmB8PREcWT2f",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.024,
+        "tokens": {
+          "total": 7616,
+          "input": 7518,
+          "output": 98,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222092426,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e69a89001AZtBm7HYJ3IuJW",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6967d0019sCrp8VP9R9pM5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222093540,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e69a8a001oa27Y6CNKqo5xs",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6967d0019sCrp8VP9R9pM5",
+        "type": "tool",
+        "callID": "773eaadc-e14f-4616-9f6f-90b772a911b5",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Nona_Mamulashvili"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Nona_Mamulashvili\nFinal URL: https://en.wikipedia.org/wiki/Nona_Mamulashvili\nTitle: Nona Mamulashvili - Wikipedia\nBytes read: 79903\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Nona+Mamulashvili]\nLog in\nPersonal tools\nDonate\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222092427,
+            "end": 1779222093539
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222093541,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e69ee40015O6frVrt8jgqAB",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6967d0019sCrp8VP9R9pM5",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0257,
+        "tokens": {
+          "total": 8183,
+          "input": 8090,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222094872,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6a417001hysxL6FLqXjkFX",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e69ee6001rps0eZ8QsbQgVP",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222097644,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6a418001kKzhUtcpbedZwq",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e69ee6001rps0eZ8QsbQgVP",
+        "type": "tool",
+        "callID": "67fd2e2a-9fba-4ef7-8d0c-23ceced2c9ed",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili"
+          },
+          "output": "URL: https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\nFinal URL: https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_200_challenge_title (status=200)\nMarkers: one moment, please, please wait while your request is being verified, title:one moment, please",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222094872,
+            "end": 1779222097643
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222097645,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6aeec001HiJPbUDFRZ5qJp",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e69ee6001rps0eZ8QsbQgVP",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0274,
+        "tokens": {
+          "total": 8737,
+          "input": 8634,
+          "output": 103,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222099006,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6b43d0018Cc9Td7wRO4Izg",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6aeee001ASE35NMTsbzND5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222100492,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6b43e001eomxGk59ZQv13G",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6aeee001ASE35NMTsbzND5",
+        "type": "tool",
+        "callID": "d968fd40-8adb-4ffa-a713-1b4342afa505",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nona Mamulashvili education birth place disability LGBTQ"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgian: ნონა მამულაშვილი; born 13 March 1977) is a Georgian political figure. In November 2020Nonawas elected a member of Parliament of Georgia by party list, bloc: \"United National Movement - United Opposition, Strength is in Unity\". <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Nona_Mamulashvili <\/URL> __END_OF_SOURCE 1__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222099006,
+            "end": 1779222100491
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222100493,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6ba0c001cH7PJ4n5AV3FOZ",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6aeee001ASE35NMTsbzND5",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0279,
+        "tokens": {
+          "total": 8962,
+          "input": 8875,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222102316,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6c12c001ucPYasH4D3t2cv",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6ba10001qQiXdx14UfZ3zm",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222103729,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6c12c002HWe0F6Ux3rT5j1",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6ba10001qQiXdx14UfZ3zm",
+        "type": "tool",
+        "callID": "e59ba020-0805-4919-8c5d-901cac90cf41",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Nona Mamulashvili LinkedIn profile"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> First meeting with my brother since the war started in 🇺🇦#georgianlegion <\/CONTENT> <URL> https://az.linkedin.com/posts/nona-mamulashvili-1880b936_georgianlegion-activity-6970066061710757888-vthV?trk=public_profile_like_view <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Experience: Gamziri platform www.gamziri.com · Location: Tbilisi · 500+ connections onLinkedIn. ViewNonaMamulashvili'sprofileonLinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/nona-mamulashvili-1880b936 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> NonaMamulashviliposted images onLinkedInHarvard Carr Fellow | Geopolitics, AI & Democratic Resilience | Former MP | Researcher on Surveillance, Hybrid Warfare & Power in Eurasia <\/CONTENT> <URL> https://www.linkedin.com/posts/nona-mamulashvili-1880b936_activity-7422899386264981504-njrz <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> An expert in the public policy development process, as well as an accomplished business strategist and skilled diplomat, with a history of achievement at leading companies in diverse industries through the ever-increasing maze of legislative and regulatory challenges. Developing and implementing stakeholder engagement strategies with key government stakeholders in the USA, Eastern Europe and ... <\/CONTENT> <URL> https://app.onfrontiers.com/profile/nmamulashvili1 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> NonaMamulashviliis a former Member of the Georgian Parliament and a civic leader with over two decades of experience spanning government, international business, and global policy advocacy. Her career bridges the public and private sectors, with a strong focus on diplomacy, strategic communication, and regional development across the Caucasus, Central Asia, Eastern Europe, Mongolia, and ... <\/CONTENT> <URL> https://www.hks.harvard.edu/about/nona-mamulashvili <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Ms.NonaMamulashviliis a former Member of the Parliament of Georgia, where she served on the Foreign Affairs Committee and the NATO Parliamentary Assembly. She is currently a Fellow at the Harvard Kennedy School's Carr Center for Human Rights Policy, focusing on authoritarian surveillance systems and their impact on democracy and civil society. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-nona-mamulashvili-116 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> NonaMamulashviliis chairwoman of the Caucasus Economic Policy Institute, a think tank that promotes structural change and institutional development through policy research and advocacy in Caucasus and Central Asia. She is also the president of the Georgian Swiss Business Association and a vice president at the International Chamber of Commerce in Georgia.Nonais a non-resident fellow at ... <\/CONTENT> <URL> https://www.asiaglobalinstitute.hku.hk/about/people/nona-mamulashvili <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> NonaMamulashviliis a prominent politician, business leader, political analyst and former member of the parliament of Georgia Since November 2020 representing party group \"United National Movement - United Opposition, Strength is in Unity\". <\/CONTENT> <URL> https://bpur.org/personality/nona-mamulashvili <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> NonaMamulashviliis a fellow with MEI's Frontier Europe Initiative. She currently leads the Caucasus Economic Policy Institute, a think tank promoting structural change and institutional development through policy research and advocacy in the Caucasus. <\/CONTENT> <URL> https://www.mei.edu/person/nona-mamulashvili <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> View theprofilesof professionals named \"Mamulashvili\" onLinkedIn. There are 9 professionals named \"Mamulashvili\", who useLinkedInto exchange information, ideas, and opportunities. <\/CONTENT> <URL> https://www.linkedin.com/pub/dir/Mamulashvili/+ <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222102317,
+            "end": 1779222103729
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222103731,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6c6b2001QKyc0HT5xT4HPu",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6ba10001qQiXdx14UfZ3zm",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0285,
+        "tokens": {
+          "total": 9178,
+          "input": 9094,
+          "output": 84,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222105091,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6cc02001X50OmboMhzS37T",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6c6b4001hFTty9o13QTzyM",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222105969,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6cc03001fh5N19gc7FBcGu",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6c6b4001hFTty9o13QTzyM",
+        "type": "tool",
+        "callID": "cc25ffeb-233b-4c94-afac-fe2c12c8fad6",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.hks.harvard.edu/about/nona-mamulashvili"
+          },
+          "output": "URL: https://www.hks.harvard.edu/about/nona-mamulashvili\nFinal URL: https://www.hks.harvard.edu/about/nona-mamulashvili\nTitle: Nona Mamulashvili | Harvard Kennedy School\nBytes read: 53259\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nSkip to main content\nMain navigation Mobile\nEducational Programs\n[link: https://www.hks.harvard.edu/educational-programs]\nMaster’s Programs\n[link: https://www.hks.harvard.edu/educational-programs/masters-programs]\nExecutive Education\n[link: https://www.hks.harvard.edu/executive-education]\nDoctoral Programs\n[link: https://www.hks.harvard.edu/educational-programs/doctoral-programs]\nHarvard Online\n[link: https://www.hks.harvard.edu/educational-programs/harvard-online-courses-featuring-harvard-kennedy-school-experts]\nPublic Leadership Credential\n[link: https://www.hks.harvard.edu/educational-programs/public-leadership-credential]\nCourses\n[link: https://www.hks.harvard.edu/courses]\nUndergraduate Opportunities\n[link: https://www.hks.harvard.edu/educational-programs/undergraduate-opportunities]\nAcademic Calendars & Policies\n[link: https://www.hks.harvard.edu/educational-programs/academic-calendars-policies]\nAdmissions\n& Aid\n[link: https://www.hks.harvard.edu/admissions-financial-aid]\nMaster’s Program Admissions\n[link: https://www.hks.harvard.edu/admissions-aid/masters-program-admissions]\nExecutive Education Admissions\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222105091,
+            "end": 1779222105969
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222105970,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6cf71001eCRl5YlLj1i0Tn",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6c6b4001hFTty9o13QTzyM",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0322,
+        "tokens": {
+          "total": 10361,
+          "input": 10265,
+          "output": 96,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222107272,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6d488001TWzObNnk0w5Epz",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6cf73001BjpH7u634InBsj",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222108704,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6d488002Qlsf09l2L1nm3T",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6cf73001BjpH7u634InBsj",
+        "type": "tool",
+        "callID": "f1592176-c952-4bd0-9c56-c38cea1657f3",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://bpur.org/personality/nona-mamulashvili"
+          },
+          "output": "URL: https://bpur.org/personality/nona-mamulashvili\nFinal URL: https://bpur.org/personality/nona-mamulashvili\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_200_challenge_title (status=200)\nMarkers: one moment, please, please wait while your request is being verified, cloudflare, title:one moment, please",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222107273,
+            "end": 1779222108703
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222108705,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6da20001hHpkQtQKmi3umm",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6cf73001BjpH7u634InBsj",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0337,
+        "tokens": {
+          "total": 10870,
+          "input": 10778,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222110063,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6df6f001SJghsYRwxnrORy",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6da22001seIj75xl9yXizB",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222110065,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6df6f002Yi4gV9WbWpneCR",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6da22001seIj75xl9yXizB",
+        "type": "tool",
+        "callID": "ab67975a-5662-4cf4-aa61-99f40b1112fb",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://camcanetwork.com/members/ms-nona-mamulashvili-116"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 0, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"url\": \"https://camcanetwork.com/members/ms-nona-mamulashvili-116\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_fetch:{\\\"query\\\": \\\"\\\", \\\"url\\\": \\\"https://camcanetwork.com/members/ms-nona-mamulashvili-116\\\"}\", \"tool\": \"web_fetch\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222110064,
+            "end": 1779222110065
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222110066,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e6df71001iLTj8DVCUIncsD",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6da22001seIj75xl9yXizB",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0345,
+        "tokens": {
+          "total": 11089,
+          "input": 10989,
+          "output": 100,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222118860,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e701cb001iqy5H57mA0s848",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6df73001h6LTQldBAg656E",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779222118860,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e701cc0011wX731O6L5ARPZ",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6df73001h6LTQldBAg656E",
+        "type": "text",
+        "text": "```json\n{\n  \"name\": \"Nona Mamulashvili\",\n  \"educational_attainment\": \"Unknown\",\n  \"prior_occupation\": \"Regional Director for Pfizer; Senior Advisor to the President of Georgia\",\n  \"birth_year\": 1977,\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"Unknown\",\n    \"prior_occupation\": \"https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\",\n    \"birth_year\": \"https://en.wikipedia.org/wiki/Nona_Mamulashvili\",\n    \"birth_place\": \"Unknown\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\"\n  }\n}\n```",
+        "time": {
+          "start": 1779222118860,
+          "end": 1779222118860
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222118861,
+      "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+      "part": {
+        "id": "prt_e41e701cd001scXXR0WvJtrBIG",
+        "sessionID": "ses_1be1985f1ffe3iDr7KgYgbL9Fi",
+        "messageID": "msg_e41e6df73001h6LTQldBAg656E",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0451,
+        "tokens": {
+          "total": 8505,
+          "input": 6873,
+          "output": 1632,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779222086747,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e68457001ctQUvgBL3LeFuh\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e67a49001LBqFoHHaMHSYpS\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222089076,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e68459001VdZnmrcvgCUXaz\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e67a49001LBqFoHHaMHSYpS\",\"type\":\"tool\",\"callID\":\"b5c51dc3-fddf-4c36-ad89-924a50209971\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nona Mamulashvili Georgia politician biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgian: ნონა მამულაშვილი; born 13 March 1977) is a Georgian political figure. In November 2020Nonawas elected a member of Parliament ofGeorgiaby party list, bloc: \\\"United National Movement - United Opposition, Strength is in Unity\\\". <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Nona_Mamulashvili <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> The Supreme Representative Body ofGeorgiaadministering the legislative authority, determining the main directions of the domestic and foreign policy of the country and overseeing the Government <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/2499/biography <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Previously,Nonaworked as the regional director for Pfizer covering Caucasus and Central Asian countries. She also has extensive experience working in the public sector and was the senior advisor to the Analytical Group of the president ofGeorgiain 2005-2007, as well as a political analyst at the Ministry of Foreign Affairs ofGeorgiaat a ... <\/CONTENT> <URL> https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Amidst to the experience of working in the public sector,NonaMamulashviliwas a senior advisor to the Presidential Analytical Group of the President ofGeorgiain 2005-2007, and later became a political analyst at the Ministry of Foreign Affairs ofGeorgia. <\/CONTENT> <URL> https://cbw.ge/culture/nona-mamulashvili-becomes-a-georgian-winner-of-asiaglobal-fellows-program <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> NonaMamulashviliis a former Member of the Georgian Parliament and a civic leader with over two decades of experience spanning government, international business, and global policy advocacy. Her career bridges the public and private sectors, with a strong focus on diplomacy, strategic communication, and regional development across the Caucasus, Central Asia, Eastern Europe, Mongolia, and ... <\/CONTENT> <URL> https://www.hks.harvard.edu/about/nona-mamulashvili <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> NonaMamulashviliis a prominentpolitician, business leader, political analyst and former member of the parliament ofGeorgiaSince November 2020 representing party group \\\"United National Movement - United Opposition, Strength is in Unity\\\". <\/CONTENT> <URL> https://bpur.org/personality/nona-mamulashvili <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Ms.NonaMamulashviliis a former Member of the Parliament ofGeorgia, where she served on the Foreign Affairs Committee and the NATO Parliamentary Assembly. She is currently a Fellow at the Harvard Kennedy School's Carr Center for Human Rights Policy, focusing on authoritarian surveillance systems and their impact on democracy and civil society. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-nona-mamulashvili-116 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Previously, she worked as the Regional Director for Pfizer covering Caucasus and Central Asian countries.Nonaalso has extensive experience working in the public sector; she served as the Senior Advisor to the Analytical Group of President ofGeorgiabetween 2005-2007, and later as a political analyst at the Ministry of Foreign Affairs ofGeorgia. <\/CONTENT> <URL> https://www.mei.edu/person/nona-mamulashvili <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> NonaMamulashviliis the co-founder of the Gamziri platform, and she has dedicated her life to improving the civil society and politics ofGeorgia. Until recently, she was a member of the Georgian Parliament until she resigned. <\/CONTENT> <URL> https://www.hudson.org/events/georgia-ukraine-euro-atlantic-community-update-front-lines-freedom-mamuka-nona-mamulashvili <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> An expert in the public policy development process, as well as an accomplished business strategist and skilled diplomat, with a history of achievement at leading companies in diverse industries through the ever-increasing maze of legislative and regulatory challenges. Developing and implementing stakeholder engagement strategies with key government stakeholders in the USA, Eastern Europe and ... <\/CONTENT> <URL> https://app.onfrontiers.com/profile/nmamulashvili1 <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222086750,\"end\":1779222089075},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222089080,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e68d75001n8J0FYMYktKtG5\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e67a49001LBqFoHHaMHSYpS\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.02178,\"tokens\":{\"total\":6484,\"input\":6290,\"output\":194,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222090117,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e69185001AH7rLzlStJozyT\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e68d7c001aOtmB8PREcWT2f\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222091387,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e69185002kXO1J0SPg07dsi\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e68d7c001aOtmB8PREcWT2f\",\"type\":\"tool\",\"callID\":\"8cd77cf6-f35a-445f-986a-95ea415b8eed\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://parliament.ge/en/parliament-members/2499/biography\"},\"output\":\"URL: https://parliament.ge/en/parliament-members/2499/biography\\nFinal URL: https://parliament.ge/en/parliament-members/2499/biography\\nTitle: Nona Mamulashvili - Parliament of Georgia\\nBytes read: 145833\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nUseful Links\\n[link: https://parliament.ge/en/useful-links]\\nParliament\\n[link: https://parliament.ge/en/parliament]\\nPlenary Sessions\\n[link: https://parliament.ge/en/parliament/plenary-sessions]\\nBureau\\n[link: https://parliament.ge/en/parliament/bureau]\\nCommittees\\n[link: https://parliament.ge/en/parliament/committees]\\nFactions\\n[link: https://parliament.ge/en/parliament/factions]\\nPolitical Groups\\n[link: https://parliament.ge/en/parliament/political-groups]\\nMajority\\n[link: https://parliament.ge/en/parliament/majority]\\nParliamentary Opposition\\n[link: https://parliament.ge/en/parliament/parliamentary-opposition]\\nMembers of the Parliament without the faction\\n[link: https://parliament.ge/en/parliament/deputies-without-faction]\\nCommissions, Councils\\n[link: https://parliament.ge/en/parliament/commissions]\\nParliamentary Diplomacy\\n[link: https://parliament.ge/en/parliament/parliamentary-diplomacy]\\nStaff\\n[link: https://parliament.ge/en/parliament/staff/structure]\\nTraining Center\\n[link: https://parliament.ge/en/parliament/staff/training-center/about]\\nParliament Members\\n[link: https://parliament.ge/en/parliament-members]\\nLegislation\\n[link: https://parliament.ge/en/legislation/reglament]\\nMedia\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222090118,\"end\":1779222091386},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222091388,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6967b001Qy49FaNSw9KAsG\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e68d7c001aOtmB8PREcWT2f\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.024024,\"tokens\":{\"total\":7616,\"input\":7518,\"output\":98,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222092426,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e69a89001AZtBm7HYJ3IuJW\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6967d0019sCrp8VP9R9pM5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222093540,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e69a8a001oa27Y6CNKqo5xs\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6967d0019sCrp8VP9R9pM5\",\"type\":\"tool\",\"callID\":\"773eaadc-e14f-4616-9f6f-90b772a911b5\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Nona_Mamulashvili\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Nona_Mamulashvili\\nFinal URL: https://en.wikipedia.org/wiki/Nona_Mamulashvili\\nTitle: Nona Mamulashvili - Wikipedia\\nBytes read: 79903\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Nona+Mamulashvili]\\nLog in\\nPersonal tools\\nDonate\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222092427,\"end\":1779222093539},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222093541,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e69ee40015O6frVrt8jgqAB\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6967d0019sCrp8VP9R9pM5\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.025665,\"tokens\":{\"total\":8183,\"input\":8090,\"output\":93,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222094872,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6a417001hysxL6FLqXjkFX\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e69ee6001rps0eZ8QsbQgVP\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222097644,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6a418001kKzhUtcpbedZwq\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e69ee6001rps0eZ8QsbQgVP\",\"type\":\"tool\",\"callID\":\"67fd2e2a-9fba-4ef7-8d0c-23ceced2c9ed\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\"},\"output\":\"URL: https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\\nFinal URL: https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_200_challenge_title (status=200)\\nMarkers: one moment, please, please wait while your request is being verified, title:one moment, please\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222094872,\"end\":1779222097643},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222097645,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6aeec001HiJPbUDFRZ5qJp\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e69ee6001rps0eZ8QsbQgVP\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.027447,\"tokens\":{\"total\":8737,\"input\":8634,\"output\":103,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222099006,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6b43d0018Cc9Td7wRO4Izg\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6aeee001ASE35NMTsbzND5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222100492,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6b43e001eomxGk59ZQv13G\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6aeee001ASE35NMTsbzND5\",\"type\":\"tool\",\"callID\":\"d968fd40-8adb-4ffa-a713-1b4342afa505\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nona Mamulashvili education birth place disability LGBTQ\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> NonaMamulashvili(Georgian: ნონა მამულაშვილი; born 13 March 1977) is a Georgian political figure. In November 2020Nonawas elected a member of Parliament of Georgia by party list, bloc: \\\"United National Movement - United Opposition, Strength is in Unity\\\". <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Nona_Mamulashvili <\/URL> __END_OF_SOURCE 1__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222099006,\"end\":1779222100491},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222100493,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6ba0c001cH7PJ4n5AV3FOZ\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6aeee001ASE35NMTsbzND5\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.02793,\"tokens\":{\"total\":8962,\"input\":8875,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222102316,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6c12c001ucPYasH4D3t2cv\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6ba10001qQiXdx14UfZ3zm\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222103729,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6c12c002HWe0F6Ux3rT5j1\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6ba10001qQiXdx14UfZ3zm\",\"type\":\"tool\",\"callID\":\"e59ba020-0805-4919-8c5d-901cac90cf41\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Nona Mamulashvili LinkedIn profile\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> First meeting with my brother since the war started in 🇺🇦#georgianlegion <\/CONTENT> <URL> https://az.linkedin.com/posts/nona-mamulashvili-1880b936_georgianlegion-activity-6970066061710757888-vthV?trk=public_profile_like_view <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Experience: Gamziri platform www.gamziri.com · Location: Tbilisi · 500+ connections onLinkedIn. ViewNonaMamulashvili'sprofileonLinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/nona-mamulashvili-1880b936 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> NonaMamulashviliposted images onLinkedInHarvard Carr Fellow | Geopolitics, AI & Democratic Resilience | Former MP | Researcher on Surveillance, Hybrid Warfare & Power in Eurasia <\/CONTENT> <URL> https://www.linkedin.com/posts/nona-mamulashvili-1880b936_activity-7422899386264981504-njrz <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> An expert in the public policy development process, as well as an accomplished business strategist and skilled diplomat, with a history of achievement at leading companies in diverse industries through the ever-increasing maze of legislative and regulatory challenges. Developing and implementing stakeholder engagement strategies with key government stakeholders in the USA, Eastern Europe and ... <\/CONTENT> <URL> https://app.onfrontiers.com/profile/nmamulashvili1 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> NonaMamulashviliis a former Member of the Georgian Parliament and a civic leader with over two decades of experience spanning government, international business, and global policy advocacy. Her career bridges the public and private sectors, with a strong focus on diplomacy, strategic communication, and regional development across the Caucasus, Central Asia, Eastern Europe, Mongolia, and ... <\/CONTENT> <URL> https://www.hks.harvard.edu/about/nona-mamulashvili <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Ms.NonaMamulashviliis a former Member of the Parliament of Georgia, where she served on the Foreign Affairs Committee and the NATO Parliamentary Assembly. She is currently a Fellow at the Harvard Kennedy School's Carr Center for Human Rights Policy, focusing on authoritarian surveillance systems and their impact on democracy and civil society. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-nona-mamulashvili-116 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> NonaMamulashviliis chairwoman of the Caucasus Economic Policy Institute, a think tank that promotes structural change and institutional development through policy research and advocacy in Caucasus and Central Asia. She is also the president of the Georgian Swiss Business Association and a vice president at the International Chamber of Commerce in Georgia.Nonais a non-resident fellow at ... <\/CONTENT> <URL> https://www.asiaglobalinstitute.hku.hk/about/people/nona-mamulashvili <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> NonaMamulashviliis a prominent politician, business leader, political analyst and former member of the parliament of Georgia Since November 2020 representing party group \\\"United National Movement - United Opposition, Strength is in Unity\\\". <\/CONTENT> <URL> https://bpur.org/personality/nona-mamulashvili <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> NonaMamulashviliis a fellow with MEI's Frontier Europe Initiative. She currently leads the Caucasus Economic Policy Institute, a think tank promoting structural change and institutional development through policy research and advocacy in the Caucasus. <\/CONTENT> <URL> https://www.mei.edu/person/nona-mamulashvili <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> View theprofilesof professionals named \\\"Mamulashvili\\\" onLinkedIn. There are 9 professionals named \\\"Mamulashvili\\\", who useLinkedInto exchange information, ideas, and opportunities. <\/CONTENT> <URL> https://www.linkedin.com/pub/dir/Mamulashvili/+ <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222102317,\"end\":1779222103729},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222103731,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6c6b2001QKyc0HT5xT4HPu\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6ba10001qQiXdx14UfZ3zm\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.028542,\"tokens\":{\"total\":9178,\"input\":9094,\"output\":84,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222105091,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6cc02001X50OmboMhzS37T\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6c6b4001hFTty9o13QTzyM\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222105969,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6cc03001fh5N19gc7FBcGu\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6c6b4001hFTty9o13QTzyM\",\"type\":\"tool\",\"callID\":\"cc25ffeb-233b-4c94-afac-fe2c12c8fad6\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.hks.harvard.edu/about/nona-mamulashvili\"},\"output\":\"URL: https://www.hks.harvard.edu/about/nona-mamulashvili\\nFinal URL: https://www.hks.harvard.edu/about/nona-mamulashvili\\nTitle: Nona Mamulashvili | Harvard Kennedy School\\nBytes read: 53259\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nSkip to main content\\nMain navigation Mobile\\nEducational Programs\\n[link: https://www.hks.harvard.edu/educational-programs]\\nMaster’s Programs\\n[link: https://www.hks.harvard.edu/educational-programs/masters-programs]\\nExecutive Education\\n[link: https://www.hks.harvard.edu/executive-education]\\nDoctoral Programs\\n[link: https://www.hks.harvard.edu/educational-programs/doctoral-programs]\\nHarvard Online\\n[link: https://www.hks.harvard.edu/educational-programs/harvard-online-courses-featuring-harvard-kennedy-school-experts]\\nPublic Leadership Credential\\n[link: https://www.hks.harvard.edu/educational-programs/public-leadership-credential]\\nCourses\\n[link: https://www.hks.harvard.edu/courses]\\nUndergraduate Opportunities\\n[link: https://www.hks.harvard.edu/educational-programs/undergraduate-opportunities]\\nAcademic Calendars & Policies\\n[link: https://www.hks.harvard.edu/educational-programs/academic-calendars-policies]\\nAdmissions\\n& Aid\\n[link: https://www.hks.harvard.edu/admissions-financial-aid]\\nMaster’s Program Admissions\\n[link: https://www.hks.harvard.edu/admissions-aid/masters-program-admissions]\\nExecutive Education Admissions\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222105091,\"end\":1779222105969},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222105970,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6cf71001eCRl5YlLj1i0Tn\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6c6b4001hFTty9o13QTzyM\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.032235,\"tokens\":{\"total\":10361,\"input\":10265,\"output\":96,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222107272,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6d488001TWzObNnk0w5Epz\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6cf73001BjpH7u634InBsj\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222108704,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6d488002Qlsf09l2L1nm3T\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6cf73001BjpH7u634InBsj\",\"type\":\"tool\",\"callID\":\"f1592176-c952-4bd0-9c56-c38cea1657f3\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://bpur.org/personality/nona-mamulashvili\"},\"output\":\"URL: https://bpur.org/personality/nona-mamulashvili\\nFinal URL: https://bpur.org/personality/nona-mamulashvili\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_200_challenge_title (status=200)\\nMarkers: one moment, please, please wait while your request is being verified, cloudflare, title:one moment, please\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222107273,\"end\":1779222108703},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222108705,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6da20001hHpkQtQKmi3umm\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6cf73001BjpH7u634InBsj\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.033714,\"tokens\":{\"total\":10870,\"input\":10778,\"output\":92,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222110063,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6df6f001SJghsYRwxnrORy\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6da22001seIj75xl9yXizB\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222110065,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6df6f002Yi4gV9WbWpneCR\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6da22001seIj75xl9yXizB\",\"type\":\"tool\",\"callID\":\"ab67975a-5662-4cf4-aa61-99f40b1112fb\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://camcanetwork.com/members/ms-nona-mamulashvili-116\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 0, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"url\\\": \\\"https://camcanetwork.com/members/ms-nona-mamulashvili-116\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_fetch:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\", \\\\\\\"url\\\\\\\": \\\\\\\"https://camcanetwork.com/members/ms-nona-mamulashvili-116\\\\\\\"}\\\", \\\"tool\\\": \\\"web_fetch\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222110064,\"end\":1779222110065},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222110066,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e6df71001iLTj8DVCUIncsD\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6da22001seIj75xl9yXizB\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.034467,\"tokens\":{\"total\":11089,\"input\":10989,\"output\":100,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222118860,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e701cb001iqy5H57mA0s848\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6df73001h6LTQldBAg656E\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779222118860,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e701cc0011wX731O6L5ARPZ\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6df73001h6LTQldBAg656E\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"name\\\": \\\"Nona Mamulashvili\\\",\\n  \\\"educational_attainment\\\": \\\"Unknown\\\",\\n  \\\"prior_occupation\\\": \\\"Regional Director for Pfizer; Senior Advisor to the President of Georgia\\\",\\n  \\\"birth_year\\\": 1977,\\n  \\\"birth_place\\\": \\\"Unknown\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"sources\\\": {\\n    \\\"educational_attainment\\\": \\\"Unknown\\\",\\n    \\\"prior_occupation\\\": \\\"https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili\\\",\\n    \\\"birth_year\\\": \\\"https://en.wikipedia.org/wiki/Nona_Mamulashvili\\\",\\n    \\\"birth_place\\\": \\\"Unknown\\\",\\n    \\\"disability_status\\\": \\\"Unknown\\\",\\n    \\\"sexual_orientation\\\": \\\"Unknown\\\"\\n  }\\n}\\n```\",\"time\":{\"start\":1779222118860,\"end\":1779222118860}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222118861,\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"part\":{\"id\":\"prt_e41e701cd001scXXR0WvJtrBIG\",\"sessionID\":\"ses_1be1985f1ffe3iDr7KgYgbL9Fi\",\"messageID\":\"msg_e41e6df73001h6LTQldBAg656E\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.045099,\"tokens\":{\"total\":8505,\"input\":6873,\"output\":1632,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

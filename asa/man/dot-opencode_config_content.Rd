@@ -12,6 +12,7 @@
   target_backend,
   target_model,
   outer_model = ASA_OPENCODE_OUTER_MODEL,
+  loop_guard = NULL,
   allow_read_webpages = NULL,
   auto_openwebpage_policy = NULL
 )

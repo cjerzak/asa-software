@@ -1,0 +1,16 @@
+{
+  "name": "Kentaro Motomura",
+  "educational_attainment": "Bachelor of Economics, Aoyama Gakuin University",
+  "educational_attainment_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "prior_occupation": "Political secretary to Hirohisa Fujii",
+  "prior_occupation_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "birth_year": 1970,
+  "birth_year_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "birth_place": "Sagamihara, Kanagawa Prefecture, Japan",
+  "birth_place_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://ja.wikipedia.org/wiki/%E6%9C%AC%E6%9D%91%E8%B3%A2%E5%A4%AA%E9%83%8E",
+  "class_background": "Middle class/professional"
+}

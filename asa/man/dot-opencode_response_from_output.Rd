@@ -13,7 +13,8 @@
   thread_id = NULL,
   target_backend = NULL,
   target_model = NULL,
-  outer_model = ASA_OPENCODE_OUTER_MODEL
+  outer_model = ASA_OPENCODE_OUTER_MODEL,
+  loop_guard = NULL
 )
 }
 \description{

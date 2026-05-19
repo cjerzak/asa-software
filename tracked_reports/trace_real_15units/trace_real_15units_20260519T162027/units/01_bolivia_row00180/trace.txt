@@ -1,0 +1,634 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779222087454,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6871c001ZGPBSJ5ptXkNGL",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e679ea001FOySA8isd7kdQc",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222087461,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6871d001QmTuncBHC3k3aA",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e679ea001FOySA8isd7kdQc",
+        "type": "tool",
+        "callID": "dc6969e7-acb2-4c44-8e36-d4ac590ea634",
+        "tool": "todowrite",
+        "state": {
+          "status": "completed",
+          "input": {
+            "todos": [
+              {
+                "priority": "high",
+                "content": "Search for Flora Largo Pumari's biographical information",
+                "status": "pending"
+              },
+              {
+                "status": "pending",
+                "priority": "high",
+                "content": "Extract educational attainment, prior occupation, birth year, birth place, disability status, and sexual orientation"
+              },
+              {
+                "priority": "medium",
+                "content": "Determine class background based on prior occupation",
+                "status": "pending"
+              },
+              {
+                "status": "pending",
+                "priority": "high",
+                "content": "Format results as JSON with source URLs"
+              }
+            ]
+          },
+          "output": "[\n  {\n    \"priority\": \"high\",\n    \"content\": \"Search for Flora Largo Pumari's biographical information\",\n    \"status\": \"pending\"\n  },\n  {\n    \"status\": \"pending\",\n    \"priority\": \"high\",\n    \"content\": \"Extract educational attainment, prior occupation, birth year, birth place, disability status, and sexual orientation\"\n  },\n  {\n    \"priority\": \"medium\",\n    \"content\": \"Determine class background based on prior occupation\",\n    \"status\": \"pending\"\n  },\n  {\n    \"status\": \"pending\",\n    \"priority\": \"high\",\n    \"content\": \"Format results as JSON with source URLs\"\n  }\n]",
+          "title": "4 todos",
+          "metadata": {
+            "todos": [
+              {
+                "priority": "high",
+                "content": "Search for Flora Largo Pumari's biographical information",
+                "status": "pending"
+              },
+              {
+                "status": "pending",
+                "priority": "high",
+                "content": "Extract educational attainment, prior occupation, birth year, birth place, disability status, and sexual orientation"
+              },
+              {
+                "priority": "medium",
+                "content": "Determine class background based on prior occupation",
+                "status": "pending"
+              },
+              {
+                "status": "pending",
+                "priority": "high",
+                "content": "Format results as JSON with source URLs"
+              }
+            ],
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222087457,
+            "end": 1779222087460
+          }
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222089883,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e68723001vLZnVk0i1uxk8d",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e679ea001FOySA8isd7kdQc",
+        "type": "tool",
+        "callID": "8297b653-9b18-4d47-8059-2d6d808cad9a",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Flora Largo Pumari Bolivia biografía"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> FloraLargoPumari00:00 Diputada plurinominal por el departamento de Potosí - MAS Valorar: sin votos aún 699 lecturas Revise y escuche más de:BiografíasAsamblea Plurinacional <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> FloraLargoPumariis on Facebook. Join Facebook to connect withFloraLargoPumariand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/flora.largopumari <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Este documento presenta las especies defloranativas deBolivia, incluyendo árboles, plantas, flores y palmeras. Describe cada especie con su nombre científico y nombres comunes en quechua y español. Algunas especies destacadas son el patujú, la cantuta, el guapurú, la yareta, la palmera pasopaya, el penoco y la flor del motacú. El documento provee detalles sobre las familias botánicas ... <\/CONTENT> <URL> https://es.scribd.com/doc/137090284/Flora-de-Bolivia <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> PDF | On Jan 1, 2013, R.I. Meneses and others published Hacia unafloradeBolivia| Find, read and cite all the research you need on ResearchGate <\/CONTENT> <URL> https://www.researchgate.net/publication/264274788_Hacia_una_flora_de_Bolivia <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Encuentra los hechos y acontecimientos históricos de la Historia deBolivia. Efemérides, fechas importantes en los departamentos de Chuquisaca, La Paz, Cochabamba, Santa Cruz, Potosí, Oruro, Tarija, Beni y Pando. Además, encuentra,biografías, defunciones y natalicios de personajes históricos y famosos bolivianos. Personajes de la literatura, novela, cine, presidentes, escritores ... <\/CONTENT> <URL> https://www.historia.com.bo/biografia <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> FloraLargoPumariFloraLargoPumariDiputada plurinominal por el departamento de Potosí - MAS Publicado por eabolivia en 12:03 No hay comentarios: <\/CONTENT> <URL> https://biografiasbolivia.blogspot.com <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Decreto Supremo N° 2310 Evo Morales Ayma DECRETO SUPREMO N° 2310 EVO MORALES AYMA PRESIDENTE CONSTITUCIONAL DEL ESTADO PLURINACIONAL DEBOLIVIAC O N S I D E R A N D O: Que el Parágrafo V del Artículo 48 de la Constitución Política del Estado, determina que el Estado promoverá la incorporación de las mujeres al trabajo y garantizará la misma remuneración que a los hombres por un ... <\/CONTENT> <URL> https://docslib.org/doc/417000/biografíashistorias-de-vida-en-la-asamblea-legislativa-plurinacional <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Tras recorrer un gradiente altitudinal que va de los 194 a los 5.300 metros de altura, los investigadores defloray vegetación de la expedición científica Identidad Madidi: Freddy Zenteno, David Villaba y Laura Moya, botánicos del Herbario Nacional deBolivia, identificaron 460 registros nuevos en 15 sitios de estudio (2015-2017 ... <\/CONTENT> <URL> https://bolivia.wcs.org/es-es/Recursos-Informativos/Sala-de-noticias/articleType/ArticleView/articleId/16112/La-diversidad-de-plantas-en-Identidad-Madidi.aspx <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La Comisión de Política Internacional y Protección al Migrante será presidida por Ingrid Zabala; el Comité de Política Internacional, Protección al Migrante y Organismos porFloraLargoPumaride Potosí; el Comité de Región Amazónica, Tierra y Territorio por David Quispe de La Paz; y el Comité de Recursos Naturales, Hídricos y Agua ... <\/CONTENT> <URL> https://www.hoybolivia.com/Noticia.php?IdNoticia=57588 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> a sindical. Esa es la generalidad pero, por supuesto, hay mujeres que realizaron estudios, que tienen largas y destacadas trayectorias profesionales, tanto en el oficialismo como en la as mujeres. Sin embargo, todas refieren que en algún momento, por alguna circunstancia, libraron duras batallas por lograr sus espacios y por mantener <\/CONTENT> <URL> https://www2.congreso.gob.pe/sicr/cendocbib/con4_uibd.nsf/1BD3C2CBC92F0BF105257FF50073A263/$FILE/10697.pdf <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222087461,
+            "end": 1779222089882
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222089886,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6909c001T7cKkQDAsCTdT3",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e679ea001FOySA8isd7kdQc",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0246,
+        "tokens": {
+          "total": 6690,
+          "input": 6310,
+          "output": 380,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222092675,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e69b830010GJGXQCEftrrzZ",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6909f001CTUFEH7ojvel18",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222094051,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e69b830021ujdrRgXt75Vxl",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6909f001CTUFEH7ojvel18",
+        "type": "tool",
+        "callID": "d2ba6b09-6174-481d-9a9d-65885c5fcd80",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari"
+          },
+          "output": "URL: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\nFinal URL: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\nTitle: Flora Largo Pumari | Erbol Digital Archivo\nBytes read: 88458\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nArchivo\nBiografías Asamblea Plurinacional\nFlora Largo Pumari\nFlora Largo Pumari\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari]\n00:00\nDiputada plurinominal por el departamento de Potosí - MAS\nValorar:\nSelect rating\nGive Flora Largo Pumari 1/5\nGive Flora Largo Pumari 2/5\nGive Flora Largo Pumari 3/5\nGive Flora Largo Pumari 4/5\nGive Flora Largo Pumari 5/5\nsin votos aún\n785 lecturas\nRevise y escuche más de: Biografías Asamblea Plurinacional\nMirtha Da Costa\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/mirtha_da_costa]\nhace\n13 años 3 meses\nNelly Nuñez\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/nelly_nunez]\nhace\n13 años 3 meses\nMaría Chuca Gutiérrez\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/maria_chuca_gutierrez]\nhace\n13 años 3 meses\nToribia Alvaro\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/toribia_alvaro]\nhace\n13 años 3 meses\nFlora Aguilar\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_aguilar]\nhace\n13 años 3 meses\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222092676,
+            "end": 1779222094050
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222094052,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6a0e3001yFY6fFt1YEpSud",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6909f001CTUFEH7ojvel18",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0285,
+        "tokens": {
+          "total": 8292,
+          "input": 7991,
+          "output": 301,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222095448,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6a658001fXwIkJX5xrS4FV",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6a0e50013oH7kOrIYl6clt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222098333,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6a6580022fh95tqn8MA8ww",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6a0e50013oH7kOrIYl6clt",
+        "type": "tool",
+        "callID": "fd60484e-3474-41d2-85a8-045551cde86a",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://docslib.org/doc/417000/biografíashistorias-de-vida-en-la-asamblea-legislativa-plurinacional"
+          },
+          "output": "URL: https://docslib.org/doc/417000/biografíashistorias-de-vida-en-la-asamblea-legislativa-plurinacional\nFinal URL: https://docslib.org/doc/417000/biograf%C3%ADashistorias-de-vida-en-la-asamblea-legislativa-plurinacional\nTitle: Biografíashistorias De Vida En La Asamblea Legislativa Plurinacional - DocsLib\nBytes read: 60046\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nDOCSLIB.ORG\n[link: https://docslib.org/]\nSign Up\n[link: https://docslib.org/profile/signup]\nLog In\nUpload\nSearch\nSign Up\n[link: https://docslib.org/profile/signup]\nLog In\nUpload\nBiografíashistorias De Vida En La Asamblea Legislativa Plurinacional\nTotal Page：\n16\nFile Type：\npdf\n, Size：\n1020Kb\nDownload full-text PDF\n[link: https://docslib.org/download/417000/biograf%C3%ADashistorias-de-vida-en-la-asamblea-legislativa-plurinacional]\nRead full-text\nHtml View\nText View\nLoad more\n259\nCopy Link\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222095448,
+            "end": 1779222098333
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222098334,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6b19d001tlqJTyTBOgCHIY",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6a0e50013oH7kOrIYl6clt",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0277,
+        "tokens": {
+          "total": 8755,
+          "input": 8637,
+          "output": 118,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222099581,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6b67700120lT5cxDV30v3h",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6b19f001VuOdvVKHc0Ji5C",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222101174,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6b679001D9Hby8mKvF6TSq",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6b19f001VuOdvVKHc0Ji5C",
+        "type": "tool",
+        "callID": "407bf03d-25dd-484b-ba81-816c4eb8af48",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Flora Largo Pumari\" biografía educación ocupación"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Flora Largo Pumari00:00 Diputada plurinominal por el departamento de Potosí - MAS Valorar: sin votos aún 699 lecturas Revise y escuche más de:BiografíasAsamblea Plurinacional <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Flora Largo Pumariis on Facebook. Join Facebook to connect withFlora Largo Pumariand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/flora.largopumari <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Flora Largo PumariFlora Largo PumariDiputada plurinominal por el departamento de Potosí - MAS Publicado por eabolivia en 12:03 No hay comentarios: <\/CONTENT> <URL> https://biografiasbolivia.blogspot.com <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Flora Largo Pumari(MAS) y Hugo Garcia Méndez (s) Adolfo Ocampo Melgarejo (MAS) y Gladys Vargas Escobar (s) Agripina Ramírez Nava (MAS) y Justino Leaño Quispe (s) <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Benito Ramos CalizayaFlora Largo PumariAdolfo Ocampo Melgarejo Diputados uninominales Circunscripción 37 Jorge Emilio Solares Barrientos (MAS) Circunscripción 38 Juan Carlos Cejas Ugarte (MAS) Circunscripción 39 Luis Gallego Condori (MAS) Circunscripción 40 Richard Cordel Ramírez (MAS) Circunscripción 41 Severo Aguilar Gabriel (MAS ... <\/CONTENT> <URL> https://www.opinion.com.bo/articulo/el-pais/potosi/20091207214015330852.html <\/URL> __END_OF_SOURCE 5__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222099583,
+            "end": 1779222101173
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222101175,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6bcb6001COpksUvqXg7v4S",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6b19f001VuOdvVKHc0Ji5C",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0286,
+        "tokens": {
+          "total": 9182,
+          "input": 9094,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222102490,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6c1d7001QGpW4KUnrGiKtm",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6bcb9001oRC7C7dya0T8gw",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222117499,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6c1d9001OvcZ4cY2cdkRlV",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6bcb9001oRC7C7dya0T8gw",
+        "type": "tool",
+        "callID": "5b253d2d-2e30-4dc5-b1b2-ed1d5748bca2",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Flora Largo Pumari\" Potosi MAS biografia"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 5, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"\\\"Flora Largo Pumari\\\" Potosi MAS biografia\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"\\\\\\\"flora largo pumari\\\\\\\" potosi mas biografia\\\"}\", \"tool\": \"web_search\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222102493,
+            "end": 1779222117499
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222117500,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e6fc7c001VBZ6Jp3uU2Cvmy",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6bcb9001oRC7C7dya0T8gw",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0306,
+        "tokens": {
+          "total": 9844,
+          "input": 9755,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222118964,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e702330013JtSQFGC1GSvjp",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6fc7e001AAEYEJzcvky2HE",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222133974,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e70233002J7RtC5si0hCEbL",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6fc7e001AAEYEJzcvky2HE",
+        "type": "tool",
+        "callID": "e3a47867-1759-49bf-967e-dcc57622b781",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Flora Largo Pumari\" biografia completa"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 6, \"search_budget_limit\": 8, \"timeouts\": 2, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"\\\"Flora Largo Pumari\\\" biografia completa\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"\\\\\\\"flora largo pumari\\\\\\\" biografia completa\\\"}\", \"tool\": \"web_search\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222118964,
+            "end": 1779222133972
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222133978,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e73cd6001FDAtU0QtqQFp7W",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e6fc7e001AAEYEJzcvky2HE",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0314,
+        "tokens": {
+          "total": 10114,
+          "input": 10028,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222135243,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e741c9001gonZtjFg8o0CBL",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e73cde001VtTgsX7rSYCXVS",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222136573,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e741ca0012w7aQ5N0lyALap",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e73cde001VtTgsX7rSYCXVS",
+        "type": "tool",
+        "callID": "76b31349-280b-4d83-a1c8-6f96acf5a5cb",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Flora Largo Pumari\" ocupación anterior"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Flora Largo Pumari00:00 Diputada plurinominal por el departamento de Potosí - MAS Valorar: sin votos aún 699 lecturas Revise y escuche más de: Biografías Asamblea Plurinacional <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Flora Largo Pumariis on Facebook. Join Facebook to connect withFlora Largo Pumariand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/flora.largopumari <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Flora Largo PumariFlora Largo PumariDiputada plurinominal por el departamento de Potosí - MAS Publicado por eabolivia en 12:03 No hay comentarios: <\/CONTENT> <URL> https://biografiasbolivia.blogspot.com <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Benito Ramos CalizayaFlora Largo PumariAdolfo Ocampo Melgarejo Diputados uninominales Circunscripción 37 Jorge Emilio Solares Barrientos (MAS) Circunscripción 38 Juan Carlos Cejas Ugarte (MAS) Circunscripción 39 Luis Gallego Condori (MAS) Circunscripción 40 Richard Cordel Ramírez (MAS) Circunscripción 41 Severo Aguilar Gabriel (MAS ... <\/CONTENT> <URL> https://www.opinion.com.bo/articulo/el-pais/potosi/20091207214015330852.html <\/URL> __END_OF_SOURCE 4__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222135243,
+            "end": 1779222136572
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222136575,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e746fd001RQjjJt6x1iH799",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e73cde001VtTgsX7rSYCXVS",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0322,
+        "tokens": {
+          "total": 10379,
+          "input": 10293,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222137806,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e74bcd001R6C7zQKAgbcr9Z",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e74701001FdBjxsNQIwCv8F",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222152817,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e74bce001BN5Ms5yz6pJJia",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e74701001FdBjxsNQIwCv8F",
+        "type": "tool",
+        "callID": "fa4faefd-c3f0-4868-9f7b-eebcc62a4c12",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Flora Largo Pumari\" biografia \"Bartolina Sisa\""
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 3, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"\\\"Flora Largo Pumari\\\" biografia \\\"Bartolina Sisa\\\"\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"\\\\\\\"flora largo pumari\\\\\\\" biografia \\\\\\\"bartolina sisa\\\\\\\"\\\"}\", \"tool\": \"web_search\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222137806,
+            "end": 1779222152814
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222152822,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e78671001DcQiBGiEVZS1Ik",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e74701001FdBjxsNQIwCv8F",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0339,
+        "tokens": {
+          "total": 10934,
+          "input": 10843,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222161685,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e7a914001tDtO7T74JYngiy",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e7867b001SiMGA1nZsf9Q3u",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779222161685,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e7a914002OzsKFAHAzyl91i",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e7867b001SiMGA1nZsf9Q3u",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Unknown\",\n  \"prior_occupation\": \"Unknown\",\n  \"birth_year\": \"1974\",\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Unknown\",\n  \"sources\": {\n    \"educational_attainment\": \"Unknown\",\n    \"prior_occupation\": \"Unknown\",\n    \"birth_year\": \"https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\",\n    \"birth_place\": \"Unknown\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\",\n    \"class_background\": \"Unknown\"\n  }\n}\n```",
+        "time": {
+          "start": 1779222161685,
+          "end": 1779222161685
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222161686,
+      "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+      "part": {
+        "id": "prt_e41e7a915001Ld7aFdjaiE92fK",
+        "sessionID": "ses_1be198663ffe7GoiFY33lywpXi",
+        "messageID": "msg_e41e7867b001SiMGA1nZsf9Q3u",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0449,
+        "tokens": {
+          "total": 8394,
+          "input": 6752,
+          "output": 1642,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779222087454,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6871c001ZGPBSJ5ptXkNGL\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e679ea001FOySA8isd7kdQc\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222087461,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6871d001QmTuncBHC3k3aA\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e679ea001FOySA8isd7kdQc\",\"type\":\"tool\",\"callID\":\"dc6969e7-acb2-4c44-8e36-d4ac590ea634\",\"tool\":\"todowrite\",\"state\":{\"status\":\"completed\",\"input\":{\"todos\":[{\"priority\":\"high\",\"content\":\"Search for Flora Largo Pumari's biographical information\",\"status\":\"pending\"},{\"status\":\"pending\",\"priority\":\"high\",\"content\":\"Extract educational attainment, prior occupation, birth year, birth place, disability status, and sexual orientation\"},{\"priority\":\"medium\",\"content\":\"Determine class background based on prior occupation\",\"status\":\"pending\"},{\"status\":\"pending\",\"priority\":\"high\",\"content\":\"Format results as JSON with source URLs\"}]},\"output\":\"[\\n  {\\n    \\\"priority\\\": \\\"high\\\",\\n    \\\"content\\\": \\\"Search for Flora Largo Pumari's biographical information\\\",\\n    \\\"status\\\": \\\"pending\\\"\\n  },\\n  {\\n    \\\"status\\\": \\\"pending\\\",\\n    \\\"priority\\\": \\\"high\\\",\\n    \\\"content\\\": \\\"Extract educational attainment, prior occupation, birth year, birth place, disability status, and sexual orientation\\\"\\n  },\\n  {\\n    \\\"priority\\\": \\\"medium\\\",\\n    \\\"content\\\": \\\"Determine class background based on prior occupation\\\",\\n    \\\"status\\\": \\\"pending\\\"\\n  },\\n  {\\n    \\\"status\\\": \\\"pending\\\",\\n    \\\"priority\\\": \\\"high\\\",\\n    \\\"content\\\": \\\"Format results as JSON with source URLs\\\"\\n  }\\n]\",\"title\":\"4 todos\",\"metadata\":{\"todos\":[{\"priority\":\"high\",\"content\":\"Search for Flora Largo Pumari's biographical information\",\"status\":\"pending\"},{\"status\":\"pending\",\"priority\":\"high\",\"content\":\"Extract educational attainment, prior occupation, birth year, birth place, disability status, and sexual orientation\"},{\"priority\":\"medium\",\"content\":\"Determine class background based on prior occupation\",\"status\":\"pending\"},{\"status\":\"pending\",\"priority\":\"high\",\"content\":\"Format results as JSON with source URLs\"}],\"truncated\":false},\"time\":{\"start\":1779222087457,\"end\":1779222087460}}}}\n{\"type\":\"tool_use\",\"timestamp\":1779222089883,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e68723001vLZnVk0i1uxk8d\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e679ea001FOySA8isd7kdQc\",\"type\":\"tool\",\"callID\":\"8297b653-9b18-4d47-8059-2d6d808cad9a\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Flora Largo Pumari Bolivia biografía\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> FloraLargoPumari00:00 Diputada plurinominal por el departamento de Potosí - MAS Valorar: sin votos aún 699 lecturas Revise y escuche más de:BiografíasAsamblea Plurinacional <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> FloraLargoPumariis on Facebook. Join Facebook to connect withFloraLargoPumariand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/flora.largopumari <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Este documento presenta las especies defloranativas deBolivia, incluyendo árboles, plantas, flores y palmeras. Describe cada especie con su nombre científico y nombres comunes en quechua y español. Algunas especies destacadas son el patujú, la cantuta, el guapurú, la yareta, la palmera pasopaya, el penoco y la flor del motacú. El documento provee detalles sobre las familias botánicas ... <\/CONTENT> <URL> https://es.scribd.com/doc/137090284/Flora-de-Bolivia <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> PDF | On Jan 1, 2013, R.I. Meneses and others published Hacia unafloradeBolivia| Find, read and cite all the research you need on ResearchGate <\/CONTENT> <URL> https://www.researchgate.net/publication/264274788_Hacia_una_flora_de_Bolivia <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Encuentra los hechos y acontecimientos históricos de la Historia deBolivia. Efemérides, fechas importantes en los departamentos de Chuquisaca, La Paz, Cochabamba, Santa Cruz, Potosí, Oruro, Tarija, Beni y Pando. Además, encuentra,biografías, defunciones y natalicios de personajes históricos y famosos bolivianos. Personajes de la literatura, novela, cine, presidentes, escritores ... <\/CONTENT> <URL> https://www.historia.com.bo/biografia <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> FloraLargoPumariFloraLargoPumariDiputada plurinominal por el departamento de Potosí - MAS Publicado por eabolivia en 12:03 No hay comentarios: <\/CONTENT> <URL> https://biografiasbolivia.blogspot.com <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Decreto Supremo N° 2310 Evo Morales Ayma DECRETO SUPREMO N° 2310 EVO MORALES AYMA PRESIDENTE CONSTITUCIONAL DEL ESTADO PLURINACIONAL DEBOLIVIAC O N S I D E R A N D O: Que el Parágrafo V del Artículo 48 de la Constitución Política del Estado, determina que el Estado promoverá la incorporación de las mujeres al trabajo y garantizará la misma remuneración que a los hombres por un ... <\/CONTENT> <URL> https://docslib.org/doc/417000/biografíashistorias-de-vida-en-la-asamblea-legislativa-plurinacional <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Tras recorrer un gradiente altitudinal que va de los 194 a los 5.300 metros de altura, los investigadores defloray vegetación de la expedición científica Identidad Madidi: Freddy Zenteno, David Villaba y Laura Moya, botánicos del Herbario Nacional deBolivia, identificaron 460 registros nuevos en 15 sitios de estudio (2015-2017 ... <\/CONTENT> <URL> https://bolivia.wcs.org/es-es/Recursos-Informativos/Sala-de-noticias/articleType/ArticleView/articleId/16112/La-diversidad-de-plantas-en-Identidad-Madidi.aspx <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La Comisión de Política Internacional y Protección al Migrante será presidida por Ingrid Zabala; el Comité de Política Internacional, Protección al Migrante y Organismos porFloraLargoPumaride Potosí; el Comité de Región Amazónica, Tierra y Territorio por David Quispe de La Paz; y el Comité de Recursos Naturales, Hídricos y Agua ... <\/CONTENT> <URL> https://www.hoybolivia.com/Noticia.php?IdNoticia=57588 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> a sindical. Esa es la generalidad pero, por supuesto, hay mujeres que realizaron estudios, que tienen largas y destacadas trayectorias profesionales, tanto en el oficialismo como en la as mujeres. Sin embargo, todas refieren que en algún momento, por alguna circunstancia, libraron duras batallas por lograr sus espacios y por mantener <\/CONTENT> <URL> https://www2.congreso.gob.pe/sicr/cendocbib/con4_uibd.nsf/1BD3C2CBC92F0BF105257FF50073A263/$FILE/10697.pdf <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222087461,\"end\":1779222089882},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222089886,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6909c001T7cKkQDAsCTdT3\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e679ea001FOySA8isd7kdQc\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.02463,\"tokens\":{\"total\":6690,\"input\":6310,\"output\":380,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222092675,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e69b830010GJGXQCEftrrzZ\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6909f001CTUFEH7ojvel18\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222094051,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e69b830021ujdrRgXt75Vxl\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6909f001CTUFEH7ojvel18\",\"type\":\"tool\",\"callID\":\"d2ba6b09-6174-481d-9a9d-65885c5fcd80\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\"},\"output\":\"URL: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\\nFinal URL: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\\nTitle: Flora Largo Pumari | Erbol Digital Archivo\\nBytes read: 88458\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nArchivo\\nBiografías Asamblea Plurinacional\\nFlora Largo Pumari\\nFlora Largo Pumari\\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari]\\n00:00\\nDiputada plurinominal por el departamento de Potosí - MAS\\nValorar:\\nSelect rating\\nGive Flora Largo Pumari 1/5\\nGive Flora Largo Pumari 2/5\\nGive Flora Largo Pumari 3/5\\nGive Flora Largo Pumari 4/5\\nGive Flora Largo Pumari 5/5\\nsin votos aún\\n785 lecturas\\nRevise y escuche más de: Biografías Asamblea Plurinacional\\nMirtha Da Costa\\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/mirtha_da_costa]\\nhace\\n13 años 3 meses\\nNelly Nuñez\\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/nelly_nunez]\\nhace\\n13 años 3 meses\\nMaría Chuca Gutiérrez\\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/maria_chuca_gutierrez]\\nhace\\n13 años 3 meses\\nToribia Alvaro\\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/toribia_alvaro]\\nhace\\n13 años 3 meses\\nFlora Aguilar\\n[link: https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_aguilar]\\nhace\\n13 años 3 meses\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222092676,\"end\":1779222094050},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222094052,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6a0e3001yFY6fFt1YEpSud\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6909f001CTUFEH7ojvel18\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.028488,\"tokens\":{\"total\":8292,\"input\":7991,\"output\":301,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222095448,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6a658001fXwIkJX5xrS4FV\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6a0e50013oH7kOrIYl6clt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222098333,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6a6580022fh95tqn8MA8ww\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6a0e50013oH7kOrIYl6clt\",\"type\":\"tool\",\"callID\":\"fd60484e-3474-41d2-85a8-045551cde86a\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://docslib.org/doc/417000/biografíashistorias-de-vida-en-la-asamblea-legislativa-plurinacional\"},\"output\":\"URL: https://docslib.org/doc/417000/biografíashistorias-de-vida-en-la-asamblea-legislativa-plurinacional\\nFinal URL: https://docslib.org/doc/417000/biograf%C3%ADashistorias-de-vida-en-la-asamblea-legislativa-plurinacional\\nTitle: Biografíashistorias De Vida En La Asamblea Legislativa Plurinacional - DocsLib\\nBytes read: 60046\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nDOCSLIB.ORG\\n[link: https://docslib.org/]\\nSign Up\\n[link: https://docslib.org/profile/signup]\\nLog In\\nUpload\\nSearch\\nSign Up\\n[link: https://docslib.org/profile/signup]\\nLog In\\nUpload\\nBiografíashistorias De Vida En La Asamblea Legislativa Plurinacional\\nTotal Page：\\n16\\nFile Type：\\npdf\\n, Size：\\n1020Kb\\nDownload full-text PDF\\n[link: https://docslib.org/download/417000/biograf%C3%ADashistorias-de-vida-en-la-asamblea-legislativa-plurinacional]\\nRead full-text\\nHtml View\\nText View\\nLoad more\\n259\\nCopy Link\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222095448,\"end\":1779222098333},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222098334,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6b19d001tlqJTyTBOgCHIY\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6a0e50013oH7kOrIYl6clt\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.027681,\"tokens\":{\"total\":8755,\"input\":8637,\"output\":118,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222099581,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6b67700120lT5cxDV30v3h\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6b19f001VuOdvVKHc0Ji5C\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222101174,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6b679001D9Hby8mKvF6TSq\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6b19f001VuOdvVKHc0Ji5C\",\"type\":\"tool\",\"callID\":\"407bf03d-25dd-484b-ba81-816c4eb8af48\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Flora Largo Pumari\\\" biografía educación ocupación\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Flora Largo Pumari00:00 Diputada plurinominal por el departamento de Potosí - MAS Valorar: sin votos aún 699 lecturas Revise y escuche más de:BiografíasAsamblea Plurinacional <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Flora Largo Pumariis on Facebook. Join Facebook to connect withFlora Largo Pumariand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/flora.largopumari <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Flora Largo PumariFlora Largo PumariDiputada plurinominal por el departamento de Potosí - MAS Publicado por eabolivia en 12:03 No hay comentarios: <\/CONTENT> <URL> https://biografiasbolivia.blogspot.com <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Flora Largo Pumari(MAS) y Hugo Garcia Méndez (s) Adolfo Ocampo Melgarejo (MAS) y Gladys Vargas Escobar (s) Agripina Ramírez Nava (MAS) y Justino Leaño Quispe (s) <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Benito Ramos CalizayaFlora Largo PumariAdolfo Ocampo Melgarejo Diputados uninominales Circunscripción 37 Jorge Emilio Solares Barrientos (MAS) Circunscripción 38 Juan Carlos Cejas Ugarte (MAS) Circunscripción 39 Luis Gallego Condori (MAS) Circunscripción 40 Richard Cordel Ramírez (MAS) Circunscripción 41 Severo Aguilar Gabriel (MAS ... <\/CONTENT> <URL> https://www.opinion.com.bo/articulo/el-pais/potosi/20091207214015330852.html <\/URL> __END_OF_SOURCE 5__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222099583,\"end\":1779222101173},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222101175,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6bcb6001COpksUvqXg7v4S\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6b19f001VuOdvVKHc0Ji5C\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.028602,\"tokens\":{\"total\":9182,\"input\":9094,\"output\":88,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222102490,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6c1d7001QGpW4KUnrGiKtm\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6bcb9001oRC7C7dya0T8gw\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222117499,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6c1d9001OvcZ4cY2cdkRlV\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6bcb9001oRC7C7dya0T8gw\",\"type\":\"tool\",\"callID\":\"5b253d2d-2e30-4dc5-b1b2-ed1d5748bca2\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Flora Largo Pumari\\\" Potosi MAS biografia\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 5, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"\\\\\\\"Flora Largo Pumari\\\\\\\" Potosi MAS biografia\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"flora largo pumari\\\\\\\\\\\\\\\" potosi mas biografia\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222102493,\"end\":1779222117499},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222117500,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e6fc7c001VBZ6Jp3uU2Cvmy\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6bcb9001oRC7C7dya0T8gw\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.0306,\"tokens\":{\"total\":9844,\"input\":9755,\"output\":89,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222118964,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e702330013JtSQFGC1GSvjp\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6fc7e001AAEYEJzcvky2HE\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222133974,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e70233002J7RtC5si0hCEbL\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6fc7e001AAEYEJzcvky2HE\",\"type\":\"tool\",\"callID\":\"e3a47867-1759-49bf-967e-dcc57622b781\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Flora Largo Pumari\\\" biografia completa\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 6, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 2, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"\\\\\\\"Flora Largo Pumari\\\\\\\" biografia completa\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"flora largo pumari\\\\\\\\\\\\\\\" biografia completa\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222118964,\"end\":1779222133972},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222133978,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e73cd6001FDAtU0QtqQFp7W\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e6fc7e001AAEYEJzcvky2HE\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031374,\"tokens\":{\"total\":10114,\"input\":10028,\"output\":86,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222135243,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e741c9001gonZtjFg8o0CBL\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e73cde001VtTgsX7rSYCXVS\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222136573,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e741ca0012w7aQ5N0lyALap\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e73cde001VtTgsX7rSYCXVS\",\"type\":\"tool\",\"callID\":\"76b31349-280b-4d83-a1c8-6f96acf5a5cb\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Flora Largo Pumari\\\" ocupación anterior\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Flora Largo Pumari00:00 Diputada plurinominal por el departamento de Potosí - MAS Valorar: sin votos aún 699 lecturas Revise y escuche más de: Biografías Asamblea Plurinacional <\/CONTENT> <URL> https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Flora Largo Pumariis on Facebook. Join Facebook to connect withFlora Largo Pumariand others you may know. Facebook gives people the power to share and makes the world more open and connected. <\/CONTENT> <URL> https://www.facebook.com/flora.largopumari <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Flora Largo PumariFlora Largo PumariDiputada plurinominal por el departamento de Potosí - MAS Publicado por eabolivia en 12:03 No hay comentarios: <\/CONTENT> <URL> https://biografiasbolivia.blogspot.com <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Benito Ramos CalizayaFlora Largo PumariAdolfo Ocampo Melgarejo Diputados uninominales Circunscripción 37 Jorge Emilio Solares Barrientos (MAS) Circunscripción 38 Juan Carlos Cejas Ugarte (MAS) Circunscripción 39 Luis Gallego Condori (MAS) Circunscripción 40 Richard Cordel Ramírez (MAS) Circunscripción 41 Severo Aguilar Gabriel (MAS ... <\/CONTENT> <URL> https://www.opinion.com.bo/articulo/el-pais/potosi/20091207214015330852.html <\/URL> __END_OF_SOURCE 4__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222135243,\"end\":1779222136572},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222136575,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e746fd001RQjjJt6x1iH799\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e73cde001VtTgsX7rSYCXVS\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.032169,\"tokens\":{\"total\":10379,\"input\":10293,\"output\":86,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222137806,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e74bcd001R6C7zQKAgbcr9Z\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e74701001FdBjxsNQIwCv8F\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222152817,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e74bce001BN5Ms5yz6pJJia\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e74701001FdBjxsNQIwCv8F\",\"type\":\"tool\",\"callID\":\"fa4faefd-c3f0-4868-9f7b-eebcc62a4c12\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Flora Largo Pumari\\\" biografia \\\"Bartolina Sisa\\\"\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 3, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"\\\\\\\"Flora Largo Pumari\\\\\\\" biografia \\\\\\\"Bartolina Sisa\\\\\\\"\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"flora largo pumari\\\\\\\\\\\\\\\" biografia \\\\\\\\\\\\\\\"bartolina sisa\\\\\\\\\\\\\\\"\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222137806,\"end\":1779222152814},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222152822,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e78671001DcQiBGiEVZS1Ik\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e74701001FdBjxsNQIwCv8F\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.033894,\"tokens\":{\"total\":10934,\"input\":10843,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222161685,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e7a914001tDtO7T74JYngiy\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e7867b001SiMGA1nZsf9Q3u\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779222161685,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e7a914002OzsKFAHAzyl91i\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e7867b001SiMGA1nZsf9Q3u\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Unknown\\\",\\n  \\\"prior_occupation\\\": \\\"Unknown\\\",\\n  \\\"birth_year\\\": \\\"1974\\\",\\n  \\\"birth_place\\\": \\\"Unknown\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"class_background\\\": \\\"Unknown\\\",\\n  \\\"sources\\\": {\\n    \\\"educational_attainment\\\": \\\"Unknown\\\",\\n    \\\"prior_occupation\\\": \\\"Unknown\\\",\\n    \\\"birth_year\\\": \\\"https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\\\",\\n    \\\"birth_place\\\": \\\"Unknown\\\",\\n    \\\"disability_status\\\": \\\"Unknown\\\",\\n    \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n    \\\"class_background\\\": \\\"Unknown\\\"\\n  }\\n}\\n```\",\"time\":{\"start\":1779222161685,\"end\":1779222161685}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222161686,\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"part\":{\"id\":\"prt_e41e7a915001Ld7aFdjaiE92fK\",\"sessionID\":\"ses_1be198663ffe7GoiFY33lywpXi\",\"messageID\":\"msg_e41e7867b001SiMGA1nZsf9Q3u\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.044886,\"tokens\":{\"total\":8394,\"input\":6752,\"output\":1642,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

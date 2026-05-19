@@ -1,0 +1,18 @@
+{
+  "name": "Chaj Kuldilok",
+  "educational_attainment": "Unknown",
+  "prior_occupation": "Unknown",
+  "birth_year": "Unknown",
+  "birth_place": "Unknown",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Unknown",
+  "sources": {
+    "educational_attainment": "Unknown",
+    "prior_occupation": "Unknown",
+    "birth_year": "Unknown",
+    "birth_place": "Unknown",
+    "disability_status": "Unknown",
+    "sexual_orientation": "Unknown"
+  }
+}

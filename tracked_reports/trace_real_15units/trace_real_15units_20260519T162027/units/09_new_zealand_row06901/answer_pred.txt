@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "BA and LLB",
+  "educational_attainment_source": "https://www.beehive.govt.nz/minister/biography/winston-peters-0",
+  "prior_occupation": "Teacher and Lawyer (Barrister and Solicitor)",
+  "prior_occupation_source": "https://www.beehive.govt.nz/minister/biography/winston-peters-0",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.beehive.govt.nz/minister/biography/winston-peters-0",
+  "birth_year": "1945",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Winston_Peters",
+  "birth_place": "Whangarei, New Zealand",
+  "birth_place_source": "https://ethnicelebs.com/winston-peters",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Winston_Peters",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Winston_Peters"
+}

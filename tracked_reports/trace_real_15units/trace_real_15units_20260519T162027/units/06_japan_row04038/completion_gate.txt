@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "completion_gate",
+  "reason": "completion_gate_not_available",
+  "expected_empty": true,
+  "unit_key": "06_japan_row04038",
+  "generated_at_utc": "2026-05-19T20:23:14Z"
+}

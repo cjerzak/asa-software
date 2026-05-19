@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Doctor of Economic Sciences; Graduated from Moscow Machine-Tool Institute (1990) and Moscow Institute of Economics and Statistics (1996).",
+  "educational_attainment_source": "https://www.spisok-putina.org/en/personas/slutsky",
+  "prior_occupation": "Banking executive (Member of the ProInvestBank Council and Deputy Chairman of the Executive Board of UnicomBank).",
+  "prior_occupation_source": "https://kremlin-roadmap.gfsis.org.ge/public-persons/display/27",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://kremlin-roadmap.gfsis.org.ge/public-persons/display/27",
+  "birth_year": "1968",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Leonid_Slutsky_(politician)",
+  "birth_place": "Moscow, Russian SFSR, Soviet Union",
+  "birth_place_source": "https://interkomitet.com/about-the-committee/committee-staff/leonid-slutsky-chairman-of-the-committee",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://lslutsky.ru/en/biography",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Leonid_Slutsky_(politician)"
+}

@@ -1,0 +1,311 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779222090883,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e69480001hDE23ai3q7F6Sk",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e68ae7001tPZ0Vo7J1A0xaR",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222093628,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e694820016wDU57026UHB0j",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e68ae7001tPZ0Vo7J1A0xaR",
+        "type": "tool",
+        "callID": "44bcc42b-1f02-4f85-8bdc-2f7aa779cd0d",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters New Zealand biography education occupation birth disability sexual orientation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is aNewZealandpolitician. He has led the political partyNewZealandFirst since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up theNewZealandFirst Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> In 1993, MrPetersand others formed theNewZealandFirst Party to represent thoseNewZealanders concerned about the social and economic direction of our country, after the reforms brought in under Rogernomics in the 1980's. <\/CONTENT> <URL> https://www.nzfirst.nz/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofWinstonPeters(1945 - present), politician fromNew_Zealand. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish theNewZealandFirst party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> WinstonRaymondPetersPC is aNewZealandpolitician and leader ofNewZealandFirst, a political party he founded in 1993.Petershas had a successful and turbulent political career since entering Parliament in 1978, first serving as a Cabinet Minister in the Bolger Government before being sacked in 1991. <\/CONTENT> <URL> https://www.biographies.net/people/en/winston_peters <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> NewZealandOccupationpolitician, diplomat, rugby union player, political candidateEducationUniversity of Auckland Position held Member of the Privy Council of the United Kingdom, Member of theNewZealandParliament, Deputy Prime Minister ofNewZealand, Minister of Foreign Affairs, Minister for Māori Development, Minister of Racing Gender ... <\/CONTENT> <URL> https://entityfacts.com/en/person/winston-peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> WinstonPetersturned a venerable 80 on 11 April , but he showed no sign of retiring asNewZealand'sarchetypal populist during his recent state of the nation speech. He especially enjoyed the hecklers, gleefully telling them one by one to get out. As ever, his detractors became extras in theWinstonPetersshow - something of a trademark in his long political career. As well as a ... <\/CONTENT> <URL> https://www.auckland.ac.nz/en/news/2025/04/09/winston-peters-at-80.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonPetersis the stuff of legend in theNewZealandGovernment. He's the only diplomat that's ever been invited to North Korea. He's also the longest-serving MP, entering Parliament in 1979 - before the rise of neoliberalism or the inception of the internet - during a time of massive political upheaval on the world stage. The Kingmaker. Now, as the often-controversial MP makes a ... <\/CONTENT> <URL> https://www.critic.co.nz/culture/article/10861/-winston-peters-in-his-reputation-era <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> WINSTONPETERS. ILLUSTRATION: ROSS MURRAY FOR THE SPINOFF.NewZealandFirst and the winebox Many details about thisnewparty were mysterious.Peterswas the leader, obviously, but other political parties had formal appointment procedures. How were leaders and candidates inNewZealandFirst decided?Peters: \"By the founders.\" Media: \"Who are the founders?\"Peters: \"That's none of ... <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222090885,
+            "end": 1779222093627
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222093630,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e69f3d001og0m3sODmKhFZq",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e68ae7001tPZ0Vo7J1A0xaR",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0225,
+        "tokens": {
+          "total": 6523,
+          "input": 6281,
+          "output": 242,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222094897,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6a431001SsCWyaUig0d6R4",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e69f3f001KEY4TaJ6kGJrmY",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222096344,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6a4310024M5p2TCIguKnLk",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e69f3f001KEY4TaJ6kGJrmY",
+        "type": "tool",
+        "callID": "209b9cc2-17e8-4b4b-839a-6fca27bdb0ab",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Winston_Peters"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Winston_Peters\nFinal URL: https://en.wikipedia.org/wiki/Winston_Peters\nTitle: Winston Peters - Wikipedia\nBytes read: 962899\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Winston+Peters]\nLog in\nPersonal tools\nDonate\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222094898,
+            "end": 1779222096344
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222096345,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6a9d9001TouvV9ga98S04d",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e69f3f001KEY4TaJ6kGJrmY",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0246,
+        "tokens": {
+          "total": 7827,
+          "input": 7736,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222097574,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6aea5001tO7FtqY0b47Dg8",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6a9db001qppnfJ0loeYEK6",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222098780,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6aea5002wkloM25UPkitEs",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6a9db001qppnfJ0loeYEK6",
+        "type": "tool",
+        "callID": "6291d11b-8737-4a45-a025-4f70ba3cf58d",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.beehive.govt.nz/minister/biography/winston-peters-0"
+          },
+          "output": "URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\nFinal URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\nTitle: (unknown)\nBytes read: 212\nCache: MISS\n\nNo readable text extracted.",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222097574,
+            "end": 1779222098780
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222098781,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6b35c001jfVnQin6nkLgsm",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6a9db001qppnfJ0loeYEK6",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0263,
+        "tokens": {
+          "total": 8371,
+          "input": 8270,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222099988,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6b813001G1UJMIY2gvd27U",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6b35e001J7aVJASr8cOZaO",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779222101542,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6b813002eg8oSX4FUSA7wl",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6b35e001J7aVJASr8cOZaO",
+        "type": "tool",
+        "callID": "d2584a61-2c2b-40a2-afc1-815a204a6294",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters birth place disability sexual orientation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> TweetWinstonPetersNew Zealand politician Date ofBirth: 11-Apr -1945PlaceofBirth: Whangarei, Northland Region, New Zealand Profession: politician, diplomat, rugby union player Nationality: New Zealand Zodiac Sign: Aries Social Profiles:winstonpetersShow Famous Birthdays Today, New Zealand 👉 Worldwide Celebrity Birthdays Today About ... <\/CONTENT> <URL> https://www.bornglorious.com/person/?pi=1396178 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Answers to your questions aboutWinstonPeters's life, age, relationships,sexualorientation, drug usage, net worth and the latest gossip! <\/CONTENT> <URL> https://www.vipfaq.com/Winston Peters.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> WinstonPeters'perspective on religion aligns with his broader political philosophy, characterized by pragmatism and a desire for balance.Peters'complex religious beliefs and mixed ancestry reflect the diversity of New Zealand society, demonstrating his respect for religion combined with an independent and critical view point. <\/CONTENT> <URL> https://wealthypeeps.com/winston-peters-ethnicity-and-religion <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> WinstonPetersby Manila · October 22, 2017BirthName: Wynston RaymondPetersPlaceofBirth: Whangarei, Northland, New Zealand Date ofBirth: 11 April, 1945 Ethnicity: *father - Māori, small amount of Irish or Scottish *mother - Scottish, Northern Irish, EnglishWinstonPetersis a New Zealand politician. <\/CONTENT> <URL> https://ethnicelebs.com/winston-peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> The couple have two children, a son named JoelWinstonPetersand a daughter named BreeWinstonPeters, who is an actress. 179 Facts AboutWinstonPeters| FactSnippet. <\/CONTENT> <URL> https://www.factsnippet.com/site/facts-about-winston-peters.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Top 10 Interesting Facts aboutWinstonPetersWinstonRaymondPeters(born 11 April 1945) is a New Zealand politician who has led the New Zealand First party since its establishment in 1993.Peterswas born in Whangarei and raised in rural Te Tai Tokerau in Whananki before attending Dargaville High School. <\/CONTENT> <URL> https://www.discoverwalks.com/blog/new-zealand/top-10-interesting-facts-about-winston-peters <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Find out whereWinstonPeterswas born, their birthday and details about their professions, education, religion, family and other life details and facts. <\/CONTENT> <URL> https://playback.fm/person/winston-peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> WinstonPeters(11 April 1945-) was Deputy Prime Minister of New Zealand from 16 December 1996 to 14 August 1998, succeeding Don McKinnon and preceding Wyatt Creech, and from 26 October 2017, succeeding Paula Bennett. He was the founder and leader of the populist New Zealand First party.WinstonPeterswas born in Whangarei, New Zealand on 11 April 1945 to a father of Maori descent and a ... <\/CONTENT> <URL> https://historica.fandom.com/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonRaymondPeters(born 11 April 1945) is a well-known New Zealand politician. He started the political party New Zealand First in 1993 and has led it ever since. <\/CONTENT> <URL> https://kids.kiddle.co/Winston_Peters <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779222099988,
+            "end": 1779222101541
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222101543,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6be260015ju6T43QTFZWAg",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6b35e001J7aVJASr8cOZaO",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0267,
+        "tokens": {
+          "total": 8551,
+          "input": 8466,
+          "output": 85,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779222104117,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6c831001pLXgYRgl6keXE4",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6be29001G1MLuIDExGm7j0",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779222104118,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6c833001vb31v4cFKmwdWR",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6be29001G1MLuIDExGm7j0",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"BA and LLB\",\n  \"educational_attainment_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"prior_occupation\": \"Teacher and Lawyer (Barrister and Solicitor)\",\n  \"prior_occupation_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"birth_year\": \"1945\",\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\",\n  \"birth_place\": \"Whangarei, New Zealand\",\n  \"birth_place_source\": \"https://ethnicelebs.com/winston-peters\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\"\n}\n```",
+        "time": {
+          "start": 1779222104118,
+          "end": 1779222104118
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779222104121,
+      "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+      "part": {
+        "id": "prt_e41e6c83700183Mj1Rkh8dCbEG",
+        "sessionID": "ses_1be19753dffeFxRadAnwyJLhO1",
+        "messageID": "msg_e41e6be29001G1MLuIDExGm7j0",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0341,
+        "tokens": {
+          "total": 9910,
+          "input": 9545,
+          "output": 365,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779222090883,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e69480001hDE23ai3q7F6Sk\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e68ae7001tPZ0Vo7J1A0xaR\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222093628,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e694820016wDU57026UHB0j\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e68ae7001tPZ0Vo7J1A0xaR\",\"type\":\"tool\",\"callID\":\"44bcc42b-1f02-4f85-8bdc-2f7aa779cd0d\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters New Zealand biography education occupation birth disability sexual orientation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is aNewZealandpolitician. He has led the political partyNewZealandFirst since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up theNewZealandFirst Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> In 1993, MrPetersand others formed theNewZealandFirst Party to represent thoseNewZealanders concerned about the social and economic direction of our country, after the reforms brought in under Rogernomics in the 1980's. <\/CONTENT> <URL> https://www.nzfirst.nz/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofWinstonPeters(1945 - present), politician fromNew_Zealand. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish theNewZealandFirst party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> WinstonRaymondPetersPC is aNewZealandpolitician and leader ofNewZealandFirst, a political party he founded in 1993.Petershas had a successful and turbulent political career since entering Parliament in 1978, first serving as a Cabinet Minister in the Bolger Government before being sacked in 1991. <\/CONTENT> <URL> https://www.biographies.net/people/en/winston_peters <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> NewZealandOccupationpolitician, diplomat, rugby union player, political candidateEducationUniversity of Auckland Position held Member of the Privy Council of the United Kingdom, Member of theNewZealandParliament, Deputy Prime Minister ofNewZealand, Minister of Foreign Affairs, Minister for Māori Development, Minister of Racing Gender ... <\/CONTENT> <URL> https://entityfacts.com/en/person/winston-peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> WinstonPetersturned a venerable 80 on 11 April , but he showed no sign of retiring asNewZealand'sarchetypal populist during his recent state of the nation speech. He especially enjoyed the hecklers, gleefully telling them one by one to get out. As ever, his detractors became extras in theWinstonPetersshow - something of a trademark in his long political career. As well as a ... <\/CONTENT> <URL> https://www.auckland.ac.nz/en/news/2025/04/09/winston-peters-at-80.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonPetersis the stuff of legend in theNewZealandGovernment. He's the only diplomat that's ever been invited to North Korea. He's also the longest-serving MP, entering Parliament in 1979 - before the rise of neoliberalism or the inception of the internet - during a time of massive political upheaval on the world stage. The Kingmaker. Now, as the often-controversial MP makes a ... <\/CONTENT> <URL> https://www.critic.co.nz/culture/article/10861/-winston-peters-in-his-reputation-era <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> WINSTONPETERS. ILLUSTRATION: ROSS MURRAY FOR THE SPINOFF.NewZealandFirst and the winebox Many details about thisnewparty were mysterious.Peterswas the leader, obviously, but other political parties had formal appointment procedures. How were leaders and candidates inNewZealandFirst decided?Peters: \\\"By the founders.\\\" Media: \\\"Who are the founders?\\\"Peters: \\\"That's none of ... <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222090885,\"end\":1779222093627},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222093630,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e69f3d001og0m3sODmKhFZq\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e68ae7001tPZ0Vo7J1A0xaR\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022473,\"tokens\":{\"total\":6523,\"input\":6281,\"output\":242,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222094897,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6a431001SsCWyaUig0d6R4\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e69f3f001KEY4TaJ6kGJrmY\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222096344,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6a4310024M5p2TCIguKnLk\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e69f3f001KEY4TaJ6kGJrmY\",\"type\":\"tool\",\"callID\":\"209b9cc2-17e8-4b4b-839a-6fca27bdb0ab\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Winston_Peters\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Winston_Peters\\nFinal URL: https://en.wikipedia.org/wiki/Winston_Peters\\nTitle: Winston Peters - Wikipedia\\nBytes read: 962899\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Winston+Peters]\\nLog in\\nPersonal tools\\nDonate\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222094898,\"end\":1779222096344},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222096345,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6a9d9001TouvV9ga98S04d\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e69f3f001KEY4TaJ6kGJrmY\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.024573,\"tokens\":{\"total\":7827,\"input\":7736,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222097574,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6aea5001tO7FtqY0b47Dg8\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6a9db001qppnfJ0loeYEK6\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222098780,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6aea5002wkloM25UPkitEs\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6a9db001qppnfJ0loeYEK6\",\"type\":\"tool\",\"callID\":\"6291d11b-8737-4a45-a025-4f70ba3cf58d\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\"},\"output\":\"URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\\nFinal URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\\nTitle: (unknown)\\nBytes read: 212\\nCache: MISS\\n\\nNo readable text extracted.\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222097574,\"end\":1779222098780},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222098781,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6b35c001jfVnQin6nkLgsm\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6a9db001qppnfJ0loeYEK6\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026325,\"tokens\":{\"total\":8371,\"input\":8270,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222099988,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6b813001G1UJMIY2gvd27U\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6b35e001J7aVJASr8cOZaO\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779222101542,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6b813002eg8oSX4FUSA7wl\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6b35e001J7aVJASr8cOZaO\",\"type\":\"tool\",\"callID\":\"d2584a61-2c2b-40a2-afc1-815a204a6294\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters birth place disability sexual orientation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> TweetWinstonPetersNew Zealand politician Date ofBirth: 11-Apr -1945PlaceofBirth: Whangarei, Northland Region, New Zealand Profession: politician, diplomat, rugby union player Nationality: New Zealand Zodiac Sign: Aries Social Profiles:winstonpetersShow Famous Birthdays Today, New Zealand 👉 Worldwide Celebrity Birthdays Today About ... <\/CONTENT> <URL> https://www.bornglorious.com/person/?pi=1396178 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Answers to your questions aboutWinstonPeters's life, age, relationships,sexualorientation, drug usage, net worth and the latest gossip! <\/CONTENT> <URL> https://www.vipfaq.com/Winston Peters.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> WinstonPeters'perspective on religion aligns with his broader political philosophy, characterized by pragmatism and a desire for balance.Peters'complex religious beliefs and mixed ancestry reflect the diversity of New Zealand society, demonstrating his respect for religion combined with an independent and critical view point. <\/CONTENT> <URL> https://wealthypeeps.com/winston-peters-ethnicity-and-religion <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> WinstonPetersby Manila · October 22, 2017BirthName: Wynston RaymondPetersPlaceofBirth: Whangarei, Northland, New Zealand Date ofBirth: 11 April, 1945 Ethnicity: *father - Māori, small amount of Irish or Scottish *mother - Scottish, Northern Irish, EnglishWinstonPetersis a New Zealand politician. <\/CONTENT> <URL> https://ethnicelebs.com/winston-peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> The couple have two children, a son named JoelWinstonPetersand a daughter named BreeWinstonPeters, who is an actress. 179 Facts AboutWinstonPeters| FactSnippet. <\/CONTENT> <URL> https://www.factsnippet.com/site/facts-about-winston-peters.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Top 10 Interesting Facts aboutWinstonPetersWinstonRaymondPeters(born 11 April 1945) is a New Zealand politician who has led the New Zealand First party since its establishment in 1993.Peterswas born in Whangarei and raised in rural Te Tai Tokerau in Whananki before attending Dargaville High School. <\/CONTENT> <URL> https://www.discoverwalks.com/blog/new-zealand/top-10-interesting-facts-about-winston-peters <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Find out whereWinstonPeterswas born, their birthday and details about their professions, education, religion, family and other life details and facts. <\/CONTENT> <URL> https://playback.fm/person/winston-peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> WinstonPeters(11 April 1945-) was Deputy Prime Minister of New Zealand from 16 December 1996 to 14 August 1998, succeeding Don McKinnon and preceding Wyatt Creech, and from 26 October 2017, succeeding Paula Bennett. He was the founder and leader of the populist New Zealand First party.WinstonPeterswas born in Whangarei, New Zealand on 11 April 1945 to a father of Maori descent and a ... <\/CONTENT> <URL> https://historica.fandom.com/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonRaymondPeters(born 11 April 1945) is a well-known New Zealand politician. He started the political party New Zealand First in 1993 and has led it ever since. <\/CONTENT> <URL> https://kids.kiddle.co/Winston_Peters <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779222099988,\"end\":1779222101541},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222101543,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6be260015ju6T43QTFZWAg\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6b35e001J7aVJASr8cOZaO\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026673,\"tokens\":{\"total\":8551,\"input\":8466,\"output\":85,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779222104117,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6c831001pLXgYRgl6keXE4\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6be29001G1MLuIDExGm7j0\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779222104118,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6c833001vb31v4cFKmwdWR\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6be29001G1MLuIDExGm7j0\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"BA and LLB\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"prior_occupation\\\": \\\"Teacher and Lawyer (Barrister and Solicitor)\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"birth_year\\\": \\\"1945\\\",\\n  \\\"birth_year_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\",\\n  \\\"birth_place\\\": \\\"Whangarei, New Zealand\\\",\\n  \\\"birth_place_source\\\": \\\"https://ethnicelebs.com/winston-peters\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\"\\n}\\n```\",\"time\":{\"start\":1779222104118,\"end\":1779222104118}}}\n{\"type\":\"step_finish\",\"timestamp\":1779222104121,\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"part\":{\"id\":\"prt_e41e6c83700183Mj1Rkh8dCbEG\",\"sessionID\":\"ses_1be19753dffeFxRadAnwyJLhO1\",\"messageID\":\"msg_e41e6be29001G1MLuIDExGm7j0\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.03411,\"tokens\":{\"total\":9910,\"input\":9545,\"output\":365,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

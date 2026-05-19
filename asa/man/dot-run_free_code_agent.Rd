@@ -10,6 +10,8 @@
   recursion_limit = NULL,
   expected_schema = NULL,
   thread_id = NULL,
+  search_budget_limit = NULL,
+  unknown_after_searches = NULL,
   auto_openwebpage_policy = NULL,
   performance_profile = NULL,
   webpage_policy = NULL,

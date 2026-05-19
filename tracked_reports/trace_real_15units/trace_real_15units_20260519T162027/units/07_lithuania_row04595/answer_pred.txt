@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Master's degree. He studied at the Lithuanian University of Agriculture (now Vytauto Didžiojo universiteto Žemės ūkio akademija), where he graduated in 2005. He also completed studies at the Division General Stasys Raštikis NCO School, receiving the rank of reserve lieutenant.",
+  "educational_attainment_url": "https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius",
+  "prior_occupation": "Forester. He worked as a deputy forester at the Braziūkai forestry of the Kazlų Rūda Training Forest Enterprise (2006–2008), chief forester (2012–2016), and later as a forest manager (urėdas) at the Kėdainiai Forest Enterprise (2016–2018).",
+  "prior_occupation_url": "https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5",
+  "birth_year": 1982,
+  "birth_year_url": "https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius",
+  "birth_place": "Kaunas (Garliava), Lithuania",
+  "birth_place_url": "https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius",
+  "disability_status": "Unknown",
+  "disability_status_url": "https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_url": "https://lt.wikipedia.org/wiki/Justinas_Urbanavi%C4%8Dius",
+  "class_background": "Middle class/professional",
+  "class_background_url": "https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5"
+}

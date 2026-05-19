@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Master of Science in Environmental Engineering, Oklahoma State University; Bachelor of Science in Chemical Engineering, Tamkang University",
+  "prior_occupation": "Associate Engineer at the Industrial Technology Research Institute (ITRI)",
+  "birth_year": "1959",
+  "birth_place": "Taipei City, Taiwan",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "https://www.moi.gov.tw/cp.aspx?n=27",
+    "prior_occupation": "https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu",
+    "birth_year": "https://en.wikipedia.org/wiki/Liu_Shyh-fang",
+    "birth_place": "https://votetw.com/wiki/%E5%8A%89%E4%B8%96%E8%8A%B3",
+    "disability_status": "https://en.wikipedia.org/wiki/Liu_Shyh-fang",
+    "sexual_orientation": "https://en.wikipedia.org/wiki/Liu_Shyh-fang",
+    "class_background": "https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu"
+  }
+}

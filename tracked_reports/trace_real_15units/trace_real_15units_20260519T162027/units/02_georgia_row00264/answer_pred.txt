@@ -1,0 +1,18 @@
+{
+  "name": "Nona Mamulashvili",
+  "educational_attainment": "Unknown",
+  "prior_occupation": "Regional Director for Pfizer; Senior Advisor to the President of Georgia",
+  "birth_year": 1977,
+  "birth_place": "Unknown",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "Unknown",
+    "prior_occupation": "https://www.asiaglobalinstitute.hku.hk/agf/fellows/nona-mamulashvili",
+    "birth_year": "https://en.wikipedia.org/wiki/Nona_Mamulashvili",
+    "birth_place": "Unknown",
+    "disability_status": "Unknown",
+    "sexual_orientation": "Unknown"
+  }
+}
