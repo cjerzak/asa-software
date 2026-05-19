@@ -42,6 +42,153 @@ opencode_jsonl <- function(...) {
   )
 }
 
+opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
+  skip_if_not(nzchar(python), "python3 not found")
+
+  script <- tempfile("asa-opencode-gateway-probe-", fileext = ".py")
+  stdout_file <- tempfile("asa-opencode-gateway-probe-stdout-")
+  stderr_file <- tempfile("asa-opencode-gateway-probe-stderr-")
+  on.exit(unlink(c(script, stdout_file, stderr_file), force = TRUE), add = TRUE)
+
+  writeLines(
+    c(
+      "import json",
+      "import sys",
+      "import threading",
+      "import types",
+      "import urllib.error",
+      "import urllib.request",
+      "",
+      sprintf("sys.path.insert(0, %s)", as.character(jsonlite::toJSON(python_path, auto_unbox = TRUE))),
+      "",
+      "class DummyChat:",
+      "    def __init__(self, *args, **kwargs):",
+      "        pass",
+      "",
+      "class FakeMessage:",
+      "    def __init__(self, content='', tool_calls=None, usage_metadata=None, **kwargs):",
+      "        self.content = content",
+      "        self.tool_calls = tool_calls if tool_calls is not None else kwargs.get('tool_calls', [])",
+      "        self.usage_metadata = usage_metadata if usage_metadata is not None else kwargs.get('usage_metadata', {})",
+      "",
+      "class FakeToolMessage(FakeMessage):",
+      "    def __init__(self, content='', tool_call_id='', status=None, **kwargs):",
+      "        super().__init__(content=content, **kwargs)",
+      "        self.tool_call_id = tool_call_id",
+      "        self.status = status",
+      "",
+      "def install_module(name, **attrs):",
+      "    module = types.ModuleType(name)",
+      "    for key, value in attrs.items():",
+      "        setattr(module, key, value)",
+      "    sys.modules[name] = module",
+      "    return module",
+      "",
+      "langchain_core = types.ModuleType('langchain_core')",
+      "langchain_core.__path__ = []",
+      "sys.modules['langchain_core'] = langchain_core",
+      "install_module(",
+      "    'langchain_core.messages',",
+      "    AIMessage=FakeMessage,",
+      "    HumanMessage=FakeMessage,",
+      "    SystemMessage=FakeMessage,",
+      "    ToolMessage=FakeToolMessage,",
+      ")",
+      "install_module('langchain_anthropic', ChatAnthropic=DummyChat)",
+      "install_module('langchain_aws', ChatBedrockConverse=DummyChat)",
+      "install_module('langchain_google_genai', ChatGoogleGenerativeAI=DummyChat)",
+      "install_module('langchain_groq', ChatGroq=DummyChat)",
+      "install_module('langchain_openai', ChatOpenAI=DummyChat)",
+      "",
+      "from asa_backend.free_code import anthropic_gateway as gateway",
+      "",
+      "def fake_invoke(request, backend, model):",
+      "    return gateway.AIMessage(",
+      "        content='gateway ok',",
+      "        usage_metadata={'input_tokens': 2, 'output_tokens': 3},",
+      "    )",
+      "",
+      "gateway._invoke_model = fake_invoke",
+      "server = gateway.ThreadingHTTPServer(('127.0.0.1', 0), gateway._GatewayHandler)",
+      "thread = threading.Thread(target=server.serve_forever, daemon=True)",
+      "thread.start()",
+      "base_url = f'http://127.0.0.1:{server.server_port}'",
+      "",
+      "def post(path, stream=False):",
+      "    payload = {",
+      "        'model': 'claude-test',",
+      "        'max_tokens': 64,",
+      "        'stream': stream,",
+      "        'messages': [{'role': 'user', 'content': 'ping'}],",
+      "    }",
+      "    body = json.dumps(payload).encode('utf-8')",
+      "    request = urllib.request.Request(",
+      "        base_url + path,",
+      "        data=body,",
+      "        method='POST',",
+      "        headers={",
+      "            'Content-Type': 'application/json',",
+      "            'X-ASA-Target-Backend': 'openai',",
+      "            'X-ASA-Target-Model': 'gpt-4.1-mini',",
+      "        },",
+      "    )",
+      "    try:",
+      "        with urllib.request.urlopen(request, timeout=5) as response:",
+      "            return {",
+      "                'status': response.status,",
+      "                'content_type': response.headers.get('Content-Type', ''),",
+      "                'body': response.read().decode('utf-8'),",
+      "            }",
+      "    except urllib.error.HTTPError as exc:",
+      "        return {",
+      "            'status': exc.code,",
+      "            'content_type': exc.headers.get('Content-Type', ''),",
+      "            'body': exc.read().decode('utf-8'),",
+      "        }",
+      "",
+      "try:",
+      "    results = {",
+      "        'v1_messages': post('/v1/messages'),",
+      "        'messages': post('/messages'),",
+      "        'messages_stream': post('/messages', stream=True),",
+      "        'bad': post('/bad'),",
+      "    }",
+      "finally:",
+      "    server.shutdown()",
+      "    thread.join(timeout=5)",
+      "    server.server_close()",
+      "",
+      "print(json.dumps(results), flush=True)",
+      ""
+    ),
+    con = script,
+    useBytes = TRUE
+  )
+
+  status <- suppressWarnings(system2(
+    command = python,
+    args = script,
+    stdout = stdout_file,
+    stderr = stderr_file,
+    timeout = 15
+  ))
+  status_int <- suppressWarnings(as.integer(status))
+  if (is.na(status_int)) {
+    status_int <- 0L
+  }
+
+  stdout <- paste(readLines(stdout_file, warn = FALSE), collapse = "\n")
+  stderr <- paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
+  if (status_int != 0L) {
+    stop(
+      sprintf("OpenCode gateway probe failed (status=%d).\nstdout: %s\nstderr: %s", status_int, stdout, stderr),
+      call. = FALSE
+    )
+  }
+
+  jsonlite::fromJSON(stdout, simplifyVector = FALSE)
+}
+
 test_that("asa_config and initialize_agent accept opencode", {
   cfg <- asa::asa_config(
     agent_backend = "opencode",
@@ -157,6 +304,28 @@ test_that("OpenCode config content wires provider, headers, tools, and MCP", {
   search_opts <- jsonlite::fromJSON(server$environment$ASA_FREE_CODE_SEARCH_OPTIONS_JSON, simplifyVector = FALSE)
   expect_identical(search_opts$max_results, 7L)
   expect_identical(search_opts$search_doc_content_chars_max, 321L)
+})
+
+test_that("OpenCode gateway accepts /messages and /v1/messages", {
+  python_path <- asa_test_python_path(
+    required_files = file.path("asa_backend", "free_code", "anthropic_gateway.py")
+  )
+  skip_if_not(nzchar(python_path) && dir.exists(python_path), "Python modules not found")
+
+  result <- opencode_gateway_probe(python_path)
+
+  expect_equal(result$v1_messages$status, 200L)
+  expect_match(result$v1_messages$body, "gateway ok", fixed = TRUE)
+  expect_equal(result$messages$status, 200L)
+  expect_match(result$messages$body, "gateway ok", fixed = TRUE)
+
+  expect_equal(result$messages_stream$status, 200L)
+  expect_match(result$messages_stream$content_type, "text/event-stream", fixed = TRUE)
+  expect_match(result$messages_stream$body, "event: message_start", fixed = TRUE)
+  expect_match(result$messages_stream$body, "event: message_stop", fixed = TRUE)
+
+  expect_equal(result$bad$status, 404L)
+  expect_match(result$bad$body, "Unsupported path: /bad", fixed = TRUE)
 })
 
 test_that("OpenCode JSONL parser handles text, errors, sessions, usage, and malformed stdout", {

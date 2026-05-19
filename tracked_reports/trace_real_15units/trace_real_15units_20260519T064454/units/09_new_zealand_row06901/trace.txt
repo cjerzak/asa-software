@@ -1,0 +1,369 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779187699034,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fd9cd59001VqiyDUPgxsiReK",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fd9c0fc001aTAPpMUbzYd5ZT",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187701625,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fd9cd59002HfA4YcQAna50uw",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fd9c0fc001aTAPpMUbzYd5ZT",
+        "type": "tool",
+        "callID": "98958c07-9b16-4b74-9c22-d446b4eb7e95",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters New Zealand politician biography education occupation birth disability sexual orientation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is aNewZealandpolitician. He has led the political partyNewZealandFirst since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up theNewZealandFirst Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> He entered Parliament in 1978 for the National Party in the seat of Hunua and was MP for Tauranga from 1984 till 2005. In 1993, MrPetersand others formed theNewZealandFirst Party to represent thoseNewZealanders concerned about the social and economic direction of our country, after the reforms brought in under Rogernomics in the 1980's. <\/CONTENT> <URL> https://www.nzfirst.nz/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> After the 2017 general elections,NewZealandFirst formed a coalition government with the Labour Party. MrPeterswas the Deputy Prime Minister, Minister for Foreign Affairs, State-Owned Enterprises and Racing. <\/CONTENT> <URL> https://nzfirst.nationbuilder.com/winston-peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BiographyofWinstonPeters(1945 - present),politicianfromNew_Zealand. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Home MPs and Electorates Members of ParliamentPeters,WinstonPublished date: 4 Feb 2026 NZ First PartyPeters,WinstonSee where I sit in the debating chamber <\/CONTENT> <URL> https://www3.parliament.nz/en/mps-and-electorates/members-of-parliament/peters-winston <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish theNewZealandFirst party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> NewZealandOccupationpolitician, diplomat, rugby union player, political candidateEducationUniversity of Auckland Position held Member of the Privy Council of the United Kingdom, Member of theNewZealandParliament, Deputy Prime Minister ofNewZealand, Minister of Foreign Affairs, Minister for Māori Development, Minister of Racing Gender ... <\/CONTENT> <URL> https://entityfacts.com/en/person/winston-peters <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonPetersis the stuff of legend in theNewZealandGovernment. He's the only diplomat that's ever been invited to North Korea. He's also the longest-serving MP, entering Parliament in 1979 - before the rise of neoliberalism or the inception of the internet - during a time of massive political upheaval on the world stage. The Kingmaker. Now, as the often-controversial MP makes a ... <\/CONTENT> <URL> https://www.critic.co.nz/culture/article/10861/-winston-peters-in-his-reputation-era <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Henare's presence lent credibility to the claim thatNewZealandFirst was a genuine political movement, not a vanity project forPeters.NewZealandpolitics in the mid 1990s was consumed by the winebox debate, a vast and sprawling, summary-defying political, financial and legal scandal about the sale of government assets and the bailout of ... <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187699037,
+            "end": 1779187701624
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187701628,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fd9d77a001jdMzIe2NwtIOds",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fd9c0fc001aTAPpMUbzYd5ZT",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0225,
+        "tokens": {
+          "total": 6525,
+          "input": 6283,
+          "output": 242,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187703044,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fd9dd02001HLcAzFihAvpt78",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fd9d77e001a6oGD1tgg76RxK",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187733047,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fd9dd03001jt4aixD8j3XZYa",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fd9d77e001a6oGD1tgg76RxK",
+        "type": "tool",
+        "callID": "d956ad2e-d11e-424b-a0de-5c63c04068b8",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "error",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Winston_Peters"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779187703044,
+            "end": 1779187733046
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187733048,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda5237001r1DExQ2Akn8Fmr",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fd9d77e001a6oGD1tgg76RxK",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0244,
+        "tokens": {
+          "total": 7771,
+          "input": 7680,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187743339,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda7a6a001VOnbOfhMJPQobL",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda523a001uBSZt6wd3gDe4Q",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187745798,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda7a6a00203knwx62td316O",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda523a001uBSZt6wd3gDe4Q",
+        "type": "tool",
+        "callID": "ff453b7d-03c6-4220-b8a2-327ff9095208",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.beehive.govt.nz/minister/biography/winston-peters-0"
+          },
+          "output": "URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\nFinal URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\nTitle: (unknown)\nBytes read: 212\nCache: MISS\n\nNo readable text extracted.",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187743339,
+            "end": 1779187745797
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187745799,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda8406001vAFf43vj1A8SZt",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda523a001uBSZt6wd3gDe4Q",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0249,
+        "tokens": {
+          "total": 7905,
+          "input": 7804,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187747262,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda89bd001v157YHRoVmYtib",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda8409001jDwPDGuLsuJTVT",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187748819,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda89be001p59qTMfR1ZW9V5",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda8409001jDwPDGuLsuJTVT",
+        "type": "tool",
+        "callID": "fe2abba5-581b-452a-a245-095068743024",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters birth place disability sexual orientation LGBTQ identity"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is a New Zealand politician. He has led the political party New Zealand First since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187747263,
+            "end": 1779187748819
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187748821,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda8fd40016q8PZX2kSU8eX4",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda8409001jDwPDGuLsuJTVT",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0253,
+        "tokens": {
+          "total": 8087,
+          "input": 8000,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187750125,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda94ec001f381AUAF6Kc9qX",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda8fd6001P5HVDlrxSlBCB7",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187751860,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda94ed001G2FIKwTCFBU2wP",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda8fd6001P5HVDlrxSlBCB7",
+        "type": "tool",
+        "callID": "cafa824a-bbd3-4c43-8517-6c534bb4aa44",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters birth place Whangarei Northland"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is a New Zealand politician. He has led the political party New Zealand First since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> WinstonPetersby Manila · October 22, 2017BirthName: Wynston RaymondPetersPlaceofBirth:Whangarei,Northland, New Zealand Date ofBirth: 11 April, 1945 Ethnicity: *father - Māori, small amount of Irish or Scottish *mother - Scottish, Northern Irish, EnglishWinstonPetersis a New Zealand politician. <\/CONTENT> <URL> https://ethnicelebs.com/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Petershas led the populist New Zealand First party since its foundation in 1993. He has been a Member of Parliament since 2011, having previously served from 1979 to 1981 and 1984 to 2008.Peterswas born in theNorthlandcity ofWhangarei. He is of mixed ethnicity, his father being Maori and his mother being of Scottish descent. <\/CONTENT> <URL> https://www.bornglorious.com/person/?pi=1396178 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 1945 April 11th New Zealand He was born inWhangārei,Northland, to a father of Maori descent and a mother of Scottish immigrant descent. His father's Iwi tribe is from the Ngāti Wai tribe, a branch of the Maori tribe , and his mother's original surname is MacInnes, a Scottish clan. He spent his childhood growing up in the Whananaki farm area. After attendingWhangareiBoys' High School and ... <\/CONTENT> <URL> https://en.namu.wiki/w/윈스턴 피터스 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> WinstonPetersis one of the most popular and richest Politician who was born on April 10, 1945 inWhangarei,NorthlandRegion, New Zealand. New Zealand politician who founded the New Zealand First party in 1993. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/winston-peters <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> WinstonRaymondPetersis a New Zealand politician serving as Leader of New Zealand First since its foundation in 1993.Petersserved as Deputy Prime Minister of New Zealand from 1996 to 1998 and 2017 to 2020, Minister of Foreign Affairs from 2005 to 2008 and 2017 to 2020, and Treasurer of New Zealand from 1996 to 1998. <\/CONTENT> <URL> https://fmsppl.com/list-of-people/born-in-whangarei-northland-region-new-zealand <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Rt HonWinstonPetersThe Right HonourableWinstonPeters, currently serving as Deputy Prime Minister, has an extraordinary five-decade history in New Zealand politics. Born Wynston RaymondPetersin Whananaki,Whangāreiin 1945, MrPetersattendedWhangāreiBoys' High School and Dargaville High School. <\/CONTENT> <URL> https://wbhsoba.co.nz/old-boys/rt-hon-winston-peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> WinstonPeterswas born in 1945 inWhangarei. He graduated in history and political studies from the University of Auckland. He worked as a teacher, barrister and later as a solicitor in his own law practice; he was previously captain of the Auckland Maori rugby team. In 1978,Peterswas elected as the National Party's MP for Hunua. He later lost his seat, was re-elected in 1984, and then ... <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 8__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187750126,
+            "end": 1779187751859
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187751861,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fda9bb4001SAq53ZOaYDc7DA",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda8fd6001P5HVDlrxSlBCB7",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0261,
+        "tokens": {
+          "total": 8346,
+          "input": 8259,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187754381,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fdaa58a001KjCr7T2xmZKLFf",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda9bb7001x4oo4KwcKt9YQ7",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779187754382,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fdaa58b001LPlvXwUL7Q1SSa",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda9bb7001x4oo4KwcKt9YQ7",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"BA and LLB (University of Auckland)\",\n  \"educational_attainment_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"prior_occupation\": \"Teacher, Barrister, and Solicitor\",\n  \"prior_occupation_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"birth_year\": \"1945\",\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\",\n  \"birth_place\": \"Whangārei, Northland, New Zealand\",\n  \"birth_place_source\": \"https://wbhsoba.co.nz/old-boys/rt-hon-winston-peters\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\"\n}\n```",
+        "time": {
+          "start": 1779187754381,
+          "end": 1779187754381
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187754385,
+      "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+      "part": {
+        "id": "prt_e3fdaa58e001UhJNaw1t0g5TbP",
+        "sessionID": "ses_1c0263f2effe048LGYbu0qUL8t",
+        "messageID": "msg_e3fda9bb7001x4oo4KwcKt9YQ7",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0342,
+        "tokens": {
+          "total": 9864,
+          "input": 9482,
+          "output": 382,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779187699034,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fd9cd59001VqiyDUPgxsiReK\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fd9c0fc001aTAPpMUbzYd5ZT\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187701625,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fd9cd59002HfA4YcQAna50uw\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fd9c0fc001aTAPpMUbzYd5ZT\",\"type\":\"tool\",\"callID\":\"98958c07-9b16-4b74-9c22-d446b4eb7e95\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters New Zealand politician biography education occupation birth disability sexual orientation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is aNewZealandpolitician. He has led the political partyNewZealandFirst since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up theNewZealandFirst Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> He entered Parliament in 1978 for the National Party in the seat of Hunua and was MP for Tauranga from 1984 till 2005. In 1993, MrPetersand others formed theNewZealandFirst Party to represent thoseNewZealanders concerned about the social and economic direction of our country, after the reforms brought in under Rogernomics in the 1980's. <\/CONTENT> <URL> https://www.nzfirst.nz/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> After the 2017 general elections,NewZealandFirst formed a coalition government with the Labour Party. MrPeterswas the Deputy Prime Minister, Minister for Foreign Affairs, State-Owned Enterprises and Racing. <\/CONTENT> <URL> https://nzfirst.nationbuilder.com/winston-peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BiographyofWinstonPeters(1945 - present),politicianfromNew_Zealand. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Home MPs and Electorates Members of ParliamentPeters,WinstonPublished date: 4 Feb 2026 NZ First PartyPeters,WinstonSee where I sit in the debating chamber <\/CONTENT> <URL> https://www3.parliament.nz/en/mps-and-electorates/members-of-parliament/peters-winston <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish theNewZealandFirst party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> NewZealandOccupationpolitician, diplomat, rugby union player, political candidateEducationUniversity of Auckland Position held Member of the Privy Council of the United Kingdom, Member of theNewZealandParliament, Deputy Prime Minister ofNewZealand, Minister of Foreign Affairs, Minister for Māori Development, Minister of Racing Gender ... <\/CONTENT> <URL> https://entityfacts.com/en/person/winston-peters <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonPetersis the stuff of legend in theNewZealandGovernment. He's the only diplomat that's ever been invited to North Korea. He's also the longest-serving MP, entering Parliament in 1979 - before the rise of neoliberalism or the inception of the internet - during a time of massive political upheaval on the world stage. The Kingmaker. Now, as the often-controversial MP makes a ... <\/CONTENT> <URL> https://www.critic.co.nz/culture/article/10861/-winston-peters-in-his-reputation-era <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Henare's presence lent credibility to the claim thatNewZealandFirst was a genuine political movement, not a vanity project forPeters.NewZealandpolitics in the mid 1990s was consumed by the winebox debate, a vast and sprawling, summary-defying political, financial and legal scandal about the sale of government assets and the bailout of ... <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187699037,\"end\":1779187701624},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187701628,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fd9d77a001jdMzIe2NwtIOds\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fd9c0fc001aTAPpMUbzYd5ZT\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022479,\"tokens\":{\"total\":6525,\"input\":6283,\"output\":242,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187703044,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fd9dd02001HLcAzFihAvpt78\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fd9d77e001a6oGD1tgg76RxK\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187733047,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fd9dd03001jt4aixD8j3XZYa\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fd9d77e001a6oGD1tgg76RxK\",\"type\":\"tool\",\"callID\":\"d956ad2e-d11e-424b-a0de-5c63c04068b8\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"error\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Winston_Peters\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779187703044,\"end\":1779187733046}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187733048,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda5237001r1DExQ2Akn8Fmr\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fd9d77e001a6oGD1tgg76RxK\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.024405,\"tokens\":{\"total\":7771,\"input\":7680,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187743339,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda7a6a001VOnbOfhMJPQobL\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda523a001uBSZt6wd3gDe4Q\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187745798,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda7a6a00203knwx62td316O\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda523a001uBSZt6wd3gDe4Q\",\"type\":\"tool\",\"callID\":\"ff453b7d-03c6-4220-b8a2-327ff9095208\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\"},\"output\":\"URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\\nFinal URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\\nTitle: (unknown)\\nBytes read: 212\\nCache: MISS\\n\\nNo readable text extracted.\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187743339,\"end\":1779187745797},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187745799,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda8406001vAFf43vj1A8SZt\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda523a001uBSZt6wd3gDe4Q\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.024927,\"tokens\":{\"total\":7905,\"input\":7804,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187747262,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda89bd001v157YHRoVmYtib\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda8409001jDwPDGuLsuJTVT\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187748819,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda89be001p59qTMfR1ZW9V5\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda8409001jDwPDGuLsuJTVT\",\"type\":\"tool\",\"callID\":\"fe2abba5-581b-452a-a245-095068743024\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters birth place disability sexual orientation LGBTQ identity\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is a New Zealand politician. He has led the political party New Zealand First since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187747263,\"end\":1779187748819},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187748821,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda8fd40016q8PZX2kSU8eX4\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda8409001jDwPDGuLsuJTVT\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.025305,\"tokens\":{\"total\":8087,\"input\":8000,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187750125,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda94ec001f381AUAF6Kc9qX\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda8fd6001P5HVDlrxSlBCB7\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187751860,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda94ed001G2FIKwTCFBU2wP\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda8fd6001P5HVDlrxSlBCB7\",\"type\":\"tool\",\"callID\":\"cafa824a-bbd3-4c43-8517-6c534bb4aa44\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters birth place Whangarei Northland\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is a New Zealand politician. He has led the political party New Zealand First since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> WinstonPetersby Manila · October 22, 2017BirthName: Wynston RaymondPetersPlaceofBirth:Whangarei,Northland, New Zealand Date ofBirth: 11 April, 1945 Ethnicity: *father - Māori, small amount of Irish or Scottish *mother - Scottish, Northern Irish, EnglishWinstonPetersis a New Zealand politician. <\/CONTENT> <URL> https://ethnicelebs.com/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Petershas led the populist New Zealand First party since its foundation in 1993. He has been a Member of Parliament since 2011, having previously served from 1979 to 1981 and 1984 to 2008.Peterswas born in theNorthlandcity ofWhangarei. He is of mixed ethnicity, his father being Maori and his mother being of Scottish descent. <\/CONTENT> <URL> https://www.bornglorious.com/person/?pi=1396178 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 1945 April 11th New Zealand He was born inWhangārei,Northland, to a father of Maori descent and a mother of Scottish immigrant descent. His father's Iwi tribe is from the Ngāti Wai tribe, a branch of the Maori tribe , and his mother's original surname is MacInnes, a Scottish clan. He spent his childhood growing up in the Whananaki farm area. After attendingWhangareiBoys' High School and ... <\/CONTENT> <URL> https://en.namu.wiki/w/윈스턴 피터스 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> WinstonPetersis one of the most popular and richest Politician who was born on April 10, 1945 inWhangarei,NorthlandRegion, New Zealand. New Zealand politician who founded the New Zealand First party in 1993. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/winston-peters <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> WinstonRaymondPetersis a New Zealand politician serving as Leader of New Zealand First since its foundation in 1993.Petersserved as Deputy Prime Minister of New Zealand from 1996 to 1998 and 2017 to 2020, Minister of Foreign Affairs from 2005 to 2008 and 2017 to 2020, and Treasurer of New Zealand from 1996 to 1998. <\/CONTENT> <URL> https://fmsppl.com/list-of-people/born-in-whangarei-northland-region-new-zealand <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Rt HonWinstonPetersThe Right HonourableWinstonPeters, currently serving as Deputy Prime Minister, has an extraordinary five-decade history in New Zealand politics. Born Wynston RaymondPetersin Whananaki,Whangāreiin 1945, MrPetersattendedWhangāreiBoys' High School and Dargaville High School. <\/CONTENT> <URL> https://wbhsoba.co.nz/old-boys/rt-hon-winston-peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> WinstonPeterswas born in 1945 inWhangarei. He graduated in history and political studies from the University of Auckland. He worked as a teacher, barrister and later as a solicitor in his own law practice; he was previously captain of the Auckland Maori rugby team. In 1978,Peterswas elected as the National Party's MP for Hunua. He later lost his seat, was re-elected in 1984, and then ... <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 8__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187750126,\"end\":1779187751859},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187751861,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fda9bb4001SAq53ZOaYDc7DA\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda8fd6001P5HVDlrxSlBCB7\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026082,\"tokens\":{\"total\":8346,\"input\":8259,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187754381,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fdaa58a001KjCr7T2xmZKLFf\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda9bb7001x4oo4KwcKt9YQ7\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779187754382,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fdaa58b001LPlvXwUL7Q1SSa\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda9bb7001x4oo4KwcKt9YQ7\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"BA and LLB (University of Auckland)\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"prior_occupation\\\": \\\"Teacher, Barrister, and Solicitor\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"birth_year\\\": \\\"1945\\\",\\n  \\\"birth_year_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\",\\n  \\\"birth_place\\\": \\\"Whangārei, Northland, New Zealand\\\",\\n  \\\"birth_place_source\\\": \\\"https://wbhsoba.co.nz/old-boys/rt-hon-winston-peters\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\"\\n}\\n```\",\"time\":{\"start\":1779187754381,\"end\":1779187754381}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187754385,\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"part\":{\"id\":\"prt_e3fdaa58e001UhJNaw1t0g5TbP\",\"sessionID\":\"ses_1c0263f2effe048LGYbu0qUL8t\",\"messageID\":\"msg_e3fda9bb7001x4oo4KwcKt9YQ7\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.034176,\"tokens\":{\"total\":9864,\"input\":9482,\"output\":382,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

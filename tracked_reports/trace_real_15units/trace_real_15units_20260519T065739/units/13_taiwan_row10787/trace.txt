@@ -1,0 +1,500 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779188342726,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe39fc40018s9BIDrIR7wpQo",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe393c3001OEDPEFJv12VdMr",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188344854,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe39fc5001c5MxLTzm5jbk4d",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe393c3001OEDPEFJv12VdMr",
+        "type": "tool",
+        "callID": "05f59e96-072e-4a0a-a518-b2d2c1059466",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Shyh-Fang Liu Taiwan politician biography DPP 2016"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanesepoliticianwho currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. [3] <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> While introducing LiShyh-fang, LI Vice President and former Macedonian State Secretary for Foreign Affairs Emil Kirjas particularly highlighted how only through the past struggle and hardship ofDPP'sfounding members, wasTaiwanable to transform from a one-party autocracy into a flourishing democracy today.LiuShyh-fangwas also present when LI hosted a meeting inTaiwanin 2004. <\/CONTENT> <URL> https://www.dpp.org.tw/en/content_print/media/66 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BiographyLiuShyh-fang(Chinese: 劉世芳; pinyin:LiúShìfāng) is a Taiwanesepolitician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://peoplepill.com/i/liu-shih-fang <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Hon.Shyh-FangLIUis the Minister of the Ministry of the Interior (MOI),Taiwan. She assumed office in May 2024 and brings extensive experience in both national and local governance. Prior to her current role, she held several senior leadership positions acrossTaiwan'sgovernment, including serving as a Legislator in multiple terms of the Legislative Yuan, Deputy Mayor of Kaohsiung City ... <\/CONTENT> <URL> https://www.yushanforum.org/people.php?pid=1365 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> LiuShyh-fang(orLiuShih-fang; ; born 15 August 1959) is a Taiwanesepoliticianwho currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://www.theinfolist.com/html/ALL/l/L/Liu_Shyh-fang.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Taiwanesepolitician <\/CONTENT> <URL> https://dbpedia.org/page/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanesepolitician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Liu_Shyh-fang <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> LiuShyh-fang(orLiuShih-fang; [1] ; born 15 August 1959) is a Taiwanesepolitician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. [2] <\/CONTENT> <URL> https://everything.explained.today/Liu_Shih-fang <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> LiuShyh-fangMember of the Legislative Yuan elected in 2001 Taiwanese legislative election in the at-large district parliamentary term 5th Legislative Yuan start time 1 February 2002 end time 30 June 2002 parliamentary group Democratic Progressive Party Legislative Caucus electoral district Proportional Representation in national election ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q6653712 <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188342728,
+            "end": 1779188344852
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188344856,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3a8170010C03MYRaHGvUvX",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe393c3001OEDPEFJv12VdMr",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0228,
+        "tokens": {
+          "total": 6544,
+          "input": 6284,
+          "output": 260,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188346295,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3adb6001oojTY6el4DOsLn",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3a81a001LxuAKFkdukR11y",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188347091,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3adb7001h4XA2gJAjFDOw7",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3a81a001LxuAKFkdukR11y",
+        "type": "tool",
+        "callID": "7c9e4379-55f6-4ed6-83a1-289b01869c69",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Liu_Shyh-fang"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Liu_Shyh-fang\nFinal URL: https://en.wikipedia.org/wiki/Liu_Shyh-fang\nTitle: Liu Shyh-fang - Wikipedia\nBytes read: 108643\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Liu+Shyh-fang]\nLog in\nPersonal tools\nDonate\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188346296,
+            "end": 1779188347090
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188347092,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3b0d30012fo3fS12pnWPhC",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3a81a001LxuAKFkdukR11y",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0238,
+        "tokens": {
+          "total": 7569,
+          "input": 7476,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188348700,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3b71b001nDHHirJRnESDKO",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3b0d6001IcYR6R86x4a333",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188350064,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3b71b00278CE4o4rgO4bDR",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3b0d6001IcYR6R86x4a333",
+        "type": "tool",
+        "callID": "6eebd96f-a054-40e9-b9fa-f34184c1143a",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 學歷 經歷 出生地 職業 class background"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 執 ... <\/CONTENT> <URL> https://zh.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 2__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188348700,
+            "end": 1779188350063
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188350065,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3bc7000155Zxw0ISqyOJhA",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3b0d6001IcYR6R86x4a333",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0254,
+        "tokens": {
+          "total": 8111,
+          "input": 8021,
+          "output": 90,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188351340,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3c16b001mCgjlX1n635Kih",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3bc730014HKbUQGo5sufUo",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188352060,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3c16b002XSOxVGVq2ngY9M",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3bc730014HKbUQGo5sufUo",
+        "type": "tool",
+        "callID": "c9ac98fa-98e2-4fc7-aa3e-0a044cb1a915",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://zh.wikipedia.org/wiki/劉世芳"
+          },
+          "output": "URL: https://zh.wikipedia.org/wiki/劉世芳\nFinal URL: https://zh.wikipedia.org/wiki/%E5%8A%89%E4%B8%96%E8%8A%B3\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_429_bot_marker (status=429)\nMarkers: too many requests",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188351340,
+            "end": 1779188352059
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188352061,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3c43c001ZT9P6L8T4zAAck",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3bc730014HKbUQGo5sufUo",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0267,
+        "tokens": {
+          "total": 8544,
+          "input": 8454,
+          "output": 90,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188353361,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3c9500011OiVWo6iXo49zW",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3c43e00135btzl01LXjsgc",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188355014,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3c950002OU6L3i9WsSQOEd",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3c43e00135btzl01LXjsgc",
+        "type": "tool",
+        "callID": "781473af-f943-45df-a828-ad2daeefcd9b",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Shyh-Fang Liu education prior occupation birth place disability LGBTQ identity"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> #LiuShyh-fangLatest Articles Taiwan premier-designate reveals 5 new ministers Heads of interior, transportation,education, culture, and justice ministries named <\/CONTENT> <URL> https://www.taiwannews.com.tw/en/topic/Liu Shyh-fang <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Hon.Shyh-FangLIUis the Minister of the Ministry of the Interior (MOI), Taiwan. She assumed office in May 2024 and brings extensive experience in both national and local governance.Priorto her current role, she held several senior leadership positions across Taiwan's government, including serving as a Legislator in multiple terms of the Legislative Yuan, Deputy Mayor of Kaohsiung City ... <\/CONTENT> <URL> https://www.yushanforum.org/people.php?pid=1365 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> LiuShyh-fang: exploreLiuShyh-fang'sbirthday, net worth 2026, birthday, height, age, bio, salary 2026, family life, fun trivia facts, popularity rankings, and more. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/liu-shyh-fang <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Liu_Shyh-fang <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> LiuShyh-fang(Chinese: 劉世芳; pinyin:LiúShìfāng) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://alchetron.com/Liu-Shyh-fang <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> LiuShyh-fang(orLiuShih-fang; [1] ; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://everything.explained.today/Liu_Shih-fang <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> LiuShyh-fang(orLiuShih-fang; ; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://www.theinfolist.com/html/ALL/l/L/Liu_Shyh-fang.html <\/URL> __END_OF_SOURCE 8__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188353361,
+            "end": 1779188355013
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188355015,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3cfc6001DxJTCQtxLsXwMd",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3c43e00135btzl01LXjsgc",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0273,
+        "tokens": {
+          "total": 8752,
+          "input": 8662,
+          "output": 90,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188356726,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3d675001YdNaCiOZrJEbn5",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3cfc8001OOjW4MyeMO7RZi",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188358232,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3d675002aSRxOJm525ciR2",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3cfc8001OOjW4MyeMO7RZi",
+        "type": "tool",
+        "callID": "0b0aa1bb-6c3a-47c6-ba22-1214f0cd13ce",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 出生地 職業 經歷 2016 立法委員"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任立法委員、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 經歷財團法人工業技術研究院副工程司 臺灣環境保護聯盟理事 澎湖縣政府機要秘書 （1993年－1995年） 民主進步黨新潮流系總幹事 民主進步黨中央常務委員 彭婉如文教基金會常務董事 臺北市女權會常務董事 臺灣環境保護聯盟執行委員 財團法人工業技術研究院 ... <\/CONTENT> <URL> https://election.ltn.com.tw/2016/legislator/candidate/587/249 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 曾獲頒中華民國二等 景星勳章。2016年 立法委員選舉，劉世芳空降接手民進黨在 南臺灣 深耕已久的艱困選區，戰勝對手 張顯耀 （該區原任立委 黃昭順 轉戰不分區 [2]），奪下國民黨長期盤據的 左營 、 楠梓 選區。 <\/CONTENT> <URL> https://votetw.com/wiki/劉世芳 <\/URL> __END_OF_SOURCE 3__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188356726,
+            "end": 1779188358232
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188358233,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3dc58001dke1HSBfRzdpFI",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3cfc8001OOjW4MyeMO7RZi",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0303,
+        "tokens": {
+          "total": 9722,
+          "input": 9628,
+          "output": 94,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188359513,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3e158001UOcvScH6rExd68",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3dc5b001Jf0KkL0Qmtl2EI",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779188364261,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3e158002GiGtyYoX14f6Ig",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3dc5b001Jf0KkL0Qmtl2EI",
+        "type": "tool",
+        "callID": "527305a1-9356-466f-841c-d9b2079678f0",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 出生地 籍貫"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> 劉世芳...劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 <\/CONTENT> <URL> https://ja.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 生年月日 1959年 8月13日 （66歳）出生地中華民国 台湾省 台北市 <\/CONTENT> <URL> https://www.wikiwand.com/ja/劉世芳 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 概要 生年月日,出生地... <\/CONTENT> <URL> https://www.wikiwand.com/ja/articles/劉世芳 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 出典: フリー百科事典『ウィキペディア（Wikipedia）』 (2024/07/21 07:16 UTC 版) ...劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 <\/CONTENT> <URL> https://www.weblio.jp/wkpja/content/劉世芳_劉世芳の概要 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 早年 劉世芳生於 臺北市，父親為新北市 三峽 人，母親為臺北 北投 人，胞姊劉世芬曾任 台北市立動物園 園長。 她在 淡江大學 化工 系畢業後於 奧克拉荷馬州立大學 取得 環境工程 碩士學位，後回臺於 工業技術研究院 中擔任副工程師。 [2] <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 劉世芳（りゅう せいほう、リウ シーファン） 基本情報 劉世芳は1959年 8月13日 に 中華民国 （台湾）で生まれた 政治家 であり、元エンジニアでもあります。 民主進歩党 に所属し、内政部長を歴任したほか、立法委員としても活躍しました。 <\/CONTENT> <URL> https://pedia.3rd-in.co.jp/wiki/劉世芳 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 早年 劉世芳生於 臺北市，父親為新北市 三峽 人，母親為臺北 北投 人，胞姊劉世芬曾任 台北市立動物園 園長。 她在 淡江大學 化工 系畢業後於 奧克拉荷馬州立大學 取得 環境工程 碩士學位，後回臺於 工業技術研究院 中擔任副工程師。 [2] <\/CONTENT> <URL> https://zh.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 台湾民衆党の比例代表名簿に基づき繰り上げ当選し、台湾史上初の中国籍配偶者（陸配）出身の立法委員（国会議員）となった李貞秀氏の就任を巡り、憲法および国籍法に関わる「二重国籍」論争が激化している。 <\/CONTENT> <URL> https://japan.storm.mg/keyword/劉世芳 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> AI tools トップQs タイムライン チャット Loading AI tools すべて 記事 引用 地図 <\/CONTENT> <URL> https://www.wikiwand.com/ja/dictionary/劉世芳 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 劉世芳（臺灣話： Lâu Sè-hong，1959年8月13日－），中華民國政治人物，臺北縣三峽人（今新北市三峽區），生於臺北市，現任第10屆立法委員。 曾任行政院秘書長、總統府副秘書長、高雄市副市長、臺中縣副縣長、高雄世運組織委員會基金會執行長、民進... <\/CONTENT> <URL> https://wikis.tw/劉世芳 <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779188359513,
+            "end": 1779188364260
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188364262,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3f3e500113Rk8lFii9gtQ6",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3dc5b001Jf0KkL0Qmtl2EI",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0318,
+        "tokens": {
+          "total": 10273,
+          "input": 10188,
+          "output": 85,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779188366895,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3fe2d001a0oWYSKYvYeox5",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3f3e8001JGaN06osu8Bd5b",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779188366895,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3fe2e001YkrzkRgtEQM33w",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3f3e8001JGaN06osu8Bd5b",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Master's degree in Environmental Engineering from Oklahoma State University; Bachelor's degree in Chemical Engineering from Tamkang University.\",\n  \"educational_attainment_source\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n  \"prior_occupation\": \"Associate Engineer at the Industrial Technology Research Institute (ITRI).\",\n  \"prior_occupation_source\": \"https://election.ltn.com.tw/2016/legislator/candidate/587/249\",\n  \"birth_year\": \"1959\",\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n  \"birth_place\": \"Taipei City, Taiwan.\",\n  \"birth_place_source\": \"https://zh.wikipedia.org/zh-tw/%E5%8A%89%E4%B8%96%E8%8A%B3\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://election.ltn.com.tw/2016/legislator/candidate/587/249\"\n}\n```",
+        "time": {
+          "start": 1779188366895,
+          "end": 1779188366895
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779188366897,
+      "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+      "part": {
+        "id": "prt_e3fe3fe300012mChqiFtD6uvPk",
+        "sessionID": "ses_1c01c6c65ffeyNMpgOSFw6WYVW",
+        "messageID": "msg_e3fe3f3e8001JGaN06osu8Bd5b",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.041,
+        "tokens": {
+          "total": 11997,
+          "input": 11579,
+          "output": 418,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779188342726,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe39fc40018s9BIDrIR7wpQo\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe393c3001OEDPEFJv12VdMr\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188344854,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe39fc5001c5MxLTzm5jbk4d\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe393c3001OEDPEFJv12VdMr\",\"type\":\"tool\",\"callID\":\"05f59e96-072e-4a0a-a518-b2d2c1059466\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Shyh-Fang Liu Taiwan politician biography DPP 2016\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanesepoliticianwho currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. [3] <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> While introducing LiShyh-fang, LI Vice President and former Macedonian State Secretary for Foreign Affairs Emil Kirjas particularly highlighted how only through the past struggle and hardship ofDPP'sfounding members, wasTaiwanable to transform from a one-party autocracy into a flourishing democracy today.LiuShyh-fangwas also present when LI hosted a meeting inTaiwanin 2004. <\/CONTENT> <URL> https://www.dpp.org.tw/en/content_print/media/66 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BiographyLiuShyh-fang(Chinese: 劉世芳; pinyin:LiúShìfāng) is a Taiwanesepolitician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://peoplepill.com/i/liu-shih-fang <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Hon.Shyh-FangLIUis the Minister of the Ministry of the Interior (MOI),Taiwan. She assumed office in May 2024 and brings extensive experience in both national and local governance. Prior to her current role, she held several senior leadership positions acrossTaiwan'sgovernment, including serving as a Legislator in multiple terms of the Legislative Yuan, Deputy Mayor of Kaohsiung City ... <\/CONTENT> <URL> https://www.yushanforum.org/people.php?pid=1365 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> LiuShyh-fang(orLiuShih-fang; ; born 15 August 1959) is a Taiwanesepoliticianwho currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://www.theinfolist.com/html/ALL/l/L/Liu_Shyh-fang.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Taiwanesepolitician <\/CONTENT> <URL> https://dbpedia.org/page/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanesepolitician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Liu_Shyh-fang <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> LiuShyh-fang(orLiuShih-fang; [1] ; born 15 August 1959) is a Taiwanesepolitician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. [2] <\/CONTENT> <URL> https://everything.explained.today/Liu_Shih-fang <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> LiuShyh-fangMember of the Legislative Yuan elected in 2001 Taiwanese legislative election in the at-large district parliamentary term 5th Legislative Yuan start time 1 February 2002 end time 30 June 2002 parliamentary group Democratic Progressive Party Legislative Caucus electoral district Proportional Representation in national election ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q6653712 <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188342728,\"end\":1779188344852},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188344856,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3a8170010C03MYRaHGvUvX\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe393c3001OEDPEFJv12VdMr\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022752,\"tokens\":{\"total\":6544,\"input\":6284,\"output\":260,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188346295,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3adb6001oojTY6el4DOsLn\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3a81a001LxuAKFkdukR11y\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188347091,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3adb7001h4XA2gJAjFDOw7\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3a81a001LxuAKFkdukR11y\",\"type\":\"tool\",\"callID\":\"7c9e4379-55f6-4ed6-83a1-289b01869c69\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Liu_Shyh-fang\\nFinal URL: https://en.wikipedia.org/wiki/Liu_Shyh-fang\\nTitle: Liu Shyh-fang - Wikipedia\\nBytes read: 108643\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Liu+Shyh-fang]\\nLog in\\nPersonal tools\\nDonate\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188346296,\"end\":1779188347090},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188347092,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3b0d30012fo3fS12pnWPhC\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3a81a001LxuAKFkdukR11y\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023823,\"tokens\":{\"total\":7569,\"input\":7476,\"output\":93,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188348700,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3b71b001nDHHirJRnESDKO\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3b0d6001IcYR6R86x4a333\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188350064,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3b71b00278CE4o4rgO4bDR\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3b0d6001IcYR6R86x4a333\",\"type\":\"tool\",\"callID\":\"6eebd96f-a054-40e9-b9fa-f34184c1143a\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 學歷 經歷 出生地 職業 class background\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 執 ... <\/CONTENT> <URL> https://zh.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 2__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188348700,\"end\":1779188350063},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188350065,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3bc7000155Zxw0ISqyOJhA\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3b0d6001IcYR6R86x4a333\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.025413,\"tokens\":{\"total\":8111,\"input\":8021,\"output\":90,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188351340,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3c16b001mCgjlX1n635Kih\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3bc730014HKbUQGo5sufUo\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188352060,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3c16b002XSOxVGVq2ngY9M\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3bc730014HKbUQGo5sufUo\",\"type\":\"tool\",\"callID\":\"c9ac98fa-98e2-4fc7-aa3e-0a044cb1a915\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://zh.wikipedia.org/wiki/劉世芳\"},\"output\":\"URL: https://zh.wikipedia.org/wiki/劉世芳\\nFinal URL: https://zh.wikipedia.org/wiki/%E5%8A%89%E4%B8%96%E8%8A%B3\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_429_bot_marker (status=429)\\nMarkers: too many requests\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188351340,\"end\":1779188352059},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188352061,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3c43c001ZT9P6L8T4zAAck\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3bc730014HKbUQGo5sufUo\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026712,\"tokens\":{\"total\":8544,\"input\":8454,\"output\":90,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188353361,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3c9500011OiVWo6iXo49zW\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3c43e00135btzl01LXjsgc\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188355014,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3c950002OU6L3i9WsSQOEd\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3c43e00135btzl01LXjsgc\",\"type\":\"tool\",\"callID\":\"781473af-f943-45df-a828-ad2daeefcd9b\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Shyh-Fang Liu education prior occupation birth place disability LGBTQ identity\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> #LiuShyh-fangLatest Articles Taiwan premier-designate reveals 5 new ministers Heads of interior, transportation,education, culture, and justice ministries named <\/CONTENT> <URL> https://www.taiwannews.com.tw/en/topic/Liu Shyh-fang <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Hon.Shyh-FangLIUis the Minister of the Ministry of the Interior (MOI), Taiwan. She assumed office in May 2024 and brings extensive experience in both national and local governance.Priorto her current role, she held several senior leadership positions across Taiwan's government, including serving as a Legislator in multiple terms of the Legislative Yuan, Deputy Mayor of Kaohsiung City ... <\/CONTENT> <URL> https://www.yushanforum.org/people.php?pid=1365 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> LiuShyh-fang: exploreLiuShyh-fang'sbirthday, net worth 2026, birthday, height, age, bio, salary 2026, family life, fun trivia facts, popularity rankings, and more. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/liu-shyh-fang <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Liu_Shyh-fang <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> LiuShyh-fang(Chinese: 劉世芳; pinyin:LiúShìfāng) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://alchetron.com/Liu-Shyh-fang <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> LiuShyh-fang(orLiuShih-fang; [1] ; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://everything.explained.today/Liu_Shih-fang <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> LiuShyh-fang(orLiuShih-fang; ; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://www.theinfolist.com/html/ALL/l/L/Liu_Shyh-fang.html <\/URL> __END_OF_SOURCE 8__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188353361,\"end\":1779188355013},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188355015,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3cfc6001DxJTCQtxLsXwMd\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3c43e00135btzl01LXjsgc\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.027336,\"tokens\":{\"total\":8752,\"input\":8662,\"output\":90,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188356726,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3d675001YdNaCiOZrJEbn5\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3cfc8001OOjW4MyeMO7RZi\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188358232,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3d675002aSRxOJm525ciR2\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3cfc8001OOjW4MyeMO7RZi\",\"type\":\"tool\",\"callID\":\"0b0aa1bb-6c3a-47c6-ba22-1214f0cd13ce\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 出生地 職業 經歷 2016 立法委員\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任立法委員、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 經歷財團法人工業技術研究院副工程司 臺灣環境保護聯盟理事 澎湖縣政府機要秘書 （1993年－1995年） 民主進步黨新潮流系總幹事 民主進步黨中央常務委員 彭婉如文教基金會常務董事 臺北市女權會常務董事 臺灣環境保護聯盟執行委員 財團法人工業技術研究院 ... <\/CONTENT> <URL> https://election.ltn.com.tw/2016/legislator/candidate/587/249 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 曾獲頒中華民國二等 景星勳章。2016年 立法委員選舉，劉世芳空降接手民進黨在 南臺灣 深耕已久的艱困選區，戰勝對手 張顯耀 （該區原任立委 黃昭順 轉戰不分區 [2]），奪下國民黨長期盤據的 左營 、 楠梓 選區。 <\/CONTENT> <URL> https://votetw.com/wiki/劉世芳 <\/URL> __END_OF_SOURCE 3__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188356726,\"end\":1779188358232},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188358233,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3dc58001dke1HSBfRzdpFI\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3cfc8001OOjW4MyeMO7RZi\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.030294,\"tokens\":{\"total\":9722,\"input\":9628,\"output\":94,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188359513,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3e158001UOcvScH6rExd68\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3dc5b001Jf0KkL0Qmtl2EI\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779188364261,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3e158002GiGtyYoX14f6Ig\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3dc5b001Jf0KkL0Qmtl2EI\",\"type\":\"tool\",\"callID\":\"527305a1-9356-466f-841c-d9b2079678f0\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 出生地 籍貫\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> 劉世芳...劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 <\/CONTENT> <URL> https://ja.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 生年月日 1959年 8月13日 （66歳）出生地中華民国 台湾省 台北市 <\/CONTENT> <URL> https://www.wikiwand.com/ja/劉世芳 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 概要 生年月日,出生地... <\/CONTENT> <URL> https://www.wikiwand.com/ja/articles/劉世芳 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 出典: フリー百科事典『ウィキペディア（Wikipedia）』 (2024/07/21 07:16 UTC 版) ...劉世芳（りゅう せいほう、リウ シーファン、 1959年 〈民国 48年〉 8月13日 - ）は、 中華民国 （台湾）の 政治家 、元 エンジニア。 内政部長 、 民主進歩党 所属の元 立法委員 [1]。 <\/CONTENT> <URL> https://www.weblio.jp/wkpja/content/劉世芳_劉世芳の概要 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 早年 劉世芳生於 臺北市，父親為新北市 三峽 人，母親為臺北 北投 人，胞姊劉世芬曾任 台北市立動物園 園長。 她在 淡江大學 化工 系畢業後於 奧克拉荷馬州立大學 取得 環境工程 碩士學位，後回臺於 工業技術研究院 中擔任副工程師。 [2] <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 劉世芳（りゅう せいほう、リウ シーファン） 基本情報 劉世芳は1959年 8月13日 に 中華民国 （台湾）で生まれた 政治家 であり、元エンジニアでもあります。 民主進歩党 に所属し、内政部長を歴任したほか、立法委員としても活躍しました。 <\/CONTENT> <URL> https://pedia.3rd-in.co.jp/wiki/劉世芳 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 早年 劉世芳生於 臺北市，父親為新北市 三峽 人，母親為臺北 北投 人，胞姊劉世芬曾任 台北市立動物園 園長。 她在 淡江大學 化工 系畢業後於 奧克拉荷馬州立大學 取得 環境工程 碩士學位，後回臺於 工業技術研究院 中擔任副工程師。 [2] <\/CONTENT> <URL> https://zh.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 台湾民衆党の比例代表名簿に基づき繰り上げ当選し、台湾史上初の中国籍配偶者（陸配）出身の立法委員（国会議員）となった李貞秀氏の就任を巡り、憲法および国籍法に関わる「二重国籍」論争が激化している。 <\/CONTENT> <URL> https://japan.storm.mg/keyword/劉世芳 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> AI tools トップQs タイムライン チャット Loading AI tools すべて 記事 引用 地図 <\/CONTENT> <URL> https://www.wikiwand.com/ja/dictionary/劉世芳 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 劉世芳（臺灣話： Lâu Sè-hong，1959年8月13日－），中華民國政治人物，臺北縣三峽人（今新北市三峽區），生於臺北市，現任第10屆立法委員。 曾任行政院秘書長、總統府副秘書長、高雄市副市長、臺中縣副縣長、高雄世運組織委員會基金會執行長、民進... <\/CONTENT> <URL> https://wikis.tw/劉世芳 <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779188359513,\"end\":1779188364260},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188364262,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3f3e500113Rk8lFii9gtQ6\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3dc5b001Jf0KkL0Qmtl2EI\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031839,\"tokens\":{\"total\":10273,\"input\":10188,\"output\":85,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779188366895,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3fe2d001a0oWYSKYvYeox5\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3f3e8001JGaN06osu8Bd5b\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779188366895,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3fe2e001YkrzkRgtEQM33w\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3f3e8001JGaN06osu8Bd5b\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Master's degree in Environmental Engineering from Oklahoma State University; Bachelor's degree in Chemical Engineering from Tamkang University.\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\\\",\\n  \\\"prior_occupation\\\": \\\"Associate Engineer at the Industrial Technology Research Institute (ITRI).\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://election.ltn.com.tw/2016/legislator/candidate/587/249\\\",\\n  \\\"birth_year\\\": \\\"1959\\\",\\n  \\\"birth_year_source\\\": \\\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\\\",\\n  \\\"birth_place\\\": \\\"Taipei City, Taiwan.\\\",\\n  \\\"birth_place_source\\\": \\\"https://zh.wikipedia.org/zh-tw/%E5%8A%89%E4%B8%96%E8%8A%B3\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://election.ltn.com.tw/2016/legislator/candidate/587/249\\\"\\n}\\n```\",\"time\":{\"start\":1779188366895,\"end\":1779188366895}}}\n{\"type\":\"step_finish\",\"timestamp\":1779188366897,\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"part\":{\"id\":\"prt_e3fe3fe300012mChqiFtD6uvPk\",\"sessionID\":\"ses_1c01c6c65ffeyNMpgOSFw6WYVW\",\"messageID\":\"msg_e3fe3f3e8001JGaN06osu8Bd5b\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.041007,\"tokens\":{\"total\":11997,\"input\":11579,\"output\":418,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

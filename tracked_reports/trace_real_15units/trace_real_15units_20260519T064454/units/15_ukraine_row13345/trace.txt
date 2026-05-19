@@ -1,0 +1,558 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779187738213,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fda6662001xu1lp41uhYYX5h",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fda5a27001eVEUUYfmQe2oQ0",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187767480,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fda6663001x5Q7QzT1mtG4w2",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fda5a27001eVEUUYfmQe2oQ0",
+        "type": "tool",
+        "callID": "efd5a7e5-47a9-4fe5-9eed-c56d7de2731f",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Anna Kolisnyk Ukraine MP Servant of the People biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> TheVerkhovna Rada has registered a draft resolution on the early termination of the powers ofAnnaKolisnyk, a member of parliament from theServantofthePeopleparty. <\/CONTENT> <URL> https://babel.ua/en/news/118481-mp-from-servant-of-the-people-kolisnyk-who-wanted-to-get-out-of-ukraine-resigns-her-mandate <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TheVerkhovna Rada ofUkraineprematurely terminated the powers of Member of ParliamentAnnaKolisnykfromtheServantofthePeoplefaction. 262MPsvoted for the decision.AnnaKolisnykwas elected from theServantofthePeoplelist at number 94 and had submitted her resignation from the deputy mandate as early as May 2025. In the party lineup after her comes Dmytro Slyinko, followed by ... <\/CONTENT> <URL> https://mezha.net/eng/bukvy/ukrainian-parliament-ends-mp-anna-kolisnyk-s-powers-amid-corruption-case <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> TheVerkhovna Rada has prematurely terminated the powers ofAnnaKolisnyk, a member of theServantofthePeoplefaction. The corresponding resolution No. 13337 was voted for by 262MPsoutoftheminimum required 226, the Ukrainian News agency reports. According to the resolution,Kolisnyk'spowers ... <\/CONTENT> <URL> https://ukranews.com/en/news/1112477-rada-early-terminates-powers-of-mp-from-the-servant-of-the-people-party-kolisnyk <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> TheVerkhovna Rada Committee supportedAnnaKolisnyk'sstatement on resigning her mandate. In 2023, the Supreme Anti-Corruption Court closed the case against her regarding false declaration.People'sDeputy from \"ServantofthePeople\"AnnaKolesnik submitted a letter of resignation. <\/CONTENT> <URL> https://unn.ua/en/news/mp-from-servant-of-the-people-kolisnyk-resigns <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> TheVerkhovna Rada ofUkrainehas prematurely terminated the powers ofAnnaKolisnyk, a member of theServantofthePeopleparty. This became known from the broadcast of the plenary session of the parliament.MPssupported draft resolution #13337 on the early termination ofKolisnyk'spowers. \"262MPsvoted in favor, one against. <\/CONTENT> <URL> https://news.liga.net/en/politics/news/rada-early-terminates-powers-of-mp-kolisnyk <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Position:People'sdeputy from the \"ServantofthePeople\" faction. Sphere of corrupt activity: Unreliable declaration. Region of corruption activity: City of Kyiv. Qualification: Part 1 Art. 366-2 of the Criminal Code ofUkraine. <\/CONTENT> <URL> https://ebk.wiki/en/people/kolisnik-anna <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> TheVerkhovna Rada has prematurely terminated the powers ofAnnaKolisnyk, a member of theServantofthePeoplefaction. — Ukrinform. <\/CONTENT> <URL> https://www.ukrinform.net/rubric-polytics/4049770-ukrainian-parliament-revokes-mandate-of-mp-kolisnyk.html <\/URL> __END_OF_SOURCE 7__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187738217,
+            "end": 1779187767479
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187767483,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdad8b9001T26X43R2CnnFpF",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fda5a27001eVEUUYfmQe2oQ0",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0235,
+        "tokens": {
+          "total": 6593,
+          "input": 6283,
+          "output": 310,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187768913,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdade50001YfCIhWfk52vJwS",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdad8bd001cR0yt0CZo4nAqu",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187770383,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdade51001kM9Wdc4KyTj7N4",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdad8bd001cR0yt0CZo4nAqu",
+        "type": "tool",
+        "callID": "ade36df0-96b3-4418-a8b7-09edc1ff8807",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Анна Колісник біографія Слуга народу"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> АннаКолісник, членкиня Комітету Верховної Ради України з питань фінансів, податкової та митної політики. Українська державна та громадська діячка, політик. <\/CONTENT> <URL> https://sluga-narodu.com/deputies/anna-kolisnyk <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> АннаСергіївнаКолісник(нар. 24 жовтня 1994, Лебедин, Сумська область) — український правник та колишній народний депутат IX скликання.АннаКолісникнародилась 1994 року в Лебедині на Сумщині. Навчалась на юридичному факультеті Національного юридичного університету імені Ярослава Мудрого за спеціальністю «міжнародне право». <\/CONTENT> <URL> https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> У 2019 році, на позачергових виборах до Верховної Ради IX скликання, вона увійшла до списку партії \"Слуга народу\" під номером 94. Це був час, коли нова політична сила, очолювана Володимиром Зеленським, обіцяла радикальні реформи, і молоді обличчя, як Колісник, ставали символами свіжого подиху. <\/CONTENT> <URL> https://www.fair.org.ua/anna-kolisnyk-biografiya-obiczyanky-rejtyng-u-detalyah <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> На виборах Президента України 2019 року була довіреною особою кандидата Володимира Зеленського на територіальному виборчому окрузі № 168 на Харківщині. У 2019 році була обрана народною депутаткою 9 скликання від партії \"Слуга народу\" номером 94 у списку як безпартійна. Членкиня однойменної фракції. <\/CONTENT> <URL> https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Політичний шлях: Від \"Слуги народу\" до незалежних кроків Політична кар'єра Анни Скороход стартувала з гучним акордом у 2019 році, коли вона стала народною депутаткою IX скликання від партії ... <\/CONTENT> <URL> https://gelios.ua/anna-skorohod-biografiya-vid-biznesu-do-polityky-v-ukrayini <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> КолісникАннаСергіївна: харківська юристка стала ще однією представницею прекрасної половини людства у Раді.КолісникАннаСергіївна, яка стала народним депутатом від партії «Слуга народу», працювала судовою експерткою та була довіреною особою Володимира Зеленського на президентських виборах. <\/CONTENT> <URL> https://my.ua/uk/persons/anna-kolisnik <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> АннаКолісникнародилася 24 жовтня 1994 року в місті Лебедин, що на Сумщині. Політикиня закінчила юрфак Національного юридичного університету імені Ярослава Мудрого (спеціальність — \"Міжнародне право\"). Отримала другу вищу освіту в ХНУ імені В. Н. Каразіна. <\/CONTENT> <URL> https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 21 жовтня 2025р. 24 жовтня 1994р. включена до виборчого списку під № 94. <\/CONTENT> <URL> https://itd.rada.gov.ua/mps/info/page/21144 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Висування ПОЛІТИЧНА ПАРТІЯ \"СЛУГА НАРОДУ\" № у виборчому списку партії 94 Номер та дата рішення про реєстрацію кандидатом 1233 від 24.06.2019 Номер та дата рішення про визнання обраним народним депутатом України протокол ... <\/CONTENT> <URL> https://www.cvk.gov.ua/pls/vnd2019/wp407pt001f01=919pf7201=18582.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Нардепка від СлугинародуАннаКолісниксклала мандат. Комітет підтримав її відставку - хто займе її місце? Читайте про АннуКолісникта пов'язані з нею скандали. <\/CONTENT> <URL> https://zaxid.net/nardepka_vid_partiyi_sluga_narodu_anna_kolisnik_sklala_mandat_n1611663 <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187768914,
+            "end": 1779187770380
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187770385,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdae40f001Vb54yCKXlEp1Y6",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdad8bd001cR0yt0CZo4nAqu",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0232,
+        "tokens": {
+          "total": 7387,
+          "input": 7298,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187771697,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdae92e0011HNGWThwn9kzYr",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdae4140011a1jF2XR6ZouQG",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187772679,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdae930001eqROsQj9Oe75Mm",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdae4140011a1jF2XR6ZouQG",
+        "type": "tool",
+        "callID": "b78842bc-af25-4d94-ab3d-6fa77b74c4ae",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна"
+          },
+          "output": "URL: https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\nFinal URL: https://uk.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%96%D1%81%D0%BD%D0%B8%D0%BA_%D0%90%D0%BD%D0%BD%D0%B0_%D0%A1%D0%B5%D1%80%D0%B3%D1%96%D1%97%D0%B2%D0%BD%D0%B0\nTitle: Колісник Анна Сергіївна — Вікіпедія\nBytes read: 285984\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nПерейти до вмісту\nГоловне меню\nГоловне меню\nперемістити на бічну панель\nсховати\nНавігація\nГоловна сторінка\n[link: https://uk.wikipedia.org/wiki/%D0%93%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0_%D1%81%D1%82%D0%BE%D1%80%D1%96%D0%BD%D0%BA%D0%B0]\nПоточні події\n[link: https://uk.wikipedia.org/wiki/%D0%9F%D0%BE%D1%80%D1%82%D0%B0%D0%BB:%D0%9F%D0%BE%D1%82%D0%BE%D1%87%D0%BD%D1%96_%D0%BF%D0%BE%D0%B4%D1%96%D1%97]\nНові редагування\n[link: https://uk.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B5%D1%86%D1%96%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0:%D0%9D%D0%BE%D0%B2%D1%96_%D1%80%D0%B5%D0%B4%D0%B0%D0%B3%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F]\nНові сторінки\n[link: https://uk.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B5%D1%86%D1%96%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0:%D0%9D%D0%BE%D0%B2%D1%96_%D1%81%D1%82%D0%BE%D1%80%D1%96%D0%BD%D0%BA%D0%B8]\nВипадкова стаття\n[link: https://uk.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B5%D1%86%D1%96%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0:%D0%92%D0%B8%D0%BF%D0%B0%D0%B4%D0%BA%D0%BE%D0%B2%D0%B0_%D1%81%D1%82%D0%BE%D1%80%D1%96%D0%BD%D0%BA%D0%B0]\nСпеціальні сторінки\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187771699,
+            "end": 1779187772678
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187772680,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdaed07001UH8pQ00z8pNuvR",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdae4140011a1jF2XR6ZouQG",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0277,
+        "tokens": {
+          "total": 8848,
+          "input": 8749,
+          "output": 99,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187773976,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdaf216001RL4PiLo9l4ifKG",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdaed0a001RTVUU7jfPEwW1V",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187775980,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdaf217001mzIg5ZT5negcuz",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdaed0a001RTVUU7jfPEwW1V",
+        "type": "tool",
+        "callID": "780231cf-be19-44d9-b855-7cc1b854fbfe",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://sluga-narodu.com/deputies/anna-kolisnyk"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"http_error\",\"retryable\":true,\"url\":\"https://sluga-narodu.com/deputies/anna-kolisnyk\",\"final_url\":\"https://sluga-narodu.com/deputies/anna-kolisnyk\",\"status_code\":520,\"error\":\"http_error\",\"error_detail\":null,\"attempt\":2,\"attempts\":2}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187773977,
+            "end": 1779187775977
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187775985,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdaf9ed001dRKsn64BrjBIPW",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdaed0a001RTVUU7jfPEwW1V",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0309,
+        "tokens": {
+          "total": 9905,
+          "input": 9810,
+          "output": 95,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187777278,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdafefd001R1RqHNKC9YB6Tq",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdaf9f8001qc8VT6OAG2cssf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187807290,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdafefe001ir8C73zp5x9F11",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdaf9f8001qc8VT6OAG2cssf",
+        "type": "tool",
+        "callID": "603c3a8d-6fb3-441b-b02d-9b14a0a2e1ac",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "error",
+          "input": {
+            "url": "https://itd.rada.gov.ua/mps/info/page/21144"
+          },
+          "error": "McpError: MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779187777278,
+            "end": 1779187807284
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187807297,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdb743a001zTqimF2GNezydL",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdaf9f8001qc8VT6OAG2cssf",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0316,
+        "tokens": {
+          "total": 10121,
+          "input": 10022,
+          "output": 99,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187829289,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbca2700177dsHHP60C358z",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdb7448001j5JHiT0fw7Z4m9",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187830891,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbca28001KK4VKHAjHhYdLv",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdb7448001j5JHiT0fw7Z4m9",
+        "type": "tool",
+        "callID": "41aa892a-8ac2-450d-a800-535c59460bf7",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html"
+          },
+          "output": "URL: https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\nFinal URL: https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\nTitle: ​Колісник Анна  . Досьє\nBytes read: 29803\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nПідтримати\n[link: https://lb.ua/donate]\nУКР\nENG\n[link: https://en.lb.ua]\nНовини\n[link: https://lb.ua/news]\nПолітика\n[link: https://lb.ua/politics]\nЕкономіка\n[link: https://lb.ua/economics]\nCуспільство\n[link: https://lb.ua/society]\nЗдоров'я\n[link: https://lb.ua/health]\nКультура\n[link: https://lb.ua/culture]\nDefense Tech\n[link: https://lb.ua/theme/defense_tech]\nCвіт\n[link: https://lb.ua/world]\nСпорт\n[link: https://lb.ua/sport]\nСпецтеми\n[link: https://lb.ua/theme]\nКиїв\n[link: https://lb.ua/theme/kyiv]\nНова Країна\n[link: https://lb.ua/theme/nova_krayina]\nТериторії культури\n[link: https://lb.ua/theme/terytorii_kultury]\nCultHub\n[link: https://lb.ua/theme/culthub]\nLB.talks\n[link: https://lb.ua/theme/lb_talks]\nHavas Village\n[link: https://lb.ua/theme/havas_village]\n30 років гривні\n[link: https://lb.ua/theme/30_rokiv_grivni]\nЕпіцентр виробників\n[link: https://lb.ua/theme/epicentr_vyrobnykiv]\nПублікації\n[link: https://lb.ua/analytics]\nБлоги\n[link: https://lb.ua/blog]\nДосьє\n[link: https://lb.ua/file]\nІвенти\n[link: https://lb.ua/events]\nLB.live\n[link: https://www.youtube.com/channel/UC_wMhlGmskE2Ue-400XjofQ]\nФото/Відео\n[link: https://lb.ua/photo]\nАвтори\n[link: https://lb.ua/author]\nРедакція\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187829289,
+            "end": 1779187830888
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187830896,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbd06c001gDSE2m3U7XOREG",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdb7448001j5JHiT0fw7Z4m9",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.032,
+        "tokens": {
+          "total": 10258,
+          "input": 10154,
+          "output": 104,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187832147,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbd550001Lx7MMZlb4d28g1",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbd074001yQWhWLxy3erBZ2",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187834759,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbd5520018FGDb7vYmf9u71",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbd074001yQWhWLxy3erBZ2",
+        "type": "tool",
+        "callID": "b5a1f586-df90-4300-bcdd-b3460d70b2c5",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna"
+          },
+          "output": "URL: https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna\nFinal URL: https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna\nTitle: Колісник Анна Сергіївна: Біографія, Майно, Кар'єра та Особисте Життя. Обранці\nBytes read: 249021\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nМеню\nВерховна Рада України\nОбласні та міські ради\nНовини\n[link: https://obrantsi.ua/news]\nІнфографіки\n[link: https://obrantsi.ua/infographics]\nПартії\nПолітичний довідник\nГоловна\n[link: https://obrantsi.ua/]\nНародні депутати\n[link: https://obrantsi.ua/deputies]\nКолісник Анна Сергіївна\nКолісник\nАнна\nСергіївна\nДодати для порівняння\nВибув 21 жовтня 2025 року. Особиста письмова заява про припинення повноважень.\nПолітсили, від яких обиралася\n0 років\nДосвід нардепства\nСтатуси\nСередні корупційні ризики\nРівень статків\nНакопичення\n0 грн\n+11.9\n%\nПолітсили, від яких обиралася\n0 років\nДосвід нардепства\nРейтинг обранця\nДосвід держуправління\n13\nСоц. охоплення\n0\nКарма +\n0\nКарма -\n40\nЗаконотворча діяльність\n0\nВідвідуваність\n67\nОсвіта\n30\nКорупційні ризики\n45\nПояснення\n28\nЗагальний рейтинг\nПояснення рейтингу обранця\nДосвід держуправління\nСукупний досвід роботи на державних посадах та в політиці\nСоц. охоплення\nРівень впливу на суспільство, заснований на кількості фоловерів в соцмережах\nКарма +\nСукупна оцінка позитивних для репутації дій\nКарма -\nСукупна оцінка негативних для репутації дій\nЗаконотворча діяльність\nПоказник ініціативності нардепів у Верховній Раді (не плутати з продуктивністю)\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187832149,
+            "end": 1779187834758
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187834761,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbdf88001QjHznFa3JiQpeu",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbd074001yQWhWLxy3erBZ2",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0342,
+        "tokens": {
+          "total": 10992,
+          "input": 10893,
+          "output": 99,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187836214,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbe535001B8bjBvVUV4l9Ue",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbdf8b001jvzFMuX23jkHTI",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779187838194,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbe5350022Z7m1RVt5A09Br",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbdf8b001jvzFMuX23jkHTI",
+        "type": "tool",
+        "callID": "e80a479c-e024-4a36-9551-336289fb52e3",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Anna Kolisnyk Ukraine MP disability sexual orientation LGBTQ"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> In 2015, the Ukrainian Parliament approved an employment anti-discrimination law coveringsexualorientationand gender identity, [2] and in 2016, Ukrainian officials simplified the transition process for transgender people. [5] In 2021, the Ukrainian Ministry of Health implemented their 2016 proposal to allow gay and bisexual men to donate blood. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/LGBTQ_rights_in_Ukraine <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> This publication presents information that reflects the social, legal and political situation of theLGBTQ(lesbian, gay, bisexual, and transgender) people inUkrainein 2025. It contains data and analyses of the issues related toLGBTQrights and interests in legislation, public and political life, <\/CONTENT> <URL> https://gay.org.ua/en/blog/2026/02/08/holding-the-line-lgbtq-situation-in-ukraine-in-2025 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> This policy brief is structured as follows. It starts with a brief overview of the situation of LGBTQ+ Ukrainians before the full-scale invasion. It then proceeds with an analysis of the challenges LGBTQ+ people faced inUkrainein 2022-2023, covering such areas as forced migration and displacement, access to housing and healthcare, economic inequalities, access to education, political ... <\/CONTENT> <URL> https://gppi.net/assets/Shevtsova_2024_Queering_Displacement_FINAL.pdf <\/URL> __END_OF_SOURCE 3__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779187836214,
+            "end": 1779187838194
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187838196,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbecf3001AiPB2BaET5vghH",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbdf8b001jvzFMuX23jkHTI",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.036,
+        "tokens": {
+          "total": 11663,
+          "input": 11576,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779187842020,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbfbe00015AMjDSDqxKolfO",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbecf500177jmZAQ31qQqBv",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779187842021,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbfbe1001i9HUjnbl7T1O5I",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbecf500177jmZAQ31qQqBv",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Higher education. Graduated from the Yaroslav Mudryi National Law University with a degree in International Law. Also received a second higher education from V. N. Karazin Kharkiv National University.\",\n  \"educational_attainment_source\": \"https://uk.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%96%D1%81%D0%BD%D0%B8%D0%BA_%D0%90%D0%BD%D0%BD%D0%B0_%D0%A1%D0%B5%D1%80%D0%B3%D1%96%D1%97%D0%B2%D0%BD%D0%B0\",\n  \"prior_occupation\": \"Forensic expert at the Kharkiv Research Forensic Center of the Ministry of Internal Affairs of Ukraine.\",\n  \"prior_occupation_source\": \"https://my.ua/uk/persons/anna-kolisnik\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://my.ua/uk/persons/anna-kolisnik\",\n  \"birth_year\": 1994,\n  \"birth_year_source\": \"https://itd.rada.gov.ua/mps/info/page/21144\",\n  \"birth_place\": \"Lebedyn, Sumy Oblast, Ukraine\",\n  \"birth_place_source\": \"https://uk.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%96%D1%81%D0%BD%D0%B8%D0%BA_%D0%90%D0%BD%D0%BD%D0%B0_%D0%A1%D0%B5%D1%80%D0%B3%D1%96%D1%97%D0%B2%D0%BD%D0%B0\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://itd.rada.gov.ua/mps/info/page/21144\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://itd.rada.gov.ua/mps/info/page/21144\"\n}\n```",
+        "time": {
+          "start": 1779187842020,
+          "end": 1779187842020
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779187842025,
+      "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+      "part": {
+        "id": "prt_e3fdbfbe6001BxT20Eb2wPrcZ2",
+        "sessionID": "ses_1c025a603ffevtHUPIheBLxYmJ",
+        "messageID": "msg_e3fdbecf500177jmZAQ31qQqBv",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0458,
+        "tokens": {
+          "total": 12715,
+          "input": 12079,
+          "output": 636,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779187738213,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fda6662001xu1lp41uhYYX5h\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fda5a27001eVEUUYfmQe2oQ0\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187767480,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fda6663001x5Q7QzT1mtG4w2\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fda5a27001eVEUUYfmQe2oQ0\",\"type\":\"tool\",\"callID\":\"efd5a7e5-47a9-4fe5-9eed-c56d7de2731f\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Anna Kolisnyk Ukraine MP Servant of the People biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> TheVerkhovna Rada has registered a draft resolution on the early termination of the powers ofAnnaKolisnyk, a member of parliament from theServantofthePeopleparty. <\/CONTENT> <URL> https://babel.ua/en/news/118481-mp-from-servant-of-the-people-kolisnyk-who-wanted-to-get-out-of-ukraine-resigns-her-mandate <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TheVerkhovna Rada ofUkraineprematurely terminated the powers of Member of ParliamentAnnaKolisnykfromtheServantofthePeoplefaction. 262MPsvoted for the decision.AnnaKolisnykwas elected from theServantofthePeoplelist at number 94 and had submitted her resignation from the deputy mandate as early as May 2025. In the party lineup after her comes Dmytro Slyinko, followed by ... <\/CONTENT> <URL> https://mezha.net/eng/bukvy/ukrainian-parliament-ends-mp-anna-kolisnyk-s-powers-amid-corruption-case <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> TheVerkhovna Rada has prematurely terminated the powers ofAnnaKolisnyk, a member of theServantofthePeoplefaction. The corresponding resolution No. 13337 was voted for by 262MPsoutoftheminimum required 226, the Ukrainian News agency reports. According to the resolution,Kolisnyk'spowers ... <\/CONTENT> <URL> https://ukranews.com/en/news/1112477-rada-early-terminates-powers-of-mp-from-the-servant-of-the-people-party-kolisnyk <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> TheVerkhovna Rada Committee supportedAnnaKolisnyk'sstatement on resigning her mandate. In 2023, the Supreme Anti-Corruption Court closed the case against her regarding false declaration.People'sDeputy from \\\"ServantofthePeople\\\"AnnaKolesnik submitted a letter of resignation. <\/CONTENT> <URL> https://unn.ua/en/news/mp-from-servant-of-the-people-kolisnyk-resigns <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> TheVerkhovna Rada ofUkrainehas prematurely terminated the powers ofAnnaKolisnyk, a member of theServantofthePeopleparty. This became known from the broadcast of the plenary session of the parliament.MPssupported draft resolution #13337 on the early termination ofKolisnyk'spowers. \\\"262MPsvoted in favor, one against. <\/CONTENT> <URL> https://news.liga.net/en/politics/news/rada-early-terminates-powers-of-mp-kolisnyk <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Position:People'sdeputy from the \\\"ServantofthePeople\\\" faction. Sphere of corrupt activity: Unreliable declaration. Region of corruption activity: City of Kyiv. Qualification: Part 1 Art. 366-2 of the Criminal Code ofUkraine. <\/CONTENT> <URL> https://ebk.wiki/en/people/kolisnik-anna <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> TheVerkhovna Rada has prematurely terminated the powers ofAnnaKolisnyk, a member of theServantofthePeoplefaction. — Ukrinform. <\/CONTENT> <URL> https://www.ukrinform.net/rubric-polytics/4049770-ukrainian-parliament-revokes-mandate-of-mp-kolisnyk.html <\/URL> __END_OF_SOURCE 7__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187738217,\"end\":1779187767479},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187767483,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdad8b9001T26X43R2CnnFpF\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fda5a27001eVEUUYfmQe2oQ0\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023499,\"tokens\":{\"total\":6593,\"input\":6283,\"output\":310,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187768913,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdade50001YfCIhWfk52vJwS\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdad8bd001cR0yt0CZo4nAqu\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187770383,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdade51001kM9Wdc4KyTj7N4\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdad8bd001cR0yt0CZo4nAqu\",\"type\":\"tool\",\"callID\":\"ade36df0-96b3-4418-a8b7-09edc1ff8807\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Анна Колісник біографія Слуга народу\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> АннаКолісник, членкиня Комітету Верховної Ради України з питань фінансів, податкової та митної політики. Українська державна та громадська діячка, політик. <\/CONTENT> <URL> https://sluga-narodu.com/deputies/anna-kolisnyk <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> АннаСергіївнаКолісник(нар. 24 жовтня 1994, Лебедин, Сумська область) — український правник та колишній народний депутат IX скликання.АннаКолісникнародилась 1994 року в Лебедині на Сумщині. Навчалась на юридичному факультеті Національного юридичного університету імені Ярослава Мудрого за спеціальністю «міжнародне право». <\/CONTENT> <URL> https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> У 2019 році, на позачергових виборах до Верховної Ради IX скликання, вона увійшла до списку партії \\\"Слуга народу\\\" під номером 94. Це був час, коли нова політична сила, очолювана Володимиром Зеленським, обіцяла радикальні реформи, і молоді обличчя, як Колісник, ставали символами свіжого подиху. <\/CONTENT> <URL> https://www.fair.org.ua/anna-kolisnyk-biografiya-obiczyanky-rejtyng-u-detalyah <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> На виборах Президента України 2019 року була довіреною особою кандидата Володимира Зеленського на територіальному виборчому окрузі № 168 на Харківщині. У 2019 році була обрана народною депутаткою 9 скликання від партії \\\"Слуга народу\\\" номером 94 у списку як безпартійна. Членкиня однойменної фракції. <\/CONTENT> <URL> https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Політичний шлях: Від \\\"Слуги народу\\\" до незалежних кроків Політична кар'єра Анни Скороход стартувала з гучним акордом у 2019 році, коли вона стала народною депутаткою IX скликання від партії ... <\/CONTENT> <URL> https://gelios.ua/anna-skorohod-biografiya-vid-biznesu-do-polityky-v-ukrayini <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> КолісникАннаСергіївна: харківська юристка стала ще однією представницею прекрасної половини людства у Раді.КолісникАннаСергіївна, яка стала народним депутатом від партії «Слуга народу», працювала судовою експерткою та була довіреною особою Володимира Зеленського на президентських виборах. <\/CONTENT> <URL> https://my.ua/uk/persons/anna-kolisnik <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> АннаКолісникнародилася 24 жовтня 1994 року в місті Лебедин, що на Сумщині. Політикиня закінчила юрфак Національного юридичного університету імені Ярослава Мудрого (спеціальність — \\\"Міжнародне право\\\"). Отримала другу вищу освіту в ХНУ імені В. Н. Каразіна. <\/CONTENT> <URL> https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 21 жовтня 2025р. 24 жовтня 1994р. включена до виборчого списку під № 94. <\/CONTENT> <URL> https://itd.rada.gov.ua/mps/info/page/21144 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Висування ПОЛІТИЧНА ПАРТІЯ \\\"СЛУГА НАРОДУ\\\" № у виборчому списку партії 94 Номер та дата рішення про реєстрацію кандидатом 1233 від 24.06.2019 Номер та дата рішення про визнання обраним народним депутатом України протокол ... <\/CONTENT> <URL> https://www.cvk.gov.ua/pls/vnd2019/wp407pt001f01=919pf7201=18582.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Нардепка від СлугинародуАннаКолісниксклала мандат. Комітет підтримав її відставку - хто займе її місце? Читайте про АннуКолісникта пов'язані з нею скандали. <\/CONTENT> <URL> https://zaxid.net/nardepka_vid_partiyi_sluga_narodu_anna_kolisnik_sklala_mandat_n1611663 <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187768914,\"end\":1779187770380},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187770385,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdae40f001Vb54yCKXlEp1Y6\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdad8bd001cR0yt0CZo4nAqu\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023229,\"tokens\":{\"total\":7387,\"input\":7298,\"output\":89,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187771697,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdae92e0011HNGWThwn9kzYr\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdae4140011a1jF2XR6ZouQG\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187772679,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdae930001eqROsQj9Oe75Mm\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdae4140011a1jF2XR6ZouQG\",\"type\":\"tool\",\"callID\":\"b78842bc-af25-4d94-ab3d-6fa77b74c4ae\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\"},\"output\":\"URL: https://uk.wikipedia.org/wiki/Колісник_Анна_Сергіївна\\nFinal URL: https://uk.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%96%D1%81%D0%BD%D0%B8%D0%BA_%D0%90%D0%BD%D0%BD%D0%B0_%D0%A1%D0%B5%D1%80%D0%B3%D1%96%D1%97%D0%B2%D0%BD%D0%B0\\nTitle: Колісник Анна Сергіївна — Вікіпедія\\nBytes read: 285984\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nПерейти до вмісту\\nГоловне меню\\nГоловне меню\\nперемістити на бічну панель\\nсховати\\nНавігація\\nГоловна сторінка\\n[link: https://uk.wikipedia.org/wiki/%D0%93%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0_%D1%81%D1%82%D0%BE%D1%80%D1%96%D0%BD%D0%BA%D0%B0]\\nПоточні події\\n[link: https://uk.wikipedia.org/wiki/%D0%9F%D0%BE%D1%80%D1%82%D0%B0%D0%BB:%D0%9F%D0%BE%D1%82%D0%BE%D1%87%D0%BD%D1%96_%D0%BF%D0%BE%D0%B4%D1%96%D1%97]\\nНові редагування\\n[link: https://uk.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B5%D1%86%D1%96%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0:%D0%9D%D0%BE%D0%B2%D1%96_%D1%80%D0%B5%D0%B4%D0%B0%D0%B3%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F]\\nНові сторінки\\n[link: https://uk.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B5%D1%86%D1%96%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0:%D0%9D%D0%BE%D0%B2%D1%96_%D1%81%D1%82%D0%BE%D1%80%D1%96%D0%BD%D0%BA%D0%B8]\\nВипадкова стаття\\n[link: https://uk.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B5%D1%86%D1%96%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0:%D0%92%D0%B8%D0%BF%D0%B0%D0%B4%D0%BA%D0%BE%D0%B2%D0%B0_%D1%81%D1%82%D0%BE%D1%80%D1%96%D0%BD%D0%BA%D0%B0]\\nСпеціальні сторінки\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187771699,\"end\":1779187772678},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187772680,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdaed07001UH8pQ00z8pNuvR\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdae4140011a1jF2XR6ZouQG\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.027732,\"tokens\":{\"total\":8848,\"input\":8749,\"output\":99,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187773976,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdaf216001RL4PiLo9l4ifKG\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdaed0a001RTVUU7jfPEwW1V\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187775980,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdaf217001mzIg5ZT5negcuz\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdaed0a001RTVUU7jfPEwW1V\",\"type\":\"tool\",\"callID\":\"780231cf-be19-44d9-b855-7cc1b854fbfe\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://sluga-narodu.com/deputies/anna-kolisnyk\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"http_error\\\",\\\"retryable\\\":true,\\\"url\\\":\\\"https://sluga-narodu.com/deputies/anna-kolisnyk\\\",\\\"final_url\\\":\\\"https://sluga-narodu.com/deputies/anna-kolisnyk\\\",\\\"status_code\\\":520,\\\"error\\\":\\\"http_error\\\",\\\"error_detail\\\":null,\\\"attempt\\\":2,\\\"attempts\\\":2}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187773977,\"end\":1779187775977},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187775985,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdaf9ed001dRKsn64BrjBIPW\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdaed0a001RTVUU7jfPEwW1V\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.030855,\"tokens\":{\"total\":9905,\"input\":9810,\"output\":95,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187777278,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdafefd001R1RqHNKC9YB6Tq\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdaf9f8001qc8VT6OAG2cssf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187807290,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdafefe001ir8C73zp5x9F11\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdaf9f8001qc8VT6OAG2cssf\",\"type\":\"tool\",\"callID\":\"603c3a8d-6fb3-441b-b02d-9b14a0a2e1ac\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"error\",\"input\":{\"url\":\"https://itd.rada.gov.ua/mps/info/page/21144\"},\"error\":\"McpError: MCP error -32001: Request timed out\",\"time\":{\"start\":1779187777278,\"end\":1779187807284}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187807297,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdb743a001zTqimF2GNezydL\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdaf9f8001qc8VT6OAG2cssf\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031551,\"tokens\":{\"total\":10121,\"input\":10022,\"output\":99,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187829289,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbca2700177dsHHP60C358z\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdb7448001j5JHiT0fw7Z4m9\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187830891,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbca28001KK4VKHAjHhYdLv\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdb7448001j5JHiT0fw7Z4m9\",\"type\":\"tool\",\"callID\":\"41aa892a-8ac2-450d-a800-535c59460bf7\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\"},\"output\":\"URL: https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\\nFinal URL: https://lb.ua/file/person/4816_kolisnik_anna_sergiivna.html\\nTitle: ​Колісник Анна  . Досьє\\nBytes read: 29803\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nПідтримати\\n[link: https://lb.ua/donate]\\nУКР\\nENG\\n[link: https://en.lb.ua]\\nНовини\\n[link: https://lb.ua/news]\\nПолітика\\n[link: https://lb.ua/politics]\\nЕкономіка\\n[link: https://lb.ua/economics]\\nCуспільство\\n[link: https://lb.ua/society]\\nЗдоров'я\\n[link: https://lb.ua/health]\\nКультура\\n[link: https://lb.ua/culture]\\nDefense Tech\\n[link: https://lb.ua/theme/defense_tech]\\nCвіт\\n[link: https://lb.ua/world]\\nСпорт\\n[link: https://lb.ua/sport]\\nСпецтеми\\n[link: https://lb.ua/theme]\\nКиїв\\n[link: https://lb.ua/theme/kyiv]\\nНова Країна\\n[link: https://lb.ua/theme/nova_krayina]\\nТериторії культури\\n[link: https://lb.ua/theme/terytorii_kultury]\\nCultHub\\n[link: https://lb.ua/theme/culthub]\\nLB.talks\\n[link: https://lb.ua/theme/lb_talks]\\nHavas Village\\n[link: https://lb.ua/theme/havas_village]\\n30 років гривні\\n[link: https://lb.ua/theme/30_rokiv_grivni]\\nЕпіцентр виробників\\n[link: https://lb.ua/theme/epicentr_vyrobnykiv]\\nПублікації\\n[link: https://lb.ua/analytics]\\nБлоги\\n[link: https://lb.ua/blog]\\nДосьє\\n[link: https://lb.ua/file]\\nІвенти\\n[link: https://lb.ua/events]\\nLB.live\\n[link: https://www.youtube.com/channel/UC_wMhlGmskE2Ue-400XjofQ]\\nФото/Відео\\n[link: https://lb.ua/photo]\\nАвтори\\n[link: https://lb.ua/author]\\nРедакція\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187829289,\"end\":1779187830888},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187830896,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbd06c001gDSE2m3U7XOREG\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdb7448001j5JHiT0fw7Z4m9\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.032022,\"tokens\":{\"total\":10258,\"input\":10154,\"output\":104,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187832147,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbd550001Lx7MMZlb4d28g1\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbd074001yQWhWLxy3erBZ2\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187834759,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbd5520018FGDb7vYmf9u71\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbd074001yQWhWLxy3erBZ2\",\"type\":\"tool\",\"callID\":\"b5a1f586-df90-4300-bcdd-b3460d70b2c5\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna\"},\"output\":\"URL: https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna\\nFinal URL: https://obrantsi.ua/deputies/anna-kolisnik-sergiyivna\\nTitle: Колісник Анна Сергіївна: Біографія, Майно, Кар'єра та Особисте Життя. Обранці\\nBytes read: 249021\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nМеню\\nВерховна Рада України\\nОбласні та міські ради\\nНовини\\n[link: https://obrantsi.ua/news]\\nІнфографіки\\n[link: https://obrantsi.ua/infographics]\\nПартії\\nПолітичний довідник\\nГоловна\\n[link: https://obrantsi.ua/]\\nНародні депутати\\n[link: https://obrantsi.ua/deputies]\\nКолісник Анна Сергіївна\\nКолісник\\nАнна\\nСергіївна\\nДодати для порівняння\\nВибув 21 жовтня 2025 року. Особиста письмова заява про припинення повноважень.\\nПолітсили, від яких обиралася\\n0 років\\nДосвід нардепства\\nСтатуси\\nСередні корупційні ризики\\nРівень статків\\nНакопичення\\n0 грн\\n+11.9\\n%\\nПолітсили, від яких обиралася\\n0 років\\nДосвід нардепства\\nРейтинг обранця\\nДосвід держуправління\\n13\\nСоц. охоплення\\n0\\nКарма +\\n0\\nКарма -\\n40\\nЗаконотворча діяльність\\n0\\nВідвідуваність\\n67\\nОсвіта\\n30\\nКорупційні ризики\\n45\\nПояснення\\n28\\nЗагальний рейтинг\\nПояснення рейтингу обранця\\nДосвід держуправління\\nСукупний досвід роботи на державних посадах та в політиці\\nСоц. охоплення\\nРівень впливу на суспільство, заснований на кількості фоловерів в соцмережах\\nКарма +\\nСукупна оцінка позитивних для репутації дій\\nКарма -\\nСукупна оцінка негативних для репутації дій\\nЗаконотворча діяльність\\nПоказник ініціативності нардепів у Верховній Раді (не плутати з продуктивністю)\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187832149,\"end\":1779187834758},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187834761,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbdf88001QjHznFa3JiQpeu\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbd074001yQWhWLxy3erBZ2\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.034164,\"tokens\":{\"total\":10992,\"input\":10893,\"output\":99,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187836214,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbe535001B8bjBvVUV4l9Ue\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbdf8b001jvzFMuX23jkHTI\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779187838194,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbe5350022Z7m1RVt5A09Br\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbdf8b001jvzFMuX23jkHTI\",\"type\":\"tool\",\"callID\":\"e80a479c-e024-4a36-9551-336289fb52e3\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Anna Kolisnyk Ukraine MP disability sexual orientation LGBTQ\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> In 2015, the Ukrainian Parliament approved an employment anti-discrimination law coveringsexualorientationand gender identity, [2] and in 2016, Ukrainian officials simplified the transition process for transgender people. [5] In 2021, the Ukrainian Ministry of Health implemented their 2016 proposal to allow gay and bisexual men to donate blood. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/LGBTQ_rights_in_Ukraine <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> This publication presents information that reflects the social, legal and political situation of theLGBTQ(lesbian, gay, bisexual, and transgender) people inUkrainein 2025. It contains data and analyses of the issues related toLGBTQrights and interests in legislation, public and political life, <\/CONTENT> <URL> https://gay.org.ua/en/blog/2026/02/08/holding-the-line-lgbtq-situation-in-ukraine-in-2025 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> This policy brief is structured as follows. It starts with a brief overview of the situation of LGBTQ+ Ukrainians before the full-scale invasion. It then proceeds with an analysis of the challenges LGBTQ+ people faced inUkrainein 2022-2023, covering such areas as forced migration and displacement, access to housing and healthcare, economic inequalities, access to education, political ... <\/CONTENT> <URL> https://gppi.net/assets/Shevtsova_2024_Queering_Displacement_FINAL.pdf <\/URL> __END_OF_SOURCE 3__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779187836214,\"end\":1779187838194},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187838196,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbecf3001AiPB2BaET5vghH\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbdf8b001jvzFMuX23jkHTI\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.036033,\"tokens\":{\"total\":11663,\"input\":11576,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779187842020,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbfbe00015AMjDSDqxKolfO\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbecf500177jmZAQ31qQqBv\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779187842021,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbfbe1001i9HUjnbl7T1O5I\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbecf500177jmZAQ31qQqBv\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Higher education. Graduated from the Yaroslav Mudryi National Law University with a degree in International Law. Also received a second higher education from V. N. Karazin Kharkiv National University.\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://uk.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%96%D1%81%D0%BD%D0%B8%D0%BA_%D0%90%D0%BD%D0%BD%D0%B0_%D0%A1%D0%B5%D1%80%D0%B3%D1%96%D1%97%D0%B2%D0%BD%D0%B0\\\",\\n  \\\"prior_occupation\\\": \\\"Forensic expert at the Kharkiv Research Forensic Center of the Ministry of Internal Affairs of Ukraine.\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://my.ua/uk/persons/anna-kolisnik\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://my.ua/uk/persons/anna-kolisnik\\\",\\n  \\\"birth_year\\\": 1994,\\n  \\\"birth_year_source\\\": \\\"https://itd.rada.gov.ua/mps/info/page/21144\\\",\\n  \\\"birth_place\\\": \\\"Lebedyn, Sumy Oblast, Ukraine\\\",\\n  \\\"birth_place_source\\\": \\\"https://uk.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%96%D1%81%D0%BD%D0%B8%D0%BA_%D0%90%D0%BD%D0%BD%D0%B0_%D0%A1%D0%B5%D1%80%D0%B3%D1%96%D1%97%D0%B2%D0%BD%D0%B0\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://itd.rada.gov.ua/mps/info/page/21144\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://itd.rada.gov.ua/mps/info/page/21144\\\"\\n}\\n```\",\"time\":{\"start\":1779187842020,\"end\":1779187842020}}}\n{\"type\":\"step_finish\",\"timestamp\":1779187842025,\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"part\":{\"id\":\"prt_e3fdbfbe6001BxT20Eb2wPrcZ2\",\"sessionID\":\"ses_1c025a603ffevtHUPIheBLxYmJ\",\"messageID\":\"msg_e3fdbecf500177jmZAQ31qQqBv\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.045777,\"tokens\":{\"total\":12715,\"input\":12079,\"output\":636,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

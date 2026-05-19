@@ -1,0 +1,6 @@
+{
+  "opencode_cli_status": 0,
+  "opencode_errors": "APIError: Not Found: {\"error\": {\"type\": \"not_found\", \"message\": \"Unsupported path: /messages\"}} (status 404)",
+  "opencode_parse_error": false,
+  "opencode_stderr": ""
+}

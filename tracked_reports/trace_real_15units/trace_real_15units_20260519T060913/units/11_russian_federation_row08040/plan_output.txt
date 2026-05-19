@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "plan_output",
+  "reason": "plan_not_generated",
+  "expected_empty": true,
+  "unit_key": "11_russian_federation_row08040",
+  "generated_at_utc": "2026-05-19T10:10:40Z"
+}

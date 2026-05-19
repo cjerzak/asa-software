@@ -545,7 +545,7 @@ class _GatewayHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0]
-        if path != "/v1/messages":
+        if path not in {"/v1/messages", "/messages"}:
             _json_response(self, 404, {"error": {"type": "not_found", "message": f"Unsupported path: {path}"}})
             return
 

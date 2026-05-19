@@ -1,0 +1,30 @@
+{
+  "status": "error",
+  "unit": {
+    "unit_index": 12,
+    "unit_key": "12_south_korea_row10728",
+    "country": "South Korea",
+    "row_id": 10728,
+    "person_name": "KİM Han-gil",
+    "election_year": "2012",
+    "pol_party": "Democratic Party",
+    "region": "National",
+    "person_bday": "Not available",
+    "gender_character": "Male",
+    "ethnic": "Korean"
+  },
+  "started_at_utc": "2026-05-19T10:26:48Z",
+  "finished_at_utc": "2026-05-19T10:27:10Z",
+  "elapsed_time": 0.2544,
+  "error_message": "OpenCode returned an error. APIError: Not Found: {\"error\": {\"type\": \"not_found\", \"message\": \"Unsupported path: /messages\"}} (status 404)",
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260519T062540/units/12_south_korea_row10728",
+  "field_status": [],
+  "diagnostics": {
+    "opencode_cli_status": 0,
+    "opencode_errors": "APIError: Not Found: {\"error\": {\"type\": \"not_found\", \"message\": \"Unsupported path: /messages\"}} (status 404)",
+    "opencode_parse_error": false,
+    "opencode_stderr": ""
+  },
+  "completion_gate": []
+}

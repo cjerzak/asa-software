@@ -1,0 +1,6 @@
+{
+  "opencode_cli_status": 0,
+  "opencode_errors": [],
+  "opencode_parse_error": false,
+  "opencode_stderr": ""
+}

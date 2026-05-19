@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "plan_output",
+  "reason": "plan_not_generated",
+  "expected_empty": true,
+  "unit_key": "05_italy_row03389",
+  "generated_at_utc": "2026-05-19T11:00:14Z"
+}

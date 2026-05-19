@@ -922,11 +922,13 @@ EXPECTED_SCHEMA <- list(
   justification = "string"
 )
 
+#agent_backend <- "agent"
+#agent_backend = "free-code"
+agent_backend = "opencode"
+
 build_agent_config_summary <- function(tor_registry_path) {
   list(
-    #agent_backend = "agent", # custom
-    #agent_backend = "free-code", # claude-code open-sourced
-    agent_backend = "opencode", # opencode
+    agent_backend = agent_backend,
     backend = "gemini",
     model = "gemini-3-flash-preview",
     proxy = "ASA_PROXY (per-worker)",
@@ -1120,7 +1122,7 @@ initialize_trace_agent <- function(run_context, verbose = TRUE) {
   ))
 
   asa::initialize_agent(
-    agent_backend = "free-code",
+    agent_backend = agent_backend,
     backend = "gemini",
     model = "gemini-3-flash-preview",
     conda_env = TRACE_CONDA_ENV,
