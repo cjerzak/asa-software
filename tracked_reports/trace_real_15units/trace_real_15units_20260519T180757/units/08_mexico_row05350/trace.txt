@@ -1,0 +1,626 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779228556081,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42493b30001CUe62ZzGi1JFwr",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42492d7a001sZVNm4RzGLZfH2",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228562801,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42493b32001ucYfHSv7z9pTdj",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42492d7a001sZVNm4RzGLZfH2",
+        "type": "tool",
+        "callID": "bcd4f1bd-57da-4272-84a0-0167de1d9da8",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mónica Clara Molina PRI México 2012 biografía SIL"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MónicaElizabeth Sandoval Hernández (born 25 January 1975) is a Mexican politician. Previously affiliated with the Party of the Democratic Revolution (PRD), she joined the Institutional Revolutionary Party (PRI) after the PRD lost its status as a nationally registered party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mónica_Elizabeth_Sandoval_Hernández <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Secretaria Técnica en Confederacion · Experiencia: Confederacion · Ubicación: Ciudad deMéxico· 1 contacto en LinkedIn. Mira el perfil deMonicaClaraMolinaen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/monica-clara-molina-3839b937 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Jefa de Unidad Administrativa en el Sistema Colectivo Metro de la Ciudad deMéxico. Colaboradora de la Procuraduría General del Distrito Federal. Coordinadora del Proyecto de Reconstrucción en Chiapas y Oaxaca relativo a los sismos del 19 de septiembre. Analista en la Comisión de Salud de la Asamblea de Representantes del Distrito Federal. <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9228206 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ClaraMolina,MónicaEstatus: Activo Partido: Partido Revolucionario Institucional (PRI) Nacimiento: 00/00/0000, Principio de elección: Representación Proporcional Zona: Oaxaca, Tercera Protesta: 02/12/2014 Ubicación: Edificio H, Planta Baja. Teléfono: 50-36-00-00 Ext: 66227. 56-28-13-00 Ext: 7123. Último grado de estudios: Licenciatura <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216686 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> CONSEJO POLíTlCO NACIONAL Transformando SECRETARIA TÉCNICA aMéxicoACUERDO CATORCE Se toma protesta como Secretaria General Sustituta para concluir el periodo 2011-2015 a la C. Ivonne Aracelly Ortega Pacheco. ACUERDO QUINCE Integración de la Comisión Nacional de Justicia Partidaria. Propietarios 1.- Presidente SADOT SÁNCHEZ CARREÑO 2.- ARTURO UGALDE MENESES 3.-MONICACLARAMOLINA... <\/CONTENT> <URL> https://pri.org.mx/ElPartidoDeMexico/Documentos/Transparencia/Fraccion3/Acuerdos/ConsejoPoliticoNacional/CPN2012/11DEDICIEMBREDE2012.pdf <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DiputadaMónicaClaraMolinaCon fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas parlamentarias ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Invalid SQL: INSERT INTO SIL_EXT_BITACORA VALUES (NOW (),'PL','Consulta al PopUp Perfil del Legislador','Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/116..1938.76 Safari/537.36','CVE_LEGISLADOR','9228200','52.167.144.190') <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9228200 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Temas de interés Con fundamento en lo dispuesto en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas, entre ellas, las gacetas de la Cámara de Diputados y del Senado. Los contenidos que aquí se ... <\/CONTENT> <URL> https://nsil.gobernacion.gob.mx <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Consulta el perfil legislativo, intervenciones en el pleno y actividades de los legisladores en el Sistema de Información Legislativa. <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9228974 <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228556085,
+            "end": 1779228562799
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228562804,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e424955720011yt2iMWrUuGNy3",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42492d7a001sZVNm4RzGLZfH2",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0232,
+        "tokens": {
+          "total": 6579,
+          "input": 6293,
+          "output": 286,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228564189,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42495adc001BhthTQQWX3HxGt",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42495576001uuj8YjGmNJQtoM",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228566556,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42495adc002sKF4VJOqGb4KeO",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42495576001uuj8YjGmNJQtoM",
+        "type": "tool",
+        "callID": "2fcd5687-1cf7-44a0-9ffa-e5bb11448fd4",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686"
+          },
+          "output": "URL: https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\nFinal URL: http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\nTitle: SIL - Sistema de Información Legislativa-PopUp Legislador\nBytes read: 61169\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nTrámites\n[link: https://www.gob.mx/tramites]\nG\nobierno\n[link: https://www.gob.mx/gobierno]\n[link: https://www.gob.mx/segob]\nInicio\nA\ncerca de\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/acerca]\nC\nontacto\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/contactanos]\nPerfil ⁄ Actividad legislativa\nCámara\nBúsqueda de Intervenciones en el pleno\n* Legislatura\n62\n* Instancia\nCámara\nLegislador\nGrupo parlamentario\nSelecciona ...\nTema\nTipo asunto\nTipo de intervención\nSeleccionar ...\nPostura\nSelecciona ...\nA favor\nEn contra\nNo aplica\nSin postura\nFecha Inicial:\nFecha Final:\n* Se requiere que elija al menos 3 pámetros de búsqueda\nDiputada Mónica Clara Molina\nNúmero de la legislatura:\nLXII Legislatura\nPeriodo de la legislatura:\nDel 29/08/2012 al 31/08/2015\nPartido:\nPRI\nNacimiento:\nN/A\nEntidad:\nCiudad:\nPrincipio de elección:\nRepresentación Proporcional\nRegión de elección:\nEntidad: Oaxaca\nCircunscripción: Tercera\nUbicación:\nEdificio H, Planta Baja.\nCorreo electrónico:\nTeléfono:\n50-36-00-00 Ext: 66227. 56-28-13-00 Ext: 7123.\nSuplente de:\nDiputada María de las Nieves García Fernández\nÚltimo grado de estudios:\nLicenciatura\nPreparación académica:\nDerecho\nExperiencia legislativa:\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228564189,
+            "end": 1779228566555
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228566558,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249641d001meSkqUKcS16iWX",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42495576001uuj8YjGmNJQtoM",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0248,
+        "tokens": {
+          "total": 7805,
+          "input": 7693,
+          "output": 112,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228567863,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42496936001z5PbWIseu4U58Y",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42496420001J3qApQ0DM8eSNC",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228569411,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42496937001LfR4h0v7iJWuZs",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42496420001J3qApQ0DM8eSNC",
+        "type": "tool",
+        "callID": "60b05f6c-688e-4cfb-b361-089ac166d2fe",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mónica Clara Molina PRI biografía trayectoria profesional"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MónicaMolinaTejedor is a Spanish actress and singer with a distinctive Mediterranean style in her albums. She is the daughter of well-known singer AntonioMolina. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mónica_Molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Presidente diputado Silvano Aureoles Conejo: CiudadanaMónicaClaraMolina, ¿protesta guardar y hacer guardar la Constitución Política de los Estados Unidos Mexicanos y las leyes que de ella emanen, y desempeñar leal y patrióticamente el cargo de diputada que el pueblo le ha conferido, mirando en todo por el bien y prosperidad de la Unión? <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Archivos/Documentos/2014/12/asun_3181333_20141202_1417546492.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Secretaria Técnica en Confederacion · Experiencia: Confederacion · Ubicación: Ciudad de México · 1 contacto en LinkedIn. Mira el perfil deMonicaClaraMolinaen LinkedIn, una redprofesionalde más de 1.000 millones de miembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/monica-clara-molina-3839b937 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Trayectoriay Legado Latrayectoriaartística deMónicaMolinacomienza a consolidarse a finales de los años 90, cuando en 1999 publica su primer álbum, marcando un estilo personal y elegante que se caracteriza por un marcado carácter mediterráneo. <\/CONTENT> <URL> https://www.buenamusica.com/monica-molina/biografia <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Mónicalanza al mercado su primer álbum en el año 1999, \"Tu despedida\", con unos temas de estilo mediterráneo. El álbum alcanza un notable éxito y la cantante consigue con él el Disco de Oro, realizando una gira por diversos países. <\/CONTENT> <URL> https://www.biografias.es/famosos/monica-molina.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La vida actual deMónicaMolina, hermana de ÁngelaMolinay madre de Candela Coronado que está centrada en su carrera musical. <\/CONTENT> <URL> https://www.divinity.es/famosos/20241126/monica-molina-vida-actual-madre-candela-coronado_18_014079785.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Monicamolinaay amorMónicaMolinais a Spanish actress and singer with a distinctive Mediterranean style in her albums. She is the daughter of well-known singer AntonioMolina. <\/CONTENT> <URL> https://alchetron.com/Mónica-Molina <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ClaraMolina,MónicaEstatus: Activo Partido: Partido Revolucionario Institucional (PRI) Nacimiento: 00/00/0000, Principio de elección: Representación Proporcional Zona: Oaxaca, Tercera Protesta: 02/12/2014 Ubicación: Edificio H, Planta Baja. Teléfono: 50-36-00-00 Ext: 66227. 56-28-13-00 Ext: 7123. Último grado de estudios: Licenciatura <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216686 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DiputadaMónicaClaraMolina... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228567864,
+            "end": 1779228569410
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228569412,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42496f43001jI9dMCbPdTYp8l",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42496420001J3qApQ0DM8eSNC",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0264,
+        "tokens": {
+          "total": 8449,
+          "input": 8363,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228570692,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42497443001q0YWk43wLPkvoX",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42496f46001W5uECEGu2T42zj",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228572152,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42497444001EikxR33v7IA041",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42496f46001W5uECEGu2T42zj",
+        "type": "tool",
+        "callID": "4ed19824-3715-402a-b87b-e38ea01a7ff3",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Mónica Clara Molina\" PRI trayectoria profesional abogado"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Expulsan a Duarte delPRIy ya es Prófugo de la Justicia *EL SENADOR JALISCIENSE, ARTURO ZAMORA, DIO A CONOCER EL VEREDICTO AGENCIAS El gobernador de Veracruz con licencia, Javier Duarte de Ochoa, fue expulsado por unanimidad de las filas del Partido Revolucionario Institucional (PRI), organización política en la que militaba desde 1995 ... <\/CONTENT> <URL> https://minervamultimedios.com/tag/monica-clara-molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> DiputadaMónica Clara Molina... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 06/11/2025 Asistencias Dip. |Mónica Clara Molina| Agrupadas por periodo de Sesiones <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/asistencias_diputados_xperiodonplxii.php?dipt=897 <\/URL> __END_OF_SOURCE 3__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228570693,
+            "end": 1779228572152
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228572154,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e424979f9001dRpRK35IkM56fL",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e42496f46001W5uECEGu2T42zj",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.03,
+        "tokens": {
+          "total": 9657,
+          "input": 9570,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228573432,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42497ef7001WBPguOth2NMI65",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e424979fb001UVshOrz3q7t2B1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228579388,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42497ef80012y2hAUjQoj4u4A",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e424979fb001UVshOrz3q7t2B1",
+        "type": "tool",
+        "callID": "e0d2666d-3bbb-4aeb-963f-ce10aeafb8b5",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://minervamultimedios.com/tag/monica-clara-molina"
+          },
+          "output": "URL: https://minervamultimedios.com/tag/monica-clara-molina\nFinal URL: https://minervamultimedios.com/tag/monica-clara-molina/\nTitle: Mónica Clara Molina – Minerva Multimedios\nBytes read: 53970\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nmartes , mayo 19 2026\nLa Perla\n[link: https://minervamultimedios.com/category/zmg-jalisco-local-ciudad/]\nSeguridad y Justicia\n[link: https://minervamultimedios.com/category/policia/]\nSalud\n[link: https://minervamultimedios.com/category/salud/]\nEcología y Medio Ambiente\n[link: https://minervamultimedios.com/category/ecologia-y-medio-ambiente/]\nLas Plumas de Minerva\n[link: https://minervamultimedios.com/category/opinion/]\nLa Vida en Rosa\n[link: https://minervamultimedios.com/category/farandula-sociedad/]\nEl Monedero\n[link: https://minervamultimedios.com/category/zmg-jalisco-local-finanzas/]\n¡De mochilazo!\n[link: https://minervamultimedios.com/category/demochilazo/]\nEl Balón\n[link: https://minervamultimedios.com/category/mexico-deportes-todos/]\nMinerva Multimedios Noticias, opinión, reportajes, videos, Guadalajara informada\n[link: https://minervamultimedios.com/]\nNoticias de última hora\nJalisco recuerda a trabajadores fechas y derechos para el pago de utilidades\n[link: https://minervamultimedios.com/2026/05/17/jalisco-recuerda-a-trabajadores-fechas-y-derechos-para-el-pago-de-utilidades/]\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228573432,
+            "end": 1779228579387
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228579389,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249963c001Xl0Fkn96sKUIqg",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e424979fb001UVshOrz3q7t2B1",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0316,
+        "tokens": {
+          "total": 10141,
+          "input": 10043,
+          "output": 98,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228580579,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42499ae2001Xzc26EsyMW9Zbz",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249963f001FYbbgmy5MQXxIs",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228582021,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e42499ae2002C9uUtuq6sOpE0r",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249963f001FYbbgmy5MQXxIs",
+        "type": "tool",
+        "callID": "7f854c44-9e7e-49fe-a937-76531298fac8",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Mónica Clara Molina\" PRI Comisión Nacional de Justicia Partidaria"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Conforme a la normatividad delPRI, laComisiónNacionaldeJusticiaPartidaria, conformada por siete integrantes: Fernando Elías Calles (presidente), el senador Arturo Zamora Jiménez, así como los comisionados Arturo Ugalde Menéses,Mónica Clara Molina, Héctor Humberto Gutiérrezdela Garza, Laura Ivonne Zapata Martínez, y el ... <\/CONTENT> <URL> https://www.ejecentral.com.mx/la-comision-nacional-de-justicia-partidaria-del-partido-revolucionario-institucional-informa <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> La Dip.Mónica Clara Molina(PRI) argumenta sobre la importanciadegarantizar a todos el vivir con la mayor dignidad posible, en este contexto, se manifiest... <\/CONTENT> <URL> https://www.youtube.com/watch?v=l793RDHQJmo <\/URL> __END_OF_SOURCE 2__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228580579,
+            "end": 1779228582020
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228582022,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249a085001lVPk1BEet8IgpI",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249963f001FYbbgmy5MQXxIs",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0333,
+        "tokens": {
+          "total": 10720,
+          "input": 10629,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228583389,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249a5dc001gbM3jfc21h3Knz",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249a087001IivKIYlVoTpHGM",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228595291,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249a5dc002fhdQKaEepFbCiu",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249a087001IivKIYlVoTpHGM",
+        "type": "tool",
+        "callID": "c1382441-8e70-4a7d-8fff-140813dd2142",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Mónica Clara Molina\" PRI biografía estudios trayectoria profesional"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Expulsan a Duarte delPRIy ya es Prófugo de la Justicia *EL SENADOR JALISCIENSE, ARTURO ZAMORA, DIO A CONOCER EL VEREDICTO AGENCIAS El gobernador de Veracruz con licencia, Javier Duarte de Ochoa, fue expulsado por unanimidad de las filas del Partido Revolucionario Institucional (PRI), organización política en la que militaba desde 1995 ... <\/CONTENT> <URL> https://minervamultimedios.com/tag/monica-clara-molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 02/01/2025 Votaciones Dip. |Mónica Clara Molina| Titulo de la Votación Sentido del voto 2 Diciembre 2014 1 <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/votaciones_por_pernplxii.php?iddipt=897&pert=9 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 06/11/2025 Asistencias Dip. |Mónica Clara Molina| Agrupadas por periodo de Sesiones <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/asistencias_diputados_xperiodonplxii.php?dipt=897 <\/URL> __END_OF_SOURCE 3__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228583389,
+            "end": 1779228595291
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228595293,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249d45c001w5e70X7hui2KEB",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249a087001IivKIYlVoTpHGM",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0343,
+        "tokens": {
+          "total": 11066,
+          "input": 10977,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228596582,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249d9650018PlQEQUWE61c9l",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249d45e001S5YrFmPXj9X4bG",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228598267,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249d966001vHA73rA96C0LWV",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249d45e001S5YrFmPXj9X4bG",
+        "type": "tool",
+        "callID": "1cd3ffa4-ac14-4b59-8aa2-80715289eba7",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Mónica Clara Molina\" PRI abogado trayectoria profesional"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Expulsan a Duarte delPRIy ya es Prófugo de la Justicia *EL SENADOR JALISCIENSE, ARTURO ZAMORA, DIO A CONOCER EL VEREDICTO AGENCIAS El gobernador de Veracruz con licencia, Javier Duarte de Ochoa, fue expulsado por unanimidad de las filas del Partido Revolucionario Institucional (PRI), organización política en la que militaba desde 1995 ... <\/CONTENT> <URL> https://minervamultimedios.com/tag/monica-clara-molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> DiputadaMónica Clara Molina... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 06/11/2025 Asistencias Dip. |Mónica Clara Molina| Agrupadas por periodo de Sesiones <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/asistencias_diputados_xperiodonplxii.php?dipt=897 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 02/01/2025 Votaciones Dip. |Mónica Clara Molina| Titulo de la Votación Sentido del voto 2 Diciembre 2014 1 <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/votaciones_por_pernplxii.php?iddipt=897&pert=9 <\/URL> __END_OF_SOURCE 4__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228596582,
+            "end": 1779228598266
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228598269,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249dffb001krYCQNq3miPGqr",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249d45e001S5YrFmPXj9X4bG",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0356,
+        "tokens": {
+          "total": 11517,
+          "input": 11430,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228599747,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249e5c1001WXLGlRgfXD0Efk",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249dfff001V6ZudIe4iq5r66",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228599749,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249e5c1002UYyCICyaRK8TE1",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249dfff001V6ZudIe4iq5r66",
+        "type": "tool",
+        "callID": "4f51546e-75e4-41d4-9b8d-345857affa6d",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Mónica Clara Molina\" PRI currículum vitae"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 0, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"\\\"Mónica Clara Molina\\\" PRI currículum vitae\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"\\\\\\\"mónica clara molina\\\\\\\" pri currículum vitae\\\"}\", \"tool\": \"web_search\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228599747,
+            "end": 1779228599749
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228599751,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249e5c6001RTbnGNThMjayqK",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249dfff001V6ZudIe4iq5r66",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0374,
+        "tokens": {
+          "total": 12100,
+          "input": 12012,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228604748,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249f94b001lwgTrc0qCtR3ZI",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249e5c80014rYa4dBq7BMkEg",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779228604748,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249f94b0023OWv2MWwikMqi0",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249e5c80014rYa4dBq7BMkEg",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Licenciatura en Derecho\",\n  \"prior_occupation\": \"Lawyer and Member of the National Commission of Party Justice (PRI)\",\n  \"birth_year\": \"Unknown\",\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\",\n    \"prior_occupation\": \"https://www.ejecentral.com.mx/la-comision-nacional-de-justicia-partidaria-del-partido-revolucionario-institucional-informa\",\n    \"birth_year\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\",\n    \"birth_place\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\",\n    \"disability_status\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\",\n    \"sexual_orientation\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\",\n    \"class_background\": \"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\"\n  }\n}\n```",
+        "time": {
+          "start": 1779228604748,
+          "end": 1779228604748
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228604750,
+      "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+      "part": {
+        "id": "prt_e4249f94d001xzxLG9yN3xAaJc",
+        "sessionID": "ses_1bdb6d2c2ffewjLfkTMIsZkOK0",
+        "messageID": "msg_e4249e5c80014rYa4dBq7BMkEg",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0369,
+        "tokens": {
+          "total": 8745,
+          "input": 7857,
+          "output": 888,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779228556081,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42493b30001CUe62ZzGi1JFwr\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42492d7a001sZVNm4RzGLZfH2\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228562801,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42493b32001ucYfHSv7z9pTdj\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42492d7a001sZVNm4RzGLZfH2\",\"type\":\"tool\",\"callID\":\"bcd4f1bd-57da-4272-84a0-0167de1d9da8\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mónica Clara Molina PRI México 2012 biografía SIL\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MónicaElizabeth Sandoval Hernández (born 25 January 1975) is a Mexican politician. Previously affiliated with the Party of the Democratic Revolution (PRD), she joined the Institutional Revolutionary Party (PRI) after the PRD lost its status as a nationally registered party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mónica_Elizabeth_Sandoval_Hernández <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Secretaria Técnica en Confederacion · Experiencia: Confederacion · Ubicación: Ciudad deMéxico· 1 contacto en LinkedIn. Mira el perfil deMonicaClaraMolinaen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/monica-clara-molina-3839b937 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Jefa de Unidad Administrativa en el Sistema Colectivo Metro de la Ciudad deMéxico. Colaboradora de la Procuraduría General del Distrito Federal. Coordinadora del Proyecto de Reconstrucción en Chiapas y Oaxaca relativo a los sismos del 19 de septiembre. Analista en la Comisión de Salud de la Asamblea de Representantes del Distrito Federal. <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9228206 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ClaraMolina,MónicaEstatus: Activo Partido: Partido Revolucionario Institucional (PRI) Nacimiento: 00/00/0000, Principio de elección: Representación Proporcional Zona: Oaxaca, Tercera Protesta: 02/12/2014 Ubicación: Edificio H, Planta Baja. Teléfono: 50-36-00-00 Ext: 66227. 56-28-13-00 Ext: 7123. Último grado de estudios: Licenciatura <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216686 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> CONSEJO POLíTlCO NACIONAL Transformando SECRETARIA TÉCNICA aMéxicoACUERDO CATORCE Se toma protesta como Secretaria General Sustituta para concluir el periodo 2011-2015 a la C. Ivonne Aracelly Ortega Pacheco. ACUERDO QUINCE Integración de la Comisión Nacional de Justicia Partidaria. Propietarios 1.- Presidente SADOT SÁNCHEZ CARREÑO 2.- ARTURO UGALDE MENESES 3.-MONICACLARAMOLINA... <\/CONTENT> <URL> https://pri.org.mx/ElPartidoDeMexico/Documentos/Transparencia/Fraccion3/Acuerdos/ConsejoPoliticoNacional/CPN2012/11DEDICIEMBREDE2012.pdf <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DiputadaMónicaClaraMolinaCon fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas parlamentarias ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Invalid SQL: INSERT INTO SIL_EXT_BITACORA VALUES (NOW (),'PL','Consulta al PopUp Perfil del Legislador','Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/116..1938.76 Safari/537.36','CVE_LEGISLADOR','9228200','52.167.144.190') <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9228200 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Temas de interés Con fundamento en lo dispuesto en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas, entre ellas, las gacetas de la Cámara de Diputados y del Senado. Los contenidos que aquí se ... <\/CONTENT> <URL> https://nsil.gobernacion.gob.mx <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Consulta el perfil legislativo, intervenciones en el pleno y actividades de los legisladores en el Sistema de Información Legislativa. <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9228974 <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228556085,\"end\":1779228562799},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228562804,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e424955720011yt2iMWrUuGNy3\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42492d7a001sZVNm4RzGLZfH2\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023169,\"tokens\":{\"total\":6579,\"input\":6293,\"output\":286,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228564189,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42495adc001BhthTQQWX3HxGt\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42495576001uuj8YjGmNJQtoM\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228566556,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42495adc002sKF4VJOqGb4KeO\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42495576001uuj8YjGmNJQtoM\",\"type\":\"tool\",\"callID\":\"2fcd5687-1cf7-44a0-9ffa-e5bb11448fd4\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\"},\"output\":\"URL: https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\nFinal URL: http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\nTitle: SIL - Sistema de Información Legislativa-PopUp Legislador\\nBytes read: 61169\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nTrámites\\n[link: https://www.gob.mx/tramites]\\nG\\nobierno\\n[link: https://www.gob.mx/gobierno]\\n[link: https://www.gob.mx/segob]\\nInicio\\nA\\ncerca de\\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/acerca]\\nC\\nontacto\\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/contactanos]\\nPerfil ⁄ Actividad legislativa\\nCámara\\nBúsqueda de Intervenciones en el pleno\\n* Legislatura\\n62\\n* Instancia\\nCámara\\nLegislador\\nGrupo parlamentario\\nSelecciona ...\\nTema\\nTipo asunto\\nTipo de intervención\\nSeleccionar ...\\nPostura\\nSelecciona ...\\nA favor\\nEn contra\\nNo aplica\\nSin postura\\nFecha Inicial:\\nFecha Final:\\n* Se requiere que elija al menos 3 pámetros de búsqueda\\nDiputada Mónica Clara Molina\\nNúmero de la legislatura:\\nLXII Legislatura\\nPeriodo de la legislatura:\\nDel 29/08/2012 al 31/08/2015\\nPartido:\\nPRI\\nNacimiento:\\nN/A\\nEntidad:\\nCiudad:\\nPrincipio de elección:\\nRepresentación Proporcional\\nRegión de elección:\\nEntidad: Oaxaca\\nCircunscripción: Tercera\\nUbicación:\\nEdificio H, Planta Baja.\\nCorreo electrónico:\\nTeléfono:\\n50-36-00-00 Ext: 66227. 56-28-13-00 Ext: 7123.\\nSuplente de:\\nDiputada María de las Nieves García Fernández\\nÚltimo grado de estudios:\\nLicenciatura\\nPreparación académica:\\nDerecho\\nExperiencia legislativa:\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228564189,\"end\":1779228566555},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228566558,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249641d001meSkqUKcS16iWX\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42495576001uuj8YjGmNJQtoM\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.024759,\"tokens\":{\"total\":7805,\"input\":7693,\"output\":112,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228567863,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42496936001z5PbWIseu4U58Y\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42496420001J3qApQ0DM8eSNC\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228569411,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42496937001LfR4h0v7iJWuZs\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42496420001J3qApQ0DM8eSNC\",\"type\":\"tool\",\"callID\":\"60b05f6c-688e-4cfb-b361-089ac166d2fe\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mónica Clara Molina PRI biografía trayectoria profesional\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MónicaMolinaTejedor is a Spanish actress and singer with a distinctive Mediterranean style in her albums. She is the daughter of well-known singer AntonioMolina. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mónica_Molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Presidente diputado Silvano Aureoles Conejo: CiudadanaMónicaClaraMolina, ¿protesta guardar y hacer guardar la Constitución Política de los Estados Unidos Mexicanos y las leyes que de ella emanen, y desempeñar leal y patrióticamente el cargo de diputada que el pueblo le ha conferido, mirando en todo por el bien y prosperidad de la Unión? <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Archivos/Documentos/2014/12/asun_3181333_20141202_1417546492.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Secretaria Técnica en Confederacion · Experiencia: Confederacion · Ubicación: Ciudad de México · 1 contacto en LinkedIn. Mira el perfil deMonicaClaraMolinaen LinkedIn, una redprofesionalde más de 1.000 millones de miembros. <\/CONTENT> <URL> https://mx.linkedin.com/in/monica-clara-molina-3839b937 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Trayectoriay Legado Latrayectoriaartística deMónicaMolinacomienza a consolidarse a finales de los años 90, cuando en 1999 publica su primer álbum, marcando un estilo personal y elegante que se caracteriza por un marcado carácter mediterráneo. <\/CONTENT> <URL> https://www.buenamusica.com/monica-molina/biografia <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Mónicalanza al mercado su primer álbum en el año 1999, \\\"Tu despedida\\\", con unos temas de estilo mediterráneo. El álbum alcanza un notable éxito y la cantante consigue con él el Disco de Oro, realizando una gira por diversos países. <\/CONTENT> <URL> https://www.biografias.es/famosos/monica-molina.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La vida actual deMónicaMolina, hermana de ÁngelaMolinay madre de Candela Coronado que está centrada en su carrera musical. <\/CONTENT> <URL> https://www.divinity.es/famosos/20241126/monica-molina-vida-actual-madre-candela-coronado_18_014079785.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Monicamolinaay amorMónicaMolinais a Spanish actress and singer with a distinctive Mediterranean style in her albums. She is the daughter of well-known singer AntonioMolina. <\/CONTENT> <URL> https://alchetron.com/Mónica-Molina <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ClaraMolina,MónicaEstatus: Activo Partido: Partido Revolucionario Institucional (PRI) Nacimiento: 00/00/0000, Principio de elección: Representación Proporcional Zona: Oaxaca, Tercera Protesta: 02/12/2014 Ubicación: Edificio H, Planta Baja. Teléfono: 50-36-00-00 Ext: 66227. 56-28-13-00 Ext: 7123. Último grado de estudios: Licenciatura <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216686 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DiputadaMónicaClaraMolina... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228567864,\"end\":1779228569410},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228569412,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42496f43001jI9dMCbPdTYp8l\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42496420001J3qApQ0DM8eSNC\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026379,\"tokens\":{\"total\":8449,\"input\":8363,\"output\":86,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228570692,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42497443001q0YWk43wLPkvoX\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42496f46001W5uECEGu2T42zj\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228572152,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42497444001EikxR33v7IA041\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42496f46001W5uECEGu2T42zj\",\"type\":\"tool\",\"callID\":\"4ed19824-3715-402a-b87b-e38ea01a7ff3\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Mónica Clara Molina\\\" PRI trayectoria profesional abogado\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Expulsan a Duarte delPRIy ya es Prófugo de la Justicia *EL SENADOR JALISCIENSE, ARTURO ZAMORA, DIO A CONOCER EL VEREDICTO AGENCIAS El gobernador de Veracruz con licencia, Javier Duarte de Ochoa, fue expulsado por unanimidad de las filas del Partido Revolucionario Institucional (PRI), organización política en la que militaba desde 1995 ... <\/CONTENT> <URL> https://minervamultimedios.com/tag/monica-clara-molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> DiputadaMónica Clara Molina... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 06/11/2025 Asistencias Dip. |Mónica Clara Molina| Agrupadas por periodo de Sesiones <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/asistencias_diputados_xperiodonplxii.php?dipt=897 <\/URL> __END_OF_SOURCE 3__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228570693,\"end\":1779228572152},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228572154,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e424979f9001dRpRK35IkM56fL\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e42496f46001W5uECEGu2T42zj\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.030015,\"tokens\":{\"total\":9657,\"input\":9570,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228573432,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42497ef7001WBPguOth2NMI65\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e424979fb001UVshOrz3q7t2B1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228579388,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42497ef80012y2hAUjQoj4u4A\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e424979fb001UVshOrz3q7t2B1\",\"type\":\"tool\",\"callID\":\"e0d2666d-3bbb-4aeb-963f-ce10aeafb8b5\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://minervamultimedios.com/tag/monica-clara-molina\"},\"output\":\"URL: https://minervamultimedios.com/tag/monica-clara-molina\\nFinal URL: https://minervamultimedios.com/tag/monica-clara-molina/\\nTitle: Mónica Clara Molina – Minerva Multimedios\\nBytes read: 53970\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nmartes , mayo 19 2026\\nLa Perla\\n[link: https://minervamultimedios.com/category/zmg-jalisco-local-ciudad/]\\nSeguridad y Justicia\\n[link: https://minervamultimedios.com/category/policia/]\\nSalud\\n[link: https://minervamultimedios.com/category/salud/]\\nEcología y Medio Ambiente\\n[link: https://minervamultimedios.com/category/ecologia-y-medio-ambiente/]\\nLas Plumas de Minerva\\n[link: https://minervamultimedios.com/category/opinion/]\\nLa Vida en Rosa\\n[link: https://minervamultimedios.com/category/farandula-sociedad/]\\nEl Monedero\\n[link: https://minervamultimedios.com/category/zmg-jalisco-local-finanzas/]\\n¡De mochilazo!\\n[link: https://minervamultimedios.com/category/demochilazo/]\\nEl Balón\\n[link: https://minervamultimedios.com/category/mexico-deportes-todos/]\\nMinerva Multimedios Noticias, opinión, reportajes, videos, Guadalajara informada\\n[link: https://minervamultimedios.com/]\\nNoticias de última hora\\nJalisco recuerda a trabajadores fechas y derechos para el pago de utilidades\\n[link: https://minervamultimedios.com/2026/05/17/jalisco-recuerda-a-trabajadores-fechas-y-derechos-para-el-pago-de-utilidades/]\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228573432,\"end\":1779228579387},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228579389,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249963c001Xl0Fkn96sKUIqg\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e424979fb001UVshOrz3q7t2B1\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031599,\"tokens\":{\"total\":10141,\"input\":10043,\"output\":98,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228580579,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42499ae2001Xzc26EsyMW9Zbz\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249963f001FYbbgmy5MQXxIs\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228582021,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e42499ae2002C9uUtuq6sOpE0r\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249963f001FYbbgmy5MQXxIs\",\"type\":\"tool\",\"callID\":\"7f854c44-9e7e-49fe-a937-76531298fac8\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Mónica Clara Molina\\\" PRI Comisión Nacional de Justicia Partidaria\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Conforme a la normatividad delPRI, laComisiónNacionaldeJusticiaPartidaria, conformada por siete integrantes: Fernando Elías Calles (presidente), el senador Arturo Zamora Jiménez, así como los comisionados Arturo Ugalde Menéses,Mónica Clara Molina, Héctor Humberto Gutiérrezdela Garza, Laura Ivonne Zapata Martínez, y el ... <\/CONTENT> <URL> https://www.ejecentral.com.mx/la-comision-nacional-de-justicia-partidaria-del-partido-revolucionario-institucional-informa <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> La Dip.Mónica Clara Molina(PRI) argumenta sobre la importanciadegarantizar a todos el vivir con la mayor dignidad posible, en este contexto, se manifiest... <\/CONTENT> <URL> https://www.youtube.com/watch?v=l793RDHQJmo <\/URL> __END_OF_SOURCE 2__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228580579,\"end\":1779228582020},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228582022,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249a085001lVPk1BEet8IgpI\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249963f001FYbbgmy5MQXxIs\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.033252,\"tokens\":{\"total\":10720,\"input\":10629,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228583389,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249a5dc001gbM3jfc21h3Knz\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249a087001IivKIYlVoTpHGM\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228595291,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249a5dc002fhdQKaEepFbCiu\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249a087001IivKIYlVoTpHGM\",\"type\":\"tool\",\"callID\":\"c1382441-8e70-4a7d-8fff-140813dd2142\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Mónica Clara Molina\\\" PRI biografía estudios trayectoria profesional\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Expulsan a Duarte delPRIy ya es Prófugo de la Justicia *EL SENADOR JALISCIENSE, ARTURO ZAMORA, DIO A CONOCER EL VEREDICTO AGENCIAS El gobernador de Veracruz con licencia, Javier Duarte de Ochoa, fue expulsado por unanimidad de las filas del Partido Revolucionario Institucional (PRI), organización política en la que militaba desde 1995 ... <\/CONTENT> <URL> https://minervamultimedios.com/tag/monica-clara-molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 02/01/2025 Votaciones Dip. |Mónica Clara Molina| Titulo de la Votación Sentido del voto 2 Diciembre 2014 1 <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/votaciones_por_pernplxii.php?iddipt=897&pert=9 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 06/11/2025 Asistencias Dip. |Mónica Clara Molina| Agrupadas por periodo de Sesiones <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/asistencias_diputados_xperiodonplxii.php?dipt=897 <\/URL> __END_OF_SOURCE 3__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228583389,\"end\":1779228595291},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228595293,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249d45c001w5e70X7hui2KEB\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249a087001IivKIYlVoTpHGM\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.034266,\"tokens\":{\"total\":11066,\"input\":10977,\"output\":89,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228596582,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249d9650018PlQEQUWE61c9l\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249d45e001S5YrFmPXj9X4bG\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228598267,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249d966001vHA73rA96C0LWV\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249d45e001S5YrFmPXj9X4bG\",\"type\":\"tool\",\"callID\":\"1cd3ffa4-ac14-4b59-8aa2-80715289eba7\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Mónica Clara Molina\\\" PRI abogado trayectoria profesional\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Expulsan a Duarte delPRIy ya es Prófugo de la Justicia *EL SENADOR JALISCIENSE, ARTURO ZAMORA, DIO A CONOCER EL VEREDICTO AGENCIAS El gobernador de Veracruz con licencia, Javier Duarte de Ochoa, fue expulsado por unanimidad de las filas del Partido Revolucionario Institucional (PRI), organización política en la que militaba desde 1995 ... <\/CONTENT> <URL> https://minervamultimedios.com/tag/monica-clara-molina <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> DiputadaMónica Clara Molina... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 06/11/2025 Asistencias Dip. |Mónica Clara Molina| Agrupadas por periodo de Sesiones <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/asistencias_diputados_xperiodonplxii.php?dipt=897 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 02/01/2025 Votaciones Dip. |Mónica Clara Molina| Titulo de la Votación Sentido del voto 2 Diciembre 2014 1 <\/CONTENT> <URL> https://sitllxii.diputados.gob.mx/votaciones_por_pernplxii.php?iddipt=897&pert=9 <\/URL> __END_OF_SOURCE 4__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228596582,\"end\":1779228598266},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228598269,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249dffb001krYCQNq3miPGqr\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249d45e001S5YrFmPXj9X4bG\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.035595,\"tokens\":{\"total\":11517,\"input\":11430,\"output\":87,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228599747,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249e5c1001WXLGlRgfXD0Efk\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249dfff001V6ZudIe4iq5r66\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228599749,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249e5c1002UYyCICyaRK8TE1\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249dfff001V6ZudIe4iq5r66\",\"type\":\"tool\",\"callID\":\"4f51546e-75e4-41d4-9b8d-345857affa6d\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Mónica Clara Molina\\\" PRI currículum vitae\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 0, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"\\\\\\\"Mónica Clara Molina\\\\\\\" PRI currículum vitae\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"mónica clara molina\\\\\\\\\\\\\\\" pri currículum vitae\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228599747,\"end\":1779228599749},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228599751,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249e5c6001RTbnGNThMjayqK\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249dfff001V6ZudIe4iq5r66\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.037356,\"tokens\":{\"total\":12100,\"input\":12012,\"output\":88,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228604748,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249f94b001lwgTrc0qCtR3ZI\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249e5c80014rYa4dBq7BMkEg\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779228604748,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249f94b0023OWv2MWwikMqi0\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249e5c80014rYa4dBq7BMkEg\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Licenciatura en Derecho\\\",\\n  \\\"prior_occupation\\\": \\\"Lawyer and Member of the National Commission of Party Justice (PRI)\\\",\\n  \\\"birth_year\\\": \\\"Unknown\\\",\\n  \\\"birth_place\\\": \\\"Unknown\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"sources\\\": {\\n    \\\"educational_attainment\\\": \\\"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\\",\\n    \\\"prior_occupation\\\": \\\"https://www.ejecentral.com.mx/la-comision-nacional-de-justicia-partidaria-del-partido-revolucionario-institucional-informa\\\",\\n    \\\"birth_year\\\": \\\"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\\",\\n    \\\"birth_place\\\": \\\"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\\",\\n    \\\"disability_status\\\": \\\"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\\",\\n    \\\"sexual_orientation\\\": \\\"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\\",\\n    \\\"class_background\\\": \\\"http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686\\\"\\n  }\\n}\\n```\",\"time\":{\"start\":1779228604748,\"end\":1779228604748}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228604750,\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"part\":{\"id\":\"prt_e4249f94d001xzxLG9yN3xAaJc\",\"sessionID\":\"ses_1bdb6d2c2ffewjLfkTMIsZkOK0\",\"messageID\":\"msg_e4249e5c80014rYa4dBq7BMkEg\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.036891,\"tokens\":{\"total\":8745,\"input\":7857,\"output\":888,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

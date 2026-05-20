@@ -558,7 +558,9 @@
                                             thread_id = NULL,
                                             target_backend = NULL,
                                             target_model = NULL,
-                                            loop_guard = NULL) {
+                                            loop_guard = NULL,
+                                            process_timeout = FALSE,
+                                            timeout_seconds = NULL) {
   structured_output <- output$structured_output %||% NULL
   result_text <- output$result %||% ""
   result_text <- as.character(result_text %||% "")
@@ -594,9 +596,29 @@
     }
   }
 
-  is_error <- isTRUE(output$is_error %||% FALSE) || !identical(as.integer(cli_status), 0L)
+  process_timeout <- isTRUE(process_timeout) || isTRUE(output$process_timeout %||% FALSE)
+  timeout_seconds <- timeout_seconds %||% output$timeout_seconds %||% NULL
+  timeout_message <- if (isTRUE(process_timeout)) {
+    suffix <- if (!is.null(timeout_seconds) && !is.na(timeout_seconds)) {
+      paste0(" after ", timeout_seconds, " seconds")
+    } else {
+      ""
+    }
+    paste0("free-code process timed out", suffix, ".")
+  } else {
+    ""
+  }
+  if (isTRUE(process_timeout) && !nzchar(result_text)) {
+    result_text <- timeout_message
+  }
+
+  is_error <- process_timeout || isTRUE(output$is_error %||% FALSE) || !identical(as.integer(cli_status), 0L)
   status_code <- if (is_error) ASA_STATUS_ERROR else ASA_STATUS_SUCCESS
-  stop_reason <- as.character(output$stop_reason %||% if (terminal_valid) "structured_output" else "end_turn")
+  stop_reason <- as.character(if (isTRUE(process_timeout)) {
+    "process_timeout"
+  } else {
+    output$stop_reason %||% if (terminal_valid) "structured_output" else "end_turn"
+  })
   stop_reason <- if (length(stop_reason) > 0L && nzchar(stop_reason[[1]])) stop_reason[[1]] else NA_character_
 
   usage <- output$usage %||% list()
@@ -632,6 +654,8 @@
     field_status = list(),
     diagnostics = list(
       free_code_cli_status = as.integer(cli_status),
+      free_code_process_timeout = process_timeout,
+      free_code_timeout_seconds = timeout_seconds,
       free_code_permission_denials = output$permission_denials %||% list(),
       tool_loop_guard = loop_guard %||% list()
     ),
@@ -651,7 +675,9 @@
     backend_invoke_minutes = elapsed_minutes,
     backend = list(
       agent_backend = "free-code",
-      cli_status = as.integer(cli_status)
+      cli_status = as.integer(cli_status),
+      process_timeout = process_timeout,
+      timeout_seconds = timeout_seconds
     )
   )
   resp$retrieval_metrics <- list()
@@ -748,15 +774,18 @@
   }
 
   started <- Sys.time()
-  result <- processx::run(
+  timeout_seconds <- as.numeric(agent$config$timeout %||% ASA_DEFAULT_TIMEOUT)
+  result <- .run_processx(
     command = cli$command,
     args = cli_args,
     wd = workdir,
     env = cli_env,
     error_on_status = FALSE,
-    timeout = as.numeric(agent$config$timeout %||% ASA_DEFAULT_TIMEOUT) * 1000
+    timeout = timeout_seconds,
+    cleanup_tree = TRUE
   )
   elapsed_minutes <- as.numeric(difftime(Sys.time(), started, units = "mins"))
+  process_timeout <- isTRUE(result$timeout %||% FALSE)
 
   parsed <- tryCatch(
     .free_code_parse_output(result$stdout),
@@ -772,6 +801,15 @@
       )
     }
   )
+  if (isTRUE(process_timeout)) {
+    parsed$is_error <- TRUE
+    parsed$process_timeout <- TRUE
+    parsed$timeout_seconds <- timeout_seconds
+    parsed$stop_reason <- "process_timeout"
+    if (!nzchar(trimws(as.character(parsed$result %||% "")))) {
+      parsed$result <- paste0("free-code process timed out after ", timeout_seconds, " seconds.")
+    }
+  }
 
   .free_code_response_from_output(
     output = parsed,
@@ -782,6 +820,8 @@
     thread_id = thread_id,
     target_backend = agent$backend,
     target_model = agent$model,
-    loop_guard = loop_guard
+    loop_guard = loop_guard,
+    process_timeout = process_timeout,
+    timeout_seconds = timeout_seconds
   )
 }

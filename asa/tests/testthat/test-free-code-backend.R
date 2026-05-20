@@ -274,6 +274,66 @@ test_that("run_free_code_agent maps structured output back into asa_response", {
   expect_true(grepl("X-ASA-Target-Model: gpt-4.1-mini", env_text, fixed = TRUE))
 })
 
+test_that("run_free_code_agent enforces configured timeout seconds and maps process timeouts", {
+  dummy_proc <- new.env(parent = emptyenv())
+  dummy_proc$is_alive <- function() FALSE
+  dummy_proc$kill <- function() invisible(NULL)
+  dummy_proc$wait <- function(timeout = 0) 0L
+
+  mcp_file <- tempfile("asa-free-code-mcp-", fileext = ".json")
+  writeLines("{\"mcpServers\":{}}", mcp_file, useBytes = TRUE)
+
+  captured_run <- NULL
+  testthat::local_mocked_bindings(
+    .free_code_require_processx = function() invisible(TRUE),
+    .free_code_command_spec = function() list(command = "/usr/bin/free-code", prefix_args = character(0)),
+    .free_code_python_binary = function(conda_env) "/usr/bin/python3",
+    .free_code_python_path = function() "/tmp/asa-python",
+    .free_code_launch_gateway = function(config, python, python_path, verbose = FALSE) {
+      list(
+        process = dummy_proc,
+        base_url = "http://127.0.0.1:8789",
+        log_file = tempfile("asa-free-code-gateway-log-", fileext = ".log"),
+        port_file = tempfile("asa-free-code-gateway-port-", fileext = ".txt")
+      )
+    },
+    .free_code_write_mcp_config = function(config, python, python_path, allow_read_webpages = NULL,
+                                           auto_openwebpage_policy = NULL) {
+      mcp_file
+    },
+    .run_processx = function(...) {
+      captured_run <<- list(...)
+      list(status = NA_integer_, stdout = "", stderr = "", timeout = TRUE)
+    },
+    .package = "asa"
+  )
+
+  agent <- asa::asa_agent(
+    python_agent = NULL,
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    config = asa::asa_config(
+      agent_backend = "free-code",
+      backend = "openai",
+      model = "gpt-4.1-mini",
+      proxy = NULL,
+      timeout = 7L
+    )
+  )
+
+  resp <- asa:::.run_free_code_agent(
+    prompt = "Return structured output.",
+    agent = agent
+  )
+
+  expect_identical(captured_run$timeout, 7)
+  expect_true(isTRUE(captured_run$cleanup_tree))
+  expect_identical(resp$status_code, asa:::ASA_STATUS_ERROR)
+  expect_identical(resp$stop_reason, "process_timeout")
+  expect_true(isTRUE(resp$diagnostics$free_code_process_timeout))
+  expect_identical(resp$diagnostics$free_code_timeout_seconds, 7)
+})
+
 test_that("run_free_code_agent succeeds against repo entrypoint with live OpenAI backend", {
   skip_if_not_installed("withr")
   asa_test_skip_api_tests()

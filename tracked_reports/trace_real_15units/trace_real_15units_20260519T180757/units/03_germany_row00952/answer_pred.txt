@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Magister Artium in Communication Science, Politics, and Economics",
+  "prior_occupation": "Employee of the Die Linke parliamentary group in the Bundestag",
+  "birth_year": "1975",
+  "birth_place": "Munich, Germany",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "https://en.wikipedia.org/wiki/Nicole_Gohlke",
+    "prior_occupation": "https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke",
+    "birth_year": "https://de.wikipedia.org/wiki/Nicole_Gohlke",
+    "birth_place": "https://de.wikipedia.org/wiki/Nicole_Gohlke",
+    "disability_status": "https://de.wikipedia.org/wiki/Nicole_Gohlke",
+    "sexual_orientation": "https://de.wikipedia.org/wiki/Nicole_Gohlke",
+    "class_background": "https://www.dielinkebt.de/abgeordnete/profil/nicole-gohlke"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "educational_attainment": "Unknown",
+  "prior_occupation": "Unknown",
+  "birth_year": 1974,
+  "birth_place": "Unknown",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Unknown",
+  "sources": {
+    "educational_attainment": "Unknown",
+    "prior_occupation": "Unknown",
+    "birth_year": "https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari",
+    "birth_place": "Unknown",
+    "disability_status": "Unknown",
+    "sexual_orientation": "Unknown"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Licenciatura en Derecho",
+  "prior_occupation": "Lawyer and Member of the National Commission of Party Justice (PRI)",
+  "birth_year": "Unknown",
+  "birth_place": "Unknown",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686",
+    "prior_occupation": "https://www.ejecentral.com.mx/la-comision-nacional-de-justicia-partidaria-del-partido-revolucionario-institucional-informa",
+    "birth_year": "http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686",
+    "birth_place": "http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686",
+    "disability_status": "http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686",
+    "sexual_orientation": "http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686",
+    "class_background": "http://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686"
+  }
+}

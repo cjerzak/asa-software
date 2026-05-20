@@ -297,6 +297,8 @@ test_that("OpenCode config content wires provider, headers, tools, and MCP", {
   expect_false(parsed$tools$write)
   expect_false(parsed$tools$edit)
   expect_false(parsed$tools$bash)
+  expect_false(parsed$tools$question)
+  expect_identical(parsed$permission$question, "deny")
   expect_identical(parsed$permission$webfetch, "deny")
   expect_identical(parsed$permission$edit, "deny")
 
@@ -449,6 +451,31 @@ test_that("OpenCode tool-loop diagnostics count timeout, invalid, and guard even
   expect_identical(diag$timeout_errors, 2L)
   expect_identical(diag$guard_errors, 1L)
   expect_true(isTRUE(diag$search_budget_exhausted))
+})
+
+test_that("OpenCode tool-loop diagnostics flag interactive question tools", {
+  events <- list(
+    list(
+      type = "tool_use",
+      part = list(
+        tool = "question",
+        state = list(
+          status = "running",
+          input = list(
+            questions = list(list(question = "Who is the target person?"))
+          )
+        )
+      )
+    )
+  )
+
+  diag <- asa:::.opencode_tool_loop_diagnostics(events)
+
+  expect_identical(diag$tool_calls, 1L)
+  expect_identical(diag$internal_tool_calls, 1L)
+  expect_identical(diag$question_tool_calls, 1L)
+  expect_identical(diag$pending_question_tool_calls, 1L)
+  expect_identical(diag$search_calls, 0L)
 })
 
 test_that("OpenCode response maps fenced JSON into final_payload", {
@@ -608,7 +635,8 @@ test_that("run_opencode_agent maps fake CLI output into asa_response and run_tas
   expect_true("--agent" %in% args)
   expect_true("build" %in% args)
   expect_true("--dir" %in% args)
-  expect_true("Return structured output." %in% args)
+  expect_true(any(grepl("NON-INTERACTIVE BATCH RUN:", args, fixed = TRUE)))
+  expect_true(any(grepl("Return structured output.", args, fixed = TRUE)))
 
   env_lines <- readLines(env_file, warn = FALSE)
   expect_true(any(grepl("^HTTPS_PROXY=$", env_lines)))
@@ -620,6 +648,8 @@ test_that("run_opencode_agent maps fake CLI output into asa_response and run_tas
   expect_identical(opencode_config$provider$anthropic$options$baseURL, "http://127.0.0.1:8789")
   expect_identical(opencode_config$provider$anthropic$options$headers$`X-ASA-Target-Backend`, "openai")
   expect_identical(opencode_config$provider$anthropic$options$headers$`X-ASA-Target-Model`, "gpt-4.1-mini")
+  expect_false(opencode_config$tools$question)
+  expect_identical(opencode_config$permission$question, "deny")
 
   result <- asa::run_task(
     "Return structured output.",
@@ -634,6 +664,59 @@ test_that("run_opencode_agent maps fake CLI output into asa_response and run_tas
   expect_identical(result$parsed$answer, 42L)
   expect_identical(result$execution$config_snapshot$agent_backend, "opencode")
   expect_identical(result$execution$config_snapshot$backend, "openai")
+})
+
+test_that("run_opencode_agent enforces configured timeout seconds and maps process timeouts", {
+  dummy_proc <- new.env(parent = emptyenv())
+  dummy_proc$is_alive <- function() FALSE
+  dummy_proc$kill <- function() invisible(NULL)
+  dummy_proc$wait <- function(timeout = 0) 0L
+
+  captured_run <- NULL
+  testthat::local_mocked_bindings(
+    .opencode_require_processx = function() invisible(TRUE),
+    .opencode_command_spec = function() list(command = "/usr/bin/opencode", prefix_args = character(0)),
+    .opencode_python_binary = function(conda_env) "/usr/bin/python3",
+    .opencode_python_path = function() "/tmp/asa-python",
+    .free_code_launch_gateway = function(config, python, python_path, verbose = FALSE) {
+      list(
+        process = dummy_proc,
+        base_url = "http://127.0.0.1:8789",
+        log_file = tempfile("asa-opencode-gateway-log-", fileext = ".log"),
+        port_file = tempfile("asa-opencode-gateway-port-", fileext = ".txt")
+      )
+    },
+    .run_processx = function(...) {
+      captured_run <<- list(...)
+      list(status = NA_integer_, stdout = "", stderr = "", timeout = TRUE)
+    },
+    .package = "asa"
+  )
+
+  agent <- asa::asa_agent(
+    python_agent = NULL,
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    config = asa::asa_config(
+      agent_backend = "opencode",
+      backend = "openai",
+      model = "gpt-4.1-mini",
+      proxy = NULL,
+      timeout = 5L
+    )
+  )
+
+  resp <- asa:::.run_opencode_agent(
+    prompt = "Return structured output.",
+    agent = agent
+  )
+
+  expect_identical(captured_run$timeout, 5)
+  expect_true(isTRUE(captured_run$cleanup_tree))
+  expect_identical(resp$status_code, asa:::ASA_STATUS_ERROR)
+  expect_identical(resp$stop_reason, "process_timeout")
+  expect_true(isTRUE(resp$diagnostics$opencode_process_timeout))
+  expect_identical(resp$diagnostics$opencode_timeout_seconds, 5)
 })
 
 test_that("resolve_agent_from_config forwards opencode agent_backend", {

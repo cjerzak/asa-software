@@ -1,0 +1,398 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779228553367,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42493095001UauZ7EGk4MHOBa",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e424924c1001xuATmZyVaiyVa8",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228556594,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42493096001BTWat48MS6sRoW",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e424924c1001xuATmZyVaiyVa8",
+        "type": "tool",
+        "callID": "5a01cb7e-f27d-4c7a-9d36-de43797e95c4",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Maria Cristina Caretta biografia Wikipedia"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> BiografiaÈ stata presidente nazionale dal 2002 al 2009 della Confederazione delle Associazioni Venatorie Italiane (CONF.A.V.I.) e fondatrice della Fondazione per la Cultura Rurale Onlus. Ha inoltre lavorato come assistente al Parlamento Europeo dell'on. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MariaCristinaCaretta(born 11 January 1964) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] She has served as deputy chairwoman of the agriculture committee since 2022. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariaCristinaCaretta(Thiene, 11 gennaio 1964) è una politica italiana. Questa voce sull'argomento politici italiani è solo un abbozzo. Contribuisci a migliorarla secondo le convenzioni diWikipedia. Segui i suggerimenti del progetto di riferimento. Fatti in breve Deputata della Repubblica Italiana, In carica ... <\/CONTENT> <URL> https://www.wikiwand.com/it/articles/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 3__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228553371,
+            "end": 1779228556593
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228558882,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e4249309c001mXiInXCWCegBn5",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e424924c1001xuATmZyVaiyVa8",
+        "type": "tool",
+        "callID": "42bddef8-ace3-43e2-9c7c-35add3dcd892",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Maria Cristina Caretta Camera dei Deputati profilo"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche del 2013 l'Associazione per la Difesa e la Promozione della Cultura Rurale stringe un accordo con Fratelli d'Italia [3], ottenendo perCarettail secondo posto allaCameradeiDeputatinella circoscrizione Veneto 1, senza tuttavia raggiungere l'elezione. [4] Alle elezioni politiche del 2018 viene eletta deputata nel collegio uninominale Veneto 2 - 07 (Schio) per la ... <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MariaCristinaCaretta(born 11 January 1964) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] She has served as deputy chairwoman of the agriculture committee since 2022. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Riferimenti ^ (It) \" XVIII Legislatura -Deputatie Organi - Scheda deputato -CARETTAMariaCristina\" , su www.camera.it (accesso 10 ottobre 2020 ) . ↑ (in) \" Poli 2018, Sergio Berlato (FDI AN): Important risultato di Il Canto degli Italiani nel Veneto elettaMariaCristinaCarettae non solo \" on Vipiù ,4 marzo 2018(accesso 10 ottobre ... <\/CONTENT> <URL> https://it.frwiki.wiki/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Ideputatidevono altresì rendere dichiarazione di ogni altra attività professionale o di lavoro autonomo o di impiego o di lavoro privato. Il par. V dello stesso Codice prevede, altresì, che le dichiarazioni rese daideputatisiano pubblicate sul sito Internet dellaCameradeideputati. <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/18-307573 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Pertanto,deputatie senatori che sono molto assenti o spesso impegnati in missioni istituzionali - come chi è anche membro del governo - hanno un basso indice di affidabilità parlamentare. <\/CONTENT> <URL> https://parlamento19.openpolis.it/persone/maria-cristina-caretta-1964-01-11 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Cameradeideputati- XIX Legislatura - ATTIVITA' SVOLTA dall'on.CARETTAMariaCristinaSCHEDA BIOGRAFICA Come deputato| <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivitalegislativaassemblea&shadow_deputato=307573&idLegislatura=19 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MsMariaCristinaCARETTA(Italy, ECPA) Substitute Deputy FdICameradeideputatiIT - 00186 - Roma Italy Working language: English Declarations of interests: 2026 , 2025 , 2024 , 2023 Declarations of interest regarding election observations (if applicable) <\/CONTENT> <URL> https://pace.coe.int/en/members/8739 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Substitute Deputy FdICameradeideputatiIT - 00186 - Roma Italy Working language: English Declarations of interests: 2024 , 2023 <\/CONTENT> <URL> https://pace.coe.int/members/8739/declarations <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Cameradeideputati- XVIII Legislatura -Cameradeideputati-Deputatie Organi Parlamentari -Deputati-CARETTAMariaCristina <\/CONTENT> <URL> https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18 <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228553374,
+            "end": 1779228558881
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228558885,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42494623001kNmJYkHXGSshxU",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e424924c1001xuATmZyVaiyVa8",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.022,
+        "tokens": {
+          "total": 6498,
+          "input": 6288,
+          "output": 210,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228560325,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42494bc4001pa1WwL003c8SU7",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42494626001WBnvDdJIXrscm3",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228562544,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42494bc5001prMwOJc7tS3QGM",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42494626001WBnvDdJIXrscm3",
+        "type": "tool",
+        "callID": "08b98742-391f-4507-bc08-c8eff1577de3",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18"
+          },
+          "output": "URL: https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18\nFinal URL: https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_403 (status=403)",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228560325,
+            "end": 1779228562543
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228564911,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42494bc6001z01ha3xOtpBlEc",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42494626001WBnvDdJIXrscm3",
+        "type": "tool",
+        "callID": "82834f5d-a6c0-4a42-b177-497dd56760ee",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://it.wikipedia.org/wiki/Maria_Cristina_Caretta"
+          },
+          "output": "URL: https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\nFinal URL: https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\nTitle: Maria Cristina Caretta - Wikipedia\nBytes read: 107225\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nVai al contenuto\nMenu principale\nMenu principale\nsposta nella barra laterale\nnascondi\nNavigazione\nPagina principale\n[link: https://it.wikipedia.org/wiki/Pagina_principale]\nUltime modifiche\n[link: https://it.wikipedia.org/wiki/Speciale:UltimeModifiche]\nUna voce a caso\n[link: https://it.wikipedia.org/wiki/Speciale:PaginaCasuale]\nNelle vicinanze\n[link: https://it.wikipedia.org/wiki/Speciale:NelleVicinanze]\nVetrina\n[link: https://it.wikipedia.org/wiki/Wikipedia:Vetrina]\nAiuto\n[link: https://it.wikipedia.org/wiki/Aiuto:Aiuto]\nSportello informazioni\n[link: https://it.wikipedia.org/wiki/Aiuto:Sportello_informazioni]\nPagine speciali\n[link: https://it.wikipedia.org/wiki/Speciale:PagineSpeciali]\nComunità\nPortale Comunità\n[link: https://it.wikipedia.org/wiki/Portale:Comunit%C3%A0]\nBar\n[link: https://it.wikipedia.org/wiki/Wikipedia:Bar]\nIl Wikipediano\n[link: https://it.wikipedia.org/wiki/Wikipedia:Wikipediano]\nContatti\n[link: https://it.wikipedia.org/wiki/Wikipedia:Contatti]\nRicerca\n[link: https://it.wikipedia.org/wiki/Speciale:Ricerca]\nRicerca\nAspetto\nFai una donazione\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=it.wikipedia.org&uselang=it]\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228560326,
+            "end": 1779228564911
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228564913,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42495db0001rn0ccP5xpeY5lt",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42494626001WBnvDdJIXrscm3",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0259,
+        "tokens": {
+          "total": 8012,
+          "input": 7857,
+          "output": 155,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228566234,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e424962d9001jUcFIb5vOVo12L",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42495db300156SONl9wqOlUXI",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228568136,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e424962d9002uhjgc4XijA91Lg",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42495db300156SONl9wqOlUXI",
+        "type": "tool",
+        "callID": "863be7a6-3891-437f-8634-990d70a18e0e",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Maria Cristina Caretta titolo di studio istruzione"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> È stata presidente nazionale dal 2002 al 2009 della Confederazione delle Associazioni Venatorie Italiane (CONF.A.V.I.) e fondatrice della Fondazione per la Cultura Rurale Onlus. Ha inoltre lavorato come assistente al Parlamento Europeo dell'on. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MariaCristinaCaretta(born 11 January 1964) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] She has served as deputy chairwoman of the agriculture committee since 2022. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Come vota, quali atti presenta, a chi è più vicino, quanto è presente, l'indicediproduttivitàdiMariaCristinaCARETTA <\/CONTENT> <URL> https://parlamento18.openpolis.it/parlamentare/caretta-maria-cristina/685701 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Ai politici viene attribuito un punteggio in base agli incarichi ricoperti in parlamento e al governo attraverso un sistema originalediponderazionediistituzioni, organi e ruoli. Scopri come lo calcoliamo. È un indicatore originale Openpolis. <\/CONTENT> <URL> https://parlamento19.openpolis.it/persone/maria-cristina-caretta-1964-01-11 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Titoloe occupazione: OPERATOREDISISTEMI INFORMATICI; PRESIDENTE NAZIONALE CONFAVI; SEGRETARIO GENERALE DELLA FONDAZIONE PER LA CULTURA RURALE-ONLUS Iscritto al Gruppo: FRATELLI D'ITALIA <\/CONTENT> <URL> https://www.amministrazionicomunali.it/camera/caretta-maria-cristina <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> In questa pagina è contenuta la documentazionedicui alla legge n. 441 del 1982, comprensiva della dichiarazione dei redditi, da depositare entro un mese dalla scadenza del termine utile per la sua presentazione. <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/19-307573 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Propostediinchiesta parlamentare presentate come cofirmatario RIZZETTO ed altri: \"Istituzionediuna Commissione parlamentarediinchiesta sulla mortediDavid Rossi\" (Doc. XXII, n. 7) [ PDF ] (presentata il 3 novembre 2022) <\/CONTENT> <URL> https://www.camera.it/leg19/29?tipoAttivita=DOCXXII&shadow_deputato=307573&idLegislatura=19 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> COMMISSIONE PARLAMENTAREDIINCHIESTA SUL FEMMINICIDIO, NONCHE' SU OGNI FORMADIVIOLENZADIGENERE dal 3 luglio 2023 DELEGAZIONE ITALIANA PRESSO L'ASSEMBLEA PARLAMENTARE DEL CONSIGLIO D'EUROPA dal 12 gennaio 2023 (Membro supplente) <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?idLegislatura=19&sezione=deputati&tipoDoc=schedaDeputato&idpersona=307573 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> INIZIO CONTENUTO ATTIVITA' SVOLTA dall'on.CARETTAMariaCristinaSCHEDA BIOGRAFICA Come deputato| Propostedimodificazione al regolamento Mozioni, risoluzioni, interpellanze e interrogazioni Ordini del giorno <\/CONTENT> <URL> https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Le informazioni pubblicate sono fornite dal dipendente e la veridicità delle stesse èdisua esclusiva responsabilità. <\/CONTENT> <URL> https://www.unibo.it/cv/PDF/Cristina-Caretti-30526-CV.pdf <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228566234,
+            "end": 1779228568135
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228569792,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e424962db001baOFscTRxWLcxu",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42495db300156SONl9wqOlUXI",
+        "type": "tool",
+        "callID": "0c5f53d2-2d46-4a59-98a4-91a622afa076",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Maria Cristina Caretta curriculum vitae Fratelli d'Italia"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche del 2013 l'Associazione per la Difesa e la Promozione della Cultura Rurale stringe un accordo conFratellid'Italia[3], ottenendo perCarettail secondo posto alla Camera dei Deputati nella circoscrizione Veneto 1, senza tuttavia raggiungere l'elezione. [4] Alle elezioni politiche del 2018 viene eletta deputata nel collegio uninominale Veneto 2 - 07 (Schio) per la ... <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Movimento per la Caccia e per la Cultura rurale -MariaCristinaCaretta, candidata nella posizione di capolista alla Camera dei Deputati per il collegio Veneto1 (Vicenza, Verona, Padova, Rovigo) nella lista del movimento politicoFratellid'Italia, si accinge a partecipare, in vista delle elezioni politiche del 24 e 25 febbraio prossimi, a dibattiti e tribune elettorali allo scopo di fornire ... <\/CONTENT> <URL> https://archivio.vicenzapiu.com/leggi/maria-cristina-caretta-caccia-e-cultura-rurale-con-fratelli-ditalia <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariaCristinaCarettanuovo Commissario del Coordinamento Provinciale diFratellid'ItaliaVenezia L'Organizzazione e il Coordinamento Regionale, e giunta la comunicazione della avvenuta nomina dell'On. <\/CONTENT> <URL> https://www.fdivenezia.it/news-fratelli-ditalia/572 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> CarettaDeputata Entra nel mondo diFratellid'ItaliaTesserati Fai una donazione Leggi la Gazzetta Tricolore <\/CONTENT> <URL> https://www.fratelli-italia.it/deputato/maria-cristina-caretta <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> CarettaMariaCristina: scrivi una recensione su il deputato. Foto, informazione un deputato <\/CONTENT> <URL> https://deputies.it/caretta-maria-cristina-fdi-revisione-foto-informazione-un-deputato <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> BiografiaMariaCristinaCarettaè nata il 11 gennaio 1964 a Thiene. È stata eletta membro deiFratellid'Italiaalle elezioni politiche del 2018 . <\/CONTENT> <URL> https://it.frwiki.wiki/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> CARETTAMariaCristinaNato a: THIENE (VICENZA) l'11 gennaio 1964 Titolo e occupazione: OPERATORE DI SISTEMI INFORMATICI; PRESIDENTE NAZIONALE CONFAVI; SEGRETARIO GENERALE DELLA FONDAZIONE PER LA CULTURA RURALE-ONLUS Iscritto al Gruppo:FRATELLID'ITALIACircoscrizione: VENETO 2 Collegio di elezione: COLLEGIO UNINOMINALE VENETO 2 07 - SCHIO <\/CONTENT> <URL> https://www.amministrazionicomunali.it/camera/caretta-maria-cristina <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Tutti i deputati della XVIII legislaturaMARIACRISTINACARETTAFRATELLID'ITALIADEPUTATA NELLE LEGISLATURE: XVIII XIX ANAGRAFICA ATTIVITÀ SVOLTA <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/18-307573 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Iscritta al gruppo parlamentareFRATELLID'ITALIAdal 27 marzo 2018 al 12 ottobre 2022 <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idLegislatura=18&idPersona=307573&webType=Normale <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228566236,
+            "end": 1779228569791
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228569800,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e424970c0001srCT38HCVIIBjI",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42495db300156SONl9wqOlUXI",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0277,
+        "tokens": {
+          "total": 8767,
+          "input": 8651,
+          "output": 116,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228571132,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e424975fb001t0F7S0R8Dqx4AB",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e424970cb001EwmNXqCdRNU3R7",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228578918,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e424975fb002CfKYuyDT6BdYHC",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e424970cb001EwmNXqCdRNU3R7",
+        "type": "tool",
+        "callID": "f9505f22-dd51-435b-8b9e-de85538d787a",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Maria Cristina Caretta disabilità orientamento sessuale LGBTQ"
+          },
+          "output": "No good DuckDuckGo Search Result was found",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228571132,
+            "end": 1779228578917
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228578920,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42499466001d2Z00IEbSLx8xD",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e424970cb001EwmNXqCdRNU3R7",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0345,
+        "tokens": {
+          "total": 11143,
+          "input": 11055,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228581163,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42499d2a001tE7pFaorlsxgvJ",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42499469001KoJHaQOHfkyDAt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779228581164,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42499d2a002vAqdOm5ZSYNV45",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42499469001KoJHaQOHfkyDAt",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Operatore di sistemi informatici\",\n  \"educational_attainment_source\": \"https://www.amministrazionicomunali.it/camera/caretta-maria-cristina\",\n  \"prior_occupation\": \"Presidente nazionale della Confederazione delle Associazioni Venatorie Italiane (CONF.A.V.I.) e Segretario Generale della Fondazione per la Cultura Rurale Onlus\",\n  \"prior_occupation_source\": \"https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.amministrazionicomunali.it/camera/caretta-maria-cristina\",\n  \"birth_year\": 1964,\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Maria_Cristina_Caretta\",\n  \"birth_place\": \"Thiene (Vicenza), Italy\",\n  \"birth_place_source\": \"https://www.amministrazionicomunali.it/camera/caretta-maria-cristina\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\"\n}\n```",
+        "time": {
+          "start": 1779228581163,
+          "end": 1779228581163
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228581165,
+      "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+      "part": {
+        "id": "prt_e42499d2c001OFa2oyIzV7ph59",
+        "sessionID": "ses_1bdb6db7cffe8tZiBDF9v7eb0C",
+        "messageID": "msg_e42499469001KoJHaQOHfkyDAt",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0396,
+        "tokens": {
+          "total": 11577,
+          "input": 11169,
+          "output": 408,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779228553367,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42493095001UauZ7EGk4MHOBa\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e424924c1001xuATmZyVaiyVa8\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228556594,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42493096001BTWat48MS6sRoW\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e424924c1001xuATmZyVaiyVa8\",\"type\":\"tool\",\"callID\":\"5a01cb7e-f27d-4c7a-9d36-de43797e95c4\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Maria Cristina Caretta biografia Wikipedia\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> BiografiaÈ stata presidente nazionale dal 2002 al 2009 della Confederazione delle Associazioni Venatorie Italiane (CONF.A.V.I.) e fondatrice della Fondazione per la Cultura Rurale Onlus. Ha inoltre lavorato come assistente al Parlamento Europeo dell'on. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MariaCristinaCaretta(born 11 January 1964) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] She has served as deputy chairwoman of the agriculture committee since 2022. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariaCristinaCaretta(Thiene, 11 gennaio 1964) è una politica italiana. Questa voce sull'argomento politici italiani è solo un abbozzo. Contribuisci a migliorarla secondo le convenzioni diWikipedia. Segui i suggerimenti del progetto di riferimento. Fatti in breve Deputata della Repubblica Italiana, In carica ... <\/CONTENT> <URL> https://www.wikiwand.com/it/articles/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 3__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228553371,\"end\":1779228556593},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779228558882,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e4249309c001mXiInXCWCegBn5\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e424924c1001xuATmZyVaiyVa8\",\"type\":\"tool\",\"callID\":\"42bddef8-ace3-43e2-9c7c-35add3dcd892\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Maria Cristina Caretta Camera dei Deputati profilo\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche del 2013 l'Associazione per la Difesa e la Promozione della Cultura Rurale stringe un accordo con Fratelli d'Italia [3], ottenendo perCarettail secondo posto allaCameradeiDeputatinella circoscrizione Veneto 1, senza tuttavia raggiungere l'elezione. [4] Alle elezioni politiche del 2018 viene eletta deputata nel collegio uninominale Veneto 2 - 07 (Schio) per la ... <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MariaCristinaCaretta(born 11 January 1964) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] She has served as deputy chairwoman of the agriculture committee since 2022. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Riferimenti ^ (It) \\\" XVIII Legislatura -Deputatie Organi - Scheda deputato -CARETTAMariaCristina\\\" , su www.camera.it (accesso 10 ottobre 2020 ) . ↑ (in) \\\" Poli 2018, Sergio Berlato (FDI AN): Important risultato di Il Canto degli Italiani nel Veneto elettaMariaCristinaCarettae non solo \\\" on Vipiù ,4 marzo 2018(accesso 10 ottobre ... <\/CONTENT> <URL> https://it.frwiki.wiki/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Ideputatidevono altresì rendere dichiarazione di ogni altra attività professionale o di lavoro autonomo o di impiego o di lavoro privato. Il par. V dello stesso Codice prevede, altresì, che le dichiarazioni rese daideputatisiano pubblicate sul sito Internet dellaCameradeideputati. <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/18-307573 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Pertanto,deputatie senatori che sono molto assenti o spesso impegnati in missioni istituzionali - come chi è anche membro del governo - hanno un basso indice di affidabilità parlamentare. <\/CONTENT> <URL> https://parlamento19.openpolis.it/persone/maria-cristina-caretta-1964-01-11 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Cameradeideputati- XIX Legislatura - ATTIVITA' SVOLTA dall'on.CARETTAMariaCristinaSCHEDA BIOGRAFICA Come deputato| <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivitalegislativaassemblea&shadow_deputato=307573&idLegislatura=19 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MsMariaCristinaCARETTA(Italy, ECPA) Substitute Deputy FdICameradeideputatiIT - 00186 - Roma Italy Working language: English Declarations of interests: 2026 , 2025 , 2024 , 2023 Declarations of interest regarding election observations (if applicable) <\/CONTENT> <URL> https://pace.coe.int/en/members/8739 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Substitute Deputy FdICameradeideputatiIT - 00186 - Roma Italy Working language: English Declarations of interests: 2024 , 2023 <\/CONTENT> <URL> https://pace.coe.int/members/8739/declarations <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Cameradeideputati- XVIII Legislatura -Cameradeideputati-Deputatie Organi Parlamentari -Deputati-CARETTAMariaCristina <\/CONTENT> <URL> https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18 <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228553374,\"end\":1779228558881},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228558885,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42494623001kNmJYkHXGSshxU\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e424924c1001xuATmZyVaiyVa8\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022014,\"tokens\":{\"total\":6498,\"input\":6288,\"output\":210,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228560325,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42494bc4001pa1WwL003c8SU7\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42494626001WBnvDdJIXrscm3\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228562544,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42494bc5001prMwOJc7tS3QGM\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42494626001WBnvDdJIXrscm3\",\"type\":\"tool\",\"callID\":\"08b98742-391f-4507-bc08-c8eff1577de3\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18\"},\"output\":\"URL: https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18\\nFinal URL: https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_403 (status=403)\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228560325,\"end\":1779228562543},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779228564911,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42494bc6001z01ha3xOtpBlEc\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42494626001WBnvDdJIXrscm3\",\"type\":\"tool\",\"callID\":\"82834f5d-a6c0-4a42-b177-497dd56760ee\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\"},\"output\":\"URL: https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\\nFinal URL: https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\\nTitle: Maria Cristina Caretta - Wikipedia\\nBytes read: 107225\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nVai al contenuto\\nMenu principale\\nMenu principale\\nsposta nella barra laterale\\nnascondi\\nNavigazione\\nPagina principale\\n[link: https://it.wikipedia.org/wiki/Pagina_principale]\\nUltime modifiche\\n[link: https://it.wikipedia.org/wiki/Speciale:UltimeModifiche]\\nUna voce a caso\\n[link: https://it.wikipedia.org/wiki/Speciale:PaginaCasuale]\\nNelle vicinanze\\n[link: https://it.wikipedia.org/wiki/Speciale:NelleVicinanze]\\nVetrina\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Vetrina]\\nAiuto\\n[link: https://it.wikipedia.org/wiki/Aiuto:Aiuto]\\nSportello informazioni\\n[link: https://it.wikipedia.org/wiki/Aiuto:Sportello_informazioni]\\nPagine speciali\\n[link: https://it.wikipedia.org/wiki/Speciale:PagineSpeciali]\\nComunità\\nPortale Comunità\\n[link: https://it.wikipedia.org/wiki/Portale:Comunit%C3%A0]\\nBar\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Bar]\\nIl Wikipediano\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Wikipediano]\\nContatti\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Contatti]\\nRicerca\\n[link: https://it.wikipedia.org/wiki/Speciale:Ricerca]\\nRicerca\\nAspetto\\nFai una donazione\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=it.wikipedia.org&uselang=it]\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228560326,\"end\":1779228564911},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228564913,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42495db0001rn0ccP5xpeY5lt\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42494626001WBnvDdJIXrscm3\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.025896,\"tokens\":{\"total\":8012,\"input\":7857,\"output\":155,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228566234,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e424962d9001jUcFIb5vOVo12L\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42495db300156SONl9wqOlUXI\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228568136,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e424962d9002uhjgc4XijA91Lg\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42495db300156SONl9wqOlUXI\",\"type\":\"tool\",\"callID\":\"863be7a6-3891-437f-8634-990d70a18e0e\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Maria Cristina Caretta titolo di studio istruzione\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> È stata presidente nazionale dal 2002 al 2009 della Confederazione delle Associazioni Venatorie Italiane (CONF.A.V.I.) e fondatrice della Fondazione per la Cultura Rurale Onlus. Ha inoltre lavorato come assistente al Parlamento Europeo dell'on. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MariaCristinaCaretta(born 11 January 1964) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] She has served as deputy chairwoman of the agriculture committee since 2022. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Come vota, quali atti presenta, a chi è più vicino, quanto è presente, l'indicediproduttivitàdiMariaCristinaCARETTA <\/CONTENT> <URL> https://parlamento18.openpolis.it/parlamentare/caretta-maria-cristina/685701 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Ai politici viene attribuito un punteggio in base agli incarichi ricoperti in parlamento e al governo attraverso un sistema originalediponderazionediistituzioni, organi e ruoli. Scopri come lo calcoliamo. È un indicatore originale Openpolis. <\/CONTENT> <URL> https://parlamento19.openpolis.it/persone/maria-cristina-caretta-1964-01-11 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Titoloe occupazione: OPERATOREDISISTEMI INFORMATICI; PRESIDENTE NAZIONALE CONFAVI; SEGRETARIO GENERALE DELLA FONDAZIONE PER LA CULTURA RURALE-ONLUS Iscritto al Gruppo: FRATELLI D'ITALIA <\/CONTENT> <URL> https://www.amministrazionicomunali.it/camera/caretta-maria-cristina <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> In questa pagina è contenuta la documentazionedicui alla legge n. 441 del 1982, comprensiva della dichiarazione dei redditi, da depositare entro un mese dalla scadenza del termine utile per la sua presentazione. <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/19-307573 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Propostediinchiesta parlamentare presentate come cofirmatario RIZZETTO ed altri: \\\"Istituzionediuna Commissione parlamentarediinchiesta sulla mortediDavid Rossi\\\" (Doc. XXII, n. 7) [ PDF ] (presentata il 3 novembre 2022) <\/CONTENT> <URL> https://www.camera.it/leg19/29?tipoAttivita=DOCXXII&shadow_deputato=307573&idLegislatura=19 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> COMMISSIONE PARLAMENTAREDIINCHIESTA SUL FEMMINICIDIO, NONCHE' SU OGNI FORMADIVIOLENZADIGENERE dal 3 luglio 2023 DELEGAZIONE ITALIANA PRESSO L'ASSEMBLEA PARLAMENTARE DEL CONSIGLIO D'EUROPA dal 12 gennaio 2023 (Membro supplente) <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?idLegislatura=19&sezione=deputati&tipoDoc=schedaDeputato&idpersona=307573 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> INIZIO CONTENUTO ATTIVITA' SVOLTA dall'on.CARETTAMariaCristinaSCHEDA BIOGRAFICA Come deputato| Propostedimodificazione al regolamento Mozioni, risoluzioni, interpellanze e interrogazioni Ordini del giorno <\/CONTENT> <URL> https://www.camera.it/leg18/29?tipoAttivita=DOCII&shadow_deputato=307573&idLegislatura=18 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Le informazioni pubblicate sono fornite dal dipendente e la veridicità delle stesse èdisua esclusiva responsabilità. <\/CONTENT> <URL> https://www.unibo.it/cv/PDF/Cristina-Caretti-30526-CV.pdf <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228566234,\"end\":1779228568135},\"attachments\":[]}}}\n{\"type\":\"tool_use\",\"timestamp\":1779228569792,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e424962db001baOFscTRxWLcxu\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42495db300156SONl9wqOlUXI\",\"type\":\"tool\",\"callID\":\"0c5f53d2-2d46-4a59-98a4-91a622afa076\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Maria Cristina Caretta curriculum vitae Fratelli d'Italia\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Alle elezioni politiche del 2013 l'Associazione per la Difesa e la Promozione della Cultura Rurale stringe un accordo conFratellid'Italia[3], ottenendo perCarettail secondo posto alla Camera dei Deputati nella circoscrizione Veneto 1, senza tuttavia raggiungere l'elezione. [4] Alle elezioni politiche del 2018 viene eletta deputata nel collegio uninominale Veneto 2 - 07 (Schio) per la ... <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Movimento per la Caccia e per la Cultura rurale -MariaCristinaCaretta, candidata nella posizione di capolista alla Camera dei Deputati per il collegio Veneto1 (Vicenza, Verona, Padova, Rovigo) nella lista del movimento politicoFratellid'Italia, si accinge a partecipare, in vista delle elezioni politiche del 24 e 25 febbraio prossimi, a dibattiti e tribune elettorali allo scopo di fornire ... <\/CONTENT> <URL> https://archivio.vicenzapiu.com/leggi/maria-cristina-caretta-caccia-e-cultura-rurale-con-fratelli-ditalia <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariaCristinaCarettanuovo Commissario del Coordinamento Provinciale diFratellid'ItaliaVenezia L'Organizzazione e il Coordinamento Regionale, e giunta la comunicazione della avvenuta nomina dell'On. <\/CONTENT> <URL> https://www.fdivenezia.it/news-fratelli-ditalia/572 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> CarettaDeputata Entra nel mondo diFratellid'ItaliaTesserati Fai una donazione Leggi la Gazzetta Tricolore <\/CONTENT> <URL> https://www.fratelli-italia.it/deputato/maria-cristina-caretta <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> CarettaMariaCristina: scrivi una recensione su il deputato. Foto, informazione un deputato <\/CONTENT> <URL> https://deputies.it/caretta-maria-cristina-fdi-revisione-foto-informazione-un-deputato <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> BiografiaMariaCristinaCarettaè nata il 11 gennaio 1964 a Thiene. È stata eletta membro deiFratellid'Italiaalle elezioni politiche del 2018 . <\/CONTENT> <URL> https://it.frwiki.wiki/wiki/Maria_Cristina_Caretta <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> CARETTAMariaCristinaNato a: THIENE (VICENZA) l'11 gennaio 1964 Titolo e occupazione: OPERATORE DI SISTEMI INFORMATICI; PRESIDENTE NAZIONALE CONFAVI; SEGRETARIO GENERALE DELLA FONDAZIONE PER LA CULTURA RURALE-ONLUS Iscritto al Gruppo:FRATELLID'ITALIACircoscrizione: VENETO 2 Collegio di elezione: COLLEGIO UNINOMINALE VENETO 2 07 - SCHIO <\/CONTENT> <URL> https://www.amministrazionicomunali.it/camera/caretta-maria-cristina <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Tutti i deputati della XVIII legislaturaMARIACRISTINACARETTAFRATELLID'ITALIADEPUTATA NELLE LEGISLATURE: XVIII XIX ANAGRAFICA ATTIVITÀ SVOLTA <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/18-307573 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Iscritta al gruppo parlamentareFRATELLID'ITALIAdal 27 marzo 2018 al 12 ottobre 2022 <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idLegislatura=18&idPersona=307573&webType=Normale <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228566236,\"end\":1779228569791},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228569800,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e424970c0001srCT38HCVIIBjI\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42495db300156SONl9wqOlUXI\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.027693,\"tokens\":{\"total\":8767,\"input\":8651,\"output\":116,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228571132,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e424975fb001t0F7S0R8Dqx4AB\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e424970cb001EwmNXqCdRNU3R7\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228578918,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e424975fb002CfKYuyDT6BdYHC\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e424970cb001EwmNXqCdRNU3R7\",\"type\":\"tool\",\"callID\":\"f9505f22-dd51-435b-8b9e-de85538d787a\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Maria Cristina Caretta disabilità orientamento sessuale LGBTQ\"},\"output\":\"No good DuckDuckGo Search Result was found\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228571132,\"end\":1779228578917},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228578920,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42499466001d2Z00IEbSLx8xD\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e424970cb001EwmNXqCdRNU3R7\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.034485,\"tokens\":{\"total\":11143,\"input\":11055,\"output\":88,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228581163,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42499d2a001tE7pFaorlsxgvJ\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42499469001KoJHaQOHfkyDAt\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779228581164,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42499d2a002vAqdOm5ZSYNV45\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42499469001KoJHaQOHfkyDAt\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Operatore di sistemi informatici\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://www.amministrazionicomunali.it/camera/caretta-maria-cristina\\\",\\n  \\\"prior_occupation\\\": \\\"Presidente nazionale della Confederazione delle Associazioni Venatorie Italiane (CONF.A.V.I.) e Segretario Generale della Fondazione per la Cultura Rurale Onlus\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://www.amministrazionicomunali.it/camera/caretta-maria-cristina\\\",\\n  \\\"birth_year\\\": 1964,\\n  \\\"birth_year_source\\\": \\\"https://en.wikipedia.org/wiki/Maria_Cristina_Caretta\\\",\\n  \\\"birth_place\\\": \\\"Thiene (Vicenza), Italy\\\",\\n  \\\"birth_place_source\\\": \\\"https://www.amministrazionicomunali.it/camera/caretta-maria-cristina\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://it.wikipedia.org/wiki/Maria_Cristina_Caretta\\\"\\n}\\n```\",\"time\":{\"start\":1779228581163,\"end\":1779228581163}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228581165,\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"part\":{\"id\":\"prt_e42499d2c001OFa2oyIzV7ph59\",\"sessionID\":\"ses_1bdb6db7cffe8tZiBDF9v7eb0C\",\"messageID\":\"msg_e42499469001KoJHaQOHfkyDAt\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.039627,\"tokens\":{\"total\":11577,\"input\":11169,\"output\":408,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

@@ -1,0 +1,433 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779228556701,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42493d9b001a2M2SbESr1Gj7q",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e4249314b0019nwrtk4ZAJInZR",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228559147,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42493d9c001jP0vyq66WRUCpO",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e4249314b0019nwrtk4ZAJInZR",
+        "type": "tool",
+        "callID": "7a0e6459-a569-4123-b80d-a8954b432df6",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters New Zealand politician biography educational attainment prior occupation birth year birth place disability status sexual orientation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is aNewZealandpolitician. He has led the political partyNewZealandFirst since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up theNewZealandFirst Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> At the 2023 General Election,NewZealandFirst formed a coalition Government with the National and ACT Parties. MrPetersserved as the Deputy Prime Minister until May 2025, Minister for Foreign Affairs, and Minister for Racing. <\/CONTENT> <URL> https://www.nzfirst.nz/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofWinstonPeters(1945 - present),politicianfromNew_Zealand. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Home MPs and Electorates Members of ParliamentPeters,WinstonPublished date: 4 Feb 2026 NZ First PartyPeters,WinstonSee where I sit in the debating chamber <\/CONTENT> <URL> https://www3.parliament.nz/en/mps-and-electorates/members-of-parliament/peters-winston <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish theNewZealandFirst party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> WinstonRaymondPeters(born 11 April 1945) is aNewZealandpoliticianwho founded and has led theNewZealandFirst party since 1993. He entered Parliament in 1978 as a National Party MP for Hunua and later represented Tauranga until 2005, establishing himself as a persistent figure inNewZealandpolitics over more than four decades.Petershas served as Deputy Prime Minister three times ... <\/CONTENT> <URL> https://grokipedia.com/page/Winston_Peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> More than 40yearsafter he arrived in parliament,WinstonPetersis facing, barring a miracle, the end of the line. Danyl Mclauchlan traces the life & times of one of the most compelling and enduring characters in NZ political history <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> As a result of the 1996 election he became part of the Coalition Government with National Party andNewZealandFirst and became Deputy Prime Minister and Treasurer in the first MMP Coalition Government. Biographical sources Correspondence from HonWinstonPeters2 Dec. 1992. \"National Māori Candidates.\" Tu Tangata 3 (1981): 8. <\/CONTENT> <URL> https://komako.org.nz/person/777 <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228556703,
+            "end": 1779228559146
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228559151,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249472c001mRIFQmSUnZNtm0",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e4249314b0019nwrtk4ZAJInZR",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0224,
+        "tokens": {
+          "total": 6519,
+          "input": 6283,
+          "output": 236,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228560313,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42494bb8001v4Jslg5x51YtCg",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e424947310019ZeKpmT5pO6rqy",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228561459,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42494bb9001sqKZMpb9Mw9lRl",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e424947310019ZeKpmT5pO6rqy",
+        "type": "tool",
+        "callID": "ea12ec30-f699-46c7-8dc1-a4f2dc7d69d7",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Winston_Peters"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Winston_Peters\nFinal URL: https://en.wikipedia.org/wiki/Winston_Peters\nTitle: Winston Peters - Wikipedia\nBytes read: 962900\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Winston+Peters]\nLog in\nPersonal tools\nDonate\n",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228560313,
+            "end": 1779228561458
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228561460,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e424950330012jCGlW4yP3MCzt",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e424947310019ZeKpmT5pO6rqy",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.024,
+        "tokens": {
+          "total": 7621,
+          "input": 7530,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228562714,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42495519001fzL1ScMiXAQ5ej",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42495037001CyI0C6HDD1zlX0",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228562718,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249551a001WnPrl0P2yk3k7w",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42495037001CyI0C6HDD1zlX0",
+        "type": "tool",
+        "callID": "00e2e7b0-b148-4e71-8e0e-14d5edea25bc",
+        "tool": "read",
+        "state": {
+          "status": "error",
+          "input": {
+            "limit": 2000,
+            "filePath": "/private/var/folders/gv/l5wlstr55gl_g0pgx6k47z9m0000gn/T/RtmpT95eDp/asa_opencode_work_11f57975cf3c/wikipedia_winston_peters.txt"
+          },
+          "error": "Error: File not found: /private/var/folders/gv/l5wlstr55gl_g0pgx6k47z9m0000gn/T/RtmpT95eDp/asa_opencode_work_11f57975cf3c/wikipedia_winston_peters.txt",
+          "time": {
+            "start": 1779228562716,
+            "end": 1779228562718
+          }
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228562720,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249551f001RXbXdGTvWNT7dN",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42495037001CyI0C6HDD1zlX0",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0256,
+        "tokens": {
+          "total": 8156,
+          "input": 8064,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228564072,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42495a67001Jf3Fuxwx2n7rLt",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42495521001dGEDlghO65p2Es",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228566095,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42495a67002uptBPgKDmu3IU9",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42495521001dGEDlghO65p2Es",
+        "type": "tool",
+        "callID": "a3357099-755d-4453-9c24-a0fb8177d492",
+        "tool": "asa_search_web_fetch",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.beehive.govt.nz/minister/biography/winston-peters-0"
+          },
+          "output": "URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\nFinal URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\nTitle: (unknown)\nBytes read: 212\nCache: MISS\n\nNo readable text extracted.",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228564072,
+            "end": 1779228566095
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228566097,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249624f001aPlO4XHHQj1Rgt",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42495521001dGEDlghO65p2Es",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0264,
+        "tokens": {
+          "total": 8404,
+          "input": 8303,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228567784,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e424968e70015MZGZtbXFAjgJd",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e424962520017j11932eyjTNWx",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228569314,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e424968e8001SuXhBtHBQu7m59",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e424962520017j11932eyjTNWx",
+        "type": "tool",
+        "callID": "7ca651ee-9a63-4798-b49a-5c913cb00e24",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters birth place disability status sexual orientation education prior occupation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is a New Zealand politician. He has led the political party New Zealand First since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TweetWinstonPetersNew Zealand politician Date ofBirth: 11-Apr -1945PlaceofBirth: Whangarei, Northland Region, New Zealand Profession: politician, diplomat, rugby union player Nationality: New Zealand Zodiac Sign: Aries Social Profiles:winstonpetersShow Famous Birthdays Today, New Zealand 👉 Worldwide Celebrity Birthdays Today About ... <\/CONTENT> <URL> https://www.bornglorious.com/person/?pi=1396178 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ExploreWinstonPeters's biography, personal life, family and real age. Discover the real story, facts, and details ofWinstonPeters. <\/CONTENT> <URL> https://www.celebsages.com/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish the New Zealand First party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> WinstonPeters's immediate impact during his lifetime has been profound, particularly in elevating the prominence of regional and indigenous issues within national politics. His advocacy for rural communities and Māori rights challenged the dominance of urban-centric policies and helped reframe debates around economic development and ... <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up the New Zealand First Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> CultureWinstonPeters: In His Reputation EraWinstonPetersis the stuff of legend in the New Zealand Government. He's the only diplomat that's ever been invited to North Korea. <\/CONTENT> <URL> https://www.critic.co.nz/culture/article/10861/-winston-peters-in-his-reputation-era <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> The Right HonourableWinstonPeters, currently serving as Deputy Prime Minister, has an extraordinary five-decade history in New Zealand politics. <\/CONTENT> <URL> https://wbhsoba.co.nz/old-boys/rt-hon-winston-peters <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonPeters. Actor: The Commission.WinstonPeterswas born on 11 April 1945 in Whangarei, New Zealand. He is an actor, known for The Commission (2005), Inner Demon (2005) and Calypso Dreams (2003). <\/CONTENT> <URL> https://www.imdb.com/name/nm1579339/bio <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> More than 40 years after he arrived in parliament,WinstonPetersis facing, barring a miracle, the end of the line. Danyl Mclauchlan traces the life & times of one of the most compelling and enduring characters in NZ political history <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228567785,
+            "end": 1779228569313
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228569315,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42496ee2001vbL7nazxFdF6RC",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e424962520017j11932eyjTNWx",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0268,
+        "tokens": {
+          "total": 8588,
+          "input": 8499,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228570941,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249753c001imu4WekshUtsVr",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42496ee6001PKlmUzknJGfUzS",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779228572213,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249753c002ZXOutvMiD5yFqI",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42496ee6001PKlmUzknJGfUzS",
+        "type": "tool",
+        "callID": "722e9570-2f81-4e49-97c0-d313bcd4b584",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Winston Peters sexual orientation disability status publicly disclosed"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Answers to your questions aboutWinstonPeters's life, age, relationships,sexualorientation, drug usage, net worth and the latest gossip! <\/CONTENT> <URL> https://www.vipfaq.com/Winston Peters.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Federal employee respondents to MSPB surveys perceived thatsexualorientationdiscrimination occurred about as often as discrimination based on national origin and maritalstatusor violations of veteran's preference. Lesbian, gay, bisexual, and transgender (LGBT) Federal employee perceptions of the workplace are generally less positive than their colleagues. We found, however, that in some ... <\/CONTENT> <URL> https://www.mspb.gov/studies/studies/Sexual_Orientation_and_the_Federal_Workplace_Policy_Perception_1026379.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Clayton County, Georgia thatsexualorientationand gender identity are protected characteristics under Title VII, the federal anti-discrimination law that prohibits employment discrimination on the basis of one's race, color, religion, sex, or national origin. This decision applies to employers and employees across the country. <\/CONTENT> <URL> https://www.taftlaw.com/news-events/law-bulletins/sexual-orientation-and-gender-identity-protected-characteristics-under-title-vii <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> The feasibility of asking questions aboutsexualorientationin population-based data collection has been demonstrated across many studies. For example, Meyer and col-leagues (2002) conducted a study that found that women would respond to an anony-mous random-digit-dial telephone health survey asking a series of questions that in-cludedsexual... <\/CONTENT> <URL> https://www.jstor.org/stable/pdf/48762565.pdf <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> What's the demographic composition of the U.S. nonprofit sector—in terms of race/ethnicity, gender,sexualorientation, anddisabilitystatus? Are staff, leaders, and board members equally diverse? How does leadership diversity vary by organization size, revenue, subsector, and state? <\/CONTENT> <URL> https://candid.org/blogs/diversity-in-nonprofit-sector-candid-demographic-data-report <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> New LGBTQI+ Community Survey data from the Center for American Progress and NORC show that disabled LGBTQI+ people experience higher rates of discrimination in public services, education ... <\/CONTENT> <URL> https://www.americanprogress.org/article/the-state-of-disabled-lgbtqi-people-in-2024 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> We, the undersigned lesbian, gay, bisexual, transgender, queer, intersex, and othersexualand gender minority (LGBTQI+) people and their families and allies, write to express our strong support for the Census Bureau's proposed test of questions measuringsexualorientationand gender identity for the American Community Survey. <\/CONTENT> <URL> https://downloads.regulations.gov/USBC-2023-0007-0092/attachment_2.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Table 1. LGBT people unprotected by state employment and public accommodations non-discrimination statutes that includesexualorientationand gender identity, separately for LGB and transgender people <\/CONTENT> <URL> https://williamsinstitute.law.ucla.edu/wp-content/uploads/LGBT-ND-Statutes-Empl-PA-Jun-2019.pdf <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> We, the undersigned 13,243 lesbian, gay, bisexual, transgender, queer, intersex and othersexualand gender minority (LGBTQI+) people and their families and allies, write to express our strong support for the Census Bureau moving forward with its proposed test of questions measuringsexualorientationand gender identity on the American Community Survey (ACS) this year. <\/CONTENT> <URL> https://www.reginfo.gov/public/do/DownloadDocument?objectID=143240102 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> The U.S. Reports collection delves into historic Supreme Court cases which have ties to Pride month and the struggle for LGBTQ+ rights. <\/CONTENT> <URL> https://blogs.loc.gov/law/2024/06/lgbtq-legal-history-in-the-u-s-reports-collection <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779228570941,
+            "end": 1779228572212
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228572214,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e42497a35001792WGqSWT67g88",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42496ee6001PKlmUzknJGfUzS",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0307,
+        "tokens": {
+          "total": 9886,
+          "input": 9800,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779228574749,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249841b001wfIiN2JBThWsmg",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42497a37001Gmjm5vlhRVd7sO",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779228574750,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249841c0018UDGgDnnHqbWlU",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42497a37001Gmjm5vlhRVd7sO",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"BA and LLB\",\n  \"educational_attainment_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"prior_occupation\": \"Teacher, Barrister and Solicitor\",\n  \"prior_occupation_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.beehive.govt.nz/minister/biography/winston-peters-0\",\n  \"birth_year\": \"1945\",\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\",\n  \"birth_place\": \"Whangarei, New Zealand\",\n  \"birth_place_source\": \"https://www.bornglorious.com/person/?pi=1396178\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://en.wikipedia.org/wiki/Winston_Peters\"\n}\n```",
+        "time": {
+          "start": 1779228574750,
+          "end": 1779228574750
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779228574752,
+      "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+      "part": {
+        "id": "prt_e4249841e001EIDcclCXAnDiqq",
+        "sessionID": "ses_1bdb6ceecffee7AjZ5sfx0bhHv",
+        "messageID": "msg_e42497a37001Gmjm5vlhRVd7sO",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0386,
+        "tokens": {
+          "total": 11399,
+          "input": 11028,
+          "output": 371,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779228556701,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42493d9b001a2M2SbESr1Gj7q\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e4249314b0019nwrtk4ZAJInZR\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228559147,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42493d9c001jP0vyq66WRUCpO\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e4249314b0019nwrtk4ZAJInZR\",\"type\":\"tool\",\"callID\":\"7a0e6459-a569-4123-b80d-a8954b432df6\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters New Zealand politician biography educational attainment prior occupation birth year birth place disability status sexual orientation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is aNewZealandpolitician. He has led the political partyNewZealandFirst since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up theNewZealandFirst Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> At the 2023 General Election,NewZealandFirst formed a coalition Government with the National and ACT Parties. MrPetersserved as the Deputy Prime Minister until May 2025, Minister for Foreign Affairs, and Minister for Racing. <\/CONTENT> <URL> https://www.nzfirst.nz/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofWinstonPeters(1945 - present),politicianfromNew_Zealand. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Home MPs and Electorates Members of ParliamentPeters,WinstonPublished date: 4 Feb 2026 NZ First PartyPeters,WinstonSee where I sit in the debating chamber <\/CONTENT> <URL> https://www3.parliament.nz/en/mps-and-electorates/members-of-parliament/peters-winston <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish theNewZealandFirst party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> WinstonRaymondPeters(born 11 April 1945) is aNewZealandpoliticianwho founded and has led theNewZealandFirst party since 1993. He entered Parliament in 1978 as a National Party MP for Hunua and later represented Tauranga until 2005, establishing himself as a persistent figure inNewZealandpolitics over more than four decades.Petershas served as Deputy Prime Minister three times ... <\/CONTENT> <URL> https://grokipedia.com/page/Winston_Peters <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> More than 40yearsafter he arrived in parliament,WinstonPetersis facing, barring a miracle, the end of the line. Danyl Mclauchlan traces the life & times of one of the most compelling and enduring characters in NZ political history <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> As a result of the 1996 election he became part of the Coalition Government with National Party andNewZealandFirst and became Deputy Prime Minister and Treasurer in the first MMP Coalition Government. Biographical sources Correspondence from HonWinstonPeters2 Dec. 1992. \\\"National Māori Candidates.\\\" Tu Tangata 3 (1981): 8. <\/CONTENT> <URL> https://komako.org.nz/person/777 <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228556703,\"end\":1779228559146},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228559151,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249472c001mRIFQmSUnZNtm0\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e4249314b0019nwrtk4ZAJInZR\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.022389,\"tokens\":{\"total\":6519,\"input\":6283,\"output\":236,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228560313,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42494bb8001v4Jslg5x51YtCg\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e424947310019ZeKpmT5pO6rqy\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228561459,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42494bb9001sqKZMpb9Mw9lRl\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e424947310019ZeKpmT5pO6rqy\",\"type\":\"tool\",\"callID\":\"ea12ec30-f699-46c7-8dc1-a4f2dc7d69d7\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Winston_Peters\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Winston_Peters\\nFinal URL: https://en.wikipedia.org/wiki/Winston_Peters\\nTitle: Winston Peters - Wikipedia\\nBytes read: 962900\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Winston+Peters]\\nLog in\\nPersonal tools\\nDonate\\n\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228560313,\"end\":1779228561458},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228561460,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e424950330012jCGlW4yP3MCzt\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e424947310019ZeKpmT5pO6rqy\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023955,\"tokens\":{\"total\":7621,\"input\":7530,\"output\":91,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228562714,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42495519001fzL1ScMiXAQ5ej\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42495037001CyI0C6HDD1zlX0\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228562718,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249551a001WnPrl0P2yk3k7w\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42495037001CyI0C6HDD1zlX0\",\"type\":\"tool\",\"callID\":\"00e2e7b0-b148-4e71-8e0e-14d5edea25bc\",\"tool\":\"read\",\"state\":{\"status\":\"error\",\"input\":{\"limit\":2000,\"filePath\":\"/private/var/folders/gv/l5wlstr55gl_g0pgx6k47z9m0000gn/T/RtmpT95eDp/asa_opencode_work_11f57975cf3c/wikipedia_winston_peters.txt\"},\"error\":\"Error: File not found: /private/var/folders/gv/l5wlstr55gl_g0pgx6k47z9m0000gn/T/RtmpT95eDp/asa_opencode_work_11f57975cf3c/wikipedia_winston_peters.txt\",\"time\":{\"start\":1779228562716,\"end\":1779228562718}}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228562720,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249551f001RXbXdGTvWNT7dN\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42495037001CyI0C6HDD1zlX0\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.025572,\"tokens\":{\"total\":8156,\"input\":8064,\"output\":92,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228564072,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42495a67001Jf3Fuxwx2n7rLt\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42495521001dGEDlghO65p2Es\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228566095,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42495a67002uptBPgKDmu3IU9\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42495521001dGEDlghO65p2Es\",\"type\":\"tool\",\"callID\":\"a3357099-755d-4453-9c24-a0fb8177d492\",\"tool\":\"asa_search_web_fetch\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\"},\"output\":\"URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\\nFinal URL: https://www.beehive.govt.nz/minister/biography/winston-peters-0\\nTitle: (unknown)\\nBytes read: 212\\nCache: MISS\\n\\nNo readable text extracted.\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228564072,\"end\":1779228566095},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228566097,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249624f001aPlO4XHHQj1Rgt\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42495521001dGEDlghO65p2Es\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026424,\"tokens\":{\"total\":8404,\"input\":8303,\"output\":101,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228567784,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e424968e70015MZGZtbXFAjgJd\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e424962520017j11932eyjTNWx\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228569314,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e424968e8001SuXhBtHBQu7m59\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e424962520017j11932eyjTNWx\",\"type\":\"tool\",\"callID\":\"7ca651ee-9a63-4798-b49a-5c913cb00e24\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters birth place disability status sexual orientation education prior occupation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> WinstonRaymondPetersPC (born 11 April 1945) is a New Zealand politician. He has led the political party New Zealand First since he founded it in 1993, and since November 2023 has served as the 25th minister of foreign affairs. [2] A long-serving member of Parliament (MP),Peterswas re-elected for a fifteenth time at the 2023 general election, [3] having previously been an MP from 1979 to ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Winston_Peters <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TweetWinstonPetersNew Zealand politician Date ofBirth: 11-Apr -1945PlaceofBirth: Whangarei, Northland Region, New Zealand Profession: politician, diplomat, rugby union player Nationality: New Zealand Zodiac Sign: Aries Social Profiles:winstonpetersShow Famous Birthdays Today, New Zealand 👉 Worldwide Celebrity Birthdays Today About ... <\/CONTENT> <URL> https://www.bornglorious.com/person/?pi=1396178 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ExploreWinstonPeters's biography, personal life, family and real age. Discover the real story, facts, and details ofWinstonPeters. <\/CONTENT> <URL> https://www.celebsages.com/winston-peters <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> WinstonPetersentered Parliament in 1978 for the National Party as the MP for Hunua and was MP for Tauranga from 1984 till 2005. MrPetersleft the National Party in 1993 to establish the New Zealand First party and has been its leader ever since. MrPetersgrew up in Northland and holds a BA and LLB. He has worked as a primary and secondary school teacher and has practised as a Barrister and ... <\/CONTENT> <URL> https://www.beehive.govt.nz/minister/biography/winston-peters-0 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> WinstonPeters's immediate impact during his lifetime has been profound, particularly in elevating the prominence of regional and indigenous issues within national politics. His advocacy for rural communities and Māori rights challenged the dominance of urban-centric policies and helped reframe debates around economic development and ... <\/CONTENT> <URL> https://biographycentral.com/biography/winston_peters <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> After the National Party's Victory during the 1990 elections,Petersbecame Minister of Maori Affairs.Petersset up the New Zealand First Party in 1993; the party won two seats in 1993 and 17 seats in 1996. As Deputy Prime Minister from 1996-1998, he led a number of business delegations to China, Hong Kong, the US and Canada. <\/CONTENT> <URL> https://goodcountry.org/global-vote/elections/new-zealand/candidates/winston-peters <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> CultureWinstonPeters: In His Reputation EraWinstonPetersis the stuff of legend in the New Zealand Government. He's the only diplomat that's ever been invited to North Korea. <\/CONTENT> <URL> https://www.critic.co.nz/culture/article/10861/-winston-peters-in-his-reputation-era <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> The Right HonourableWinstonPeters, currently serving as Deputy Prime Minister, has an extraordinary five-decade history in New Zealand politics. <\/CONTENT> <URL> https://wbhsoba.co.nz/old-boys/rt-hon-winston-peters <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> WinstonPeters. Actor: The Commission.WinstonPeterswas born on 11 April 1945 in Whangarei, New Zealand. He is an actor, known for The Commission (2005), Inner Demon (2005) and Calypso Dreams (2003). <\/CONTENT> <URL> https://www.imdb.com/name/nm1579339/bio <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> More than 40 years after he arrived in parliament,WinstonPetersis facing, barring a miracle, the end of the line. Danyl Mclauchlan traces the life & times of one of the most compelling and enduring characters in NZ political history <\/CONTENT> <URL> https://www.interest.co.nz/news/107427/more-40-years-after-he-arrived-parliament-winston-peters-facing-barring-miracle-end-line <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228567785,\"end\":1779228569313},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228569315,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42496ee2001vbL7nazxFdF6RC\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e424962520017j11932eyjTNWx\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026832,\"tokens\":{\"total\":8588,\"input\":8499,\"output\":89,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228570941,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249753c001imu4WekshUtsVr\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42496ee6001PKlmUzknJGfUzS\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779228572213,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249753c002ZXOutvMiD5yFqI\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42496ee6001PKlmUzknJGfUzS\",\"type\":\"tool\",\"callID\":\"722e9570-2f81-4e49-97c0-d313bcd4b584\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Winston Peters sexual orientation disability status publicly disclosed\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Answers to your questions aboutWinstonPeters's life, age, relationships,sexualorientation, drug usage, net worth and the latest gossip! <\/CONTENT> <URL> https://www.vipfaq.com/Winston Peters.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Federal employee respondents to MSPB surveys perceived thatsexualorientationdiscrimination occurred about as often as discrimination based on national origin and maritalstatusor violations of veteran's preference. Lesbian, gay, bisexual, and transgender (LGBT) Federal employee perceptions of the workplace are generally less positive than their colleagues. We found, however, that in some ... <\/CONTENT> <URL> https://www.mspb.gov/studies/studies/Sexual_Orientation_and_the_Federal_Workplace_Policy_Perception_1026379.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Clayton County, Georgia thatsexualorientationand gender identity are protected characteristics under Title VII, the federal anti-discrimination law that prohibits employment discrimination on the basis of one's race, color, religion, sex, or national origin. This decision applies to employers and employees across the country. <\/CONTENT> <URL> https://www.taftlaw.com/news-events/law-bulletins/sexual-orientation-and-gender-identity-protected-characteristics-under-title-vii <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> The feasibility of asking questions aboutsexualorientationin population-based data collection has been demonstrated across many studies. For example, Meyer and col-leagues (2002) conducted a study that found that women would respond to an anony-mous random-digit-dial telephone health survey asking a series of questions that in-cludedsexual... <\/CONTENT> <URL> https://www.jstor.org/stable/pdf/48762565.pdf <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> What's the demographic composition of the U.S. nonprofit sector—in terms of race/ethnicity, gender,sexualorientation, anddisabilitystatus? Are staff, leaders, and board members equally diverse? How does leadership diversity vary by organization size, revenue, subsector, and state? <\/CONTENT> <URL> https://candid.org/blogs/diversity-in-nonprofit-sector-candid-demographic-data-report <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> New LGBTQI+ Community Survey data from the Center for American Progress and NORC show that disabled LGBTQI+ people experience higher rates of discrimination in public services, education ... <\/CONTENT> <URL> https://www.americanprogress.org/article/the-state-of-disabled-lgbtqi-people-in-2024 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> We, the undersigned lesbian, gay, bisexual, transgender, queer, intersex, and othersexualand gender minority (LGBTQI+) people and their families and allies, write to express our strong support for the Census Bureau's proposed test of questions measuringsexualorientationand gender identity for the American Community Survey. <\/CONTENT> <URL> https://downloads.regulations.gov/USBC-2023-0007-0092/attachment_2.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Table 1. LGBT people unprotected by state employment and public accommodations non-discrimination statutes that includesexualorientationand gender identity, separately for LGB and transgender people <\/CONTENT> <URL> https://williamsinstitute.law.ucla.edu/wp-content/uploads/LGBT-ND-Statutes-Empl-PA-Jun-2019.pdf <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> We, the undersigned 13,243 lesbian, gay, bisexual, transgender, queer, intersex and othersexualand gender minority (LGBTQI+) people and their families and allies, write to express our strong support for the Census Bureau moving forward with its proposed test of questions measuringsexualorientationand gender identity on the American Community Survey (ACS) this year. <\/CONTENT> <URL> https://www.reginfo.gov/public/do/DownloadDocument?objectID=143240102 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> The U.S. Reports collection delves into historic Supreme Court cases which have ties to Pride month and the struggle for LGBTQ+ rights. <\/CONTENT> <URL> https://blogs.loc.gov/law/2024/06/lgbtq-legal-history-in-the-u-s-reports-collection <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779228570941,\"end\":1779228572212},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228572214,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e42497a35001792WGqSWT67g88\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42496ee6001PKlmUzknJGfUzS\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.03069,\"tokens\":{\"total\":9886,\"input\":9800,\"output\":86,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779228574749,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249841b001wfIiN2JBThWsmg\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42497a37001Gmjm5vlhRVd7sO\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779228574750,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249841c0018UDGgDnnHqbWlU\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42497a37001Gmjm5vlhRVd7sO\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"BA and LLB\\\",\\n  \\\"educational_attainment_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"prior_occupation\\\": \\\"Teacher, Barrister and Solicitor\\\",\\n  \\\"prior_occupation_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"class_background_source\\\": \\\"https://www.beehive.govt.nz/minister/biography/winston-peters-0\\\",\\n  \\\"birth_year\\\": \\\"1945\\\",\\n  \\\"birth_year_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\",\\n  \\\"birth_place\\\": \\\"Whangarei, New Zealand\\\",\\n  \\\"birth_place_source\\\": \\\"https://www.bornglorious.com/person/?pi=1396178\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"disability_status_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation_source\\\": \\\"https://en.wikipedia.org/wiki/Winston_Peters\\\"\\n}\\n```\",\"time\":{\"start\":1779228574750,\"end\":1779228574750}}}\n{\"type\":\"step_finish\",\"timestamp\":1779228574752,\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"part\":{\"id\":\"prt_e4249841e001EIDcclCXAnDiqq\",\"sessionID\":\"ses_1bdb6ceecffee7AjZ5sfx0bhHv\",\"messageID\":\"msg_e42497a37001Gmjm5vlhRVd7sO\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.038649,\"tokens\":{\"total\":11399,\"input\":11028,\"output\":371,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

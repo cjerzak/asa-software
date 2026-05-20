@@ -1,0 +1,57 @@
+{
+  "status": "success",
+  "unit": {
+    "unit_index": 1,
+    "unit_key": "01_bolivia_row00180",
+    "country": "Bolivia",
+    "row_id": 180,
+    "person_name": "Flora Largo Pumari",
+    "election_year": "2009",
+    "pol_party": "Movement Towards Socialism-Political Instrument for the People's Soveriengty (MAS-IPSP)",
+    "region": "Potosi",
+    "person_bday": "1974-01-01",
+    "gender_character": "Female",
+    "ethnic": "Mestizo"
+  },
+  "started_at_utc": "2026-05-19T22:08:44Z",
+  "finished_at_utc": "2026-05-19T22:09:59Z",
+  "elapsed_time": 1.1295,
+  "error_message": null,
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260519T180757/units/01_bolivia_row00180",
+  "field_status": [],
+  "diagnostics": {
+    "opencode_cli_status": 0,
+    "opencode_errors": [],
+    "opencode_parse_error": false,
+    "opencode_stderr": "",
+    "tool_loop_guard": {
+      "config": {
+        "recursion_limit": 40,
+        "search_budget_limit": 8,
+        "unknown_after_searches": 3,
+        "repeated_timeout_limit": 2,
+        "repeated_fetch_timeout_limit": 1,
+        "total_timeout_limit": 3,
+        "repeated_invalid_tool_limit": 2,
+        "total_invalid_tool_limit": 4,
+        "repeated_tool_request_limit": 4,
+        "tool_deadline_seconds": 15,
+        "mcp_timeout_ms": 20000
+      },
+      "tool_calls": 10,
+      "search_calls": 9,
+      "invalid_tool_calls": 0,
+      "tool_errors": 0,
+      "timeout_errors": 2,
+      "guard_errors": 2,
+      "cache_hits": 0,
+      "repeated_signature_count": 1,
+      "most_repeated_signature": "asa_search_web_fetch:{\"url\":\"https://anteriorportal.erbol.com.bo/podcast/biografias_asamblea_plurinacional/flora_largo_pumari\"}",
+      "search_calls_limit": 8,
+      "search_calls_remaining": 0,
+      "search_budget_exhausted": true
+    }
+  },
+  "completion_gate": []
+}

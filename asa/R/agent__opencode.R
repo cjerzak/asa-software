@@ -155,6 +155,7 @@
   headers[["X-ASA-Target-Model"]] <- target_model
 
   tools <- list(
+    question = FALSE,
     webfetch = FALSE,
     websearch = FALSE,
     write = FALSE,
@@ -163,6 +164,7 @@
   )
 
   permission <- list(
+    question = "deny",
     webfetch = "deny",
     websearch = "deny",
     edit = "deny",
@@ -222,7 +224,7 @@
     "--model", .opencode_model_ref(outer_model),
     "--agent", agent_name,
     "--dir", workdir,
-    prompt
+    .opencode_noninteractive_prompt(prompt)
   )
 }
 
@@ -249,6 +251,28 @@
     return("")
   }
   value[[1]]
+}
+
+#' Add non-interactive batch guardrails to OpenCode prompts
+#' @keywords internal
+.opencode_noninteractive_prompt <- function(prompt) {
+  prompt <- as.character(prompt %||% "")
+  if (length(prompt) == 0L || is.na(prompt[[1]])) {
+    prompt <- ""
+  } else {
+    prompt <- prompt[[1]]
+  }
+  guard <- paste(
+    "NON-INTERACTIVE BATCH RUN:",
+    "- Do not ask the user follow-up questions or invoke interactive question tools.",
+    "- Treat the supplied task metadata as authoritative.",
+    "- If evidence is insufficient for a requested field, return Unknown.",
+    sep = "\n"
+  )
+  if (grepl("NON-INTERACTIVE BATCH RUN:", prompt, fixed = TRUE)) {
+    return(prompt)
+  }
+  paste(guard, prompt, sep = "\n\n")
 }
 
 #' Render an OpenCode error event into a human-readable string
@@ -372,6 +396,9 @@
   timeout_errors <- 0L
   guard_errors <- 0L
   cache_hits <- 0L
+  internal_tool_calls <- 0L
+  question_tool_calls <- 0L
+  pending_question_tool_calls <- 0L
   signatures <- character(0)
 
   for (event in events %||% list()) {
@@ -392,6 +419,15 @@
 
     tool_calls <- tool_calls + 1L
     signatures <- c(signatures, sig)
+    if (nzchar(tool) && !grepl("^asa_search_", tool)) {
+      internal_tool_calls <- internal_tool_calls + 1L
+    }
+    if (identical(tool, "question")) {
+      question_tool_calls <- question_tool_calls + 1L
+      if (status %in% c("pending", "running")) {
+        pending_question_tool_calls <- pending_question_tool_calls + 1L
+      }
+    }
     if (grepl("web_search|web_fetch|asa_search", tool, ignore.case = TRUE)) {
       search_calls <- search_calls + 1L
     }
@@ -431,6 +467,9 @@
     timeout_errors = timeout_errors,
     guard_errors = guard_errors,
     cache_hits = cache_hits,
+    internal_tool_calls = internal_tool_calls,
+    question_tool_calls = question_tool_calls,
+    pending_question_tool_calls = pending_question_tool_calls,
     repeated_signature_count = repeated_signature_count,
     most_repeated_signature = if (length(signature_counts) > 0L) names(signature_counts)[[1L]] else NA_character_,
     search_calls_limit = search_limit,
@@ -508,18 +547,35 @@
                                            target_backend = NULL,
                                            target_model = NULL,
                                            outer_model = ASA_OPENCODE_OUTER_MODEL,
-                                           loop_guard = NULL) {
+                                           loop_guard = NULL,
+                                           process_timeout = FALSE,
+                                           timeout_seconds = NULL) {
   result_text <- .opencode_scalar_text(output$text %||% "")
   stderr_text <- .opencode_scalar_text(stderr %||% "")
   errors <- as.character(output$errors %||% character(0))
   errors <- errors[!is.na(errors) & nzchar(errors)]
   parse_error <- isTRUE(output$parse_error %||% FALSE)
   cli_status <- as.integer(cli_status %||% 0L)
-  is_error <- parse_error || length(errors) > 0L || !identical(cli_status, 0L)
+  process_timeout <- isTRUE(process_timeout) || isTRUE(output$process_timeout %||% FALSE)
+  timeout_seconds <- timeout_seconds %||% output$timeout_seconds %||% NULL
+  timeout_message <- if (isTRUE(process_timeout)) {
+    suffix <- if (!is.null(timeout_seconds) && !is.na(timeout_seconds)) {
+      paste0(" after ", timeout_seconds, " seconds")
+    } else {
+      ""
+    }
+    paste0("OpenCode process timed out", suffix, ".")
+  } else {
+    ""
+  }
+  if (nzchar(timeout_message)) {
+    errors <- unique(c(errors, timeout_message))
+  }
+  is_error <- process_timeout || parse_error || length(errors) > 0L || !identical(cli_status, 0L)
 
   if (is_error && !nzchar(result_text)) {
     message_parts <- c(
-      if (parse_error) "OpenCode did not return valid JSONL." else "OpenCode returned an error.",
+      if (isTRUE(process_timeout)) timeout_message else if (parse_error) "OpenCode did not return valid JSONL." else "OpenCode returned an error.",
       errors,
       if (nzchar(stderr_text)) stderr_text else character(0)
     )
@@ -545,6 +601,8 @@
     list(
       events = output$events %||% list(),
       cli_status = cli_status,
+      process_timeout = process_timeout,
+      timeout_seconds = timeout_seconds,
       stderr = stderr_text,
       errors = errors,
       parse_error = parse_error,
@@ -581,7 +639,11 @@
     fold_stats = list(fold_count = 0L),
     prompt = prompt,
     thread_id = output$session_id %||% thread_id,
-    stop_reason = output$stop_reason %||% if (isTRUE(terminal$valid)) "structured_output" else "end_turn",
+    stop_reason = if (isTRUE(process_timeout)) {
+      "process_timeout"
+    } else {
+      output$stop_reason %||% if (isTRUE(terminal$valid)) "structured_output" else "end_turn"
+    },
     budget_state = list(
       tool_calls_used = tool_loop_guard$tool_calls %||% NA_integer_,
       tool_calls_limit = loop_guard$recursion_limit %||% NA_integer_,
@@ -598,6 +660,8 @@
     field_status = list(),
     diagnostics = list(
       opencode_cli_status = cli_status,
+      opencode_process_timeout = process_timeout,
+      opencode_timeout_seconds = timeout_seconds,
       opencode_errors = errors,
       opencode_parse_error = parse_error,
       opencode_stderr = stderr_text,
@@ -619,7 +683,9 @@
     backend_invoke_minutes = elapsed_minutes,
     backend = list(
       agent_backend = "opencode",
-      cli_status = cli_status
+      cli_status = cli_status,
+      process_timeout = process_timeout,
+      timeout_seconds = timeout_seconds
     )
   )
   resp$retrieval_metrics <- list()
@@ -716,15 +782,18 @@
   }
 
   started <- Sys.time()
-  result <- processx::run(
+  timeout_seconds <- as.numeric(agent$config$timeout %||% ASA_DEFAULT_TIMEOUT)
+  result <- .run_processx(
     command = cli$command,
     args = cli_args,
     wd = workdir,
     env = cli_env,
     error_on_status = FALSE,
-    timeout = as.numeric(agent$config$timeout %||% ASA_DEFAULT_TIMEOUT) * 1000
+    timeout = timeout_seconds,
+    cleanup_tree = TRUE
   )
   elapsed_minutes <- as.numeric(difftime(Sys.time(), started, units = "mins"))
+  process_timeout <- isTRUE(result$timeout %||% FALSE)
 
   parsed <- tryCatch(
     .opencode_parse_output(result$stdout),
@@ -745,6 +814,14 @@
       )
     }
   )
+  if (isTRUE(process_timeout)) {
+    parsed$process_timeout <- TRUE
+    parsed$timeout_seconds <- timeout_seconds
+    parsed$stop_reason <- "process_timeout"
+    if (!nzchar(.opencode_scalar_text(parsed$text %||% ""))) {
+      parsed$text <- paste0("OpenCode process timed out after ", timeout_seconds, " seconds.")
+    }
+  }
 
   .opencode_response_from_output(
     output = parsed,
@@ -756,6 +833,8 @@
     target_backend = agent$backend,
     target_model = agent$model,
     outer_model = outer_model,
-    loop_guard = loop_guard
+    loop_guard = loop_guard,
+    process_timeout = process_timeout,
+    timeout_seconds = timeout_seconds
   )
 }

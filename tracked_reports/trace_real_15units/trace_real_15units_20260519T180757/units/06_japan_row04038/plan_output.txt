@@ -1,0 +1,8 @@
+{
+  "status": "empty",
+  "artifact": "plan_output",
+  "reason": "plan_not_generated",
+  "expected_empty": true,
+  "unit_key": "06_japan_row04038",
+  "generated_at_utc": "2026-05-19T22:09:38Z"
+}

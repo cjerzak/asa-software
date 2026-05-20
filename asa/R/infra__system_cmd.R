@@ -1,3 +1,9 @@
+#' Run processx::run through a mockable internal seam
+#' @keywords internal
+.run_processx <- function(...) {
+  processx::run(...)
+}
+
 #' Run External Command (processx if available, system2 fallback)
 #' @keywords internal
 .run_command <- function(command,
@@ -63,4 +69,3 @@
 
   list(status = as.integer(status), stdout = stdout, stderr = stderr)
 }
-
