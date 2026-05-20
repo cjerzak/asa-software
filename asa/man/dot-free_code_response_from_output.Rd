@@ -13,7 +13,9 @@
   thread_id = NULL,
   target_backend = NULL,
   target_model = NULL,
-  loop_guard = NULL
+  loop_guard = NULL,
+  process_timeout = FALSE,
+  timeout_seconds = NULL
 )
 }
 \description{

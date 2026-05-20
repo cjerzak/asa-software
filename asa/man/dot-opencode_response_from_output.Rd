@@ -14,7 +14,9 @@
   target_backend = NULL,
   target_model = NULL,
   outer_model = ASA_OPENCODE_OUTER_MODEL,
-  loop_guard = NULL
+  loop_guard = NULL,
+  process_timeout = FALSE,
+  timeout_seconds = NULL
 )
 }
 \description{
