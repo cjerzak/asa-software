@@ -1,0 +1,10 @@
+{
+  "educational_attainment": "Licenciatura en Derecho",
+  "prior_occupation": "Unknown",
+  "birth_year": "Unknown",
+  "birth_place": "Unknown",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Unknown",
+  "sources": ["https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216686", "https://sil.gobernacion.gob.mx/Archivos/Documentos/2014/12/asun_3181333_20141202_1417546492.pdf"]
+}

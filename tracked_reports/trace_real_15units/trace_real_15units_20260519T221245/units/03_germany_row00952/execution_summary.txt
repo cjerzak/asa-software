@@ -1,0 +1,62 @@
+{
+  "status": "success",
+  "unit": {
+    "unit_index": 3,
+    "unit_key": "03_germany_row00952",
+    "country": "Germany",
+    "row_id": 952,
+    "person_name": "Nicole Gohlke",
+    "election_year": "2017",
+    "pol_party": "The Left",
+    "region": "Bayern",
+    "person_bday": "Not available",
+    "gender_character": "Female",
+    "ethnic": "German"
+  },
+  "started_at_utc": "2026-05-20T02:13:34Z",
+  "finished_at_utc": "2026-05-20T02:14:51Z",
+  "elapsed_time": 1.1459,
+  "error_message": null,
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260519T221245/units/03_germany_row00952",
+  "field_status": [],
+  "diagnostics": {
+    "opencode_cli_status": 0,
+    "opencode_process_timeout": false,
+    "opencode_timeout_seconds": 180,
+    "opencode_errors": [],
+    "opencode_parse_error": false,
+    "opencode_stderr": "",
+    "tool_loop_guard": {
+      "config": {
+        "recursion_limit": 40,
+        "search_budget_limit": 8,
+        "unknown_after_searches": 3,
+        "repeated_timeout_limit": 2,
+        "repeated_fetch_timeout_limit": 1,
+        "total_timeout_limit": 3,
+        "repeated_invalid_tool_limit": 2,
+        "total_invalid_tool_limit": 4,
+        "repeated_tool_request_limit": 4,
+        "tool_deadline_seconds": 15,
+        "mcp_timeout_ms": 20000
+      },
+      "tool_calls": 6,
+      "search_calls": 6,
+      "invalid_tool_calls": 0,
+      "tool_errors": 0,
+      "timeout_errors": 0,
+      "guard_errors": 0,
+      "cache_hits": 0,
+      "internal_tool_calls": 0,
+      "question_tool_calls": 0,
+      "pending_question_tool_calls": 0,
+      "repeated_signature_count": 1,
+      "most_repeated_signature": "asa_search_web_fetch:{\"url\":\"https://de.wikipedia.org/wiki/Nicole_Gohlke\"}",
+      "search_calls_limit": 8,
+      "search_calls_remaining": 2,
+      "search_budget_exhausted": false
+    }
+  },
+  "completion_gate": []
+}

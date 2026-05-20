@@ -1,0 +1,439 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779243259132,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432994f9001SHzQhJOqw3I7g5",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e43298a23001UaWN00dEE1A2iE",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779243262060,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432994fb001Me8iqpAu32p6VZ",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e43298a23001UaWN00dEE1A2iE",
+        "type": "tool",
+        "callID": "4fa8f89a-0a61-4d9f-81ff-b59b2b46add9",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Shyh-Fang Liu Taiwan DPP biography 劉世芳"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. [3] <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BiographyLiuShyh-fang(Chinese: 劉世芳; pinyin:LiúShìfāng) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://peoplepill.com/i/liu-shih-fang <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Taiwanese politician <\/CONTENT> <URL> https://dbpedia.org/page/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 立法委員 立法委員劉世芳先後取得淡江大學化學工程系學士、美國奧克拉荷馬州州立大學環境工程碩士。曾擔任工研院副工程師、澎湖縣政府機要秘書、台北市政府環保局局長、台中縣副縣長、第五屆不分區立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、高雄世運組委員會 ... <\/CONTENT> <URL> https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Beijing's intimidation of Minister of the InteriorLiuShyh-fang(劉世芳) and her family aims to dissuade Taiwanese businesspeople from supporting the Democratic Progressive Party (DPP) in upcoming elections,DPPlawmakers said yesterday. A report published on Friday by state-owned Ta Kung Pao (大公報) said thatLiuhad received political donations from her nephew, Yen Wen-chun ... <\/CONTENT> <URL> https://www.taipeitimes.com/News/taiwan/archives/2026/03/02/2003853113 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 英文姓名：Liu,Shyh-Fang屆別：第 10 屆 性別：女 黨籍：民主進步黨 選區：高雄市第3選舉區 委員會： 第10屆第1會期：司法及 ... <\/CONTENT> <URL> https://www.congressnews.com.tw/legislator/371-100088.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Minister of the InteriorLiuShyh-fang(劉世芳) was granted permission not to respond to questions fromTaiwanPeople's Party (TPP) Legislator Li Zhenxiu (李貞秀) during Li's first legislative inquiry yesterday, as questions over her eligibility to serve continued to loom. Although Li has held a Taiwanese ID card for more than 10 years and registered as a candidate for TPP's ... <\/CONTENT> <URL> https://www.taipeitimes.com/News/taiwan/archives/2026/03/17/2003853967 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> LiuShyh-fangMember of the Legislative Yuan elected in 2001 Taiwanese legislative election in the at-large district parliamentary term 5th Legislative Yuan start time 1 February 2002 end time 30 June 2002 parliamentary group Democratic Progressive Party Legislative Caucus electoral district Proportional Representation in national election ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q6653712 <\/URL> __END_OF_SOURCE 9__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779243259135,
+            "end": 1779243262058
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779243262063,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329a06d001dk5C7GW5bpoGJU",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e43298a23001UaWN00dEE1A2iE",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0216,
+        "tokens": {
+          "total": 6228,
+          "input": 5987,
+          "output": 241,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779243263595,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329a6690016jvTt0h3Im2cH9",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329a0710018STka1Y8h06a4m",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779243265348,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329a66a001YdwHLqfZ4AqkK3",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329a0710018STka1Y8h06a4m",
+        "type": "tool",
+        "callID": "db498e08-d435-41d6-ac07-1b2fc8302b1c",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 出生地 劉世芳 殘障 劉世芳 性取向 劉世芳 職業 Shyh-Fang Liu birth place disability sexual orientation occupation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese:劉世芳; pinyin:LiúShìfāng ; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/liu-shyh-fang <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 立法委員 立法委員劉世芳先後取得淡江大學化學工程系學士、美國奧克拉荷馬州州立大學環境工程碩士。曾擔任工研院副工程師、澎湖縣政府機要秘書、台北市政府環保局局長、台中縣副縣長、第五屆不分區立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、高雄世運組委員會 ... <\/CONTENT> <URL> https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Liu_Shyh-fang <\/URL> __END_OF_SOURCE 5__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779243263595,
+            "end": 1779243265347
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779243265350,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329ad44001YMWdS3ThQi8p98",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329a0710018STka1Y8h06a4m",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0234,
+        "tokens": {
+          "total": 7369,
+          "input": 7259,
+          "output": 110,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779243266864,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329b32f001HiNXDb7e7lqmBi",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329ad47001avag7HMrtn0rRY",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779243268526,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329b32f002JMWhO5Ky60WV1i",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329ad47001avag7HMrtn0rRY",
+        "type": "tool",
+        "callID": "b910034c-71b2-4251-91c7-a0f0a3447f99",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 出生地 劉世芳 籍貫 劉世芳 父母 劉世芳 成長背景 劉世芳 兄弟姊妹 劉世芳 婚姻 劉世芳 伴侶 劉世芳 兒子 劉世芳 領養 Shyh-Fang Liu birth place family background children"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 立法委員 立法委員劉世芳先後取得淡江大學化學工程系學士、美國奧克拉荷馬州州立大學環境工程碩士。曾擔任工研院副工程師、澎湖縣政府機要秘書、台北市政府環保局局長、台中縣副縣長、第五屆不分區立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、高雄世運組委員會 ... <\/CONTENT> <URL> https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu <\/URL> __END_OF_SOURCE 2__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779243266864,
+            "end": 1779243268525
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779243268528,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329b9ae001JExUF9JY5oMiry",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329ad47001avag7HMrtn0rRY",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0262,
+        "tokens": {
+          "total": 8184,
+          "input": 8046,
+          "output": 138,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779243270609,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329c1d0001I7YAvCqeuxv6yw",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329b9b1001nNet9R3sDuqXil",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779243285615,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329c1d0002oMDylPnIQgX2Qp",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329b9b1001nNet9R3sDuqXil",
+        "type": "tool",
+        "callID": "6830e919-0ff0-46a7-b186-742153f5ec6b",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 台北市 出生 劉世芳 高雄市 出生 劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 4, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"劉世芳 台北市 出生 劉世芳 高雄市 出生 劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"劉世芳 台北市 出生 劉世芳 高雄市 出生 劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北\\\"}\", \"tool\": \"web_search\"}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779243270609,
+            "end": 1779243285615
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779243285616,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e4329fc6f001XuZ4EG1lCbaThE",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329b9b1001nNet9R3sDuqXil",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0294,
+        "tokens": {
+          "total": 8780,
+          "input": 8529,
+          "output": 251,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779243287702,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a0495001YDrDLhmbxRpzHx",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329fc72001ULloJpxiWgEO5G",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779243299249,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a04960012DWpownEPVWRd3",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329fc72001ULloJpxiWgEO5G",
+        "type": "tool",
+        "callID": "a313bc46-1c7a-4fa2-b700-29badecfb18c",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 籍貫 劉世芳 出生地 劉世芳 哪裡人 劉世芳 故鄉 劉世芳 成長 劉世芳 父母 劉世芳 家族 劉世芳 祖籍 劉世芳 台北 劉世芳 高雄 劉世芳 宜蘭 劉世芳 屏東 劉世芳 雲林 劉世芳 嘉義 劉世芳 台南 劉世芳 台中 劉世芳 桃園 劉世芳 新竹 劉世芳 苗栗 劉世芳 南投 劉世芳 花蓮 劉世芳 台東 劉世芳 澎湖 劉世芳 金門 劉世芳 馬祖 劉世芳 基隆 劉世芳 新北"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。 曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 執 ... <\/CONTENT> <URL> https://zh.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 刘世芳，女，汉族，1959年8月13日出生于台湾省，毕业于淡江大学化学工程系，拥有俄克拉何马州立大学环境工程硕士学位，中国台湾政治人物，隶属民进党新潮流系，现任中国台湾内务主管部门负责人。1993年，刘世芳步入台湾地区政坛，担任澎湖县政府机要秘书。陈水扁担任台北市长后，刘世芳 ... <\/CONTENT> <URL> https://baike.baidu.com/item/刘世芳/12427450 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 劉世芳，女，漢族，1959年8月生於台灣，台灣高雄副市長，劉世芳是台灣政治人物，曾任總統府副秘書長及行政院秘書長。 <\/CONTENT> <URL> https://www.newton.com.tw/wiki/劉世芳/12427450 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 刘世芳，女，汉族，1959年8月生于台湾省，曾获二等景星勋章。 曾任台湾地区领导人办公室副秘书长及行政机构秘书长，高雄市政府副市长。 现任中国台湾地区内部事务主管部门负责人 1。 <\/CONTENT> <URL> https://baike.sogou.com/v42881982.htm <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> [NOWnews今日新聞]準總統賴清德今宣布未來的新內閣，現任內政部長林右昌轉任民進黨秘書長，未來內政部長內定由前立委劉世芳接任。今年64歲的劉 ... <\/CONTENT> <URL> https://tw.news.yahoo.com/人物-劉世芳資歷完整-曾說扯鈴是中國文化-012440560.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 經歷 第9屆及第10屆立法委員 高雄市政府副市長 2009世界運動會組織委員會基金會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 第5屆立法委員 臺中縣政府副縣長 臺北市政府環境保護局長 <\/CONTENT> <URL> https://geaemba.com/member/內政部部長-劉世芳 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> [29] 退出高雄市長初選 2018年1月10日，劉世芳在臉書宣布退出民進黨高雄市長初選。 [30] 劉世芳說：「因為支持我，陳菊市長飽受攻擊。 令人痛心的是，連一本單純的回憶錄都被和初選扯在一起，無庸置疑的政績也被扭曲被懷疑。 <\/CONTENT> <URL> https://votetw.com/wiki/劉世芳 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 劉世芳（1959年8月13日—），中華民國政治人物，民主進步黨籍，現任內政部部長、總統府全社會防衛韌性委員會執行秘書。曾任立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、行政院政務委員、高雄市副市長、臺中縣副縣長、2009高雄世運組織委員會基金會執行長、民進黨中央 ... <\/CONTENT> <URL> https://www.wikiwand.com/zh-hk/articles/劉世芳 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 任期內推動的重要成果：推動修訂刑法一百條『100行動聯盟』，推動國會 助理制度，廢除黑名單行動，台中關係法，集會 遊行法的推動。 <\/CONTENT> <URL> https://newcongress.yam.org.tw/director/03.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 今年64歲的劉世芳，從政經歷完整，是民進黨內女性政治人物代表，他在扁政府時期就獲重用，擔任高雄市副市長期間，更被視為是時任市長陳菊的分身。 不過2018年高雄市長初選，他與現任市長陳其邁間的裂痕，也導致後來民進黨丟掉市長寶座，讓韓國瑜當選。 <\/CONTENT> <URL> https://today.line.me/tw/v3/article/x2B6Zvw <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779243287703,
+            "end": 1779243299248
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779243299250,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a31b1001e6PNTOZ1enfYKd",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e4329fc72001ULloJpxiWgEO5G",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0312,
+        "tokens": {
+          "total": 9511,
+          "input": 9288,
+          "output": 223,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779243301279,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a399d001bHv16ggdWAGzfG",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e432a31b5001hT2aQM5UxO9fmy",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779243308994,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a399e001FVz9k7qCAWp6xx",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e432a31b5001hT2aQM5UxO9fmy",
+        "type": "tool",
+        "callID": "dce7d18c-58b6-4174-b523-662b4468059f",
+        "tool": "asa_search_web_search",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 刘世芳，女，汉族，1959年8月13日出生于台湾省，毕业于淡江大学化学工程系，拥有俄克拉何马州立大学环境工程硕士学位，中国台湾政治人物，隶属民进党新潮流系，现任中国台湾内务主管部门负责人。1993年，刘世芳步入台湾地区政坛，担任澎湖县政府机要秘书。陈水扁担任台北市长后，刘世芳 ... <\/CONTENT> <URL> https://baike.baidu.com/item/刘世芳/12427450 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> [NOWnews今日新聞]準總統賴清德今宣布未來的新內閣，現任內政部長林右昌轉任民進黨秘書長，未來內政部長內定由前立委劉世芳接任。今年64歲的劉 ... <\/CONTENT> <URL> https://tw.news.yahoo.com/人物-劉世芳資歷完整-曾說扯鈴是中國文化-012440560.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 關於劉世芳的中央社新聞: 汛期將至伴聖嬰現象 劉世芳籲民眾提前整備防災、國海院攜手國家公園署 導入前端科技守護海洋、全國首座社宅結合長照 ... <\/CONTENT> <URL> https://www.cna.com.tw/tag/18429 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 臺北市政府環境保護局長 臺中縣政府副縣長 第5屆立法委員 行政院秘書長 總統府副秘書長 國家安全會議副秘書長 2009 ... <\/CONTENT> <URL> https://www.moi.gov.tw/cp.aspx?n=27 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 經歷 立法院 (第九屆)左楠區委員 高雄市副市長 2009高雄世運組委會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 立法院 (第五屆)委員 台中縣副縣長 台北市環保局長 澎湖縣政府機要秘書 工研院副工程師 <\/CONTENT> <URL> https://口袋國會.tw/part2_1_detail.php?sno=166&sect=10 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 經歷 第9屆及第10屆立法委員 高雄市政府副市長 2009世界運動會組織委員會基金會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 第5屆立法委員 臺中縣政府副縣長 臺北市政府環境保護局長 <\/CONTENT> <URL> https://geaemba.com/member/內政部部長-劉世芳 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 劉世芳，女，漢族，1959年8月生於台灣，台灣高雄副市長，劉世芳是台灣政治人物，曾任總統府副秘書長及行政院秘書長。 <\/CONTENT> <URL> https://www.newton.com.tw/wiki/劉世芳/12427450 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> [29] 退出高雄市長初選 2018年1月10日，劉世芳在臉書宣布退出民進黨高雄市長初選。 [30] 劉世芳說：「因為支持我，陳菊市長飽受攻擊。 令人痛心的是，連一本單純的回憶錄都被和初選扯在一起，無庸置疑的政績也被扭曲被懷疑。 <\/CONTENT> <URL> https://votetw.com/wiki/劉世芳 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 學歷 美國奧克拉荷馬州州立大學環境工程碩士 淡江大學化學工程系學士 經歷 第九屆立法委員 高雄市副市長 2009高雄世運組委會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 第五屆立法委員 台中縣副縣長 台北市環保局長 澎湖縣政府機要秘書 工研院副工程師 電話 國會研究室：02 ... <\/CONTENT> <URL> https://www.congressnews.com.tw/legislator/371-100088.html <\/URL> __END_OF_SOURCE 10__",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1779243301279,
+            "end": 1779243308993
+          },
+          "attachments": []
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779243308995,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a57c2001CenULC7SlASnu5",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e432a31b5001hT2aQM5UxO9fmy",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "cost": 0.0361,
+        "tokens": {
+          "total": 11096,
+          "input": 10861,
+          "output": 235,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779243312005,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a63840016cooMaEzJL7ieb",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e432a57c4001qi91oywGI1OaGH",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "timestamp": 1779243312005,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a6384002yHgiJEvkM4xBmL",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e432a57c4001qi91oywGI1OaGH",
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Master of Science in Environmental Engineering from Oklahoma State University; Bachelor of Science in Chemical Engineering from Tamkang University.\",\n  \"prior_occupation\": \"Associate Engineer at the Industrial Technology Research Institute (ITRI).\",\n  \"birth_year\": \"1959\",\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu\",\n    \"prior_occupation\": \"https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu\",\n    \"birth_year\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n    \"birth_place\": \"https://zh.wikipedia.org/zh-tw/%E5%88%98%E4%B8%96%E8%8A%B3\",\n    \"disability_status\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n    \"sexual_orientation\": \"https://en.wikipedia.org/wiki/Liu_Shyh-fang\",\n    \"class_background\": \"https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu\"\n  }\n}\n```",
+        "time": {
+          "start": 1779243312005,
+          "end": 1779243312005
+        }
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779243312007,
+      "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+      "part": {
+        "id": "prt_e432a6386001Z5pxRCurRENOY2",
+        "sessionID": "ses_1bcd6760dffejQbAznp9zpEhrT",
+        "messageID": "msg_e432a57c4001qi91oywGI1OaGH",
+        "type": "step-finish",
+        "reason": "stop",
+        "cost": 0.0437,
+        "tokens": {
+          "total": 12863,
+          "input": 12435,
+          "output": 428,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779243259132,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432994f9001SHzQhJOqw3I7g5\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e43298a23001UaWN00dEE1A2iE\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779243262060,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432994fb001Me8iqpAu32p6VZ\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e43298a23001UaWN00dEE1A2iE\",\"type\":\"tool\",\"callID\":\"4fa8f89a-0a61-4d9f-81ff-b59b2b46add9\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Shyh-Fang Liu Taiwan DPP biography 劉世芳\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. [3] <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> BiographyLiuShyh-fang(Chinese: 劉世芳; pinyin:LiúShìfāng) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. She was deputy secretary-general of the office of President Chen Shui-bian. <\/CONTENT> <URL> https://peoplepill.com/i/liu-shih-fang <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Taiwanese politician <\/CONTENT> <URL> https://dbpedia.org/page/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 立法委員 立法委員劉世芳先後取得淡江大學化學工程系學士、美國奧克拉荷馬州州立大學環境工程碩士。曾擔任工研院副工程師、澎湖縣政府機要秘書、台北市政府環保局局長、台中縣副縣長、第五屆不分區立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、高雄世運組委員會 ... <\/CONTENT> <URL> https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Beijing's intimidation of Minister of the InteriorLiuShyh-fang(劉世芳) and her family aims to dissuade Taiwanese businesspeople from supporting the Democratic Progressive Party (DPP) in upcoming elections,DPPlawmakers said yesterday. A report published on Friday by state-owned Ta Kung Pao (大公報) said thatLiuhad received political donations from her nephew, Yen Wen-chun ... <\/CONTENT> <URL> https://www.taipeitimes.com/News/taiwan/archives/2026/03/02/2003853113 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 英文姓名：Liu,Shyh-Fang屆別：第 10 屆 性別：女 黨籍：民主進步黨 選區：高雄市第3選舉區 委員會： 第10屆第1會期：司法及 ... <\/CONTENT> <URL> https://www.congressnews.com.tw/legislator/371-100088.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Minister of the InteriorLiuShyh-fang(劉世芳) was granted permission not to respond to questions fromTaiwanPeople's Party (TPP) Legislator Li Zhenxiu (李貞秀) during Li's first legislative inquiry yesterday, as questions over her eligibility to serve continued to loom. Although Li has held a Taiwanese ID card for more than 10 years and registered as a candidate for TPP's ... <\/CONTENT> <URL> https://www.taipeitimes.com/News/taiwan/archives/2026/03/17/2003853967 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> LiuShyh-fangMember of the Legislative Yuan elected in 2001 Taiwanese legislative election in the at-large district parliamentary term 5th Legislative Yuan start time 1 February 2002 end time 30 June 2002 parliamentary group Democratic Progressive Party Legislative Caucus electoral district Proportional Representation in national election ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q6653712 <\/URL> __END_OF_SOURCE 9__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779243259135,\"end\":1779243262058},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779243262063,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329a06d001dk5C7GW5bpoGJU\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e43298a23001UaWN00dEE1A2iE\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.021576,\"tokens\":{\"total\":6228,\"input\":5987,\"output\":241,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779243263595,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329a6690016jvTt0h3Im2cH9\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329a0710018STka1Y8h06a4m\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779243265348,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329a66a001YdwHLqfZ4AqkK3\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329a0710018STka1Y8h06a4m\",\"type\":\"tool\",\"callID\":\"db498e08-d435-41d6-ac07-1b2fc8302b1c\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 出生地 劉世芳 殘障 劉世芳 性取向 劉世芳 職業 Shyh-Fang Liu birth place disability sexual orientation occupation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> LiuShyh-fang[1] (orLiuShih-fang; [2] Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician who currently serves as the Minister of the Interior since 2024. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Liu_Shyh-fang <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese:劉世芳; pinyin:LiúShìfāng ; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/liu-shyh-fang <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 立法委員 立法委員劉世芳先後取得淡江大學化學工程系學士、美國奧克拉荷馬州州立大學環境工程碩士。曾擔任工研院副工程師、澎湖縣政府機要秘書、台北市政府環保局局長、台中縣副縣長、第五屆不分區立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、高雄世運組委員會 ... <\/CONTENT> <URL> https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> LiuShyh-fang(orLiuShih-fang; Chinese: 劉世芳; pinyin:LiúShìfāng; born 15 August 1959) is a Taiwanese politician. She graduated from the Oklahoma State University and is a member of the Democratic Progressive Party. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Liu_Shyh-fang <\/URL> __END_OF_SOURCE 5__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779243263595,\"end\":1779243265347},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779243265350,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329ad44001YMWdS3ThQi8p98\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329a0710018STka1Y8h06a4m\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.023427,\"tokens\":{\"total\":7369,\"input\":7259,\"output\":110,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779243266864,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329b32f001HiNXDb7e7lqmBi\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329ad47001avag7HMrtn0rRY\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779243268526,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329b32f002JMWhO5Ky60WV1i\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329ad47001avag7HMrtn0rRY\",\"type\":\"tool\",\"callID\":\"b910034c-71b2-4251-91c7-a0f0a3447f99\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 出生地 劉世芳 籍貫 劉世芳 父母 劉世芳 成長背景 劉世芳 兄弟姊妹 劉世芳 婚姻 劉世芳 伴侶 劉世芳 兒子 劉世芳 領養 Shyh-Fang Liu birth place family background children\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 立法委員 立法委員劉世芳先後取得淡江大學化學工程系學士、美國奧克拉荷馬州州立大學環境工程碩士。曾擔任工研院副工程師、澎湖縣政府機要秘書、台北市政府環保局局長、台中縣副縣長、第五屆不分區立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、高雄世運組委員會 ... <\/CONTENT> <URL> https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu <\/URL> __END_OF_SOURCE 2__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779243266864,\"end\":1779243268525},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779243268528,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329b9ae001JExUF9JY5oMiry\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329ad47001avag7HMrtn0rRY\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.026208,\"tokens\":{\"total\":8184,\"input\":8046,\"output\":138,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779243270609,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329c1d0001I7YAvCqeuxv6yw\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329b9b1001nNet9R3sDuqXil\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779243285615,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329c1d0002oMDylPnIQgX2Qp\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329b9b1001nNet9R3sDuqXil\",\"type\":\"tool\",\"callID\":\"6830e919-0ff0-46a7-b186-742153f5ec6b\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 台北市 出生 劉世芳 高雄市 出生 劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 4, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"劉世芳 台北市 出生 劉世芳 高雄市 出生 劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"劉世芳 台北市 出生 劉世芳 高雄市 出生 劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779243270609,\"end\":1779243285615},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779243285616,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e4329fc6f001XuZ4EG1lCbaThE\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329b9b1001nNet9R3sDuqXil\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.029352,\"tokens\":{\"total\":8780,\"input\":8529,\"output\":251,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779243287702,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a0495001YDrDLhmbxRpzHx\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329fc72001ULloJpxiWgEO5G\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779243299249,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a04960012DWpownEPVWRd3\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329fc72001ULloJpxiWgEO5G\",\"type\":\"tool\",\"callID\":\"a313bc46-1c7a-4fa2-b700-29badecfb18c\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 籍貫 劉世芳 出生地 劉世芳 哪裡人 劉世芳 故鄉 劉世芳 成長 劉世芳 父母 劉世芳 家族 劉世芳 祖籍 劉世芳 台北 劉世芳 高雄 劉世芳 宜蘭 劉世芳 屏東 劉世芳 雲林 劉世芳 嘉義 劉世芳 台南 劉世芳 台中 劉世芳 桃園 劉世芳 新竹 劉世芳 苗栗 劉世芳 南投 劉世芳 花蓮 劉世芳 台東 劉世芳 澎湖 劉世芳 金門 劉世芳 馬祖 劉世芳 基隆 劉世芳 新北\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。 曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 執 ... <\/CONTENT> <URL> https://zh.wikipedia.org/wiki/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 刘世芳，女，汉族，1959年8月13日出生于台湾省，毕业于淡江大学化学工程系，拥有俄克拉何马州立大学环境工程硕士学位，中国台湾政治人物，隶属民进党新潮流系，现任中国台湾内务主管部门负责人。1993年，刘世芳步入台湾地区政坛，担任澎湖县政府机要秘书。陈水扁担任台北市长后，刘世芳 ... <\/CONTENT> <URL> https://baike.baidu.com/item/刘世芳/12427450 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 劉世芳，女，漢族，1959年8月生於台灣，台灣高雄副市長，劉世芳是台灣政治人物，曾任總統府副秘書長及行政院秘書長。 <\/CONTENT> <URL> https://www.newton.com.tw/wiki/劉世芳/12427450 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 刘世芳，女，汉族，1959年8月生于台湾省，曾获二等景星勋章。 曾任台湾地区领导人办公室副秘书长及行政机构秘书长，高雄市政府副市长。 现任中国台湾地区内部事务主管部门负责人 1。 <\/CONTENT> <URL> https://baike.sogou.com/v42881982.htm <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> [NOWnews今日新聞]準總統賴清德今宣布未來的新內閣，現任內政部長林右昌轉任民進黨秘書長，未來內政部長內定由前立委劉世芳接任。今年64歲的劉 ... <\/CONTENT> <URL> https://tw.news.yahoo.com/人物-劉世芳資歷完整-曾說扯鈴是中國文化-012440560.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 經歷 第9屆及第10屆立法委員 高雄市政府副市長 2009世界運動會組織委員會基金會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 第5屆立法委員 臺中縣政府副縣長 臺北市政府環境保護局長 <\/CONTENT> <URL> https://geaemba.com/member/內政部部長-劉世芳 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> [29] 退出高雄市長初選 2018年1月10日，劉世芳在臉書宣布退出民進黨高雄市長初選。 [30] 劉世芳說：「因為支持我，陳菊市長飽受攻擊。 令人痛心的是，連一本單純的回憶錄都被和初選扯在一起，無庸置疑的政績也被扭曲被懷疑。 <\/CONTENT> <URL> https://votetw.com/wiki/劉世芳 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 劉世芳（1959年8月13日—），中華民國政治人物，民主進步黨籍，現任內政部部長、總統府全社會防衛韌性委員會執行秘書。曾任立法委員、行政院秘書長、總統府副秘書長、國家安全會議副秘書長、行政院政務委員、高雄市副市長、臺中縣副縣長、2009高雄世運組織委員會基金會執行長、民進黨中央 ... <\/CONTENT> <URL> https://www.wikiwand.com/zh-hk/articles/劉世芳 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 任期內推動的重要成果：推動修訂刑法一百條『100行動聯盟』，推動國會 助理制度，廢除黑名單行動，台中關係法，集會 遊行法的推動。 <\/CONTENT> <URL> https://newcongress.yam.org.tw/director/03.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 今年64歲的劉世芳，從政經歷完整，是民進黨內女性政治人物代表，他在扁政府時期就獲重用，擔任高雄市副市長期間，更被視為是時任市長陳菊的分身。 不過2018年高雄市長初選，他與現任市長陳其邁間的裂痕，也導致後來民進黨丟掉市長寶座，讓韓國瑜當選。 <\/CONTENT> <URL> https://today.line.me/tw/v3/article/x2B6Zvw <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779243287703,\"end\":1779243299248},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779243299250,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a31b1001e6PNTOZ1enfYKd\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e4329fc72001ULloJpxiWgEO5G\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.031209,\"tokens\":{\"total\":9511,\"input\":9288,\"output\":223,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779243301279,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a399d001bHv16ggdWAGzfG\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e432a31b5001hT2aQM5UxO9fmy\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779243308994,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a399e001FVz9k7qCAWp6xx\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e432a31b5001hT2aQM5UxO9fmy\",\"type\":\"tool\",\"callID\":\"dce7d18c-58b6-4174-b523-662b4468059f\",\"tool\":\"asa_search_web_search\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"劉世芳 籍貫 台北 劉世芳 籍貫 高雄 劉世芳 籍貫 宜蘭 劉世芳 籍貫 屏東 劉世芳 籍貫 雲林 劉世芳 籍貫 嘉義 劉世芳 籍貫 台南 劉世芳 籍貫 台中 劉世芳 籍貫 桃園 劉世芳 籍貫 新竹 劉世芳 籍貫 苗栗 劉世芳 籍貫 南投 劉世芳 籍貫 花蓮 劉世芳 籍貫 台東 劉世芳 籍貫 澎湖 劉世芳 籍貫 金門 劉世芳 籍貫 馬祖 劉世芳 籍貫 基隆 劉世芳 籍貫 新北\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> 劉世芳（1959年8月13日—）， 中華民國 政治人物， 民主進步黨 籍，現任 內政部 部長、 總統府全社會防衛韌性委員會 執行秘書。曾任 立法委員 、 行政院秘書長 、 總統府 副秘書長、 國家安全會議 副秘書長、行政院政務委員、 高雄市 副市長、 臺中縣 副縣長、 2009高雄世運 組織委員會基金會 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/劉世芳 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 刘世芳，女，汉族，1959年8月13日出生于台湾省，毕业于淡江大学化学工程系，拥有俄克拉何马州立大学环境工程硕士学位，中国台湾政治人物，隶属民进党新潮流系，现任中国台湾内务主管部门负责人。1993年，刘世芳步入台湾地区政坛，担任澎湖县政府机要秘书。陈水扁担任台北市长后，刘世芳 ... <\/CONTENT> <URL> https://baike.baidu.com/item/刘世芳/12427450 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> [NOWnews今日新聞]準總統賴清德今宣布未來的新內閣，現任內政部長林右昌轉任民進黨秘書長，未來內政部長內定由前立委劉世芳接任。今年64歲的劉 ... <\/CONTENT> <URL> https://tw.news.yahoo.com/人物-劉世芳資歷完整-曾說扯鈴是中國文化-012440560.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 關於劉世芳的中央社新聞: 汛期將至伴聖嬰現象 劉世芳籲民眾提前整備防災、國海院攜手國家公園署 導入前端科技守護海洋、全國首座社宅結合長照 ... <\/CONTENT> <URL> https://www.cna.com.tw/tag/18429 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 臺北市政府環境保護局長 臺中縣政府副縣長 第5屆立法委員 行政院秘書長 總統府副秘書長 國家安全會議副秘書長 2009 ... <\/CONTENT> <URL> https://www.moi.gov.tw/cp.aspx?n=27 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 經歷 立法院 (第九屆)左楠區委員 高雄市副市長 2009高雄世運組委會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 立法院 (第五屆)委員 台中縣副縣長 台北市環保局長 澎湖縣政府機要秘書 工研院副工程師 <\/CONTENT> <URL> https://口袋國會.tw/part2_1_detail.php?sno=166&sect=10 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 經歷 第9屆及第10屆立法委員 高雄市政府副市長 2009世界運動會組織委員會基金會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 第5屆立法委員 臺中縣政府副縣長 臺北市政府環境保護局長 <\/CONTENT> <URL> https://geaemba.com/member/內政部部長-劉世芳 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 劉世芳，女，漢族，1959年8月生於台灣，台灣高雄副市長，劉世芳是台灣政治人物，曾任總統府副秘書長及行政院秘書長。 <\/CONTENT> <URL> https://www.newton.com.tw/wiki/劉世芳/12427450 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> [29] 退出高雄市長初選 2018年1月10日，劉世芳在臉書宣布退出民進黨高雄市長初選。 [30] 劉世芳說：「因為支持我，陳菊市長飽受攻擊。 令人痛心的是，連一本單純的回憶錄都被和初選扯在一起，無庸置疑的政績也被扭曲被懷疑。 <\/CONTENT> <URL> https://votetw.com/wiki/劉世芳 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> 學歷 美國奧克拉荷馬州州立大學環境工程碩士 淡江大學化學工程系學士 經歷 第九屆立法委員 高雄市副市長 2009高雄世運組委會常務董事 國家安全會議副秘書長 總統府副秘書長 行政院秘書長 第五屆立法委員 台中縣副縣長 台北市環保局長 澎湖縣政府機要秘書 工研院副工程師 電話 國會研究室：02 ... <\/CONTENT> <URL> https://www.congressnews.com.tw/legislator/371-100088.html <\/URL> __END_OF_SOURCE 10__\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1779243301279,\"end\":1779243308993},\"attachments\":[]}}}\n{\"type\":\"step_finish\",\"timestamp\":1779243308995,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a57c2001CenULC7SlASnu5\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e432a31b5001hT2aQM5UxO9fmy\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"cost\":0.036108,\"tokens\":{\"total\":11096,\"input\":10861,\"output\":235,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1779243312005,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a63840016cooMaEzJL7ieb\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e432a57c4001qi91oywGI1OaGH\",\"type\":\"step-start\"}}\n{\"type\":\"text\",\"timestamp\":1779243312005,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a6384002yHgiJEvkM4xBmL\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e432a57c4001qi91oywGI1OaGH\",\"type\":\"text\",\"text\":\"```json\\n{\\n  \\\"educational_attainment\\\": \\\"Master of Science in Environmental Engineering from Oklahoma State University; Bachelor of Science in Chemical Engineering from Tamkang University.\\\",\\n  \\\"prior_occupation\\\": \\\"Associate Engineer at the Industrial Technology Research Institute (ITRI).\\\",\\n  \\\"birth_year\\\": \\\"1959\\\",\\n  \\\"birth_place\\\": \\\"Unknown\\\",\\n  \\\"disability_status\\\": \\\"Unknown\\\",\\n  \\\"sexual_orientation\\\": \\\"Unknown\\\",\\n  \\\"class_background\\\": \\\"Middle class/professional\\\",\\n  \\\"sources\\\": {\\n    \\\"educational_attainment\\\": \\\"https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu\\\",\\n    \\\"prior_occupation\\\": \\\"https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu\\\",\\n    \\\"birth_year\\\": \\\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\\\",\\n    \\\"birth_place\\\": \\\"https://zh.wikipedia.org/zh-tw/%E5%88%98%E4%B8%96%E8%8A%B3\\\",\\n    \\\"disability_status\\\": \\\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\\\",\\n    \\\"sexual_orientation\\\": \\\"https://en.wikipedia.org/wiki/Liu_Shyh-fang\\\",\\n    \\\"class_background\\\": \\\"https://www.igf.org.tw/twigf2020/2020_speaker/shyh-fang-liu\\\"\\n  }\\n}\\n```\",\"time\":{\"start\":1779243312005,\"end\":1779243312005}}}\n{\"type\":\"step_finish\",\"timestamp\":1779243312007,\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"part\":{\"id\":\"prt_e432a6386001Z5pxRCurRENOY2\",\"sessionID\":\"ses_1bcd6760dffejQbAznp9zpEhrT\",\"messageID\":\"msg_e432a57c4001qi91oywGI1OaGH\",\"type\":\"step-finish\",\"reason\":\"stop\",\"cost\":0.043725,\"tokens\":{\"total\":12863,\"input\":12435,\"output\":428,\"reasoning\":0,\"cache\":{\"read\":0,\"write\":0}}}}\n"
+}

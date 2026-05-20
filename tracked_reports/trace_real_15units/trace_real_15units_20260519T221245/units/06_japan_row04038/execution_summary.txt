@@ -1,0 +1,62 @@
+{
+  "status": "success",
+  "unit": {
+    "unit_index": 6,
+    "unit_key": "06_japan_row04038",
+    "country": "Japan",
+    "row_id": 4038,
+    "person_name": "Kentaro Motomura",
+    "election_year": "2009",
+    "pol_party": "Democratic Party of Japan",
+    "region": "Southern Kanto",
+    "person_bday": "1970-01-01",
+    "gender_character": "Male",
+    "ethnic": "Japanese"
+  },
+  "started_at_utc": "2026-05-20T02:13:37Z",
+  "finished_at_utc": "2026-05-20T02:14:42Z",
+  "elapsed_time": 0.949,
+  "error_message": null,
+  "tool_names": null,
+  "unit_dir": "/Users/cjerzak/Documents/asa-software/tracked_reports/trace_real_15units/trace_real_15units_20260519T221245/units/06_japan_row04038",
+  "field_status": [],
+  "diagnostics": {
+    "opencode_cli_status": 0,
+    "opencode_process_timeout": false,
+    "opencode_timeout_seconds": 180,
+    "opencode_errors": [],
+    "opencode_parse_error": false,
+    "opencode_stderr": "",
+    "tool_loop_guard": {
+      "config": {
+        "recursion_limit": 40,
+        "search_budget_limit": 8,
+        "unknown_after_searches": 3,
+        "repeated_timeout_limit": 2,
+        "repeated_fetch_timeout_limit": 1,
+        "total_timeout_limit": 3,
+        "repeated_invalid_tool_limit": 2,
+        "total_invalid_tool_limit": 4,
+        "repeated_tool_request_limit": 4,
+        "tool_deadline_seconds": 15,
+        "mcp_timeout_ms": 20000
+      },
+      "tool_calls": 6,
+      "search_calls": 6,
+      "invalid_tool_calls": 0,
+      "tool_errors": 0,
+      "timeout_errors": 0,
+      "guard_errors": 0,
+      "cache_hits": 0,
+      "internal_tool_calls": 0,
+      "question_tool_calls": 0,
+      "pending_question_tool_calls": 0,
+      "repeated_signature_count": 1,
+      "most_repeated_signature": "asa_search_web_fetch:{\"url\":\"https://ja.wikipedia.org/wiki/本村賢太郎\"}",
+      "search_calls_limit": 8,
+      "search_calls_remaining": 2,
+      "search_budget_exhausted": false
+    }
+  },
+  "completion_gate": []
+}

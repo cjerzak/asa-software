@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Master's degree",
+  "educational_attainment_source": "https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5",
+  "prior_occupation": "Forester (Eigulys / Girininko pavaduotojas)",
+  "prior_occupation_source": "https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5",
+  "birth_year": 1982,
+  "birth_year_source": "https://lt.wikipedia.org/wiki/Justinas_Urbanavičius",
+  "birth_place": "Kaunas district, Lithuania",
+  "birth_place_source": "https://www.manobalsas.lt/politikai/partijos_info_2019.php?pol_hash=67928f01443fa837a5b143b8d0614ba5",
+  "disability_status": "Unknown",
+  "disability_status_source": "Unknown",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "Unknown"
+}

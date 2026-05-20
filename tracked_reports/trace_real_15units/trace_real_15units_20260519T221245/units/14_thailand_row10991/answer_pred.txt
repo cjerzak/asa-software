@@ -1,0 +1,10 @@
+{
+  "educational_attainment": "Unknown",
+  "prior_occupation": "Unknown",
+  "birth_year": "Unknown",
+  "birth_place": "Unknown",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Unknown",
+  "sources": ["https://www.nationthailand.com/in-focus/30193160", "https://www.bangkokpost.com/opinion/opinion/273817/the-underground-business-at-chatuchak-weekend-market"]
+}

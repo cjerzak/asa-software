@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Graduated from Konkuk University with a degree in Political Science and Diplomacy (transferred from Korean Language and Literature).",
+  "prior_occupation": "Journalist and Writer (worked for Hankook Ilbo and JoongAng Ilbo in the United States; also a novelist).",
+  "birth_year": "1953",
+  "birth_place": "Tokyo, Japan",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "https://alchetron.com/Kim-Han-gil",
+    "prior_occupation": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+    "birth_year": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+    "birth_place": "https://celebrity-birthdays.com/people/kim-han-gil",
+    "disability_status": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+    "sexual_orientation": "https://en.wikipedia.org/wiki/Kim_Han-gil",
+    "class_background": "https://alchetron.com/Kim-Han-gil"
+  }
+}
