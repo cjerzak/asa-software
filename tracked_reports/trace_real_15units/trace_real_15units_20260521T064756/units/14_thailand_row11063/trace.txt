@@ -1,0 +1,638 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360566965,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a278eb40010S16A5AU6W7Spd",
+        "messageID": "msg_e4a27845c001htFaUIYIp0ZsJk",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360569052,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "04ff7675-fe78-4643-ab22-9ee9bcb28bb8",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Chuvit Witakpornpallop biography Pheu Thai Thailand"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP or PT; / ˌpʌˈtaɪ / PUH TY;Thai: พรรคเพื่อไทย, RTGS: Phak PhueaThai[pʰǎk pʰɯ̂a tʰāj], lit. 'ForThaisParty') is a major populist, liberal conservative political party inThailand. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Pheu_Thai_Party <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Chuwit Kamolvisit (Thai: ชูวิทย์ กมลวิศิษฎ์; RTGS: Chuwit Kamonwisit; born 29 August 1961) is a controversialThaipolitician who was once the country's biggest massage parlour owner, known as the \"tub tycoon\". [1] After an arrest in 2003, he publicly claimed that he paid large bribes to manyThaipolice officers. He then sold some of his massage parlors ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chuwit_Kamolvisit <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> AsThailandmoves closer to a likely general election in March 2026, political currents are shifting fast. ThePheuThaiParty -- once the undisputed electoral powerhouse -- now faces existential ... <\/CONTENT> <URL> https://www.bangkokpost.com/thailand/special-reports/3123046/pheu-thais-identity-crisis <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> PheuThaiParty: A major political party inThailand, with its headquarters in Bangkok, thePheuThaiParty is dedicated to improving the quality of life for its citizens and protecting national ... <\/CONTENT> <URL> https://www.scmp.com/topics/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> In the last election in 2023,PheuThaiwon 73 of 133 direct constituency seats available across 20 provinces inThailand'snorth-east, which houses four million of the country's 8.56 million ... <\/CONTENT> <URL> https://www.straitstimes.com/asia/se-asia/rural-thai-voters-shift-old-loyalties-testing-pheu-thais-populist-machine <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ThePheuThaiParty was founded on 20 September 2007, as an anticipated replacement for the People's Power Party (PPP), which the Constitutional Court ofThailanddissolved less than three months later after finding party members guilty of electoral fraud. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Pheu_Thai_Party <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KRITDIKORN WONGSWANGPANICH The results ofThailand's2023 general elections came as a shock. ThePheuThaiParty (PTP), which had won the five previous ballots, came second to a relative newcomer, the Move Forward Party (MFP). As soon as the polls closed, local and international media was saturated with articles that tried to make sense of the defeat,1 while condemnations of the party's ... <\/CONTENT> <URL> https://www.jstor.org/stable/pdf/27278479.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Long before he reinvented himself asThailand'ssleek-haired, pencil-mustached antihero against crime and corruption, Chuwit wanted to be the nation's answer to Hugh Hefner. And he was. <\/CONTENT> <URL> https://www.vice.com/en/article/thailand-whistleblower-anti-corruption-chuwit <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Outspoken politician, founder and leader of Rak Prathetthai Party Place of Birth: Bangkok Date of Birth: Tue Aug 29, 1961 Age: 65 Family Background: Born to a Hong Kong-born Chinese father and aThaimother Education: Thepsirin School B.A. Commerce and Accountancy, Thammasat University MBA San Diego University, California, USA M.A. Political Science, Thammasat University Career: Founded the ... <\/CONTENT> <URL> https://whoswho-thailand.com/listing/chuwit-kamolvisit <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Life The fast life and slow exit ofThaishowman Chuwit Flamboyant public figure leaves sex, scandals and politics behind. Or does he? <\/CONTENT> <URL> https://asia.nikkei.com/life-arts/life/the-fast-life-and-slow-exit-of-thai-showman-chuwit <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360566973,
+            "end": 1779360569051
+          }
+        },
+        "id": "prt_e4a278eb60017janSFati9Mhun",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27845c001htFaUIYIp0ZsJk"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360570498,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "625b8de0-5845-41bc-913f-24abe21013b3",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "ชูวิทย์ พิทักษ์พรพัลลภ ประวัติ"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> วันที่ 12 พ.ย.2568ชูวิทย์กุ่ยพิทักษ์พรพัลลภจัดงานฉลองวันเกิดครบ 61 ปี ที่บ้านหนองขุหลุ ต.ขุหลุ อ.ตระการพืชผล จ.อุบลราชธานี ซึ่ง ... <\/CONTENT> <URL> https://www.nationtv.tv/blogs/politic/rueang-mai-cop/378969317 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> สำนักงานใหญ่พรรคเพื่อไทย เลขที่ 197 ถนนวิภาวดีรังสิต แขวงสาม ... <\/CONTENT> <URL> https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ประวัติทางการเมือง หมายเหตุ : ข้อมูลย้อนหลังถึงปี 2562 <\/CONTENT> <URL> https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ทางด้านลูกสาวนายชูวิทย์ นางสาว สุดารัตน์พิทักษ์พรพัลลภ- กานต์ ส.ส.อุบลราชธานี เขต 7 พรรคเพื่อไทย เปิดเผยผ่านเฟสบุ้คส่วนตัว ... <\/CONTENT> <URL> https://www.guideubon.com/detail.php?a_id=1348 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> นายชูวิทย์พิทักษ์พรพัลลภอดีต สส.อุบลราชธานี พรรคเพื่อไทย ได้ยื่นขอลาออกออกจากการเป็นสมาชิกพรรคเพื่อไทยเมื่อวัน ที่ 25 ก.ย. ... <\/CONTENT> <URL> https://www.facebook.com/PPTVHD36/posts/1334005035435867 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ประวัติและข้อมูล นายชูวิทย์พิทักษ์พรพัลลภผู้สมัคร ส.ส. พรรคกล้าธรรม ในการเลือกตั้ง 2569 หมายเลขอะไร อยู่ลำดับที่เท่าไหร่ เช็กรายละเอียดและผล ... <\/CONTENT> <URL> https://election2026.tnnthailand.com/party-list/42/1004 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://www.wikiwand.com/th/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> วันที่ 27 ก.ย. 2568 นายชูวิทย์พิทักษ์พรพัลลภอดีต สส.อุบลราชธานี พรรคเพื่อไทย ได้ยื่นขอลาออกออกจากการเป็นสมาชิกพรรคเพื่อไทย ... <\/CONTENT> <URL> https://today.line.me/th/v3/article/LXr32Rl <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> แก้ รธน. พรรคพลังประชารัฐ สิทธิเสรีภาพ / บัตรเลือกตั้ง 2 ใบ / ตัดบทลงโทษ ส.ส.ดูเรื่องงบ / ตัดข้อห้าม ส.ส.เกี่ยวข้องราชการ / ให้ ส.ส. ร่วมติดตามปฏิรูป ... <\/CONTENT> <URL> https://theyworkforus.wevis.info/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360566978,
+            "end": 1779360570496
+          }
+        },
+        "id": "prt_e4a278ebf0019AiNTO3ywekALQ",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27845c001htFaUIYIp0ZsJk"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360570506,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a279c83001blI1fsWGiihWlb",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27845c001htFaUIYIp0ZsJk",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5390,
+          "input": 5090,
+          "output": 300,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0198
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360573219,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27a722001xbQA2ZJNXqiObY",
+        "messageID": "msg_e4a279c88001MVqqV1XxLFcTBb",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360573949,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "079214eb-27f4-4c9e-96d3-f4ef8bca808d",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ"
+          },
+          "output": "URL: https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ\nFinal URL: https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0\nTitle: ชูวิทย์ พิทักษ์พรพัลลภ - วิกิพีเดีย\nBytes read: 128542\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nข้ามไปเนื้อหา\nเมนูหลัก\nเมนูหลัก\nย้ายเมนูไปที่แถบด้านข้าง\nซ่อน\nการนำทาง\nหน้าหลัก\n[link: https://th.wikipedia.org/wiki/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81]\nถามคำถาม\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B8%84%E0%B8%B3%E0%B8%96%E0%B8%B2%E0%B8%A1]\nเหตุการณ์ปัจจุบัน\n[link: https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B5%E0%B8%A2%E0%B9%88%E0%B8%AD%E0%B8%A2:%E0%B9%80%E0%B8%AB%E0%B8%95%E0%B8%B8%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B8%9B%E0%B8%B1%E0%B8%88%E0%B8%88%E0%B8%B8%E0%B8%9A%E0%B8%B1%E0%B8%99]\nสุ่มบทความ\n[link: https://th.wikipedia.org/wiki/%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9:%E0%B8%AA%E0%B8%B8%E0%B9%88%E0%B8%A1]\nเกี่ยวกับวิกิพีเดีย\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A]\nติดต่อเรา\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360573223,
+            "end": 1779360573948
+          }
+        },
+        "id": "prt_e4a27a723001ADRi1PHtnDudd8",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a279c88001MVqqV1XxLFcTBb"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360573955,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27a9fe001x3ER3wCfRsnaxm",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a279c88001MVqqV1XxLFcTBb",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7996,
+          "input": 7544,
+          "output": 452,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0294
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360575300,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27af42001Ev9pHIgUwvV1g9",
+        "messageID": "msg_e4a27aa01001ya45M0964blFxU",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360575308,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "b9c6e8cb-b5dc-4aa2-aa67-77cd0990942f",
+        "state": {
+          "status": "completed",
+          "input": {
+            "offset": 2000,
+            "url": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ",
+            "limit": 5000
+          },
+          "output": "ASA_TOOL_CACHE_HIT\nURL: https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ\nFinal URL: https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0\nTitle: ชูวิทย์ พิทักษ์พรพัลลภ - วิกิพีเดีย\nBytes read: 128542\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nข้ามไปเนื้อหา\nเมนูหลัก\nเมนูหลัก\nย้ายเมนูไปที่แถบด้านข้าง\nซ่อน\nการนำทาง\nหน้าหลัก\n[link: https://th.wikipedia.org/wiki/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81]\nถามคำถาม\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B8%84%E0%B8%B3%E0%B8%96%E0%B8%B2%E0%B8%A1]\nเหตุการณ์ปัจจุบัน\n[link: https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B5%E0%B8%A2%E0%B9%88%E0%B8%AD%E0%B8%A2:%E0%B9%80%E0%B8%AB%E0%B8%95%E0%B8%B8%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B8%9B%E0%B8%B1%E0%B8%88%E0%B8%88%E0%B8%B8%E0%B8%9A%E0%B8%B1%E0%B8%99]\nสุ่มบทความ\n[link: https://th.wikipedia.org/wiki/%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9:%E0%B8%AA%E0%B8%B8%E0%B9%88%E0%B8%A1]\nเกี่ยวกับวิกิพีเดีย\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A]\nติดต่อเรา\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360575304,
+            "end": 1779360575307
+          }
+        },
+        "id": "prt_e4a27af44001F0Oy3rb85NSeCt",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27aa01001ya45M0964blFxU"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360575314,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27af4c0015K8UtC4hBjZMeb",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27aa01001ya45M0964blFxU",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8895,
+          "input": 8780,
+          "output": 115,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0281
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360576849,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27b550001qG4uMbQ4oiAtVY",
+        "messageID": "msg_e4a27af500015RuTkOrpy9xeS6",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360584628,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "4ea99119-03e2-4cfd-808c-584d00d03bad",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล"
+          },
+          "output": "URL: https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล\nFinal URL: https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5\nTitle: นาย ชูวิทย์ พิทักษ์พรพัลลภ - พรรคเพื่อไทย\nBytes read: 44122\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nข่าวสารพรรค\n[link: https://www.ptp.or.th/%e0%b8%82%e0%b9%88%e0%b8%b2%e0%b8%a7%e0%b8%aa%e0%b8%b2%e0%b8%a3%e0%b8%88%e0%b8%b2%e0%b8%81%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\nประกาศ\n[link: https://www.ptp.or.th/archives/category/%e0%b8%9b%e0%b8%a3%e0%b8%b0%e0%b8%81%e0%b8%b2%e0%b8%a8]\nPheu Thai – YPP\n[link: https://www.ptp.or.th/ypp]\nเกี่ยวกับพรรค\nกรรมการบริหารพรรคเพื่อไทย\n[link: https://www.ptp.or.th/%e0%b8%81%e0%b8%a3%e0%b8%a3%e0%b8%a1%e0%b8%81%e0%b8%b2%e0%b8%a3%e0%b8%9a%e0%b8%a3%e0%b8%ab%e0%b8%b2%e0%b8%a3%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\nนโยบาย\nนโยบายเลือกตั้ง 2569\n[link: https://election.ptp.or.th/policy]\n2568 โอกาสไทย ทำได้จริง\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2%e0%b8%a3%e0%b8%b0%e0%b8%a2%e0%b8%b0%e0%b8%a2%e0%b8%b2%e0%b8%a7]\nนโยบาย 2566\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2]\nณ วันนั้น\n[link: https://www.ptp.or.th/%e0%b8%93-%e0%b8%a7%e0%b8%b1%e0%b8%99%e0%b8%99%e0%b8%b1%e0%b9%89%e0%b8%99]\nติดต่อพรรค\n[link: https://www.ptp.or.th/%e0%b8%95%e0%b8%b4%e0%b8%94%e0%b8%95%e0%b9%88%e0%b8%ad]\nนาย ชูวิทย์ พิทักษ์พรพัลลภ\nตำแหน่ง\nส.ส.แบ่งเขต\nเขต 7\nจังหวัด อุบลราชธานี\nประวัติการศึกษา\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360576853,
+            "end": 1779360584626
+          }
+        },
+        "id": "prt_e4a27b552001YXYiIMnN0mpJD8",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27af500015RuTkOrpy9xeS6"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360584637,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27d3b5001zyvjpWTE2wFVnu",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27af500015RuTkOrpy9xeS6",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10142,
+          "input": 10038,
+          "output": 104,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0317
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360586842,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27dc59001aFqHit2srEUgln",
+        "messageID": "msg_e4a27d3bb001dhYGTs4KjcEblT",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360586905,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "0b5a1937-2624-4e93-bf7a-b76f824d2bd8",
+        "state": {
+          "status": "completed",
+          "input": {
+            "limit": 5000,
+            "url": "https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5",
+            "offset": 2000
+          },
+          "output": "URL: https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5\nFinal URL: https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5\nTitle: นาย ชูวิทย์ พิทักษ์พรพัลลภ - พรรคเพื่อไทย\nBytes read: 44122\nCache: HIT\n\nRelevant excerpts:\n\n[1]\nข่าวสารพรรค\n[link: https://www.ptp.or.th/%e0%b8%82%e0%b9%88%e0%b8%b2%e0%b8%a7%e0%b8%aa%e0%b8%b2%e0%b8%a3%e0%b8%88%e0%b8%b2%e0%b8%81%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\nประกาศ\n[link: https://www.ptp.or.th/archives/category/%e0%b8%9b%e0%b8%a3%e0%b8%b0%e0%b8%81%e0%b8%b2%e0%b8%a8]\nPheu Thai – YPP\n[link: https://www.ptp.or.th/ypp]\nเกี่ยวกับพรรค\nกรรมการบริหารพรรคเพื่อไทย\n[link: https://www.ptp.or.th/%e0%b8%81%e0%b8%a3%e0%b8%a3%e0%b8%a1%e0%b8%81%e0%b8%b2%e0%b8%a3%e0%b8%9a%e0%b8%a3%e0%b8%ab%e0%b8%b2%e0%b8%a3%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\nนโยบาย\nนโยบายเลือกตั้ง 2569\n[link: https://election.ptp.or.th/policy]\n2568 โอกาสไทย ทำได้จริง\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2%e0%b8%a3%e0%b8%b0%e0%b8%a2%e0%b8%b0%e0%b8%a2%e0%b8%b2%e0%b8%a7]\nนโยบาย 2566\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2]\nณ วันนั้น\n[link: https://www.ptp.or.th/%e0%b8%93-%e0%b8%a7%e0%b8%b1%e0%b8%99%e0%b8%99%e0%b8%b1%e0%b9%89%e0%b8%99]\nติดต่อพรรค\n[link: https://www.ptp.or.th/%e0%b8%95%e0%b8%b4%e0%b8%94%e0%b8%95%e0%b9%88%e0%b8%ad]\nนาย ชูวิทย์ พิทักษ์พรพัลลภ\nตำแหน่ง\nส.ส.แบ่งเขต\nเขต 7\nจังหวัด อุบลราชธานี\nประวัติการศึกษา\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360586846,
+            "end": 1779360586904
+          }
+        },
+        "id": "prt_e4a27dc5b001ky2cTFy6AVruJu",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27d3bb001dhYGTs4KjcEblT"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360586912,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27dc9a001Mlo7Gos84AFNv3",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27d3bb001dhYGTs4KjcEblT",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11622,
+          "input": 11319,
+          "output": 303,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0385
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360588462,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27e2ad001mwtvxbYrXOg9GN",
+        "messageID": "msg_e4a27dc9e001z2dK48ac4X0mMM",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360590220,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "53de274e-087a-438d-b79f-040501abcb27",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad"
+          },
+          "output": "URL: https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad\nFinal URL: https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad\nTitle: ชูวิทย์ พิทักษ์พรพัลลภ - Parliament Watch\nBytes read: 78045\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nนักการเมือง\nการลงมติ\n[link: https://parliamentwatch.wevis.info/assemblies/latest/representative/votes]\nการเสนอกฎหมาย\nเกี่ยวกับเรา\nหน้าหลัก\n[link: https://parliamentwatch.wevis.info/]\nนักการเมือง\nชูวิทย์ พิทักษ์พรพัลลภ\n[link: https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad]\nนาย ชูวิทย์ พิทักษ์พรพัลลภ\nไม่อยู่ในตำแหน่งทางการเมือง\nดาวน์โหลดข้อมูล\nผลการลงมติรายคน\n[link: https://parliamentwatch.wevis.info/files/download/politicians/47adf106-0997-4eea-848f-46f6247c81ad-votes.csv]\nอัปเดตข้อมูล: 8 พฤษภาคม 2569\nแชร์ประวัติ\nข้อมูลพื้นฐาน\nประวัติทางการเมือง\n1 ตำแหน่ง\n1 พรรคการเมือง\nประวัติการลงมติ\nเห็นด้วย 22 มติ\nไม่เห็นด้วย 2 มติ\nลา / ขาดลงมติ 73 มติ\nข้อมูลพื้นฐาน\nเพศ\nชาย\nวันเกิด\n12 พฤศจิกายน 2506\n(62 ปี)\nการศึกษา\nปริญญาตรี ครุศาสตรบัณฑิต (การบริหารการศึกษา) สถาบันราชภัฏอุบลราชธานี\nอาชีพเดิม\nสมาชิกสภาผู้แทนราษฎร\nช่องทางติดต่อ\nFacebook\n[link: https://www.facebook.com/Chuvitkui/]\nX (Twitter)\n[link: https://twitter.com/ChuvitP]\nประวัติทางการเมือง\nหมายเหตุ : ข้อมูลย้อนหลังถึงปี 2562\n1 ตำแหน่งทางการเมือง\nสมาชิกสภาผู้แทนราษฎร\nสภาผู้แทนราษฎร ชุดที่ 25\n[link: https://parliamentwatch.wevis.info/assemblies/สภาผู้แทนราษฎร-25]\n(มี.ค. 2562 - มี.ค. 2566)\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360588466,
+            "end": 1779360590218
+          }
+        },
+        "id": "prt_e4a27e2ae001Y18wj3tdbDiniN",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27dc9e001z2dK48ac4X0mMM"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360590226,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27e98c0013n638KhwLIeu1H",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27dc9e001z2dK48ac4X0mMM",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 13106,
+          "input": 12984,
+          "output": 122,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0408
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360591683,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27ef42001gYepwKP6Sa6YFc",
+        "messageID": "msg_e4a27e9900011gflJ4mdHGMC6Q",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360593064,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "337ad2d1-a16d-4d45-a1e3-60a24419bce9",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "ชูวิทย์ พิทักษ์พรพัลลภ อาชีพก่อนเล่นการเมือง"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ประวัติทางการเมือง หมายเหตุ : ข้อมูลย้อนหลังถึงปี 2562 <\/CONTENT> <URL> https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> อย่าขิงกัน!ชูวิทย์ (กุ่ย)เล่าอยู่มานานไม่ 5mo 3 ดอกบัว ไข่หง กะหรี่ปับ ลูกใหย่ใส้เยอะ สมัยหน้าสอบตกคือเก่า..เชื่อเถอะ 5mo ธงชัย เทียนสว่าง ประชาชน ... <\/CONTENT> <URL> https://www.facebook.com/ThePoliticsByMatichon/posts/ชูวิทย์-พิทักษ์พรพัลลภ-ที่ปรึกษารัฐมนตรีว่าการกระทรวงเกษตร-ร้อยเอกธรรมนัส-พรหมเผ/1248122780689548 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> สำนักงานใหญ่พรรคเพื่อไทย เลขที่ 197 ถนนวิภาวดีรังสิต แขวงสาม ... <\/CONTENT> <URL> https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 23,062 views • Sep 27, 2025 • #ข่าวการเมือง #พรรคเพื่อไทย #ชูวิทย์พิทักษ์พรพัลลภ <\/CONTENT> <URL> https://www.youtube.com/watch?v=rk9ewimDdS4 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 27 กันยายน 2568 ผู้สื่อข่าวรายงานว่า เมื่อวันที่ 25 กันยายน 2568 ที่ผ่านมา นายชูวิทย์พิทักษ์พรพัลลภหรือชูวิทย์กุ่ย ได้ทำหนังสือ ... <\/CONTENT> <URL> https://www.nationtv.tv/politic/378967325 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://www.wikiwand.com/th/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> แก้ รธน. พรรคพลังประชารัฐ สิทธิเสรีภาพ / บัตรเลือกตั้ง 2 ใบ / ตัดบทลงโทษ ส.ส.ดูเรื่องงบ / ตัดข้อห้าม ส.ส.เกี่ยวข้องราชการ / ให้ ส.ส. ร่วมติดตามปฏิรูป ... <\/CONTENT> <URL> https://theyworkforus.wevis.info/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> ร่างพรรคเพื่อไทย ฉบับที่ 1 เพิ่มสิทธิเสรีภาพของประชาชน สิทธิในกระบวนการยุติธรรม สิทธิพิทักษ์รัฐธรรมนูญ เสรีภาพในการแสดง ... <\/CONTENT> <URL> https://theyworkforus.elect.in.th/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://wikimore.private.coffee/wiki/th/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360591686,
+            "end": 1779360593063
+          }
+        },
+        "id": "prt_e4a27ef43001LW4tgfPtVXVQNh",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27e9900011gflJ4mdHGMC6Q"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360593069,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27f4a80017vtcJwnKgn8EME",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27e9900011gflJ4mdHGMC6Q",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 13881,
+          "input": 13785,
+          "output": 96,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0428
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360594435,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27fa01001OmtPsjdVNb3lQD",
+        "messageID": "msg_e4a27f4ac001F6FF2neJqllUj5",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360595802,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "bce8cdb4-d7ab-4c1e-b0f1-0d5cb639ccee",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ อะไร"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ชูวิทย์กุ่ย พิทักษ์พรพัลลภ. 46,942 likes · 4 talking about this. Public figure <\/CONTENT> <URL> https://www.facebook.com/Chuvitkui <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ๑. นายชูวิทย์พิทักษ์พรพัลลภให้ดำรงตำแหน่ง ที่ปรึกษารัฐมนตรีว่าการกระทรวงเกษตรและสหกรณ์ ๒. <\/CONTENT> <URL> https://www.bangkokbiznews.com/news/news-update/1205514 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> วันที่ 27 ก.ย. 2568 นายชูวิทย์พิทักษ์พรพัลลภอดีต สส.อุบลราชธานี พรรคเพื่อไทย ได้ยื่นขอลาออกออกจากการเป็นสมาชิกพรรคเพื่อไทย ... <\/CONTENT> <URL> https://today.line.me/th/v3/article/LXr32Rl <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 1 ตำแหน่งทางการเมือง สมาชิกสภาผู้แทนราษฎร สภาผู้แทนราษฎร ชุดที่ 25 (มี.ค. 2562 - มี.ค. 2566) <\/CONTENT> <URL> https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> สำนักงานใหญ่พรรคเพื่อไทย เลขที่ 197 ถนนวิภาวดีรังสิต แขวงสาม ... <\/CONTENT> <URL> https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ร่างพรรคเพื่อไทย ฉบับที่ 1 เพิ่มสิทธิเสรีภาพของประชาชน สิทธิในกระบวนการยุติธรรม สิทธิพิทักษ์รัฐธรรมนูญ เสรีภาพในการแสดง ... <\/CONTENT> <URL> https://theyworkforus.elect.in.th/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://www.wikiwand.com/th/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> สมัยออนทัวรีดน้ำเชื้อทั่วไทย ยุคปี 50 วันเฉลิมฟาร์ม อ.ผาขาว \"บอยอุบล สส.ชูวิทย์\"_ (เกิด12/06/40) ทายาทบูลบราซิล บุญนาค-835 แม่โบว์แดง ... <\/CONTENT> <URL> https://www.facebook.com/chuvit.pitakpornpunlup/photos_albums <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ทางด้านลูกสาวนายชูวิทย์ นางสาว สุดารัตน์พิทักษ์พรพัลลภ- กานต์ ส.ส.อุบลราชธานี เขต 7 พรรคเพื่อไทย เปิดเผยผ่านเฟสบุ้คส่วนตัว ... <\/CONTENT> <URL> https://www.guideubon.com/detail.php?a_id=1348 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360594440,
+            "end": 1779360595801
+          }
+        },
+        "id": "prt_e4a27fa0400104rRYecP2hHU55",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27f4ac001F6FF2neJqllUj5"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360595808,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a27ff5a001CmNXwoXtbfqmwL",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27f4ac001F6FF2neJqllUj5",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 15119,
+          "input": 15026,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0465
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360598245,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a2808e4001jtoh00tNDtN2r9",
+        "messageID": "msg_e4a27ff5e001xL5zwyU4mjhbk4",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360598257,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "d3b156a6-5959-480a-98e7-08cf73559bfb",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ ฟาร์ม วัว"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 0, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ ฟาร์ม วัว\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ ฟาร์ม วัว\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360598249,
+            "end": 1779360598256
+          }
+        },
+        "id": "prt_e4a2808e50011sYe3UTNzrAD31",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "messageID": "msg_e4a27ff5e001xL5zwyU4mjhbk4"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360598263,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a2808f1001Agi0oUzDEYxePL",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27ff5e001xL5zwyU4mjhbk4",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-finish",
+        "tokens": {
+          "total": 16295,
+          "input": 16198,
+          "output": 97,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.05
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360713463,
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "id": "prt_e4a29caf3001pz4K3e92hqXi2t",
+        "messageID": "msg_e4a2808f5001wjeKerdK3zzk53",
+        "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Bachelor of Education (Educational Administration), Rajabhat Institute Ubon Ratchathani\",\n  \"prior_occupation\": \"Businessman (Livestock/Farm owner)\",\n  \"birth_year\": \"1963\",\n  \"birth_place\": \"Ubon Ratchathani, Thailand\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad\",\n    \"prior_occupation\": \"https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0\",\n    \"birth_year\": \"https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad\",\n    \"birth_place\": \"https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\"\n  }\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b5d87c23ffeXb1qwyPPDNb2pl",
+  "opencode_export_final_text_chars": 1189,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360566965,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a278eb40010S16A5AU6W7Spd\",\"messageID\":\"msg_e4a27845c001htFaUIYIp0ZsJk\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360569052,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"04ff7675-fe78-4643-ab22-9ee9bcb28bb8\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Chuvit Witakpornpallop biography Pheu Thai Thailand\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ThePheuThaiParty (PTP or PT; / ˌpʌˈtaɪ / PUH TY;Thai: พรรคเพื่อไทย, RTGS: Phak PhueaThai[pʰǎk pʰɯ̂a tʰāj], lit. 'ForThaisParty') is a major populist, liberal conservative political party inThailand. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Pheu_Thai_Party <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Chuwit Kamolvisit (Thai: ชูวิทย์ กมลวิศิษฎ์; RTGS: Chuwit Kamonwisit; born 29 August 1961) is a controversialThaipolitician who was once the country's biggest massage parlour owner, known as the \\\"tub tycoon\\\". [1] After an arrest in 2003, he publicly claimed that he paid large bribes to manyThaipolice officers. He then sold some of his massage parlors ... <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chuwit_Kamolvisit <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> AsThailandmoves closer to a likely general election in March 2026, political currents are shifting fast. ThePheuThaiParty -- once the undisputed electoral powerhouse -- now faces existential ... <\/CONTENT> <URL> https://www.bangkokpost.com/thailand/special-reports/3123046/pheu-thais-identity-crisis <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> PheuThaiParty: A major political party inThailand, with its headquarters in Bangkok, thePheuThaiParty is dedicated to improving the quality of life for its citizens and protecting national ... <\/CONTENT> <URL> https://www.scmp.com/topics/pheu-thai-party-thailand <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> In the last election in 2023,PheuThaiwon 73 of 133 direct constituency seats available across 20 provinces inThailand'snorth-east, which houses four million of the country's 8.56 million ... <\/CONTENT> <URL> https://www.straitstimes.com/asia/se-asia/rural-thai-voters-shift-old-loyalties-testing-pheu-thais-populist-machine <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ThePheuThaiParty was founded on 20 September 2007, as an anticipated replacement for the People's Power Party (PPP), which the Constitutional Court ofThailanddissolved less than three months later after finding party members guilty of electoral fraud. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Pheu_Thai_Party <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KRITDIKORN WONGSWANGPANICH The results ofThailand's2023 general elections came as a shock. ThePheuThaiParty (PTP), which had won the five previous ballots, came second to a relative newcomer, the Move Forward Party (MFP). As soon as the polls closed, local and international media was saturated with articles that tried to make sense of the defeat,1 while condemnations of the party's ... <\/CONTENT> <URL> https://www.jstor.org/stable/pdf/27278479.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Long before he reinvented himself asThailand'ssleek-haired, pencil-mustached antihero against crime and corruption, Chuwit wanted to be the nation's answer to Hugh Hefner. And he was. <\/CONTENT> <URL> https://www.vice.com/en/article/thailand-whistleblower-anti-corruption-chuwit <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Outspoken politician, founder and leader of Rak Prathetthai Party Place of Birth: Bangkok Date of Birth: Tue Aug 29, 1961 Age: 65 Family Background: Born to a Hong Kong-born Chinese father and aThaimother Education: Thepsirin School B.A. Commerce and Accountancy, Thammasat University MBA San Diego University, California, USA M.A. Political Science, Thammasat University Career: Founded the ... <\/CONTENT> <URL> https://whoswho-thailand.com/listing/chuwit-kamolvisit <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Life The fast life and slow exit ofThaishowman Chuwit Flamboyant public figure leaves sex, scandals and politics behind. Or does he? <\/CONTENT> <URL> https://asia.nikkei.com/life-arts/life/the-fast-life-and-slow-exit-of-thai-showman-chuwit <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360566973,\"end\":1779360569051}},\"id\":\"prt_e4a278eb60017janSFati9Mhun\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27845c001htFaUIYIp0ZsJk\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360570498,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"625b8de0-5845-41bc-913f-24abe21013b3\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"ชูวิทย์ พิทักษ์พรพัลลภ ประวัติ\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> วันที่ 12 พ.ย.2568ชูวิทย์กุ่ยพิทักษ์พรพัลลภจัดงานฉลองวันเกิดครบ 61 ปี ที่บ้านหนองขุหลุ ต.ขุหลุ อ.ตระการพืชผล จ.อุบลราชธานี ซึ่ง ... <\/CONTENT> <URL> https://www.nationtv.tv/blogs/politic/rueang-mai-cop/378969317 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> สำนักงานใหญ่พรรคเพื่อไทย เลขที่ 197 ถนนวิภาวดีรังสิต แขวงสาม ... <\/CONTENT> <URL> https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ประวัติทางการเมือง หมายเหตุ : ข้อมูลย้อนหลังถึงปี 2562 <\/CONTENT> <URL> https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ทางด้านลูกสาวนายชูวิทย์ นางสาว สุดารัตน์พิทักษ์พรพัลลภ- กานต์ ส.ส.อุบลราชธานี เขต 7 พรรคเพื่อไทย เปิดเผยผ่านเฟสบุ้คส่วนตัว ... <\/CONTENT> <URL> https://www.guideubon.com/detail.php?a_id=1348 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> นายชูวิทย์พิทักษ์พรพัลลภอดีต สส.อุบลราชธานี พรรคเพื่อไทย ได้ยื่นขอลาออกออกจากการเป็นสมาชิกพรรคเพื่อไทยเมื่อวัน ที่ 25 ก.ย. ... <\/CONTENT> <URL> https://www.facebook.com/PPTVHD36/posts/1334005035435867 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ประวัติและข้อมูล นายชูวิทย์พิทักษ์พรพัลลภผู้สมัคร ส.ส. พรรคกล้าธรรม ในการเลือกตั้ง 2569 หมายเลขอะไร อยู่ลำดับที่เท่าไหร่ เช็กรายละเอียดและผล ... <\/CONTENT> <URL> https://election2026.tnnthailand.com/party-list/42/1004 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://www.wikiwand.com/th/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> วันที่ 27 ก.ย. 2568 นายชูวิทย์พิทักษ์พรพัลลภอดีต สส.อุบลราชธานี พรรคเพื่อไทย ได้ยื่นขอลาออกออกจากการเป็นสมาชิกพรรคเพื่อไทย ... <\/CONTENT> <URL> https://today.line.me/th/v3/article/LXr32Rl <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> แก้ รธน. พรรคพลังประชารัฐ สิทธิเสรีภาพ / บัตรเลือกตั้ง 2 ใบ / ตัดบทลงโทษ ส.ส.ดูเรื่องงบ / ตัดข้อห้าม ส.ส.เกี่ยวข้องราชการ / ให้ ส.ส. ร่วมติดตามปฏิรูป ... <\/CONTENT> <URL> https://theyworkforus.wevis.info/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360566978,\"end\":1779360570496}},\"id\":\"prt_e4a278ebf0019AiNTO3ywekALQ\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27845c001htFaUIYIp0ZsJk\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360570506,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a279c83001blI1fsWGiihWlb\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27845c001htFaUIYIp0ZsJk\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":5390,\"input\":5090,\"output\":300,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.01977}}\n{\"type\":\"step_start\",\"timestamp\":1779360573219,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27a722001xbQA2ZJNXqiObY\",\"messageID\":\"msg_e4a279c88001MVqqV1XxLFcTBb\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360573949,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"079214eb-27f4-4c9e-96d3-f4ef8bca808d\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ\"},\"output\":\"URL: https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ\\nFinal URL: https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0\\nTitle: ชูวิทย์ พิทักษ์พรพัลลภ - วิกิพีเดีย\\nBytes read: 128542\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nข้ามไปเนื้อหา\\nเมนูหลัก\\nเมนูหลัก\\nย้ายเมนูไปที่แถบด้านข้าง\\nซ่อน\\nการนำทาง\\nหน้าหลัก\\n[link: https://th.wikipedia.org/wiki/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81]\\nถามคำถาม\\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B8%84%E0%B8%B3%E0%B8%96%E0%B8%B2%E0%B8%A1]\\nเหตุการณ์ปัจจุบัน\\n[link: https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B5%E0%B8%A2%E0%B9%88%E0%B8%AD%E0%B8%A2:%E0%B9%80%E0%B8%AB%E0%B8%95%E0%B8%B8%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B8%9B%E0%B8%B1%E0%B8%88%E0%B8%88%E0%B8%B8%E0%B8%9A%E0%B8%B1%E0%B8%99]\\nสุ่มบทความ\\n[link: https://th.wikipedia.org/wiki/%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9:%E0%B8%AA%E0%B8%B8%E0%B9%88%E0%B8%A1]\\nเกี่ยวกับวิกิพีเดีย\\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A]\\nติดต่อเรา\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360573223,\"end\":1779360573948}},\"id\":\"prt_e4a27a723001ADRi1PHtnDudd8\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a279c88001MVqqV1XxLFcTBb\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360573955,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27a9fe001x3ER3wCfRsnaxm\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a279c88001MVqqV1XxLFcTBb\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":7996,\"input\":7544,\"output\":452,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.029412}}\n{\"type\":\"step_start\",\"timestamp\":1779360575300,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27af42001Ev9pHIgUwvV1g9\",\"messageID\":\"msg_e4a27aa01001ya45M0964blFxU\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360575308,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"b9c6e8cb-b5dc-4aa2-aa67-77cd0990942f\",\"state\":{\"status\":\"completed\",\"input\":{\"offset\":2000,\"url\":\"https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ\",\"limit\":5000},\"output\":\"ASA_TOOL_CACHE_HIT\\nURL: https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ\\nFinal URL: https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0\\nTitle: ชูวิทย์ พิทักษ์พรพัลลภ - วิกิพีเดีย\\nBytes read: 128542\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nข้ามไปเนื้อหา\\nเมนูหลัก\\nเมนูหลัก\\nย้ายเมนูไปที่แถบด้านข้าง\\nซ่อน\\nการนำทาง\\nหน้าหลัก\\n[link: https://th.wikipedia.org/wiki/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81]\\nถามคำถาม\\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B8%84%E0%B8%B3%E0%B8%96%E0%B8%B2%E0%B8%A1]\\nเหตุการณ์ปัจจุบัน\\n[link: https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B5%E0%B8%A2%E0%B9%88%E0%B8%AD%E0%B8%A2:%E0%B9%80%E0%B8%AB%E0%B8%95%E0%B8%B8%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B8%9B%E0%B8%B1%E0%B8%88%E0%B8%88%E0%B8%B8%E0%B8%9A%E0%B8%B1%E0%B8%99]\\nสุ่มบทความ\\n[link: https://th.wikipedia.org/wiki/%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9:%E0%B8%AA%E0%B8%B8%E0%B9%88%E0%B8%A1]\\nเกี่ยวกับวิกิพีเดีย\\n[link: https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%B4%E0%B8%9E%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B5%E0%B8%A2:%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A]\\nติดต่อเรา\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360575304,\"end\":1779360575307}},\"id\":\"prt_e4a27af44001F0Oy3rb85NSeCt\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27aa01001ya45M0964blFxU\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360575314,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27af4c0015K8UtC4hBjZMeb\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27aa01001ya45M0964blFxU\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":8895,\"input\":8780,\"output\":115,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.028065}}\n{\"type\":\"step_start\",\"timestamp\":1779360576849,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27b550001qG4uMbQ4oiAtVY\",\"messageID\":\"msg_e4a27af500015RuTkOrpy9xeS6\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360584628,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"4ea99119-03e2-4cfd-808c-584d00d03bad\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล\"},\"output\":\"URL: https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล\\nFinal URL: https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5\\nTitle: นาย ชูวิทย์ พิทักษ์พรพัลลภ - พรรคเพื่อไทย\\nBytes read: 44122\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nข่าวสารพรรค\\n[link: https://www.ptp.or.th/%e0%b8%82%e0%b9%88%e0%b8%b2%e0%b8%a7%e0%b8%aa%e0%b8%b2%e0%b8%a3%e0%b8%88%e0%b8%b2%e0%b8%81%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\\nประกาศ\\n[link: https://www.ptp.or.th/archives/category/%e0%b8%9b%e0%b8%a3%e0%b8%b0%e0%b8%81%e0%b8%b2%e0%b8%a8]\\nPheu Thai – YPP\\n[link: https://www.ptp.or.th/ypp]\\nเกี่ยวกับพรรค\\nกรรมการบริหารพรรคเพื่อไทย\\n[link: https://www.ptp.or.th/%e0%b8%81%e0%b8%a3%e0%b8%a3%e0%b8%a1%e0%b8%81%e0%b8%b2%e0%b8%a3%e0%b8%9a%e0%b8%a3%e0%b8%ab%e0%b8%b2%e0%b8%a3%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\\nนโยบาย\\nนโยบายเลือกตั้ง 2569\\n[link: https://election.ptp.or.th/policy]\\n2568 โอกาสไทย ทำได้จริง\\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2%e0%b8%a3%e0%b8%b0%e0%b8%a2%e0%b8%b0%e0%b8%a2%e0%b8%b2%e0%b8%a7]\\nนโยบาย 2566\\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2]\\nณ วันนั้น\\n[link: https://www.ptp.or.th/%e0%b8%93-%e0%b8%a7%e0%b8%b1%e0%b8%99%e0%b8%99%e0%b8%b1%e0%b9%89%e0%b8%99]\\nติดต่อพรรค\\n[link: https://www.ptp.or.th/%e0%b8%95%e0%b8%b4%e0%b8%94%e0%b8%95%e0%b9%88%e0%b8%ad]\\nนาย ชูวิทย์ พิทักษ์พรพัลลภ\\nตำแหน่ง\\nส.ส.แบ่งเขต\\nเขต 7\\nจังหวัด อุบลราชธานี\\nประวัติการศึกษา\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360576853,\"end\":1779360584626}},\"id\":\"prt_e4a27b552001YXYiIMnN0mpJD8\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27af500015RuTkOrpy9xeS6\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360584637,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27d3b5001zyvjpWTE2wFVnu\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27af500015RuTkOrpy9xeS6\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":10142,\"input\":10038,\"output\":104,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.031674}}\n{\"type\":\"step_start\",\"timestamp\":1779360586842,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27dc59001aFqHit2srEUgln\",\"messageID\":\"msg_e4a27d3bb001dhYGTs4KjcEblT\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360586905,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"0b5a1937-2624-4e93-bf7a-b76f824d2bd8\",\"state\":{\"status\":\"completed\",\"input\":{\"limit\":5000,\"url\":\"https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5\",\"offset\":2000},\"output\":\"URL: https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5\\nFinal URL: https://www.ptp.or.th/archives/people/%E0%B8%99%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C-%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5\\nTitle: นาย ชูวิทย์ พิทักษ์พรพัลลภ - พรรคเพื่อไทย\\nBytes read: 44122\\nCache: HIT\\n\\nRelevant excerpts:\\n\\n[1]\\nข่าวสารพรรค\\n[link: https://www.ptp.or.th/%e0%b8%82%e0%b9%88%e0%b8%b2%e0%b8%a7%e0%b8%aa%e0%b8%b2%e0%b8%a3%e0%b8%88%e0%b8%b2%e0%b8%81%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\\nประกาศ\\n[link: https://www.ptp.or.th/archives/category/%e0%b8%9b%e0%b8%a3%e0%b8%b0%e0%b8%81%e0%b8%b2%e0%b8%a8]\\nPheu Thai – YPP\\n[link: https://www.ptp.or.th/ypp]\\nเกี่ยวกับพรรค\\nกรรมการบริหารพรรคเพื่อไทย\\n[link: https://www.ptp.or.th/%e0%b8%81%e0%b8%a3%e0%b8%a3%e0%b8%a1%e0%b8%81%e0%b8%b2%e0%b8%a3%e0%b8%9a%e0%b8%a3%e0%b8%ab%e0%b8%b2%e0%b8%a3%e0%b8%9e%e0%b8%a3%e0%b8%a3%e0%b8%84]\\nนโยบาย\\nนโยบายเลือกตั้ง 2569\\n[link: https://election.ptp.or.th/policy]\\n2568 โอกาสไทย ทำได้จริง\\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2%e0%b8%a3%e0%b8%b0%e0%b8%a2%e0%b8%b0%e0%b8%a2%e0%b8%b2%e0%b8%a7]\\nนโยบาย 2566\\n[link: https://www.ptp.or.th/%e0%b8%99%e0%b9%82%e0%b8%a2%e0%b8%9a%e0%b8%b2%e0%b8%a2]\\nณ วันนั้น\\n[link: https://www.ptp.or.th/%e0%b8%93-%e0%b8%a7%e0%b8%b1%e0%b8%99%e0%b8%99%e0%b8%b1%e0%b9%89%e0%b8%99]\\nติดต่อพรรค\\n[link: https://www.ptp.or.th/%e0%b8%95%e0%b8%b4%e0%b8%94%e0%b8%95%e0%b9%88%e0%b8%ad]\\nนาย ชูวิทย์ พิทักษ์พรพัลลภ\\nตำแหน่ง\\nส.ส.แบ่งเขต\\nเขต 7\\nจังหวัด อุบลราชธานี\\nประวัติการศึกษา\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360586846,\"end\":1779360586904}},\"id\":\"prt_e4a27dc5b001ky2cTFy6AVruJu\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27d3bb001dhYGTs4KjcEblT\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360586912,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27dc9a001Mlo7Gos84AFNv3\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27d3bb001dhYGTs4KjcEblT\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":11622,\"input\":11319,\"output\":303,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.038502}}\n{\"type\":\"step_start\",\"timestamp\":1779360588462,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27e2ad001mwtvxbYrXOg9GN\",\"messageID\":\"msg_e4a27dc9e001z2dK48ac4X0mMM\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360590220,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"53de274e-087a-438d-b79f-040501abcb27\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad\"},\"output\":\"URL: https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad\\nFinal URL: https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad\\nTitle: ชูวิทย์ พิทักษ์พรพัลลภ - Parliament Watch\\nBytes read: 78045\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nนักการเมือง\\nการลงมติ\\n[link: https://parliamentwatch.wevis.info/assemblies/latest/representative/votes]\\nการเสนอกฎหมาย\\nเกี่ยวกับเรา\\nหน้าหลัก\\n[link: https://parliamentwatch.wevis.info/]\\nนักการเมือง\\nชูวิทย์ พิทักษ์พรพัลลภ\\n[link: https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad]\\nนาย ชูวิทย์ พิทักษ์พรพัลลภ\\nไม่อยู่ในตำแหน่งทางการเมือง\\nดาวน์โหลดข้อมูล\\nผลการลงมติรายคน\\n[link: https://parliamentwatch.wevis.info/files/download/politicians/47adf106-0997-4eea-848f-46f6247c81ad-votes.csv]\\nอัปเดตข้อมูล: 8 พฤษภาคม 2569\\nแชร์ประวัติ\\nข้อมูลพื้นฐาน\\nประวัติทางการเมือง\\n1 ตำแหน่ง\\n1 พรรคการเมือง\\nประวัติการลงมติ\\nเห็นด้วย 22 มติ\\nไม่เห็นด้วย 2 มติ\\nลา / ขาดลงมติ 73 มติ\\nข้อมูลพื้นฐาน\\nเพศ\\nชาย\\nวันเกิด\\n12 พฤศจิกายน 2506\\n(62 ปี)\\nการศึกษา\\nปริญญาตรี ครุศาสตรบัณฑิต (การบริหารการศึกษา) สถาบันราชภัฏอุบลราชธานี\\nอาชีพเดิม\\nสมาชิกสภาผู้แทนราษฎร\\nช่องทางติดต่อ\\nFacebook\\n[link: https://www.facebook.com/Chuvitkui/]\\nX (Twitter)\\n[link: https://twitter.com/ChuvitP]\\nประวัติทางการเมือง\\nหมายเหตุ : ข้อมูลย้อนหลังถึงปี 2562\\n1 ตำแหน่งทางการเมือง\\nสมาชิกสภาผู้แทนราษฎร\\nสภาผู้แทนราษฎร ชุดที่ 25\\n[link: https://parliamentwatch.wevis.info/assemblies/สภาผู้แทนราษฎร-25]\\n(มี.ค. 2562 - มี.ค. 2566)\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360588466,\"end\":1779360590218}},\"id\":\"prt_e4a27e2ae001Y18wj3tdbDiniN\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27dc9e001z2dK48ac4X0mMM\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360590226,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27e98c0013n638KhwLIeu1H\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27dc9e001z2dK48ac4X0mMM\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":13106,\"input\":12984,\"output\":122,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.040782}}\n{\"type\":\"step_start\",\"timestamp\":1779360591683,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27ef42001gYepwKP6Sa6YFc\",\"messageID\":\"msg_e4a27e9900011gflJ4mdHGMC6Q\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360593064,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"337ad2d1-a16d-4d45-a1e3-60a24419bce9\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"ชูวิทย์ พิทักษ์พรพัลลภ อาชีพก่อนเล่นการเมือง\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ประวัติทางการเมือง หมายเหตุ : ข้อมูลย้อนหลังถึงปี 2562 <\/CONTENT> <URL> https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> อย่าขิงกัน!ชูวิทย์ (กุ่ย)เล่าอยู่มานานไม่ 5mo 3 ดอกบัว ไข่หง กะหรี่ปับ ลูกใหย่ใส้เยอะ สมัยหน้าสอบตกคือเก่า..เชื่อเถอะ 5mo ธงชัย เทียนสว่าง ประชาชน ... <\/CONTENT> <URL> https://www.facebook.com/ThePoliticsByMatichon/posts/ชูวิทย์-พิทักษ์พรพัลลภ-ที่ปรึกษารัฐมนตรีว่าการกระทรวงเกษตร-ร้อยเอกธรรมนัส-พรหมเผ/1248122780689548 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> สำนักงานใหญ่พรรคเพื่อไทย เลขที่ 197 ถนนวิภาวดีรังสิต แขวงสาม ... <\/CONTENT> <URL> https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 23,062 views • Sep 27, 2025 • #ข่าวการเมือง #พรรคเพื่อไทย #ชูวิทย์พิทักษ์พรพัลลภ <\/CONTENT> <URL> https://www.youtube.com/watch?v=rk9ewimDdS4 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> 27 กันยายน 2568 ผู้สื่อข่าวรายงานว่า เมื่อวันที่ 25 กันยายน 2568 ที่ผ่านมา นายชูวิทย์พิทักษ์พรพัลลภหรือชูวิทย์กุ่ย ได้ทำหนังสือ ... <\/CONTENT> <URL> https://www.nationtv.tv/politic/378967325 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://www.wikiwand.com/th/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> แก้ รธน. พรรคพลังประชารัฐ สิทธิเสรีภาพ / บัตรเลือกตั้ง 2 ใบ / ตัดบทลงโทษ ส.ส.ดูเรื่องงบ / ตัดข้อห้าม ส.ส.เกี่ยวข้องราชการ / ให้ ส.ส. ร่วมติดตามปฏิรูป ... <\/CONTENT> <URL> https://theyworkforus.wevis.info/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> ร่างพรรคเพื่อไทย ฉบับที่ 1 เพิ่มสิทธิเสรีภาพของประชาชน สิทธิในกระบวนการยุติธรรม สิทธิพิทักษ์รัฐธรรมนูญ เสรีภาพในการแสดง ... <\/CONTENT> <URL> https://theyworkforus.elect.in.th/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://wikimore.private.coffee/wiki/th/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360591686,\"end\":1779360593063}},\"id\":\"prt_e4a27ef43001LW4tgfPtVXVQNh\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27e9900011gflJ4mdHGMC6Q\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360593069,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27f4a80017vtcJwnKgn8EME\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27e9900011gflJ4mdHGMC6Q\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":13881,\"input\":13785,\"output\":96,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.042795}}\n{\"type\":\"step_start\",\"timestamp\":1779360594435,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27fa01001OmtPsjdVNb3lQD\",\"messageID\":\"msg_e4a27f4ac001F6FF2neJqllUj5\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360595802,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"bce8cdb4-d7ab-4c1e-b0f1-0d5cb639ccee\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ อะไร\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ชูวิทย์กุ่ย พิทักษ์พรพัลลภ. 46,942 likes · 4 talking about this. Public figure <\/CONTENT> <URL> https://www.facebook.com/Chuvitkui <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ๑. นายชูวิทย์พิทักษ์พรพัลลภให้ดำรงตำแหน่ง ที่ปรึกษารัฐมนตรีว่าการกระทรวงเกษตรและสหกรณ์ ๒. <\/CONTENT> <URL> https://www.bangkokbiznews.com/news/news-update/1205514 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> วันที่ 27 ก.ย. 2568 นายชูวิทย์พิทักษ์พรพัลลภอดีต สส.อุบลราชธานี พรรคเพื่อไทย ได้ยื่นขอลาออกออกจากการเป็นสมาชิกพรรคเพื่อไทย ... <\/CONTENT> <URL> https://today.line.me/th/v3/article/LXr32Rl <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 1 ตำแหน่งทางการเมือง สมาชิกสภาผู้แทนราษฎร สภาผู้แทนราษฎร ชุดที่ 25 (มี.ค. 2562 - มี.ค. 2566) <\/CONTENT> <URL> https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> สำนักงานใหญ่พรรคเพื่อไทย เลขที่ 197 ถนนวิภาวดีรังสิต แขวงสาม ... <\/CONTENT> <URL> https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ร่างพรรคเพื่อไทย ฉบับที่ 1 เพิ่มสิทธิเสรีภาพของประชาชน สิทธิในกระบวนการยุติธรรม สิทธิพิทักษ์รัฐธรรมนูญ เสรีภาพในการแสดง ... <\/CONTENT> <URL> https://theyworkforus.elect.in.th/people/ชูวิทย์-พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ชูวิทย์พิทักษ์พรพัลลภหรือที่ สื่อมวลชน นิยมเรียกว่าชูวิทย์กุ่ย (เกิด 12 พฤศจิกายน พ.ศ. 2506) เป็น นักธุรกิจ และ นักการเมือง ชาว ... <\/CONTENT> <URL> https://www.wikiwand.com/th/ชูวิทย์_พิทักษ์พรพัลลภ <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> สมัยออนทัวรีดน้ำเชื้อทั่วไทย ยุคปี 50 วันเฉลิมฟาร์ม อ.ผาขาว \\\"บอยอุบล สส.ชูวิทย์\\\"_ (เกิด12/06/40) ทายาทบูลบราซิล บุญนาค-835 แม่โบว์แดง ... <\/CONTENT> <URL> https://www.facebook.com/chuvit.pitakpornpunlup/photos_albums <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ทางด้านลูกสาวนายชูวิทย์ นางสาว สุดารัตน์พิทักษ์พรพัลลภ- กานต์ ส.ส.อุบลราชธานี เขต 7 พรรคเพื่อไทย เปิดเผยผ่านเฟสบุ้คส่วนตัว ... <\/CONTENT> <URL> https://www.guideubon.com/detail.php?a_id=1348 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360594440,\"end\":1779360595801}},\"id\":\"prt_e4a27fa0400104rRYecP2hHU55\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27f4ac001F6FF2neJqllUj5\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360595808,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a27ff5a001CmNXwoXtbfqmwL\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27f4ac001F6FF2neJqllUj5\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":15119,\"input\":15026,\"output\":93,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.046473}}\n{\"type\":\"step_start\",\"timestamp\":1779360598245,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a2808e4001jtoh00tNDtN2r9\",\"messageID\":\"msg_e4a27ff5e001xL5zwyU4mjhbk4\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360598257,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"d3b156a6-5959-480a-98e7-08cf73559bfb\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ ฟาร์ม วัว\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 0, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ ฟาร์ม วัว\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"ชูวิทย์ พิทักษ์พรพัลลภ ธุรกิจ ฟาร์ม วัว\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360598249,\"end\":1779360598256}},\"id\":\"prt_e4a2808e50011sYe3UTNzrAD31\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"messageID\":\"msg_e4a27ff5e001xL5zwyU4mjhbk4\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360598263,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a2808f1001Agi0oUzDEYxePL\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27ff5e001xL5zwyU4mjhbk4\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-finish\",\"tokens\":{\"total\":16295,\"input\":16198,\"output\":97,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.050049}}\n{\"type\":\"step_start\",\"timestamp\":1779360713463,\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"part\":{\"id\":\"prt_e4a29caf3001pz4K3e92hqXi2t\",\"messageID\":\"msg_e4a2808f5001wjeKerdK3zzk53\",\"sessionID\":\"ses_1b5d87c23ffeXb1qwyPPDNb2pl\",\"type\":\"step-start\"}}\n"
+}

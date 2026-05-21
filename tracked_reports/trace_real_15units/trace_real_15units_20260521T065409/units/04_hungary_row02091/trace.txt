@@ -1,0 +1,290 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360922454,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "id": "prt_e4a2cfb54001dwU9W4IyPFSoH3",
+        "messageID": "msg_e4a2cee9e001tUf49TSjHkxS2I",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360924708,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "c993af70-a9b1-49a1-90f9-877f6acf4556",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics biography education prior occupation birth year birth place"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Tibor_Navracsics <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Children: AdélNavracsicsand Dóra TündeNavracsicsRelationship: Married Net Worth: $1 million Early Life AndEducationTiborNavracsicswas born on 13 June 1966 in Veszprém, Hungary, to parents whose names are unknown and can be referred to as Mr. and Mrs.Navracsics. Details about any potential siblings are not publicly available. <\/CONTENT> <URL> https://www.thecityceleb.com/biography/public-figure/politician/tibor-navracsics-biography-age-spouse-net-worth-wikipedia-parents-children-education-party-positions <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> TiborNavracsicsHisbiographyis available in 23 different languages on Wikipedia (up from 22 in 2024).TiborNavracsicsis the 18,173rd most popular politician (down from 17,457th in 2024), the 867th most popularbiographyfrom Hungary (down from 823rd in 2019) and the 148th most popular Hungarian Politician. <\/CONTENT> <URL> https://pantheon.world/profile/person/Tibor_Navracsics <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofTiborNavracsics(1966 - present), politician from Hungary. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/tibor_navracsics <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Find out whereTiborNavracsicswas born, their birthday and details about their professions,education, religion, family and other life details and facts. <\/CONTENT> <URL> https://playback.fm/person/tibor-navracsics <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> TiborNavracsicsis one of the most popular and richest Politician who was born on June 13, 1966 in Veszprém, Hungary.TiborNavracsics(born Veszprém, Hungary, 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/tibor-navracsics <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> TiborNavracsicsis a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. <\/CONTENT> <URL> https://prabook.com/web/tibor.navracsics/1785599 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. He is a member of the Christian Democratic People's Party and was the European Commissioner forEducation, Culture, Youth and Sport in the Juncker ... <\/CONTENT> <URL> https://everything.explained.today/Tibor_Navracsics <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Curriculum vitae ofTiborNavracsics, Dr.TiborNavracsics, Dr. Minister of Public Administration and Justice, deputy prime minister <\/CONTENT> <URL> https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> TiborNavracsics(Veszprém, Hungary, 13. June 1966 -) lawyer and political scientist, head of parliamentary group of the Fidesz - Hungarian Civic Union political party.He is married, he has a daughter, who was born in 1991. <\/CONTENT> <URL> https://en-academic.com/dic.nsf/enwiki/7094142 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360922467,
+            "end": 1779360924706
+          }
+        },
+        "id": "prt_e4a2cfb570013wOiav6e39d7c7",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "messageID": "msg_e4a2cee9e001tUf49TSjHkxS2I"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360924719,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "id": "prt_e4a2d0425001veES1Zu2DZsr0o",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2cee9e001tUf49TSjHkxS2I",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5347,
+          "input": 5098,
+          "output": 249,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.019
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360926985,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "id": "prt_e4a2d0d08001e1RzuGjOhVVyvf",
+        "messageID": "msg_e4a2d042c001A6SEX4FOqKse0p",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360928034,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "cf047418-43be-491f-9aeb-e91a215fb43d",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Tibor_Navracsics"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\nFinal URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\nTitle: Tibor Navracsics - Wikipedia\nBytes read: 146410\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Tibor+Navracsics]\nLog in\nPersonal tools\nDonate\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360926988,
+            "end": 1779360928033
+          }
+        },
+        "id": "prt_e4a2d0d09001Cw2f3SLvB5wZw8",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "messageID": "msg_e4a2d042c001A6SEX4FOqKse0p"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360929162,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "e145a3b8-ec20-4079-9efb-045b978f1367",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf"
+          },
+          "output": "URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\nFinal URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\nTitle: (unknown)\nBytes read: 92699\nCache: MISS\nSource-Type: pdf\n\nRelevant excerpts:\n\n[1]\nCurriculum vitae of Tibor Navracsics, Dr.\nTibor Navracsics, Dr.\nMinister of Public Administration and Justice, deputy prime minister\nPersonal data:\n\n\nVeszprém, 1966.\nMarried, two daughters.\nProfessional experience:\n\n\n\n\n\n\n\n\n\n\nIn 1990 he received his diploma from ELTE Faculty of Law. Then he was employed\nat Veszprém City Court and after passing his judicial exam he served at Veszprém\nCounty Council.\n1993-1997 Assistant lecturer at Budapest University of Economics\n1996-1997 Guest lecturer at the University of Brighton\n1997-1999 Senior lecturer at the Faculty of Law and Political Sciences at ELTE\n1999 Associate professor, ELTE\n1998-2002 Head of Communication and Information Department, Prime Minister’s\nOffice\n1997-2000 General Secretary of Hungarian Political Science Association\n2003-2006 Cabinet Chief to the President of the Fidesz – Hungarian Civic Union\n2006-2010 Elected MP for Veszprém from the county list, head of the parliamentary\ngroup of Fidesz – Hungarian Civic Union, fraction leader for Fidesz, member of the\nCommittee for Constitutional and Judicial Affairs\n2010- Elected MP for Veszprém’s individual constituency, minister of public\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360926994,
+            "end": 1779360929161
+          }
+        },
+        "id": "prt_e4a2d0d0e0018CzXcMqBhE9cu5",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "messageID": "msg_e4a2d042c001A6SEX4FOqKse0p"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360930785,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "b971a635-85c1-4008-ab8e-728c8c697a4d",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics disability status sexual orientation LGBTQ identity"
+          },
+          "output": "No good DuckDuckGo Search Result was found",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360927000,
+            "end": 1779360930784
+          }
+        },
+        "id": "prt_e4a2d0d14001AEnOZeiizJc72X",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "messageID": "msg_e4a2d042c001A6SEX4FOqKse0p"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360930791,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "id": "prt_e4a2d1be1001jm4NDvL0o44qkA",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d042c001A6SEX4FOqKse0p",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6688,
+          "input": 6388,
+          "output": 300,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0237
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360932075,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "id": "prt_e4a2d20ea001qDiOk4dX7dInEW",
+        "messageID": "msg_e4a2d1be50010kw6dXSJ9ixpGZ",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360933941,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "b5f3aa62-ac70-453e-b63a-4c5f649f1f3d",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics sexual orientation LGBTQ identity disclosure"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> This qualitative study sought to understand lesbian, gay, bisexual, transgender, queer (LGBTQ) individuals' experiences ofsexualorientationdisclosurein health care settings and ways health care providers (HCPs) can create supportive and inclusive relationships with patients. <\/CONTENT> <URL> https://www.sciencedirect.com/science/article/pii/S1555415523002672 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> A recent 2018 report by the Human Rights Campaign found only 21% of transgender and gender expansive youth to be out to their parents, while 33% of youth were considering who to disclose to in their family and how to manage these relationships afterdisclosure. <\/CONTENT> <URL> https://courses.lumenlearning.com/suny-lgbtq-studies/chapter/identity-disclosure <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Rather than viewingdisclosureas a singular event, this review underscoresLGBTQ+ youthidentitydisclosureas a complex, developmental process extending over time and across diverse contexts. <\/CONTENT> <URL> https://www.researchgate.net/publication/381252806_LGBTQ_Youth_Identity_Disclosure_Processes_A_Systematic_Review <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> LGBTQ+ youthidentitydisclosureis a complex, developmental process that extends over time and across multiple contexts. Future research should include study ofdisclosurecontent, longitudinal ... <\/CONTENT> <URL> https://www.researchgate.net/publication/377694318_LGBTQ_Youth_Identity_Disclosure_Processes_A_Systematic_Review <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ABSTRACTDisclosureofsexualorientationand/or genderidentityis a complex process that changes over time. While qualitative research captures the nuanced thoughts and emotions of LGBTQ+ individuals, longitudinal quantitative studies provide information on associations with predictors and outcomes ofdisclosureover time. <\/CONTENT> <URL> https://www.tandfonline.com/doi/full/10.1080/00918369.2025.2540371 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> The decreasing age ofLGBTQ+identitydisclosureand changing social landscape forsexualorientationand genderidentityhighlight the need to understand how the process ofdisclosureunfolds forsexualand gender minority youth through review and synthesis of the existing literature. <\/CONTENT> <URL> https://link.springer.com/article/10.1007/s40894-024-00243-1 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> To better understand howLGBTQadults identify, we asked respondents three separate questions: When it comes tosexualorientation, more than half ofLGBTQadults (55%) describe themselves as bisexual. Four-in-ten are gay or lesbian, while small shares are straight (1%) or something else (3%). About ... <\/CONTENT> <URL> https://www.pewresearch.org/social-trends/2025/05/29/lgbtq-identities <\/URL> __END_OF_SOURCE 7__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360932079,
+            "end": 1779360933940
+          }
+        },
+        "id": "prt_e4a2d20ec001sMYEKZQboEpinr",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "messageID": "msg_e4a2d1be50010kw6dXSJ9ixpGZ"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360933948,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "id": "prt_e4a2d2835001C6WhB13pLqcdot",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d1be50010kw6dXSJ9ixpGZ",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7617,
+          "input": 7529,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0239
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360936720,
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "id": "prt_e4a2d330e001feik0e8yFh460T",
+        "messageID": "msg_e4a2d283a001VTXY0AzhLUXdH9",
+        "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Law degree (ELTE Faculty of Law, 1990); PhD in Political Science (1999)\",\n  \"educational_attainment_source\": \"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\",\n  \"prior_occupation\": \"Lawyer, judge's apprentice, and university lecturer/associate professor\",\n  \"prior_occupation_source\": \"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\",\n  \"birth_year\": 1966,\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Tibor_Navracsics\",\n  \"birth_place\": \"Veszprém, Hungary\",\n  \"birth_place_source\": \"https://en.wikipedia.org/wiki/Tibor_Navracsics\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://en.wikipedia.org/wiki/Tibor_Navracsics\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://en.wikipedia.org/wiki/Tibor_Navracsics\"\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b5d3125fffegUPv4bnCsqJHBV",
+  "opencode_export_final_text_chars": 1038,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360922454,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"id\":\"prt_e4a2cfb54001dwU9W4IyPFSoH3\",\"messageID\":\"msg_e4a2cee9e001tUf49TSjHkxS2I\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360924708,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"c993af70-a9b1-49a1-90f9-877f6acf4556\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics biography education prior occupation birth year birth place\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Tibor_Navracsics <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Children: AdélNavracsicsand Dóra TündeNavracsicsRelationship: Married Net Worth: $1 million Early Life AndEducationTiborNavracsicswas born on 13 June 1966 in Veszprém, Hungary, to parents whose names are unknown and can be referred to as Mr. and Mrs.Navracsics. Details about any potential siblings are not publicly available. <\/CONTENT> <URL> https://www.thecityceleb.com/biography/public-figure/politician/tibor-navracsics-biography-age-spouse-net-worth-wikipedia-parents-children-education-party-positions <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> TiborNavracsicsHisbiographyis available in 23 different languages on Wikipedia (up from 22 in 2024).TiborNavracsicsis the 18,173rd most popular politician (down from 17,457th in 2024), the 867th most popularbiographyfrom Hungary (down from 823rd in 2019) and the 148th most popular Hungarian Politician. <\/CONTENT> <URL> https://pantheon.world/profile/person/Tibor_Navracsics <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofTiborNavracsics(1966 - present), politician from Hungary. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/tibor_navracsics <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Find out whereTiborNavracsicswas born, their birthday and details about their professions,education, religion, family and other life details and facts. <\/CONTENT> <URL> https://playback.fm/person/tibor-navracsics <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> TiborNavracsicsis one of the most popular and richest Politician who was born on June 13, 1966 in Veszprém, Hungary.TiborNavracsics(born Veszprém, Hungary, 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. <\/CONTENT> <URL> https://celebrity-birthdays.com/people/tibor-navracsics <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> TiborNavracsicsis a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. <\/CONTENT> <URL> https://prabook.com/web/tibor.navracsics/1785599 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. He is a member of the Christian Democratic People's Party and was the European Commissioner forEducation, Culture, Youth and Sport in the Juncker ... <\/CONTENT> <URL> https://everything.explained.today/Tibor_Navracsics <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Curriculum vitae ofTiborNavracsics, Dr.TiborNavracsics, Dr. Minister of Public Administration and Justice, deputy prime minister <\/CONTENT> <URL> https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> TiborNavracsics(Veszprém, Hungary, 13. June 1966 -) lawyer and political scientist, head of parliamentary group of the Fidesz - Hungarian Civic Union political party.He is married, he has a daughter, who was born in 1991. <\/CONTENT> <URL> https://en-academic.com/dic.nsf/enwiki/7094142 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360922467,\"end\":1779360924706}},\"id\":\"prt_e4a2cfb570013wOiav6e39d7c7\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"messageID\":\"msg_e4a2cee9e001tUf49TSjHkxS2I\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360924719,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"id\":\"prt_e4a2d0425001veES1Zu2DZsr0o\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2cee9e001tUf49TSjHkxS2I\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"type\":\"step-finish\",\"tokens\":{\"total\":5347,\"input\":5098,\"output\":249,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.019029}}\n{\"type\":\"step_start\",\"timestamp\":1779360926985,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"id\":\"prt_e4a2d0d08001e1RzuGjOhVVyvf\",\"messageID\":\"msg_e4a2d042c001A6SEX4FOqKse0p\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360928034,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"cf047418-43be-491f-9aeb-e91a215fb43d\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Tibor_Navracsics\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\\nFinal URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\\nTitle: Tibor Navracsics - Wikipedia\\nBytes read: 146410\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Tibor+Navracsics]\\nLog in\\nPersonal tools\\nDonate\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360926988,\"end\":1779360928033}},\"id\":\"prt_e4a2d0d09001Cw2f3SLvB5wZw8\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"messageID\":\"msg_e4a2d042c001A6SEX4FOqKse0p\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360929162,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"e145a3b8-ec20-4079-9efb-045b978f1367\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\"},\"output\":\"URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\\nFinal URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\\nTitle: (unknown)\\nBytes read: 92699\\nCache: MISS\\nSource-Type: pdf\\n\\nRelevant excerpts:\\n\\n[1]\\nCurriculum vitae of Tibor Navracsics, Dr.\\nTibor Navracsics, Dr.\\nMinister of Public Administration and Justice, deputy prime minister\\nPersonal data:\\n\\n\\nVeszprém, 1966.\\nMarried, two daughters.\\nProfessional experience:\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nIn 1990 he received his diploma from ELTE Faculty of Law. Then he was employed\\nat Veszprém City Court and after passing his judicial exam he served at Veszprém\\nCounty Council.\\n1993-1997 Assistant lecturer at Budapest University of Economics\\n1996-1997 Guest lecturer at the University of Brighton\\n1997-1999 Senior lecturer at the Faculty of Law and Political Sciences at ELTE\\n1999 Associate professor, ELTE\\n1998-2002 Head of Communication and Information Department, Prime Minister’s\\nOffice\\n1997-2000 General Secretary of Hungarian Political Science Association\\n2003-2006 Cabinet Chief to the President of the Fidesz – Hungarian Civic Union\\n2006-2010 Elected MP for Veszprém from the county list, head of the parliamentary\\ngroup of Fidesz – Hungarian Civic Union, fraction leader for Fidesz, member of the\\nCommittee for Constitutional and Judicial Affairs\\n2010- Elected MP for Veszprém’s individual constituency, minister of public\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360926994,\"end\":1779360929161}},\"id\":\"prt_e4a2d0d0e0018CzXcMqBhE9cu5\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"messageID\":\"msg_e4a2d042c001A6SEX4FOqKse0p\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360930785,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"b971a635-85c1-4008-ab8e-728c8c697a4d\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics disability status sexual orientation LGBTQ identity\"},\"output\":\"No good DuckDuckGo Search Result was found\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360927000,\"end\":1779360930784}},\"id\":\"prt_e4a2d0d14001AEnOZeiizJc72X\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"messageID\":\"msg_e4a2d042c001A6SEX4FOqKse0p\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360930791,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"id\":\"prt_e4a2d1be1001jm4NDvL0o44qkA\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d042c001A6SEX4FOqKse0p\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"type\":\"step-finish\",\"tokens\":{\"total\":6688,\"input\":6388,\"output\":300,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.023664}}\n{\"type\":\"step_start\",\"timestamp\":1779360932075,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"id\":\"prt_e4a2d20ea001qDiOk4dX7dInEW\",\"messageID\":\"msg_e4a2d1be50010kw6dXSJ9ixpGZ\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360933941,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"b5f3aa62-ac70-453e-b63a-4c5f649f1f3d\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics sexual orientation LGBTQ identity disclosure\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> This qualitative study sought to understand lesbian, gay, bisexual, transgender, queer (LGBTQ) individuals' experiences ofsexualorientationdisclosurein health care settings and ways health care providers (HCPs) can create supportive and inclusive relationships with patients. <\/CONTENT> <URL> https://www.sciencedirect.com/science/article/pii/S1555415523002672 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> A recent 2018 report by the Human Rights Campaign found only 21% of transgender and gender expansive youth to be out to their parents, while 33% of youth were considering who to disclose to in their family and how to manage these relationships afterdisclosure. <\/CONTENT> <URL> https://courses.lumenlearning.com/suny-lgbtq-studies/chapter/identity-disclosure <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Rather than viewingdisclosureas a singular event, this review underscoresLGBTQ+ youthidentitydisclosureas a complex, developmental process extending over time and across diverse contexts. <\/CONTENT> <URL> https://www.researchgate.net/publication/381252806_LGBTQ_Youth_Identity_Disclosure_Processes_A_Systematic_Review <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> LGBTQ+ youthidentitydisclosureis a complex, developmental process that extends over time and across multiple contexts. Future research should include study ofdisclosurecontent, longitudinal ... <\/CONTENT> <URL> https://www.researchgate.net/publication/377694318_LGBTQ_Youth_Identity_Disclosure_Processes_A_Systematic_Review <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ABSTRACTDisclosureofsexualorientationand/or genderidentityis a complex process that changes over time. While qualitative research captures the nuanced thoughts and emotions of LGBTQ+ individuals, longitudinal quantitative studies provide information on associations with predictors and outcomes ofdisclosureover time. <\/CONTENT> <URL> https://www.tandfonline.com/doi/full/10.1080/00918369.2025.2540371 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> The decreasing age ofLGBTQ+identitydisclosureand changing social landscape forsexualorientationand genderidentityhighlight the need to understand how the process ofdisclosureunfolds forsexualand gender minority youth through review and synthesis of the existing literature. <\/CONTENT> <URL> https://link.springer.com/article/10.1007/s40894-024-00243-1 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> To better understand howLGBTQadults identify, we asked respondents three separate questions: When it comes tosexualorientation, more than half ofLGBTQadults (55%) describe themselves as bisexual. Four-in-ten are gay or lesbian, while small shares are straight (1%) or something else (3%). About ... <\/CONTENT> <URL> https://www.pewresearch.org/social-trends/2025/05/29/lgbtq-identities <\/URL> __END_OF_SOURCE 7__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360932079,\"end\":1779360933940}},\"id\":\"prt_e4a2d20ec001sMYEKZQboEpinr\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"messageID\":\"msg_e4a2d1be50010kw6dXSJ9ixpGZ\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360933948,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"id\":\"prt_e4a2d2835001C6WhB13pLqcdot\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d1be50010kw6dXSJ9ixpGZ\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"type\":\"step-finish\",\"tokens\":{\"total\":7617,\"input\":7529,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.023907}}\n{\"type\":\"step_start\",\"timestamp\":1779360936720,\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"part\":{\"id\":\"prt_e4a2d330e001feik0e8yFh460T\",\"messageID\":\"msg_e4a2d283a001VTXY0AzhLUXdH9\",\"sessionID\":\"ses_1b5d3125fffegUPv4bnCsqJHBV\",\"type\":\"step-start\"}}\n"
+}

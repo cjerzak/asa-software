@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Doctor of Biomedical Sciences (1996); Graduated from the Lithuanian Veterinary Academy as a zoo-engineer (1991).",
+  "educational_attainment_source": "https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija",
+  "prior_occupation": "University professor and researcher at the Lithuanian University of Health Sciences and Vytautas Magnus University Agriculture Academy; former Minister of Agriculture (2012–2014).",
+  "prior_occupation_source": "https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija",
+  "birth_year": 1968,
+  "birth_year_source": "https://lt.wikipedia.org/wiki/Vigilijus_Jukna",
+  "birth_place": "Kaunas, Lithuania",
+  "birth_place_source": "https://lt.wikipedia.org/wiki/Vigilijus_Jukna",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija"
+}

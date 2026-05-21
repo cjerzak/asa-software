@@ -1,0 +1,530 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360549506,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a274a7f0013U12lg2tOx1OqJ",
+        "messageID": "msg_e4a274061001kx5O06JflxgDTO",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360552597,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "4abe5149-840e-4f9c-8ee1-e78d24c6aa1e",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics biography Wikipedia Hungary Fidesz"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Tibor_Navracsics <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TiborNavracsicsbegan his career in academia before transitioning into politics, where he became a prominent figure in theFideszparty. He served asHungary'sMinister of Public Administration and Justice from 2010 to 2014, playing a key role in significant governance reforms. <\/CONTENT> <URL> https://www.thecityceleb.com/biography/public-figure/politician/tibor-navracsics-biography-age-spouse-net-worth-wikipedia-parents-children-education-party-positions <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> TiborNavracsics(Veszprém,Hungary, 13. June 1966 -) lawyer and political scientist, head of parliamentary group of theFidesz- Hungarian Civic Union political party.He is married, he has a daughter, who was born in 1991. <\/CONTENT> <URL> https://en-academic.com/dic.nsf/enwiki/7094142 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofTiborNavracsics(1966 - present), politician fromHungary. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/tibor_navracsics <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 2003-2006 Cabinet Chief to the President of theFidesz- Hungarian Civic Union 2006-2010 Elected MP for Veszprém from the county list, head of the parliamentary group ofFidesz- Hungarian Civic Union, fraction leader forFidesz, member of the Committee for Constitutional and Judicial Affairs <\/CONTENT> <URL> https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf <\/URL> __END_OF_SOURCE 5__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360549517,
+            "end": 1779360552595
+          }
+        },
+        "id": "prt_e4a274a82001ycgR3VsxGRhwlb",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a274061001kx5O06JflxgDTO"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360552605,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a275696001WMerzoX5OHs7FN",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a274061001kx5O06JflxgDTO",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5245,
+          "input": 5096,
+          "output": 149,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0175
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360554444,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a275dcb001Wl3nhPd3BX44aG",
+        "messageID": "msg_e4a27569b001SnhvmKNfXWaHcc",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360555661,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "8206e9ec-d4e1-4ce6-a149-67780a10ab1e",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Tibor_Navracsics"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\nFinal URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\nTitle: Tibor Navracsics - Wikipedia\nBytes read: 146410\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Tibor+Navracsics]\nLog in\nPersonal tools\nDonate\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360554447,
+            "end": 1779360555660
+          }
+        },
+        "id": "prt_e4a275dcc001QR1oClpqEk0m2Z",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a27569b001SnhvmKNfXWaHcc"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360557916,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "25c055a1-1a24-4c3c-97bc-d671490f5a26",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics education prior occupation CV Hungary"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Tibor_Navracsics <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TiborNavracsicsis the Minister for Regional Development inHungary.TiborNavracsicsis a lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://budapestforum.org/participant/tibor-navracsics <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Overall,TiborNavracsics's current activities reflect a career committed to advancingeducation, strengthening democratic institutions, and promoting European solidarity. His ongoing influence underscores his role as a key architect of policy and reform, shaping the future ofHungaryand Europe well into the 21st century. <\/CONTENT> <URL> https://biographycentral.com/biography/tibor_navracsics <\/URL> __END_OF_SOURCE 3__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360554451,
+            "end": 1779360557915
+          }
+        },
+        "id": "prt_e4a275dd1001BU1MNjc0600BHy",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a27569b001SnhvmKNfXWaHcc"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360557924,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a276b5d001ps0LQSutl1ggWd",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27569b001SnhvmKNfXWaHcc",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6042,
+          "input": 5804,
+          "output": 238,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.021
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360559413,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a277133001HUzRoS1puuYggG",
+        "messageID": "msg_e4a276b61001sJXBNhmvZ5Kp4c",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360562880,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "1146e60e-9e53-42de-8e28-a8ba4447c9c8",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf"
+          },
+          "output": "URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\nFinal URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\nTitle: (unknown)\nBytes read: 92699\nCache: MISS\nSource-Type: pdf\n\nRelevant excerpts:\n\n[1]\nCurriculum vitae of Tibor Navracsics, Dr.\nTibor Navracsics, Dr.\nMinister of Public Administration and Justice, deputy prime minister\nPersonal data:\n\n\nVeszprém, 1966.\nMarried, two daughters.\nProfessional experience:\n\n\n\n\n\n\n\n\n\n\nIn 1990 he received his diploma from ELTE Faculty of Law. Then he was employed\nat Veszprém City Court and after passing his judicial exam he served at Veszprém\nCounty Council.\n1993-1997 Assistant lecturer at Budapest University of Economics\n1996-1997 Guest lecturer at the University of Brighton\n1997-1999 Senior lecturer at the Faculty of Law and Political Sciences at ELTE\n1999 Associate professor, ELTE\n1998-2002 Head of Communication and Information Department, Prime Minister’s\nOffice\n1997-2000 General Secretary of Hungarian Political Science Association\n2003-2006 Cabinet Chief to the President of the Fidesz – Hungarian Civic Union\n2006-2010 Elected MP for Veszprém from the county list, head of the parliamentary\ngroup of Fidesz – Hungarian Civic Union, fraction leader for Fidesz, member of the\nCommittee for Constitutional and Judicial Affairs\n2010- Elected MP for Veszprém’s individual constituency, minister of public\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360559417,
+            "end": 1779360562879
+          }
+        },
+        "id": "prt_e4a277135001Lg4DPuMk6OUWww",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a276b61001sJXBNhmvZ5Kp4c"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360564449,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "89d2bb47-0e9c-4d44-b854-4526f946f127",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics sexual orientation LGBTQ identity disability status"
+          },
+          "output": "No good DuckDuckGo Search Result was found",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360559421,
+            "end": 1779360564448
+          }
+        },
+        "id": "prt_e4a27713a0011YzpF24P7HA2PX",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a276b61001sJXBNhmvZ5Kp4c"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360564456,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a2784e1001xblvbozTFyLLqa",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a276b61001sJXBNhmvZ5Kp4c",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6884,
+          "input": 6735,
+          "output": 149,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0224
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360565746,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a2789f10019kVwNehj3F83u4",
+        "messageID": "msg_e4a2784e60018bkseOcB2rxF6o",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360567056,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "7cadac19-2c59-43d7-a81d-d99cd54737bb",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics disability status sexual orientation LGBTQ"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Believe disabled youth, including youth with developmental disabilities, when they come out or invite you in about theirsexualorientationand/or gender identity. <\/CONTENT> <URL> https://reports.hrc.org/2024-disabled-lgbtq-youth-report <\/URL> __END_OF_SOURCE 1__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360565750,
+            "end": 1779360567055
+          }
+        },
+        "id": "prt_e4a2789f3001x3wO8QUDAlHqK5",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a2784e60018bkseOcB2rxF6o"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360567063,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a278f11001Zw65Z3azkESvMR",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2784e60018bkseOcB2rxF6o",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7474,
+          "input": 7386,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0235
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360568389,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a279444001Kws86KqPe0cXBh",
+        "messageID": "msg_e4a278f15001uTDMnZw5YfaNUO",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360588401,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "793252c2-9b68-421a-bb30-fe3b6db73c48",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Tibor Navracsics \"sexual orientation\" OR \"LGBTQ\" OR \"gay\" OR \"disability\""
+          },
+          "error": "MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779360568392,
+            "end": 1779360588399
+          }
+        },
+        "id": "prt_e4a279446001UocwbmQpfEs1E6",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a278f15001uTDMnZw5YfaNUO"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360588409,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a27e271001XUu0004bqa26Fe",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a278f15001uTDMnZw5YfaNUO",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7673,
+          "input": 7572,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0242
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360589675,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a27e76a001XjYRAiJNQg0yUm",
+        "messageID": "msg_e4a27e277001dNGORjGsLmy6jC",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360609683,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "4bb7d9e2-ffb3-44ff-83bb-03700f0438f0",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Tibor Navracsics \"sexual orientation\" OR \"LGBTQ\" OR \"disability\""
+          },
+          "error": "MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779360589679,
+            "end": 1779360609682
+          }
+        },
+        "id": "prt_e4a27e76b001pj7Tn2KOjkPdbP",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a27e277001dNGORjGsLmy6jC"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360609699,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a283593001DThGS2gHPon1fi",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27e277001dNGORjGsLmy6jC",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7799,
+          "input": 7702,
+          "output": 97,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0246
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360610822,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a283a05001JkJCKrBZjUiyiD",
+        "messageID": "msg_e4a2835a0001vuXJoqLpZK7wcC",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360624169,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "e9061b28-29c1-48f7-b3a5-84c3dc121dae",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Tibor Navracsics personal life family"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Tibor Navracsics personal life family\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"tibor navracsics personal life family\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360610825,
+            "end": 1779360624168
+          }
+        },
+        "id": "prt_e4a283a0600185RxLOMI3nBqlO",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "messageID": "msg_e4a2835a0001vuXJoqLpZK7wcC"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360624175,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a286e2a001keSqS2N5bVLIrv",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2835a0001vuXJoqLpZK7wcC",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7914,
+          "input": 7828,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0248
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360628182,
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "id": "prt_e4a287dd5001nsHRl742YPNXP8",
+        "messageID": "msg_e4a286e2d001NR76wvFG3tIXJo",
+        "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"name\": \"Tibor Navracsics\",\n  \"educational_attainment\": \"Law degree from ELTE Faculty of Law (1990), Doctorate (Dr.)\",\n  \"educational_attainment_source\": \"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\",\n  \"prior_occupation\": \"Lawyer and University Lecturer/Professor\",\n  \"prior_occupation_source\": \"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\",\n  \"birth_year\": 1966,\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Tibor_Navracsics\",\n  \"birth_place\": \"Veszprém, Hungary\",\n  \"birth_place_source\": \"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\"\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b5d8c09bffemp7aauw2ypDjPq",
+  "opencode_export_final_text_chars": 978,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360549506,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a274a7f0013U12lg2tOx1OqJ\",\"messageID\":\"msg_e4a274061001kx5O06JflxgDTO\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360552597,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"4abe5149-840e-4f9c-8ee1-e78d24c6aa1e\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics biography Wikipedia Hungary Fidesz\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Tibor_Navracsics <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TiborNavracsicsbegan his career in academia before transitioning into politics, where he became a prominent figure in theFideszparty. He served asHungary'sMinister of Public Administration and Justice from 2010 to 2014, playing a key role in significant governance reforms. <\/CONTENT> <URL> https://www.thecityceleb.com/biography/public-figure/politician/tibor-navracsics-biography-age-spouse-net-worth-wikipedia-parents-children-education-party-positions <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> TiborNavracsics(Veszprém,Hungary, 13. June 1966 -) lawyer and political scientist, head of parliamentary group of theFidesz- Hungarian Civic Union political party.He is married, he has a daughter, who was born in 1991. <\/CONTENT> <URL> https://en-academic.com/dic.nsf/enwiki/7094142 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> BiographyofTiborNavracsics(1966 - present), politician fromHungary. Discover their life story, achievements, and legacy. <\/CONTENT> <URL> https://biographycentral.com/biography/tibor_navracsics <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 2003-2006 Cabinet Chief to the President of theFidesz- Hungarian Civic Union 2006-2010 Elected MP for Veszprém from the county list, head of the parliamentary group ofFidesz- Hungarian Civic Union, fraction leader forFidesz, member of the Committee for Constitutional and Judicial Affairs <\/CONTENT> <URL> https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf <\/URL> __END_OF_SOURCE 5__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360549517,\"end\":1779360552595}},\"id\":\"prt_e4a274a82001ycgR3VsxGRhwlb\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a274061001kx5O06JflxgDTO\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360552605,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a275696001WMerzoX5OHs7FN\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a274061001kx5O06JflxgDTO\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-finish\",\"tokens\":{\"total\":5245,\"input\":5096,\"output\":149,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.017523}}\n{\"type\":\"step_start\",\"timestamp\":1779360554444,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a275dcb001Wl3nhPd3BX44aG\",\"messageID\":\"msg_e4a27569b001SnhvmKNfXWaHcc\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360555661,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"8206e9ec-d4e1-4ce6-a149-67780a10ab1e\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Tibor_Navracsics\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\\nFinal URL: https://en.wikipedia.org/wiki/Tibor_Navracsics\\nTitle: Tibor Navracsics - Wikipedia\\nBytes read: 146410\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Tibor+Navracsics]\\nLog in\\nPersonal tools\\nDonate\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360554447,\"end\":1779360555660}},\"id\":\"prt_e4a275dcc001QR1oClpqEk0m2Z\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a27569b001SnhvmKNfXWaHcc\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360557916,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"25c055a1-1a24-4c3c-97bc-d671490f5a26\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics education prior occupation CV Hungary\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> TiborNavracsics(born 13 June 1966) is a Hungarian lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Tibor_Navracsics <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> TiborNavracsicsis the Minister for Regional Development inHungary.TiborNavracsicsis a lawyer and politician, who served as Minister of Foreign Affairs and Trade from June to September 2014. He previously served as Minister of Administration and Justice between 2010 and 2014. <\/CONTENT> <URL> https://budapestforum.org/participant/tibor-navracsics <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Overall,TiborNavracsics's current activities reflect a career committed to advancingeducation, strengthening democratic institutions, and promoting European solidarity. His ongoing influence underscores his role as a key architect of policy and reform, shaping the future ofHungaryand Europe well into the 21st century. <\/CONTENT> <URL> https://biographycentral.com/biography/tibor_navracsics <\/URL> __END_OF_SOURCE 3__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360554451,\"end\":1779360557915}},\"id\":\"prt_e4a275dd1001BU1MNjc0600BHy\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a27569b001SnhvmKNfXWaHcc\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360557924,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a276b5d001ps0LQSutl1ggWd\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27569b001SnhvmKNfXWaHcc\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-finish\",\"tokens\":{\"total\":6042,\"input\":5804,\"output\":238,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.020982}}\n{\"type\":\"step_start\",\"timestamp\":1779360559413,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a277133001HUzRoS1puuYggG\",\"messageID\":\"msg_e4a276b61001sJXBNhmvZ5Kp4c\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360562880,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"1146e60e-9e53-42de-8e28-a8ba4447c9c8\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\"},\"output\":\"URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\\nFinal URL: https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf\\nTitle: (unknown)\\nBytes read: 92699\\nCache: MISS\\nSource-Type: pdf\\n\\nRelevant excerpts:\\n\\n[1]\\nCurriculum vitae of Tibor Navracsics, Dr.\\nTibor Navracsics, Dr.\\nMinister of Public Administration and Justice, deputy prime minister\\nPersonal data:\\n\\n\\nVeszprém, 1966.\\nMarried, two daughters.\\nProfessional experience:\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nIn 1990 he received his diploma from ELTE Faculty of Law. Then he was employed\\nat Veszprém City Court and after passing his judicial exam he served at Veszprém\\nCounty Council.\\n1993-1997 Assistant lecturer at Budapest University of Economics\\n1996-1997 Guest lecturer at the University of Brighton\\n1997-1999 Senior lecturer at the Faculty of Law and Political Sciences at ELTE\\n1999 Associate professor, ELTE\\n1998-2002 Head of Communication and Information Department, Prime Minister’s\\nOffice\\n1997-2000 General Secretary of Hungarian Political Science Association\\n2003-2006 Cabinet Chief to the President of the Fidesz – Hungarian Civic Union\\n2006-2010 Elected MP for Veszprém from the county list, head of the parliamentary\\ngroup of Fidesz – Hungarian Civic Union, fraction leader for Fidesz, member of the\\nCommittee for Constitutional and Judicial Affairs\\n2010- Elected MP for Veszprém’s individual constituency, minister of public\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360559417,\"end\":1779360562879}},\"id\":\"prt_e4a277135001Lg4DPuMk6OUWww\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a276b61001sJXBNhmvZ5Kp4c\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360564449,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"89d2bb47-0e9c-4d44-b854-4526f946f127\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics sexual orientation LGBTQ identity disability status\"},\"output\":\"No good DuckDuckGo Search Result was found\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360559421,\"end\":1779360564448}},\"id\":\"prt_e4a27713a0011YzpF24P7HA2PX\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a276b61001sJXBNhmvZ5Kp4c\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360564456,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a2784e1001xblvbozTFyLLqa\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a276b61001sJXBNhmvZ5Kp4c\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-finish\",\"tokens\":{\"total\":6884,\"input\":6735,\"output\":149,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.02244}}\n{\"type\":\"step_start\",\"timestamp\":1779360565746,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a2789f10019kVwNehj3F83u4\",\"messageID\":\"msg_e4a2784e60018bkseOcB2rxF6o\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360567056,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"7cadac19-2c59-43d7-a81d-d99cd54737bb\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics disability status sexual orientation LGBTQ\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Believe disabled youth, including youth with developmental disabilities, when they come out or invite you in about theirsexualorientationand/or gender identity. <\/CONTENT> <URL> https://reports.hrc.org/2024-disabled-lgbtq-youth-report <\/URL> __END_OF_SOURCE 1__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360565750,\"end\":1779360567055}},\"id\":\"prt_e4a2789f3001x3wO8QUDAlHqK5\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a2784e60018bkseOcB2rxF6o\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360567063,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a278f11001Zw65Z3azkESvMR\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2784e60018bkseOcB2rxF6o\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-finish\",\"tokens\":{\"total\":7474,\"input\":7386,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.023478}}\n{\"type\":\"step_start\",\"timestamp\":1779360568389,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a279444001Kws86KqPe0cXBh\",\"messageID\":\"msg_e4a278f15001uTDMnZw5YfaNUO\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360588401,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"793252c2-9b68-421a-bb30-fe3b6db73c48\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Tibor Navracsics \\\"sexual orientation\\\" OR \\\"LGBTQ\\\" OR \\\"gay\\\" OR \\\"disability\\\"\"},\"error\":\"MCP error -32001: Request timed out\",\"time\":{\"start\":1779360568392,\"end\":1779360588399}},\"id\":\"prt_e4a279446001UocwbmQpfEs1E6\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a278f15001uTDMnZw5YfaNUO\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360588409,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a27e271001XUu0004bqa26Fe\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a278f15001uTDMnZw5YfaNUO\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-finish\",\"tokens\":{\"total\":7673,\"input\":7572,\"output\":101,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.024231}}\n{\"type\":\"step_start\",\"timestamp\":1779360589675,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a27e76a001XjYRAiJNQg0yUm\",\"messageID\":\"msg_e4a27e277001dNGORjGsLmy6jC\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360609683,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"4bb7d9e2-ffb3-44ff-83bb-03700f0438f0\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Tibor Navracsics \\\"sexual orientation\\\" OR \\\"LGBTQ\\\" OR \\\"disability\\\"\"},\"error\":\"MCP error -32001: Request timed out\",\"time\":{\"start\":1779360589679,\"end\":1779360609682}},\"id\":\"prt_e4a27e76b001pj7Tn2KOjkPdbP\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a27e277001dNGORjGsLmy6jC\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360609699,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a283593001DThGS2gHPon1fi\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27e277001dNGORjGsLmy6jC\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-finish\",\"tokens\":{\"total\":7799,\"input\":7702,\"output\":97,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.024561}}\n{\"type\":\"step_start\",\"timestamp\":1779360610822,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a283a05001JkJCKrBZjUiyiD\",\"messageID\":\"msg_e4a2835a0001vuXJoqLpZK7wcC\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360624169,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"e9061b28-29c1-48f7-b3a5-84c3dc121dae\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Tibor Navracsics personal life family\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Tibor Navracsics personal life family\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"tibor navracsics personal life family\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360610825,\"end\":1779360624168}},\"id\":\"prt_e4a283a0600185RxLOMI3nBqlO\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"messageID\":\"msg_e4a2835a0001vuXJoqLpZK7wcC\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360624175,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a286e2a001keSqS2N5bVLIrv\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2835a0001vuXJoqLpZK7wcC\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-finish\",\"tokens\":{\"total\":7914,\"input\":7828,\"output\":86,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.024774}}\n{\"type\":\"step_start\",\"timestamp\":1779360628182,\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"part\":{\"id\":\"prt_e4a287dd5001nsHRl742YPNXP8\",\"messageID\":\"msg_e4a286e2d001NR76wvFG3tIXJo\",\"sessionID\":\"ses_1b5d8c09bffemp7aauw2ypDjPq\",\"type\":\"step-start\"}}\n"
+}

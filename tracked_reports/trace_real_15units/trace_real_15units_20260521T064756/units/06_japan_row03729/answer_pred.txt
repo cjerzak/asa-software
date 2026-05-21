@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Bachelor's degree in Economics from Ritsumeikan University",
+  "educational_attainment_source": "https://ja.wikipedia.org/wiki/%E7%9A%86%E5%90%89%E7%A8%B2%E7%94%9F",
+  "prior_occupation": "Civil servant at Kagoshima City Hall; Chairman of the Kagoshima City Workers' Union",
+  "prior_occupation_source": "https://ja.wikipedia.org/wiki/%E7%9A%86%E5%90%89%E7%A8%B2%E7%94%9F",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://ja.wikipedia.org/wiki/%E7%9A%86%E5%90%89%E7%A8%B2%E7%94%9F",
+  "birth_year": 1950,
+  "birth_year_source": "https://ja.wikipedia.org/wiki/%E7%9A%86%E5%90%89%E7%A8%B2%E7%94%9F",
+  "birth_place": "Kagoshima City, Kagoshima Prefecture, Japan",
+  "birth_place_source": "https://ja.wikipedia.org/wiki/%E7%9A%86%E5%90%89%E7%A8%B2%E7%94%9F",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://ja.wikipedia.org/wiki/%E7%9A%86%E5%90%89%E7%A8%B2%E7%94%9F",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://ja.wikipedia.org/wiki/%E7%9A%86%E5%90%89%E7%A8%B2%E7%94%9F"
+}

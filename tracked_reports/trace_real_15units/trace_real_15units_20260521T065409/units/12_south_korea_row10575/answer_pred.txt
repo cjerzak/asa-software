@@ -1,0 +1,9 @@
+{
+  "educational_attainment": "Chung Sye-kyun holds a Bachelor of Arts in Law from Korea University (1975), a Master of Business Administration from Pepperdine University (1990), and a PhD in Business Administration from Kyung Hee University (2004). Sources: https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun, https://www.koreatimes.co.kr/www/nation/2025/01/113_33089.html",
+  "prior_occupation": "Before entering politics in 1996, he worked for the Ssangyong Group for 17 years (1978–1995), rising to the position of executive director and serving as a branch manager in New York. Sources: https://koreajoongangdaily.joins.com/2020/06/10/national/people/Chung-Syekyun-prime-minister-interview/20200610172700242.html, https://theseoultimes.com/ST/?url=%2FST%2Fdb%2Fread.php%3Fidx%3D13108",
+  "class_background": "Middle class/professional. His career as a corporate executive at a major conglomerate (Ssangyong Group) and his high level of education (PhD) align with the middle class/professional category. Source: https://koreajoongangdaily.joins.com/2020/06/10/national/people/Chung-Syekyun-prime-minister-interview/20200610172700242.html",
+  "birth_year": "1950. Source: https://en.wikipedia.org/wiki/Chung_Sye-kyun",
+  "birth_place": "Jinan, North Jeolla Province, South Korea. Source: https://en.wikipedia.org/wiki/Chung_Sye-kyun",
+  "disability_status": "Unknown. No public disclosure of disability status found. Source: https://en.wikipedia.org/wiki/Chung_Sye-kyun",
+  "sexual_orientation": "Unknown. No public disclosure of LGBTQ identity found. Source: https://en.wikipedia.org/wiki/Chung_Sye-kyun"
+}

@@ -1,0 +1,664 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360926516,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d0b32001XOh5HEkrwr9Hnl",
+        "messageID": "msg_e4a2d0044001yrcKdCRHXSEFRd",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360928782,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "2a6d2169-8aad-4731-90b9-437e08654c25",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Panama biografía educación ocupación"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Educación: Universidad dePanamá· Ubicación:Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Con 59 votos a favor, tanto de su partido como algunos de oposición, Crispiano Adames fue escogido - esta mañana- para dirigir la Asamblea Nacional. Le acompañarán los vicepresidentes Kayra Harding yMiguelA.Fanovich. (más…) <\/CONTENT> <URL> https://ensegundos.com.pa/tag/miguel-fanovich <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MiguelFanovich: el diputado del pueblo chiricano La trayectoria política deMiguelFanovichse inicia en la gobernación de la provincia de Chiriquí, donde demostró su sensibilidad por los más necesitados que vieron en el una luz de esperanza.Su trabajo le ha garantizado dos diputaciones en forma sucesiva, quehoyle permiten continuar defendiendo los intereses de su provincia y su acción ... <\/CONTENT> <URL> https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> El ejecutivoMIGUELFANOVICHregistra 1 vinculaciones enPanamá. Revisa cargos vigentes e históricos, empresas relacionadas, fechas clave y documentos públicos para un análisis detallado. <\/CONTENT> <URL> https://panamaempresas.com/ejecutivo/miguel-fanovich-id-6E0DD223D186C1FC <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MiguelFanovich.MiguelFanoviches electo segundo vicepresidente de la Asamblea NacionalPanamáJubilados y pensionados: Todo lo que debes saber sobre el pago del martes 19 de mayo <\/CONTENT> <URL> https://www.telemetro.com/miguel-fanovich-a2500497 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> El diputadoMiguelFanovichpresentó el proyecto de ley 29, que busca aumentar a $1,500 el tope para calcular el XIII Mes para los funcionarios ... <\/CONTENT> <URL> https://www.critica.com.pa/temas/miguel-fanovich <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Guía de políticosPanamáFormación Académica Corresponde a las tres experiencias de formación académica más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Experiencia Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta ... <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> EinarFanovich,PanamáSigeilyFanovich,PanamáSigelyFanovich,PanamáMiguelFanovich,PanamáIrvinFanovich,PanamáErneFanovich,PanamáErneFanovichAbogados,PanamáSigeilyFanovichBethancourt,PanamáCarmenFanovichCaballero,PanamáEsta información proviene de fuentes públicas y se muestra de acuerdo al Artículo 6.1 del RGPD. <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-A.-Fanovich.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich,PanamáErneFanovich,PanamáEinarFanovich,PanamáSigeilyFanovich,PanamáSigelyFanovich,PanamáMiguelFanovich,PanamáSerafina Enidza Tejerino Rodriguez,PanamáDora Olivia Aleman Tejerino, Costa Rica Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Work cat.: (OSt)6571:Panamá. Asamblea Nacional 5371, Debate N°31 [junio-2022] :, 2022. Ancón, Calle Culebra, Edificio 224 y 236 Correo electrónico: biblioteca ... <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360926523,
+            "end": 1779360928781
+          }
+        },
+        "id": "prt_e4a2d0b34001j9qbpMUtwPVMrz",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2d0044001yrcKdCRHXSEFRd"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360928793,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d140f001zFFaMS9IG4SImO",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d0044001yrcKdCRHXSEFRd",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5303,
+          "input": 5084,
+          "output": 219,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0185
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360930929,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d1c6f00103v6I72WDsr6ze",
+        "messageID": "msg_e4a2d1417001d4BRTUnI11VU7W",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360932745,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "e76c9472-e61d-40fd-9704-f4a856736826",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"tls_error\",\"retryable\":true,\"url\":\"https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino\",\"final_url\":null,\"status_code\":null,\"error\":\"Failed to perform, curl: (60) SSL certificate problem: certificate has expired. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\",\"error_detail\":null,\"attempt\":2,\"attempts\":2}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360930932,
+            "end": 1779360932744
+          }
+        },
+        "id": "prt_e4a2d1c71001aSZhakIKOVgH6n",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2d1417001d4BRTUnI11VU7W"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360932753,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d238a0017IY5qXDult4xTQ",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d1417001d4BRTUnI11VU7W",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6620,
+          "input": 6395,
+          "output": 225,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0226
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360934035,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d2892001roA3R12CSg6Ax5",
+        "messageID": "msg_e4a2d238e001MIfm1FaVN8DfKB",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360935583,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "91ab22f7-17d1-478c-a9e6-6c5fa0bfd8be",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Angel Fanovich Tijerino biografía fecha de nacimiento lugar de nacimiento educación"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y másde15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Política Corresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listadodelos procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MiguelAngelFanovichTijerinois on Facebook. Join Facebook to connect withMiguelAngelFanovichTijerinoand others you may know. Facebook gives... <\/CONTENT> <URL> https://www.facebook.com/miguelangel.fanovichtijerino <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MIGUELANGELFANOVICHTIJERINOwas included in the global trader database of NBD Trade Data on2022-11-30. It is the first time forMIGUELANGELFANOVICHTIJERINOto appear in the customs data of thePANAMA and at present, NBD Customs Data system has included 2 customs import and export records related to it, and among the trade partners ofMIGUELANGELFANOVICHTIJERINO,0 procurers and 2 ... <\/CONTENT> <URL> https://en.nbd.ltd/trader/info/NBDX1H159752070 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Descarga escrituras en PDF. Recibe alertasdecambios. Consulta directores, avisosdeoperación, marcas, importaciones, licitaciones públicas y más. <\/CONTENT> <URL> https://www.panadata.net/personas/3255283 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Mulino viaja para participar en la Asambleadela ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Númeroderegistros utilizados en: 1 Forma preferida:FanovichT.,MiguelÁngelNotas <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \"Voto Informado\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20defebrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Al parecer la publicación en diferentes redes socialesdeesta información encolerizaron al diputado chiricano,MiguelFanovich, quien por poco le da un ataque cardíaco en el períododeincidencias, durante el plenodela Asamblea Nacionaldeayer miércoles. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360934038,
+            "end": 1779360935581
+          }
+        },
+        "id": "prt_e4a2d2893001P60qob83EXoEUQ",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2d238e001MIfm1FaVN8DfKB"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360935590,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d2e9f001j4IJQGrFvUbmd2",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d238e001MIfm1FaVN8DfKB",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6735,
+          "input": 6642,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0213
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360937097,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d3487001KfvjEdWZdfeciU",
+        "messageID": "msg_e4a2d2ea40014RDcCYuOIWNeD4",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360938846,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "ff763d60-49c7-41de-bd84-5715cf7763ad",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html"
+          },
+          "output": "URL: https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html\nFinal URL: https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html\nTitle: Miguel Fanovich (R) - Candidatos | Tvn Panamá\nBytes read: 297306\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nES NOTICIA\nÚltimas noticias\n[link: https://www.tvn-2.com/ultimo/]\nJosé Raúl Mulino\n[link: https://www.tvn-2.com/temas/jose-raul-mulino/]\nCepanim\n[link: https://www.tvn-2.com/temas/cepanim/]\nIfarhu\n[link: https://www.tvn-2.com/temas/ifarhu/]\nToque de queda\n[link: https://www.tvn-2.com/temas/toque-de-queda/]\nVenezuela\n[link: https://www.tvn-2.com/temas/venezuela/]\nAsamblea Nacional\n[link: https://www.tvn-2.com/temas/asamblea-nacional/]\nCombustibles en Panamá\n[link: https://www.tvn-2.com/temas/combustibles/]\nDonald Trump\n[link: https://www.tvn-2.com/temas/donald-trump/]\nEn vivo\n[link: https://www.tvnpass.com/]\nIr al contenido\nObrir navegació\nNoticias\nNacionales\n[link: https://www.tvn-2.com/nacionales/]\nMundo\n[link: https://www.tvn-2.com/mundo/]\nContenido Exclusivo\n[link: https://www.tvn-2.com/contenido-exclusivo/]\nVideos\n[link: https://www.tvn-2.com/videos/]\nShow TVN\n[link: https://www.tvn-2.com/entretenimiento/]\nTVN Radio\n[link: https://www.tvn-2.com/tvn-radio/]\nDeportes\n[link: https://www.tvn-2.com/tvmax/]\nMundial 2026\n[link: https://www.tvn-2.com/tvmax/copa-mundial-fifa-2026/]\nCopa Nestlé\n[link: https://www.tvn-2.com/especiales/copa-nestle/]\nBeisbol Nacional\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360937100,
+            "end": 1779360938845
+          }
+        },
+        "id": "prt_e4a2d3489001tPvfa2hHuuYl9j",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2d2ea40014RDcCYuOIWNeD4"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360938853,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d3b5f001LpqAqeB0LlTbPP",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d2ea40014RDcCYuOIWNeD4",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7986,
+          "input": 7866,
+          "output": 120,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0254
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360940145,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d4070001VHMMk5ciHJ6EHE",
+        "messageID": "msg_e4a2d3b63001T6of6VNIDqn2IP",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360941649,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "5295fa01-a6b2-4245-b8e6-a62e1c610512",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Tijerino biografía completa educación profesión"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta Política Corresponde al documento con prioridades, formas y acciones de gobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Suscríbase a nuestro newsletter Reciba diariamente información de actualidad directamente en su correo electrónico. Suscribirte a las notificaciones <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y más de 15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Educación: Universidad de Panamá · Ubicación: Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> H.D.MiguelAngelFanovichtijerinoNoticias al instante panama 4.8K subscribers Subscribed <\/CONTENT> <URL> https://www.youtube.com/watch?v=CPScWgrZ3ZA <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Laeducaciónes la clave para sacar a nuestros chicos de la pobreza. En el bueno gobierno vamos a respaldar una reforma educativa y que se invierta el 6% del producto interno eneducación. #FanovichDiputado#Vota1#VotaMolirena#UniendoFuerzas Flor Perez and Luis AbrahamFanovichTijerino󰤥 2 󰤦 1MiguelFanovichApr 12, 2019 · 󰟠 <\/CONTENT> <URL> https://www.facebook.com/people/Miguel-Fanovich/100069435090004 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MiguelFanovich: el diputado del pueblo chiricano La trayectoria política deMiguelFanovichse inicia en la gobernación de la provincia de Chiriquí, donde demostró su sensibilidad por los más necesitados que vieron en el una luz de esperanza.Su trabajo le ha garantizado dos diputaciones en forma sucesiva, quehoyle permiten continuar defendiendo los intereses de su provincia y su acción ... <\/CONTENT> <URL> https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \"Voto Informado\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La Asamblea Nacional juega un rol fundamental para el desarrollo y protección de nuestra democracia. Más allá de sus funciones legislativas, la Asamblea Nacional tiene funciones judiciales y administrativas, que incluyen la fiscalización de otras instituciones del Estado. Las preguntas para los candidatos a Diputado (a) fueron formuladas tomando en cuenta temas de interés ciudadano, y los ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/miguel-fanovich <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> MiguelÁngelTijerinoJuárez (conocido artísticamente comoMiguelTigerino) es un joven cantante y cantautor costarricense. Conocido por ser uno de los participantes de la Primera Temporada de Nace una Estrella. <\/CONTENT> <URL> https://naceunaestrellacr.fandom.com/es/wiki/Miguel_Ángel_Tijerino <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360940148,
+            "end": 1779360941648
+          }
+        },
+        "id": "prt_e4a2d4071001lC3dUx2Vcx3Gla",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2d3b63001T6of6VNIDqn2IP"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360941656,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d4652001mcaqeE8OG8p8GX",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d3b63001T6of6VNIDqn2IP",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8726,
+          "input": 8638,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0272
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360942936,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d4b57001Eqcd4Y0o4H2Q6Q",
+        "messageID": "msg_e4a2d4656001zPY4dzmH3YMiU1",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360944486,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "084a415c-e4c5-4d3d-9026-5e772102715b",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Tijerino fecha de nacimiento lugar de nacimiento biografía"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> TijerinoMiguelFanovichTijerinois on Facebook. Join Facebook to connect withTijerinoMiguelFanovichTijerinoand others you may know. Facebook gives... <\/CONTENT> <URL> https://www.facebook.com/miguel.fanovichtijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MiguelA.FanovichTijerinoMulino viaja para participar en la Asambleadela ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y másde15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \"Voto Informado\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20defebrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> FUENTE: Informado por candidato u obtenidodealgún sitio oficialdeeste DeclaracióndeBeneficios Corresponde al detalle sobre los usosdebeneficios fiscales que ha ejercido el candidato que va a la reelección, como franquicias, pasaporte diplomático, placa oficial, viáticos y otros. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Para encontrar lafechadenacimientopor nombre y apellido, utiliza registros civiles, redes sociales y basesdedatos públicas. ¡Descubrí datos clave! <\/CONTENT> <URL> https://tekoha.com.ar/como-encontrar-la-fecha-de-nacimiento-por-nombre-y-apellido <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Consultar lafechadenacimientodeuna persona con su DNI en Perú es un proceso fácil si se utilizan las herramientas adecuadas, como el portaldeRENIEC o las aplicaciones móviles oficiales. Si necesitas una verificación más formal, siempre puedes acudir a una oficinadeRENIEC. En todo caso, es importante recordar que el usodeesta información debe estar alineado con las normativas ... <\/CONTENT> <URL> https://dniperu.com/consultas/buscar-fecha-de-nacimiento-con-dni <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Busca a tus antepasados en certificadosdenacimiento, registrosdematrimonio, registrosdecensos y otros documentos. <\/CONTENT> <URL> https://www.familysearch.org/es/search <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Panamá, 3deenerode2003. Honorable señorMiguelAngelFanovichTijerinoGobernadordela ProvinciadeChiriquí E. S. D. Señor Gobernador: Acusamos recibodesu nota fechada 30dediciembrede2002, en virtuddela cual nos formula consulta jurídica, previa la siguiente explicación: <\/CONTENT> <URL> https://vocc.procuraduria-admon.gob.pa/sites/default/files/C-002-03_0.PDF <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360942939,
+            "end": 1779360944485
+          }
+        },
+        "id": "prt_e4a2d4b580012gqPxa7gNTunoj",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2d4656001zPY4dzmH3YMiU1"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360944493,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d51660016ZGYfPv4TqRQnt",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d4656001zPY4dzmH3YMiU1",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9965,
+          "input": 9874,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.031
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360945891,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2d56e1001NhGl1mMIQzrEmV",
+        "messageID": "msg_e4a2d516b001Vv1rw84D7HZnk3",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360965902,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "018f9572-87c1-4056-84b0-0789e5d5427b",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "Miguel Fanovich Tijerino biografía estudios universitarios profesión antes de política"
+          },
+          "error": "MCP error -32001: Request timed out",
+          "time": {
+            "start": 1779360945894,
+            "end": 1779360965901
+          }
+        },
+        "id": "prt_e4a2d56e3001ihwwALAQDQ7ruY",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2d516b001Vv1rw84D7HZnk3"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360965910,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2da50f001HARWNlZ0aDzFtN",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d516b001Vv1rw84D7HZnk3",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11158,
+          "input": 11066,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0346
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360967328,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2daa9f001JMcvz7rhaZI1cH",
+        "messageID": "msg_e4a2da514001sXVojGjAhkNcuv",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360973978,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "ba39e4c8-5392-48f7-8018-a8968d193438",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Tijerino biografía estudios universitarios profesión antes de política"
+          },
+          "output": "ASA_TOOL_CACHE_HIT\n__START_OF_SOURCE 1__ <CONTENT> Panamá, 3deenerode2003. Honorable señorMiguelAngelFanovichTijerinoGobernadordela ProvinciadeChiriquí E. S. D. Señor Gobernador: Acusamos recibodesu nota fechada 30dediciembrede2002, en virtuddela cual nos formula consulta jurídica, previa la siguiente explicación: <\/CONTENT> <URL> https://vocc.procuraduria-admon.gob.pa/sites/default/files/C-002-03_0.PDF <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral PropuestaPolíticaCorresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Mulino viaja para participar en la Asambleadela ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> SigelyFanovich, Panamá Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo 6.1 del RGPD. La persona puede o no seguir activa en los cargos mencionados. La concordancia se realiza únicamente por el nombre completo por lo que es posible que la información se refiera a másdeuna persona. Solicitar borrado <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Todos los derechos reservados. Apartado 0834-00129, Panamá - Rep.dePanamá | Dirección, Avenida 12deOctubre | Central Telefónica (507) 390-6700 email: internet@telemetro.com <\/CONTENT> <URL> https://www.telemetro.com/nacionales/miguel-fanovich-es-electo-segundo-vicepresidente-la-asamblea-nacional-n5256852 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> El ejecutivoMIGUELFANOVICHregistra 1 vinculaciones en Panamá. Revisa cargos vigentes e históricos, empresas relacionadas, fechas clave y documentos públicos para un análisis detallado. <\/CONTENT> <URL> https://panamaempresas.com/ejecutivo/miguel-fanovich-id-6E0DD223D186C1FC <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Educación: UniversidaddePanamá · Ubicación: Panamá. Ver el perfildeMiguelFanovichen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> He leído con detenimiento el escritodefecha 24 del presente mes y año, suscrito pro el actual diputadoMiguelngelFanovichTijerino, quien esboza que el \"Partido Arnulfista, saliódela elección presidencial, con los más duros resultados que haya podido registrar su historiapolítica\". <\/CONTENT> <URL> https://portal.critica.com.pa/archivo/12262004/opi04.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Debe recordarse que, como partedela alianzapolíticaentre el PRD y el Molirena,MiguelFanovichfue partedela Junta Directivadela Asamblea Nacional en las tres últimas legislaturas, teniendo una posición siempre favorable a las propuestas del Gobierno Nacional ydelos diputados oficialistas. <\/CONTENT> <URL> https://destinopanama.com.pa/2023/07/fanovich-se-cambia-de-tolda <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360967331,
+            "end": 1779360973977
+          }
+        },
+        "id": "prt_e4a2daaa0001hhNiUq5m04yOGB",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2da514001sXVojGjAhkNcuv"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360973985,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2dc49b001p7Q83P73FjtTak",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2da514001sXVojGjAhkNcuv",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11279,
+          "input": 11187,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0349
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360975560,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2dcac70019PuzG1eA6Vx83p",
+        "messageID": "msg_e4a2dc49f001b1bcpXjp3TH1k9",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360976959,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "ed33923a-bf67-49d5-86af-16e82a9d6894",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Tijerino biografía \"nacido en\" Chiriquí"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Biografíade JuanMiguelJuanMiguel: La Ascensión de un Ídolo Inicios Humildes y Primeros Pasos: El Nacimiento de una Leyenda La historia de JuanMiguelcomenzó en un pequeño pueblo.Nacido enuna familia modesta, JuanMigueldesde niño mostró un talento innato para la música. <\/CONTENT> <URL> https://www.musica.com/juan-miguel/biografia <\/URL> __END_OF_SOURCE 1__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360975563,
+            "end": 1779360976958
+          }
+        },
+        "id": "prt_e4a2dcac90012l4TAhi1pTGGs3",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2dc49f001b1bcpXjp3TH1k9"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360976966,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2dd040001z3ZTYQiWjQjSkt",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2dc49f001b1bcpXjp3TH1k9",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 12591,
+          "input": 12498,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0389
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360978294,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2dd575001tRwmmADZiBl0wM",
+        "messageID": "msg_e4a2dd0440014srOU83dm84zeD",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360978301,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "7f086445-6e01-4585-9f48-73cbbb647fb7",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Tijerino biografía \"nacido el\""
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 0, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Miguel Fanovich Tijerino biografía \\\"nacido el\\\"\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"miguel fanovich tijerino biografía \\\\\\\"nacido el\\\\\\\"\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360978297,
+            "end": 1779360978300
+          }
+        },
+        "id": "prt_e4a2dd576001h9PTRc2KkEVMJO",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "messageID": "msg_e4a2dd0440014srOU83dm84zeD"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360978307,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2dd57d0021qOOIU3YywqE0Q",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2dd0440014srOU83dm84zeD",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-finish",
+        "tokens": {
+          "total": 12812,
+          "input": 12722,
+          "output": 90,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0395
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360988960,
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "id": "prt_e4a2dff1e001aYUqZOGsApYb8Q",
+        "messageID": "msg_e4a2dd581001yA0dDkVYk4jcX1",
+        "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"University (Universidad de Panamá)\",\n  \"prior_occupation\": \"Governor of Chiriquí\",\n  \"birth_year\": \"Unknown\",\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://pa.linkedin.com/in/miguel-fanovich-4573101bb\",\n    \"prior_occupation\": \"https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html\",\n    \"birth_year\": \"Unknown\",\n    \"birth_place\": \"Unknown\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\"\n  }\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b5d30050ffeUxfG0oGpSC2Lbq",
+  "opencode_export_final_text_chars": 651,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360926516,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d0b32001XOh5HEkrwr9Hnl\",\"messageID\":\"msg_e4a2d0044001yrcKdCRHXSEFRd\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360928782,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"2a6d2169-8aad-4731-90b9-437e08654c25\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Panama biografía educación ocupación\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Educación: Universidad dePanamá· Ubicación:Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Con 59 votos a favor, tanto de su partido como algunos de oposición, Crispiano Adames fue escogido - esta mañana- para dirigir la Asamblea Nacional. Le acompañarán los vicepresidentes Kayra Harding yMiguelA.Fanovich. (más…) <\/CONTENT> <URL> https://ensegundos.com.pa/tag/miguel-fanovich <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MiguelFanovich: el diputado del pueblo chiricano La trayectoria política deMiguelFanovichse inicia en la gobernación de la provincia de Chiriquí, donde demostró su sensibilidad por los más necesitados que vieron en el una luz de esperanza.Su trabajo le ha garantizado dos diputaciones en forma sucesiva, quehoyle permiten continuar defendiendo los intereses de su provincia y su acción ... <\/CONTENT> <URL> https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> El ejecutivoMIGUELFANOVICHregistra 1 vinculaciones enPanamá. Revisa cargos vigentes e históricos, empresas relacionadas, fechas clave y documentos públicos para un análisis detallado. <\/CONTENT> <URL> https://panamaempresas.com/ejecutivo/miguel-fanovich-id-6E0DD223D186C1FC <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MiguelFanovich.MiguelFanoviches electo segundo vicepresidente de la Asamblea NacionalPanamáJubilados y pensionados: Todo lo que debes saber sobre el pago del martes 19 de mayo <\/CONTENT> <URL> https://www.telemetro.com/miguel-fanovich-a2500497 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> El diputadoMiguelFanovichpresentó el proyecto de ley 29, que busca aumentar a $1,500 el tope para calcular el XIII Mes para los funcionarios ... <\/CONTENT> <URL> https://www.critica.com.pa/temas/miguel-fanovich <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Guía de políticosPanamáFormación Académica Corresponde a las tres experiencias de formación académica más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Experiencia Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta ... <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> EinarFanovich,PanamáSigeilyFanovich,PanamáSigelyFanovich,PanamáMiguelFanovich,PanamáIrvinFanovich,PanamáErneFanovich,PanamáErneFanovichAbogados,PanamáSigeilyFanovichBethancourt,PanamáCarmenFanovichCaballero,PanamáEsta información proviene de fuentes públicas y se muestra de acuerdo al Artículo 6.1 del RGPD. <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-A.-Fanovich.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich,PanamáErneFanovich,PanamáEinarFanovich,PanamáSigeilyFanovich,PanamáSigelyFanovich,PanamáMiguelFanovich,PanamáSerafina Enidza Tejerino Rodriguez,PanamáDora Olivia Aleman Tejerino, Costa Rica Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Work cat.: (OSt)6571:Panamá. Asamblea Nacional 5371, Debate N°31 [junio-2022] :, 2022. Ancón, Calle Culebra, Edificio 224 y 236 Correo electrónico: biblioteca ... <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360926523,\"end\":1779360928781}},\"id\":\"prt_e4a2d0b34001j9qbpMUtwPVMrz\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2d0044001yrcKdCRHXSEFRd\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360928793,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d140f001zFFaMS9IG4SImO\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d0044001yrcKdCRHXSEFRd\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":5303,\"input\":5084,\"output\":219,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.018537}}\n{\"type\":\"step_start\",\"timestamp\":1779360930929,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d1c6f00103v6I72WDsr6ze\",\"messageID\":\"msg_e4a2d1417001d4BRTUnI11VU7W\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360932745,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"e76c9472-e61d-40fd-9704-f4a856736826\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"tls_error\\\",\\\"retryable\\\":true,\\\"url\\\":\\\"https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino\\\",\\\"final_url\\\":null,\\\"status_code\\\":null,\\\"error\\\":\\\"Failed to perform, curl: (60) SSL certificate problem: certificate has expired. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\\\",\\\"error_detail\\\":null,\\\"attempt\\\":2,\\\"attempts\\\":2}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360930932,\"end\":1779360932744}},\"id\":\"prt_e4a2d1c71001aSZhakIKOVgH6n\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2d1417001d4BRTUnI11VU7W\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360932753,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d238a0017IY5qXDult4xTQ\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d1417001d4BRTUnI11VU7W\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":6620,\"input\":6395,\"output\":225,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.02256}}\n{\"type\":\"step_start\",\"timestamp\":1779360934035,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d2892001roA3R12CSg6Ax5\",\"messageID\":\"msg_e4a2d238e001MIfm1FaVN8DfKB\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360935583,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"91ab22f7-17d1-478c-a9e6-6c5fa0bfd8be\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Angel Fanovich Tijerino biografía fecha de nacimiento lugar de nacimiento educación\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y másde15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Política Corresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listadodelos procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MiguelAngelFanovichTijerinois on Facebook. Join Facebook to connect withMiguelAngelFanovichTijerinoand others you may know. Facebook gives... <\/CONTENT> <URL> https://www.facebook.com/miguelangel.fanovichtijerino <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MIGUELANGELFANOVICHTIJERINOwas included in the global trader database of NBD Trade Data on2022-11-30. It is the first time forMIGUELANGELFANOVICHTIJERINOto appear in the customs data of thePANAMA and at present, NBD Customs Data system has included 2 customs import and export records related to it, and among the trade partners ofMIGUELANGELFANOVICHTIJERINO,0 procurers and 2 ... <\/CONTENT> <URL> https://en.nbd.ltd/trader/info/NBDX1H159752070 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Descarga escrituras en PDF. Recibe alertasdecambios. Consulta directores, avisosdeoperación, marcas, importaciones, licitaciones públicas y más. <\/CONTENT> <URL> https://www.panadata.net/personas/3255283 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Mulino viaja para participar en la Asambleadela ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Númeroderegistros utilizados en: 1 Forma preferida:FanovichT.,MiguelÁngelNotas <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \\\"Voto Informado\\\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20defebrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Al parecer la publicación en diferentes redes socialesdeesta información encolerizaron al diputado chiricano,MiguelFanovich, quien por poco le da un ataque cardíaco en el períododeincidencias, durante el plenodela Asamblea Nacionaldeayer miércoles. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360934038,\"end\":1779360935581}},\"id\":\"prt_e4a2d2893001P60qob83EXoEUQ\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2d238e001MIfm1FaVN8DfKB\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360935590,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d2e9f001j4IJQGrFvUbmd2\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d238e001MIfm1FaVN8DfKB\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":6735,\"input\":6642,\"output\":93,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.021321}}\n{\"type\":\"step_start\",\"timestamp\":1779360937097,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d3487001KfvjEdWZdfeciU\",\"messageID\":\"msg_e4a2d2ea40014RDcCYuOIWNeD4\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360938846,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"ff763d60-49c7-41de-bd84-5715cf7763ad\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html\"},\"output\":\"URL: https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html\\nFinal URL: https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html\\nTitle: Miguel Fanovich (R) - Candidatos | Tvn Panamá\\nBytes read: 297306\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nES NOTICIA\\nÚltimas noticias\\n[link: https://www.tvn-2.com/ultimo/]\\nJosé Raúl Mulino\\n[link: https://www.tvn-2.com/temas/jose-raul-mulino/]\\nCepanim\\n[link: https://www.tvn-2.com/temas/cepanim/]\\nIfarhu\\n[link: https://www.tvn-2.com/temas/ifarhu/]\\nToque de queda\\n[link: https://www.tvn-2.com/temas/toque-de-queda/]\\nVenezuela\\n[link: https://www.tvn-2.com/temas/venezuela/]\\nAsamblea Nacional\\n[link: https://www.tvn-2.com/temas/asamblea-nacional/]\\nCombustibles en Panamá\\n[link: https://www.tvn-2.com/temas/combustibles/]\\nDonald Trump\\n[link: https://www.tvn-2.com/temas/donald-trump/]\\nEn vivo\\n[link: https://www.tvnpass.com/]\\nIr al contenido\\nObrir navegació\\nNoticias\\nNacionales\\n[link: https://www.tvn-2.com/nacionales/]\\nMundo\\n[link: https://www.tvn-2.com/mundo/]\\nContenido Exclusivo\\n[link: https://www.tvn-2.com/contenido-exclusivo/]\\nVideos\\n[link: https://www.tvn-2.com/videos/]\\nShow TVN\\n[link: https://www.tvn-2.com/entretenimiento/]\\nTVN Radio\\n[link: https://www.tvn-2.com/tvn-radio/]\\nDeportes\\n[link: https://www.tvn-2.com/tvmax/]\\nMundial 2026\\n[link: https://www.tvn-2.com/tvmax/copa-mundial-fifa-2026/]\\nCopa Nestlé\\n[link: https://www.tvn-2.com/especiales/copa-nestle/]\\nBeisbol Nacional\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360937100,\"end\":1779360938845}},\"id\":\"prt_e4a2d3489001tPvfa2hHuuYl9j\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2d2ea40014RDcCYuOIWNeD4\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360938853,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d3b5f001LpqAqeB0LlTbPP\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d2ea40014RDcCYuOIWNeD4\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":7986,\"input\":7866,\"output\":120,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.025398}}\n{\"type\":\"step_start\",\"timestamp\":1779360940145,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d4070001VHMMk5ciHJ6EHE\",\"messageID\":\"msg_e4a2d3b63001T6of6VNIDqn2IP\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360941649,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"5295fa01-a6b2-4245-b8e6-a62e1c610512\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Tijerino biografía completa educación profesión\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta Política Corresponde al documento con prioridades, formas y acciones de gobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Suscríbase a nuestro newsletter Reciba diariamente información de actualidad directamente en su correo electrónico. Suscribirte a las notificaciones <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y más de 15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Educación: Universidad de Panamá · Ubicación: Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> H.D.MiguelAngelFanovichtijerinoNoticias al instante panama 4.8K subscribers Subscribed <\/CONTENT> <URL> https://www.youtube.com/watch?v=CPScWgrZ3ZA <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Laeducaciónes la clave para sacar a nuestros chicos de la pobreza. En el bueno gobierno vamos a respaldar una reforma educativa y que se invierta el 6% del producto interno eneducación. #FanovichDiputado#Vota1#VotaMolirena#UniendoFuerzas Flor Perez and Luis AbrahamFanovichTijerino󰤥 2 󰤦 1MiguelFanovichApr 12, 2019 · 󰟠 <\/CONTENT> <URL> https://www.facebook.com/people/Miguel-Fanovich/100069435090004 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MiguelFanovich: el diputado del pueblo chiricano La trayectoria política deMiguelFanovichse inicia en la gobernación de la provincia de Chiriquí, donde demostró su sensibilidad por los más necesitados que vieron en el una luz de esperanza.Su trabajo le ha garantizado dos diputaciones en forma sucesiva, quehoyle permiten continuar defendiendo los intereses de su provincia y su acción ... <\/CONTENT> <URL> https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \\\"Voto Informado\\\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La Asamblea Nacional juega un rol fundamental para el desarrollo y protección de nuestra democracia. Más allá de sus funciones legislativas, la Asamblea Nacional tiene funciones judiciales y administrativas, que incluyen la fiscalización de otras instituciones del Estado. Las preguntas para los candidatos a Diputado (a) fueron formuladas tomando en cuenta temas de interés ciudadano, y los ... <\/CONTENT> <URL> https://voto2024.maga.dev/es/candidatos/diputado/miguel-fanovich <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> MiguelÁngelTijerinoJuárez (conocido artísticamente comoMiguelTigerino) es un joven cantante y cantautor costarricense. Conocido por ser uno de los participantes de la Primera Temporada de Nace una Estrella. <\/CONTENT> <URL> https://naceunaestrellacr.fandom.com/es/wiki/Miguel_Ángel_Tijerino <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360940148,\"end\":1779360941648}},\"id\":\"prt_e4a2d4071001lC3dUx2Vcx3Gla\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2d3b63001T6of6VNIDqn2IP\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360941656,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d4652001mcaqeE8OG8p8GX\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d3b63001T6of6VNIDqn2IP\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":8726,\"input\":8638,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.027234}}\n{\"type\":\"step_start\",\"timestamp\":1779360942936,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d4b57001Eqcd4Y0o4H2Q6Q\",\"messageID\":\"msg_e4a2d4656001zPY4dzmH3YMiU1\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360944486,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"084a415c-e4c5-4d3d-9026-5e772102715b\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Tijerino fecha de nacimiento lugar de nacimiento biografía\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> TijerinoMiguelFanovichTijerinois on Facebook. Join Facebook to connect withTijerinoMiguelFanovichTijerinoand others you may know. Facebook gives... <\/CONTENT> <URL> https://www.facebook.com/miguel.fanovichtijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MiguelA.FanovichTijerinoMulino viaja para participar en la Asambleadela ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y másde15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \\\"Voto Informado\\\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20defebrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> FUENTE: Informado por candidato u obtenidodealgún sitio oficialdeeste DeclaracióndeBeneficios Corresponde al detalle sobre los usosdebeneficios fiscales que ha ejercido el candidato que va a la reelección, como franquicias, pasaporte diplomático, placa oficial, viáticos y otros. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Para encontrar lafechadenacimientopor nombre y apellido, utiliza registros civiles, redes sociales y basesdedatos públicas. ¡Descubrí datos clave! <\/CONTENT> <URL> https://tekoha.com.ar/como-encontrar-la-fecha-de-nacimiento-por-nombre-y-apellido <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Consultar lafechadenacimientodeuna persona con su DNI en Perú es un proceso fácil si se utilizan las herramientas adecuadas, como el portaldeRENIEC o las aplicaciones móviles oficiales. Si necesitas una verificación más formal, siempre puedes acudir a una oficinadeRENIEC. En todo caso, es importante recordar que el usodeesta información debe estar alineado con las normativas ... <\/CONTENT> <URL> https://dniperu.com/consultas/buscar-fecha-de-nacimiento-con-dni <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Busca a tus antepasados en certificadosdenacimiento, registrosdematrimonio, registrosdecensos y otros documentos. <\/CONTENT> <URL> https://www.familysearch.org/es/search <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Panamá, 3deenerode2003. Honorable señorMiguelAngelFanovichTijerinoGobernadordela ProvinciadeChiriquí E. S. D. Señor Gobernador: Acusamos recibodesu nota fechada 30dediciembrede2002, en virtuddela cual nos formula consulta jurídica, previa la siguiente explicación: <\/CONTENT> <URL> https://vocc.procuraduria-admon.gob.pa/sites/default/files/C-002-03_0.PDF <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360942939,\"end\":1779360944485}},\"id\":\"prt_e4a2d4b580012gqPxa7gNTunoj\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2d4656001zPY4dzmH3YMiU1\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360944493,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d51660016ZGYfPv4TqRQnt\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d4656001zPY4dzmH3YMiU1\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":9965,\"input\":9874,\"output\":91,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.030987}}\n{\"type\":\"step_start\",\"timestamp\":1779360945891,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2d56e1001NhGl1mMIQzrEmV\",\"messageID\":\"msg_e4a2d516b001Vv1rw84D7HZnk3\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360965902,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"018f9572-87c1-4056-84b0-0789e5d5427b\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"Miguel Fanovich Tijerino biografía estudios universitarios profesión antes de política\"},\"error\":\"MCP error -32001: Request timed out\",\"time\":{\"start\":1779360945894,\"end\":1779360965901}},\"id\":\"prt_e4a2d56e3001ihwwALAQDQ7ruY\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2d516b001Vv1rw84D7HZnk3\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360965910,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2da50f001HARWNlZ0aDzFtN\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d516b001Vv1rw84D7HZnk3\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":11158,\"input\":11066,\"output\":92,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.034578}}\n{\"type\":\"step_start\",\"timestamp\":1779360967328,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2daa9f001JMcvz7rhaZI1cH\",\"messageID\":\"msg_e4a2da514001sXVojGjAhkNcuv\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360973978,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"ba39e4c8-5392-48f7-8018-a8968d193438\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Tijerino biografía estudios universitarios profesión antes de política\"},\"output\":\"ASA_TOOL_CACHE_HIT\\n__START_OF_SOURCE 1__ <CONTENT> Panamá, 3deenerode2003. Honorable señorMiguelAngelFanovichTijerinoGobernadordela ProvinciadeChiriquí E. S. D. Señor Gobernador: Acusamos recibodesu nota fechada 30dediciembrede2002, en virtuddela cual nos formula consulta jurídica, previa la siguiente explicación: <\/CONTENT> <URL> https://vocc.procuraduria-admon.gob.pa/sites/default/files/C-002-03_0.PDF <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral PropuestaPolíticaCorresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Mulino viaja para participar en la Asambleadela ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> SigelyFanovich, Panamá Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo 6.1 del RGPD. La persona puede o no seguir activa en los cargos mencionados. La concordancia se realiza únicamente por el nombre completo por lo que es posible que la información se refiera a másdeuna persona. Solicitar borrado <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Todos los derechos reservados. Apartado 0834-00129, Panamá - Rep.dePanamá | Dirección, Avenida 12deOctubre | Central Telefónica (507) 390-6700 email: internet@telemetro.com <\/CONTENT> <URL> https://www.telemetro.com/nacionales/miguel-fanovich-es-electo-segundo-vicepresidente-la-asamblea-nacional-n5256852 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> El ejecutivoMIGUELFANOVICHregistra 1 vinculaciones en Panamá. Revisa cargos vigentes e históricos, empresas relacionadas, fechas clave y documentos públicos para un análisis detallado. <\/CONTENT> <URL> https://panamaempresas.com/ejecutivo/miguel-fanovich-id-6E0DD223D186C1FC <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información provienedefuentes públicas y se muestradeacuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Educación: UniversidaddePanamá · Ubicación: Panamá. Ver el perfildeMiguelFanovichen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> He leído con detenimiento el escritodefecha 24 del presente mes y año, suscrito pro el actual diputadoMiguelngelFanovichTijerino, quien esboza que el \\\"Partido Arnulfista, saliódela elección presidencial, con los más duros resultados que haya podido registrar su historiapolítica\\\". <\/CONTENT> <URL> https://portal.critica.com.pa/archivo/12262004/opi04.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Debe recordarse que, como partedela alianzapolíticaentre el PRD y el Molirena,MiguelFanovichfue partedela Junta Directivadela Asamblea Nacional en las tres últimas legislaturas, teniendo una posición siempre favorable a las propuestas del Gobierno Nacional ydelos diputados oficialistas. <\/CONTENT> <URL> https://destinopanama.com.pa/2023/07/fanovich-se-cambia-de-tolda <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360967331,\"end\":1779360973977}},\"id\":\"prt_e4a2daaa0001hhNiUq5m04yOGB\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2da514001sXVojGjAhkNcuv\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360973985,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2dc49b001p7Q83P73FjtTak\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2da514001sXVojGjAhkNcuv\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":11279,\"input\":11187,\"output\":92,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.034941}}\n{\"type\":\"step_start\",\"timestamp\":1779360975560,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2dcac70019PuzG1eA6Vx83p\",\"messageID\":\"msg_e4a2dc49f001b1bcpXjp3TH1k9\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360976959,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"ed33923a-bf67-49d5-86af-16e82a9d6894\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Tijerino biografía \\\"nacido en\\\" Chiriquí\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Biografíade JuanMiguelJuanMiguel: La Ascensión de un Ídolo Inicios Humildes y Primeros Pasos: El Nacimiento de una Leyenda La historia de JuanMiguelcomenzó en un pequeño pueblo.Nacido enuna familia modesta, JuanMigueldesde niño mostró un talento innato para la música. <\/CONTENT> <URL> https://www.musica.com/juan-miguel/biografia <\/URL> __END_OF_SOURCE 1__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360975563,\"end\":1779360976958}},\"id\":\"prt_e4a2dcac90012l4TAhi1pTGGs3\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2dc49f001b1bcpXjp3TH1k9\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360976966,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2dd040001z3ZTYQiWjQjSkt\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2dc49f001b1bcpXjp3TH1k9\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":12591,\"input\":12498,\"output\":93,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.038889}}\n{\"type\":\"step_start\",\"timestamp\":1779360978294,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2dd575001tRwmmADZiBl0wM\",\"messageID\":\"msg_e4a2dd0440014srOU83dm84zeD\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360978301,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"7f086445-6e01-4585-9f48-73cbbb647fb7\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Tijerino biografía \\\"nacido el\\\"\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 0, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Miguel Fanovich Tijerino biografía \\\\\\\"nacido el\\\\\\\"\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"miguel fanovich tijerino biografía \\\\\\\\\\\\\\\"nacido el\\\\\\\\\\\\\\\"\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360978297,\"end\":1779360978300}},\"id\":\"prt_e4a2dd576001h9PTRc2KkEVMJO\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"messageID\":\"msg_e4a2dd0440014srOU83dm84zeD\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360978307,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2dd57d0021qOOIU3YywqE0Q\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2dd0440014srOU83dm84zeD\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-finish\",\"tokens\":{\"total\":12812,\"input\":12722,\"output\":90,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.039516}}\n{\"type\":\"step_start\",\"timestamp\":1779360988960,\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"part\":{\"id\":\"prt_e4a2dff1e001aYUqZOGsApYb8Q\",\"messageID\":\"msg_e4a2dd581001yA0dDkVYk4jcX1\",\"sessionID\":\"ses_1b5d30050ffeUxfG0oGpSC2Lbq\",\"type\":\"step-start\"}}\n"
+}

@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Bachelor of Education (Educational Administration), Ubon Ratchathani Rajabhat Institute",
+  "educational_attainment_source": "https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad",
+  "prior_occupation": "Businessman",
+  "prior_occupation_source": "https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0",
+  "birth_year": 1963,
+  "birth_year_source": "https://th.wikipedia.org/wiki/%E0%B8%8A%E0%B8%B9%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B9%8C_%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%A5%E0%B8%A5%E0%B8%A0",
+  "birth_place": "Ubon Ratchathani, Thailand",
+  "birth_place_source": "https://www.nationtv.tv/blogs/politic/rueang-mai-cop/378969317",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://parliamentwatch.wevis.info/politicians/47adf106-0997-4eea-848f-46f6247c81ad"
+}

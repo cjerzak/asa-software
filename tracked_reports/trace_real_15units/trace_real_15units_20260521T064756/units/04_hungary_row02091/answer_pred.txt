@@ -1,0 +1,17 @@
+{
+  "name": "Tibor Navracsics",
+  "educational_attainment": "Law degree from ELTE Faculty of Law (1990), Doctorate (Dr.)",
+  "educational_attainment_source": "https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf",
+  "prior_occupation": "Lawyer and University Lecturer/Professor",
+  "prior_occupation_source": "https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf",
+  "birth_year": 1966,
+  "birth_year_source": "https://en.wikipedia.org/wiki/Tibor_Navracsics",
+  "birth_place": "Veszprém, Hungary",
+  "birth_place_source": "https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf",
+  "disability_status": "Unknown",
+  "disability_status_source": "Unknown",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "Unknown",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.europarl.europa.eu/cmsdata/193949/20120207ATT37512EN-original.pdf"
+}

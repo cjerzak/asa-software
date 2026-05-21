@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "PhD Candidate in Digital Economy (Business and Technology University); Certificate for Political and Economic Affairs (Georgetown University and Charles University)",
+  "educational_attainment_source": "https://parliament.ge/en/parliament-members/7112/biography",
+  "prior_occupation": "Deputy Chairperson of the Georgia Innovation and Technology Agency (GITA)",
+  "prior_occupation_source": "https://cbw.ge/economy/gita-deputy-chairman-mariam-lashkhi-is-in-the-platoon-of-georgian-dream",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://cbw.ge/economy/gita-deputy-chairman-mariam-lashkhi-is-in-the-platoon-of-georgian-dream",
+  "birth_year": "1988",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Mariam_Lashkhi",
+  "birth_place": "Unknown",
+  "birth_place_source": "Unknown",
+  "disability_status": "Unknown",
+  "disability_status_source": "Unknown",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "Unknown"
+}

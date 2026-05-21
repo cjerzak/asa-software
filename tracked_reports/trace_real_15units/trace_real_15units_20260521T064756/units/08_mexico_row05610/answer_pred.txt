@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Licenciatura en Derecho (Law Degree)",
+  "educational_attainment_source": "https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921",
+  "prior_occupation": "Lawyer",
+  "prior_occupation_source": "https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t",
+  "birth_year": 1982,
+  "birth_year_source": "https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921",
+  "birth_place": "Tehuantepec, Oaxaca, Mexico",
+  "birth_place_source": "https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921"
+}

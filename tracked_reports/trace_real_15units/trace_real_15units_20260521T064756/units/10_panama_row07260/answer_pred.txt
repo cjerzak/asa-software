@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Universidad de Panamá",
+  "prior_occupation": "Gobernador de la provincia de Chiriquí",
+  "birth_year": "Unknown",
+  "birth_place": "Unknown",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "https://pa.linkedin.com/in/miguel-fanovich-4573101bb",
+    "prior_occupation": "https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html",
+    "birth_year": "Unknown",
+    "birth_place": "Unknown",
+    "disability_status": "Unknown",
+    "sexual_orientation": "Unknown",
+    "class_background": "https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html"
+  }
+}

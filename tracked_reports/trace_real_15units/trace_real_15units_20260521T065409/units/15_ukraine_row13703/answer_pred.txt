@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Kyiv State University (Law degree)",
+  "educational_attainment_source": "https://biographycentral.com/biography/viktor_medvedchuk",
+  "prior_occupation": "Lawyer",
+  "prior_occupation_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk",
+  "birth_year": "1954",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk",
+  "birth_place": "Pochet, Krasnoyarsk Krai, RSFSR",
+  "birth_place_source": "https://en.unansea.com/politician-viktor-medvedchuk-biography-and-interesting-facts-from-life",
+  "disability_status": "Unknown",
+  "disability_status_source": "Unknown",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "Unknown",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk"
+}

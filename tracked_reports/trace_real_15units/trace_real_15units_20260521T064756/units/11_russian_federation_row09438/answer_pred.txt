@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Graduated from the History Department of Moscow State University (MSU) in 1981, specializing in the history of the Communist Party of the Soviet Union. He also holds a PhD (Candidate of Historical Sciences) obtained in 1985.",
+  "educational_attainment_source": "https://prabook.com/web/konstantin.zatulin/2140414",
+  "prior_occupation": "Before being elected to the State Duma in 1993, he was a businessman and political organizer. He headed the 'Entrepreneurs for a New Russia' association and served as an advisor to the Mayor of Moscow. Earlier, he worked in the Komsomol Central Committee (1987-1989).",
+  "prior_occupation_source": "https://kremlin-roadmap.gfsis.org.ge/public-persons/display/24",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://eiao.org/konstantin-zatulin-russia",
+  "birth_year": "1958",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin",
+  "birth_place": "Batumi, Adjarian ASSR, Georgian SSR, USSR",
+  "birth_place_source": "https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin"
+}

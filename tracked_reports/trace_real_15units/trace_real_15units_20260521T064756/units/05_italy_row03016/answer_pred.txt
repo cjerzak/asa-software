@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Laurea in Economia (indirizzo Finanza aziendale e credito) presso l'Università degli Studi di Pavia",
+  "educational_attainment_source": "https://comune.arona.no.it/wp-content/uploads/2024/06/CV_Gusmeroli.pdf",
+  "prior_occupation": "Commercialista e revisore dei conti",
+  "prior_occupation_source": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli",
+  "birth_year": 1961,
+  "birth_year_source": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli",
+  "birth_place": "Varese, Italy",
+  "birth_place_source": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli"
+}

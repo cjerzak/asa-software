@@ -1,0 +1,18 @@
+{
+  "unit_key": "11_russian_federation_row09438",
+  "generated_at_utc": "2026-05-21T10:50:02Z",
+  "canonical_artifact_id": "50fa9c1e0f960651bc7ab79259f48b0d283ae1df78a476337741cdadc7302c01",
+  "released_artifact_id": "307e61ae8c384561d1775b6948d7e12e31b3b53c343193daf3bea4a78eca4648",
+  "released_from": "opencode_final_text_json",
+  "canonical_available": true,
+  "canonical_matches_message": false,
+  "canonical_byte_hash": "50fa9c1e0f960651bc7ab79259f48b0d283ae1df78a476337741cdadc7302c01",
+  "released_byte_hash": "307e61ae8c384561d1775b6948d7e12e31b3b53c343193daf3bea4a78eca4648",
+  "byte_hash_matches": false,
+  "canonical_semantic_hash": "4c9234fbc47a27116f78d7d954d22a8aee617d726e26eddea52067cfc326bc29",
+  "released_semantic_hash": null,
+  "semantic_hash_matches": false,
+  "hash_mismatch_type": null,
+  "truncation_signals": [],
+  "json_repair_reasons": []
+}

@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Degree in Economics (specialization in corporate finance and credit)",
+  "educational_attainment_source": "https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475",
+  "prior_occupation": "Chartered accountant and auditor (Commercialista e revisore dei conti)",
+  "prior_occupation_source": "https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475",
+  "birth_year": 1961,
+  "birth_year_source": "https://en.wikipedia.org/wiki/Alberto_Gusmeroli",
+  "birth_place": "Varese, Italy",
+  "birth_place_source": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli",
+  "disability_status": "Unknown",
+  "disability_status_source": "Unknown",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "Unknown",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475"
+}

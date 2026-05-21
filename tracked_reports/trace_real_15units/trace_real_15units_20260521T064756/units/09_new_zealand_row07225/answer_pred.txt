@@ -1,0 +1,30 @@
+{
+  "educational_attainment": {
+    "value": "Bachelor of Arts with Honours in Politics",
+    "source": "https://www.rnz.co.nz/news/political/509720/grant-robertson-s-political-history-a-contested-legacy"
+  },
+  "prior_occupation": {
+    "value": "Diplomat (Ministry of Foreign Affairs and Trade)",
+    "source": "https://www.rnz.co.nz/news/political/509720/grant-robertson-s-political-history-a-contested-legacy"
+  },
+  "class_background": {
+    "value": "Middle class/professional",
+    "source": "https://www.rnz.co.nz/news/political/509720/grant-robertson-s-political-history-a-contested-legacy"
+  },
+  "birth_year": {
+    "value": 1971,
+    "source": "https://en.wikipedia.org/wiki/Grant_Robertson"
+  },
+  "birth_place": {
+    "value": "Palmerston North, New Zealand",
+    "source": "https://celebrity-birthdays.com/people/grant-robertson"
+  },
+  "disability_status": {
+    "value": "Unknown",
+    "source": "https://www.beehive.govt.nz/minister/hon-grant-robertson?page=1"
+  },
+  "sexual_orientation": {
+    "value": "Gay",
+    "source": "https://www.1news.co.nz/2024/02/20/timeline-grant-robertsons-legacy-in-politics"
+  }
+}

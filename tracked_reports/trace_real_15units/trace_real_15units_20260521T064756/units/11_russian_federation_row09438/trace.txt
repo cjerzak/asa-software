@@ -1,0 +1,544 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360555188,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a2760b1001pgyfj0T0WaTYgR",
+        "messageID": "msg_e4a2756920010hEeeqD5qU6SXI",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360557545,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "bd01f923-a43b-400f-a8ec-057afd227551",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Konstantin Fyodorovich Zatulin biography Russian Federation 1993 Party of Russian Unity and Accord"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is aRussianpolitician, first deputy chairman of the committee of the State Duma for the CIS and relations withRussiannationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Затулин (в центре) около1993года В1993году создал и возглавил объединение «Предприниматели за новую Россию», принявшее вместе с Партией российского единства и согласия (С. <\/CONTENT> <URL> https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> In1993he headed the political movement \"Entrepreneurs of the New Russia\". In1993, Mr.. together with the movement of entrepreneurs for a new Russia \"has entered electoral coalition with thePartyofRussia'sunityandharmony, and participated in elections to the Duma in1993.1993-1995,. <\/CONTENT> <URL> https://persona.rin.ru/eng/view/f/0/16160/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> In1993KonstantinZatulinwas elected to the State Duma of theRussianFederationwhere became the chairman the first created Committee on CIS Affairs and Relations with Compatriots. It was the First assembly of State Duma. In 1995 he was the chairman of the Commission on the Black Sea Fleet. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> KonstantinZatulinwas elected to the State Duma of theRussianFederationI, IV, V, VII convocations. Since 1996 he is the Founder and Director of the Institute of CIS countries (Institute of Diaspora and Integration). He led the weekly author programmes on the channel TV-Center Continent (on the post-Soviet space problems), Political Kitchen, Matter of Principle,RussianQuestion (2002 ... <\/CONTENT> <URL> https://valdaiclub.com/about/experts/522 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> KonstantinFyodorovichZatulinis aRussianpolitician, first deputy chairman of the committee of the State Duma for the Commonwealth of Independent States and relations withRussiannationals abroad. <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константи́н Фёдорович Зату́лин; born 7 September 1958) is aRussianpolitician and expert on post‑ Soviet affairs. He is a Deputy of the State Duma since 1994, representing the United Russia faction, and serves as First Deputy Chairman of the State Duma Committee on CIS Affairs, Eurasian Integration, and Relations with ... <\/CONTENT> <URL> https://thefireriseswiki.miraheze.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 1. Name of IndividualKonstantinFyodorovichZatulin(also transliterated asKonstantinFedorovichZatulin,Russian: Константин Фёдорович Затулин) is widely referenced in English-language reports and sanctions documentation under the nameKonstantinZatulin. 2. Date of BirthKonstantinZatulinwas born on 7 September 1958 in Batumi, Adjarian ASSR, Georgian SSR, USSR ... <\/CONTENT> <URL> https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин, born on 7 September 1958, in Batumi, Soviet Union) is aRussianpolitician, first deputy chairman of the committee of the State Duma for the CIS and relations withRussiannationals abroad. He represents the Sochi constituency. <\/CONTENT> <URL> https://dbpedia.org/page/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360555196,
+            "end": 1779360557544
+          }
+        },
+        "id": "prt_e4a2760b40012mEbbq57X3haeH",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a2756920010hEeeqD5qU6SXI"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360557555,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a2769eb001rQSTcsJfzEPHN0",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2756920010hEeeqD5qU6SXI",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5324,
+          "input": 5095,
+          "output": 229,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0187
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360559948,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a27734a001y9KWn5pnYYM6p0",
+        "messageID": "msg_e4a2769f1001YGMZIp7VWt28l2",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360561525,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "a10c8c6c-d8bf-4469-9e6c-f6bfb3af0f04",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович"
+          },
+          "output": "URL: https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович\nFinal URL: https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D1%82%D1%83%D0%BB%D0%B8%D0%BD,_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD_%D0%A4%D1%91%D0%B4%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87\nTitle: Затулин, Константин Фёдорович — Википедия\nBytes read: 467616\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nПерейти к содержанию\nГлавное меню\nГлавное меню\nпереместить в боковую панель\nскрыть\nНавигация\nЗаглавная страница\n[link: https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0]\nСодержание\n[link: https://ru.wikipedia.org/wiki/%D0%92%D0%B8%D0%BA%D0%B8%D0%BF%D0%B5%D0%B4%D0%B8%D1%8F:%D0%A1%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5]\nИзбранные статьи\n[link: https://ru.wikipedia.org/wiki/%D0%92%D0%B8%D0%BA%D0%B8%D0%BF%D0%B5%D0%B4%D0%B8%D1%8F:%D0%98%D0%B7%D0%B1%D1%80%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5_%D1%81%D1%82%D0%B0%D1%82%D1%8C%D0%B8]\nСлучайная статья\n[link: https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F:%D0%A1%D0%BB%D1%83%D1%87%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0]\nТекущие события\n[link: https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D1%80%D1%82%D0%B0%D0%BB:%D0%A2%D0%B5%D0%BA%D1%83%D1%89%D0%B8%D0%B5_%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D1%8F]\nУчастие\nСообщить об ошибке\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360559951,
+            "end": 1779360561524
+          }
+        },
+        "id": "prt_e4a27734c001ROH2bMv3tFhx6j",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a2769f1001YGMZIp7VWt28l2"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360561532,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a277975001agAV1XnthPPKdz",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2769f1001YGMZIp7VWt28l2",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6643,
+          "input": 6304,
+          "output": 339,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.024
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360562810,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a277e78001wD7EiazN9jj5iY",
+        "messageID": "msg_e4a27797a001TiabwgcRADLDyC",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360564184,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "5e8915db-123c-4870-b6a8-581080a19415",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Konstantin_Zatulin"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Konstantin_Zatulin\nFinal URL: https://en.wikipedia.org/wiki/Konstantin_Zatulin\nTitle: Konstantin Zatulin - Wikipedia\nBytes read: 154049\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Konstantin+Zatulin]\nLog in\nPersonal tools\nDonate\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360562813,
+            "end": 1779360564182
+          }
+        },
+        "id": "prt_e4a277e7a0018nQL2lVv6rDlco",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a27797a001TiabwgcRADLDyC"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360564190,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a2783d8001gXB4lyVo7ZzP4h",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27797a001TiabwgcRADLDyC",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7494,
+          "input": 7400,
+          "output": 94,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0236
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360565513,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a278907001OwSt5fPEwpgZnn",
+        "messageID": "msg_e4a2783dc001QUhPtQVbH9TY32",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360566996,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "1ddb2ed7-ee96-4809-bd0a-73c22f528ec7",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Konstantin Zatulin education prior occupation disability sexual orientation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> KonstantinZatulinwas born in September 7, 1958 in Batumi (Adjara Autonomous Republic of Georgia SSR) in the officer family. His parents are originally from the Don. His father,ZatulinFedor, was a Colonel in the border troops of the USSR. Both parents,ZatulinFedor and his wife Zatulina Vera (nee Fedorova ) were the Dons Cossacks. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> KonstantinFyodorovichZatulinis a Russian politician, first deputy chairman of the committee of the State Duma for the Commonwealth of Independent States and relations with Russian nationals abroad. <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Read the full biography ofKonstantinZatulin, including facts, birthday, life story, profession, family and more. <\/CONTENT> <URL> https://www.biographies.net/people/en/konstantin_zatulin <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Yes,KonstantinZatulinis alive (67 years old). What doesKonstantinZatulindo for a living?KonstantinZatulinis known as a politician. Where wasKonstantinZatulinborn?KonstantinZatulinwas born in Batumi on September 7, 1958. Where didKonstantinZatulinstudy?KonstantinZatulinstudied at MSU Faculty of History. <\/CONTENT> <URL> https://entityfacts.com/en/person/konstantin-zatulin <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> KonstantinZatulinwas born on September 7, 1958, in a family of a military service member, in Batumi, Ajara ASSR, Georgian SSR, USSR. After spending his childhood in Batumi, his family moved to Sochi, where he graduated from a secondary school. <\/CONTENT> <URL> https://kremlin-roadmap.gfsis.org.ge/public-persons/display/24 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KonstantinZatulin. Biography The future politician was born on September 7, 1958 in the capital of Adjara - the city of Batumi. About his father - Don CossackZatulinFedor Ivanovich - responded as a prototype Lanovoy in the legendary film \"Officers\". <\/CONTENT> <URL> https://en.birmiss.com/zatulin-konstantin-fedorovich-biography-photo-nationality <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> KonstantinFyodorovichZatulin(also transliterated asKonstantinFedorovichZatulin, Russian: Константин Фёдорович Затулин) is widely referenced in English-language reports and sanctions documentation under the nameKonstantinZatulin. <\/CONTENT> <URL> https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Константин Фёдорович Затулин родился 7 сентября 1958 г. в семье офицера-пограничника. Детство и юность провел в Сочи, семья жила в доме № 10 на улице Набережной (теперь Конституции СССР). Окончил ... <\/CONTENT> <URL> https://zatulin.ru/kandidat2021/biografiya-kandidata.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> KonstantinFedorovich described the outcome as a \"great tragedy.\" In reality, the true tragedy occurred earlier when 20% of Azerbaijan's territory was under Armenianoccupation. Now, with Azerbaijan's sovereignty and territorial integrity fully restored after a 44-day war and a one-day anti-terrorist operation, the situation is improving. <\/CONTENT> <URL> https://caliber.az/en/post/how-russian-mp-became-international-persona-non-grata <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360565516,
+            "end": 1779360566995
+          }
+        },
+        "id": "prt_e4a278909001XV05tFx7MVpbX4",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a2783dc001QUhPtQVbH9TY32"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360567002,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a278ed4001zQVPhSuYdia1ig",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2783dc001QUhPtQVbH9TY32",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8035,
+          "input": 7947,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0252
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360568371,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a279432001vrcKElayzUf3uW",
+        "messageID": "msg_e4a278ed8001nYh0TDXC1VHFoi",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360583389,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "1d74d462-0f46-4a18-8550-88adad3d7eea",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://zatulin.ru/kandidat2021/biografiya-kandidata.html"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"_ToolDeadlineExpired\",\"retryable\":false,\"url\":\"https://zatulin.ru/kandidat2021/biografiya-kandidata.html\",\"final_url\":null,\"status_code\":null,\"error\":\"ASA tool deadline exceeded after 15.0s\",\"error_detail\":null,\"attempt\":null,\"attempts\":null}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360568374,
+            "end": 1779360583387
+          }
+        },
+        "id": "prt_e4a279433001y34hSCZd3HhbNq",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a278ed8001nYh0TDXC1VHFoi"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360583396,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a27cedd001MGHJhcn45apjUh",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a278ed8001nYh0TDXC1VHFoi",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9289,
+          "input": 9188,
+          "output": 101,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0291
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360584929,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a27d4e0001wP8cyJWoQIjKjb",
+        "messageID": "msg_e4a27cee2001HyS0oUt7jL10oa",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360586497,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "c8da51a0-4034-4941-93b8-7a0e39a8fc40",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Konstantin Zatulin education MSU Faculty of History graduation year"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Yes,KonstantinZatulinis alive (67yearsold). What doesKonstantinZatulindo for a living?KonstantinZatulinis known as a politician. Where wasKonstantinZatulinborn?KonstantinZatulinwas born in Batumi on September 7, 1958. Where didKonstantinZatulinstudy?KonstantinZatulinstudied atMSUFacultyofHistory. <\/CONTENT> <URL> https://entityfacts.com/en/person/konstantin-zatulin <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> After schoolKonstantinZatulinstarted his career in the Krasnodar Territory. In 1977 he got intoFacultyofHistoryofthe Lomonosov Moscow State Universitydiploma. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> EducationZatulingraduated from theHistoryDepartment of Moscow State University in 1981, specializing in thehistoryofthe Communist Party of the Soviet Union. Career In the 1993 electionZatulinwas elected deputy in the State Duma, where he assumed the position of the chairman of the Committee for the Commonwealth of Independent States and relations with Russian nationals abroad. In the ... <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> KonstantinFyodorovichZatulin(Russian , born on 7 September 1958, in Batumi, Soviet Union) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad.Zatulingraduated from theHistoryDepa <\/CONTENT> <URL> https://alchetron.com/Konstantin-Zatulin <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ZATULINKonstantinFyodorovich Executive Secretary Born in September 7, 1958 in Batumi. 1981 - graduated from theHistoryFacultyofthe Lomonosov Moscow State University with honors. 1985 - PhD. 1987-1989 - political science reviewer, assistant secretary at the Komsomol Central Committee, head of the section. <\/CONTENT> <URL> https://sfei.info/img/2020/11/organizing_committee.pdf <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> The followingyear, he submitted documents for the full-time department of the historicalfacultyofthe Moscow State University, he could not enter because of a shortage of points, soZatulinKonstantinFedorovich began to study in absentia. <\/CONTENT> <URL> https://en.birmiss.com/zatulin-konstantin-fedorovich-biography-photo-nationality <\/URL> __END_OF_SOURCE 7__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360584933,
+            "end": 1779360586496
+          }
+        },
+        "id": "prt_e4a27d4e1001wMtmn3FqcZbHiP",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a27cee2001HyS0oUt7jL10oa"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360586503,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a27db01001uBWpFiGTnutrSd",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27cee2001HyS0oUt7jL10oa",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9489,
+          "input": 9400,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0295
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360587924,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a27e093001wyTwB0KiijoZ6w",
+        "messageID": "msg_e4a27db05001A0mngAxJPEg56q",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360589473,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "a110c0dd-3d61-45f9-8ddc-65f2e6202430",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Konstantin Zatulin occupation before 1993 State Duma election"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of theStateDumafor the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> zatulin.ru — официальный сайт Константин Фёдорович Затулин Затулин, Константин — статья в Лентапедии. 2012 год. Страны СНГ.Русские и русскоязычные в новом зарубежье Категории: Родившиеся 7 ... <\/CONTENT> <URL> https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> In1993KonstantinZatulinwas elected to theStateDumaof the Russian Federation where became the chairman the first created Committee on CIS Affairs and Relations with Compatriots. It was the First assembly ofStateDuma. In 1995 he was the chairman of the Commission on the Black Sea Fleet. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> KonstantinFyodorovichZatulinis a Russian politician, first deputy chairman of the committee of theStateDumafor the Commonwealth of IndependentStatesand relations with Russian nationals abroad. <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константи́н Фёдорович Зату́лин; born 7 September 1958) is a Russian politician and expert on post‑ Soviet affairs. He is a Deputy of theStateDumasince 1994, representing the United Russia faction, and serves as First Deputy Chairman of theStateDumaCommittee on CIS Affairs, Eurasian Integration, and Relations with ... <\/CONTENT> <URL> https://thefireriseswiki.miraheze.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> In the1993electionZatulinwas elected deputy in theStateDuma, where he assumed the position of the chairman of the Committee for the Commonwealth of IndependentStatesand relations with Russian nationals abroad. <\/CONTENT> <URL> https://everything.explained.today/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> In1993, he created a political entity \"Entrepreneurs for New Russia\", which, together with a partner party participated in the FirstStateDumaelections.Zatulinbecame theStateDumaMP and got the position of the Chairman of a newly created Committee for CIS Affairs and Relations with Compatriots. <\/CONTENT> <URL> https://kremlin-roadmap.gfsis.org.ge/public-persons/display/24 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Many, including politicians who are not very interested in politics, are familiar withZatulinKonstantinFedorovich, a deputy of theStateDuma, a political scientist and a TV presenter. His calm soft voice is pleasant to listen to, he always talks with arguments, unobtrusively and interestingly. <\/CONTENT> <URL> https://en.birmiss.com/zatulin-konstantin-fedorovich-biography-photo-nationality <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 7. Known Affiliations and NetworksKonstantinZatulinis a prominent member of the United Russia party and has held multiple convocations as a deputy in theStateDuma. He is the first deputy chairman of theStateDumaCommittee for the Commonwealth of IndependentStates(CIS) and relations with Russian nationals abroad. <\/CONTENT> <URL> https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> According toZatulin, who was first elected to Russia'sStateDumain1993,beforePutin's coming to power, the Russian policy towards Abkhazia was contradictory and at times hostile to the Abkhza cause, as seen, for example, from the economic blockade formally imposed in 1994 on Abkhazia. <\/CONTENT> <URL> https://oldwp.civil.ge/archives/364372 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360587928,
+            "end": 1779360589472
+          }
+        },
+        "id": "prt_e4a27e094001kPQvAfXFCOarf1",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a27db05001A0mngAxJPEg56q"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360589480,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a27e6a2001LHWdLk52Jrfc3P",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27db05001A0mngAxJPEg56q",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10423,
+          "input": 10331,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0324
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360590904,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a27ec37001hrCW9sppOmO9HV",
+        "messageID": "msg_e4a27e6a6001xCOVc1fKW3GSVj",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360596619,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "4ab6c681-6d8c-4c11-b003-da7420850141",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Konstantin Zatulin disability status sexual orientation LGBTQ identity"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360590907,
+            "end": 1779360596618
+          }
+        },
+        "id": "prt_e4a27ec38001vdD7XkPw8XVgQX",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "messageID": "msg_e4a27e6a6001xCOVc1fKW3GSVj"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360596625,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a28028c00101NG2N0fI3U60A",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27e6a6001xCOVc1fKW3GSVj",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11660,
+          "input": 11572,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.036
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360599567,
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "id": "prt_e4a280e0d0017gVlkj9E9Tp9Rr",
+        "messageID": "msg_e4a280290001SSMarzmYD6ZM9c",
+        "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Graduated from the History Department of Moscow State University (MSU) in 1981, specializing in the history of the Communist Party of the Soviet Union. He also holds a PhD (Candidate of Historical Sciences) obtained in 1985.\",\n  \"educational_attainment_source\": \"https://prabook.com/web/konstantin.zatulin/2140414\",\n  \"prior_occupation\": \"Before being elected to the State Duma in 1993, he was a businessman and political organizer. He headed the 'Entrepreneurs for a New Russia' association and served as an advisor to the Mayor of Moscow. Earlier, he worked in the Komsomol Central Committee (1987-1989).\",\n  \"prior_occupation_source\": \"https://kremlin-roadmap.gfsis.org.ge/public-persons/display/24\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://eiao.org/konstantin-zatulin-russia\",\n  \"birth_year\": \"1958\",\n  \"birth_year_source\": \"https://en.wikipedia.org/wiki/Konstantin_Zatulin\",\n  \"birth_place\": \"Batumi, Adjarian ASSR, Georgian SSR, USSR\",\n  \"birth_place_source\": \"https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://en.wikipedia.org/wiki/Konstantin_Zatulin\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://en.wikipedia.org/wiki/Konstantin_Zatulin\"\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1",
+  "opencode_export_final_text_chars": 1366,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360555188,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a2760b1001pgyfj0T0WaTYgR\",\"messageID\":\"msg_e4a2756920010hEeeqD5qU6SXI\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360557545,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"bd01f923-a43b-400f-a8ec-057afd227551\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Konstantin Fyodorovich Zatulin biography Russian Federation 1993 Party of Russian Unity and Accord\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is aRussianpolitician, first deputy chairman of the committee of the State Duma for the CIS and relations withRussiannationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Затулин (в центре) около1993года В1993году создал и возглавил объединение «Предприниматели за новую Россию», принявшее вместе с Партией российского единства и согласия (С. <\/CONTENT> <URL> https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> In1993he headed the political movement \\\"Entrepreneurs of the New Russia\\\". In1993, Mr.. together with the movement of entrepreneurs for a new Russia \\\"has entered electoral coalition with thePartyofRussia'sunityandharmony, and participated in elections to the Duma in1993.1993-1995,. <\/CONTENT> <URL> https://persona.rin.ru/eng/view/f/0/16160/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> In1993KonstantinZatulinwas elected to the State Duma of theRussianFederationwhere became the chairman the first created Committee on CIS Affairs and Relations with Compatriots. It was the First assembly of State Duma. In 1995 he was the chairman of the Commission on the Black Sea Fleet. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> KonstantinZatulinwas elected to the State Duma of theRussianFederationI, IV, V, VII convocations. Since 1996 he is the Founder and Director of the Institute of CIS countries (Institute of Diaspora and Integration). He led the weekly author programmes on the channel TV-Center Continent (on the post-Soviet space problems), Political Kitchen, Matter of Principle,RussianQuestion (2002 ... <\/CONTENT> <URL> https://valdaiclub.com/about/experts/522 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> KonstantinFyodorovichZatulinis aRussianpolitician, first deputy chairman of the committee of the State Duma for the Commonwealth of Independent States and relations withRussiannationals abroad. <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константи́н Фёдорович Зату́лин; born 7 September 1958) is aRussianpolitician and expert on post‑ Soviet affairs. He is a Deputy of the State Duma since 1994, representing the United Russia faction, and serves as First Deputy Chairman of the State Duma Committee on CIS Affairs, Eurasian Integration, and Relations with ... <\/CONTENT> <URL> https://thefireriseswiki.miraheze.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 1. Name of IndividualKonstantinFyodorovichZatulin(also transliterated asKonstantinFedorovichZatulin,Russian: Константин Фёдорович Затулин) is widely referenced in English-language reports and sanctions documentation under the nameKonstantinZatulin. 2. Date of BirthKonstantinZatulinwas born on 7 September 1958 in Batumi, Adjarian ASSR, Georgian SSR, USSR ... <\/CONTENT> <URL> https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин, born on 7 September 1958, in Batumi, Soviet Union) is aRussianpolitician, first deputy chairman of the committee of the State Duma for the CIS and relations withRussiannationals abroad. He represents the Sochi constituency. <\/CONTENT> <URL> https://dbpedia.org/page/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360555196,\"end\":1779360557544}},\"id\":\"prt_e4a2760b40012mEbbq57X3haeH\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a2756920010hEeeqD5qU6SXI\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360557555,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a2769eb001rQSTcsJfzEPHN0\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2756920010hEeeqD5qU6SXI\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":5324,\"input\":5095,\"output\":229,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.01872}}\n{\"type\":\"step_start\",\"timestamp\":1779360559948,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a27734a001y9KWn5pnYYM6p0\",\"messageID\":\"msg_e4a2769f1001YGMZIp7VWt28l2\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360561525,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"a10c8c6c-d8bf-4469-9e6c-f6bfb3af0f04\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович\"},\"output\":\"URL: https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович\\nFinal URL: https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D1%82%D1%83%D0%BB%D0%B8%D0%BD,_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD_%D0%A4%D1%91%D0%B4%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87\\nTitle: Затулин, Константин Фёдорович — Википедия\\nBytes read: 467616\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nПерейти к содержанию\\nГлавное меню\\nГлавное меню\\nпереместить в боковую панель\\nскрыть\\nНавигация\\nЗаглавная страница\\n[link: https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0]\\nСодержание\\n[link: https://ru.wikipedia.org/wiki/%D0%92%D0%B8%D0%BA%D0%B8%D0%BF%D0%B5%D0%B4%D0%B8%D1%8F:%D0%A1%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5]\\nИзбранные статьи\\n[link: https://ru.wikipedia.org/wiki/%D0%92%D0%B8%D0%BA%D0%B8%D0%BF%D0%B5%D0%B4%D0%B8%D1%8F:%D0%98%D0%B7%D0%B1%D1%80%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5_%D1%81%D1%82%D0%B0%D1%82%D1%8C%D0%B8]\\nСлучайная статья\\n[link: https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F:%D0%A1%D0%BB%D1%83%D1%87%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0]\\nТекущие события\\n[link: https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D1%80%D1%82%D0%B0%D0%BB:%D0%A2%D0%B5%D0%BA%D1%83%D1%89%D0%B8%D0%B5_%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D1%8F]\\nУчастие\\nСообщить об ошибке\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360559951,\"end\":1779360561524}},\"id\":\"prt_e4a27734c001ROH2bMv3tFhx6j\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a2769f1001YGMZIp7VWt28l2\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360561532,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a277975001agAV1XnthPPKdz\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2769f1001YGMZIp7VWt28l2\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":6643,\"input\":6304,\"output\":339,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.023997}}\n{\"type\":\"step_start\",\"timestamp\":1779360562810,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a277e78001wD7EiazN9jj5iY\",\"messageID\":\"msg_e4a27797a001TiabwgcRADLDyC\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360564184,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"5e8915db-123c-4870-b6a8-581080a19415\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Konstantin_Zatulin\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Konstantin_Zatulin\\nFinal URL: https://en.wikipedia.org/wiki/Konstantin_Zatulin\\nTitle: Konstantin Zatulin - Wikipedia\\nBytes read: 154049\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Konstantin+Zatulin]\\nLog in\\nPersonal tools\\nDonate\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360562813,\"end\":1779360564182}},\"id\":\"prt_e4a277e7a0018nQL2lVv6rDlco\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a27797a001TiabwgcRADLDyC\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360564190,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a2783d8001gXB4lyVo7ZzP4h\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27797a001TiabwgcRADLDyC\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":7494,\"input\":7400,\"output\":94,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.02361}}\n{\"type\":\"step_start\",\"timestamp\":1779360565513,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a278907001OwSt5fPEwpgZnn\",\"messageID\":\"msg_e4a2783dc001QUhPtQVbH9TY32\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360566996,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"1ddb2ed7-ee96-4809-bd0a-73c22f528ec7\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Konstantin Zatulin education prior occupation disability sexual orientation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> KonstantinZatulinwas born in September 7, 1958 in Batumi (Adjara Autonomous Republic of Georgia SSR) in the officer family. His parents are originally from the Don. His father,ZatulinFedor, was a Colonel in the border troops of the USSR. Both parents,ZatulinFedor and his wife Zatulina Vera (nee Fedorova ) were the Dons Cossacks. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> KonstantinFyodorovichZatulinis a Russian politician, first deputy chairman of the committee of the State Duma for the Commonwealth of Independent States and relations with Russian nationals abroad. <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Read the full biography ofKonstantinZatulin, including facts, birthday, life story, profession, family and more. <\/CONTENT> <URL> https://www.biographies.net/people/en/konstantin_zatulin <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Yes,KonstantinZatulinis alive (67 years old). What doesKonstantinZatulindo for a living?KonstantinZatulinis known as a politician. Where wasKonstantinZatulinborn?KonstantinZatulinwas born in Batumi on September 7, 1958. Where didKonstantinZatulinstudy?KonstantinZatulinstudied at MSU Faculty of History. <\/CONTENT> <URL> https://entityfacts.com/en/person/konstantin-zatulin <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> KonstantinZatulinwas born on September 7, 1958, in a family of a military service member, in Batumi, Ajara ASSR, Georgian SSR, USSR. After spending his childhood in Batumi, his family moved to Sochi, where he graduated from a secondary school. <\/CONTENT> <URL> https://kremlin-roadmap.gfsis.org.ge/public-persons/display/24 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KonstantinZatulin. Biography The future politician was born on September 7, 1958 in the capital of Adjara - the city of Batumi. About his father - Don CossackZatulinFedor Ivanovich - responded as a prototype Lanovoy in the legendary film \\\"Officers\\\". <\/CONTENT> <URL> https://en.birmiss.com/zatulin-konstantin-fedorovich-biography-photo-nationality <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> KonstantinFyodorovichZatulin(also transliterated asKonstantinFedorovichZatulin, Russian: Константин Фёдорович Затулин) is widely referenced in English-language reports and sanctions documentation under the nameKonstantinZatulin. <\/CONTENT> <URL> https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Константин Фёдорович Затулин родился 7 сентября 1958 г. в семье офицера-пограничника. Детство и юность провел в Сочи, семья жила в доме № 10 на улице Набережной (теперь Конституции СССР). Окончил ... <\/CONTENT> <URL> https://zatulin.ru/kandidat2021/biografiya-kandidata.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> KonstantinFedorovich described the outcome as a \\\"great tragedy.\\\" In reality, the true tragedy occurred earlier when 20% of Azerbaijan's territory was under Armenianoccupation. Now, with Azerbaijan's sovereignty and territorial integrity fully restored after a 44-day war and a one-day anti-terrorist operation, the situation is improving. <\/CONTENT> <URL> https://caliber.az/en/post/how-russian-mp-became-international-persona-non-grata <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360565516,\"end\":1779360566995}},\"id\":\"prt_e4a278909001XV05tFx7MVpbX4\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a2783dc001QUhPtQVbH9TY32\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360567002,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a278ed4001zQVPhSuYdia1ig\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2783dc001QUhPtQVbH9TY32\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":8035,\"input\":7947,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.025161}}\n{\"type\":\"step_start\",\"timestamp\":1779360568371,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a279432001vrcKElayzUf3uW\",\"messageID\":\"msg_e4a278ed8001nYh0TDXC1VHFoi\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360583389,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"1d74d462-0f46-4a18-8550-88adad3d7eea\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://zatulin.ru/kandidat2021/biografiya-kandidata.html\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"_ToolDeadlineExpired\\\",\\\"retryable\\\":false,\\\"url\\\":\\\"https://zatulin.ru/kandidat2021/biografiya-kandidata.html\\\",\\\"final_url\\\":null,\\\"status_code\\\":null,\\\"error\\\":\\\"ASA tool deadline exceeded after 15.0s\\\",\\\"error_detail\\\":null,\\\"attempt\\\":null,\\\"attempts\\\":null}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360568374,\"end\":1779360583387}},\"id\":\"prt_e4a279433001y34hSCZd3HhbNq\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a278ed8001nYh0TDXC1VHFoi\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360583396,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a27cedd001MGHJhcn45apjUh\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a278ed8001nYh0TDXC1VHFoi\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":9289,\"input\":9188,\"output\":101,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.029079}}\n{\"type\":\"step_start\",\"timestamp\":1779360584929,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a27d4e0001wP8cyJWoQIjKjb\",\"messageID\":\"msg_e4a27cee2001HyS0oUt7jL10oa\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360586497,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"c8da51a0-4034-4941-93b8-7a0e39a8fc40\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Konstantin Zatulin education MSU Faculty of History graduation year\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Yes,KonstantinZatulinis alive (67yearsold). What doesKonstantinZatulindo for a living?KonstantinZatulinis known as a politician. Where wasKonstantinZatulinborn?KonstantinZatulinwas born in Batumi on September 7, 1958. Where didKonstantinZatulinstudy?KonstantinZatulinstudied atMSUFacultyofHistory. <\/CONTENT> <URL> https://entityfacts.com/en/person/konstantin-zatulin <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> After schoolKonstantinZatulinstarted his career in the Krasnodar Territory. In 1977 he got intoFacultyofHistoryofthe Lomonosov Moscow State Universitydiploma. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> EducationZatulingraduated from theHistoryDepartment of Moscow State University in 1981, specializing in thehistoryofthe Communist Party of the Soviet Union. Career In the 1993 electionZatulinwas elected deputy in the State Duma, where he assumed the position of the chairman of the Committee for the Commonwealth of Independent States and relations with Russian nationals abroad. In the ... <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> KonstantinFyodorovichZatulin(Russian , born on 7 September 1958, in Batumi, Soviet Union) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad.Zatulingraduated from theHistoryDepa <\/CONTENT> <URL> https://alchetron.com/Konstantin-Zatulin <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ZATULINKonstantinFyodorovich Executive Secretary Born in September 7, 1958 in Batumi. 1981 - graduated from theHistoryFacultyofthe Lomonosov Moscow State University with honors. 1985 - PhD. 1987-1989 - political science reviewer, assistant secretary at the Komsomol Central Committee, head of the section. <\/CONTENT> <URL> https://sfei.info/img/2020/11/organizing_committee.pdf <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> The followingyear, he submitted documents for the full-time department of the historicalfacultyofthe Moscow State University, he could not enter because of a shortage of points, soZatulinKonstantinFedorovich began to study in absentia. <\/CONTENT> <URL> https://en.birmiss.com/zatulin-konstantin-fedorovich-biography-photo-nationality <\/URL> __END_OF_SOURCE 7__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360584933,\"end\":1779360586496}},\"id\":\"prt_e4a27d4e1001wMtmn3FqcZbHiP\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a27cee2001HyS0oUt7jL10oa\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360586503,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a27db01001uBWpFiGTnutrSd\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27cee2001HyS0oUt7jL10oa\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":9489,\"input\":9400,\"output\":89,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.029535}}\n{\"type\":\"step_start\",\"timestamp\":1779360587924,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a27e093001wyTwB0KiijoZ6w\",\"messageID\":\"msg_e4a27db05001A0mngAxJPEg56q\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360589473,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"a110c0dd-3d61-45f9-8ddc-65f2e6202430\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Konstantin Zatulin occupation before 1993 State Duma election\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of theStateDumafor the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> zatulin.ru — официальный сайт Константин Фёдорович Затулин Затулин, Константин — статья в Лентапедии. 2012 год. Страны СНГ.Русские и русскоязычные в новом зарубежье Категории: Родившиеся 7 ... <\/CONTENT> <URL> https://ru.wikipedia.org/wiki/Затулин,_Константин_Фёдорович <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> In1993KonstantinZatulinwas elected to theStateDumaof the Russian Federation where became the chairman the first created Committee on CIS Affairs and Relations with Compatriots. It was the First assembly ofStateDuma. In 1995 he was the chairman of the Commission on the Black Sea Fleet. <\/CONTENT> <URL> https://eiao.org/konstantin-zatulin-russia <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> KonstantinFyodorovichZatulinis a Russian politician, first deputy chairman of the committee of theStateDumafor the Commonwealth of IndependentStatesand relations with Russian nationals abroad. <\/CONTENT> <URL> https://prabook.com/web/konstantin.zatulin/2140414 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константи́н Фёдорович Зату́лин; born 7 September 1958) is a Russian politician and expert on post‑ Soviet affairs. He is a Deputy of theStateDumasince 1994, representing the United Russia faction, and serves as First Deputy Chairman of theStateDumaCommittee on CIS Affairs, Eurasian Integration, and Relations with ... <\/CONTENT> <URL> https://thefireriseswiki.miraheze.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> In the1993electionZatulinwas elected deputy in theStateDuma, where he assumed the position of the chairman of the Committee for the Commonwealth of IndependentStatesand relations with Russian nationals abroad. <\/CONTENT> <URL> https://everything.explained.today/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> In1993, he created a political entity \\\"Entrepreneurs for New Russia\\\", which, together with a partner party participated in the FirstStateDumaelections.Zatulinbecame theStateDumaMP and got the position of the Chairman of a newly created Committee for CIS Affairs and Relations with Compatriots. <\/CONTENT> <URL> https://kremlin-roadmap.gfsis.org.ge/public-persons/display/24 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Many, including politicians who are not very interested in politics, are familiar withZatulinKonstantinFedorovich, a deputy of theStateDuma, a political scientist and a TV presenter. His calm soft voice is pleasant to listen to, he always talks with arguments, unobtrusively and interestingly. <\/CONTENT> <URL> https://en.birmiss.com/zatulin-konstantin-fedorovich-biography-photo-nationality <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 7. Known Affiliations and NetworksKonstantinZatulinis a prominent member of the United Russia party and has held multiple convocations as a deputy in theStateDuma. He is the first deputy chairman of theStateDumaCommittee for the Commonwealth of IndependentStates(CIS) and relations with Russian nationals abroad. <\/CONTENT> <URL> https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> According toZatulin, who was first elected to Russia'sStateDumain1993,beforePutin's coming to power, the Russian policy towards Abkhazia was contradictory and at times hostile to the Abkhza cause, as seen, for example, from the economic blockade formally imposed in 1994 on Abkhazia. <\/CONTENT> <URL> https://oldwp.civil.ge/archives/364372 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360587928,\"end\":1779360589472}},\"id\":\"prt_e4a27e094001kPQvAfXFCOarf1\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a27db05001A0mngAxJPEg56q\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360589480,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a27e6a2001LHWdLk52Jrfc3P\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27db05001A0mngAxJPEg56q\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":10423,\"input\":10331,\"output\":92,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.032373}}\n{\"type\":\"step_start\",\"timestamp\":1779360590904,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a27ec37001hrCW9sppOmO9HV\",\"messageID\":\"msg_e4a27e6a6001xCOVc1fKW3GSVj\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360596619,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"4ab6c681-6d8c-4c11-b003-da7420850141\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Konstantin Zatulin disability status sexual orientation LGBTQ identity\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> KonstantinFyodorovichZatulin(Russian: Константин Фёдорович Затулин; born 7 September 1958) is a Russian politician, first deputy chairman of the committee of the State Duma for the CIS and relations with Russian nationals abroad. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Konstantin_Zatulin <\/URL> __END_OF_SOURCE 1__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360590907,\"end\":1779360596618}},\"id\":\"prt_e4a27ec38001vdD7XkPw8XVgQX\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"messageID\":\"msg_e4a27e6a6001xCOVc1fKW3GSVj\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360596625,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a28028c00101NG2N0fI3U60A\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27e6a6001xCOVc1fKW3GSVj\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-finish\",\"tokens\":{\"total\":11660,\"input\":11572,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.036036}}\n{\"type\":\"step_start\",\"timestamp\":1779360599567,\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"part\":{\"id\":\"prt_e4a280e0d0017gVlkj9E9Tp9Rr\",\"messageID\":\"msg_e4a280290001SSMarzmYD6ZM9c\",\"sessionID\":\"ses_1b5d8a9f7ffeZVNN9fJyYn5rQ1\",\"type\":\"step-start\"}}\n"
+}

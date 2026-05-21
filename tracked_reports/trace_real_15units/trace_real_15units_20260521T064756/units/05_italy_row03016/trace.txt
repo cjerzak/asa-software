@@ -1,0 +1,420 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360550776,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a274f75001qTzuGb5JUPr8NP",
+        "messageID": "msg_e4a2744c8001AfxGf6Kguj4JLl",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360554323,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "4f2755b2-b41b-4f6d-b9d9-212d5024e201",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Alberto Luigi Gusmeroli biografia Wikipedia Camera dei Deputati"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Collegamenti esterniAlbertoLuigiGusmeroli, su storia.camera.it,Cameradeideputati.AlbertoGusmeroli, su Openpolis, Associazione Openpolis. Registrazioni diAlbertoGusmeroli, su RadioRadicale.it, Radio Radicale. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> AlbertoLuigiGusmeroli(born 27 February 1961) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] He has served as mayor of Arona since 2024, having previously served from 2010 to 2020. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Con questo portale laCameradeideputatisi è dotata di una piattaforma di pubblicazione unica, stabile e condivisa della documentazione e delle informazioni sulla sua attività, a partire dalla I Legislatura del Parlamento sabaudo del 1848 fino alla legislatura che precede quella in corso. In occasione del 150° anniversario dell'Unità d'Italia è stato avviato un intervento complessivo di ... <\/CONTENT> <URL> https://storia.camera.it/deputato/alberto-luigi-gusmeroli-19610227 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Ideputatidevono altresì rendere dichiarazione di ogni altra attività professionale o di lavoro autonomo o di impiego o di lavoro privato. Il par. V dello stesso Codice prevede, altresì, che le dichiarazioni rese daideputatisiano pubblicate sul sito Internet dellaCameradeideputati. <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/19-307475 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> GusmeroliAlbertoLuigiIl deputatoCameradeideputatiLega - Salvini PremierGusmeroliAlbertoLuiginato a Varese, il 27 Febbraio 1961 <\/CONTENT> <URL> https://deputies.it/gusmeroli-alberto-luigi-lega-revisione-foto-informazione-un-deputato <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Laurea in economia indirizzo finanza aziendale e credito; Commercialista e revisoredeiconti rdfs: label xsd:stringALBERTOLUIGIGUSMEROLI, XIX Legislatura della Repubblica dc: title <\/CONTENT> <URL> https://dati.camera.it/ocd/deputato.rdf/d307475_19 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Pertanto,deputatie senatori che sono molto assenti o spesso impegnati in missioni istituzionali - come chi è anche membro del governo - hanno un basso indice di affidabilità parlamentare. <\/CONTENT> <URL> https://parlamento19.openpolis.it/persone/alberto-luigi-gusmeroli-1961-02-27-2 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> GUSMEROLIed altri: \"Interpretazione autentica dell'articolo 51, comma 2, lettera f-bis), del testo unico delle imposte sui redditi, di cui al decreto del Presidente della Repubblica 22 dicembre 1986, n. 917, in materia di esclusione dal reddito di lavoro dipendente delle prestazionideiservizi di cura, assistenza e custodiadeifigli fino ... <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivita&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Cameradeideputati- XIX Legislatura - Cerca Stai consultando:Cameradeideputati>Deputatie Organi >Deputati <\/CONTENT> <URL> https://www.camera.it/leg19/29?shadow_deputato=307475&amp%3Bidpersona=307475&amp%3Bidlegislatura=19 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Discussione di mozioni, risoluzioni, interpellanze e interrogazioni 5-01153Gusmeroli: Apposizione del visto di conformità per la trasmissione della dichiarazionedeiredditi ai fini della regolarizzazione delle violazioni formali 25-07-2023 - pag. 55 torna su <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivitanonlegislativacommissione&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360550787,
+            "end": 1779360554322
+          }
+        },
+        "id": "prt_e4a274f78001OM0bZvgmx5Rowt",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "messageID": "msg_e4a2744c8001AfxGf6Kguj4JLl"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360554332,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a275d540011l0TQMfdgE31AA",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2744c8001AfxGf6Kguj4JLl",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5266,
+          "input": 5089,
+          "output": 177,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0179
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360556873,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a2767470018DrPHRYXV3BK6E",
+        "messageID": "msg_e4a275d5a001dsfWtMlswU9nMt",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360559023,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "14b3f04d-a331-4423-8e95-265b98c6479a",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://it.wikipedia.org/wiki/Alberto_Gusmeroli"
+          },
+          "output": "URL: https://it.wikipedia.org/wiki/Alberto_Gusmeroli\nFinal URL: https://it.wikipedia.org/wiki/Alberto_Gusmeroli\nTitle: Alberto Gusmeroli - Wikipedia\nBytes read: 104645\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nVai al contenuto\nMenu principale\nMenu principale\nsposta nella barra laterale\nnascondi\nNavigazione\nPagina principale\n[link: https://it.wikipedia.org/wiki/Pagina_principale]\nUltime modifiche\n[link: https://it.wikipedia.org/wiki/Speciale:UltimeModifiche]\nUna voce a caso\n[link: https://it.wikipedia.org/wiki/Speciale:PaginaCasuale]\nNelle vicinanze\n[link: https://it.wikipedia.org/wiki/Speciale:NelleVicinanze]\nVetrina\n[link: https://it.wikipedia.org/wiki/Wikipedia:Vetrina]\nAiuto\n[link: https://it.wikipedia.org/wiki/Aiuto:Aiuto]\nSportello informazioni\n[link: https://it.wikipedia.org/wiki/Aiuto:Sportello_informazioni]\nPagine speciali\n[link: https://it.wikipedia.org/wiki/Speciale:PagineSpeciali]\nComunità\nPortale Comunità\n[link: https://it.wikipedia.org/wiki/Portale:Comunit%C3%A0]\nBar\n[link: https://it.wikipedia.org/wiki/Wikipedia:Bar]\nIl Wikipediano\n[link: https://it.wikipedia.org/wiki/Wikipedia:Wikipediano]\nContatti\n[link: https://it.wikipedia.org/wiki/Wikipedia:Contatti]\nRicerca\n[link: https://it.wikipedia.org/wiki/Speciale:Ricerca]\nRicerca\nAspetto\nFai una donazione\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=it.wikipedia.org&uselang=it]\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360556876,
+            "end": 1779360559022
+          }
+        },
+        "id": "prt_e4a276749001h35IOr1Cpgsu7Q",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "messageID": "msg_e4a275d5a001dsfWtMlswU9nMt"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360559030,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a276faf0017c4YcEu7NVQi04",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a275d5a001dsfWtMlswU9nMt",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6837,
+          "input": 6450,
+          "output": 387,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0252
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360560252,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27747a001sqtNdZouq3BAt0",
+        "messageID": "msg_e4a276fb3001ddnhx8hXGpsTXo",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360575270,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "20feca53-22f5-4a37-b698-72d56c6bc8ce",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.camera.it/leg19/29?shadow_deputato=307475&idpersona=307475&idlegislatura=19"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"_ToolDeadlineExpired\",\"retryable\":false,\"url\":\"https://www.camera.it/leg19/29?shadow_deputato=307475&idpersona=307475&idlegislatura=19\",\"final_url\":null,\"status_code\":null,\"error\":\"ASA tool deadline exceeded after 15.0s\",\"error_detail\":null,\"attempt\":null,\"attempts\":null}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360560255,
+            "end": 1779360575269
+          }
+        },
+        "id": "prt_e4a27747c001S5efQonzUeCodo",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "messageID": "msg_e4a276fb3001ddnhx8hXGpsTXo"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360575276,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27af26001fJi4uxSVEBeyCr",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a276fb3001ddnhx8hXGpsTXo",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7160,
+          "input": 7039,
+          "output": 121,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0229
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360576451,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27b3c2001KfOCQ0C1E2s6VT",
+        "messageID": "msg_e4a27af2a001ckwmYYttNVYcz4",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360578153,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "4fe52124-9385-4483-a61b-7075cfd9b44d",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Alberto Luigi Gusmeroli orientamento sessuale disabilità"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Disposizioni in materia di turismo accessibile e di partecipazione delle persone disabili alle attività culturali, turistiche e ricreative. C. 997 Caramanna e C. 1269 Andreuzza <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaAttivita&idlegislatura=19&idpersona=307475&tipoAttivita=attivitalegislativacommissione&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Indagine conoscitiva sul Made in Italy: valorizzazione e sviluppo dell'impresa italiana nei suoi diversi ambiti produttivi. Audizione, in videoconferenza, diLuigiScordamaglia, capo area mercati, internazionalizzazione e politiche comunitarie, Consigliere delegato Filiera Italia di Coldiretti 07-02-2023 - pagg. 3, 4 <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivitanonlegislativacommissione&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Interventi su progetti di legge in Assemblea Disegno di legge: S. 345 - Conversione in legge, con modificazioni, del decreto-legge 18 novembre 2022, n. 176, recante misure urgenti di sostegno nel settore energetico e di finanza pubblica (Approvato dal Senato) (A.C. 730) 12-01-2023 Dichiarazione di voto finale - pagg. 13 [Video] 15 [Video] Disegno di legge: Conversione in legge, con ... <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaAttivita&idlegislatura=19&idpersona=307475&tipoAttivita=attivitalegislativaassemblea&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Scopo di questo contributo è quello di tentare una succinta ricostruzione del quadro giuridico relativo al diritto alla sessualità delle persone disabili, nell'ambito del più generale nuovo \"paradigma\" delladisabilitàin cui la tutela dei diritti fondamentali delle persone è centrale. <\/CONTENT> <URL> https://www.questionegiustizia.it/data/rivista/articoli/348/qg_2016-2_30.pdf <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Attraverso questo lavoro si vuole far emergere come il binomio sessualità/disabilità sia ancora sommerso, poco dibattuto e faticosamente affrontato nelle istituzioni. <\/CONTENT> <URL> https://italianjournalofnursing.it/sessualita-e-disabilita-una-questione-ancora-sommersa <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Queste e altre iniziative di sensibilizzazione e diffusione di una cultura più vera e inclusiva della sessualità stanno contribuendo un po' alla volta a infrangere alcuni dei pregiudizi che ancora plasmano l'immaginario comune quando si parla di amore, desiderio edisabilità. <\/CONTENT> <URL> https://ilbolive.unipd.it/it/news/societa/eros-disabilita-pregiudizi-ancora-abbattere <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> GUSMEROLIed altri: \"Modifiche al decreto legislativo 10 settembre 2003, n. 276, e altre disposizioni in materia di mobilità temporanea dei lavoratori tra imprese per la salvaguardia dell'occupazione e della continuità produttiva\" (2867) (presentata il 7 aprile 2026, annunziata l'8 aprile 2026) <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivita&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> GUSMEROLIed altri: \"Detrazione delle spese per interventi di riqualificazione energetica e messa in sicurezza antisismica degli edifici mediante l'esecuzione di opere edilizie o l'installazione o sostituzione di impianti\" (969) (presentata il 9 marzo 2023, annunziata il 10 marzo 2023) <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaAttivita&idlegislatura=19&idpersona=307475&tipoAttivita=PDL&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Camera dei deputati - Deputati e Organi Parlamentari - Deputati -GUSMEROLIAlbertoLuigi <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> L'obiettivo principale è di costruire un dialogo attorno all'argomento della sessualità applicato alladisabilità. Parliamo di due mondi complessi e multisfaccettati: ladisabilità, con le sue sfide, e la sessualità, intesa come aspetto imprescindibile dall'essere umano. <\/CONTENT> <URL> https://fondazionepaideia.it/2020/12/15/nei-nostri-incontri-costruiamo-un-dialogo-attorno-a-sessualita-e-disabilita <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360576455,
+            "end": 1779360578151
+          }
+        },
+        "id": "prt_e4a27b3c4001E3RDFt11Kbrnzx",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "messageID": "msg_e4a27af2a001ckwmYYttNVYcz4"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360578159,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27ba69001E18nGkP0zzcYjF",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27af2a001ckwmYYttNVYcz4",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7379,
+          "input": 7291,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0232
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360579647,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27c03b001FYp9t20hP3qb27",
+        "messageID": "msg_e4a27ba6d001pyO1JfXSvAnqWm",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360581125,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "6f24fa9b-086f-43ec-83f7-317c4e2dafee",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C"
+          },
+          "output": "URL: https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C\nFinal URL: https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_403 (status=403)",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360579653,
+            "end": 1779360581124
+          }
+        },
+        "id": "prt_e4a27c03f001oMOc4Dm0B1BsR2",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "messageID": "msg_e4a27ba6d001pyO1JfXSvAnqWm"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360581131,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27c605001wcedrAiwsZYaxR",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27ba6d001pyO1JfXSvAnqWm",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9092,
+          "input": 8941,
+          "output": 151,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0291
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360582345,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27cac7001md2N2jmJCUofl7",
+        "messageID": "msg_e4a27c609001IEa3CFD4QmYgY3",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360583992,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "68eb76d5-991d-4d36-8265-d0331ead5c88",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Alberto Luigi Gusmeroli curriculum vitae Arona"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> AlbertoLuigiGusmeroli(born 27 February 1961) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] He has served as mayor ofAronasince 2024, having previously served from 2010 to 2020. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> AlbertoLuigiGusmeroli(Varese, 27 febbraio 1961) è un politico italiano, deputato della XVIII e XIX legislatura della Repubblica Italiana con la Lega Nord. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Amministratori del comune diAronaALBERTOLUIGIGUSMEROLISindaco Data elezione: 09/06/2024 Data entrata in carica: 09-06-2024 Partito: LEGA SALVINI PIEMONTE-NOI PERARONAData di nascita: 27/02/1961 Luogo di nascita: VARESE (VA) Titolo di studio: Laurea Magistrale Professione: SPECIALISTI E TECNICI IN SCIENZE E ATTIVITA' GESTIONALI ... <\/CONTENT> <URL> https://www.amministrazionicomunali.it/piemonte/arona/amministratori/3-alberto-luigi-gusmeroli <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> AlbertoLuigiGusmeroliSvolge il ruolo di Sindaco presso la Giunta del Comune diArona. Nato a Varese (VA) il giorno 27 Febbraio 1961, è stato eletto Sindaco il 9 Giugno 2024. Secondo i dati forniti dal Ministero dell'Interno, la categoria professionale di apparteneza diAlbertoLuigiGusmeroliè: \"Specialisti e tecnici in scienze e attivita' gestionali, commerciali e bancarie.\" Durante la ... <\/CONTENT> <URL> https://www.comuniecitta.it/comuni-italiani/giunte-e-amministrazioni/arona-3008/alberto-luigi-gusmeroli-7233 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> On.AlbertoLuigiGUSMEROLISindaco - Assessore comunale Condividi Vedi azioni Incarico Organizzazioni Competenze Deleghe Biografia ContattiCurriculumvitaeUlteriori informazioni <\/CONTENT> <URL> https://comune.arona.no.it/persona_pubblica/on-alberto-luigi-gusmeroli <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Collegi Sindacali conclusi • Bancoposta Fondi spa SGR • Enel Energia… · Esperienza: Lavoratore autonomo · Formazione: Università degli Studi di Pavia / University of Pavia · Località:Arona· Più di 500 collegamenti su LinkedIn. Vedi il profilo diAlbertoGusmerolisu LinkedIn, una community professionale di 1 miliardo di utenti. <\/CONTENT> <URL> https://it.linkedin.com/in/alberto-gusmeroli-ab177b61 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Facebook:Aronaè tua miglioriamola insiemeAlbertoGusmeroliSesso Maschio | Data di nascita 27/02/1961 | Nazionalità Italiana Sindaco del Comune diAronadal 31 marzo 2010 Laurea in Economia conseguita presso l'Università degli Studi di Pavia - indirizzo Finanza aziendale e credito Italiana <\/CONTENT> <URL> https://comune.arona.no.it/wp-content/uploads/2024/06/CV_Gusmeroli.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> AlbertoGusmeroliNato a Varese il 27 febbraio 1961, esperto nella revisione degli Enti locali e nella contabilità pubblica, è cresciuto nel quartiere SanLuigiadArona, dove ha frequentato le scuole e iniziato la sua carriera professionale che tuttora continua. Laureato in Economia presso l'Università di Pavia, con specializzazione in finanza aziendale e credito, esercita la professione ... <\/CONTENT> <URL> https://www.aronanelweb.it/wp-content/uploads/2024/05/elezionicomunali2024_lista3_gusmeroli_programma.pdf <\/URL> __END_OF_SOURCE 8__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360582349,
+            "end": 1779360583991
+          }
+        },
+        "id": "prt_e4a27cac9001XzCeyO80vrTotB",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "messageID": "msg_e4a27c609001IEa3CFD4QmYgY3"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360583999,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27d139001UfFPiFvYJQLJ6i",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27c609001IEa3CFD4QmYgY3",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9385,
+          "input": 9299,
+          "output": 86,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0292
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360586399,
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "id": "prt_e4a27da9e0013ai14QV3notPMt",
+        "messageID": "msg_e4a27d13c001D5qr81jjyAxG7v",
+        "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Laurea in Economia (indirizzo Finanza aziendale e credito) presso l'Università degli Studi di Pavia\",\n  \"educational_attainment_source\": \"https://comune.arona.no.it/wp-content/uploads/2024/06/CV_Gusmeroli.pdf\",\n  \"prior_occupation\": \"Commercialista e revisore dei conti\",\n  \"prior_occupation_source\": \"https://it.wikipedia.org/wiki/Alberto_Gusmeroli\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://it.wikipedia.org/wiki/Alberto_Gusmeroli\",\n  \"birth_year\": 1961,\n  \"birth_year_source\": \"https://it.wikipedia.org/wiki/Alberto_Gusmeroli\",\n  \"birth_place\": \"Varese, Italy\",\n  \"birth_place_source\": \"https://it.wikipedia.org/wiki/Alberto_Gusmeroli\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://it.wikipedia.org/wiki/Alberto_Gusmeroli\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://it.wikipedia.org/wiki/Alberto_Gusmeroli\"\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b5d8bc33ffecNaOEmlMay1pUb",
+  "opencode_export_final_text_chars": 963,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360550776,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a274f75001qTzuGb5JUPr8NP\",\"messageID\":\"msg_e4a2744c8001AfxGf6Kguj4JLl\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360554323,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"4f2755b2-b41b-4f6d-b9d9-212d5024e201\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Alberto Luigi Gusmeroli biografia Wikipedia Camera dei Deputati\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Collegamenti esterniAlbertoLuigiGusmeroli, su storia.camera.it,Cameradeideputati.AlbertoGusmeroli, su Openpolis, Associazione Openpolis. Registrazioni diAlbertoGusmeroli, su RadioRadicale.it, Radio Radicale. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> AlbertoLuigiGusmeroli(born 27 February 1961) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] He has served as mayor of Arona since 2024, having previously served from 2010 to 2020. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Con questo portale laCameradeideputatisi è dotata di una piattaforma di pubblicazione unica, stabile e condivisa della documentazione e delle informazioni sulla sua attività, a partire dalla I Legislatura del Parlamento sabaudo del 1848 fino alla legislatura che precede quella in corso. In occasione del 150° anniversario dell'Unità d'Italia è stato avviato un intervento complessivo di ... <\/CONTENT> <URL> https://storia.camera.it/deputato/alberto-luigi-gusmeroli-19610227 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Ideputatidevono altresì rendere dichiarazione di ogni altra attività professionale o di lavoro autonomo o di impiego o di lavoro privato. Il par. V dello stesso Codice prevede, altresì, che le dichiarazioni rese daideputatisiano pubblicate sul sito Internet dellaCameradeideputati. <\/CONTENT> <URL> https://www.camera.it/deputati/elenco/19-307475 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> GusmeroliAlbertoLuigiIl deputatoCameradeideputatiLega - Salvini PremierGusmeroliAlbertoLuiginato a Varese, il 27 Febbraio 1961 <\/CONTENT> <URL> https://deputies.it/gusmeroli-alberto-luigi-lega-revisione-foto-informazione-un-deputato <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Laurea in economia indirizzo finanza aziendale e credito; Commercialista e revisoredeiconti rdfs: label xsd:stringALBERTOLUIGIGUSMEROLI, XIX Legislatura della Repubblica dc: title <\/CONTENT> <URL> https://dati.camera.it/ocd/deputato.rdf/d307475_19 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Pertanto,deputatie senatori che sono molto assenti o spesso impegnati in missioni istituzionali - come chi è anche membro del governo - hanno un basso indice di affidabilità parlamentare. <\/CONTENT> <URL> https://parlamento19.openpolis.it/persone/alberto-luigi-gusmeroli-1961-02-27-2 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> GUSMEROLIed altri: \\\"Interpretazione autentica dell'articolo 51, comma 2, lettera f-bis), del testo unico delle imposte sui redditi, di cui al decreto del Presidente della Repubblica 22 dicembre 1986, n. 917, in materia di esclusione dal reddito di lavoro dipendente delle prestazionideiservizi di cura, assistenza e custodiadeifigli fino ... <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivita&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Cameradeideputati- XIX Legislatura - Cerca Stai consultando:Cameradeideputati>Deputatie Organi >Deputati <\/CONTENT> <URL> https://www.camera.it/leg19/29?shadow_deputato=307475&amp%3Bidpersona=307475&amp%3Bidlegislatura=19 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Discussione di mozioni, risoluzioni, interpellanze e interrogazioni 5-01153Gusmeroli: Apposizione del visto di conformità per la trasmissione della dichiarazionedeiredditi ai fini della regolarizzazione delle violazioni formali 25-07-2023 - pag. 55 torna su <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivitanonlegislativacommissione&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360550787,\"end\":1779360554322}},\"id\":\"prt_e4a274f78001OM0bZvgmx5Rowt\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"messageID\":\"msg_e4a2744c8001AfxGf6Kguj4JLl\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360554332,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a275d540011l0TQMfdgE31AA\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2744c8001AfxGf6Kguj4JLl\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-finish\",\"tokens\":{\"total\":5266,\"input\":5089,\"output\":177,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.017922}}\n{\"type\":\"step_start\",\"timestamp\":1779360556873,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a2767470018DrPHRYXV3BK6E\",\"messageID\":\"msg_e4a275d5a001dsfWtMlswU9nMt\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360559023,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"14b3f04d-a331-4423-8e95-265b98c6479a\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://it.wikipedia.org/wiki/Alberto_Gusmeroli\"},\"output\":\"URL: https://it.wikipedia.org/wiki/Alberto_Gusmeroli\\nFinal URL: https://it.wikipedia.org/wiki/Alberto_Gusmeroli\\nTitle: Alberto Gusmeroli - Wikipedia\\nBytes read: 104645\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nVai al contenuto\\nMenu principale\\nMenu principale\\nsposta nella barra laterale\\nnascondi\\nNavigazione\\nPagina principale\\n[link: https://it.wikipedia.org/wiki/Pagina_principale]\\nUltime modifiche\\n[link: https://it.wikipedia.org/wiki/Speciale:UltimeModifiche]\\nUna voce a caso\\n[link: https://it.wikipedia.org/wiki/Speciale:PaginaCasuale]\\nNelle vicinanze\\n[link: https://it.wikipedia.org/wiki/Speciale:NelleVicinanze]\\nVetrina\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Vetrina]\\nAiuto\\n[link: https://it.wikipedia.org/wiki/Aiuto:Aiuto]\\nSportello informazioni\\n[link: https://it.wikipedia.org/wiki/Aiuto:Sportello_informazioni]\\nPagine speciali\\n[link: https://it.wikipedia.org/wiki/Speciale:PagineSpeciali]\\nComunità\\nPortale Comunità\\n[link: https://it.wikipedia.org/wiki/Portale:Comunit%C3%A0]\\nBar\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Bar]\\nIl Wikipediano\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Wikipediano]\\nContatti\\n[link: https://it.wikipedia.org/wiki/Wikipedia:Contatti]\\nRicerca\\n[link: https://it.wikipedia.org/wiki/Speciale:Ricerca]\\nRicerca\\nAspetto\\nFai una donazione\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=it.wikipedia.org&uselang=it]\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360556876,\"end\":1779360559022}},\"id\":\"prt_e4a276749001h35IOr1Cpgsu7Q\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"messageID\":\"msg_e4a275d5a001dsfWtMlswU9nMt\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360559030,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a276faf0017c4YcEu7NVQi04\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a275d5a001dsfWtMlswU9nMt\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-finish\",\"tokens\":{\"total\":6837,\"input\":6450,\"output\":387,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.025155}}\n{\"type\":\"step_start\",\"timestamp\":1779360560252,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27747a001sqtNdZouq3BAt0\",\"messageID\":\"msg_e4a276fb3001ddnhx8hXGpsTXo\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360575270,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"20feca53-22f5-4a37-b698-72d56c6bc8ce\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.camera.it/leg19/29?shadow_deputato=307475&idpersona=307475&idlegislatura=19\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"_ToolDeadlineExpired\\\",\\\"retryable\\\":false,\\\"url\\\":\\\"https://www.camera.it/leg19/29?shadow_deputato=307475&idpersona=307475&idlegislatura=19\\\",\\\"final_url\\\":null,\\\"status_code\\\":null,\\\"error\\\":\\\"ASA tool deadline exceeded after 15.0s\\\",\\\"error_detail\\\":null,\\\"attempt\\\":null,\\\"attempts\\\":null}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360560255,\"end\":1779360575269}},\"id\":\"prt_e4a27747c001S5efQonzUeCodo\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"messageID\":\"msg_e4a276fb3001ddnhx8hXGpsTXo\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360575276,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27af26001fJi4uxSVEBeyCr\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a276fb3001ddnhx8hXGpsTXo\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-finish\",\"tokens\":{\"total\":7160,\"input\":7039,\"output\":121,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.022932}}\n{\"type\":\"step_start\",\"timestamp\":1779360576451,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27b3c2001KfOCQ0C1E2s6VT\",\"messageID\":\"msg_e4a27af2a001ckwmYYttNVYcz4\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360578153,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"4fe52124-9385-4483-a61b-7075cfd9b44d\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Alberto Luigi Gusmeroli orientamento sessuale disabilità\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Disposizioni in materia di turismo accessibile e di partecipazione delle persone disabili alle attività culturali, turistiche e ricreative. C. 997 Caramanna e C. 1269 Andreuzza <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaAttivita&idlegislatura=19&idpersona=307475&tipoAttivita=attivitalegislativacommissione&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Indagine conoscitiva sul Made in Italy: valorizzazione e sviluppo dell'impresa italiana nei suoi diversi ambiti produttivi. Audizione, in videoconferenza, diLuigiScordamaglia, capo area mercati, internazionalizzazione e politiche comunitarie, Consigliere delegato Filiera Italia di Coldiretti 07-02-2023 - pagg. 3, 4 <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivitanonlegislativacommissione&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Interventi su progetti di legge in Assemblea Disegno di legge: S. 345 - Conversione in legge, con modificazioni, del decreto-legge 18 novembre 2022, n. 176, recante misure urgenti di sostegno nel settore energetico e di finanza pubblica (Approvato dal Senato) (A.C. 730) 12-01-2023 Dichiarazione di voto finale - pagg. 13 [Video] 15 [Video] Disegno di legge: Conversione in legge, con ... <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaAttivita&idlegislatura=19&idpersona=307475&tipoAttivita=attivitalegislativaassemblea&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Scopo di questo contributo è quello di tentare una succinta ricostruzione del quadro giuridico relativo al diritto alla sessualità delle persone disabili, nell'ambito del più generale nuovo \\\"paradigma\\\" delladisabilitàin cui la tutela dei diritti fondamentali delle persone è centrale. <\/CONTENT> <URL> https://www.questionegiustizia.it/data/rivista/articoli/348/qg_2016-2_30.pdf <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Attraverso questo lavoro si vuole far emergere come il binomio sessualità/disabilità sia ancora sommerso, poco dibattuto e faticosamente affrontato nelle istituzioni. <\/CONTENT> <URL> https://italianjournalofnursing.it/sessualita-e-disabilita-una-questione-ancora-sommersa <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Queste e altre iniziative di sensibilizzazione e diffusione di una cultura più vera e inclusiva della sessualità stanno contribuendo un po' alla volta a infrangere alcuni dei pregiudizi che ancora plasmano l'immaginario comune quando si parla di amore, desiderio edisabilità. <\/CONTENT> <URL> https://ilbolive.unipd.it/it/news/societa/eros-disabilita-pregiudizi-ancora-abbattere <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> GUSMEROLIed altri: \\\"Modifiche al decreto legislativo 10 settembre 2003, n. 276, e altre disposizioni in materia di mobilità temporanea dei lavoratori tra imprese per la salvaguardia dell'occupazione e della continuità produttiva\\\" (2867) (presentata il 7 aprile 2026, annunziata l'8 aprile 2026) <\/CONTENT> <URL> https://www.camera.it/leg19/1431?tipoAttivita=attivita&shadow_deputato=307475&idLegislatura=19 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> GUSMEROLIed altri: \\\"Detrazione delle spese per interventi di riqualificazione energetica e messa in sicurezza antisismica degli edifici mediante l'esecuzione di opere edilizie o l'installazione o sostituzione di impianti\\\" (969) (presentata il 9 marzo 2023, annunziata il 10 marzo 2023) <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaAttivita&idlegislatura=19&idpersona=307475&tipoAttivita=PDL&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Camera dei deputati - Deputati e Organi Parlamentari - Deputati -GUSMEROLIAlbertoLuigi <\/CONTENT> <URL> https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> L'obiettivo principale è di costruire un dialogo attorno all'argomento della sessualità applicato alladisabilità. Parliamo di due mondi complessi e multisfaccettati: ladisabilità, con le sue sfide, e la sessualità, intesa come aspetto imprescindibile dall'essere umano. <\/CONTENT> <URL> https://fondazionepaideia.it/2020/12/15/nei-nostri-incontri-costruiamo-un-dialogo-attorno-a-sessualita-e-disabilita <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360576455,\"end\":1779360578151}},\"id\":\"prt_e4a27b3c4001E3RDFt11Kbrnzx\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"messageID\":\"msg_e4a27af2a001ckwmYYttNVYcz4\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360578159,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27ba69001E18nGkP0zzcYjF\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27af2a001ckwmYYttNVYcz4\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-finish\",\"tokens\":{\"total\":7379,\"input\":7291,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.023193}}\n{\"type\":\"step_start\",\"timestamp\":1779360579647,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27c03b001FYp9t20hP3qb27\",\"messageID\":\"msg_e4a27ba6d001pyO1JfXSvAnqWm\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360581125,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"6f24fa9b-086f-43ec-83f7-317c4e2dafee\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C\"},\"output\":\"URL: https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C\\nFinal URL: https://documenti.camera.it/apps/commonServices/getDocumento.ashx?sezione=deputati&tipoDoc=schedaDeputato&idlegislatura=18&idpersona=307475&tipoAttivita=DOCXXII&tipoVisAtt=1&tipopersona=C\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_403 (status=403)\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360579653,\"end\":1779360581124}},\"id\":\"prt_e4a27c03f001oMOc4Dm0B1BsR2\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"messageID\":\"msg_e4a27ba6d001pyO1JfXSvAnqWm\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360581131,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27c605001wcedrAiwsZYaxR\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27ba6d001pyO1JfXSvAnqWm\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-finish\",\"tokens\":{\"total\":9092,\"input\":8941,\"output\":151,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.029088}}\n{\"type\":\"step_start\",\"timestamp\":1779360582345,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27cac7001md2N2jmJCUofl7\",\"messageID\":\"msg_e4a27c609001IEa3CFD4QmYgY3\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360583992,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"68eb76d5-991d-4d36-8265-d0331ead5c88\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Alberto Luigi Gusmeroli curriculum vitae Arona\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> AlbertoLuigiGusmeroli(born 27 February 1961) is an Italian politician serving as a member of the Chamber of Deputies since 2018. [1] He has served as mayor ofAronasince 2024, having previously served from 2010 to 2020. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> AlbertoLuigiGusmeroli(Varese, 27 febbraio 1961) è un politico italiano, deputato della XVIII e XIX legislatura della Repubblica Italiana con la Lega Nord. <\/CONTENT> <URL> https://it.wikipedia.org/wiki/Alberto_Gusmeroli <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Amministratori del comune diAronaALBERTOLUIGIGUSMEROLISindaco Data elezione: 09/06/2024 Data entrata in carica: 09-06-2024 Partito: LEGA SALVINI PIEMONTE-NOI PERARONAData di nascita: 27/02/1961 Luogo di nascita: VARESE (VA) Titolo di studio: Laurea Magistrale Professione: SPECIALISTI E TECNICI IN SCIENZE E ATTIVITA' GESTIONALI ... <\/CONTENT> <URL> https://www.amministrazionicomunali.it/piemonte/arona/amministratori/3-alberto-luigi-gusmeroli <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> AlbertoLuigiGusmeroliSvolge il ruolo di Sindaco presso la Giunta del Comune diArona. Nato a Varese (VA) il giorno 27 Febbraio 1961, è stato eletto Sindaco il 9 Giugno 2024. Secondo i dati forniti dal Ministero dell'Interno, la categoria professionale di apparteneza diAlbertoLuigiGusmeroliè: \\\"Specialisti e tecnici in scienze e attivita' gestionali, commerciali e bancarie.\\\" Durante la ... <\/CONTENT> <URL> https://www.comuniecitta.it/comuni-italiani/giunte-e-amministrazioni/arona-3008/alberto-luigi-gusmeroli-7233 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> On.AlbertoLuigiGUSMEROLISindaco - Assessore comunale Condividi Vedi azioni Incarico Organizzazioni Competenze Deleghe Biografia ContattiCurriculumvitaeUlteriori informazioni <\/CONTENT> <URL> https://comune.arona.no.it/persona_pubblica/on-alberto-luigi-gusmeroli <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Collegi Sindacali conclusi • Bancoposta Fondi spa SGR • Enel Energia… · Esperienza: Lavoratore autonomo · Formazione: Università degli Studi di Pavia / University of Pavia · Località:Arona· Più di 500 collegamenti su LinkedIn. Vedi il profilo diAlbertoGusmerolisu LinkedIn, una community professionale di 1 miliardo di utenti. <\/CONTENT> <URL> https://it.linkedin.com/in/alberto-gusmeroli-ab177b61 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Facebook:Aronaè tua miglioriamola insiemeAlbertoGusmeroliSesso Maschio | Data di nascita 27/02/1961 | Nazionalità Italiana Sindaco del Comune diAronadal 31 marzo 2010 Laurea in Economia conseguita presso l'Università degli Studi di Pavia - indirizzo Finanza aziendale e credito Italiana <\/CONTENT> <URL> https://comune.arona.no.it/wp-content/uploads/2024/06/CV_Gusmeroli.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> AlbertoGusmeroliNato a Varese il 27 febbraio 1961, esperto nella revisione degli Enti locali e nella contabilità pubblica, è cresciuto nel quartiere SanLuigiadArona, dove ha frequentato le scuole e iniziato la sua carriera professionale che tuttora continua. Laureato in Economia presso l'Università di Pavia, con specializzazione in finanza aziendale e credito, esercita la professione ... <\/CONTENT> <URL> https://www.aronanelweb.it/wp-content/uploads/2024/05/elezionicomunali2024_lista3_gusmeroli_programma.pdf <\/URL> __END_OF_SOURCE 8__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360582349,\"end\":1779360583991}},\"id\":\"prt_e4a27cac9001XzCeyO80vrTotB\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"messageID\":\"msg_e4a27c609001IEa3CFD4QmYgY3\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360583999,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27d139001UfFPiFvYJQLJ6i\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27c609001IEa3CFD4QmYgY3\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-finish\",\"tokens\":{\"total\":9385,\"input\":9299,\"output\":86,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.029187}}\n{\"type\":\"step_start\",\"timestamp\":1779360586399,\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"part\":{\"id\":\"prt_e4a27da9e0013ai14QV3notPMt\",\"messageID\":\"msg_e4a27d13c001D5qr81jjyAxG7v\",\"sessionID\":\"ses_1b5d8bc33ffecNaOEmlMay1pUb\",\"type\":\"step-start\"}}\n"
+}

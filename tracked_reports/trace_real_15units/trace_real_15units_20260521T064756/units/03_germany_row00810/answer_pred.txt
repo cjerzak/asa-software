@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Qualifizierender Hauptschulabschluss (1987); Vocational training as a toolmaker (1991); Vocational training as a curative nurse (Heilerziehungspfleger, 1997); Further education as a mediator and systemic coach (2010/2011).",
+  "prior_occupation": "Toolmaker and Curative nurse (Heilerziehungspfleger).",
+  "birth_year": "1972",
+  "birth_place": "Bad Tölz, Bavaria, Germany",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Working class",
+  "sources": {
+    "educational_attainment": "https://andi-wagner.de/biografie/",
+    "prior_occupation": "https://en.wikipedia.org/wiki/Andreas_Wagner_(politician)",
+    "birth_year": "https://en.wikipedia.org/wiki/Andreas_Wagner_(politician)",
+    "birth_place": "https://en.wikipedia.org/wiki/Andreas_Wagner_(politician)",
+    "disability_status": "https://andi-wagner.de/biografie/",
+    "sexual_orientation": "https://andi-wagner.de/biografie/",
+    "class_background": "https://andi-wagner.de/biografie/"
+  }
+}

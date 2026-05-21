@@ -1,0 +1,79 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360556228,
+      "sessionID": "ses_1b5d8a75bffeueQHMnDkQfK2Z7",
+      "part": {
+        "id": "prt_e4a2764c2001wix4PpmuLQ2BR2",
+        "messageID": "msg_e4a27592a001sT0x3KWfd2Mkkw",
+        "sessionID": "ses_1b5d8a75bffeueQHMnDkQfK2Z7",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360560074,
+      "sessionID": "ses_1b5d8a75bffeueQHMnDkQfK2Z7",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "7c83a42d-4d5d-46ef-9599-cd12701f4095",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Cheng-Yu Chao Taiwan politician 趙正宇 biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ChaoCheng-yu(Chinese: 趙正宇; pinyin: Zháo Zhèngyǔ; born 29 March 1966) is a Taiwanesepoliticianwho was a member of the Legislative Yuan for Taoyuan 6 from 2016 until 2024. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chao_Cheng-yu <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 趙正宇（1966年3月29日—）， 中華民國 無黨籍 政治人物，現任 桃園航勤公司 董事長，曾任 立法委員，並在 立法院 加入 民主進步黨立法院黨團 運作 [1]。2020年捲入立委集體收賄案 [2]，其中與SOGO案掮客郭克銘有關之陽明山案經檢方第一時間調查，發現其為趙正宇前主任林家騏因即將遭開除，而冒 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/趙正宇 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ChaoCheng-yuwas a Taiwanese DPP member of the Legislative Yuan during the 2020s. <\/CONTENT> <URL> https://historica.fandom.com/wiki/Chao_Cheng-yu <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ChaoCheng-yu(Chinese : 趙正宇; pinyin : Zháo Zhèngyǔ; born 29 March 1966) is a Taiwanesepoliticianwho is a member of the Legislative Yuan for Taoyuan 6. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Chao_Cheng-yu <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 專題報告：台鐵行車控制4.0及軌道運輸安全改善方針｜報告國家運輸安全調查委員會業務概況及立法計畫｜審查111年度國家運輸安全調查委員會預算解凍案｜審查112年度國家運輸安全調查委員會預算｜審查112年度交通部鐵道局及所屬單位預算｜審查112年度交通部台灣鐵路管理局營業預算｜審查112年度 ... <\/CONTENT> <URL> https://lawmaker.twreporter.org/congress/lawmaker/chao-cheng-yu <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> What isChaoCheng-yu?ChaoCheng-yuis a Taiwanesepoliticianwho is a member of the Legislative Yuan for Taoyuan 6. <\/CONTENT> <URL> https://everything.explained.today/Zhao_Jheng-yu <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Taiwan0 references name in native language 趙正宇(Traditional Chinese) 0 references family name Zhao 0 references date of birth 29 March 1966 1 reference imported from Wikimedia project English Wikipedia place of birth Bade District 1 reference imported from Wikimedia project English Wikipedia native language Chinese 0 references languages ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q22100240 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 趙正宇ChaoCheng-yu（1966年3月29日－），男，生於桃園縣八德鄉（今 桃園市八德區）國軍眷村， 無黨籍 立法委員，雖為無黨籍，但加入立法院 民主進步黨 黨團運作 [1] [2]，畢業於 陸軍官校 專7期、 銘傳大學 公事系 碩士，曾任 中華民國陸軍 上尉 參謀、 八德市 市民代表 、 桃園市議員 、八德區 ... <\/CONTENT> <URL> https://votetw.com/wiki/趙正宇 <\/URL> __END_OF_SOURCE 8__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360556236,
+            "end": 1779360560073
+          }
+        },
+        "id": "prt_e4a2764c5001225IuN3MWygJU1",
+        "sessionID": "ses_1b5d8a75bffeueQHMnDkQfK2Z7",
+        "messageID": "msg_e4a27592a001sT0x3KWfd2Mkkw"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360560084,
+      "sessionID": "ses_1b5d8a75bffeueQHMnDkQfK2Z7",
+      "part": {
+        "id": "prt_e4a2773cb001jVLJO6cfD3mqDA",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a27592a001sT0x3KWfd2Mkkw",
+        "sessionID": "ses_1b5d8a75bffeueQHMnDkQfK2Z7",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5388,
+          "input": 5089,
+          "output": 299,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0198
+      }
+    }
+  ],
+  "cli_status": -9,
+  "process_timeout": true,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": "OpenCode process timed out after 180 seconds.",
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": false,
+  "opencode_export_session_id": null,
+  "opencode_export_final_text_chars": "NA",
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["step_start", "tool_use", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360556228,\"sessionID\":\"ses_1b5d8a75bffeueQHMnDkQfK2Z7\",\"part\":{\"id\":\"prt_e4a2764c2001wix4PpmuLQ2BR2\",\"messageID\":\"msg_e4a27592a001sT0x3KWfd2Mkkw\",\"sessionID\":\"ses_1b5d8a75bffeueQHMnDkQfK2Z7\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360560074,\"sessionID\":\"ses_1b5d8a75bffeueQHMnDkQfK2Z7\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"7c83a42d-4d5d-46ef-9599-cd12701f4095\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Cheng-Yu Chao Taiwan politician 趙正宇 biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ChaoCheng-yu(Chinese: 趙正宇; pinyin: Zháo Zhèngyǔ; born 29 March 1966) is a Taiwanesepoliticianwho was a member of the Legislative Yuan for Taoyuan 6 from 2016 until 2024. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chao_Cheng-yu <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 趙正宇（1966年3月29日—）， 中華民國 無黨籍 政治人物，現任 桃園航勤公司 董事長，曾任 立法委員，並在 立法院 加入 民主進步黨立法院黨團 運作 [1]。2020年捲入立委集體收賄案 [2]，其中與SOGO案掮客郭克銘有關之陽明山案經檢方第一時間調查，發現其為趙正宇前主任林家騏因即將遭開除，而冒 ... <\/CONTENT> <URL> https://zh.wikipedia.org/zh-tw/趙正宇 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ChaoCheng-yuwas a Taiwanese DPP member of the Legislative Yuan during the 2020s. <\/CONTENT> <URL> https://historica.fandom.com/wiki/Chao_Cheng-yu <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ChaoCheng-yu(Chinese : 趙正宇; pinyin : Zháo Zhèngyǔ; born 29 March 1966) is a Taiwanesepoliticianwho is a member of the Legislative Yuan for Taoyuan 6. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Chao_Cheng-yu <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 專題報告：台鐵行車控制4.0及軌道運輸安全改善方針｜報告國家運輸安全調查委員會業務概況及立法計畫｜審查111年度國家運輸安全調查委員會預算解凍案｜審查112年度國家運輸安全調查委員會預算｜審查112年度交通部鐵道局及所屬單位預算｜審查112年度交通部台灣鐵路管理局營業預算｜審查112年度 ... <\/CONTENT> <URL> https://lawmaker.twreporter.org/congress/lawmaker/chao-cheng-yu <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> What isChaoCheng-yu?ChaoCheng-yuis a Taiwanesepoliticianwho is a member of the Legislative Yuan for Taoyuan 6. <\/CONTENT> <URL> https://everything.explained.today/Zhao_Jheng-yu <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Taiwan0 references name in native language 趙正宇(Traditional Chinese) 0 references family name Zhao 0 references date of birth 29 March 1966 1 reference imported from Wikimedia project English Wikipedia place of birth Bade District 1 reference imported from Wikimedia project English Wikipedia native language Chinese 0 references languages ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q22100240 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 趙正宇ChaoCheng-yu（1966年3月29日－），男，生於桃園縣八德鄉（今 桃園市八德區）國軍眷村， 無黨籍 立法委員，雖為無黨籍，但加入立法院 民主進步黨 黨團運作 [1] [2]，畢業於 陸軍官校 專7期、 銘傳大學 公事系 碩士，曾任 中華民國陸軍 上尉 參謀、 八德市 市民代表 、 桃園市議員 、八德區 ... <\/CONTENT> <URL> https://votetw.com/wiki/趙正宇 <\/URL> __END_OF_SOURCE 8__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360556236,\"end\":1779360560073}},\"id\":\"prt_e4a2764c5001225IuN3MWygJU1\",\"sessionID\":\"ses_1b5d8a75bffeueQHMnDkQfK2Z7\",\"messageID\":\"msg_e4a27592a001sT0x3KWfd2Mkkw\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360560084,\"sessionID\":\"ses_1b5d8a75bffeueQHMnDkQfK2Z7\",\"part\":{\"id\":\"prt_e4a2773cb001jVLJO6cfD3mqDA\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a27592a001sT0x3KWfd2Mkkw\",\"sessionID\":\"ses_1b5d8a75bffeueQHMnDkQfK2Z7\",\"type\":\"step-finish\",\"tokens\":{\"total\":5388,\"input\":5089,\"output\":299,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.019752}}\n"
+}

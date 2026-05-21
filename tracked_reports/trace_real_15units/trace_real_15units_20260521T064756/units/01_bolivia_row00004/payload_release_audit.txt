@@ -1,0 +1,18 @@
+{
+  "unit_key": "01_bolivia_row00004",
+  "generated_at_utc": "2026-05-21T10:49:53Z",
+  "canonical_artifact_id": "86885b6d5383f35d20366bf48c4cc62027fe3948eaea5658ef0e75e2b63c44ec",
+  "released_artifact_id": "bee9ae132bee8ecf09bdb9f23defefe84447114be193078f274cf780fde4db5f",
+  "released_from": "opencode_final_text_json",
+  "canonical_available": true,
+  "canonical_matches_message": false,
+  "canonical_byte_hash": "86885b6d5383f35d20366bf48c4cc62027fe3948eaea5658ef0e75e2b63c44ec",
+  "released_byte_hash": "bee9ae132bee8ecf09bdb9f23defefe84447114be193078f274cf780fde4db5f",
+  "byte_hash_matches": false,
+  "canonical_semantic_hash": "f51598e12e2785427af949b4a2fe1ad00c21e52d816ba78cbad454162a88254a",
+  "released_semantic_hash": null,
+  "semantic_hash_matches": false,
+  "hash_mismatch_type": null,
+  "truncation_signals": [],
+  "json_repair_reasons": []
+}

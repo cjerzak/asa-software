@@ -1,0 +1,18 @@
+{
+  "unit_key": "05_italy_row03016",
+  "generated_at_utc": "2026-05-21T10:55:58Z",
+  "canonical_artifact_id": "e3a3a8193e910632b67f6d12e74b5324f0bd48706ee3544a8b814a552ae3bd0c",
+  "released_artifact_id": "155bebf36f857bc3790c1037a6ba05455ca1c26c244f70d0981fae22b9db3ab1",
+  "released_from": "opencode_final_text_json",
+  "canonical_available": true,
+  "canonical_matches_message": false,
+  "canonical_byte_hash": "e3a3a8193e910632b67f6d12e74b5324f0bd48706ee3544a8b814a552ae3bd0c",
+  "released_byte_hash": "155bebf36f857bc3790c1037a6ba05455ca1c26c244f70d0981fae22b9db3ab1",
+  "byte_hash_matches": false,
+  "canonical_semantic_hash": "4f5eb61faf9adce4ae5668df9d4d7ce884e7972159217fa85148029bf60aae94",
+  "released_semantic_hash": null,
+  "semantic_hash_matches": false,
+  "hash_mismatch_type": null,
+  "truncation_signals": [],
+  "json_repair_reasons": []
+}

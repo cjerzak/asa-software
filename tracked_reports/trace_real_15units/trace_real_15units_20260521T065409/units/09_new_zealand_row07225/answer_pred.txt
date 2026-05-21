@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Bachelor of Arts with Honours in Politics, University of Otago (1995)",
+  "prior_occupation": "Political staffer and advisor",
+  "birth_year": 1971,
+  "birth_place": "Palmerston North, New Zealand",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Gay",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "https://wellingtonforum.flt.nz/hon grant robertson",
+    "prior_occupation": "https://thespinoff.co.nz/politics/21-02-2024/grant-robertsons-career-in-nine-moments",
+    "birth_year": "https://en.wikipedia.org/wiki/Grant_Robertson",
+    "birth_place": "https://wellingtonforum.flt.nz/hon grant robertson",
+    "disability_status": "Unknown",
+    "sexual_orientation": "https://www.pridenz.com/grant_robertson_on_his_retirement_as_an_mp.html",
+    "class_background": "https://thespinoff.co.nz/politics/21-02-2024/grant-robertsons-career-in-nine-moments"
+  }
+}

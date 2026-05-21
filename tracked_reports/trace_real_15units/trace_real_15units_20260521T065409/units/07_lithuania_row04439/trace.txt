@@ -1,0 +1,352 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779360925020,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d055b001kVmqJYpYeAWOrU",
+        "messageID": "msg_e4a2cf8c8001QZ5HHjbQPfpKS8",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360928074,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "ebd0b13c-95a8-4eaa-b060-59b0168c6ea6",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna biography Lithuania Labour Party 2020 VRK"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Lithuania'sLabourPartyhas 6 candidates to head Ministry of Agriculture AfterVigilijusJuknaresigned as the Minister of Agriculture, theLabourPartypresidium has six candidates ... <\/CONTENT> <URL> https://www.delfi.lt/en/topics/vigilijus-jukna-en <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> position held Minister of Agriculture start time 13 December 2012 end time 17 July 2014 1 reference Member of the Seimas start time 13 November2020end time 14 November 2024 parliamentary term Thirteenth Seimas ofLithuaniaparliamentary groupLabourPartyelected in2020Lithuanian parliamentary election 1 reference member of politicalparty... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> VigilijusJuknaSeimas2020-2024 Member of the Seimas from 11/13/2020Nominated by:LabourPartyElected: By list Contacts Room: I-124 <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJuknaan Member of the Lithuanian Parliament,birthplace is Kaunas Lithuania,date of birth October 31 1968,age 54,sign of the zodiac Scorpio,Spouse Ri <\/CONTENT> <URL> https://www.xwhos.com/person/vigilijus_jukna-whois.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> An institution owned by Prime Minister Inga Ruginienė's public adviser and fellow Social DemocratVigilijusJuknareceived European Union funding for farmer training sessions that were often left without attendees, 15min.lt reported on Tuesday. According to the investigation,Jukna'sorganisation Mokslinės Paslaugos is currently implementing two major EU-funded projects covering 51 ... <\/CONTENT> <URL> https://www.lrt.lt/en/news-in-english/19/2926132/lithuanian-pm-adviser-received-eu-funds-for-trainings-without-attendees-media <\/URL> __END_OF_SOURCE 6__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360925028,
+            "end": 1779360928072
+          }
+        },
+        "id": "prt_e4a2d055d0010jpPUlp4RlDNSa",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "messageID": "msg_e4a2cf8c8001QZ5HHjbQPfpKS8"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360929509,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "c5e8c590-3028-4376-ab02-3725cb3498b3",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna Wikipedia"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> VigilijusJuknaPartinė ir politinė veikla Nuo 2008 Darbo partijos narys, nuo 2018 Darbo partijos vicepirmininkas. 2012-14 Lietuvos Respublikos žemės ūkio ministras. 2020-24 Lietuvos Respublikos Seimo ir jo Darbo partijos frakcijos narys. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> VigilijusJukna(1968-) was a Lithuanian Labor Party politician who served in the Seimas from 2020. <\/CONTENT> <URL> https://historica.fandom.com/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Vigilijus1 reference based on heuristic inferred from person's full name date of birth 23 July 1968 0 references place of birth Kaunas 1 reference languages spoken, written or signed Lithuanian 1 reference occupation politician 0 references university teacher 1 reference position held Minister of Agriculture start time 13 December 2012 end ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Contacts Room: I-124 Tel: +370 5 209 6634 E-mail:vigilijus.jukna@lrs.lt Personal Homepage Advisers and assistants Position <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Algirdas STONČAITIS Secretary General of the Seimas of the Republic of Lithuania By Resolution No XV-53 of 10 December 2024, the Seimas of the Republic of Lithuania appointed Algirdas Stončaitis as Secretary General of the Seimas for a five-year term of office. Contacts: Tel. +370 5 209 6008Room 2-316E-mail: [email protected] <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35381&p_k=2&p_asm_id=73903&p_kade_id=10 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Lithuania's Financial Crime Investigation Service (FNTT) conducted raids on Wednesday in Kaunas and Marijampolė districts as part of a pre-trial investigation into the alleged misuse of EU agricultural training funds by companies tied toVigilijusJukna, a former advisor to Prime Minister Ingrida Ruginienė, LRT.lt reports. <\/CONTENT> <URL> https://www.dailybaltic.com/33139/financial-crime-investigators-raid-offices-linked-to-former-pm-advisor-vigilijus-jukna <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> After it emerged that an organisation run byVigilijusJukna, the Prime Minister's public affairs advisor, had allegedly organised fictitious training sessions for farmers and thereby misappropriated hundreds of thousands of euros in EU funds, Prime Minister Inga Ruginienė decided to part ways with this member of her team. <\/CONTENT> <URL> https://www.lrytas.lt/english/politics/2026/05/13/news/following-the-scandalous-revelations-in-a-journalistic-investigation-ruginiene-parts-ways-with-consultant-jukna-42406094 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Prime Minister Inga Ruginienė on Tuesday decided to remove her aideVigilijusJuknaafter the news website 15min.lt published a journalistic investigation revealing that companies managed ... <\/CONTENT> <URL> https://www.delfi.lt/en/politics/pm-removes-adviser-after-media-investigation-into-eu-funded-training-120248989 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> The Financial Crime Investigation Service (FNTT) has carried out searches in Kaunas and two other regions as it probes the activities of companies linked toVigilijusJukna, former public ... <\/CONTENT> <URL> https://www.delfi.lt/en/politics/searches-conducted-amid-probe-into-activities-of-pm-s-former-aide-120249546 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360925033,
+            "end": 1779360929508
+          }
+        },
+        "id": "prt_e4a2d0566001b0AcNl4Dxx5Ewu",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "messageID": "msg_e4a2cf8c8001QZ5HHjbQPfpKS8"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360929518,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d16e70019YOL2SWNFLtfAk",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2cf8c8001QZ5HHjbQPfpKS8",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5413,
+          "input": 5086,
+          "output": 327,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0202
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360931012,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d1cc3001sPBr8qc8Qy3pOv",
+        "messageID": "msg_e4a2d16ec001hN6EIikeA3GJ4T",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360932396,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "1d08dd18-19b3-40c5-85f2-1aa311f35fa1",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9"
+          },
+          "output": "URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9\nFinal URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_403_bot_marker (status=403)\nMarkers: attention required, captcha, cloudflare, blocked",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360931016,
+            "end": 1779360932395
+          }
+        },
+        "id": "prt_e4a2d1cc5001lI23AUwFnfMhNt",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "messageID": "msg_e4a2d16ec001hN6EIikeA3GJ4T"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360934518,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "324258d1-e723-4cbc-b8ed-6c1daf195450",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://lt.wikipedia.org/wiki/Vigilijus_Jukna"
+          },
+          "output": "URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\nFinal URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\nTitle: Vigilijus Jukna – Vikipedija\nBytes read: 71654\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nPereiti prie turinio\nPagrindinis meniu\nPagrindinis meniu\nmove to sidebar\npaslėpti\nNaršymas\nPagrindinis puslapis\n[link: https://lt.wikipedia.org/wiki/Pagrindinis_puslapis]\nBendruomenės puslapis\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Bendruomen%C4%97]\nForumas\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Forumas]\nNaujausi keitimai\n[link: https://lt.wikipedia.org/wiki/Specialus:Naujausi_keitimai]\nAtsitiktinis straipsnis\n[link: https://lt.wikipedia.org/wiki/Specialus:Atsitiktinis_puslapis]\nSpecialieji puslapiai\n[link: https://lt.wikipedia.org/wiki/Specialus:Specialieji_puslapiai]\nPagalba\n[link: https://lt.wikipedia.org/wiki/Pagalba:Turinys]\nPaieška\n[link: https://lt.wikipedia.org/wiki/Specialus:Paie%C5%A1ka]\nPaieška\nIšvaizda\nParama\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=lt.wikipedia.org&uselang=lt]\nSukurti paskyrą\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Sukurti_paskyr%C4%85&returnto=Vigilijus+Jukna]\nPrisijungti\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Prisijungimas&returnto=Vigilijus+Jukna]\nAsmeniniai įrankiai\nParama\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360931019,
+            "end": 1779360934516
+          }
+        },
+        "id": "prt_e4a2d1cc9001j7zjyV8ENJxvx7",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "messageID": "msg_e4a2d16ec001hN6EIikeA3GJ4T"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360934525,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d2a7600140OdWlGytqGEex",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d16ec001hN6EIikeA3GJ4T",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7467,
+          "input": 7294,
+          "output": 173,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0245
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360935876,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d2fc2001cUbZvFrh153TeQ",
+        "messageID": "msg_e4a2d2a7b001yGXlGwC8HmaMmG",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360937458,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "4d3e2f24-c6dc-42ff-800f-f1a07ed91499",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna VRK 2020 biografija"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. 1986 m. baigė Kauno 24-ąją vidurinę mokyklą. 1991 m. - Lietuvos veterinarijos akademiją (LVA), kur įgijo zooinžinieriaus profesiją. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Pats V.Jukna teigė atsistatydinęs dėl šeiminių aplinkybių. Pradėjo dirbti Vytauto Didžiojo universiteto Žemės ūkio akademijoje, tapo mokslo centro vadovu. Dalyvavo įvairiuose nacionaliniuose rinkimuose, mandato nė karto neiškovojo. Mėgsta aktyvų laisvalaikį gamtoje, žvejoti. Vedęs, turi du sūnus. <\/CONTENT> <URL> https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Mokslinių tyrimų svarbiausia sritis - gyvulių mėsinių savybių ir mėsos kokybės gerinimas genetiniu ir technologiniu būdu. Paskelbė daugiau kaip 170 mokslo ir mokslo populiarinamųjų straipsnių. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Premjerės Ingos Ruginienės visuomeninis konsultantas, buvęs žemės ūkio ministras, socialdemokratasVigilijusJuknaatsidūrė Specialiųjų tyrimų tarnybos ir prokurorų taikiklyje. Gali ... <\/CONTENT> <URL> https://www.delfi.lt/temos/vigilijus-jukna <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJukna- verslininkas, politikas ir žemės ūkio ekspertas. Šiuo metu yra Ministrės Pirmininkės Ingos Ruginienės visuomeninis konsultantas žemės ūkio klausimais ir VDU Žemės ūkio akademijos kancleris. <\/CONTENT> <URL> https://www.15min.lt/tema/vigilijus-jukna-7262 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Seimo Darbo partijos frakcijos seniūno Vigilijaus Juknos pranešimas: „Kodėl Vyriausybė slepia, kaip nori išleisti 2,2 mlrd. eurų, ar pinigai tik saviems?\" Seimo interneto svetainėje skelbiamos Seimo narių biografijos yra sudarytos ir tikslinamos pagal Seimo narių pateiktą ir su jais suderintą informaciją. <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Seimo komisijose2020-11-24 Antikorupcijos komisija, Komisijos narys2020-12-08 Laisvės premijų komisija, Komisijos narys 2021-03-10 Aleksandro Stulginskio žvaigždės skyrimo komisija, Komisijos narys <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=38249&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Laima Liucija Andrikienė Seimo narė nuo2020-11-13 iki 2022-11-14 Arvydas Anušauskas Seimo narys nuo2020-11-13 iki 2024-11-14 Aušrinė Armonaitė Seimo narė nuo2020-11-13 iki 2024-11-14 Dalia Asanavičiūtė-Gružauskienė <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=15&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Duomenys kaupiami ir saugomi Juridinių asmenų registre, kodas 188605295 ©2020Lietuvos Respublikos Seimo kanceliarija, biudžetinė įstaiga <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> VirgilijusJukna- biomedicinos mokslų daktaras, zooinžinierius, politikas, buvęs žemės ūkio ministras. Gimė 1968 metais spalio 31 dieną, Kaune.2020metais V.Juknapagal Darbo partijos sąrašą išrinktas į Lietuvos Respublikos Seimą. Politikas yra kaimo reikalų komiteto narys. <\/CONTENT> <URL> https://www.delfi.lt/temos/virgilijus-jukna <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360935879,
+            "end": 1779360937457
+          }
+        },
+        "id": "prt_e4a2d2fc4001TV6avTldGwFT81",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "messageID": "msg_e4a2d2a7b001yGXlGwC8HmaMmG"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360937466,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d35f3001QcnMjGSnXLte73",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d2a7b001yGXlGwC8HmaMmG",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8292,
+          "input": 8199,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.026
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360938884,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d3b83001RiUH3wFUkosv0O",
+        "messageID": "msg_e4a2d35f7001EwTzLi1a6rsH53",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779360941233,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "524b0c73-1057-4b29-8d05-b7a708d55392",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija"
+          },
+          "output": "URL: https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\nFinal URL: https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\nTitle: Vigilijus Jukna | Darbo partija | 15min.lt\nBytes read: 59511\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nDarbo partija\n[link: https://www.15min.lt/seimo-rinkimai-2020/darbo-partija]\nPartijos lyderis\nVigilijus\nJukna\n[link: https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija]\nVigilijus Jukna\n1968\nGimė spalio 31 d. Kaune.\n1991\nBaigė Lietuvos veterinarijos akademiją, įgijo zooinžinieriaus profesiją.\n1996\nIr toliau užsiėmė mokslo tiriamąja veikla, tapo biomedicinos mokslų daktaru, dirbo Lietuvos veterinarijos akademijoje.\n1999\nDirbo Lietuvos sveikatos mokslų universitete.\n2012\nDarbo partijai pasiūlius, tapo žemės ūkio ministru Algirdo Butkevičiaus Vyriausybėje.\n2014\nPasitraukė iš žemės ūkio ministro pareigų po to, kai prezidentė paprašė jo prisiimti atsakomybę už neskaidrią ministerijos veiklą. Pats V.Jukna teigė atsistatydinęs dėl šeiminių aplinkybių.\nPradėjo dirbti Vytauto Didžiojo universiteto Žemės ūkio akademijoje, tapo mokslo centro vadovu.\nDalyvavo įvairiuose nacionaliniuose rinkimuose, mandato nė karto neiškovojo.\nMėgsta aktyvų laisvalaikį gamtoje, žvejoti.\nVedęs, turi du sūnus.\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779360938887,
+            "end": 1779360941231
+          }
+        },
+        "id": "prt_e4a2d3b84001S8ZkvJKxqhSxOc",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "messageID": "msg_e4a2d35f7001EwTzLi1a6rsH53"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779360941239,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d44b10012Zc3bmbAOrbMPR",
+        "reason": "tool-calls",
+        "messageID": "msg_e4a2d35f7001EwTzLi1a6rsH53",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9946,
+          "input": 9834,
+          "output": 112,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0312
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779360944287,
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "id": "prt_e4a2d509d001B3Lr2wKFiW9shj",
+        "messageID": "msg_e4a2d44b5001YK762ro5JgOb6f",
+        "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Doctor of Biomedical Sciences (1996); Graduated from the Lithuanian Veterinary Academy as a zoo-engineer (1991).\",\n  \"educational_attainment_source\": \"https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\",\n  \"prior_occupation\": \"University professor and researcher at the Lithuanian University of Health Sciences and Vytautas Magnus University Agriculture Academy; former Minister of Agriculture (2012–2014).\",\n  \"prior_occupation_source\": \"https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\",\n  \"class_background\": \"Middle class/professional\",\n  \"class_background_source\": \"https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\",\n  \"birth_year\": 1968,\n  \"birth_year_source\": \"https://lt.wikipedia.org/wiki/Vigilijus_Jukna\",\n  \"birth_place\": \"Kaunas, Lithuania\",\n  \"birth_place_source\": \"https://lt.wikipedia.org/wiki/Vigilijus_Jukna\",\n  \"disability_status\": \"Unknown\",\n  \"disability_status_source\": \"https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sexual_orientation_source\": \"https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\"\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b5d30801ffeBIRY3Z4703ID76",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b5d30801ffeBIRY3Z4703ID76",
+  "opencode_export_final_text_chars": 1215,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779360925020,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d055b001kVmqJYpYeAWOrU\",\"messageID\":\"msg_e4a2cf8c8001QZ5HHjbQPfpKS8\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360928074,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"ebd0b13c-95a8-4eaa-b060-59b0168c6ea6\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna biography Lithuania Labour Party 2020 VRK\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Lithuania'sLabourPartyhas 6 candidates to head Ministry of Agriculture AfterVigilijusJuknaresigned as the Minister of Agriculture, theLabourPartypresidium has six candidates ... <\/CONTENT> <URL> https://www.delfi.lt/en/topics/vigilijus-jukna-en <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> position held Minister of Agriculture start time 13 December 2012 end time 17 July 2014 1 reference Member of the Seimas start time 13 November2020end time 14 November 2024 parliamentary term Thirteenth Seimas ofLithuaniaparliamentary groupLabourPartyelected in2020Lithuanian parliamentary election 1 reference member of politicalparty... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> VigilijusJuknaSeimas2020-2024 Member of the Seimas from 11/13/2020Nominated by:LabourPartyElected: By list Contacts Room: I-124 <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJuknaan Member of the Lithuanian Parliament,birthplace is Kaunas Lithuania,date of birth October 31 1968,age 54,sign of the zodiac Scorpio,Spouse Ri <\/CONTENT> <URL> https://www.xwhos.com/person/vigilijus_jukna-whois.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> An institution owned by Prime Minister Inga Ruginienė's public adviser and fellow Social DemocratVigilijusJuknareceived European Union funding for farmer training sessions that were often left without attendees, 15min.lt reported on Tuesday. According to the investigation,Jukna'sorganisation Mokslinės Paslaugos is currently implementing two major EU-funded projects covering 51 ... <\/CONTENT> <URL> https://www.lrt.lt/en/news-in-english/19/2926132/lithuanian-pm-adviser-received-eu-funds-for-trainings-without-attendees-media <\/URL> __END_OF_SOURCE 6__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360925028,\"end\":1779360928072}},\"id\":\"prt_e4a2d055d0010jpPUlp4RlDNSa\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"messageID\":\"msg_e4a2cf8c8001QZ5HHjbQPfpKS8\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360929509,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"c5e8c590-3028-4376-ab02-3725cb3498b3\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna Wikipedia\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> VigilijusJuknaPartinė ir politinė veikla Nuo 2008 Darbo partijos narys, nuo 2018 Darbo partijos vicepirmininkas. 2012-14 Lietuvos Respublikos žemės ūkio ministras. 2020-24 Lietuvos Respublikos Seimo ir jo Darbo partijos frakcijos narys. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> VigilijusJukna(1968-) was a Lithuanian Labor Party politician who served in the Seimas from 2020. <\/CONTENT> <URL> https://historica.fandom.com/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Vigilijus1 reference based on heuristic inferred from person's full name date of birth 23 July 1968 0 references place of birth Kaunas 1 reference languages spoken, written or signed Lithuanian 1 reference occupation politician 0 references university teacher 1 reference position held Minister of Agriculture start time 13 December 2012 end ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Contacts Room: I-124 Tel: +370 5 209 6634 E-mail:vigilijus.jukna@lrs.lt Personal Homepage Advisers and assistants Position <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Algirdas STONČAITIS Secretary General of the Seimas of the Republic of Lithuania By Resolution No XV-53 of 10 December 2024, the Seimas of the Republic of Lithuania appointed Algirdas Stončaitis as Secretary General of the Seimas for a five-year term of office. Contacts: Tel. +370 5 209 6008Room 2-316E-mail: [email protected] <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35381&p_k=2&p_asm_id=73903&p_kade_id=10 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Lithuania's Financial Crime Investigation Service (FNTT) conducted raids on Wednesday in Kaunas and Marijampolė districts as part of a pre-trial investigation into the alleged misuse of EU agricultural training funds by companies tied toVigilijusJukna, a former advisor to Prime Minister Ingrida Ruginienė, LRT.lt reports. <\/CONTENT> <URL> https://www.dailybaltic.com/33139/financial-crime-investigators-raid-offices-linked-to-former-pm-advisor-vigilijus-jukna <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> After it emerged that an organisation run byVigilijusJukna, the Prime Minister's public affairs advisor, had allegedly organised fictitious training sessions for farmers and thereby misappropriated hundreds of thousands of euros in EU funds, Prime Minister Inga Ruginienė decided to part ways with this member of her team. <\/CONTENT> <URL> https://www.lrytas.lt/english/politics/2026/05/13/news/following-the-scandalous-revelations-in-a-journalistic-investigation-ruginiene-parts-ways-with-consultant-jukna-42406094 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Prime Minister Inga Ruginienė on Tuesday decided to remove her aideVigilijusJuknaafter the news website 15min.lt published a journalistic investigation revealing that companies managed ... <\/CONTENT> <URL> https://www.delfi.lt/en/politics/pm-removes-adviser-after-media-investigation-into-eu-funded-training-120248989 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> The Financial Crime Investigation Service (FNTT) has carried out searches in Kaunas and two other regions as it probes the activities of companies linked toVigilijusJukna, former public ... <\/CONTENT> <URL> https://www.delfi.lt/en/politics/searches-conducted-amid-probe-into-activities-of-pm-s-former-aide-120249546 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360925033,\"end\":1779360929508}},\"id\":\"prt_e4a2d0566001b0AcNl4Dxx5Ewu\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"messageID\":\"msg_e4a2cf8c8001QZ5HHjbQPfpKS8\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360929518,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d16e70019YOL2SWNFLtfAk\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2cf8c8001QZ5HHjbQPfpKS8\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-finish\",\"tokens\":{\"total\":5413,\"input\":5086,\"output\":327,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.020163}}\n{\"type\":\"step_start\",\"timestamp\":1779360931012,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d1cc3001sPBr8qc8Qy3pOv\",\"messageID\":\"msg_e4a2d16ec001hN6EIikeA3GJ4T\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360932396,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"1d08dd18-19b3-40c5-85f2-1aa311f35fa1\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9\"},\"output\":\"URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9\\nFinal URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_403_bot_marker (status=403)\\nMarkers: attention required, captcha, cloudflare, blocked\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360931016,\"end\":1779360932395}},\"id\":\"prt_e4a2d1cc5001lI23AUwFnfMhNt\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"messageID\":\"msg_e4a2d16ec001hN6EIikeA3GJ4T\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360934518,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"324258d1-e723-4cbc-b8ed-6c1daf195450\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://lt.wikipedia.org/wiki/Vigilijus_Jukna\"},\"output\":\"URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\\nFinal URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\\nTitle: Vigilijus Jukna – Vikipedija\\nBytes read: 71654\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nPereiti prie turinio\\nPagrindinis meniu\\nPagrindinis meniu\\nmove to sidebar\\npaslėpti\\nNaršymas\\nPagrindinis puslapis\\n[link: https://lt.wikipedia.org/wiki/Pagrindinis_puslapis]\\nBendruomenės puslapis\\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Bendruomen%C4%97]\\nForumas\\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Forumas]\\nNaujausi keitimai\\n[link: https://lt.wikipedia.org/wiki/Specialus:Naujausi_keitimai]\\nAtsitiktinis straipsnis\\n[link: https://lt.wikipedia.org/wiki/Specialus:Atsitiktinis_puslapis]\\nSpecialieji puslapiai\\n[link: https://lt.wikipedia.org/wiki/Specialus:Specialieji_puslapiai]\\nPagalba\\n[link: https://lt.wikipedia.org/wiki/Pagalba:Turinys]\\nPaieška\\n[link: https://lt.wikipedia.org/wiki/Specialus:Paie%C5%A1ka]\\nPaieška\\nIšvaizda\\nParama\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=lt.wikipedia.org&uselang=lt]\\nSukurti paskyrą\\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Sukurti_paskyr%C4%85&returnto=Vigilijus+Jukna]\\nPrisijungti\\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Prisijungimas&returnto=Vigilijus+Jukna]\\nAsmeniniai įrankiai\\nParama\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360931019,\"end\":1779360934516}},\"id\":\"prt_e4a2d1cc9001j7zjyV8ENJxvx7\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"messageID\":\"msg_e4a2d16ec001hN6EIikeA3GJ4T\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360934525,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d2a7600140OdWlGytqGEex\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d16ec001hN6EIikeA3GJ4T\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-finish\",\"tokens\":{\"total\":7467,\"input\":7294,\"output\":173,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.024477}}\n{\"type\":\"step_start\",\"timestamp\":1779360935876,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d2fc2001cUbZvFrh153TeQ\",\"messageID\":\"msg_e4a2d2a7b001yGXlGwC8HmaMmG\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360937458,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"4d3e2f24-c6dc-42ff-800f-f1a07ed91499\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna VRK 2020 biografija\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. 1986 m. baigė Kauno 24-ąją vidurinę mokyklą. 1991 m. - Lietuvos veterinarijos akademiją (LVA), kur įgijo zooinžinieriaus profesiją. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Pats V.Jukna teigė atsistatydinęs dėl šeiminių aplinkybių. Pradėjo dirbti Vytauto Didžiojo universiteto Žemės ūkio akademijoje, tapo mokslo centro vadovu. Dalyvavo įvairiuose nacionaliniuose rinkimuose, mandato nė karto neiškovojo. Mėgsta aktyvų laisvalaikį gamtoje, žvejoti. Vedęs, turi du sūnus. <\/CONTENT> <URL> https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Mokslinių tyrimų svarbiausia sritis - gyvulių mėsinių savybių ir mėsos kokybės gerinimas genetiniu ir technologiniu būdu. Paskelbė daugiau kaip 170 mokslo ir mokslo populiarinamųjų straipsnių. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Premjerės Ingos Ruginienės visuomeninis konsultantas, buvęs žemės ūkio ministras, socialdemokratasVigilijusJuknaatsidūrė Specialiųjų tyrimų tarnybos ir prokurorų taikiklyje. Gali ... <\/CONTENT> <URL> https://www.delfi.lt/temos/vigilijus-jukna <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJukna- verslininkas, politikas ir žemės ūkio ekspertas. Šiuo metu yra Ministrės Pirmininkės Ingos Ruginienės visuomeninis konsultantas žemės ūkio klausimais ir VDU Žemės ūkio akademijos kancleris. <\/CONTENT> <URL> https://www.15min.lt/tema/vigilijus-jukna-7262 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Seimo Darbo partijos frakcijos seniūno Vigilijaus Juknos pranešimas: „Kodėl Vyriausybė slepia, kaip nori išleisti 2,2 mlrd. eurų, ar pinigai tik saviems?\\\" Seimo interneto svetainėje skelbiamos Seimo narių biografijos yra sudarytos ir tikslinamos pagal Seimo narių pateiktą ir su jais suderintą informaciją. <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Seimo komisijose2020-11-24 Antikorupcijos komisija, Komisijos narys2020-12-08 Laisvės premijų komisija, Komisijos narys 2021-03-10 Aleksandro Stulginskio žvaigždės skyrimo komisija, Komisijos narys <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=38249&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Laima Liucija Andrikienė Seimo narė nuo2020-11-13 iki 2022-11-14 Arvydas Anušauskas Seimo narys nuo2020-11-13 iki 2024-11-14 Aušrinė Armonaitė Seimo narė nuo2020-11-13 iki 2024-11-14 Dalia Asanavičiūtė-Gružauskienė <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=15&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Duomenys kaupiami ir saugomi Juridinių asmenų registre, kodas 188605295 ©2020Lietuvos Respublikos Seimo kanceliarija, biudžetinė įstaiga <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> VirgilijusJukna- biomedicinos mokslų daktaras, zooinžinierius, politikas, buvęs žemės ūkio ministras. Gimė 1968 metais spalio 31 dieną, Kaune.2020metais V.Juknapagal Darbo partijos sąrašą išrinktas į Lietuvos Respublikos Seimą. Politikas yra kaimo reikalų komiteto narys. <\/CONTENT> <URL> https://www.delfi.lt/temos/virgilijus-jukna <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360935879,\"end\":1779360937457}},\"id\":\"prt_e4a2d2fc4001TV6avTldGwFT81\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"messageID\":\"msg_e4a2d2a7b001yGXlGwC8HmaMmG\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360937466,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d35f3001QcnMjGSnXLte73\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d2a7b001yGXlGwC8HmaMmG\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-finish\",\"tokens\":{\"total\":8292,\"input\":8199,\"output\":93,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.025992}}\n{\"type\":\"step_start\",\"timestamp\":1779360938884,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d3b83001RiUH3wFUkosv0O\",\"messageID\":\"msg_e4a2d35f7001EwTzLi1a6rsH53\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779360941233,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"524b0c73-1057-4b29-8d05-b7a708d55392\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\"},\"output\":\"URL: https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\\nFinal URL: https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija\\nTitle: Vigilijus Jukna | Darbo partija | 15min.lt\\nBytes read: 59511\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nDarbo partija\\n[link: https://www.15min.lt/seimo-rinkimai-2020/darbo-partija]\\nPartijos lyderis\\nVigilijus\\nJukna\\n[link: https://www.15min.lt/seimo-rinkimai-2020/vigilijus-jukna/darbo-partija]\\nVigilijus Jukna\\n1968\\nGimė spalio 31 d. Kaune.\\n1991\\nBaigė Lietuvos veterinarijos akademiją, įgijo zooinžinieriaus profesiją.\\n1996\\nIr toliau užsiėmė mokslo tiriamąja veikla, tapo biomedicinos mokslų daktaru, dirbo Lietuvos veterinarijos akademijoje.\\n1999\\nDirbo Lietuvos sveikatos mokslų universitete.\\n2012\\nDarbo partijai pasiūlius, tapo žemės ūkio ministru Algirdo Butkevičiaus Vyriausybėje.\\n2014\\nPasitraukė iš žemės ūkio ministro pareigų po to, kai prezidentė paprašė jo prisiimti atsakomybę už neskaidrią ministerijos veiklą. Pats V.Jukna teigė atsistatydinęs dėl šeiminių aplinkybių.\\nPradėjo dirbti Vytauto Didžiojo universiteto Žemės ūkio akademijoje, tapo mokslo centro vadovu.\\nDalyvavo įvairiuose nacionaliniuose rinkimuose, mandato nė karto neiškovojo.\\nMėgsta aktyvų laisvalaikį gamtoje, žvejoti.\\nVedęs, turi du sūnus.\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779360938887,\"end\":1779360941231}},\"id\":\"prt_e4a2d3b84001S8ZkvJKxqhSxOc\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"messageID\":\"msg_e4a2d35f7001EwTzLi1a6rsH53\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779360941239,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d44b10012Zc3bmbAOrbMPR\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4a2d35f7001EwTzLi1a6rsH53\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-finish\",\"tokens\":{\"total\":9946,\"input\":9834,\"output\":112,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.031182}}\n{\"type\":\"step_start\",\"timestamp\":1779360944287,\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"part\":{\"id\":\"prt_e4a2d509d001B3Lr2wKFiW9shj\",\"messageID\":\"msg_e4a2d44b5001YK762ro5JgOb6f\",\"sessionID\":\"ses_1b5d30801ffeBIRY3Z4703ID76\",\"type\":\"step-start\"}}\n"
+}
