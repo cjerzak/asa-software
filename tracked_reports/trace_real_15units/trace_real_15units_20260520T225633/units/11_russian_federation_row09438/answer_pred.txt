@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Graduated from the Faculty of History of Moscow State University in 1981 and completed postgraduate studies in 1985.",
+  "educational_attainment_source": "https://persona.rin.ru/eng/view/f/0/16160/zatulin-konstantin-fedorovich",
+  "prior_occupation": "Entrepreneur and business leader; he headed the 'Entrepreneurs of the New Russia' movement and was involved in business associations and the Moscow Commodity Exchange in the early 1990s.",
+  "prior_occupation_source": "https://persona.rin.ru/eng/view/f/0/16160/zatulin-konstantin-fedorovich",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://eiao.org/konstantin-zatulin-russia",
+  "birth_year": "1958",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin",
+  "birth_place": "Batumi, Adjarian ASSR, Georgian SSR, USSR",
+  "birth_place_source": "https://ngoreport.org/sanctions-database/zatulin-konstantin-fedorovich",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin"
+}

@@ -1,0 +1,17 @@
+{
+  "educational_attainment": "Doctor of Biomedicine (1996), Professor (2014), Zoo-engineer",
+  "prior_occupation": "Professor, Zoo-engineer, Scientist",
+  "birth_year": "1968",
+  "birth_place": "Kaunas, Lithuania",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications",
+    "prior_occupation": "https://lt.wikipedia.org/wiki/Vigilijus_Jukna",
+    "birth_year": "https://lt.wikipedia.org/wiki/Vigilijus_Jukna",
+    "birth_place": "https://lt.wikipedia.org/wiki/Vigilijus_Jukna",
+    "disability_status": "Unknown",
+    "sexual_orientation": "Unknown"
+  }
+}

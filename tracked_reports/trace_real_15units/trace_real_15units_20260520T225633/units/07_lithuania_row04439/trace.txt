@@ -1,0 +1,572 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779332271008,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4877cb9e001Sn5AgS3L8pIK68",
+        "messageID": "msg_e4877c13b001GSowLwqwS6zgf3",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332273193,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "6212667c-fe4a-42ea-ae9b-fdc2835afac5",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna Lithuania Labour Party biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Lithuania'sLabourPartyhas 6 candidates to head Ministry of Agriculture AfterVigilijusJuknaresigned as the Minister of Agriculture, theLabourPartypresidium has six candidates ... <\/CONTENT> <URL> https://www.delfi.lt/en/topics/vigilijus-jukna-en <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Seimas 2020-2024 Member of the Seimas from 11/13/2020 till 11/14/2024 Nominated by:LabourPartyElected: By list Position |Biography <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=40556&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Seimas 2020-2024 Member of the Seimas from 11/13/2020 Nominated by:LabourPartyElected: By list Contacts Room: I-124 Tel: +370 5 239 6634 E-mail: [email protected] Personal Homepage Advisers and assistants Position |Biography| Activities | Press releases | Reports <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJuknaSeimas 2020-2024 Member of the Seimas from 11/13/2020 Nominated by:LabourPartyElected: By list Contacts Room: I-124 <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 5__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332271014,
+            "end": 1779332273192
+          }
+        },
+        "id": "prt_e4877cba0001Q4IyuirZcrHy2h",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e4877c13b001GSowLwqwS6zgf3"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332273199,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4877d42a001Jht014kae7V9qO",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877c13b001GSowLwqwS6zgf3",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5348,
+          "input": 5088,
+          "output": 260,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0192
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332275108,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4877dba3001BdblKhIYRnvivk",
+        "messageID": "msg_e4877d42e001DfIN9jqCbV4OrW",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332275998,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "f3fa0aaf-9a2c-4897-a135-54aabadcb4a1",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://lt.wikipedia.org/wiki/Vigilijus_Jukna"
+          },
+          "output": "URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\nFinal URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\nTitle: Vigilijus Jukna – Vikipedija\nBytes read: 71654\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nPereiti prie turinio\nPagrindinis meniu\nPagrindinis meniu\nmove to sidebar\npaslėpti\nNaršymas\nPagrindinis puslapis\n[link: https://lt.wikipedia.org/wiki/Pagrindinis_puslapis]\nBendruomenės puslapis\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Bendruomen%C4%97]\nForumas\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Forumas]\nNaujausi keitimai\n[link: https://lt.wikipedia.org/wiki/Specialus:Naujausi_keitimai]\nAtsitiktinis straipsnis\n[link: https://lt.wikipedia.org/wiki/Specialus:Atsitiktinis_puslapis]\nSpecialieji puslapiai\n[link: https://lt.wikipedia.org/wiki/Specialus:Specialieji_puslapiai]\nPagalba\n[link: https://lt.wikipedia.org/wiki/Pagalba:Turinys]\nPaieška\n[link: https://lt.wikipedia.org/wiki/Specialus:Paie%C5%A1ka]\nPaieška\nIšvaizda\nParama\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=lt.wikipedia.org&uselang=lt]\nSukurti paskyrą\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Sukurti_paskyr%C4%85&returnto=Vigilijus+Jukna]\nPrisijungti\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Prisijungimas&returnto=Vigilijus+Jukna]\nAsmeniniai įrankiai\nParama\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332275110,
+            "end": 1779332275997
+          }
+        },
+        "id": "prt_e4877dba4001XzCVqgrexYiLFH",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e4877d42e001DfIN9jqCbV4OrW"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332277604,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "f8e245e0-47e7-4013-90c5-e59b378d93bb",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903"
+          },
+          "output": "URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903\nFinal URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903\nTitle: (unavailable)\nBytes read: 0\nCache: MISS\n\nBlocked fetch detected.\nReason: http_403_bot_marker (status=403)\nMarkers: attention required, captcha, cloudflare, blocked",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332275113,
+            "end": 1779332277603
+          }
+        },
+        "id": "prt_e4877dba7002Ze1sTVJ8R37JVN",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e4877d42e001DfIN9jqCbV4OrW"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332277609,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4877e564001uOBwQs7P6119Bu",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877d42e001DfIN9jqCbV4OrW",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6072,
+          "input": 5828,
+          "output": 244,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0211
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332278812,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4877ea1b001clrDcGC7RA1tWs",
+        "messageID": "msg_e4877e567001qD4jaRm5TchGJT",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332281216,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "10f59b24-ea42-47ac-9cc5-a54bffbcea89",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna biography education occupation birth"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Born on July 23, 1968,VigilijusJuknais 57 years old. Zodiac sign is Leo. Life path number is 9. AnalyzeVigilijusJuknabirthchart and kundli. <\/CONTENT> <URL> https://www.ask-oracle.com/birth-chart/vigilijus-jukna <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Advisor to the Prime Minister on agricultural issues · Experience: Vytautas Magnus University Agriculture Academy ·Education: Lithuanian University of Health Sciences · Location: Lithuania · 47 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-81602663 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Seimas 2020-2024 Member of the Seimas from 11/13/2020 till 11/14/2024 Nominated by: Labour Party Elected: By list Position |Biography <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=40556&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJuknaPartinė ir politinė veikla Nuo 2008 Darbo partijos narys, nuo 2018 Darbo partijos vicepirmininkas. 2012-14 Lietuvos Respublikos žemės ūkio ministras. 2020-24 Lietuvos Respublikos Seimo ir jo Darbo partijos frakcijos narys. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> VigilijusJuknaan Member of the Lithuanian Parliament,birthplace is Kaunas Lithuania,date ofbirthOctober 31 1968,age 54,sign of the zodiac Scorpio,Spouse Ri <\/CONTENT> <URL> https://www.xwhos.com/person/vigilijus_jukna-whois.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> BiographyVigilijusJukna, né le 31 octobre 1968 à Kaunas, alors en Union soviétique, est un homme politique lituanien membre du Parti du travail (DP). Il est ministre de l'Agriculture entre 2012 et 2014. <\/CONTENT> <URL> https://peoplepill.com/i/vigilijus-jukna <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> The aim of this study was to identify the influence of cattle breed, age, live weight, carcass weight, and yield on beef carcass conformation class.The electronic databases from \"Meat master ... <\/CONTENT> <URL> https://www.researchgate.net/profile/Vigilijus-Jukna-2 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Vigilijus1 reference based on heuristic inferred from person's full name date ofbirth23 July 1968 0 references place ofbirthKaunas 1 reference languages spoken, written or signed Lithuanian 1 referenceoccupationpolitician 0 references university teacher 1 reference position held Minister of Agriculture start time 13 December 2012 end ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Preferred nameJukna,VigilijusTitle Biomedicinos mokslų daktaras / Doctor of Biomedicine (1996) Profesorius / Professor (2014) Status Darbuotojas / Employee Official NameJukna,VigilijusDepartment <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications?f.affiliation=Agronomijos+fakultetas+%2F+Faculty+of+Agronomy%2Cequals&spc.page=1&f.author=bcac6ebd-8655-4125-8114-651395877a8a%2Cauthority&f.author=4164ee58-f99c-4be1-be40-ee0001235a2d%2Cauthority <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332278815,
+            "end": 1779332281215
+          }
+        },
+        "id": "prt_e4877ea1c002LFjcx72neBwilj",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e4877e567001qD4jaRm5TchGJT"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332281220,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4877f380001pA04IuziS12iNg",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877e567001qD4jaRm5TchGJT",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6794,
+          "input": 6706,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0214
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332282296,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4877f7b6001xCLNjVFhV20UVU",
+        "messageID": "msg_e4877f383001YNIQW4V361g7aK",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332285073,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "d9c1ee8d-7ba7-4983-9599-6d73c7fe5d35",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.vle.lt/straipsnis/vigilijus-jukna/"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"tls_error\",\"retryable\":true,\"url\":\"https://www.vle.lt/straipsnis/vigilijus-jukna/\",\"final_url\":null,\"status_code\":null,\"error\":\"Failed to perform, curl: (60) SSL certificate problem: unable to get local issuer certificate. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\",\"error_detail\":null,\"attempt\":2,\"attempts\":2}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332282298,
+            "end": 1779332285073
+          }
+        },
+        "id": "prt_e4877f7b8001eGv41fOiigQD2W",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e4877f383001YNIQW4V361g7aK"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332285078,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e48780292001sko7boT7rKjOCo",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877f383001YNIQW4V361g7aK",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8176,
+          "input": 8078,
+          "output": 98,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0257
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332286387,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e487807b2001YHJK50MFTvJ05c",
+        "messageID": "msg_e48780294001Msyfk8eLYcBbMk",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332288680,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "03fca87b-008d-4e53-ac26-248337042edc",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna education prior occupation class background"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Advisor to the Prime Minister on agricultural issues · Experience: Vytautas Magnus University Agriculture Academy ·Education: Lithuanian University of Health Sciences · Location: Lithuania · 47 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-81602663 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> VigilijusJuknaPartinė ir politinė veikla Nuo 2008 Darbo partijos narys, nuo 2018 Darbo partijos vicepirmininkas. 2012-14 Lietuvos Respublikos žemės ūkio ministras. 2020-24 Lietuvos Respublikos Seimo ir jo Darbo partijos frakcijos narys. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Lapkričio 18 dieną Vytauto Didžiojo universiteto Žemės ūkio akademijos (VDU ŽŪA) kanclerio pareigas pradėjo eiti profesorius dr.VigilijusJukna. Pokalbyje su kadenciją pradėjusiu Akademijos kancleriu - apie ateities Akademijos prioritetus, stiprybės taškus, Lietuvos žemės ūkio galimybes ir kitas aktualijas. Jūsų programoje minimos penkios strateginės kryptys, kurios ... <\/CONTENT> <URL> https://zua.vdu.lt/vdu-zemes-ukio-akademijos-kancleris-prof-dr-vigilijus-jukna-susitelkusi-ir-atvira-bendruomene-raktas-i-akademijos-augima <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Contacts Room: I-124 Tel: +370 5 209 6634 E-mail:vigilijus.jukna@lrs.lt Personal Homepage Advisers and assistants Position <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Vigilijus1 reference based on heuristic inferred from person's full name date of birth 23 July 1968 0 references place of birth Kaunas 1 reference languages spoken, written or signed Lithuanian 1 referenceoccupationpolitician 0 references university teacher 1 reference position held Minister of Agriculture start time 13 December 2012 end ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Seimo narysVigilijusJuknakviečia į konferenciją - diskusiją: „Apsirūpinimas maistu - nacionalinio saugumo prioritetas\" Seimo Darbo partijos frakcijos seniūno Vigilijaus Juknos pranešimas: „Vyriausybės krizių valdymo ypatumai: nė žingsnio be savivaldybių\" <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Committees of the Seimas 11/19/2020 Committee on Rural Affairs, Member <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&printVersion=1 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Parliament of the Republic of Lithuania <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DSpace-CRIS is a comprehensive, free and open-source Research Information Management System (CRIS/RIMS). It is based on DSpace, providing broader functionality and an expanded data model, relying on its large community. It is compliant with and supports key international standards, facilitating interoperability and data transfer. DSpace-CRIS enables secure, integrated and interoperable ... <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/vigilijus-jukna/full <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Preferred nameJukna,VigilijusTitle Biomedicinos mokslų daktaras / Doctor of Biomedicine (1996) Profesorius / Professor (2014) Status Darbuotojas / Employee Official NameJukna,VigilijusDepartment <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications?f.affiliation=Agronomijos+fakultetas+%2F+Faculty+of+Agronomy%2Cequals&spc.page=1&f.author=bcac6ebd-8655-4125-8114-651395877a8a%2Cauthority&f.author=4164ee58-f99c-4be1-be40-ee0001235a2d%2Cauthority <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332286390,
+            "end": 1779332288680
+          }
+        },
+        "id": "prt_e487807b3002NAkzXP3A8M3czl",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e48780294001Msyfk8eLYcBbMk"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332288685,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e487810a9001Pb2OL3GstXlSEi",
+        "reason": "tool-calls",
+        "messageID": "msg_e48780294001Msyfk8eLYcBbMk",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8405,
+          "input": 8316,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0263
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332289974,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e487815b50014ntlrsvS5hTbq9",
+        "messageID": "msg_e487810ab001WyYdwp5lKm9R93",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332291415,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "23a9bae2-5d1a-418d-b8a7-af89b842f8ea",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna sexual orientation disability status"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Disabilitystatusbysexualorientation/gender identity and local authority district urban-rural classification in England. Point estimates derived from weighted OLS linear regression models with statistical adjustment forsexualorientationor gender identity response-level age, sex, and ethnicity, region, and socioeconomic deprivation. <\/CONTENT> <URL> https://pmc.ncbi.nlm.nih.gov/articles/PMC11060336 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> What are human rights? us, such as age,disability, healthstatus,sexualorientationor gender identity. These rights, whether they are civil and political rights (such as the right to life, equality before the law and freedom of expression) or economic, social and cultural rights (such as the rights to work, social s <\/CONTENT> <URL> https://www.ohchr.org/Documents/Issues/Discrimination/LGBT/FactSheets/unfe-11-UN_Fact_Sheets_GenderIdentity_English.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Contacts Room: I-124 Tel: +370 5 209 6634 E-mail:vigilijus.jukna@lrs.lt Personal Homepage Advisers and assistants Position <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Seimo narė nuo 2020-11-13 iki 2022-11-14 <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=15&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Seimo narysVigilijusJuknakviečia į konferenciją - diskusiją: „Apsirūpinimas maistu - nacionalinio saugumo prioritetas\" Seimo Darbo partijos frakcijos seniūno Vigilijaus Juknos pranešimas: „Vyriausybės krizių valdymo ypatumai: nė žingsnio be savivaldybių\" <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Committees of the Seimas 11/19/2020 Committee on Rural Affairs, Member <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=38249&p_k=2&p_a=498&p_asm_id=73903&printVersion=1 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Parliament of the Republic of Lithuania <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> DSpace-CRIS is a comprehensive, free and open-source Research Information Management System (CRIS/RIMS). It is based on DSpace, providing broader functionality and an expanded data model, relying on its large community. It is compliant with and supports key international standards, facilitating interoperability and data transfer. DSpace-CRIS enables secure, integrated and interoperable ... <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/vigilijus-jukna/full <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> After it emerged that an organisation run byVigilijusJukna, the Prime Minister's public affairs advisor, had allegedly organised fictitious training sessions for farmers and thereby misappropriated hundreds of thousands of euros in EU funds, Prime Minister Inga Ruginienė decided to part ways with this member of her team. <\/CONTENT> <URL> https://www.lrytas.lt/english/politics/2026/05/13/news/following-the-scandalous-revelations-in-a-journalistic-investigation-ruginiene-parts-ways-with-consultant-jukna-42406094 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Lithuania's Justice Ministry has begun appealing court rulings mandating it to register same-sex partnerships, with lawy... <\/CONTENT> <URL> https://www.lrt.lt/en/news-in-english/19/2925306/despite-favourable-court-rulings-same-sex-couples-face-new-roadblocks-in-lithuania <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332289978,
+            "end": 1779332291414
+          }
+        },
+        "id": "prt_e487815b7001ohXQZqLJcXUP07",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e487810ab001WyYdwp5lKm9R93"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332291419,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e48781b57001Xzpnq6cS3oG5sq",
+        "reason": "tool-calls",
+        "messageID": "msg_e487810ab001WyYdwp5lKm9R93",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9993,
+          "input": 9905,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.031
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332293125,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e48782204001K7Vk6sGlQsTnRV",
+        "messageID": "msg_e48781b59001X3RAkRnk41JCSb",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332299134,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "dea1140b-1ae9-412a-a939-1453921acf8f",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna education details Lithuanian Veterinary Academy"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> VigilijusJukna,C Jukna,Nijolė Peciulaitienė,E Meskinytė Kausilienė mag（2014） 引用23浏览0引用 23 0 Amounts of essential and non-essential amino acids and the ratio in Lithuania bred cattle meat V. Jukna,C. Jukna,E. Meskinytė-Kausilienė <\/CONTENT> <URL> https://www.aminer.cn/profile/vigilijus-jukna/53f44a75dabfaee1c0afd84c <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> proffesor atLithuanianUniversity of Health Sciences,VeterinaryAcademy· Experience:LithuanianUniversity of Health Sciences,VeterinaryAcademy· Location: Lithuania · 20 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-02416326 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Advisor to the Prime Minister on agricultural issues · Experience: Vytautas Magnus University AgricultureAcademy·Education:LithuanianUniversity of Health Sciences · Location: Lithuania · 47 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-81602663 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> The LSMUVeterinaryAcademyis the only one in Lithuania that trains qualified veterinarians whose degrees are recognised throughout Europe. 2010 Following the merger of Kaunas University of Medicine and theLithuanianVeterinaryAcademy, theacademybecame an equally valuedAcademyat theLithuanianUniversity of Health Sciences. <\/CONTENT> <URL> https://lsmu.lt/en/about-lsmu/structure/veterinary-practice <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> FiftyLithuanianBlack & White andLithuanianRed bulls were slaughtered. EC of muscular longissimus dorsi and muscular semimembranosus at 45, 60, 90, 120, 150 minutes and again at 1, 2 and 4 days... <\/CONTENT> <URL> https://www.researchgate.net/profile/Vigilijus-Jukna-2 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Gyvūnų produkcijos tyrimų ir inovac. c. / Animal Production Research and Innovation Center 2024-12-02 Emailvigilijus.jukna@vdu.lt Scopus Author ID 12141987600 Researcher ID FFJ-3537-2022 Legacy ID rp05059 Research Interests Media Vikipedija Affiliations <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications?f.author=1d211703-6e40-49b1-9a3f-4a20d3edd6f9%2Cauthority&spc.page=1&view=grid&f.rights=open+access%2Cequals&f.area=Veterinarija+%2F+Veterinary+%28A002%29%2Cequals&f.subject=SGK1%2Cequals <\/URL> __END_OF_SOURCE 7__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332293127,
+            "end": 1779332299133
+          }
+        },
+        "id": "prt_e48782205001CA72477c3WuNgR",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e48781b59001X3RAkRnk41JCSb"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332299140,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4878397e001QG20nOdUj87tj1",
+        "reason": "tool-calls",
+        "messageID": "msg_e48781b59001X3RAkRnk41JCSb",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11371,
+          "input": 11282,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0352
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332300351,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e48783e3e001NHlf0azaTu1HgG",
+        "messageID": "msg_e487839820016vk0nG6HR4jmSD",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332300356,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "fe90661a-8cc2-45d5-b0a8-029d3d04f408",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Vigilijus Jukna VRK biografija 2020"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 0, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Vigilijus Jukna VRK biografija 2020\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"vigilijus jukna vrk biografija 2020\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332300353,
+            "end": 1779332300355
+          }
+        },
+        "id": "prt_e48783e3f0018lVKbi9WXkbdWt",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "messageID": "msg_e487839820016vk0nG6HR4jmSD"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332300360,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e48783e44001YhlN514NCfbgB3",
+        "reason": "tool-calls",
+        "messageID": "msg_e487839820016vk0nG6HR4jmSD",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-finish",
+        "tokens": {
+          "total": 12480,
+          "input": 12387,
+          "output": 93,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0386
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332309343,
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "id": "prt_e4878615e001xHnvVu9Vee8Bd1",
+        "messageID": "msg_e48783e47001OF9XwMxbnipYPD",
+        "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Doctor of Biomedicine (1996), Professor (2014), Zoo-engineer\",\n  \"prior_occupation\": \"Professor, Zoo-engineer, Scientist\",\n  \"birth_year\": \"1968\",\n  \"birth_place\": \"Kaunas, Lithuania\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications\",\n    \"prior_occupation\": \"https://lt.wikipedia.org/wiki/Vigilijus_Jukna\",\n    \"birth_year\": \"https://lt.wikipedia.org/wiki/Vigilijus_Jukna\",\n    \"birth_place\": \"https://lt.wikipedia.org/wiki/Vigilijus_Jukna\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\"\n  }\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b7883f3effeTvXajv3FwJB5Qt",
+  "opencode_export_final_text_chars": 771,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779332271008,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4877cb9e001Sn5AgS3L8pIK68\",\"messageID\":\"msg_e4877c13b001GSowLwqwS6zgf3\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332273193,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"6212667c-fe4a-42ea-ae9b-fdc2835afac5\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna Lithuania Labour Party biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Lithuania'sLabourPartyhas 6 candidates to head Ministry of Agriculture AfterVigilijusJuknaresigned as the Minister of Agriculture, theLabourPartypresidium has six candidates ... <\/CONTENT> <URL> https://www.delfi.lt/en/topics/vigilijus-jukna-en <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Seimas 2020-2024 Member of the Seimas from 11/13/2020 till 11/14/2024 Nominated by:LabourPartyElected: By list Position |Biography <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=40556&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Seimas 2020-2024 Member of the Seimas from 11/13/2020 Nominated by:LabourPartyElected: By list Contacts Room: I-124 Tel: +370 5 239 6634 E-mail: [email protected] Personal Homepage Advisers and assistants Position |Biography| Activities | Press releases | Reports <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJuknaSeimas 2020-2024 Member of the Seimas from 11/13/2020 Nominated by:LabourPartyElected: By list Contacts Room: I-124 <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 5__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332271014,\"end\":1779332273192}},\"id\":\"prt_e4877cba0001Q4IyuirZcrHy2h\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e4877c13b001GSowLwqwS6zgf3\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332273199,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4877d42a001Jht014kae7V9qO\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877c13b001GSowLwqwS6zgf3\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":5348,\"input\":5088,\"output\":260,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.019164}}\n{\"type\":\"step_start\",\"timestamp\":1779332275108,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4877dba3001BdblKhIYRnvivk\",\"messageID\":\"msg_e4877d42e001DfIN9jqCbV4OrW\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332275998,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"f3fa0aaf-9a2c-4897-a135-54aabadcb4a1\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://lt.wikipedia.org/wiki/Vigilijus_Jukna\"},\"output\":\"URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\\nFinal URL: https://lt.wikipedia.org/wiki/Vigilijus_Jukna\\nTitle: Vigilijus Jukna – Vikipedija\\nBytes read: 71654\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nPereiti prie turinio\\nPagrindinis meniu\\nPagrindinis meniu\\nmove to sidebar\\npaslėpti\\nNaršymas\\nPagrindinis puslapis\\n[link: https://lt.wikipedia.org/wiki/Pagrindinis_puslapis]\\nBendruomenės puslapis\\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Bendruomen%C4%97]\\nForumas\\n[link: https://lt.wikipedia.org/wiki/Vikipedija:Forumas]\\nNaujausi keitimai\\n[link: https://lt.wikipedia.org/wiki/Specialus:Naujausi_keitimai]\\nAtsitiktinis straipsnis\\n[link: https://lt.wikipedia.org/wiki/Specialus:Atsitiktinis_puslapis]\\nSpecialieji puslapiai\\n[link: https://lt.wikipedia.org/wiki/Specialus:Specialieji_puslapiai]\\nPagalba\\n[link: https://lt.wikipedia.org/wiki/Pagalba:Turinys]\\nPaieška\\n[link: https://lt.wikipedia.org/wiki/Specialus:Paie%C5%A1ka]\\nPaieška\\nIšvaizda\\nParama\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=lt.wikipedia.org&uselang=lt]\\nSukurti paskyrą\\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Sukurti_paskyr%C4%85&returnto=Vigilijus+Jukna]\\nPrisijungti\\n[link: https://lt.wikipedia.org/w/index.php?title=Specialus:Prisijungimas&returnto=Vigilijus+Jukna]\\nAsmeniniai įrankiai\\nParama\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332275110,\"end\":1779332275997}},\"id\":\"prt_e4877dba4001XzCVqgrexYiLFH\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e4877d42e001DfIN9jqCbV4OrW\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332277604,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"f8e245e0-47e7-4013-90c5-e59b378d93bb\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903\"},\"output\":\"URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903\\nFinal URL: https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903\\nTitle: (unavailable)\\nBytes read: 0\\nCache: MISS\\n\\nBlocked fetch detected.\\nReason: http_403_bot_marker (status=403)\\nMarkers: attention required, captcha, cloudflare, blocked\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332275113,\"end\":1779332277603}},\"id\":\"prt_e4877dba7002Ze1sTVJ8R37JVN\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e4877d42e001DfIN9jqCbV4OrW\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332277609,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4877e564001uOBwQs7P6119Bu\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877d42e001DfIN9jqCbV4OrW\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":6072,\"input\":5828,\"output\":244,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.021144}}\n{\"type\":\"step_start\",\"timestamp\":1779332278812,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4877ea1b001clrDcGC7RA1tWs\",\"messageID\":\"msg_e4877e567001qD4jaRm5TchGJT\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332281216,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"10f59b24-ea42-47ac-9cc5-a54bffbcea89\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna biography education occupation birth\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Born on July 23, 1968,VigilijusJuknais 57 years old. Zodiac sign is Leo. Life path number is 9. AnalyzeVigilijusJuknabirthchart and kundli. <\/CONTENT> <URL> https://www.ask-oracle.com/birth-chart/vigilijus-jukna <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Advisor to the Prime Minister on agricultural issues · Experience: Vytautas Magnus University Agriculture Academy ·Education: Lithuanian University of Health Sciences · Location: Lithuania · 47 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-81602663 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Seimas 2020-2024 Member of the Seimas from 11/13/2020 till 11/14/2024 Nominated by: Labour Party Elected: By list Position |Biography <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=40556&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> VigilijusJuknaPartinė ir politinė veikla Nuo 2008 Darbo partijos narys, nuo 2018 Darbo partijos vicepirmininkas. 2012-14 Lietuvos Respublikos žemės ūkio ministras. 2020-24 Lietuvos Respublikos Seimo ir jo Darbo partijos frakcijos narys. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> VigilijusJuknaan Member of the Lithuanian Parliament,birthplace is Kaunas Lithuania,date ofbirthOctober 31 1968,age 54,sign of the zodiac Scorpio,Spouse Ri <\/CONTENT> <URL> https://www.xwhos.com/person/vigilijus_jukna-whois.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> BiographyVigilijusJukna, né le 31 octobre 1968 à Kaunas, alors en Union soviétique, est un homme politique lituanien membre du Parti du travail (DP). Il est ministre de l'Agriculture entre 2012 et 2014. <\/CONTENT> <URL> https://peoplepill.com/i/vigilijus-jukna <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> The aim of this study was to identify the influence of cattle breed, age, live weight, carcass weight, and yield on beef carcass conformation class.The electronic databases from \\\"Meat master ... <\/CONTENT> <URL> https://www.researchgate.net/profile/Vigilijus-Jukna-2 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Vigilijus1 reference based on heuristic inferred from person's full name date ofbirth23 July 1968 0 references place ofbirthKaunas 1 reference languages spoken, written or signed Lithuanian 1 referenceoccupationpolitician 0 references university teacher 1 reference position held Minister of Agriculture start time 13 December 2012 end ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Preferred nameJukna,VigilijusTitle Biomedicinos mokslų daktaras / Doctor of Biomedicine (1996) Profesorius / Professor (2014) Status Darbuotojas / Employee Official NameJukna,VigilijusDepartment <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications?f.affiliation=Agronomijos+fakultetas+%2F+Faculty+of+Agronomy%2Cequals&spc.page=1&f.author=bcac6ebd-8655-4125-8114-651395877a8a%2Cauthority&f.author=4164ee58-f99c-4be1-be40-ee0001235a2d%2Cauthority <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332278815,\"end\":1779332281215}},\"id\":\"prt_e4877ea1c002LFjcx72neBwilj\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e4877e567001qD4jaRm5TchGJT\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332281220,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4877f380001pA04IuziS12iNg\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877e567001qD4jaRm5TchGJT\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":6794,\"input\":6706,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.021438}}\n{\"type\":\"step_start\",\"timestamp\":1779332282296,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4877f7b6001xCLNjVFhV20UVU\",\"messageID\":\"msg_e4877f383001YNIQW4V361g7aK\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332285073,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"d9c1ee8d-7ba7-4983-9599-6d73c7fe5d35\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.vle.lt/straipsnis/vigilijus-jukna/\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"tls_error\\\",\\\"retryable\\\":true,\\\"url\\\":\\\"https://www.vle.lt/straipsnis/vigilijus-jukna/\\\",\\\"final_url\\\":null,\\\"status_code\\\":null,\\\"error\\\":\\\"Failed to perform, curl: (60) SSL certificate problem: unable to get local issuer certificate. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\\\",\\\"error_detail\\\":null,\\\"attempt\\\":2,\\\"attempts\\\":2}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332282298,\"end\":1779332285073}},\"id\":\"prt_e4877f7b8001eGv41fOiigQD2W\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e4877f383001YNIQW4V361g7aK\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332285078,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e48780292001sko7boT7rKjOCo\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877f383001YNIQW4V361g7aK\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":8176,\"input\":8078,\"output\":98,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.025704}}\n{\"type\":\"step_start\",\"timestamp\":1779332286387,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e487807b2001YHJK50MFTvJ05c\",\"messageID\":\"msg_e48780294001Msyfk8eLYcBbMk\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332288680,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"03fca87b-008d-4e53-ac26-248337042edc\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna education prior occupation class background\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Advisor to the Prime Minister on agricultural issues · Experience: Vytautas Magnus University Agriculture Academy ·Education: Lithuanian University of Health Sciences · Location: Lithuania · 47 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-81602663 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> VigilijusJuknaPartinė ir politinė veikla Nuo 2008 Darbo partijos narys, nuo 2018 Darbo partijos vicepirmininkas. 2012-14 Lietuvos Respublikos žemės ūkio ministras. 2020-24 Lietuvos Respublikos Seimo ir jo Darbo partijos frakcijos narys. <\/CONTENT> <URL> https://www.vle.lt/straipsnis/vigilijus-jukna <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Lapkričio 18 dieną Vytauto Didžiojo universiteto Žemės ūkio akademijos (VDU ŽŪA) kanclerio pareigas pradėjo eiti profesorius dr.VigilijusJukna. Pokalbyje su kadenciją pradėjusiu Akademijos kancleriu - apie ateities Akademijos prioritetus, stiprybės taškus, Lietuvos žemės ūkio galimybes ir kitas aktualijas. Jūsų programoje minimos penkios strateginės kryptys, kurios ... <\/CONTENT> <URL> https://zua.vdu.lt/vdu-zemes-ukio-akademijos-kancleris-prof-dr-vigilijus-jukna-susitelkusi-ir-atvira-bendruomene-raktas-i-akademijos-augima <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Contacts Room: I-124 Tel: +370 5 209 6634 E-mail:vigilijus.jukna@lrs.lt Personal Homepage Advisers and assistants Position <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Vigilijus1 reference based on heuristic inferred from person's full name date of birth 23 July 1968 0 references place of birth Kaunas 1 reference languages spoken, written or signed Lithuanian 1 referenceoccupationpolitician 0 references university teacher 1 reference position held Minister of Agriculture start time 13 December 2012 end ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q886884 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Seimo narysVigilijusJuknakviečia į konferenciją - diskusiją: „Apsirūpinimas maistu - nacionalinio saugumo prioritetas\\\" Seimo Darbo partijos frakcijos seniūno Vigilijaus Juknos pranešimas: „Vyriausybės krizių valdymo ypatumai: nė žingsnio be savivaldybių\\\" <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Committees of the Seimas 11/19/2020 Committee on Rural Affairs, Member <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&printVersion=1 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Parliament of the Republic of Lithuania <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DSpace-CRIS is a comprehensive, free and open-source Research Information Management System (CRIS/RIMS). It is based on DSpace, providing broader functionality and an expanded data model, relying on its large community. It is compliant with and supports key international standards, facilitating interoperability and data transfer. DSpace-CRIS enables secure, integrated and interoperable ... <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/vigilijus-jukna/full <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Preferred nameJukna,VigilijusTitle Biomedicinos mokslų daktaras / Doctor of Biomedicine (1996) Profesorius / Professor (2014) Status Darbuotojas / Employee Official NameJukna,VigilijusDepartment <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications?f.affiliation=Agronomijos+fakultetas+%2F+Faculty+of+Agronomy%2Cequals&spc.page=1&f.author=bcac6ebd-8655-4125-8114-651395877a8a%2Cauthority&f.author=4164ee58-f99c-4be1-be40-ee0001235a2d%2Cauthority <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332286390,\"end\":1779332288680}},\"id\":\"prt_e487807b3002NAkzXP3A8M3czl\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e48780294001Msyfk8eLYcBbMk\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332288685,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e487810a9001Pb2OL3GstXlSEi\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48780294001Msyfk8eLYcBbMk\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":8405,\"input\":8316,\"output\":89,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.026283}}\n{\"type\":\"step_start\",\"timestamp\":1779332289974,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e487815b50014ntlrsvS5hTbq9\",\"messageID\":\"msg_e487810ab001WyYdwp5lKm9R93\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332291415,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"23a9bae2-5d1a-418d-b8a7-af89b842f8ea\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna sexual orientation disability status\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Disabilitystatusbysexualorientation/gender identity and local authority district urban-rural classification in England. Point estimates derived from weighted OLS linear regression models with statistical adjustment forsexualorientationor gender identity response-level age, sex, and ethnicity, region, and socioeconomic deprivation. <\/CONTENT> <URL> https://pmc.ncbi.nlm.nih.gov/articles/PMC11060336 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> What are human rights? us, such as age,disability, healthstatus,sexualorientationor gender identity. These rights, whether they are civil and political rights (such as the right to life, equality before the law and freedom of expression) or economic, social and cultural rights (such as the rights to work, social s <\/CONTENT> <URL> https://www.ohchr.org/Documents/Issues/Discrimination/LGBT/FactSheets/unfe-11-UN_Fact_Sheets_GenderIdentity_English.pdf <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Contacts Room: I-124 Tel: +370 5 209 6634 E-mail:vigilijus.jukna@lrs.lt Personal Homepage Advisers and assistants Position <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Seimo narė nuo 2020-11-13 iki 2022-11-14 <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=15&p_asm_id=73903&p_kade_id=9 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Seimo narysVigilijusJuknakviečia į konferenciją - diskusiją: „Apsirūpinimas maistu - nacionalinio saugumo prioritetas\\\" Seimo Darbo partijos frakcijos seniūno Vigilijaus Juknos pranešimas: „Vyriausybės krizių valdymo ypatumai: nė žingsnio be savivaldybių\\\" <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=1&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Committees of the Seimas 11/19/2020 Committee on Rural Affairs, Member <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=38249&p_k=2&p_a=498&p_asm_id=73903&printVersion=1 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Parliament of the Republic of Lithuania <\/CONTENT> <URL> https://www.lrs.lt/sip/portal.show?p_r=35299&p_k=2&p_a=498&p_asm_id=73903 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> DSpace-CRIS is a comprehensive, free and open-source Research Information Management System (CRIS/RIMS). It is based on DSpace, providing broader functionality and an expanded data model, relying on its large community. It is compliant with and supports key international standards, facilitating interoperability and data transfer. DSpace-CRIS enables secure, integrated and interoperable ... <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/vigilijus-jukna/full <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> After it emerged that an organisation run byVigilijusJukna, the Prime Minister's public affairs advisor, had allegedly organised fictitious training sessions for farmers and thereby misappropriated hundreds of thousands of euros in EU funds, Prime Minister Inga Ruginienė decided to part ways with this member of her team. <\/CONTENT> <URL> https://www.lrytas.lt/english/politics/2026/05/13/news/following-the-scandalous-revelations-in-a-journalistic-investigation-ruginiene-parts-ways-with-consultant-jukna-42406094 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Lithuania's Justice Ministry has begun appealing court rulings mandating it to register same-sex partnerships, with lawy... <\/CONTENT> <URL> https://www.lrt.lt/en/news-in-english/19/2925306/despite-favourable-court-rulings-same-sex-couples-face-new-roadblocks-in-lithuania <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332289978,\"end\":1779332291414}},\"id\":\"prt_e487815b7001ohXQZqLJcXUP07\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e487810ab001WyYdwp5lKm9R93\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332291419,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e48781b57001Xzpnq6cS3oG5sq\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e487810ab001WyYdwp5lKm9R93\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":9993,\"input\":9905,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.031035}}\n{\"type\":\"step_start\",\"timestamp\":1779332293125,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e48782204001K7Vk6sGlQsTnRV\",\"messageID\":\"msg_e48781b59001X3RAkRnk41JCSb\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332299134,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"dea1140b-1ae9-412a-a939-1453921acf8f\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna education details Lithuanian Veterinary Academy\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> VigilijusJukna(g. 1968 m. spalio 31 d. Kaune) - zooinžinierius, biomedicinos mokslų daktaras, profesorius. <\/CONTENT> <URL> https://lt.wikipedia.org/wiki/Vigilijus_Jukna <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> VigilijusJukna,C Jukna,Nijolė Peciulaitienė,E Meskinytė Kausilienė mag（2014） 引用23浏览0引用 23 0 Amounts of essential and non-essential amino acids and the ratio in Lithuania bred cattle meat V. Jukna,C. Jukna,E. Meskinytė-Kausilienė <\/CONTENT> <URL> https://www.aminer.cn/profile/vigilijus-jukna/53f44a75dabfaee1c0afd84c <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> proffesor atLithuanianUniversity of Health Sciences,VeterinaryAcademy· Experience:LithuanianUniversity of Health Sciences,VeterinaryAcademy· Location: Lithuania · 20 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-02416326 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Advisor to the Prime Minister on agricultural issues · Experience: Vytautas Magnus University AgricultureAcademy·Education:LithuanianUniversity of Health Sciences · Location: Lithuania · 47 connections on LinkedIn. ViewVigilijusJukna'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://lt.linkedin.com/in/vigilijus-jukna-81602663 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> The LSMUVeterinaryAcademyis the only one in Lithuania that trains qualified veterinarians whose degrees are recognised throughout Europe. 2010 Following the merger of Kaunas University of Medicine and theLithuanianVeterinaryAcademy, theacademybecame an equally valuedAcademyat theLithuanianUniversity of Health Sciences. <\/CONTENT> <URL> https://lsmu.lt/en/about-lsmu/structure/veterinary-practice <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> FiftyLithuanianBlack & White andLithuanianRed bulls were slaughtered. EC of muscular longissimus dorsi and muscular semimembranosus at 45, 60, 90, 120, 150 minutes and again at 1, 2 and 4 days... <\/CONTENT> <URL> https://www.researchgate.net/profile/Vigilijus-Jukna-2 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Gyvūnų produkcijos tyrimų ir inovac. c. / Animal Production Research and Innovation Center 2024-12-02 Emailvigilijus.jukna@vdu.lt Scopus Author ID 12141987600 Researcher ID FFJ-3537-2022 Legacy ID rp05059 Research Interests Media Vikipedija Affiliations <\/CONTENT> <URL> https://www.vdu.lt/cris/entities/person/4164ee58-f99c-4be1-be40-ee0001235a2d/publications?f.author=1d211703-6e40-49b1-9a3f-4a20d3edd6f9%2Cauthority&spc.page=1&view=grid&f.rights=open+access%2Cequals&f.area=Veterinarija+%2F+Veterinary+%28A002%29%2Cequals&f.subject=SGK1%2Cequals <\/URL> __END_OF_SOURCE 7__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332293127,\"end\":1779332299133}},\"id\":\"prt_e48782205001CA72477c3WuNgR\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e48781b59001X3RAkRnk41JCSb\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332299140,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4878397e001QG20nOdUj87tj1\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48781b59001X3RAkRnk41JCSb\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":11371,\"input\":11282,\"output\":89,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.035181}}\n{\"type\":\"step_start\",\"timestamp\":1779332300351,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e48783e3e001NHlf0azaTu1HgG\",\"messageID\":\"msg_e487839820016vk0nG6HR4jmSD\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332300356,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"fe90661a-8cc2-45d5-b0a8-029d3d04f408\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Vigilijus Jukna VRK biografija 2020\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 0, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Vigilijus Jukna VRK biografija 2020\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"vigilijus jukna vrk biografija 2020\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332300353,\"end\":1779332300355}},\"id\":\"prt_e48783e3f0018lVKbi9WXkbdWt\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"messageID\":\"msg_e487839820016vk0nG6HR4jmSD\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332300360,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e48783e44001YhlN514NCfbgB3\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e487839820016vk0nG6HR4jmSD\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-finish\",\"tokens\":{\"total\":12480,\"input\":12387,\"output\":93,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.038556}}\n{\"type\":\"step_start\",\"timestamp\":1779332309343,\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"part\":{\"id\":\"prt_e4878615e001xHnvVu9Vee8Bd1\",\"messageID\":\"msg_e48783e47001OF9XwMxbnipYPD\",\"sessionID\":\"ses_1b7883f3effeTvXajv3FwJB5Qt\",\"type\":\"step-start\"}}\n"
+}

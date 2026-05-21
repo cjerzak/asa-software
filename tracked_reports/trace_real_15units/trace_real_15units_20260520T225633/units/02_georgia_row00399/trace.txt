@@ -1,0 +1,606 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779332267153,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877bc90001jjzZ7bPqXWy9hl",
+        "messageID": "msg_e4877b18b001G8MojdbmP19GrD",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332269182,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "ae8e61a3-7eba-4e32-916a-d25eda5f7b22",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mariam Lashkhi Georgia politician biography Georgian Dream"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is aGeorgianpolitician. Since 2020, she has been a member of the 10th convocation of the Parliament ofGeorgia, for theGeorgianDreampolitical party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> GeorgianDream- DemocraticGeorgiaalso includedMariamLashkhi, Deputy Chairman of theGeorgianInnovation and Technology Agency, in the platoon for the 2020 parliamentary elections. The political union named her 19th. \"Mariamhas successful experience working in the private sector, international organizations and public administration. <\/CONTENT> <URL> https://cbw.ge/economy/gita-deputy-chairman-mariam-lashkhi-is-in-the-platoon-of-georgian-dream <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariamLashkhiis a prominent member ofGeorgia'srulingGeorgianDreamparty and a rising voice in the country's political landscape. Known for her firm stance on national sovereignty and democratic accountability,Lashkhibrings a background in international development and economic policy to her legislative work. She was recently appointed as Chair of the Parliament's Education ... <\/CONTENT> <URL> https://eagleeyeexplore.com/interview-with-georgia-dream-mp-mariam-lashkhi-georgia-will-not-kneel-to-the-global-war-party <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Interview withGeorgiaDreamMPMariamLashkhi:Georgiadoes not trade in dignity (2nd part)Georgia'scommitment to European integration is unwavering—but not at the cost of giving up its sovereignty. TheGeorgianDreamenvisionsGeorgiaas a sovereign bridge between civilizations—not as a satellite or a battlefield. <\/CONTENT> <URL> https://eagleeyeexplore.com/interview-with-georgia-dream-mp-mariam-lashkhi-georgia-does-not-trade-in-dignity-2nd-part <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> GeorgianDream-DemocraticGeorgiaGeorgetown University and Charles University, Certificate for Political and Economic Affairs 2011 1. 2020 - Business and Technology University - Doctoral Program Major: Digital Economy PhD Candidate <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DeputyGeorgianDreamParliament ofGeorgiaGE - 0118 - TbilisiGeorgiaWorking language: English Declarations of interests: 2021 <\/CONTENT> <URL> https://pace.coe.int/members/8445/lashkhi <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MariamLashkhiMember of Parliament ofGeorgia| Innovation & Technology Leader | Women's Rights AdvocateMariamLashkhiis a Member of Parliament ofGeorgia(GeorgianDream, XI convocation), serving as Chairperson of the Education, Science and Youth Affairs Committee and a member of the Sector Economy and Economic Policy Committee. <\/CONTENT> <URL> https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MariamLashkhiis a prominentGeorgianpoliticianand academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 8__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332267160,
+            "end": 1779332269181
+          }
+        },
+        "id": "prt_e4877bc91001v5uCMCySgZqAlK",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e4877b18b001G8MojdbmP19GrD"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332269190,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877c47f001ULFKn9XKD7RpGU",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877b18b001G8MojdbmP19GrD",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5301,
+          "input": 5090,
+          "output": 211,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0184
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332272204,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877d04a001kwWH0jPDIMGcHT",
+        "messageID": "msg_e4877c4840014ZtRka1DLXY2QU",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332274066,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "40426b4b-50e1-4967-9610-7392429be780",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://parliament.ge/en/parliament-members/7112/biography"
+          },
+          "output": "URL: https://parliament.ge/en/parliament-members/7112/biography\nFinal URL: https://parliament.ge/en/parliament-members/7112/biography\nTitle: Mariam Lashkhi - Parliament of Georgia\nBytes read: 164206\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nUseful Links\n[link: https://parliament.ge/en/useful-links]\nParliament\n[link: https://parliament.ge/en/parliament]\nPlenary Sessions\n[link: https://parliament.ge/en/parliament/plenary-sessions]\nBureau\n[link: https://parliament.ge/en/parliament/bureau]\nCommittees\n[link: https://parliament.ge/en/parliament/committees]\nFactions\n[link: https://parliament.ge/en/parliament/factions]\nPolitical Groups\n[link: https://parliament.ge/en/parliament/political-groups]\nMajority\n[link: https://parliament.ge/en/parliament/majority]\nParliamentary Opposition\n[link: https://parliament.ge/en/parliament/parliamentary-opposition]\nMembers of the Parliament without the faction\n[link: https://parliament.ge/en/parliament/deputies-without-faction]\nCommissions, Councils\n[link: https://parliament.ge/en/parliament/commissions]\nParliamentary Diplomacy\n[link: https://parliament.ge/en/parliament/parliamentary-diplomacy]\nStaff\n[link: https://parliament.ge/en/parliament/staff/structure]\nTraining Center\n[link: https://parliament.ge/en/parliament/staff/training-center/about]\nParliament Members\n[link: https://parliament.ge/en/parliament-members]\nLegislation\n[link: https://parliament.ge/en/legislation/reglament]\nMedia\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332272206,
+            "end": 1779332274066
+          }
+        },
+        "id": "prt_e4877d04c001VDvCIhqvWmnObe",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e4877c4840014ZtRka1DLXY2QU"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332274071,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877d793001OUfzCEBokAWzwQ",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877c4840014ZtRka1DLXY2QU",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6562,
+          "input": 6148,
+          "output": 414,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0247
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332275285,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877dc54001Ptp0fuwSPc7WZO",
+        "messageID": "msg_e4877d796001kXhlwDaf7eqx8I",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332276478,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "ed00b006-39ce-43a2-964d-3d88d9cc5515",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml"
+          },
+          "output": "URL: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml\nFinal URL: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml\nTitle: UNSD — 10th UNSD Global Forum on Gender Statistics\nBytes read: 20941\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nUnited Nations\n[link: http://www.un.org/]\nDepartment of Economic and Social Affairs\n[link: https://www.un.org/development/desa/en]\nStatistics Division\n[link: http://unstats.un.org/unsd/]\nHome\nAbout\nProgramme\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/programme/]\nSpeakers\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/speakers/]\nMedia Gallery\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/media-gallery]\nPast Forums\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/past-forums/]\nBiography\nDriving Change with Gender Statistics: A Path to Equality\nMariam Lashkhi\nMember of Parliament of Georgia | Innovation & Technology Leader | Women's Rights Advocate\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332275287,
+            "end": 1779332276477
+          }
+        },
+        "id": "prt_e4877dc55002XGUJ3AEzgXnmKQ",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e4877d796001kXhlwDaf7eqx8I"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332276483,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877e0ff001ljMew4bD0a78A1",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877d796001kXhlwDaf7eqx8I",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6840,
+          "input": 6720,
+          "output": 120,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.022
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332277687,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877e5b6001HyX6dD8aA4HQ7y",
+        "messageID": "msg_e4877e102001ASUvzN4WTVPsXn",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332279121,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "b1e8733b-565d-4c4f-86fc-751b15846560",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mariam Lashkhi education biography details"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament of Georgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Strong operations professional graduated from Georgetown University. · Experience: World Youth Group ·Education: BTU • Business and Technology University · Location: Georgia · 500+ connections on LinkedIn. ViewMariamLashkhi'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-43230127 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariamLashkhiParticipated in an Event Dedicated to the Day of Family Purity Held Within the Framework of the Project \"Me, Family, State\"u2028 <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MPsMariamLashkhiMember of the Parliament by Party List Political Party Georgian Dream-Democratic Georgia Faction Faction \"The Georgian Dream\"BiographyActivity Voting results Declaration Contact <\/CONTENT> <URL> https://parl.leavingstone.club/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MariamLashkhiis a prominent Georgian politician and academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Ms.MariamLashkhiis a Deputy Chairperson at Georgia's Innovation and Technology Agency (GITA) with 13 years of working and managerial experience in both public and private sectors as well as in international financial institutions and civil society organizations. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-mariam-lashkhi-115 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MariamLashkhi(born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament of Georgia, for the Georgian Dream political party. [1] Thisbiographyof a living person relies largely or entirely on a single source. (January 2022) <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Mariam Lashkhi <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> BiographyActivity Voting results Declaration ContactEducationWorking experience State awards Honorary degree Academic degree Qualification courses Special titles Additional information News 29 Dec 2025 <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> MariamLashkhiMember of Parliament of Georgia | Innovation & Technology Leader | Women's Rights AdvocateMariamLashkhiis a Member of Parliament of Georgia (Georgian Dream, XI convocation), serving as Chairperson of theEducation, Science and Youth Affairs Committee and a member of the Sector Economy and Economic Policy Committee. <\/CONTENT> <URL> https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Full Member: Committee on Culture, Science,Educationand Media (from 27/01/2025 to 03/02/2025) Full Member: Committee on Social Affairs, Health and Sustainable Development (from 21/06/2021 to 22/01/2023) <\/CONTENT> <URL> https://pace.coe.int/en/members/8445 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332277690,
+            "end": 1779332279120
+          }
+        },
+        "id": "prt_e4877e5b7001YVY487QrF049oK",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e4877e102001ASUvzN4WTVPsXn"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332279125,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877eb51001L9sFGPPAvsCy5k",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877e102001ASUvzN4WTVPsXn",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7339,
+          "input": 7254,
+          "output": 85,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.023
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332280717,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877f18c001Qr2NV9foX5JLYl",
+        "messageID": "msg_e4877eb54001XR8AY5wts9HDPO",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332281381,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "70c445d8-2f0b-4227-8f9b-cab9bff12bf7",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://camcanetwork.com/members/ms-mariam-lashkhi-115"
+          },
+          "output": "URL: https://camcanetwork.com/members/ms-mariam-lashkhi-115\nFinal URL: https://camcanetwork.com/members/ms-mariam-lashkhi-115\nTitle: Ms. Mariam Lashkhi\nBytes read: 15424\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nSkip to main content\nAbout\nMembers\n[link: https://camcanetwork.com/members/]\nForums\n[link: https://camcanetwork.com/forums/]\nCamca Talking Magazine\n[link: https://camcanetwork.com/camca-magazine/]\nBlogs\n[link: https://camcanetwork.com/blogs/]\nProjects\n[link: https://camcanetwork.com/events/]\nLibrary\n[link: https://camcanetwork.com/library/]\nLogin\ncontact@camcanetwork.com\n[link: https://camcanetwork.com/cdn-cgi/l/email-protection#c9aaa6a7bda8aabdefeafffdf2aaa8a4aaa8a7acbdbea6bba2efeafdfff2aaa6a4]\nBack to Members\n[link: https://camcanetwork.com/members/]\nMs. Mariam Lashkhi\nTechnology\nDeputy Chairperson at Georgia’s Innovation and Technology Agency (GITA).\nGeorgia\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332280720,
+            "end": 1779332281380
+          }
+        },
+        "id": "prt_e4877f18e001AjHp66n018TYlw",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e4877eb54001XR8AY5wts9HDPO"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332281386,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877f425002KFLNfg2i3uw2NA",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877eb54001XR8AY5wts9HDPO",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8534,
+          "input": 8434,
+          "output": 100,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0268
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332282757,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877f984001EbJG8IW0Qyefdk",
+        "messageID": "msg_e4877f428001vxyvymVou2kCAA",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332284188,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "e923ac3e-1f60-4d82-ae6d-7cba07307652",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mariam Lashkhi education degree university"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament of Georgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Strong operations professional graduated from GeorgetownUniversity. · Experience: World Youth Group ·Education: BTU • Business and TechnologyUniversity· Location: Georgia · 500+ connections on LinkedIn. ViewMariamLashkhi'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-43230127 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> CEO at LL Co. Law Office · Experience: Georgian Manganese ·Education: CaucasusUniversity· Location: {:currentLocation} · 275 connections on LinkedIn. ViewMariamLashkhi'sprofile on ... <\/CONTENT> <URL> https://www.linkedin.com/in/mariam-lashkhi-b63002138 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Experience: Bank of Georgia ·Education: CaucasusUniversity· Location: Tbilisi · 500+ connections on LinkedIn. ViewMariamLashkhi'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-134185138 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MariamLashkhi, Chair of theEducation, Science and Youth Affairs Committee, participated in the graduation ceremony of the bachelor's program of Tbilisi State MedicalUniversity. <\/CONTENT> <URL> https://parliament.ge/en/media/news/mariam-lashkhma-sameditsino-universitetis-kursdamtavrebulta-gamosashveb-tseremoniashi-miigho-monatsileoba <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MariamLashkhiis a prominent Georgian politician and academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Ms.MariamLashkhiis a Deputy Chairperson at Georgia's Innovation and Technology Agency (GITA) with 13 years of working and managerial experience in both public and private sectors as well as in international financial institutions and civil society organizations. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-mariam-lashkhi-115 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MariamLashkhiAddressed Event Marking the 60th Anniversary of the Vladimir Komarov Tbilisi Physics and Mathematics Public School No. 199 View More <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> ‪Grigol RobakidzeUniversity‬ - ‪‪Cited by 217‬‬ <\/CONTENT> <URL> https://scholar.google.com/citations?user=Q4nq5PMAAAAJ&hl=en <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> MariamLashkhiis a Member of Parliament of Georgia (Georgian Dream, XI convocation), serving as Chairperson of theEducation, Science and Youth Affairs Committee and a member of the Sector Economy and Economic Policy Committee. <\/CONTENT> <URL> https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332282759,
+            "end": 1779332284188
+          }
+        },
+        "id": "prt_e4877f985001kyG9ix8tw78PO0",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e4877f428001vxyvymVou2kCAA"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332284193,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e4877ff1d001qZPTNiK5bENkyp",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877f428001vxyvymVou2kCAA",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8957,
+          "input": 8872,
+          "output": 85,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0279
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332285621,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e487804b4001oG5ycyQa08k3e7",
+        "messageID": "msg_e4877ff20001FWWEaRo1xT0RkK",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332287047,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "7bd64bd0-bc6d-4f41-974b-90ed6c1548b9",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mariam Lashkhi birth place Georgia"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament ofGeorgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Member of the Parliament ofGeorgia· Experienced Project Director with a demonstrated history of working in the government administration industry. Skilled in Negotiation, European Studies, International Relations, Market Research, and English. Strong operations professional graduated from Georgetown University. · Experience: World Youth Group · Education: BTU • Business and Technology ... <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-43230127 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Hereby I also would like to express the hope that the black swan of 2020 and 2021, Covid-19, will be over soon and we'll be able to work on other very important resolutions.Georgialooks on vaccination as a part of the economic recovery and expresses readiness and willingness as an... <\/CONTENT> <URL> https://pace.coe.int/members/8445/lashkhi <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MariamLashkhiand Davit Matikashvili Participated in an Event Dedicated to the Day of Family Purity Held at Tbilisi Public School No. 60u2028 16 May 2026 <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MariamLashkhiis a prominent Georgian politician and academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MariamLashkhi(born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament ofGeorgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Mariam Lashkhi <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MariamLashkhi(born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the Parliament ofGeorgiaof the 10th convocation by party list, election bloc: „Georgian Dream - DemocraticGeorgia\". <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Ms.MariamLashkhiis a Deputy Chairperson atGeorgia'sInnovation and Technology Agency (GITA) with 13 years of working and managerial experience in both public and private sectors as well as in international financial institutions and civil society organizations. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-mariam-lashkhi-115 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Georgia0 references name in native language მარიამ ლაშხი(Georgian) 0 references date ofbirth1 August 1988 1 reference occupation politician 1 reference position held Member of the Parliament ofGeorgiaparliamentary term 10th Convocation of the Parliament ofGeorgiaparliamentary group 1 reference 8 August 2022 subject ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q106692709 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> (2025-07) PersonMariamLashkhi(Female) Date ofbirth: 01 Aug 1988 Political affiliation No information available <\/CONTENT> <URL> https://data.ipu.org/parliament/GE/specialized-bodies/GE-LC-SB07 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332285623,
+            "end": 1779332287046
+          }
+        },
+        "id": "prt_e487804b50010GTXhEHnqFcEaZ",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e4877ff20001FWWEaRo1xT0RkK"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332287051,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e48780a47001UjiKC89X2ozF08",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877ff20001FWWEaRo1xT0RkK",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10088,
+          "input": 10003,
+          "output": 85,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0313
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332288734,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e487810dc001QzJnxOqRlNdgmG",
+        "messageID": "msg_e48780a4a001nSL5CPpbFNjbrd",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332303744,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "df645da4-f826-47dc-86cb-ffd370423920",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mariam Lashkhi birth place \"Tbilisi\""
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"Mariam Lashkhi birth place \\\"Tbilisi\\\"\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"mariam lashkhi birth place \\\\\\\"tbilisi\\\\\\\"\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332288736,
+            "end": 1779332303743
+          }
+        },
+        "id": "prt_e487810de001o5sTdwJzkrpUx0",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e48780a4a001nSL5CPpbFNjbrd"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332303750,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e48784b81001IY9wdxpiSxf74S",
+        "reason": "tool-calls",
+        "messageID": "msg_e48780a4a001nSL5CPpbFNjbrd",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11277,
+          "input": 11189,
+          "output": 88,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0349
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332305116,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e487850db001tYKAJ6Dc2ttuRj",
+        "messageID": "msg_e48784b84001tGUprUHkQXpnsE",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332305121,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "498def54-05d2-49c1-8704-a394c867db19",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mariam Lashkhi \"born in\" Georgia"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Mariam Lashkhi \\\"born in\\\" Georgia\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"mariam lashkhi \\\\\\\"born in\\\\\\\" georgia\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332305118,
+            "end": 1779332305120
+          }
+        },
+        "id": "prt_e487850dc002MYYfFOL0ac2jY2",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "messageID": "msg_e48784b84001tGUprUHkQXpnsE"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332305125,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e487850e10011HP0I5jQtgOPJW",
+        "reason": "tool-calls",
+        "messageID": "msg_e48784b84001tGUprUHkQXpnsE",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11548,
+          "input": 11461,
+          "output": 87,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0357
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332316922,
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "id": "prt_e48787ef9001uS9QEosf0TbJuZ",
+        "messageID": "msg_e487850e40018uL7IkbKIiDqvz",
+        "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"PhD Candidate in Digital Economy at Business and Technology University (2020-present); Certificate for Political and Economic Affairs from Georgetown University and Charles University (2011)\",\n  \"prior_occupation\": \"Deputy Chairperson of Georgia’s Innovation and Technology Agency (GITA)\",\n  \"class_background\": \"Middle class/professional\",\n  \"birth_year\": \"1988\",\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"sources\": {\n    \"educational_attainment\": \"https://parliament.ge/en/parliament-members/7112/biography\",\n    \"prior_occupation\": \"https://cbw.ge/economy/gita-deputy-chairman-mariam-lashkhi-is-in-the-platoon-of-georgian-dream\",\n    \"birth_year\": \"https://en.wikipedia.org/wiki/Mariam_Lashkhi\",\n    \"birth_place\": \"Unknown\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\"\n  }\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b7884f36ffeoNHRuiLycXFMA5",
+  "opencode_export_final_text_chars": 907,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779332267153,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877bc90001jjzZ7bPqXWy9hl\",\"messageID\":\"msg_e4877b18b001G8MojdbmP19GrD\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332269182,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"ae8e61a3-7eba-4e32-916a-d25eda5f7b22\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mariam Lashkhi Georgia politician biography Georgian Dream\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is aGeorgianpolitician. Since 2020, she has been a member of the 10th convocation of the Parliament ofGeorgia, for theGeorgianDreampolitical party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> GeorgianDream- DemocraticGeorgiaalso includedMariamLashkhi, Deputy Chairman of theGeorgianInnovation and Technology Agency, in the platoon for the 2020 parliamentary elections. The political union named her 19th. \\\"Mariamhas successful experience working in the private sector, international organizations and public administration. <\/CONTENT> <URL> https://cbw.ge/economy/gita-deputy-chairman-mariam-lashkhi-is-in-the-platoon-of-georgian-dream <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariamLashkhiis a prominent member ofGeorgia'srulingGeorgianDreamparty and a rising voice in the country's political landscape. Known for her firm stance on national sovereignty and democratic accountability,Lashkhibrings a background in international development and economic policy to her legislative work. She was recently appointed as Chair of the Parliament's Education ... <\/CONTENT> <URL> https://eagleeyeexplore.com/interview-with-georgia-dream-mp-mariam-lashkhi-georgia-will-not-kneel-to-the-global-war-party <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Interview withGeorgiaDreamMPMariamLashkhi:Georgiadoes not trade in dignity (2nd part)Georgia'scommitment to European integration is unwavering—but not at the cost of giving up its sovereignty. TheGeorgianDreamenvisionsGeorgiaas a sovereign bridge between civilizations—not as a satellite or a battlefield. <\/CONTENT> <URL> https://eagleeyeexplore.com/interview-with-georgia-dream-mp-mariam-lashkhi-georgia-does-not-trade-in-dignity-2nd-part <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> GeorgianDream-DemocraticGeorgiaGeorgetown University and Charles University, Certificate for Political and Economic Affairs 2011 1. 2020 - Business and Technology University - Doctoral Program Major: Digital Economy PhD Candidate <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DeputyGeorgianDreamParliament ofGeorgiaGE - 0118 - TbilisiGeorgiaWorking language: English Declarations of interests: 2021 <\/CONTENT> <URL> https://pace.coe.int/members/8445/lashkhi <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MariamLashkhiMember of Parliament ofGeorgia| Innovation & Technology Leader | Women's Rights AdvocateMariamLashkhiis a Member of Parliament ofGeorgia(GeorgianDream, XI convocation), serving as Chairperson of the Education, Science and Youth Affairs Committee and a member of the Sector Economy and Economic Policy Committee. <\/CONTENT> <URL> https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MariamLashkhiis a prominentGeorgianpoliticianand academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 8__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332267160,\"end\":1779332269181}},\"id\":\"prt_e4877bc91001v5uCMCySgZqAlK\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e4877b18b001G8MojdbmP19GrD\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332269190,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877c47f001ULFKn9XKD7RpGU\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877b18b001G8MojdbmP19GrD\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":5301,\"input\":5090,\"output\":211,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.018435}}\n{\"type\":\"step_start\",\"timestamp\":1779332272204,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877d04a001kwWH0jPDIMGcHT\",\"messageID\":\"msg_e4877c4840014ZtRka1DLXY2QU\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332274066,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"40426b4b-50e1-4967-9610-7392429be780\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://parliament.ge/en/parliament-members/7112/biography\"},\"output\":\"URL: https://parliament.ge/en/parliament-members/7112/biography\\nFinal URL: https://parliament.ge/en/parliament-members/7112/biography\\nTitle: Mariam Lashkhi - Parliament of Georgia\\nBytes read: 164206\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nUseful Links\\n[link: https://parliament.ge/en/useful-links]\\nParliament\\n[link: https://parliament.ge/en/parliament]\\nPlenary Sessions\\n[link: https://parliament.ge/en/parliament/plenary-sessions]\\nBureau\\n[link: https://parliament.ge/en/parliament/bureau]\\nCommittees\\n[link: https://parliament.ge/en/parliament/committees]\\nFactions\\n[link: https://parliament.ge/en/parliament/factions]\\nPolitical Groups\\n[link: https://parliament.ge/en/parliament/political-groups]\\nMajority\\n[link: https://parliament.ge/en/parliament/majority]\\nParliamentary Opposition\\n[link: https://parliament.ge/en/parliament/parliamentary-opposition]\\nMembers of the Parliament without the faction\\n[link: https://parliament.ge/en/parliament/deputies-without-faction]\\nCommissions, Councils\\n[link: https://parliament.ge/en/parliament/commissions]\\nParliamentary Diplomacy\\n[link: https://parliament.ge/en/parliament/parliamentary-diplomacy]\\nStaff\\n[link: https://parliament.ge/en/parliament/staff/structure]\\nTraining Center\\n[link: https://parliament.ge/en/parliament/staff/training-center/about]\\nParliament Members\\n[link: https://parliament.ge/en/parliament-members]\\nLegislation\\n[link: https://parliament.ge/en/legislation/reglament]\\nMedia\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332272206,\"end\":1779332274066}},\"id\":\"prt_e4877d04c001VDvCIhqvWmnObe\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e4877c4840014ZtRka1DLXY2QU\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332274071,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877d793001OUfzCEBokAWzwQ\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877c4840014ZtRka1DLXY2QU\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":6562,\"input\":6148,\"output\":414,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.024654}}\n{\"type\":\"step_start\",\"timestamp\":1779332275285,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877dc54001Ptp0fuwSPc7WZO\",\"messageID\":\"msg_e4877d796001kXhlwDaf7eqx8I\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332276478,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"ed00b006-39ce-43a2-964d-3d88d9cc5515\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml\"},\"output\":\"URL: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml\\nFinal URL: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml\\nTitle: UNSD — 10th UNSD Global Forum on Gender Statistics\\nBytes read: 20941\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nUnited Nations\\n[link: http://www.un.org/]\\nDepartment of Economic and Social Affairs\\n[link: https://www.un.org/development/desa/en]\\nStatistics Division\\n[link: http://unstats.un.org/unsd/]\\nHome\\nAbout\\nProgramme\\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/programme/]\\nSpeakers\\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/speakers/]\\nMedia Gallery\\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/media-gallery]\\nPast Forums\\n[link: https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/past-forums/]\\nBiography\\nDriving Change with Gender Statistics: A Path to Equality\\nMariam Lashkhi\\nMember of Parliament of Georgia | Innovation & Technology Leader | Women's Rights Advocate\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332275287,\"end\":1779332276477}},\"id\":\"prt_e4877dc55002XGUJ3AEzgXnmKQ\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e4877d796001kXhlwDaf7eqx8I\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332276483,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877e0ff001ljMew4bD0a78A1\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877d796001kXhlwDaf7eqx8I\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":6840,\"input\":6720,\"output\":120,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.02196}}\n{\"type\":\"step_start\",\"timestamp\":1779332277687,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877e5b6001HyX6dD8aA4HQ7y\",\"messageID\":\"msg_e4877e102001ASUvzN4WTVPsXn\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332279121,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"b1e8733b-565d-4c4f-86fc-751b15846560\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mariam Lashkhi education biography details\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament of Georgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Strong operations professional graduated from Georgetown University. · Experience: World Youth Group ·Education: BTU • Business and Technology University · Location: Georgia · 500+ connections on LinkedIn. ViewMariamLashkhi'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-43230127 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MariamLashkhiParticipated in an Event Dedicated to the Day of Family Purity Held Within the Framework of the Project \\\"Me, Family, State\\\"u2028 <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MPsMariamLashkhiMember of the Parliament by Party List Political Party Georgian Dream-Democratic Georgia Faction Faction \\\"The Georgian Dream\\\"BiographyActivity Voting results Declaration Contact <\/CONTENT> <URL> https://parl.leavingstone.club/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MariamLashkhiis a prominent Georgian politician and academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Ms.MariamLashkhiis a Deputy Chairperson at Georgia's Innovation and Technology Agency (GITA) with 13 years of working and managerial experience in both public and private sectors as well as in international financial institutions and civil society organizations. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-mariam-lashkhi-115 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MariamLashkhi(born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament of Georgia, for the Georgian Dream political party. [1] Thisbiographyof a living person relies largely or entirely on a single source. (January 2022) <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Mariam Lashkhi <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> BiographyActivity Voting results Declaration ContactEducationWorking experience State awards Honorary degree Academic degree Qualification courses Special titles Additional information News 29 Dec 2025 <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> MariamLashkhiMember of Parliament of Georgia | Innovation & Technology Leader | Women's Rights AdvocateMariamLashkhiis a Member of Parliament of Georgia (Georgian Dream, XI convocation), serving as Chairperson of theEducation, Science and Youth Affairs Committee and a member of the Sector Economy and Economic Policy Committee. <\/CONTENT> <URL> https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Full Member: Committee on Culture, Science,Educationand Media (from 27/01/2025 to 03/02/2025) Full Member: Committee on Social Affairs, Health and Sustainable Development (from 21/06/2021 to 22/01/2023) <\/CONTENT> <URL> https://pace.coe.int/en/members/8445 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332277690,\"end\":1779332279120}},\"id\":\"prt_e4877e5b7001YVY487QrF049oK\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e4877e102001ASUvzN4WTVPsXn\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332279125,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877eb51001L9sFGPPAvsCy5k\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877e102001ASUvzN4WTVPsXn\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":7339,\"input\":7254,\"output\":85,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.023037}}\n{\"type\":\"step_start\",\"timestamp\":1779332280717,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877f18c001Qr2NV9foX5JLYl\",\"messageID\":\"msg_e4877eb54001XR8AY5wts9HDPO\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332281381,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"70c445d8-2f0b-4227-8f9b-cab9bff12bf7\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://camcanetwork.com/members/ms-mariam-lashkhi-115\"},\"output\":\"URL: https://camcanetwork.com/members/ms-mariam-lashkhi-115\\nFinal URL: https://camcanetwork.com/members/ms-mariam-lashkhi-115\\nTitle: Ms. Mariam Lashkhi\\nBytes read: 15424\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nSkip to main content\\nAbout\\nMembers\\n[link: https://camcanetwork.com/members/]\\nForums\\n[link: https://camcanetwork.com/forums/]\\nCamca Talking Magazine\\n[link: https://camcanetwork.com/camca-magazine/]\\nBlogs\\n[link: https://camcanetwork.com/blogs/]\\nProjects\\n[link: https://camcanetwork.com/events/]\\nLibrary\\n[link: https://camcanetwork.com/library/]\\nLogin\\ncontact@camcanetwork.com\\n[link: https://camcanetwork.com/cdn-cgi/l/email-protection#c9aaa6a7bda8aabdefeafffdf2aaa8a4aaa8a7acbdbea6bba2efeafdfff2aaa6a4]\\nBack to Members\\n[link: https://camcanetwork.com/members/]\\nMs. Mariam Lashkhi\\nTechnology\\nDeputy Chairperson at Georgia’s Innovation and Technology Agency (GITA).\\nGeorgia\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332280720,\"end\":1779332281380}},\"id\":\"prt_e4877f18e001AjHp66n018TYlw\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e4877eb54001XR8AY5wts9HDPO\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332281386,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877f425002KFLNfg2i3uw2NA\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877eb54001XR8AY5wts9HDPO\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":8534,\"input\":8434,\"output\":100,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.026802}}\n{\"type\":\"step_start\",\"timestamp\":1779332282757,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877f984001EbJG8IW0Qyefdk\",\"messageID\":\"msg_e4877f428001vxyvymVou2kCAA\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332284188,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"e923ac3e-1f60-4d82-ae6d-7cba07307652\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mariam Lashkhi education degree university\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament of Georgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Strong operations professional graduated from GeorgetownUniversity. · Experience: World Youth Group ·Education: BTU • Business and TechnologyUniversity· Location: Georgia · 500+ connections on LinkedIn. ViewMariamLashkhi'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-43230127 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> CEO at LL Co. Law Office · Experience: Georgian Manganese ·Education: CaucasusUniversity· Location: {:currentLocation} · 275 connections on LinkedIn. ViewMariamLashkhi'sprofile on ... <\/CONTENT> <URL> https://www.linkedin.com/in/mariam-lashkhi-b63002138 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Experience: Bank of Georgia ·Education: CaucasusUniversity· Location: Tbilisi · 500+ connections on LinkedIn. ViewMariamLashkhi'sprofile on LinkedIn, a professional community of 1 billion members. <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-134185138 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MariamLashkhi, Chair of theEducation, Science and Youth Affairs Committee, participated in the graduation ceremony of the bachelor's program of Tbilisi State MedicalUniversity. <\/CONTENT> <URL> https://parliament.ge/en/media/news/mariam-lashkhma-sameditsino-universitetis-kursdamtavrebulta-gamosashveb-tseremoniashi-miigho-monatsileoba <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MariamLashkhiis a prominent Georgian politician and academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Ms.MariamLashkhiis a Deputy Chairperson at Georgia's Innovation and Technology Agency (GITA) with 13 years of working and managerial experience in both public and private sectors as well as in international financial institutions and civil society organizations. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-mariam-lashkhi-115 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MariamLashkhiAddressed Event Marking the 60th Anniversary of the Vladimir Komarov Tbilisi Physics and Mathematics Public School No. 199 View More <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> ‪Grigol RobakidzeUniversity‬ - ‪‪Cited by 217‬‬ <\/CONTENT> <URL> https://scholar.google.com/citations?user=Q4nq5PMAAAAJ&hl=en <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> MariamLashkhiis a Member of Parliament of Georgia (Georgian Dream, XI convocation), serving as Chairperson of theEducation, Science and Youth Affairs Committee and a member of the Sector Economy and Economic Policy Committee. <\/CONTENT> <URL> https://unstats.un.org/unsd/demographic-social/meetings/2025/genderstat-forum-10/bio/Mariam-Lashkhi.cshtml <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332282759,\"end\":1779332284188}},\"id\":\"prt_e4877f985001kyG9ix8tw78PO0\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e4877f428001vxyvymVou2kCAA\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332284193,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e4877ff1d001qZPTNiK5bENkyp\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877f428001vxyvymVou2kCAA\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":8957,\"input\":8872,\"output\":85,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.027891}}\n{\"type\":\"step_start\",\"timestamp\":1779332285621,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e487804b4001oG5ycyQa08k3e7\",\"messageID\":\"msg_e4877ff20001FWWEaRo1xT0RkK\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332287047,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"7bd64bd0-bc6d-4f41-974b-90ed6c1548b9\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mariam Lashkhi birth place Georgia\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MariamLashkhi(Georgian: მარიამ ლაშხი; born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament ofGeorgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Member of the Parliament ofGeorgia· Experienced Project Director with a demonstrated history of working in the government administration industry. Skilled in Negotiation, European Studies, International Relations, Market Research, and English. Strong operations professional graduated from Georgetown University. · Experience: World Youth Group · Education: BTU • Business and Technology ... <\/CONTENT> <URL> https://ge.linkedin.com/in/mariam-lashkhi-43230127 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Hereby I also would like to express the hope that the black swan of 2020 and 2021, Covid-19, will be over soon and we'll be able to work on other very important resolutions.Georgialooks on vaccination as a part of the economic recovery and expresses readiness and willingness as an... <\/CONTENT> <URL> https://pace.coe.int/members/8445/lashkhi <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MariamLashkhiand Davit Matikashvili Participated in an Event Dedicated to the Day of Family Purity Held at Tbilisi Public School No. 60u2028 16 May 2026 <\/CONTENT> <URL> https://parliament.ge/en/parliament-members/7112/biography <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MariamLashkhiis a prominent Georgian politician and academic with extensive experience in public administration, technology, and international relations. She currently serves as a Chief Delegate at the World Youth Group, a global network of young parliamentarians. 2 3 <\/CONTENT> <URL> https://me.sh/profile/mariam-lashkhi <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MariamLashkhi(born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the 10th convocation of the Parliament ofGeorgia, for the Georgian Dream political party. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Mariam Lashkhi <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> MariamLashkhi(born 1 August 1988) is a Georgian politician. Since 2020, she has been a member of the Parliament ofGeorgiaof the 10th convocation by party list, election bloc: „Georgian Dream - DemocraticGeorgia\\\". <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Mariam_Lashkhi <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Ms.MariamLashkhiis a Deputy Chairperson atGeorgia'sInnovation and Technology Agency (GITA) with 13 years of working and managerial experience in both public and private sectors as well as in international financial institutions and civil society organizations. <\/CONTENT> <URL> https://camcanetwork.com/members/ms-mariam-lashkhi-115 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Georgia0 references name in native language მარიამ ლაშხი(Georgian) 0 references date ofbirth1 August 1988 1 reference occupation politician 1 reference position held Member of the Parliament ofGeorgiaparliamentary term 10th Convocation of the Parliament ofGeorgiaparliamentary group 1 reference 8 August 2022 subject ... <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q106692709 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> (2025-07) PersonMariamLashkhi(Female) Date ofbirth: 01 Aug 1988 Political affiliation No information available <\/CONTENT> <URL> https://data.ipu.org/parliament/GE/specialized-bodies/GE-LC-SB07 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332285623,\"end\":1779332287046}},\"id\":\"prt_e487804b50010GTXhEHnqFcEaZ\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e4877ff20001FWWEaRo1xT0RkK\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332287051,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e48780a47001UjiKC89X2ozF08\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877ff20001FWWEaRo1xT0RkK\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":10088,\"input\":10003,\"output\":85,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.031284}}\n{\"type\":\"step_start\",\"timestamp\":1779332288734,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e487810dc001QzJnxOqRlNdgmG\",\"messageID\":\"msg_e48780a4a001nSL5CPpbFNjbrd\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332303744,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"df645da4-f826-47dc-86cb-ffd370423920\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mariam Lashkhi birth place \\\"Tbilisi\\\"\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"Mariam Lashkhi birth place \\\\\\\"Tbilisi\\\\\\\"\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"mariam lashkhi birth place \\\\\\\\\\\\\\\"tbilisi\\\\\\\\\\\\\\\"\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332288736,\"end\":1779332303743}},\"id\":\"prt_e487810de001o5sTdwJzkrpUx0\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e48780a4a001nSL5CPpbFNjbrd\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332303750,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e48784b81001IY9wdxpiSxf74S\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48780a4a001nSL5CPpbFNjbrd\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":11277,\"input\":11189,\"output\":88,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.034887}}\n{\"type\":\"step_start\",\"timestamp\":1779332305116,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e487850db001tYKAJ6Dc2ttuRj\",\"messageID\":\"msg_e48784b84001tGUprUHkQXpnsE\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332305121,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"498def54-05d2-49c1-8704-a394c867db19\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mariam Lashkhi \\\"born in\\\" Georgia\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Mariam Lashkhi \\\\\\\"born in\\\\\\\" Georgia\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"mariam lashkhi \\\\\\\\\\\\\\\"born in\\\\\\\\\\\\\\\" georgia\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332305118,\"end\":1779332305120}},\"id\":\"prt_e487850dc002MYYfFOL0ac2jY2\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"messageID\":\"msg_e48784b84001tGUprUHkQXpnsE\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332305125,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e487850e10011HP0I5jQtgOPJW\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48784b84001tGUprUHkQXpnsE\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-finish\",\"tokens\":{\"total\":11548,\"input\":11461,\"output\":87,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.035688}}\n{\"type\":\"step_start\",\"timestamp\":1779332316922,\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"part\":{\"id\":\"prt_e48787ef9001uS9QEosf0TbJuZ\",\"messageID\":\"msg_e487850e40018uL7IkbKIiDqvz\",\"sessionID\":\"ses_1b7884f36ffeoNHRuiLycXFMA5\",\"type\":\"step-start\"}}\n"
+}

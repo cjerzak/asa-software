@@ -1,0 +1,552 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779331885318,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e4871e905001MFkqzpZxbUK9tn",
+        "messageID": "msg_e4871dedb0011Wgrl6hsbXDYfE",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331892907,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "0a62a283-2419-479a-b91c-35c35095931a",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Panama biografía"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Con 59 votos a favor, tanto de su partido como algunos de oposición, Crispiano Adames fue escogido - esta mañana- para dirigir la Asamblea Nacional. Le acompañarán los vicepresidentes Kayra Harding yMiguelA.Fanovich. (más…) <\/CONTENT> <URL> https://ensegundos.com.pa/tag/miguel-fanovich <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MiguelFanovich: el diputado del pueblo chiricano La trayectoria política deMiguelFanovichse inicia en la gobernación de la provincia de Chiriquí, donde demostró su sensibilidad por los más necesitados que vieron en el una luz de esperanza.Su trabajo le ha garantizado dos diputaciones en forma sucesiva, quehoyle permiten continuar defendiendo los intereses de su provincia y su acción ... <\/CONTENT> <URL> https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Educación: Universidad dePanamá· Ubicación:Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MiguelFanovich.MiguelFanoviches electo segundo vicepresidente de la Asamblea NacionalPanamáJubilados y pensionados: Todo lo que debes saber sobre el pago del martes 19 de mayo <\/CONTENT> <URL> https://www.telemetro.com/miguel-fanovich-a2500497 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> El diputado del Movimiento Liberal Republicano (Molirena)MiguelFanovichfue elegido este domingo, 1 de julio, segundo vicepresidente de la Asamblea Nacional.Fanovich, que obtuvo 42 votos ... <\/CONTENT> <URL> https://www.prensa.com/redaccion_de_prensa-com/Miguel-Fanovich-segundo-vicepresidente-Asamblea_0_3423407656.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \"Voto Informado\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El diputadoMiguelÁngelFanovich, del Movimiento Liberal Republicano Nacionalista (Molirena), fue reelecto como segundo vicepresidente de la Asamblea Nacional, superando a Juan Diego Vásquez ... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/nacional/miguel-angel-fanovich-reelecto-segundo-vicepresidente-asamblea-IKLE472965 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichen 1 empresa y más de 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Al parecer la publicación en diferentes redes sociales de esta información encolerizaron al diputado chiricano,MiguelFanovich, quien por poco le da un ataque cardíaco en el período de incidencias, durante el pleno de la Asamblea Nacional de ayer miércoles. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Guía de políticosPanamáFormación Académica Corresponde a las tres experiencias de formación académica más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Experiencia Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta ... <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331885324,
+            "end": 1779331892905
+          }
+        },
+        "id": "prt_e4871e907001AZR91K13WqyW79",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e4871dedb0011Wgrl6hsbXDYfE"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331894427,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "e271aaa1-4c72-498d-84d9-a8f11874e92b",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Fanovich Asamblea Nacional de Panamá perfil"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> El diputado del Movimiento Liberal Republicano (Molirena)MiguelFanovichfue elegido este domingo, 1dejulio, segundo vicepresidentedelaAsambleaNacional.Fanovich, que obtuvo 42 votos ... <\/CONTENT> <URL> https://www.prensa.com/redaccion_de_prensa-com/Miguel-Fanovich-segundo-vicepresidente-Asamblea_0_3423407656.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Educación: UniversidaddePanamá· Ubicación:Panamá. Ver elperfildeMiguelFanovichen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El diputadoMiguelÁngelFanovich, del Movimiento Liberal Republicano Nacionalista (Molirena), fue reelecto como segundo vicepresidentedelaAsambleaNacional, superando a Juan Diego Vásquez ... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/nacional/miguel-angel-fanovich-reelecto-segundo-vicepresidente-asamblea-IKLE472965 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MiguelFanovich.MiguelFanoviches electo segundo vicepresidentedelaAsambleaNacionalPanamáJubilados y pensionados: Todo lo que debes saber sobre el pago del martes 19demayo <\/CONTENT> <URL> https://www.telemetro.com/miguel-fanovich-a2500497 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 󱚸 Former Diputado at AsambleNacionaldePanamá󱚸 Former Diputado atAsambleaLegislativa 󱜧 Studied at USMA 󱜧 Went to liceo 󱚷 Married <\/CONTENT> <URL> https://www.facebook.com/fanovichmiguel <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Con 59 votos a favor, tantodesu partido como algunosdeoposición, Crispiano Adames fue escogido - esta mañana- para dirigir laAsambleaNacional. Le acompañarán los vicepresidentes Kayra Harding yMiguelA.Fanovich. (más…) <\/CONTENT> <URL> https://ensegundos.com.pa/tag/miguel-fanovich <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 6,218 Followers, 5,696 Following, 1,621 Posts -MiguelFanovich(@fanovichmiguel) on Instagram: \"ExDiputadodela RepúblicadePanamá\" <\/CONTENT> <URL> https://www.instagram.com/fanovichmiguel <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Política Corresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en laAsamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listadodelos procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Al parecer la publicación en diferentes redes socialesdeesta información encolerizaron al diputado chiricano,MiguelFanovich, quien por poco le da un ataque cardíaco en el períododeincidencias, durante el plenodelaAsambleaNacionaldeayer miércoles. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331885327,
+            "end": 1779331894426
+          }
+        },
+        "id": "prt_e4871e90d001CaLa0OETRrAJ0g",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e4871dedb0011Wgrl6hsbXDYfE"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331894433,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e48720c9c0018KrxkY7Iwv5rOx",
+        "reason": "tool-calls",
+        "messageID": "msg_e4871dedb0011Wgrl6hsbXDYfE",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5327,
+          "input": 5082,
+          "output": 245,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0189
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331895693,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e4872118c001Y9ieOeBZurmGMw",
+        "messageID": "msg_e48720c9f001a7vXvGzwU6rd2G",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331897490,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "4d53bdbb-1c95-4894-bca7-0609d524bc74",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"tls_error\",\"retryable\":true,\"url\":\"https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino\",\"final_url\":null,\"status_code\":null,\"error\":\"Failed to perform, curl: (60) SSL certificate problem: certificate has expired. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\",\"error_detail\":null,\"attempt\":2,\"attempts\":2}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331895695,
+            "end": 1779331897489
+          }
+        },
+        "id": "prt_e4872118d001lagKKBuPuQbNDO",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e48720c9f001a7vXvGzwU6rd2G"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331897495,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e48721893001qHuHZgy1snvlNo",
+        "reason": "tool-calls",
+        "messageID": "msg_e48720c9f001a7vXvGzwU6rd2G",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7464,
+          "input": 7360,
+          "output": 104,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0236
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331898731,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e48721d67001W6BPvRQF7yMznm",
+        "messageID": "msg_e48721896001FE9cItzIVYQehH",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331900122,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "cd45f4cb-e170-489c-94e6-f01733c3e715",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Angel Fanovich Tijerino biografía educación ocupación"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Registro Judicial: El candidato no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para este candidato en los últimos 10 años. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y más de 15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El diputadoMiguelÁngelFanovich, del Movimiento Liberal Republicano Nacionalista (Molirena), fue reelecto como segundo vicepresidente de la Asamblea Nacional, superando a Juan Diego Vásquez ... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/nacional/miguel-angel-fanovich-reelecto-segundo-vicepresidente-asamblea-IKLE472965 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTejerino en 2 empresas y más de 2 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Educación: Universidad de Panamá · Ubicación: Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Miembros relacionados (6) Miembros relacionados (6) Activos (5) Inactivos (1)MIGUELANGELFANOVICHTIJERINO•MIEMBRO - PRESIDENTE Consultar GLORIELATIJERINODEFANOVICH•FUNDADOR - SECRETARIO - MIEMBRO ConsultarMIGUELANGELFANOVICHSUGASTE •FUNDADOR Consultar LIC.LUIS MARTIN RODRIGUEZ •AGENTE RESIDENTE Consultar Ver datos completos <\/CONTENT> <URL> https://www.panadata.net/organizaciones/4438087 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Número de registros utilizados en: 1 Forma preferida:FanovichT.,MiguelÁngelNotas <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \"Voto Informado\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La bancada del Partido Molirena informó este martes, 31 de mayo, que el diputado del circuito 4-1MiguelFanovichfue elegido para ser propuesto como segundo vicepresidente de la Asamblea Nacional (AN). Así lo reveló el colectivo en una circular firmada por el jefe de la bancada, el diputado Manolo ... <\/CONTENT> <URL> https://www.metrolibre.com/politica/fanovich-va-por-la-segunda-vicepresidencia-de-la-asamblea-EAML234761 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Los estudiantes fueron atendidos por el segundo vice presidente del legislativo,MiguelAngelFanovichTijerino, quien igualmente se reunió con estudiantes graduandos de Informática y Ciencias del Colegio Arnulfo Arias Madrid. Los jóvenes recibieron conversatorios sobre diversidad de temas del acontecer nacional. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/estudiantes-chiricanos-reciben-conversatorio-JJES24209673 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331898736,
+            "end": 1779331900121
+          }
+        },
+        "id": "prt_e48721d6b0018AfiEPf32ETKsO",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e48721896001FE9cItzIVYQehH"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331900129,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e487222db0018JycJiRhRBNtGL",
+        "reason": "tool-calls",
+        "messageID": "msg_e48721896001FE9cItzIVYQehH",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7696,
+          "input": 7607,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0242
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331901485,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e4872282c001mlwXVFQmfOun8k",
+        "messageID": "msg_e487222df001aUSXUdMBaq49n1",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331902956,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "9940e686-68fa-4cf5-8d90-6dffff530d0d",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Angel Fanovich Tijerino fecha de nacimiento lugar de nacimiento"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y másde15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Política Corresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listadodelos procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> It is the first time forMIGUELANGELFANOVICHTIJERINOto appear in the customs data of thePANAMA and at present, NBD Customs Data system has included 2 customs import and export records related to it, and among the trade partners ofMIGUELANGELFANOVICHTIJERINO,0 procurers and 2 suppliers have been included in NBD Trade Data. <\/CONTENT> <URL> https://en.nbd.ltd/trader/info/NBDX1H159752070 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Miembros relacionados (6) Miembros relacionados (6) Activos (5) Inactivos (1)MIGUELANGELFANOVICHTIJERINO•MIEMBRO - PRESIDENTE Consultar GLORIELATIJERINODEFANOVICH•FUNDADOR - SECRETARIO - MIEMBRO ConsultarMIGUELANGELFANOVICHSUGASTE •FUNDADOR Consultar LIC.LUIS MARTIN RODRIGUEZ •AGENTE RESIDENTE Consultar Ver datos completos <\/CONTENT> <URL> https://www.panadata.net/organizaciones/4438087 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Si la persona hubiera fallecido, en la mayoríadelos casos se informará:FechadeDefunción -LugardeDefunción. Contarás con la asistenciadeServicios Jurídicos Dax, proveedor del servicio, para todo lo vinculado con la tramitación del informe. <\/CONTENT> <URL> https://www.dateas.com/es/servicio/filiacion/argentina <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Si tiene el DNIdela persona a buscar puede confirmar el nombre completo en RegistrodeOrganizaciones Políticas o en el Linkdela MunicipalidaddeSan Isidro. Nota: Anteriormente la páginadeseguridad social incluía en la búsquedadeasegurados lafechadenacimiento, pero actualmente ya está en desuso. <\/CONTENT> <URL> https://www.buscador-personas.com/fecha-de-nacimiento.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Conocer lafechadenacimientodeuna persona puede ser útil en varios contextos, desde trámites legales hasta verificacionesdeidentidad. En Perú, el Documento NacionaldeIdentidad (DNI) es una herramienta clave que almacena esta información. <\/CONTENT> <URL> https://dniperu.com/consultas/buscar-fecha-de-nacimiento-con-dni <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Para comenzar si quieres saber todo lo necesario para buscar lafechadenacimientomediante el Registro civil estas en ellugarcorrecto pero antesdeeso averigua bien los datosdela personadequien buscas porque vas a necesitar el RUT o númerodecarnet, junto con el Nombre y Apellido. <\/CONTENT> <URL> https://www.chileinforma.cl/buscar-la-fecha-de-nacimiento-por-el-registro-civil <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Cómo encontrar a una persona en Panama? Puede buscar personas al consultar teléfonos y direcciones en la guía telefónicadela ciudad o contactosdefamiliares y amigos. Encuentra a una persona en Panama buscando los datos como nombre y apellido, edad,fecha,lugardenacimientoy la última dirección conocida donde vive o trabajaba. Para localizar a una persona puede buscar el nombre y ... <\/CONTENT> <URL> https://registronacional.com/panama/personas.htm <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Busca a tus antepasados en certificadosdenacimiento, registrosdematrimonio, registrosdecensos y otros documentos. <\/CONTENT> <URL> https://www.familysearch.org/es/search <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331901487,
+            "end": 1779331902955
+          }
+        },
+        "id": "prt_e4872282d001fn4qRW6GCbr7zl",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e487222df001aUSXUdMBaq49n1"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331902962,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e48722ded001qLk3pjVnKWvyrp",
+        "reason": "tool-calls",
+        "messageID": "msg_e487222df001aUSXUdMBaq49n1",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8936,
+          "input": 8846,
+          "output": 90,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0279
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331904156,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e4872329b0010kC69NaS2xILP8",
+        "messageID": "msg_e48722df0001BRvk8hpOlJPLeS",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331909616,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "64999da7-1bc0-45b4-8c51-1594215a502a",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Angel Fanovich Tijerino biografía gobernador Chiriquí"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> 󱚸 Segundo Vice Presidente de la Asamblea Nacional. at Diputado de la República 󱜏 Lives in David,Chiriqui󱚷 Married <\/CONTENT> <URL> https://www.facebook.com/miguel.fanovichtijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Fanovichafirmó que su plan de trabajo está centrado en el trabajo integral con todos los sectores de la sociedad, como es la empresa privada, ganaderos, agricultores e industriales, a fin de ... <\/CONTENT> <URL> https://www.panamaamerica.com.pa/provincias/gobernador-de-chiriqui-asume-cargo-67924 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> NacionalesFanovichse enfurece porque le sacan lista de familia en planilla 'Los diputados europeos no tienen tantos privilegios como los panameños': Julio YaoMiguelFanovich, del circuito 4-1 en David,Chiriquí, fue duramente cuestionado por la población en redes. Archivo / El Siglo <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> DAVID,Chiriquí. La gestión deMiguelAngelFanovichcomogobernadorde la provincia deChiriquíconcluirá el 1 de noviembre, cuando presente su renuncia para aspirar al cargo de legislador ... <\/CONTENT> <URL> https://www.prensa.com/impresa/opinion/Fanovich-dejara-gobernacion_0_989901289.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> E lgobernadorde la provincia deChiriquí,MiguelAngelFanovich, confirmó algunas direcciones de instituciones gubernamentales existente en esta región, las cuales hasta la fecha aún no habían sido confirmadas. <\/CONTENT> <URL> https://portal.critica.com.pa/archivo/090899/prov4.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Gobierno y política La máxima autoridad de la provincia deChiriquíes elgobernador. La sede la gobernación, así como el poder judicial se localizan en la capital de la provincia, en la ciudad de David. <\/CONTENT> <URL> https://eibisyisssel.blogspot.com/p/gobierno-y-politica-editar-la-maxima.html <\/URL> __END_OF_SOURCE 6__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331904158,
+            "end": 1779331909615
+          }
+        },
+        "id": "prt_e4872329c001asXB4EdEqDrXUX",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e48722df0001BRvk8hpOlJPLeS"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331909621,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e487247f0001O6p34NyigKTAUp",
+        "reason": "tool-calls",
+        "messageID": "msg_e48722df0001BRvk8hpOlJPLeS",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10202,
+          "input": 10112,
+          "output": 90,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0317
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331910777,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e48724c78001kY60JADVrZY4hs",
+        "messageID": "msg_e487247f4001l23EGHvI65FFH9",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331912478,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "b8661ee4-5f3e-4414-a39a-b0b88e18475b",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Angel Fanovich Tijerino fecha de nacimiento David Chiriquí"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Los candidatos del Panameñista, Florentino Ábrego, y del Molirena,MiguelFanovich, lograron quedarse cada uno con las dos curules del circuito 4-1 (David, enChiriquí), durante las nuevas elecciones, en las que hubo un alto gradodeabstencionismo. El candidatodeCambio Democrático (CD ... <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/abrego-fanovich-nuevos-diputados-david-GWES23828417 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> NúmerodeAvisodeOperación : 839511-1-503266-2017-560211 Razón Comercial: GRANJA SANMIGUELRepresentante Legal:MiguelAngelFanovichGrimas RUC: 839511 1-503266 DV 79 Razón Social: GRANSA S.A.FechadeIniciodeOperaciones: 28/09/17 Ubicación:CHIRIQUÍDAVIDBIJAGUAL Urbanización: BIJAGUAL Calle: PRINCIPAL Casa: S/N Edificio ... <\/CONTENT> <URL> https://www.panamaemprende.gob.pa/resultado-consulta/958375/2 <\/URL> __END_OF_SOURCE 2__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331910779,
+            "end": 1779331912477
+          }
+        },
+        "id": "prt_e48724c79002Sw33Xfbo8Lp1mp",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e487247f4001l23EGHvI65FFH9"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331912483,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e4872531f001aQiottT2CA5QTk",
+        "reason": "tool-calls",
+        "messageID": "msg_e487247f4001l23EGHvI65FFH9",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10964,
+          "input": 10873,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.034
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331913629,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e4872579b0012CaLqHBhpDpZmW",
+        "messageID": "msg_e48725322001whUcC5DxSdPvTL",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331915170,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "ced99887-5968-472e-acef-e98e42d020fd",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Angel Fanovich Tijerino biografía completa estudios profesión"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta Política Corresponde al documento con prioridades, formas y acciones de gobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y más de 15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MiguelAngelFanovichTijerinois on Facebook. Join Facebook to connect withMiguelAngelFanovichTijerinoand others you may know. Facebook gives people the power to share and makes the world more... <\/CONTENT> <URL> https://www.facebook.com/miguelangel.fanovichtijerino <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MiguelA.FanovichTijerinoMulino viaja para participar en la Asamblea de la ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Número de registros utilizados en: 1 Forma preferida:FanovichT.,MiguelÁngelNotas <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Miembros relacionados (6) Miembros relacionados (6) Activos (5) Inactivos (1)MIGUELANGELFANOVICHTIJERINO•MIEMBRO - PRESIDENTE Consultar GLORIELATIJERINODEFANOVICH•FUNDADOR - SECRETARIO - MIEMBRO ConsultarMIGUELANGELFANOVICHSUGASTE •FUNDADOR Consultar LIC.LUIS MARTIN RODRIGUEZ •AGENTE RESIDENTE Consultar Ver datos completos <\/CONTENT> <URL> https://www.panadata.net/organizaciones/4438087 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \"Voto Informado\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá IrvinFanovich, Panamá ErneFanovich, Panamá ErneFanovichAbogados, Panamá SigeilyFanovichBethancourt, Panamá CarmenFanovichCaballero, Panamá Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo 6.1 del RGPD. <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-A.-Fanovich.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> La bancada del Partido Molirena informó este martes, 31 de mayo, que el diputado del circuito 4-1MiguelFanovichfue elegido para ser propuesto como segundo vicepresidente de la Asamblea Nacional (AN). Así lo reveló el colectivo en una circular firmada por el jefe de la bancada, el diputado Manolo ... <\/CONTENT> <URL> https://www.metrolibre.com/politica/fanovich-va-por-la-segunda-vicepresidencia-de-la-asamblea-EAML234761 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331913632,
+            "end": 1779331915169
+          }
+        },
+        "id": "prt_e4872579d001hWHjQ0OCIa4DyI",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e48725322001whUcC5DxSdPvTL"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331915174,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e48725da2001anI34V683HsNDx",
+        "reason": "tool-calls",
+        "messageID": "msg_e48725322001whUcC5DxSdPvTL",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11410,
+          "input": 11321,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0353
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331916356,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e487262430011rjDe3mBS7Kg4c",
+        "messageID": "msg_e48725da5001DCiP11fu9cMnyS",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331916361,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "47251e05-f4c0-4ad5-9bb7-1fdd24f4c403",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Miguel Angel Fanovich Tijerino biografía \"Universidad de Panamá\" carrera"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 0, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Miguel Angel Fanovich Tijerino biografía \\\"Universidad de Panamá\\\" carrera\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"miguel angel fanovich tijerino biografía \\\\\\\"universidad de panamá\\\\\\\" carrera\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331916359,
+            "end": 1779331916361
+          }
+        },
+        "id": "prt_e48726245001yWdyN7zeN1Ei7t",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "messageID": "msg_e48725da5001DCiP11fu9cMnyS"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331916365,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e4872624a0011q0MdSUoMguuAa",
+        "reason": "tool-calls",
+        "messageID": "msg_e48725da5001DCiP11fu9cMnyS",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-finish",
+        "tokens": {
+          "total": 12680,
+          "input": 12588,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0391
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331929249,
+      "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+      "part": {
+        "id": "prt_e487294a0001PuUkEeGhqvyKAP",
+        "messageID": "msg_e4872624c001hLNNOctGPGlNML",
+        "sessionID": "ses_1b78e217fffe6zctbg7UY8HmLf",
+        "type": "step-start"
+      }
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": "OpenCode returned JSONL events without terminal text. Last event types: step_finish, step_start, tool_use, step_finish, step_start, tool_use, step_finish, step_start",
+  "parse_error": false,
+  "empty_terminal_output": true,
+  "opencode_export_fallback_used": false,
+  "opencode_export_session_id": "ses_1b78e217fffe6zctbg7UY8HmLf",
+  "opencode_export_final_text_chars": "NA",
+  "opencode_export_fallback_error": "OpenCode export stdout did not contain parseable JSON: parse error: premature EOF\n                                       {   \"info\": {     \"id\": \"ses_1b\n                     (right here) ------^\n",
+  "last_event_types": ["step_finish", "step_start", "tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779331885318,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e4871e905001MFkqzpZxbUK9tn\",\"messageID\":\"msg_e4871dedb0011Wgrl6hsbXDYfE\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331892907,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"0a62a283-2419-479a-b91c-35c35095931a\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Panama biografía\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Con 59 votos a favor, tanto de su partido como algunos de oposición, Crispiano Adames fue escogido - esta mañana- para dirigir la Asamblea Nacional. Le acompañarán los vicepresidentes Kayra Harding yMiguelA.Fanovich. (más…) <\/CONTENT> <URL> https://ensegundos.com.pa/tag/miguel-fanovich <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MiguelFanovich: el diputado del pueblo chiricano La trayectoria política deMiguelFanovichse inicia en la gobernación de la provincia de Chiriquí, donde demostró su sensibilidad por los más necesitados que vieron en el una luz de esperanza.Su trabajo le ha garantizado dos diputaciones en forma sucesiva, quehoyle permiten continuar defendiendo los intereses de su provincia y su acción ... <\/CONTENT> <URL> https://sol889panama.blogspot.com/2011/09/miguel-fanovich-el-diputado-del-pueblo.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Educación: Universidad dePanamá· Ubicación:Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MiguelFanovich.MiguelFanoviches electo segundo vicepresidente de la Asamblea NacionalPanamáJubilados y pensionados: Todo lo que debes saber sobre el pago del martes 19 de mayo <\/CONTENT> <URL> https://www.telemetro.com/miguel-fanovich-a2500497 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> El diputado del Movimiento Liberal Republicano (Molirena)MiguelFanovichfue elegido este domingo, 1 de julio, segundo vicepresidente de la Asamblea Nacional.Fanovich, que obtuvo 42 votos ... <\/CONTENT> <URL> https://www.prensa.com/redaccion_de_prensa-com/Miguel-Fanovich-segundo-vicepresidente-Asamblea_0_3423407656.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \\\"Voto Informado\\\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El diputadoMiguelÁngelFanovich, del Movimiento Liberal Republicano Nacionalista (Molirena), fue reelecto como segundo vicepresidente de la Asamblea Nacional, superando a Juan Diego Vásquez ... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/nacional/miguel-angel-fanovich-reelecto-segundo-vicepresidente-asamblea-IKLE472965 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichen 1 empresa y más de 1 nombramiento enPanamá(Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Al parecer la publicación en diferentes redes sociales de esta información encolerizaron al diputado chiricano,MiguelFanovich, quien por poco le da un ataque cardíaco en el período de incidencias, durante el pleno de la Asamblea Nacional de ayer miércoles. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Guía de políticosPanamáFormación Académica Corresponde a las tres experiencias de formación académica más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Experiencia Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta ... <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331885324,\"end\":1779331892905}},\"id\":\"prt_e4871e907001AZR91K13WqyW79\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e4871dedb0011Wgrl6hsbXDYfE\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331894427,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"e271aaa1-4c72-498d-84d9-a8f11874e92b\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Fanovich Asamblea Nacional de Panamá perfil\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> El diputado del Movimiento Liberal Republicano (Molirena)MiguelFanovichfue elegido este domingo, 1dejulio, segundo vicepresidentedelaAsambleaNacional.Fanovich, que obtuvo 42 votos ... <\/CONTENT> <URL> https://www.prensa.com/redaccion_de_prensa-com/Miguel-Fanovich-segundo-vicepresidente-Asamblea_0_3423407656.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Educación: UniversidaddePanamá· Ubicación:Panamá. Ver elperfildeMiguelFanovichen LinkedIn, una red profesionaldemásde1.000 millonesdemiembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El diputadoMiguelÁngelFanovich, del Movimiento Liberal Republicano Nacionalista (Molirena), fue reelecto como segundo vicepresidentedelaAsambleaNacional, superando a Juan Diego Vásquez ... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/nacional/miguel-angel-fanovich-reelecto-segundo-vicepresidente-asamblea-IKLE472965 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> MiguelFanovich.MiguelFanoviches electo segundo vicepresidentedelaAsambleaNacionalPanamáJubilados y pensionados: Todo lo que debes saber sobre el pago del martes 19demayo <\/CONTENT> <URL> https://www.telemetro.com/miguel-fanovich-a2500497 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> 󱚸 Former Diputado at AsambleNacionaldePanamá󱚸 Former Diputado atAsambleaLegislativa 󱜧 Studied at USMA 󱜧 Went to liceo 󱚷 Married <\/CONTENT> <URL> https://www.facebook.com/fanovichmiguel <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Con 59 votos a favor, tantodesu partido como algunosdeoposición, Crispiano Adames fue escogido - esta mañana- para dirigir laAsambleaNacional. Le acompañarán los vicepresidentes Kayra Harding yMiguelA.Fanovich. (más…) <\/CONTENT> <URL> https://ensegundos.com.pa/tag/miguel-fanovich <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 6,218 Followers, 5,696 Following, 1,621 Posts -MiguelFanovich(@fanovichmiguel) on Instagram: \\\"ExDiputadodela RepúblicadePanamá\\\" <\/CONTENT> <URL> https://www.instagram.com/fanovichmiguel <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Política Corresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en laAsamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listadodelos procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Al parecer la publicación en diferentes redes socialesdeesta información encolerizaron al diputado chiricano,MiguelFanovich, quien por poco le da un ataque cardíaco en el períododeincidencias, durante el plenodelaAsambleaNacionaldeayer miércoles. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331885327,\"end\":1779331894426}},\"id\":\"prt_e4871e90d001CaLa0OETRrAJ0g\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e4871dedb0011Wgrl6hsbXDYfE\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331894433,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e48720c9c0018KrxkY7Iwv5rOx\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4871dedb0011Wgrl6hsbXDYfE\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":5327,\"input\":5082,\"output\":245,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.018921}}\n{\"type\":\"step_start\",\"timestamp\":1779331895693,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e4872118c001Y9ieOeBZurmGMw\",\"messageID\":\"msg_e48720c9f001a7vXvGzwU6rd2G\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331897490,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"4d53bdbb-1c95-4894-bca7-0609d524bc74\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"tls_error\\\",\\\"retryable\\\":true,\\\"url\\\":\\\"https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino\\\",\\\"final_url\\\":null,\\\"status_code\\\":null,\\\"error\\\":\\\"Failed to perform, curl: (60) SSL certificate problem: certificate has expired. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\\\",\\\"error_detail\\\":null,\\\"attempt\\\":2,\\\"attempts\\\":2}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331895695,\"end\":1779331897489}},\"id\":\"prt_e4872118d001lagKKBuPuQbNDO\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e48720c9f001a7vXvGzwU6rd2G\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331897495,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e48721893001qHuHZgy1snvlNo\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48720c9f001a7vXvGzwU6rd2G\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":7464,\"input\":7360,\"output\":104,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.02364}}\n{\"type\":\"step_start\",\"timestamp\":1779331898731,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e48721d67001W6BPvRQF7yMznm\",\"messageID\":\"msg_e48721896001FE9cItzIVYQehH\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331900122,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"cd45f4cb-e170-489c-94e6-f01733c3e715\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Angel Fanovich Tijerino biografía educación ocupación\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Registro Judicial: El candidato no tiene procesos judiciales abiertos o condenas en la página del Órgano Judicial. Es decir, la Corte Suprema de Justicia no ha emitido una condena o mantiene un caso abierto para este candidato en los últimos 10 años. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y más de 15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El diputadoMiguelÁngelFanovich, del Movimiento Liberal Republicano Nacionalista (Molirena), fue reelecto como segundo vicepresidente de la Asamblea Nacional, superando a Juan Diego Vásquez ... <\/CONTENT> <URL> https://www.laestrella.com.pa/panama/nacional/miguel-angel-fanovich-reelecto-segundo-vicepresidente-asamblea-IKLE472965 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTejerino en 2 empresas y más de 2 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Educación: Universidad de Panamá · Ubicación: Panamá. Ver el perfil deMiguelFanovichen LinkedIn, una red profesional de más de 1.000 millones de miembros. <\/CONTENT> <URL> https://pa.linkedin.com/in/miguel-fanovich-4573101bb <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Miembros relacionados (6) Miembros relacionados (6) Activos (5) Inactivos (1)MIGUELANGELFANOVICHTIJERINO•MIEMBRO - PRESIDENTE Consultar GLORIELATIJERINODEFANOVICH•FUNDADOR - SECRETARIO - MIEMBRO ConsultarMIGUELANGELFANOVICHSUGASTE •FUNDADOR Consultar LIC.LUIS MARTIN RODRIGUEZ •AGENTE RESIDENTE Consultar Ver datos completos <\/CONTENT> <URL> https://www.panadata.net/organizaciones/4438087 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Número de registros utilizados en: 1 Forma preferida:FanovichT.,MiguelÁngelNotas <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \\\"Voto Informado\\\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La bancada del Partido Molirena informó este martes, 31 de mayo, que el diputado del circuito 4-1MiguelFanovichfue elegido para ser propuesto como segundo vicepresidente de la Asamblea Nacional (AN). Así lo reveló el colectivo en una circular firmada por el jefe de la bancada, el diputado Manolo ... <\/CONTENT> <URL> https://www.metrolibre.com/politica/fanovich-va-por-la-segunda-vicepresidencia-de-la-asamblea-EAML234761 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Los estudiantes fueron atendidos por el segundo vice presidente del legislativo,MiguelAngelFanovichTijerino, quien igualmente se reunió con estudiantes graduandos de Informática y Ciencias del Colegio Arnulfo Arias Madrid. Los jóvenes recibieron conversatorios sobre diversidad de temas del acontecer nacional. <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/estudiantes-chiricanos-reciben-conversatorio-JJES24209673 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331898736,\"end\":1779331900121}},\"id\":\"prt_e48721d6b0018AfiEPf32ETKsO\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e48721896001FE9cItzIVYQehH\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331900129,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e487222db0018JycJiRhRBNtGL\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48721896001FE9cItzIVYQehH\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":7696,\"input\":7607,\"output\":89,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.024156}}\n{\"type\":\"step_start\",\"timestamp\":1779331901485,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e4872282c001mlwXVFQmfOun8k\",\"messageID\":\"msg_e487222df001aUSXUdMBaq49n1\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331902956,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"9940e686-68fa-4cf5-8d90-6dffff530d0d\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Angel Fanovich Tijerino fecha de nacimiento lugar de nacimiento\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y másde15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Política Corresponde al documento con prioridades, formas y accionesdegobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Procesos Judiciales Listadodelos procesos (civiles o penales) en los que el candidato a Diputado haya sido demandado. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> It is the first time forMIGUELANGELFANOVICHTIJERINOto appear in the customs data of thePANAMA and at present, NBD Customs Data system has included 2 customs import and export records related to it, and among the trade partners ofMIGUELANGELFANOVICHTIJERINO,0 procurers and 2 suppliers have been included in NBD Trade Data. <\/CONTENT> <URL> https://en.nbd.ltd/trader/info/NBDX1H159752070 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Miembros relacionados (6) Miembros relacionados (6) Activos (5) Inactivos (1)MIGUELANGELFANOVICHTIJERINO•MIEMBRO - PRESIDENTE Consultar GLORIELATIJERINODEFANOVICH•FUNDADOR - SECRETARIO - MIEMBRO ConsultarMIGUELANGELFANOVICHSUGASTE •FUNDADOR Consultar LIC.LUIS MARTIN RODRIGUEZ •AGENTE RESIDENTE Consultar Ver datos completos <\/CONTENT> <URL> https://www.panadata.net/organizaciones/4438087 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Si la persona hubiera fallecido, en la mayoríadelos casos se informará:FechadeDefunción -LugardeDefunción. Contarás con la asistenciadeServicios Jurídicos Dax, proveedor del servicio, para todo lo vinculado con la tramitación del informe. <\/CONTENT> <URL> https://www.dateas.com/es/servicio/filiacion/argentina <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Si tiene el DNIdela persona a buscar puede confirmar el nombre completo en RegistrodeOrganizaciones Políticas o en el Linkdela MunicipalidaddeSan Isidro. Nota: Anteriormente la páginadeseguridad social incluía en la búsquedadeasegurados lafechadenacimiento, pero actualmente ya está en desuso. <\/CONTENT> <URL> https://www.buscador-personas.com/fecha-de-nacimiento.html <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Conocer lafechadenacimientodeuna persona puede ser útil en varios contextos, desde trámites legales hasta verificacionesdeidentidad. En Perú, el Documento NacionaldeIdentidad (DNI) es una herramienta clave que almacena esta información. <\/CONTENT> <URL> https://dniperu.com/consultas/buscar-fecha-de-nacimiento-con-dni <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Para comenzar si quieres saber todo lo necesario para buscar lafechadenacimientomediante el Registro civil estas en ellugarcorrecto pero antesdeeso averigua bien los datosdela personadequien buscas porque vas a necesitar el RUT o númerodecarnet, junto con el Nombre y Apellido. <\/CONTENT> <URL> https://www.chileinforma.cl/buscar-la-fecha-de-nacimiento-por-el-registro-civil <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Cómo encontrar a una persona en Panama? Puede buscar personas al consultar teléfonos y direcciones en la guía telefónicadela ciudad o contactosdefamiliares y amigos. Encuentra a una persona en Panama buscando los datos como nombre y apellido, edad,fecha,lugardenacimientoy la última dirección conocida donde vive o trabajaba. Para localizar a una persona puede buscar el nombre y ... <\/CONTENT> <URL> https://registronacional.com/panama/personas.htm <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Busca a tus antepasados en certificadosdenacimiento, registrosdematrimonio, registrosdecensos y otros documentos. <\/CONTENT> <URL> https://www.familysearch.org/es/search <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331901487,\"end\":1779331902955}},\"id\":\"prt_e4872282d001fn4qRW6GCbr7zl\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e487222df001aUSXUdMBaq49n1\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331902962,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e48722ded001qLk3pjVnKWvyrp\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e487222df001aUSXUdMBaq49n1\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":8936,\"input\":8846,\"output\":90,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.027888}}\n{\"type\":\"step_start\",\"timestamp\":1779331904156,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e4872329b0010kC69NaS2xILP8\",\"messageID\":\"msg_e48722df0001BRvk8hpOlJPLeS\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331909616,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"64999da7-1bc0-45b4-8c51-1594215a502a\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Angel Fanovich Tijerino biografía gobernador Chiriquí\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> 󱚸 Segundo Vice Presidente de la Asamblea Nacional. at Diputado de la República 󱜏 Lives in David,Chiriqui󱚷 Married <\/CONTENT> <URL> https://www.facebook.com/miguel.fanovichtijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Fanovichafirmó que su plan de trabajo está centrado en el trabajo integral con todos los sectores de la sociedad, como es la empresa privada, ganaderos, agricultores e industriales, a fin de ... <\/CONTENT> <URL> https://www.panamaamerica.com.pa/provincias/gobernador-de-chiriqui-asume-cargo-67924 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> NacionalesFanovichse enfurece porque le sacan lista de familia en planilla 'Los diputados europeos no tienen tantos privilegios como los panameños': Julio YaoMiguelFanovich, del circuito 4-1 en David,Chiriquí, fue duramente cuestionado por la población en redes. Archivo / El Siglo <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/fanovich-enfurece-porque-sacan-lista-familia-planilla-HIES24142971 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> DAVID,Chiriquí. La gestión deMiguelAngelFanovichcomogobernadorde la provincia deChiriquíconcluirá el 1 de noviembre, cuando presente su renuncia para aspirar al cargo de legislador ... <\/CONTENT> <URL> https://www.prensa.com/impresa/opinion/Fanovich-dejara-gobernacion_0_989901289.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> E lgobernadorde la provincia deChiriquí,MiguelAngelFanovich, confirmó algunas direcciones de instituciones gubernamentales existente en esta región, las cuales hasta la fecha aún no habían sido confirmadas. <\/CONTENT> <URL> https://portal.critica.com.pa/archivo/090899/prov4.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Gobierno y política La máxima autoridad de la provincia deChiriquíes elgobernador. La sede la gobernación, así como el poder judicial se localizan en la capital de la provincia, en la ciudad de David. <\/CONTENT> <URL> https://eibisyisssel.blogspot.com/p/gobierno-y-politica-editar-la-maxima.html <\/URL> __END_OF_SOURCE 6__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331904158,\"end\":1779331909615}},\"id\":\"prt_e4872329c001asXB4EdEqDrXUX\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e48722df0001BRvk8hpOlJPLeS\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331909621,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e487247f0001O6p34NyigKTAUp\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48722df0001BRvk8hpOlJPLeS\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":10202,\"input\":10112,\"output\":90,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.031686}}\n{\"type\":\"step_start\",\"timestamp\":1779331910777,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e48724c78001kY60JADVrZY4hs\",\"messageID\":\"msg_e487247f4001l23EGHvI65FFH9\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331912478,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"b8661ee4-5f3e-4414-a39a-b0b88e18475b\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Angel Fanovich Tijerino fecha de nacimiento David Chiriquí\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Los candidatos del Panameñista, Florentino Ábrego, y del Molirena,MiguelFanovich, lograron quedarse cada uno con las dos curules del circuito 4-1 (David, enChiriquí), durante las nuevas elecciones, en las que hubo un alto gradodeabstencionismo. El candidatodeCambio Democrático (CD ... <\/CONTENT> <URL> https://elsiglo.com.pa/panama/nacionales/abrego-fanovich-nuevos-diputados-david-GWES23828417 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> NúmerodeAvisodeOperación : 839511-1-503266-2017-560211 Razón Comercial: GRANJA SANMIGUELRepresentante Legal:MiguelAngelFanovichGrimas RUC: 839511 1-503266 DV 79 Razón Social: GRANSA S.A.FechadeIniciodeOperaciones: 28/09/17 Ubicación:CHIRIQUÍDAVIDBIJAGUAL Urbanización: BIJAGUAL Calle: PRINCIPAL Casa: S/N Edificio ... <\/CONTENT> <URL> https://www.panamaemprende.gob.pa/resultado-consulta/958375/2 <\/URL> __END_OF_SOURCE 2__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331910779,\"end\":1779331912477}},\"id\":\"prt_e48724c79002Sw33Xfbo8Lp1mp\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e487247f4001l23EGHvI65FFH9\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331912483,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e4872531f001aQiottT2CA5QTk\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e487247f4001l23EGHvI65FFH9\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":10964,\"input\":10873,\"output\":91,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.033984}}\n{\"type\":\"step_start\",\"timestamp\":1779331913629,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e4872579b0012CaLqHBhpDpZmW\",\"messageID\":\"msg_e48725322001whUcC5DxSdPvTL\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331915170,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"ced99887-5968-472e-acef-e98e42d020fd\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Angel Fanovich Tijerino biografía completa estudios profesión\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Profesional Corresponde a las tres experiencias profesionales más relevantes del candidato. FUENTE: Informado por candidato u obtenido del Tribunal Electoral Propuesta Política Corresponde al documento con prioridades, formas y acciones de gobierno que el candidato a Diputado planea ejecutar durante su periodo en la Asamblea. <\/CONTENT> <URL> https://candidatos.espaciocivico.org/profile/miguel-angel-fanovich-tijerino <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Informes del ejecutivoMiguelAngelFanovichTijerinoen 6 empresas y más de 15 nombramientos en Panamá (Panama) <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tijerino.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MiguelAngelFanovichTijerinois on Facebook. Join Facebook to connect withMiguelAngelFanovichTijerinoand others you may know. Facebook gives people the power to share and makes the world more... <\/CONTENT> <URL> https://www.facebook.com/miguelangel.fanovichtijerino <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Pedro Ramos Tejerino, España IrvinFanovich, Panamá ErneFanovich, Panamá EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá Serafina Enidza Tejerino Rodriguez, Panamá Dora Olivia Aleman Tejerino, Costa Rica Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo ... <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-Angel-Fanovich-Tejerino.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MiguelA.FanovichTijerinoMulino viaja para participar en la Asamblea de la ONU Útimas noticias Lo más leído <\/CONTENT> <URL> https://www.laestrella.com.pa/autor/-/meta/miguel-a-fanovich-tijerino <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Número de registros utilizados en: 1 Forma preferida:FanovichT.,MiguelÁngelNotas <\/CONTENT> <URL> https://biblioteca.organojudicial.gob.pa/cgi-bin/koha/opac-authoritiesdetail.pl?authid=14478 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Miembros relacionados (6) Miembros relacionados (6) Activos (5) Inactivos (1)MIGUELANGELFANOVICHTIJERINO•MIEMBRO - PRESIDENTE Consultar GLORIELATIJERINODEFANOVICH•FUNDADOR - SECRETARIO - MIEMBRO ConsultarMIGUELANGELFANOVICHSUGASTE •FUNDADOR Consultar LIC.LUIS MARTIN RODRIGUEZ •AGENTE RESIDENTE Consultar Ver datos completos <\/CONTENT> <URL> https://www.panadata.net/organizaciones/4438087 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MiguelFanovich(R) La información colocada aquí proviene del sitio web: \\\"Voto Informado\\\" del Tribunal ElectoralMiguelFanovich(R) / Tribunal Electoral 20 de febrero 2024 - 05:48 <\/CONTENT> <URL> https://www.tvn-2.com/tu-decision-2024/candidatos/miguel-fanovich-r_1_2109319.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> EinarFanovich, Panamá SigeilyFanovich, Panamá SigelyFanovich, PanamáMiguelFanovich, Panamá IrvinFanovich, Panamá ErneFanovich, Panamá ErneFanovichAbogados, Panamá SigeilyFanovichBethancourt, Panamá CarmenFanovichCaballero, Panamá Esta información proviene de fuentes públicas y se muestra de acuerdo al Artículo 6.1 del RGPD. <\/CONTENT> <URL> https://www.datocapital.com.pa/ejecutivos/Miguel-A.-Fanovich.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> La bancada del Partido Molirena informó este martes, 31 de mayo, que el diputado del circuito 4-1MiguelFanovichfue elegido para ser propuesto como segundo vicepresidente de la Asamblea Nacional (AN). Así lo reveló el colectivo en una circular firmada por el jefe de la bancada, el diputado Manolo ... <\/CONTENT> <URL> https://www.metrolibre.com/politica/fanovich-va-por-la-segunda-vicepresidencia-de-la-asamblea-EAML234761 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331913632,\"end\":1779331915169}},\"id\":\"prt_e4872579d001hWHjQ0OCIa4DyI\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e48725322001whUcC5DxSdPvTL\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331915174,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e48725da2001anI34V683HsNDx\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48725322001whUcC5DxSdPvTL\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":11410,\"input\":11321,\"output\":89,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.035298}}\n{\"type\":\"step_start\",\"timestamp\":1779331916356,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e487262430011rjDe3mBS7Kg4c\",\"messageID\":\"msg_e48725da5001DCiP11fu9cMnyS\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331916361,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"47251e05-f4c0-4ad5-9bb7-1fdd24f4c403\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Miguel Angel Fanovich Tijerino biografía \\\"Universidad de Panamá\\\" carrera\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 0, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Miguel Angel Fanovich Tijerino biografía \\\\\\\"Universidad de Panamá\\\\\\\" carrera\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"miguel angel fanovich tijerino biografía \\\\\\\\\\\\\\\"universidad de panamá\\\\\\\\\\\\\\\" carrera\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331916359,\"end\":1779331916361}},\"id\":\"prt_e48726245001yWdyN7zeN1Ei7t\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"messageID\":\"msg_e48725da5001DCiP11fu9cMnyS\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331916365,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e4872624a0011q0MdSUoMguuAa\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48725da5001DCiP11fu9cMnyS\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-finish\",\"tokens\":{\"total\":12680,\"input\":12588,\"output\":92,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.039144}}\n{\"type\":\"step_start\",\"timestamp\":1779331929249,\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"part\":{\"id\":\"prt_e487294a0001PuUkEeGhqvyKAP\",\"messageID\":\"msg_e4872624c001hLNNOctGPGlNML\",\"sessionID\":\"ses_1b78e217fffe6zctbg7UY8HmLf\",\"type\":\"step-start\"}}\n"
+}

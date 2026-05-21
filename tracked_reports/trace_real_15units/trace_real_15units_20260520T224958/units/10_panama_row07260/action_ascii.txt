@@ -1,0 +1,22 @@
+AGENT ACTION MAP
+================
+Steps captured: 0
+LangGraph timed steps: 0
+
+INVESTIGATOR SIGNALS
+--------------------
+  +-- none
+
+WHAT HAPPENED OVERALL
+---------------------
+  +-- Summary
+      No action events available.
+
+START
+  +-- [LANGGRAPH] Node aggregates (minutes, tokens, count)
+      none
+  +-- [LANGGRAPH] Slowest timed invocations
+      none
+  +-- [TIMING] wall=0.7902m nodes=0.0000m delta=+0.7902m (overhead)
+  +-- [No action trace available]
+END

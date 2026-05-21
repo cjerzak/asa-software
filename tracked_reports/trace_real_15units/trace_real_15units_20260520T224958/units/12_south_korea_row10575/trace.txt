@@ -1,0 +1,338 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779331886756,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e4871eea3001uLFQPMU0xZlDhc",
+        "messageID": "msg_e4871e45f0016ZUFn7SL3fkI9i",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331889720,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "6f020e86-6623-4b4c-96e8-84fb71ed8170",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "CHUNG Sye-kyun South Korea biography education occupation birth"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is aSouthKorean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister ofSouthKoreafrom 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ChungSye-kyun(Hangul: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is aSouthKorean politician. He was the 42nd Prime Minister ofSouthKoreafrom January 2020 until April 2021. <\/CONTENT> <URL> https://simple.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> SouthKorea'sformer Prime MinisterChungSye-kyun, and long-term contributions to Korean governance and diplomacy. <\/CONTENT> <URL> https://allworldspresidents.com/prime-minister/chung-sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ChungSye-kyunHisbiographyis available in 25 different languages on Wikipedia.ChungSye-kyunis the 10,734th most popular politician (up from 13,001st in 2024), the 159th most popularbiographyfromSouthKorea(up from 198th in 2019) and the 74th most popularSouthKorean Politician. <\/CONTENT> <URL> https://pantheon.world/profile/person/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born November 5, 1950) is aSouthKorean politician. He held important roles like the Speaker of the National Assembly from 2016 to 2018 and the Prime Minister ofSouthKoreafrom 2020 to 2021. <\/CONTENT> <URL> https://kids.kiddle.co/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ChungSye-kyunis a prominentSouthKorean politician and civil society organization leader. He served as a member of the National Assembly for six terms and was speaker of the Assembly from 2016 to 2018. Appointed the Minister of Commerce, Industry, and Energy by former President Roh Moo-hyun in 2006,Chungtook charge of the […] <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950) is aSouthKorean politician who has served as Speaker of the National Assembly from 2016 to 2018 and Prime Minister ofSouthKoreafrom 2020 to 2021. He was previously leader of the main opposition Democratic Party between 2008 and 2010, and twice chairman of its predecessor, the Uri Party, first on an interim basis ... <\/CONTENT> <URL> https://dbpedia.org/page/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ChungSye-kyun(Korean:정세균; Hanja:丁世均; born 5 November 1950 [1]) is aSouthKorean politician who has served as Speaker of the National Assembly from 2016 to 2018 and Prime Minister ofSouthKoreafrom 2020 to 2021. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Chung_Se-kyun <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Born in Jinan, North Jeolla Province, in 1950,Chunggraduated fromKoreaUniversity in Seoul in 1975 and worked at the Ssangyong Group until 1995. Afterwards, he taught students at Kyungsung ... <\/CONTENT> <URL> https://www.koreatimes.co.kr/www/nation/2025/01/113_33089.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ChungSye-kyun, as the Speaker of National Assembly ofSouthKorea.jpg 2,000 × 1,330; 706 KB <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q11270093 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331886761,
+            "end": 1779331889719
+          }
+        },
+        "id": "prt_e4871eea4001XaRHvgG7rJZ1U1",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "messageID": "msg_e4871e45f0016ZUFn7SL3fkI9i"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331889725,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e4871fa39001iOlVZlVOqn3QF6",
+        "reason": "tool-calls",
+        "messageID": "msg_e4871e45f0016ZUFn7SL3fkI9i",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5354,
+          "input": 5093,
+          "output": 261,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0192
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331892083,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e487203720017waeE50SpUXjl0",
+        "messageID": "msg_e4871fa3c001TAHPN32Ar0szFf",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331893047,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "c7062399-1990-49bb-a743-5962e3e959c2",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://en.wikipedia.org/wiki/Chung_Sye-kyun"
+          },
+          "output": "URL: https://en.wikipedia.org/wiki/Chung_Sye-kyun\nFinal URL: https://en.wikipedia.org/wiki/Chung_Sye-kyun\nTitle: Chung Sye-kyun - Wikipedia\nBytes read: 146125\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nJump to content\nMain menu\nMain menu\nmove to sidebar\nhide\nNavigation\nMain page\n[link: https://en.wikipedia.org/wiki/Main_Page]\nContents\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\nCurrent events\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\nRandom article\n[link: https://en.wikipedia.org/wiki/Special:Random]\nAbout Wikipedia\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\nContact us\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\nContribute\nHelp\nLearn to edit\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\nCommunity portal\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\nRecent changes\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\nUpload file\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\nSpecial pages\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\nSearch\nSearch\nAppearance\nDonate\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\nCreate account\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Chung+Sye-kyun]\nLog in\nPersonal tools\nDonate\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331892085,
+            "end": 1779331893046
+          }
+        },
+        "id": "prt_e48720373001973OnsEEZVPwHM",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "messageID": "msg_e4871fa3c001TAHPN32Ar0szFf"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331893052,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e48720737001KbtuHFPeGzxVFf",
+        "reason": "tool-calls",
+        "messageID": "msg_e4871fa3c001TAHPN32Ar0szFf",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 6729,
+          "input": 6443,
+          "output": 286,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0236
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331894408,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e48720c86001Pez3mQ2sa5a4mf",
+        "messageID": "msg_e4872073b0016Nk8HB43sVbaek",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331901421,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "d7b926c8-6eef-4426-9b22-af51d98147e0",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Chung Sye-kyun education disability sexual orientation class background"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ChungSye-kyunis a prominent South Korean politician and civil society organization leader. He served as a member of the National Assembly for six terms and was speaker of the Assembly from 2016 to 2018. Appointed the Minister of Commerce, Industry, and Energy by former President Roh Moo-hyun in 2006,Chungtook charge of the […] <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born November 5, 1950) is a South Korean politician. He held important roles like the Speaker of the National Assembly from 2016 to 2018 and the Prime Minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://kids.kiddle.co/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> South Korea's former Prime MinisterChungSye-kyun, and long-term contributions to Korean governance and diplomacy. <\/CONTENT> <URL> https://allworldspresidents.com/prime-minister/chung-sye-kyun <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ChungSye-kyunHis biography is available in 25 different languages on Wikipedia.ChungSye-kyunis the 10,734th most popular politician (up from 13,001st in 2024), the 159th most popular biography from South Korea (up from 198th in 2019) and the 74th most popular South Korean Politician. <\/CONTENT> <URL> https://pantheon.world/profile/person/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ChungSye-kyun(; born 5 November 1950) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://everything.explained.today/\\/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ChungSye-kyun(Korean : 정세균 ; Hanja : 丁世均; born 5 November 1950) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Chung_Sye-kyun <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Nat l assembly speakerchungsyekyunsays korea s opposition parties are not fundamentally Early life andeducationChungwas born on 5 November 1950 in the village of Donghyang in Jinan, North Jeolla. From 1966 to 1969 he studied at Jeonju Shinheung High School in Jeonju, where he was a student reporter and served as chairman of the student ... <\/CONTENT> <URL> https://alchetron.com/Chung-Sye-kyun <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Once again, I congratulate hosting the Korea Multicultural Youth Awards and I wish you all the best in the future. Thank you.ChungSye-kyunis the prime minister of the Republic of Korea. <\/CONTENT> <URL> https://www.koreatimes.co.kr/lifestyle/people-events/20201209/prime-ministers-message-for-dreams-of-multicultural-children <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331894410,
+            "end": 1779331901420
+          }
+        },
+        "id": "prt_e48720c88001hwlXx7iZOHifWk",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "messageID": "msg_e4872073b0016Nk8HB43sVbaek"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331901426,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e487227ed001a3VxmU7z6b3VMG",
+        "reason": "tool-calls",
+        "messageID": "msg_e4872073b0016Nk8HB43sVbaek",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7087,
+          "input": 6997,
+          "output": 90,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0223
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331902740,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e48722d13001k6428OH7pFaE8v",
+        "messageID": "msg_e487227f0001auJerf4syaBOff",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331904269,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "dbe51275-bd55-4a64-9304-b75580ab55cf",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Chung Sye-kyun education degrees Ssangyong Group career"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Born in Jinan, North Jeolla Province, in 1950,Chunggraduated from Korea University in Seoul in 1975 and worked at theSsangyongGroupuntil 1995. Afterwards, he taught students at Kyungsung ... <\/CONTENT> <URL> https://www.koreatimes.co.kr/www/nation/2025/01/113_33089.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> South Korea's former Prime MinisterChungSye-kyun, and long-term contributions to Korean governance and diplomacy. <\/CONTENT> <URL> https://allworldspresidents.com/prime-minister/chung-sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Early Life andEducationChungSye-kyunwas born in a village called Donghyang in Jinan, which is in North Jeolla, South Korea. <\/CONTENT> <URL> https://kids.kiddle.co/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ChungSye-kyunis a prominent South Korean politician and civil society organization leader. He served as a member of the National Assembly for six terms and was speaker of the Assembly from 2016 to 2018. Appointed the Minister of Commerce, Industry, and Energy by former President Roh Moo-hyun in 2006,Chungtook charge of the […] <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950) is a South Korean politician who has served as Speaker of the National Assembly from 2016 to 2018 and Prime Minister of South Korea from 2020 to 2021. He was previously leader of the main opposition Democratic Party between 2008 and 2010, and twice chairman of its predecessor, the Uri Party, first on an interim basis ... <\/CONTENT> <URL> https://dbpedia.org/page/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ChungSye-kyun(Korean : 정세균 ; Hanja : 丁世均; born 5 November 1950) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Chung_Sye-kyun <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Chungis well-known for his expertise in economic and financial affairs, and previously worked as an executive at theSsangYongGroup, a Korean conglomerate, before devoting himself to acareerin politics. Some considered Moon's nomination ofChungin December to be a sign that the administration would focus on the economy in the coming years. <\/CONTENT> <URL> https://koreajoongangdaily.joins.com/2020/06/10/national/people/Chung-Syekyun-prime-minister-interview/20200610172700242.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Nat l assembly speakerchungsyekyunsays korea s opposition parties are not fundamentally Early life andeducationChungwas born on 5 November 1950 in the village of Donghyang in Jinan, North Jeolla. From 1966 to 1969 he studied at Jeonju Shinheung High School in Jeonju, where he was a student reporter and served as chairman of the student ... <\/CONTENT> <URL> https://alchetron.com/Chung-Sye-kyun <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Upon graduation he started his socialcareeras a company worker. He entered the once colossalSsangyongBusinessGroup, working as its New York City branch manager until 1995. While working forSsangyongin the Big Apple city,Chungearned a master'sdegreein business at Pepperdine University in 1990. <\/CONTENT> <URL> https://theseoultimes.com/ST/?url=%2FST%2Fdb%2Fread.php%3Fidx%3D13108 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331902743,
+            "end": 1779331904268
+          }
+        },
+        "id": "prt_e48722d15001dUzfZa6jaiQFy3",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "messageID": "msg_e487227f0001auJerf4syaBOff"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331904274,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e4872330d001RY59KoKPB63e6C",
+        "reason": "tool-calls",
+        "messageID": "msg_e487227f0001auJerf4syaBOff",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8301,
+          "input": 8210,
+          "output": 91,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.026
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331905556,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e48723813001mUcY9vYRoLFFio",
+        "messageID": "msg_e4872331000102xKWLzVsfqx7T",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779331907042,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "a123195c-6bd1-4870-8e26-833e46aae5c3",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Chung Sye-kyun PhD degree Kyung Hee University disability sexual orientation"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Graduates ofKyungHeeUniversity, Dongdaemun-gu, Seoul, Korea: names, photos, jobs and positions, locations, education <\/CONTENT> <URL> https://alumnius.net/kyung_hee_university-4650-5 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Chungis currently an executive advisor to the Democratic Party of Korea and chairman of the Roh Moo-hyun Foundation. He received his BA in law from KoreaUniversity, his MBA from PepperdineUniversity, and hisPhDin business administration fromKyungHeeUniversity. <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> AKyungHeestudent with D+900 meets one with D+100! Keyword Talk Show: Freshmen & Seniors Together! Freshmen and current students gather to share their thoughts on campus life through key topics. <\/CONTENT> <URL> https://www.khu.ac.kr/eng/user/main/view.do <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Academics Schools & Colleges <\/CONTENT> <URL> https://khu.ac.kr/eng/user/contents/view.do?menuNo=300066 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Admissions Undergraduate Admissions Graduate Admissions Application for International Admissions Application for Undergraduate Domestic Admissions Department of Asian Studies (International students only) Application for KHU Korean Language Test Division of Global Admissions (Seoul) +82-2-961-9286 Division of Global Admissions (Global) +82-31 ... <\/CONTENT> <URL> https://khu.ac.kr/eng/user/contents/view.do?menuNo=300150 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KyungHeeUniversityhas developed each campus into a specialized comprehensive campus. The Seoul Campus is dedicated to traditional academic disciplines such as humanities, social sciences, medicine, basic science, and fine arts, while the Global Campus focuses on applied studies such as engineering, applied science, international studies ... <\/CONTENT> <URL> https://khu.elsevierpure.com <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> He received a master'sdegreefrom the Wagner School of Public Service at New YorkUniversityin 1983, an MBA from PepperdineUniversityin 1993, and a doctorate fromKyungHeeUniversityin 2000. <\/CONTENT> <URL> https://alchetron.com/Chung-Sye-kyun <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 1,525 Followers, 6 Following, 27 Posts - See Instagram photos and videos from DrphChungSye-Kyun(@chung_syekyu) <\/CONTENT> <URL> https://www.instagram.com/chung_syekyu <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779331905558,
+            "end": 1779331907041
+          }
+        },
+        "id": "prt_e48723814001nhpNngKQnr0ziB",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "messageID": "msg_e4872331000102xKWLzVsfqx7T"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779331907046,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e48723de20016mP3Ke8iKPry0h",
+        "reason": "tool-calls",
+        "messageID": "msg_e4872331000102xKWLzVsfqx7T",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9684,
+          "input": 9592,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0302
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779331910958,
+      "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+      "part": {
+        "id": "prt_e48724d2d001SSxCYUe0CYciAk",
+        "messageID": "msg_e48723de5001Dwrnsl3lBBgP7O",
+        "sessionID": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+        "type": "step-start"
+      }
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": "OpenCode returned JSONL events without terminal text. Last event types: step_finish, step_start, tool_use, step_finish, step_start, tool_use, step_finish, step_start",
+  "parse_error": false,
+  "empty_terminal_output": true,
+  "opencode_export_fallback_used": false,
+  "opencode_export_session_id": "ses_1b78e1bfdffeM9ZMuI2yK9e6z1",
+  "opencode_export_final_text_chars": "NA",
+  "opencode_export_fallback_error": "OpenCode export stdout did not contain parseable JSON: parse error: premature EOF\n                                       {   \"info\": {     \"id\": \"ses_1b\n                     (right here) ------^\n",
+  "last_event_types": ["step_finish", "step_start", "tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779331886756,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e4871eea3001uLFQPMU0xZlDhc\",\"messageID\":\"msg_e4871e45f0016ZUFn7SL3fkI9i\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331889720,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"6f020e86-6623-4b4c-96e8-84fb71ed8170\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"CHUNG Sye-kyun South Korea biography education occupation birth\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is aSouthKorean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister ofSouthKoreafrom 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ChungSye-kyun(Hangul: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is aSouthKorean politician. He was the 42nd Prime Minister ofSouthKoreafrom January 2020 until April 2021. <\/CONTENT> <URL> https://simple.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> SouthKorea'sformer Prime MinisterChungSye-kyun, and long-term contributions to Korean governance and diplomacy. <\/CONTENT> <URL> https://allworldspresidents.com/prime-minister/chung-sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> ChungSye-kyunHisbiographyis available in 25 different languages on Wikipedia.ChungSye-kyunis the 10,734th most popular politician (up from 13,001st in 2024), the 159th most popularbiographyfromSouthKorea(up from 198th in 2019) and the 74th most popularSouthKorean Politician. <\/CONTENT> <URL> https://pantheon.world/profile/person/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born November 5, 1950) is aSouthKorean politician. He held important roles like the Speaker of the National Assembly from 2016 to 2018 and the Prime Minister ofSouthKoreafrom 2020 to 2021. <\/CONTENT> <URL> https://kids.kiddle.co/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ChungSye-kyunis a prominentSouthKorean politician and civil society organization leader. He served as a member of the National Assembly for six terms and was speaker of the Assembly from 2016 to 2018. Appointed the Minister of Commerce, Industry, and Energy by former President Roh Moo-hyun in 2006,Chungtook charge of the […] <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950) is aSouthKorean politician who has served as Speaker of the National Assembly from 2016 to 2018 and Prime Minister ofSouthKoreafrom 2020 to 2021. He was previously leader of the main opposition Democratic Party between 2008 and 2010, and twice chairman of its predecessor, the Uri Party, first on an interim basis ... <\/CONTENT> <URL> https://dbpedia.org/page/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> ChungSye-kyun(Korean:정세균; Hanja:丁世均; born 5 November 1950 [1]) is aSouthKorean politician who has served as Speaker of the National Assembly from 2016 to 2018 and Prime Minister ofSouthKoreafrom 2020 to 2021. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Chung_Se-kyun <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Born in Jinan, North Jeolla Province, in 1950,Chunggraduated fromKoreaUniversity in Seoul in 1975 and worked at the Ssangyong Group until 1995. Afterwards, he taught students at Kyungsung ... <\/CONTENT> <URL> https://www.koreatimes.co.kr/www/nation/2025/01/113_33089.html <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> ChungSye-kyun, as the Speaker of National Assembly ofSouthKorea.jpg 2,000 × 1,330; 706 KB <\/CONTENT> <URL> https://www.wikidata.org/wiki/Q11270093 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331886761,\"end\":1779331889719}},\"id\":\"prt_e4871eea4001XaRHvgG7rJZ1U1\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"messageID\":\"msg_e4871e45f0016ZUFn7SL3fkI9i\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331889725,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e4871fa39001iOlVZlVOqn3QF6\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4871e45f0016ZUFn7SL3fkI9i\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-finish\",\"tokens\":{\"total\":5354,\"input\":5093,\"output\":261,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.019194}}\n{\"type\":\"step_start\",\"timestamp\":1779331892083,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e487203720017waeE50SpUXjl0\",\"messageID\":\"msg_e4871fa3c001TAHPN32Ar0szFf\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331893047,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"c7062399-1990-49bb-a743-5962e3e959c2\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://en.wikipedia.org/wiki/Chung_Sye-kyun\"},\"output\":\"URL: https://en.wikipedia.org/wiki/Chung_Sye-kyun\\nFinal URL: https://en.wikipedia.org/wiki/Chung_Sye-kyun\\nTitle: Chung Sye-kyun - Wikipedia\\nBytes read: 146125\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nJump to content\\nMain menu\\nMain menu\\nmove to sidebar\\nhide\\nNavigation\\nMain page\\n[link: https://en.wikipedia.org/wiki/Main_Page]\\nContents\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contents]\\nCurrent events\\n[link: https://en.wikipedia.org/wiki/Portal:Current_events]\\nRandom article\\n[link: https://en.wikipedia.org/wiki/Special:Random]\\nAbout Wikipedia\\n[link: https://en.wikipedia.org/wiki/Wikipedia:About]\\nContact us\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Contact_us]\\nContribute\\nHelp\\nLearn to edit\\n[link: https://en.wikipedia.org/wiki/Help:Introduction]\\nCommunity portal\\n[link: https://en.wikipedia.org/wiki/Wikipedia:Community_portal]\\nRecent changes\\n[link: https://en.wikipedia.org/wiki/Special:RecentChanges]\\nUpload file\\n[link: https://en.wikipedia.org/wiki/Wikipedia:File_upload_wizard]\\nSpecial pages\\n[link: https://en.wikipedia.org/wiki/Special:SpecialPages]\\nSearch\\nSearch\\nAppearance\\nDonate\\n[link: https://donate.wikimedia.org/?wmf_source=donate&wmf_medium=sidebar&wmf_campaign=en.wikipedia.org&uselang=en]\\nCreate account\\n[link: https://en.wikipedia.org/w/index.php?title=Special:CreateAccount&returnto=Chung+Sye-kyun]\\nLog in\\nPersonal tools\\nDonate\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331892085,\"end\":1779331893046}},\"id\":\"prt_e48720373001973OnsEEZVPwHM\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"messageID\":\"msg_e4871fa3c001TAHPN32Ar0szFf\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331893052,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e48720737001KbtuHFPeGzxVFf\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4871fa3c001TAHPN32Ar0szFf\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-finish\",\"tokens\":{\"total\":6729,\"input\":6443,\"output\":286,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.023619}}\n{\"type\":\"step_start\",\"timestamp\":1779331894408,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e48720c86001Pez3mQ2sa5a4mf\",\"messageID\":\"msg_e4872073b0016Nk8HB43sVbaek\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331901421,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"d7b926c8-6eef-4426-9b22-af51d98147e0\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Chung Sye-kyun education disability sexual orientation class background\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> ChungSye-kyunis a prominent South Korean politician and civil society organization leader. He served as a member of the National Assembly for six terms and was speaker of the Assembly from 2016 to 2018. Appointed the Minister of Commerce, Industry, and Energy by former President Roh Moo-hyun in 2006,Chungtook charge of the […] <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born November 5, 1950) is a South Korean politician. He held important roles like the Speaker of the National Assembly from 2016 to 2018 and the Prime Minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://kids.kiddle.co/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> South Korea's former Prime MinisterChungSye-kyun, and long-term contributions to Korean governance and diplomacy. <\/CONTENT> <URL> https://allworldspresidents.com/prime-minister/chung-sye-kyun <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ChungSye-kyunHis biography is available in 25 different languages on Wikipedia.ChungSye-kyunis the 10,734th most popular politician (up from 13,001st in 2024), the 159th most popular biography from South Korea (up from 198th in 2019) and the 74th most popular South Korean Politician. <\/CONTENT> <URL> https://pantheon.world/profile/person/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ChungSye-kyun(; born 5 November 1950) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://everything.explained.today/\\\\/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ChungSye-kyun(Korean : 정세균 ; Hanja : 丁世均; born 5 November 1950) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Chung_Sye-kyun <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Nat l assembly speakerchungsyekyunsays korea s opposition parties are not fundamentally Early life andeducationChungwas born on 5 November 1950 in the village of Donghyang in Jinan, North Jeolla. From 1966 to 1969 he studied at Jeonju Shinheung High School in Jeonju, where he was a student reporter and served as chairman of the student ... <\/CONTENT> <URL> https://alchetron.com/Chung-Sye-kyun <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Once again, I congratulate hosting the Korea Multicultural Youth Awards and I wish you all the best in the future. Thank you.ChungSye-kyunis the prime minister of the Republic of Korea. <\/CONTENT> <URL> https://www.koreatimes.co.kr/lifestyle/people-events/20201209/prime-ministers-message-for-dreams-of-multicultural-children <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331894410,\"end\":1779331901420}},\"id\":\"prt_e48720c88001hwlXx7iZOHifWk\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"messageID\":\"msg_e4872073b0016Nk8HB43sVbaek\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331901426,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e487227ed001a3VxmU7z6b3VMG\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4872073b0016Nk8HB43sVbaek\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-finish\",\"tokens\":{\"total\":7087,\"input\":6997,\"output\":90,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.022341}}\n{\"type\":\"step_start\",\"timestamp\":1779331902740,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e48722d13001k6428OH7pFaE8v\",\"messageID\":\"msg_e487227f0001auJerf4syaBOff\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331904269,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"dbe51275-bd55-4a64-9304-b75580ab55cf\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Chung Sye-kyun education degrees Ssangyong Group career\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Born in Jinan, North Jeolla Province, in 1950,Chunggraduated from Korea University in Seoul in 1975 and worked at theSsangyongGroupuntil 1995. Afterwards, he taught students at Kyungsung ... <\/CONTENT> <URL> https://www.koreatimes.co.kr/www/nation/2025/01/113_33089.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> South Korea's former Prime MinisterChungSye-kyun, and long-term contributions to Korean governance and diplomacy. <\/CONTENT> <URL> https://allworldspresidents.com/prime-minister/chung-sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Early Life andEducationChungSye-kyunwas born in a village called Donghyang in Jinan, which is in North Jeolla, South Korea. <\/CONTENT> <URL> https://kids.kiddle.co/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ChungSye-kyunis a prominent South Korean politician and civil society organization leader. He served as a member of the National Assembly for six terms and was speaker of the Assembly from 2016 to 2018. Appointed the Minister of Commerce, Industry, and Energy by former President Roh Moo-hyun in 2006,Chungtook charge of the […] <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950) is a South Korean politician who has served as Speaker of the National Assembly from 2016 to 2018 and Prime Minister of South Korea from 2020 to 2021. He was previously leader of the main opposition Democratic Party between 2008 and 2010, and twice chairman of its predecessor, the Uri Party, first on an interim basis ... <\/CONTENT> <URL> https://dbpedia.org/page/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> ChungSye-kyun(Korean : 정세균 ; Hanja : 丁世均; born 5 November 1950) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://www.detailedpedia.com/wiki-Chung_Sye-kyun <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Chungis well-known for his expertise in economic and financial affairs, and previously worked as an executive at theSsangYongGroup, a Korean conglomerate, before devoting himself to acareerin politics. Some considered Moon's nomination ofChungin December to be a sign that the administration would focus on the economy in the coming years. <\/CONTENT> <URL> https://koreajoongangdaily.joins.com/2020/06/10/national/people/Chung-Syekyun-prime-minister-interview/20200610172700242.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Nat l assembly speakerchungsyekyunsays korea s opposition parties are not fundamentally Early life andeducationChungwas born on 5 November 1950 in the village of Donghyang in Jinan, North Jeolla. From 1966 to 1969 he studied at Jeonju Shinheung High School in Jeonju, where he was a student reporter and served as chairman of the student ... <\/CONTENT> <URL> https://alchetron.com/Chung-Sye-kyun <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Upon graduation he started his socialcareeras a company worker. He entered the once colossalSsangyongBusinessGroup, working as its New York City branch manager until 1995. While working forSsangyongin the Big Apple city,Chungearned a master'sdegreein business at Pepperdine University in 1990. <\/CONTENT> <URL> https://theseoultimes.com/ST/?url=%2FST%2Fdb%2Fread.php%3Fidx%3D13108 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331902743,\"end\":1779331904268}},\"id\":\"prt_e48722d15001dUzfZa6jaiQFy3\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"messageID\":\"msg_e487227f0001auJerf4syaBOff\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331904274,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e4872330d001RY59KoKPB63e6C\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e487227f0001auJerf4syaBOff\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-finish\",\"tokens\":{\"total\":8301,\"input\":8210,\"output\":91,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.025995}}\n{\"type\":\"step_start\",\"timestamp\":1779331905556,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e48723813001mUcY9vYRoLFFio\",\"messageID\":\"msg_e4872331000102xKWLzVsfqx7T\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779331907042,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"a123195c-6bd1-4870-8e26-833e46aae5c3\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Chung Sye-kyun PhD degree Kyung Hee University disability sexual orientation\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ChungSye-kyun(Korean: 정세균; Hanja: 丁世均; born 5 November 1950 [1]) is a South Korean politician who served as the speaker of the National Assembly from 2016 to 2018 and as the prime minister of South Korea from 2020 to 2021. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Chung_Sye-kyun <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Graduates ofKyungHeeUniversity, Dongdaemun-gu, Seoul, Korea: names, photos, jobs and positions, locations, education <\/CONTENT> <URL> https://alumnius.net/kyung_hee_university-4650-5 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Chungis currently an executive advisor to the Democratic Party of Korea and chairman of the Roh Moo-hyun Foundation. He received his BA in law from KoreaUniversity, his MBA from PepperdineUniversity, and hisPhDin business administration fromKyungHeeUniversity. <\/CONTENT> <URL> https://perryworldhouse.upenn.edu/fellows-and-affiliates/chung-sye-kyun <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> AKyungHeestudent with D+900 meets one with D+100! Keyword Talk Show: Freshmen & Seniors Together! Freshmen and current students gather to share their thoughts on campus life through key topics. <\/CONTENT> <URL> https://www.khu.ac.kr/eng/user/main/view.do <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Academics Schools & Colleges <\/CONTENT> <URL> https://khu.ac.kr/eng/user/contents/view.do?menuNo=300066 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Admissions Undergraduate Admissions Graduate Admissions Application for International Admissions Application for Undergraduate Domestic Admissions Department of Asian Studies (International students only) Application for KHU Korean Language Test Division of Global Admissions (Seoul) +82-2-961-9286 Division of Global Admissions (Global) +82-31 ... <\/CONTENT> <URL> https://khu.ac.kr/eng/user/contents/view.do?menuNo=300150 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> KyungHeeUniversityhas developed each campus into a specialized comprehensive campus. The Seoul Campus is dedicated to traditional academic disciplines such as humanities, social sciences, medicine, basic science, and fine arts, while the Global Campus focuses on applied studies such as engineering, applied science, international studies ... <\/CONTENT> <URL> https://khu.elsevierpure.com <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> He received a master'sdegreefrom the Wagner School of Public Service at New YorkUniversityin 1983, an MBA from PepperdineUniversityin 1993, and a doctorate fromKyungHeeUniversityin 2000. <\/CONTENT> <URL> https://alchetron.com/Chung-Sye-kyun <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 1,525 Followers, 6 Following, 27 Posts - See Instagram photos and videos from DrphChungSye-Kyun(@chung_syekyu) <\/CONTENT> <URL> https://www.instagram.com/chung_syekyu <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779331905558,\"end\":1779331907041}},\"id\":\"prt_e48723814001nhpNngKQnr0ziB\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"messageID\":\"msg_e4872331000102xKWLzVsfqx7T\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779331907046,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e48723de20016mP3Ke8iKPry0h\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4872331000102xKWLzVsfqx7T\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-finish\",\"tokens\":{\"total\":9684,\"input\":9592,\"output\":92,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.030156}}\n{\"type\":\"step_start\",\"timestamp\":1779331910958,\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"part\":{\"id\":\"prt_e48724d2d001SSxCYUe0CYciAk\",\"messageID\":\"msg_e48723de5001Dwrnsl3lBBgP7O\",\"sessionID\":\"ses_1b78e1bfdffeM9ZMuI2yK9e6z1\",\"type\":\"step-start\"}}\n"
+}

@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Bachelor of Education (Educational Administration), Ubon Ratchathani Rajabhat Institute",
+  "educational_attainment_source": "https://ptp.or.th/archives/people/นาย-ชูวิทย์-พิทักษ์พรพัล",
+  "prior_occupation": "Business owner (Trakan Tiger Zoo)",
+  "prior_occupation_source": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ",
+  "birth_year": 1963,
+  "birth_year_source": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ",
+  "birth_place": "Trakan Phuet Phon District, Ubon Ratchathani Province, Thailand",
+  "birth_place_source": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://th.wikipedia.org/wiki/ชูวิทย์_พิทักษ์พรพัลลภ"
+}

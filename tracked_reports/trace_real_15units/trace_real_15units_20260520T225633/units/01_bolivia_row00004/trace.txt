@@ -1,0 +1,492 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1779332267695,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e4877bead001mOjpA2wTyvjgdb",
+        "messageID": "msg_e4877af6d0018kNUCPFwUM6L6w",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332269683,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "7945a106-bdba-4357-995e-84c188dd0858",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth José Shiriqui Rapp Bolivia biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ShiriquiRappMezothJosese encuentra en Santa Cruz de la Sierra, Departamento de Santa Cruz. Esta empresa se desempeña en la siguiente industria: Venta de maquinaria. <\/CONTENT> <URL> https://bo.todosnegocios.com/shiriqui-rapp-mezoth-jose-4-6217970 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MOISÉSSHIRIQUIRAPPES EL NUEVO JEFE DE LA CASA MILITARShiriquiestuvo cumpliendo su servicio en Villazón por dos años, tras su nombramiento se traslado a la ciudad de La Paz para asumir sus... <\/CONTENT> <URL> https://www.facebook.com/story.php/?story_fbid=122189233628535606&id=61566068199963 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Segundo a imprensa local, além de Fabiano, no local também foi executadoJoséDavid ShriquiRapp, que era filho do ex-prefeito de Trinidad Moisés Shriqui, irmão do atual vereador do município deMezothShriqui de Trinidad, e primo em primeiro grau do governador de Beni,JoséAlejandro Unzueta. <\/CONTENT> <URL> https://www.folhamax.com/policia/traficante-conhecido-em-cidade-de-mt-e-assassinado-na-bolivia/366843 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> CONCEJAL MUNICIPALMEZOTHJ. SHRIQUIRAPP, PARTICIPÓ EN EL 88 ANIVERSARIO DEL CESE DE HOSTILIDADES DE LA GUERRA DEL CHACO. La guerra del chaco, conflicto que enfrentó aBoliviay Paraguay entre los años 1932 y 1935. <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/concejal-municipal-mezoth-j-shriqui-rapp-participó-en-el-88-aniversario-del-cese/288420563637279 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La historia de la guerrilla enBoliviaes una historia de ida y vuelta. Recientemente, MoisesShiriqui, hijo del alcalde de Trinidad, Beni, MoisesShiriqui <\/CONTENT> <URL> https://datos-bo.com/nacion/la-otra-cara-de-la-guerrilla-del-che-en-bolivia <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 1st Plurinational Legislative Assembly ofBoliviaDaguer Yaqueline Emma Lavive Yáñez Simon Beni C. 61 PPBMezothJoseShriquiRappBelia Antonia Cajiri Roca Beni C. 62 PPB Farides Vaca Suárez Carmelo <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Moisés_Shriqui <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 0 likes, 0 comments - roxanaahoracon on November 16, 2025: \"MOISÉSSHIRIQUIRAPPES EL NUEVO JEFE DE LA CASA MILITARShiriquiestuvo cumpliendo su servicio en Villazón por dos años, tras su nombramiento se traslado a la ciudad de La Paz para asumir sus nuevas funciones. La población de Villazón, reconoce el trabajo del Cnl. MoisésShiriqui, por su contribución en temas de seguridad. Su ... <\/CONTENT> <URL> https://www.instagram.com/p/DRJA9n2Doz2 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 10 Most Famous Bolivian People Bolivians are people identified with the country ofBolivia. This connection may be residential, legal, historical or cultural. For most Bolivians, several (or all) of these connections exist and are <\/CONTENT> <URL> https://www.discoverwalks.com/blog/bolivia/10-most-famous-bolivian-people <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332267703,
+            "end": 1779332269682
+          }
+        },
+        "id": "prt_e4877beb0001ogVf2eF80LJCJ2",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e4877af6d0018kNUCPFwUM6L6w"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332271182,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "ffd6a3cc-e7a1-44b5-bd9f-1d3925e5a146",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth Shiriqui Rapp diputado Bolivia 2009"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> El domingo 6 de diciembre de2009se celebraron las elecciones generales enBolivia, después de un referéndum constitucional celebrado el 25 de enero de ese mismo año. Los votantes debían elegir al presidente, al vicepresidente y a 130diputadosy 36 senadores para el período 2010-2015. Los cinco departamentos que aún no lo habían hecho votaron a favor de la autonomía departamental ... <\/CONTENT> <URL> https://es.wikipedia.org/wiki/Elecciones_generales_de_Bolivia_de_2009 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos como senadores,diputadosplurinominales,diputadosuninominales ydiputadospor circunscripción especial indígena originario de la Asamblea Legislativa Plurinacional del Estado Plurinacional deBolivia, en las elecciones generales del 6 de diciembre. <\/CONTENT> <URL> https://mail.eabolivia.com/lista-nomina-de-senadores-y-diputados-electos-el-2009.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Toda la información de las Elecciones Generales enBoliviageneradas el 6 de diciembre en \"Elecciones En Tiempo real\". La Paz, 9 sep.- La siguiente relación nominal de candidatos presentados por ocho partidos y agrupaciones políticas en la perspectiva de las elecciones bolivianas de2009, en ... <\/CONTENT> <URL> https://www.eabolivia.com/elecciones-2009/1964-partidos-listas-y-candidatos-en-bolivia.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 20/11/1974 16/04/1966 TARIJA <\/CONTENT> <URL> https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Nota: La Cámara deDiputadosestá conformada por 130 miembros quienes son elegidos de la siguiente forma: 70 por mayoria simple en cisrcunscripciones uninominales, 53 por representacion proporcional y en circunscripciones plurinominales departamentales, y 7 (reservados para representantes de las poblaciones indigenas en 7 de las 9 provincias ... <\/CONTENT> <URL> https://pdba.georgetown.edu/Elecdata/Bolivia/uni09.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Publicidad (ABI) El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos comodiputadosplurinominales,diputadosuninominales ydiputadospor circunscripción ... <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El libro ofrece las biografías de los parlamentarios (senadores ydiputados) deBolivia, desde 1979, cuando se eligió el primer Congreso en el retorno a la democracia, hasta los de la ... <\/CONTENT> <URL> https://www.researchgate.net/publication/280576965_Diccionario_biografico_de_parlamentarios_1979_-_2009 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> El documento presenta listas de candidatos para las elecciones generales de2009enBoliviade la organización política Plan Progreso paraBoliviaConvergencia Nacional (PPB-APB). Incluye candidatos a presidente, vicepresidente, senador por el departamento de Chuquisaca ydiputadosplurinominales por Chuquisaca con sus nombres completos, documentos de identidad y firmas. <\/CONTENT> <URL> https://es.scribd.com/doc/19544552/Candidatos-PPB-APB <\/URL> __END_OF_SOURCE 8__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332267711,
+            "end": 1779332271181
+          }
+        },
+        "id": "prt_e4877beba001TtE1u0g54TkZ6Y",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e4877af6d0018kNUCPFwUM6L6w"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332271188,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e4877cc4f001BzyzzLh2dozApg",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877af6d0018kNUCPFwUM6L6w",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5439,
+          "input": 5104,
+          "output": 335,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0203
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332274385,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e4877d8cf001yyxe5uRzxj7CJ8",
+        "messageID": "msg_e4877cc52001WKNXDPHrPJC7Hr",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332275850,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "dda2dfc6-08bc-49fe-bb93-1acefe868482",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth José Shriqui Rapp biografía educación profesión"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> POR MAYORIA DE LOS PRESENTES, EL CONCEJALMEZOTHSHRIQUIFUE REELECTO COMO SECRETARIO El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. | Concejo Municipal de ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 1st Plurinational Legislative Assembly of Bolivia Daguer Yaqueline Emma Lavive Yáñez Simon Beni C. 61 PPBMezothJoseShriquiRappBelia Antonia Cajiri Roca Beni C. 62 PPB Farides Vaca Suárez Carmelo <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Moisés_Shriqui <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> JoséDavidShriquiRappy Fabiano de Souza fueron asesinados este domingo, cerca de las 19:15, en la localidad de San Matías. <\/CONTENT> <URL> https://eju.tv/2022/09/santa-cruz-tres-personas-murieron-baleadas-en-san-matias <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MezothJoséShriquiRapp, jefe nacional de Sanidad Vegetal del Senasag, quien aclaró desde el punto de vista jurídico que existe una norma supranacional emitida por la Comunidad Andina de Naciones (CAN), que además de la Ley nacional 830, le da a su entidad la potestad para ser los directos responsables en el tema de la fiscalización de ... <\/CONTENT> <URL> https://publiagro.com.bo/2020/08/senasag-ibmetro-control-plaguicidas <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MAURICIO BARBA IRIARTE, con Cedula de Identidad NO 1735747 - IH, Concejal Municipal, Sra. CARLA ROXANA SITTYC BECERRA, con Cedula de Identidad NO 1932808, Concejal Municipal, Ing.MEZOTHJOSESHRIQUIRAPP, con Cedula de Identidad NO 1733390 expedido en Beni, Concejal Municipal y Lic. <\/CONTENT> <URL> https://trinidad.gob.bo/jdownloads/Transparencia/gestion_2023/denuncias_oct_23/DENUNCIA - 09_2023.pdf <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 0 likes, 0 comments - concejomunicipaldetrinidad on May 3, 2024: \"DIRECTIVA CONCEJO MUNICIPAL DE TRINIDAD GESTIÓN 2024-2025 Martha Yáñez Hurtado - Presidente Arnoldo Sebastián Méndez Abuawad - VicepresidenteMezothJoséShriquiRapp- Secretario\". <\/CONTENT> <URL> https://www.instagram.com/p/C6gySk2u1Zm <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 0 likes, 0 comments - trini_play on April 4, 2025: \"Los Concejales Carla Roxana Sittyc, Rodney Mercado yMezothShriqui, como miembros de las Comisiones Jurídica Institucional, Económica y Financiera yEducación, Cultura y Deportes, se reunieron la mañana de este viernes, en trabajo de Mesa Técnica con el Ejecutivo Municipal, Secretaría de Bienestar Integral y Dirección Municipal de ... <\/CONTENT> <URL> https://www.instagram.com/p/DIC3w79NX9d <\/URL> __END_OF_SOURCE 8__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332274387,
+            "end": 1779332275849
+          }
+        },
+        "id": "prt_e4877d8d1001nBrwzAYrDbg7F0",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e4877cc52001WKNXDPHrPJC7Hr"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332277224,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "b841557b-3698-41ec-8062-1bf142347b7f",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth Shriqui Rapp hoja de vida diputado"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp,diputadouninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. Gladys Parada and 24 others 󰍸 25 󰤦 4 Last viewed on: Mar 19, 2026 <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Publicacióndehojasdevida <\/CONTENT> <URL> https://region-administrativa-y-de-planificacion-amazonia-rap.micolombiadigital.gov.co/tema/hoja-de-vida <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> En cumplimiento del artículo 346 del Código Electoral, declaro bajo gravedaddejuramento, que todos los datos contenidos en mihojadevidason verídicos y autorizo su publicación en la página web del Tribunal Electoral. <\/CONTENT> <URL> https://voto2024.espaciocivico.org/sites/default/files/candidatos_diputados/cv_240.pdf <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DiputadoPor Distrito Electoral Multiple - Circunscripcion: Huancavelica Elki Ysabel Ramos Zegarra -Hojadevidadel Candidato ... <\/CONTENT> <URL> https://www.democrataverde.com/cv.php?pagina=14 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 0 likes, 0 comments - trini_play on April 4, 2025: \"Los Concejales Carla Roxana Sittyc, Rodney Mercado yMezothShriqui, como miembrosdelas Comisiones Jurídica Institucional, Económica y Financiera y Educación, Cultura y Deportes, se reunieron la mañanadeeste viernes, en trabajodeMesa Técnica con el Ejecutivo Municipal, SecretaríadeBienestar Integral y Dirección Municipalde... <\/CONTENT> <URL> https://www.instagram.com/p/DIC3w79NX9d <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 2026, AÑODEMARGARITA MAZA PARADA. <\/CONTENT> <URL> https://web.diputados.gob.mx <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> UNINOMINALES C. 61MezothJoseShriquiRapp(PPB) y Belia Antonia Cajiri Roca (s) C. 62 Farides Vaca Suárez (PPB) y Carmelo Egüez Rodríguez (s) <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Este documento presenta el Diccionario BiográficodeParlamentarios 1979-2019, el cual contiene información biográficadeaproximadamente 1000 parlamentarios bolivianos desde 1979 hasta la fecha. El diccionario fue apoyado por Fundappac y la Fundación Konrad Adenauer y tiene como objetivo mejorar el conocimiento sobre la historia del parlamento boliviano y sus miembros a travésdedatos ... <\/CONTENT> <URL> https://es.scribd.com/document/564856051/Diccionario-biogra-fico-de-parlamentarios-1979-2019 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332274390,
+            "end": 1779332277223
+          }
+        },
+        "id": "prt_e4877d8d400277S2MnNoLXhreq",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e4877cc52001WKNXDPHrPJC7Hr"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332292227,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "c9e2c3bd-9b37-4a06-b7f1-fff23a819d14",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth José Shriqui Rapp lugar de nacimiento"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 5, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"Mezoth José Shriqui Rapp lugar de nacimiento\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"mezoth josé shriqui rapp lugar de nacimiento\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332274393,
+            "end": 1779332292226
+          }
+        },
+        "id": "prt_e4877d8d700108u0No6VCam8HO",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e4877cc52001WKNXDPHrPJC7Hr"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332292233,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e48781e840017YwMiTFMcKE6QB",
+        "reason": "tool-calls",
+        "messageID": "msg_e4877cc52001WKNXDPHrPJC7Hr",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7829,
+          "input": 7401,
+          "output": 428,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0286
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332293977,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e48782557001F1t9MU7dYGiEG2",
+        "messageID": "msg_e48781e87001NGCKBTFJL0TooX",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332300640,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "15f110a0-4359-42fe-b22c-b0697ccba876",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth José Shriqui Rapp biografía completa"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 1 likes, 0 comments - atbdigital on September 12, 2022: \"José DavidShriquiRappy Fabiano de Souza fueron asesinados este domingo, cerca de las 19:15, en la localidad de #SanMatías. Las víctimas estaban compartiendo en un local, ubicado a tres cuadras de la plaza principal, y fueron acribilladas por sujetos armados que irrumpieron en el lugar y, luego de cometer los crímenes, salieron ... <\/CONTENT> <URL> https://www.instagram.com/p/Cia0SHnO0Oj <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Otro de sus hijos,MezothShriquiRappes actualmente concejal del municipio de Trinidad. En el domicilio del exalcaldeShriquien pleno centro capitalino se pudo observar ajetreos propios de un funeral, por lo que se supo que el velatorio del extintoJoséDavid se realizará en dicho lugar. <\/CONTENT> <URL> https://www.facebook.com/PanoramaInformativoTdd/posts/trinidadel-cuerpo-sin-vida-del-hijo-del-exalcalde-moises-shriqui-fue-traído-a-tr/1040668513278258 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> JoséDavidShriquiRappy Fabiano de Souza fueron asesinados este domingo, cerca de las 19:15, en la localidad de San Matías. <\/CONTENT> <URL> https://eju.tv/2022/09/santa-cruz-tres-personas-murieron-baleadas-en-san-matias <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> En horas de la noche de ese mismo día se registraron otros dos asesinatos en ese municipio cruceño al interior de un local de riñas de gallos.JoséDavidShriquiRapp, hijo del exalcalde de Trinidad, Moisés Shiriqui, y Fabiano de Souza, fueron las víctimas que se encontraban compartiendo en el local. <\/CONTENT> <URL> https://elperiodico.com.bo/la-policia-envia-un-contingente-a-san-matias-para-investigar-al-menos-cuatro-asesinatos <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Durante la mañana de este lunes se trasladó el cuerpo sin vida deJoséDavidShriquiRapp, hombre que este pasado domingo murió a consecuencia de disparos de arma de fuego durante una reunión en un domicilio en el municipio cruceño de San Matías. La víctima recibió varios disparos por parte de dos s... <\/CONTENT> <URL> https://noticias.unitel.bo/seguridad/trasladan-a-trinidad-restos-de-uno-de-los-asesinados-en-san-matias-LX4123915 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Los asesinos hirieron a un tercero y luego escaparon del lugar en un vehículo. Las víctimas fueron identificadas comoJoséDavidShriquiRapp, hijo del exalcalde de Trinidad MoisésShriquiVejarano, y Fabiano de Souza, ciudadano brasileño. Jhonny Arce, tercera víctima que quedó herida, fue trasladado a un hospital de Cáceres en Brasil. <\/CONTENT> <URL> https://www.noticiasfides.com/nacional/seguridad/doble-asesinato-grupo-armado-acribilla-a-hijo-de-un-exalcalde-y-a-un-brasileno-en-san-matias-417655 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La familiaRapp,Shriquiy Cordano nada hicimos de malo en San Matías y en el resto de Bolivia, somos personas de respeto y amigos de todo mundo, manifestó Mary Luz Cordano, familiar del ... <\/CONTENT> <URL> https://eldeber.com.bo/santa-cruz/familiares-niegan-que-hombre-acribillado-en-san-matias-hubiera-estado-involucrado-en-narcotrafico_292675 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> De los once concejales que integran el cuerpo deliberativo, solo ocho estuvieron presentes en la votación Con el respaldo mayoritario de sus pares, la concejal Martha Yáñez Hurtado fue reelegida este sábado como presidenta del Concejo Municipal de Trinidad para el periodo 2025-2026. Junto a ella, Arnoldo Méndez Abuawad mantuvo su cargo como vicepresidente, mientras queMezothShriquiRapp... <\/CONTENT> <URL> https://el-mamore.com/martha-yanez-por-tercera-vez-presidenta-del-concejo-municipal <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332293981,
+            "end": 1779332300639
+          }
+        },
+        "id": "prt_e48782559001V7FhrRA2toMrWk",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e48781e87001NGCKBTFJL0TooX"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332302373,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "63f6d071-8216-4fc8-ae7f-7f2a46b2583d",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth Shriqui Rapp profesión antes de ser diputado"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp,diputadouninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. Gladys Parada and 24 others 󰍸 25 󰤦 4 Last viewed on: Mar 19, 2026 <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Esta es una imagen trillada: cuando muchosdiputados, presidentes o ministros asumen como funcionarios le dicen a todo el mundo que han decidido, con rostrodeabnegación… <\/CONTENT> <URL> https://diario1.com/zona-1/2015/09/ser-diputado-el-negocio-del-millon-de-dolares <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> En esta sección, desglosaremos los requisitos que deben cumplir los candidatos adiputadoen México, explicando su importancia y cómo contribuyen al fortalecimiento del sistema democrático. Paraserdiputadose requiere: I.Serciudadano mexicano, por nacimiento, en el ejerciciodesus derechos. II. <\/CONTENT> <URL> https://sites.google.com/un.edu.mx/derechos-polticos/requisitos-para-ser-diputado-o-senador <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Paraserdiputadose requiere: I.Serciudadano mexicano, por nacimiento, en el ejerciciodesus derechos. II. Tener veintiún años cumplidos el díadela elección; III.Seroriginariodela entidad federativa en que se haga la elección o vecinodeesta con residencia efectivademásdeseis meses anteriores a la fechadeella. Para poder figurar en las listasdelas circunscripciones ... <\/CONTENT> <URL> https://www.constitucionpolitica.mx/titulo-3-division-poderes/capitulo-2-poder-legislativo/seccion-1-eleccion-instalacion-congreso/articulo-55-requisitos-diputado <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Artículo 10 1. Son requisitos paraserDiputada oDiputadoFederal o Senadora o Senador, ademásdelos que señalan respectivamente los artículos 55 y 58dela Constitución, los siguientes: (PÁRRAFO REFORMADO D.O.F. 13DEABRILDE2020) a) Estar inscrito en el Registro FederaldeElectores y contar con credencial para votar; b) Nosermagistrado electoral o secretario del Tribunal ... <\/CONTENT> <URL> https://mexico.justia.com/federales/leyes/ley-general-de-instituciones-y-procedimientos-electorales/libro-segundo/titulo-primero/capitulo-ii <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 23deseptiembre 2024 a las 17:42 hrs. En México, entre los requisitos paraserdiputadoo Senadordela República no se establece algún gradodeestudios en específico,deacuerdo con la ... <\/CONTENT> <URL> https://www.publimetro.com.mx/nacional/2024/09/23/que-se-necesita-para-ser-legislador-este-es-el-nivel-de-estudios-de-integrantes-del-congreso <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 0 likes, 0 comments - trini_play on April 4, 2025: \"Los Concejales Carla Roxana Sittyc, Rodney Mercado yMezothShriqui, como miembrosdelas Comisiones Jurídica Institucional, Económica y Financiera y Educación, Cultura y Deportes, se reunieron la mañanadeeste viernes, en trabajodeMesa Técnica con el Ejecutivo Municipal, SecretaríadeBienestar Integral y Dirección Municipalde... <\/CONTENT> <URL> https://www.instagram.com/p/DIC3w79NX9d <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Fuente: lapalabradelbeni.com.bo El concejal del Movimiento Tercer Sistema (MTS),MezothShriqui, informó que lograron aprobar en grande y en detalle la \"LeydeExpropiación\", presentada por ... <\/CONTENT> <URL> https://eju.tv/2021/07/trinidad-concejales-del-mts-logran-aprobar-ley-de-expropiacion <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332293985,
+            "end": 1779332302372
+          }
+        },
+        "id": "prt_e4878255e001KUYkVeAwJLmYPO",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e48781e87001NGCKBTFJL0TooX"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332303966,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "3548f6fe-6962-44d9-a182-ff0ec37e5d66",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth Shriqui Rapp estudios universitarios"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> El concejalMezothShriquiRappinforma sobre la aprobación mediante una Ley Municipal de la Urbanización Santa Inés II. #ConcejoMunicipalDeTrinidad <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/el-concejal-mezoth-shriqui-rapp-informa-sobre-la-aprobación-mediante-una-ley-mun/1140030380054462 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> POR MAYORIA DE LOS PRESENTES, EL CONCEJALMEZOTHSHRIQUIFUE REELECTO COMO SECRETARIO El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. | Concejo Municipal de ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Proyecto deEstudiosUniversitariospara Personas Confinadas Este programa permite a estudiantes privades de libertad graduados de bachillerato en la Universidad de Puerto Rico como parte del Proyecto deEstudiosUniversitariospara Personas Confinadas, proseguirestudiosen la Maestría en Gestión y Administración Cultural. <\/CONTENT> <URL> https://humanidades.uprrp.edu/magac/?page_id=1832 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ORGANIZACIÓN DEL TIEMPO: UNA HERRAMIENTA ON-LINE PARA LOS ESTUDIANTESUNIVERSITARIOSMarchena Consejero, E.1,2, Hervías Ortega, F.2,RappGarcía, C.2, Navarro Guzmán, J. <\/CONTENT> <URL> https://sap.uca.es/wp-content/uploads/2017/05/Organización-del-tiempo-una-herramienta-on-line-para-los-estudiantes-universitarios.pdf <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Por ello, se promueve la incorporación de estudiantesuniversitariosa su comunidad discursiva académica, ya que son jóvenes con una historia particular y vida social compleja, que se incluyen de manera diversa al sistema de educación. El propósito general es valorar el recurso intercultural \"rap\" <\/CONTENT> <URL> https://www.academia.edu/87948728/Experiencias_Significativas_De_Integración_Social_De_Universitarios_Mediante_La_Producción_Textual_De_Rap <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Experiencias significativas de integración social deuniversitariosmediante la producción textual de rap Significant experiences of social integration of university students by textual production of rap Adriana María Pérez Cedeño1, Águeda María Caraballo Ramos1, Lourdes Claret Martínez Pérez2, Cecilia del Valle Marcano Molano3 Universidad de Oriente, Núcleo de Anzoátegui ... <\/CONTENT> <URL> https://ve.scielo.org/scielo.php?script=sci_arttext&pid=S1315-01622014000300011 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Conversations about the intersection of race, ethnicity, and identity have dominated the American academic and political discourse for years, and the American educational research space for even longer. The incorporation of religion into the intersectionality discussion, however, is far less common; and little scholarly attention has been paid to the role of the minutiae of daily religious ... <\/CONTENT> <URL> https://repository.yu.edu/items/801f0e21-907a-4262-9f71-07c0b45f1281 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Aprende RAP de los mejores a tu ritmo Estudia desde casa con artistas de éxito internacional, solo en Magnos Music School. Empieza a cumplir sueños en nuestra escuela de música rap ¿Quieres formarte con nosotros? El domingo 20 tenemos una Master Class de Creación de Instrumentales <\/CONTENT> <URL> https://magnosschool.com <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Rav Shimon Shkop (L) with Rav Chaim Ozer Grodzinski (R) Rav Shimon Shkop had traveled to Montreal to raise money for the yeshiva. He stayed at the home of a certain wealthy man, who was known for his generous contributions to worthwhile causes. When he arrived on this particular occasion he found his usually magnanimous host in joylessness and frustration. He had conveyed to Rav Shkop that ... <\/CONTENT> <URL> https://rebbestories.blogspot.com/2011/02/rav-shimon-shkop-in-montreal.html <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332293989,
+            "end": 1779332303965
+          }
+        },
+        "id": "prt_e48782562001f7kRl0RFTqXsF8",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e48781e87001NGCKBTFJL0TooX"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332303971,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e48784c5f001R58zabnYc6gMMK",
+        "reason": "tool-calls",
+        "messageID": "msg_e48781e87001NGCKBTFJL0TooX",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10266,
+          "input": 10121,
+          "output": 145,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0325
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332305748,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e48785352001V4Wtlc2Jywe3lP",
+        "messageID": "msg_e48784c62001wzDm2Ugu5WMc76",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332305758,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "2a919c95-81b4-4c18-8ee5-67899d04b4a0",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth José Shriqui Rapp ingeniero agrónomo o civil?"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Mezoth José Shriqui Rapp ingeniero agrónomo o civil?\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"mezoth josé shriqui rapp ingeniero agrónomo o civil?\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332305750,
+            "end": 1779332305757
+          }
+        },
+        "id": "prt_e48785354001wBIJVPS3ZkbYkS",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e48784c62001wzDm2Ugu5WMc76"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332305760,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "5e2d4cbc-24ee-433b-b4cd-c4629edab887",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth Shriqui Rapp Senasag cargo anterior"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Mezoth Shriqui Rapp Senasag cargo anterior\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"mezoth shriqui rapp senasag cargo anterior\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332305752,
+            "end": 1779332305759
+          }
+        },
+        "id": "prt_e48785357001I1fmS83GkfWhba",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e48784c62001wzDm2Ugu5WMc76"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1779332305765,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "d3065732-dfca-46b2-9c02-729c37b0c4e1",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth Shriqui Rapp biografía parlamentaria Bolivia"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"query\": \"Mezoth Shriqui Rapp biografía parlamentaria Bolivia\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_search:{\\\"query\\\": \\\"mezoth shriqui rapp biografía parlamentaria bolivia\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1779332305755,
+            "end": 1779332305760
+          }
+        },
+        "id": "prt_e48785359002c5im20pq91TOqx",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "messageID": "msg_e48784c62001wzDm2Ugu5WMc76"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1779332305765,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e48785361002XBj2Of7LynkB9f",
+        "reason": "tool-calls",
+        "messageID": "msg_e48784c62001wzDm2Ugu5WMc76",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-finish",
+        "tokens": {
+          "total": 14966,
+          "input": 14815,
+          "output": 151,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0467
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1779332315708,
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "id": "prt_e48787a3b001C70g2H5VYK3367",
+        "messageID": "msg_e48785364001WmunAjxFTK6ojZ",
+        "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"University degree (Engineering)\",\n  \"prior_occupation\": \"Engineer and business owner in the machinery sales sector\",\n  \"birth_year\": 1975,\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748\",\n    \"prior_occupation\": \"https://bo.todosnegocios.com/shiriqui-rapp-mezoth-jose-4-6217970\",\n    \"birth_year\": \"Provided in task metadata\",\n    \"birth_place\": \"Unknown\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\",\n    \"class_background\": \"https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748\"\n  }\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_1b788512cffeKBfG3K8JFJhK7O",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_1b788512cffeKBfG3K8JFJhK7O",
+  "opencode_export_final_text_chars": 971,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["step_start", "tool_use", "tool_use", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1779332267695,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e4877bead001mOjpA2wTyvjgdb\",\"messageID\":\"msg_e4877af6d0018kNUCPFwUM6L6w\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332269683,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"7945a106-bdba-4357-995e-84c188dd0858\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth José Shiriqui Rapp Bolivia biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ShiriquiRappMezothJosese encuentra en Santa Cruz de la Sierra, Departamento de Santa Cruz. Esta empresa se desempeña en la siguiente industria: Venta de maquinaria. <\/CONTENT> <URL> https://bo.todosnegocios.com/shiriqui-rapp-mezoth-jose-4-6217970 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> MOISÉSSHIRIQUIRAPPES EL NUEVO JEFE DE LA CASA MILITARShiriquiestuvo cumpliendo su servicio en Villazón por dos años, tras su nombramiento se traslado a la ciudad de La Paz para asumir sus... <\/CONTENT> <URL> https://www.facebook.com/story.php/?story_fbid=122189233628535606&id=61566068199963 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Segundo a imprensa local, além de Fabiano, no local também foi executadoJoséDavid ShriquiRapp, que era filho do ex-prefeito de Trinidad Moisés Shriqui, irmão do atual vereador do município deMezothShriqui de Trinidad, e primo em primeiro grau do governador de Beni,JoséAlejandro Unzueta. <\/CONTENT> <URL> https://www.folhamax.com/policia/traficante-conhecido-em-cidade-de-mt-e-assassinado-na-bolivia/366843 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> CONCEJAL MUNICIPALMEZOTHJ. SHRIQUIRAPP, PARTICIPÓ EN EL 88 ANIVERSARIO DEL CESE DE HOSTILIDADES DE LA GUERRA DEL CHACO. La guerra del chaco, conflicto que enfrentó aBoliviay Paraguay entre los años 1932 y 1935. <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/concejal-municipal-mezoth-j-shriqui-rapp-participó-en-el-88-aniversario-del-cese/288420563637279 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> La historia de la guerrilla enBoliviaes una historia de ida y vuelta. Recientemente, MoisesShiriqui, hijo del alcalde de Trinidad, Beni, MoisesShiriqui <\/CONTENT> <URL> https://datos-bo.com/nacion/la-otra-cara-de-la-guerrilla-del-che-en-bolivia <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 1st Plurinational Legislative Assembly ofBoliviaDaguer Yaqueline Emma Lavive Yáñez Simon Beni C. 61 PPBMezothJoseShriquiRappBelia Antonia Cajiri Roca Beni C. 62 PPB Farides Vaca Suárez Carmelo <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Moisés_Shriqui <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 0 likes, 0 comments - roxanaahoracon on November 16, 2025: \\\"MOISÉSSHIRIQUIRAPPES EL NUEVO JEFE DE LA CASA MILITARShiriquiestuvo cumpliendo su servicio en Villazón por dos años, tras su nombramiento se traslado a la ciudad de La Paz para asumir sus nuevas funciones. La población de Villazón, reconoce el trabajo del Cnl. MoisésShiriqui, por su contribución en temas de seguridad. Su ... <\/CONTENT> <URL> https://www.instagram.com/p/DRJA9n2Doz2 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 10 Most Famous Bolivian People Bolivians are people identified with the country ofBolivia. This connection may be residential, legal, historical or cultural. For most Bolivians, several (or all) of these connections exist and are <\/CONTENT> <URL> https://www.discoverwalks.com/blog/bolivia/10-most-famous-bolivian-people <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332267703,\"end\":1779332269682}},\"id\":\"prt_e4877beb0001ogVf2eF80LJCJ2\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e4877af6d0018kNUCPFwUM6L6w\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332271182,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"ffd6a3cc-e7a1-44b5-bd9f-1d3925e5a146\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth Shiriqui Rapp diputado Bolivia 2009\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> El domingo 6 de diciembre de2009se celebraron las elecciones generales enBolivia, después de un referéndum constitucional celebrado el 25 de enero de ese mismo año. Los votantes debían elegir al presidente, al vicepresidente y a 130diputadosy 36 senadores para el período 2010-2015. Los cinco departamentos que aún no lo habían hecho votaron a favor de la autonomía departamental ... <\/CONTENT> <URL> https://es.wikipedia.org/wiki/Elecciones_generales_de_Bolivia_de_2009 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos como senadores,diputadosplurinominales,diputadosuninominales ydiputadospor circunscripción especial indígena originario de la Asamblea Legislativa Plurinacional del Estado Plurinacional deBolivia, en las elecciones generales del 6 de diciembre. <\/CONTENT> <URL> https://mail.eabolivia.com/lista-nomina-de-senadores-y-diputados-electos-el-2009.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Toda la información de las Elecciones Generales enBoliviageneradas el 6 de diciembre en \\\"Elecciones En Tiempo real\\\". La Paz, 9 sep.- La siguiente relación nominal de candidatos presentados por ocho partidos y agrupaciones políticas en la perspectiva de las elecciones bolivianas de2009, en ... <\/CONTENT> <URL> https://www.eabolivia.com/elecciones-2009/1964-partidos-listas-y-candidatos-en-bolivia.html <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 20/11/1974 16/04/1966 TARIJA <\/CONTENT> <URL> https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Nota: La Cámara deDiputadosestá conformada por 130 miembros quienes son elegidos de la siguiente forma: 70 por mayoria simple en cisrcunscripciones uninominales, 53 por representacion proporcional y en circunscripciones plurinominales departamentales, y 7 (reservados para representantes de las poblaciones indigenas en 7 de las 9 provincias ... <\/CONTENT> <URL> https://pdba.georgetown.edu/Elecdata/Bolivia/uni09.html <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Publicidad (ABI) El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos comodiputadosplurinominales,diputadosuninominales ydiputadospor circunscripción ... <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El libro ofrece las biografías de los parlamentarios (senadores ydiputados) deBolivia, desde 1979, cuando se eligió el primer Congreso en el retorno a la democracia, hasta los de la ... <\/CONTENT> <URL> https://www.researchgate.net/publication/280576965_Diccionario_biografico_de_parlamentarios_1979_-_2009 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> El documento presenta listas de candidatos para las elecciones generales de2009enBoliviade la organización política Plan Progreso paraBoliviaConvergencia Nacional (PPB-APB). Incluye candidatos a presidente, vicepresidente, senador por el departamento de Chuquisaca ydiputadosplurinominales por Chuquisaca con sus nombres completos, documentos de identidad y firmas. <\/CONTENT> <URL> https://es.scribd.com/doc/19544552/Candidatos-PPB-APB <\/URL> __END_OF_SOURCE 8__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332267711,\"end\":1779332271181}},\"id\":\"prt_e4877beba001TtE1u0g54TkZ6Y\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e4877af6d0018kNUCPFwUM6L6w\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332271188,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e4877cc4f001BzyzzLh2dozApg\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877af6d0018kNUCPFwUM6L6w\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-finish\",\"tokens\":{\"total\":5439,\"input\":5104,\"output\":335,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.020337}}\n{\"type\":\"step_start\",\"timestamp\":1779332274385,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e4877d8cf001yyxe5uRzxj7CJ8\",\"messageID\":\"msg_e4877cc52001WKNXDPHrPJC7Hr\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332275850,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"dda2dfc6-08bc-49fe-bb93-1acefe868482\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth José Shriqui Rapp biografía educación profesión\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> POR MAYORIA DE LOS PRESENTES, EL CONCEJALMEZOTHSHRIQUIFUE REELECTO COMO SECRETARIO El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. | Concejo Municipal de ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 1st Plurinational Legislative Assembly of Bolivia Daguer Yaqueline Emma Lavive Yáñez Simon Beni C. 61 PPBMezothJoseShriquiRappBelia Antonia Cajiri Roca Beni C. 62 PPB Farides Vaca Suárez Carmelo <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Moisés_Shriqui <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> JoséDavidShriquiRappy Fabiano de Souza fueron asesinados este domingo, cerca de las 19:15, en la localidad de San Matías. <\/CONTENT> <URL> https://eju.tv/2022/09/santa-cruz-tres-personas-murieron-baleadas-en-san-matias <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> MezothJoséShriquiRapp, jefe nacional de Sanidad Vegetal del Senasag, quien aclaró desde el punto de vista jurídico que existe una norma supranacional emitida por la Comunidad Andina de Naciones (CAN), que además de la Ley nacional 830, le da a su entidad la potestad para ser los directos responsables en el tema de la fiscalización de ... <\/CONTENT> <URL> https://publiagro.com.bo/2020/08/senasag-ibmetro-control-plaguicidas <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> MAURICIO BARBA IRIARTE, con Cedula de Identidad NO 1735747 - IH, Concejal Municipal, Sra. CARLA ROXANA SITTYC BECERRA, con Cedula de Identidad NO 1932808, Concejal Municipal, Ing.MEZOTHJOSESHRIQUIRAPP, con Cedula de Identidad NO 1733390 expedido en Beni, Concejal Municipal y Lic. <\/CONTENT> <URL> https://trinidad.gob.bo/jdownloads/Transparencia/gestion_2023/denuncias_oct_23/DENUNCIA - 09_2023.pdf <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 0 likes, 0 comments - concejomunicipaldetrinidad on May 3, 2024: \\\"DIRECTIVA CONCEJO MUNICIPAL DE TRINIDAD GESTIÓN 2024-2025 Martha Yáñez Hurtado - Presidente Arnoldo Sebastián Méndez Abuawad - VicepresidenteMezothJoséShriquiRapp- Secretario\\\". <\/CONTENT> <URL> https://www.instagram.com/p/C6gySk2u1Zm <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 0 likes, 0 comments - trini_play on April 4, 2025: \\\"Los Concejales Carla Roxana Sittyc, Rodney Mercado yMezothShriqui, como miembros de las Comisiones Jurídica Institucional, Económica y Financiera yEducación, Cultura y Deportes, se reunieron la mañana de este viernes, en trabajo de Mesa Técnica con el Ejecutivo Municipal, Secretaría de Bienestar Integral y Dirección Municipal de ... <\/CONTENT> <URL> https://www.instagram.com/p/DIC3w79NX9d <\/URL> __END_OF_SOURCE 8__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332274387,\"end\":1779332275849}},\"id\":\"prt_e4877d8d1001nBrwzAYrDbg7F0\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e4877cc52001WKNXDPHrPJC7Hr\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332277224,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"b841557b-3698-41ec-8062-1bf142347b7f\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth Shriqui Rapp hoja de vida diputado\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp,diputadouninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. Gladys Parada and 24 others 󰍸 25 󰤦 4 Last viewed on: Mar 19, 2026 <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Publicacióndehojasdevida <\/CONTENT> <URL> https://region-administrativa-y-de-planificacion-amazonia-rap.micolombiadigital.gov.co/tema/hoja-de-vida <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> En cumplimiento del artículo 346 del Código Electoral, declaro bajo gravedaddejuramento, que todos los datos contenidos en mihojadevidason verídicos y autorizo su publicación en la página web del Tribunal Electoral. <\/CONTENT> <URL> https://voto2024.espaciocivico.org/sites/default/files/candidatos_diputados/cv_240.pdf <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> DiputadoPor Distrito Electoral Multiple - Circunscripcion: Huancavelica Elki Ysabel Ramos Zegarra -Hojadevidadel Candidato ... <\/CONTENT> <URL> https://www.democrataverde.com/cv.php?pagina=14 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> 0 likes, 0 comments - trini_play on April 4, 2025: \\\"Los Concejales Carla Roxana Sittyc, Rodney Mercado yMezothShriqui, como miembrosdelas Comisiones Jurídica Institucional, Económica y Financiera y Educación, Cultura y Deportes, se reunieron la mañanadeeste viernes, en trabajodeMesa Técnica con el Ejecutivo Municipal, SecretaríadeBienestar Integral y Dirección Municipalde... <\/CONTENT> <URL> https://www.instagram.com/p/DIC3w79NX9d <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 2026, AÑODEMARGARITA MAZA PARADA. <\/CONTENT> <URL> https://web.diputados.gob.mx <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> UNINOMINALES C. 61MezothJoseShriquiRapp(PPB) y Belia Antonia Cajiri Roca (s) C. 62 Farides Vaca Suárez (PPB) y Carmelo Egüez Rodríguez (s) <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Este documento presenta el Diccionario BiográficodeParlamentarios 1979-2019, el cual contiene información biográficadeaproximadamente 1000 parlamentarios bolivianos desde 1979 hasta la fecha. El diccionario fue apoyado por Fundappac y la Fundación Konrad Adenauer y tiene como objetivo mejorar el conocimiento sobre la historia del parlamento boliviano y sus miembros a travésdedatos ... <\/CONTENT> <URL> https://es.scribd.com/document/564856051/Diccionario-biogra-fico-de-parlamentarios-1979-2019 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332274390,\"end\":1779332277223}},\"id\":\"prt_e4877d8d400277S2MnNoLXhreq\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e4877cc52001WKNXDPHrPJC7Hr\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332292227,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"c9e2c3bd-9b37-4a06-b7f1-fff23a819d14\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth José Shriqui Rapp lugar de nacimiento\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 5, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"Mezoth José Shriqui Rapp lugar de nacimiento\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"mezoth josé shriqui rapp lugar de nacimiento\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332274393,\"end\":1779332292226}},\"id\":\"prt_e4877d8d700108u0No6VCam8HO\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e4877cc52001WKNXDPHrPJC7Hr\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332292233,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e48781e840017YwMiTFMcKE6QB\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e4877cc52001WKNXDPHrPJC7Hr\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-finish\",\"tokens\":{\"total\":7829,\"input\":7401,\"output\":428,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.028623}}\n{\"type\":\"step_start\",\"timestamp\":1779332293977,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e48782557001F1t9MU7dYGiEG2\",\"messageID\":\"msg_e48781e87001NGCKBTFJL0TooX\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332300640,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"15f110a0-4359-42fe-b22c-b0697ccba876\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth José Shriqui Rapp biografía completa\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> 1 likes, 0 comments - atbdigital on September 12, 2022: \\\"José DavidShriquiRappy Fabiano de Souza fueron asesinados este domingo, cerca de las 19:15, en la localidad de #SanMatías. Las víctimas estaban compartiendo en un local, ubicado a tres cuadras de la plaza principal, y fueron acribilladas por sujetos armados que irrumpieron en el lugar y, luego de cometer los crímenes, salieron ... <\/CONTENT> <URL> https://www.instagram.com/p/Cia0SHnO0Oj <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Otro de sus hijos,MezothShriquiRappes actualmente concejal del municipio de Trinidad. En el domicilio del exalcaldeShriquien pleno centro capitalino se pudo observar ajetreos propios de un funeral, por lo que se supo que el velatorio del extintoJoséDavid se realizará en dicho lugar. <\/CONTENT> <URL> https://www.facebook.com/PanoramaInformativoTdd/posts/trinidadel-cuerpo-sin-vida-del-hijo-del-exalcalde-moises-shriqui-fue-traído-a-tr/1040668513278258 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> JoséDavidShriquiRappy Fabiano de Souza fueron asesinados este domingo, cerca de las 19:15, en la localidad de San Matías. <\/CONTENT> <URL> https://eju.tv/2022/09/santa-cruz-tres-personas-murieron-baleadas-en-san-matias <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> En horas de la noche de ese mismo día se registraron otros dos asesinatos en ese municipio cruceño al interior de un local de riñas de gallos.JoséDavidShriquiRapp, hijo del exalcalde de Trinidad, Moisés Shiriqui, y Fabiano de Souza, fueron las víctimas que se encontraban compartiendo en el local. <\/CONTENT> <URL> https://elperiodico.com.bo/la-policia-envia-un-contingente-a-san-matias-para-investigar-al-menos-cuatro-asesinatos <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Durante la mañana de este lunes se trasladó el cuerpo sin vida deJoséDavidShriquiRapp, hombre que este pasado domingo murió a consecuencia de disparos de arma de fuego durante una reunión en un domicilio en el municipio cruceño de San Matías. La víctima recibió varios disparos por parte de dos s... <\/CONTENT> <URL> https://noticias.unitel.bo/seguridad/trasladan-a-trinidad-restos-de-uno-de-los-asesinados-en-san-matias-LX4123915 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Los asesinos hirieron a un tercero y luego escaparon del lugar en un vehículo. Las víctimas fueron identificadas comoJoséDavidShriquiRapp, hijo del exalcalde de Trinidad MoisésShriquiVejarano, y Fabiano de Souza, ciudadano brasileño. Jhonny Arce, tercera víctima que quedó herida, fue trasladado a un hospital de Cáceres en Brasil. <\/CONTENT> <URL> https://www.noticiasfides.com/nacional/seguridad/doble-asesinato-grupo-armado-acribilla-a-hijo-de-un-exalcalde-y-a-un-brasileno-en-san-matias-417655 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> La familiaRapp,Shriquiy Cordano nada hicimos de malo en San Matías y en el resto de Bolivia, somos personas de respeto y amigos de todo mundo, manifestó Mary Luz Cordano, familiar del ... <\/CONTENT> <URL> https://eldeber.com.bo/santa-cruz/familiares-niegan-que-hombre-acribillado-en-san-matias-hubiera-estado-involucrado-en-narcotrafico_292675 <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> De los once concejales que integran el cuerpo deliberativo, solo ocho estuvieron presentes en la votación Con el respaldo mayoritario de sus pares, la concejal Martha Yáñez Hurtado fue reelegida este sábado como presidenta del Concejo Municipal de Trinidad para el periodo 2025-2026. Junto a ella, Arnoldo Méndez Abuawad mantuvo su cargo como vicepresidente, mientras queMezothShriquiRapp... <\/CONTENT> <URL> https://el-mamore.com/martha-yanez-por-tercera-vez-presidenta-del-concejo-municipal <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332293981,\"end\":1779332300639}},\"id\":\"prt_e48782559001V7FhrRA2toMrWk\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e48781e87001NGCKBTFJL0TooX\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332302373,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"63f6d071-8216-4fc8-ae7f-7f2a46b2583d\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth Shriqui Rapp profesión antes de ser diputado\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> MezothJoséShriquiRapp,diputadouninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. Gladys Parada and 24 others 󰍸 25 󰤦 4 Last viewed on: Mar 19, 2026 <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyodelos ocho concejales presentes en la sesión extraordinariadeeste sábado recibió la confianza y se mantendrá en el cargodeSecretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Esta es una imagen trillada: cuando muchosdiputados, presidentes o ministros asumen como funcionarios le dicen a todo el mundo que han decidido, con rostrodeabnegación… <\/CONTENT> <URL> https://diario1.com/zona-1/2015/09/ser-diputado-el-negocio-del-millon-de-dolares <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> En esta sección, desglosaremos los requisitos que deben cumplir los candidatos adiputadoen México, explicando su importancia y cómo contribuyen al fortalecimiento del sistema democrático. Paraserdiputadose requiere: I.Serciudadano mexicano, por nacimiento, en el ejerciciodesus derechos. II. <\/CONTENT> <URL> https://sites.google.com/un.edu.mx/derechos-polticos/requisitos-para-ser-diputado-o-senador <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Paraserdiputadose requiere: I.Serciudadano mexicano, por nacimiento, en el ejerciciodesus derechos. II. Tener veintiún años cumplidos el díadela elección; III.Seroriginariodela entidad federativa en que se haga la elección o vecinodeesta con residencia efectivademásdeseis meses anteriores a la fechadeella. Para poder figurar en las listasdelas circunscripciones ... <\/CONTENT> <URL> https://www.constitucionpolitica.mx/titulo-3-division-poderes/capitulo-2-poder-legislativo/seccion-1-eleccion-instalacion-congreso/articulo-55-requisitos-diputado <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Artículo 10 1. Son requisitos paraserDiputada oDiputadoFederal o Senadora o Senador, ademásdelos que señalan respectivamente los artículos 55 y 58dela Constitución, los siguientes: (PÁRRAFO REFORMADO D.O.F. 13DEABRILDE2020) a) Estar inscrito en el Registro FederaldeElectores y contar con credencial para votar; b) Nosermagistrado electoral o secretario del Tribunal ... <\/CONTENT> <URL> https://mexico.justia.com/federales/leyes/ley-general-de-instituciones-y-procedimientos-electorales/libro-segundo/titulo-primero/capitulo-ii <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> 23deseptiembre 2024 a las 17:42 hrs. En México, entre los requisitos paraserdiputadoo Senadordela República no se establece algún gradodeestudios en específico,deacuerdo con la ... <\/CONTENT> <URL> https://www.publimetro.com.mx/nacional/2024/09/23/que-se-necesita-para-ser-legislador-este-es-el-nivel-de-estudios-de-integrantes-del-congreso <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> 0 likes, 0 comments - trini_play on April 4, 2025: \\\"Los Concejales Carla Roxana Sittyc, Rodney Mercado yMezothShriqui, como miembrosdelas Comisiones Jurídica Institucional, Económica y Financiera y Educación, Cultura y Deportes, se reunieron la mañanadeeste viernes, en trabajodeMesa Técnica con el Ejecutivo Municipal, SecretaríadeBienestar Integral y Dirección Municipalde... <\/CONTENT> <URL> https://www.instagram.com/p/DIC3w79NX9d <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Fuente: lapalabradelbeni.com.bo El concejal del Movimiento Tercer Sistema (MTS),MezothShriqui, informó que lograron aprobar en grande y en detalle la \\\"LeydeExpropiación\\\", presentada por ... <\/CONTENT> <URL> https://eju.tv/2021/07/trinidad-concejales-del-mts-logran-aprobar-ley-de-expropiacion <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332293985,\"end\":1779332302372}},\"id\":\"prt_e4878255e001KUYkVeAwJLmYPO\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e48781e87001NGCKBTFJL0TooX\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332303966,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"3548f6fe-6962-44d9-a182-ff0ec37e5d66\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth Shriqui Rapp estudios universitarios\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> El concejalMezothShriquiRappinforma sobre la aprobación mediante una Ley Municipal de la Urbanización Santa Inés II. #ConcejoMunicipalDeTrinidad <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/el-concejal-mezoth-shriqui-rapp-informa-sobre-la-aprobación-mediante-una-ley-mun/1140030380054462 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> POR MAYORIA DE LOS PRESENTES, EL CONCEJALMEZOTHSHRIQUIFUE REELECTO COMO SECRETARIO El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. | Concejo Municipal de ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-releecto-como-secret/1876433386525748 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> El Ing.MezothShriquiRapp, con el apoyo de los ocho concejales presentes en la sesión extraordinaria de este sábado recibió la confianza y se mantendrá en el cargo de Secretario del ente legislativo por la gestión 2025 - 2026. COUNCILORMEZOTHSHRIQUIWAS RE-ELECTED AS SECRETARY Eng.MezothShriquiRapp, with the support of the eight councillors present at the extraordinary session ... <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/por-mayoria-de-los-presentes-el-concejal-mezoth-shriqui-fue-reeleccto-como-secre/1876433386525748 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Proyecto deEstudiosUniversitariospara Personas Confinadas Este programa permite a estudiantes privades de libertad graduados de bachillerato en la Universidad de Puerto Rico como parte del Proyecto deEstudiosUniversitariospara Personas Confinadas, proseguirestudiosen la Maestría en Gestión y Administración Cultural. <\/CONTENT> <URL> https://humanidades.uprrp.edu/magac/?page_id=1832 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> ORGANIZACIÓN DEL TIEMPO: UNA HERRAMIENTA ON-LINE PARA LOS ESTUDIANTESUNIVERSITARIOSMarchena Consejero, E.1,2, Hervías Ortega, F.2,RappGarcía, C.2, Navarro Guzmán, J. <\/CONTENT> <URL> https://sap.uca.es/wp-content/uploads/2017/05/Organización-del-tiempo-una-herramienta-on-line-para-los-estudiantes-universitarios.pdf <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Por ello, se promueve la incorporación de estudiantesuniversitariosa su comunidad discursiva académica, ya que son jóvenes con una historia particular y vida social compleja, que se incluyen de manera diversa al sistema de educación. El propósito general es valorar el recurso intercultural \\\"rap\\\" <\/CONTENT> <URL> https://www.academia.edu/87948728/Experiencias_Significativas_De_Integración_Social_De_Universitarios_Mediante_La_Producción_Textual_De_Rap <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Experiencias significativas de integración social deuniversitariosmediante la producción textual de rap Significant experiences of social integration of university students by textual production of rap Adriana María Pérez Cedeño1, Águeda María Caraballo Ramos1, Lourdes Claret Martínez Pérez2, Cecilia del Valle Marcano Molano3 Universidad de Oriente, Núcleo de Anzoátegui ... <\/CONTENT> <URL> https://ve.scielo.org/scielo.php?script=sci_arttext&pid=S1315-01622014000300011 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> Conversations about the intersection of race, ethnicity, and identity have dominated the American academic and political discourse for years, and the American educational research space for even longer. The incorporation of religion into the intersectionality discussion, however, is far less common; and little scholarly attention has been paid to the role of the minutiae of daily religious ... <\/CONTENT> <URL> https://repository.yu.edu/items/801f0e21-907a-4262-9f71-07c0b45f1281 <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Aprende RAP de los mejores a tu ritmo Estudia desde casa con artistas de éxito internacional, solo en Magnos Music School. Empieza a cumplir sueños en nuestra escuela de música rap ¿Quieres formarte con nosotros? El domingo 20 tenemos una Master Class de Creación de Instrumentales <\/CONTENT> <URL> https://magnosschool.com <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> Rav Shimon Shkop (L) with Rav Chaim Ozer Grodzinski (R) Rav Shimon Shkop had traveled to Montreal to raise money for the yeshiva. He stayed at the home of a certain wealthy man, who was known for his generous contributions to worthwhile causes. When he arrived on this particular occasion he found his usually magnanimous host in joylessness and frustration. He had conveyed to Rav Shkop that ... <\/CONTENT> <URL> https://rebbestories.blogspot.com/2011/02/rav-shimon-shkop-in-montreal.html <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332293989,\"end\":1779332303965}},\"id\":\"prt_e48782562001f7kRl0RFTqXsF8\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e48781e87001NGCKBTFJL0TooX\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332303971,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e48784c5f001R58zabnYc6gMMK\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48781e87001NGCKBTFJL0TooX\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-finish\",\"tokens\":{\"total\":10266,\"input\":10121,\"output\":145,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.032538}}\n{\"type\":\"step_start\",\"timestamp\":1779332305748,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e48785352001V4Wtlc2Jywe3lP\",\"messageID\":\"msg_e48784c62001wzDm2Ugu5WMc76\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332305758,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"2a919c95-81b4-4c18-8ee5-67899d04b4a0\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth José Shriqui Rapp ingeniero agrónomo o civil?\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Mezoth José Shriqui Rapp ingeniero agrónomo o civil?\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"mezoth josé shriqui rapp ingeniero agrónomo o civil?\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332305750,\"end\":1779332305757}},\"id\":\"prt_e48785354001wBIJVPS3ZkbYkS\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e48784c62001wzDm2Ugu5WMc76\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332305760,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"5e2d4cbc-24ee-433b-b4cd-c4629edab887\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth Shriqui Rapp Senasag cargo anterior\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Mezoth Shriqui Rapp Senasag cargo anterior\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"mezoth shriqui rapp senasag cargo anterior\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332305752,\"end\":1779332305759}},\"id\":\"prt_e48785357001I1fmS83GkfWhba\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e48784c62001wzDm2Ugu5WMc76\"}}\n{\"type\":\"tool_use\",\"timestamp\":1779332305765,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"d3065732-dfca-46b2-9c02-729c37b0c4e1\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth Shriqui Rapp biografía parlamentaria Bolivia\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"query\\\": \\\"Mezoth Shriqui Rapp biografía parlamentaria Bolivia\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"mezoth shriqui rapp biografía parlamentaria bolivia\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1779332305755,\"end\":1779332305760}},\"id\":\"prt_e48785359002c5im20pq91TOqx\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"messageID\":\"msg_e48784c62001wzDm2Ugu5WMc76\"}}\n{\"type\":\"step_finish\",\"timestamp\":1779332305765,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e48785361002XBj2Of7LynkB9f\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e48784c62001wzDm2Ugu5WMc76\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-finish\",\"tokens\":{\"total\":14966,\"input\":14815,\"output\":151,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.04671}}\n{\"type\":\"step_start\",\"timestamp\":1779332315708,\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"part\":{\"id\":\"prt_e48787a3b001C70g2H5VYK3367\",\"messageID\":\"msg_e48785364001WmunAjxFTK6ojZ\",\"sessionID\":\"ses_1b788512cffeKBfG3K8JFJhK7O\",\"type\":\"step-start\"}}\n"
+}

@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Vocational training (Toolmaker and Curative education nurse)",
+  "prior_occupation": "Toolmaker, Curative education nurse",
+  "birth_year": "1972",
+  "birth_place": "Bad Tölz, Germany",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Working class",
+  "sources": {
+    "educational_attainment": "https://www.bundestag.de/webarchiv/abgeordnete/biografien19/W/524350-524350",
+    "prior_occupation": "https://www.bundestag.de/webarchiv/abgeordnete/biografien19/W/524350-524350",
+    "birth_year": "https://de.wikipedia.org/wiki/Andreas_Wagner_(Politiker,_1972)",
+    "birth_place": "https://de.wikipedia.org/wiki/Andreas_Wagner_(Politiker,_1972)",
+    "disability_status": "https://andi-wagner.de/biografie",
+    "sexual_orientation": "https://andi-wagner.de/biografie",
+    "class_background": "https://www.bundestag.de/webarchiv/abgeordnete/biografien19/W/524350-524350"
+  }
+}

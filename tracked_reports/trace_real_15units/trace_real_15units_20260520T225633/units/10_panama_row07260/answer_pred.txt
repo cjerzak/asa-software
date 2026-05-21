@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Universidad de Panamá",
+  "educational_attainment_source": "https://pa.linkedin.com/in/miguel-fanovich-4573101bb",
+  "prior_occupation": "Businessman and Executive (President of Fagri S.A.)",
+  "prior_occupation_source": "https://panamaempresas.com/pt/empresas/fagri-sa-id-01A2A2E2D594FB9A",
+  "birth_year": "Unknown",
+  "birth_year_source": "Unknown",
+  "birth_place": "Unknown",
+  "birth_place_source": "Unknown",
+  "disability_status": "Unknown",
+  "disability_status_source": "Unknown",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "Unknown",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://panamaempresas.com/pt/empresas/fagri-sa-id-01A2A2E2D594FB9A"
+}

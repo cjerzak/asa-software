@@ -352,7 +352,7 @@
   for (event in events) {
     session_ids <- c(
       session_ids,
-      .opencode_scalar_text(event$sessionID %||% event$session_id %||% event$part$sessionID %||% "")
+      .opencode_scalar_text(event$sessionID %||% event$session_id %||% event$part$sessionID %||% event$part$session_id %||% "")
     )
 
     event_type <- .opencode_scalar_text(event$type %||% "")
@@ -510,6 +510,267 @@
   .opencode_summarize_events(events, raw_stdout = raw_stdout)
 }
 
+#' Extract an OpenCode session id from a parsed event
+#' @keywords internal
+.opencode_event_session_id <- function(event) {
+  .opencode_scalar_text(
+    event$sessionID %||%
+      event$session_id %||%
+      event$part$sessionID %||%
+      event$part$session_id %||%
+      ""
+  )
+}
+
+#' Extract an OpenCode session id from parsed output or raw JSONL
+#' @keywords internal
+.opencode_output_session_id <- function(output) {
+  session_id <- .opencode_scalar_text(output$session_id %||% "")
+  if (nzchar(session_id)) {
+    return(session_id)
+  }
+
+  for (event in output$events %||% list()) {
+    session_id <- .opencode_event_session_id(event)
+    if (nzchar(session_id)) {
+      return(session_id)
+    }
+  }
+
+  raw_stdout <- .opencode_scalar_text(output$raw_stdout %||% "")
+  if (!nzchar(raw_stdout)) {
+    return("")
+  }
+  lines <- strsplit(raw_stdout, "\r?\n", perl = TRUE)[[1]]
+  lines <- lines[nzchar(trimws(lines))]
+  for (line in lines) {
+    event <- tryCatch(
+      jsonlite::fromJSON(line, simplifyVector = FALSE),
+      error = function(e) NULL
+    )
+    if (is.null(event)) {
+      next
+    }
+    session_id <- .opencode_event_session_id(event)
+    if (nzchar(session_id)) {
+      return(session_id)
+    }
+  }
+
+  ""
+}
+
+#' Detect whether OpenCode emitted an explicit error event
+#' @keywords internal
+.opencode_has_error_event <- function(events) {
+  any(vapply(events %||% list(), function(event) {
+    identical(.opencode_scalar_text(event$type %||% event$part$type %||% ""), "error")
+  }, logical(1)))
+}
+
+#' Parse stdout from `opencode export`
+#' @keywords internal
+.opencode_parse_export_stdout <- function(stdout) {
+  stdout <- .opencode_scalar_text(stdout %||% "")
+  left <- gregexpr("{", stdout, fixed = TRUE)[[1]]
+  right <- gregexpr("}", stdout, fixed = TRUE)[[1]]
+  if (identical(left[[1]], -1L) || identical(right[[1]], -1L)) {
+    stop("OpenCode export stdout did not contain a JSON object.", call. = FALSE)
+  }
+
+  json_text <- substr(stdout, left[[1]], tail(right, 1L)[[1]])
+  tryCatch(
+    jsonlite::fromJSON(json_text, simplifyVector = FALSE),
+    error = function(e) {
+      stop("OpenCode export stdout did not contain parseable JSON: ", conditionMessage(e), call. = FALSE)
+    }
+  )
+}
+
+#' Extract the last assistant text part from an OpenCode export
+#' @keywords internal
+.opencode_export_final_assistant_text <- function(exported) {
+  messages <- exported$messages %||% list()
+  text_parts <- character(0)
+
+  for (message in messages) {
+    role <- .opencode_scalar_text(message$info$role %||% "")
+    if (!identical(role, "assistant")) {
+      next
+    }
+    for (part in message$parts %||% list()) {
+      type <- .opencode_scalar_text(part$type %||% "")
+      text <- .opencode_scalar_text(part$text %||% "")
+      if (identical(type, "text") && nzchar(text)) {
+        text_parts <- c(text_parts, text)
+      }
+    }
+  }
+
+  if (length(text_parts) > 0L) {
+    tail(text_parts, 1L)[[1]]
+  } else {
+    ""
+  }
+}
+
+#' Determine whether the OpenCode export fallback is applicable
+#' @keywords internal
+.opencode_should_try_export_fallback <- function(output,
+                                                 cli_status = 0L,
+                                                 process_timeout = FALSE) {
+  result_text <- .opencode_scalar_text(output$text %||% "")
+  errors <- as.character(output$errors %||% character(0))
+  errors <- errors[!is.na(errors) & nzchar(errors)]
+  events <- output$events %||% list()
+
+  identical(as.integer(cli_status %||% 0L), 0L) &&
+    !isTRUE(process_timeout) &&
+    !isTRUE(output$process_timeout %||% FALSE) &&
+    !isTRUE(output$parse_error %||% FALSE) &&
+    length(events) > 0L &&
+    !nzchar(result_text) &&
+    length(errors) == 0L &&
+    !.opencode_has_error_event(events)
+}
+
+#' Recover missing terminal text from the OpenCode session store
+#' @keywords internal
+.opencode_apply_export_fallback <- function(output,
+                                            cli,
+                                            cli_env,
+                                            workdir,
+                                            cli_status = 0L,
+                                            process_timeout = FALSE,
+                                            timeout_seconds = NULL) {
+  output$opencode_export_fallback_used <- FALSE
+  output$opencode_export_fallback_error <- output$opencode_export_fallback_error %||% NULL
+  output$opencode_export_session_id <- output$opencode_export_session_id %||% NULL
+  output$opencode_export_final_text_chars <- output$opencode_export_final_text_chars %||% NA_integer_
+
+  if (!.opencode_should_try_export_fallback(output, cli_status = cli_status, process_timeout = process_timeout)) {
+    return(output)
+  }
+
+  session_id <- .opencode_output_session_id(output)
+  output$opencode_export_session_id <- if (nzchar(session_id)) session_id else NULL
+  if (!nzchar(session_id)) {
+    output$opencode_export_fallback_error <- "OpenCode export fallback could not find a session id."
+    return(output)
+  }
+
+  export_timeout <- suppressWarnings(as.numeric(timeout_seconds %||% 30))
+  if (is.na(export_timeout) || export_timeout <= 0) {
+    export_timeout <- 30
+  }
+  export_timeout <- max(5, min(export_timeout, 60))
+
+  export_stdout_file <- tempfile("asa_opencode_export_stdout_")
+  export_stderr_file <- tempfile("asa_opencode_export_stderr_")
+  on.exit(unlink(c(export_stdout_file, export_stderr_file), force = TRUE), add = TRUE)
+
+  export_result <- tryCatch(
+    .run_processx(
+      command = cli$command,
+      args = c(cli$prefix_args %||% character(0), "export", session_id),
+      wd = workdir,
+      env = cli_env,
+      stdout = export_stdout_file,
+      stderr = export_stderr_file,
+      error_on_status = FALSE,
+      timeout = export_timeout,
+      cleanup_tree = TRUE
+    ),
+    error = function(e) {
+      list(status = NA_integer_, stdout = "", stderr = conditionMessage(e), timeout = FALSE)
+    }
+  )
+
+  if (isTRUE(export_result$timeout %||% FALSE)) {
+    output$opencode_export_fallback_error <- paste0(
+      "OpenCode export timed out after ", export_timeout, " seconds."
+    )
+    return(output)
+  }
+
+  export_stdout <- .opencode_scalar_text(export_result$stdout %||% "")
+  if (file.exists(export_stdout_file) && isTRUE(file.info(export_stdout_file)$size > 0L)) {
+    export_stdout <- readChar(
+      export_stdout_file,
+      nchars = file.info(export_stdout_file)$size,
+      useBytes = TRUE
+    )
+  }
+  export_stderr <- .opencode_scalar_text(export_result$stderr %||% "")
+  if (file.exists(export_stderr_file) && isTRUE(file.info(export_stderr_file)$size > 0L)) {
+    export_stderr <- readChar(
+      export_stderr_file,
+      nchars = file.info(export_stderr_file)$size,
+      useBytes = TRUE
+    )
+  }
+
+  export_status <- suppressWarnings(as.integer(export_result$status %||% NA_integer_))
+  if (is.na(export_status) || !identical(export_status, 0L)) {
+    output$opencode_export_fallback_error <- paste(
+      c(
+        paste0("OpenCode export failed with status ", if (is.na(export_status)) "NA" else export_status, "."),
+        if (nzchar(export_stderr)) export_stderr else character(0)
+      ),
+      collapse = "\n"
+    )
+    return(output)
+  }
+
+  export_parse_error <- NULL
+  exported <- tryCatch(
+    .opencode_parse_export_stdout(export_stdout),
+    error = function(e) {
+      export_parse_error <<- conditionMessage(e)
+      NULL
+    }
+  )
+  if (is.null(exported)) {
+    output$opencode_export_fallback_error <- export_parse_error %||% "OpenCode export stdout could not be parsed."
+    return(output)
+  }
+
+  final_text <- .opencode_export_final_assistant_text(exported)
+  if (!nzchar(final_text)) {
+    output$opencode_export_fallback_error <- "OpenCode export contained no non-empty assistant text part."
+    return(output)
+  }
+
+  output$text <- final_text
+  output$session_id <- session_id
+  if (!nzchar(.opencode_scalar_text(output$stop_reason %||% ""))) {
+    output$stop_reason <- "stop"
+  }
+  output$events <- c(
+    output$events %||% list(),
+    list(
+      list(
+        type = "text",
+        sessionID = session_id,
+        part = list(type = "text", text = final_text),
+        source = "opencode_export_fallback",
+        synthetic = TRUE
+      ),
+      list(
+        type = "step_finish",
+        sessionID = session_id,
+        part = list(type = "step-finish", reason = "stop"),
+        source = "opencode_export_fallback",
+        synthetic = TRUE
+      )
+    )
+  )
+  output$opencode_export_fallback_used <- TRUE
+  output$opencode_export_fallback_error <- NULL
+  output$opencode_export_final_text_chars <- nchar(final_text, type = "chars", allowNA = FALSE, keepNA = FALSE)
+  output
+}
+
 #' Parse the final OpenCode text as strict JSON
 #' @keywords internal
 .opencode_final_payload <- function(text) {
@@ -555,6 +816,10 @@
   errors <- as.character(output$errors %||% character(0))
   errors <- errors[!is.na(errors) & nzchar(errors)]
   parse_error <- isTRUE(output$parse_error %||% FALSE)
+  export_fallback_used <- isTRUE(output$opencode_export_fallback_used %||% FALSE)
+  export_fallback_error <- .opencode_scalar_text(output$opencode_export_fallback_error %||% "")
+  export_session_id <- .opencode_scalar_text(output$opencode_export_session_id %||% "")
+  export_final_text_chars <- .as_scalar_int(output$opencode_export_final_text_chars %||% NA_integer_)
   cli_status <- as.integer(cli_status %||% 0L)
   process_timeout <- isTRUE(process_timeout) || isTRUE(output$process_timeout %||% FALSE)
   events <- output$events %||% list()
@@ -628,6 +893,10 @@
       errors = errors,
       parse_error = parse_error,
       empty_terminal_output = empty_terminal_output,
+      opencode_export_fallback_used = export_fallback_used,
+      opencode_export_session_id = if (nzchar(export_session_id)) export_session_id else NULL,
+      opencode_export_final_text_chars = export_final_text_chars,
+      opencode_export_fallback_error = if (nzchar(export_fallback_error)) export_fallback_error else NULL,
       last_event_types = tail(event_types, 8L),
       raw_stdout = output$raw_stdout %||% ""
     ),
@@ -688,6 +957,10 @@
       opencode_errors = errors,
       opencode_parse_error = parse_error,
       opencode_empty_terminal_output = empty_terminal_output,
+      opencode_export_fallback_used = export_fallback_used,
+      opencode_export_session_id = if (nzchar(export_session_id)) export_session_id else NULL,
+      opencode_export_final_text_chars = export_final_text_chars,
+      opencode_export_fallback_error = if (nzchar(export_fallback_error)) export_fallback_error else NULL,
       opencode_last_event_types = tail(event_types, 8L),
       opencode_stderr = stderr_text,
       tool_loop_guard = tool_loop_guard
@@ -847,6 +1120,15 @@
       parsed$text <- paste0("OpenCode process timed out after ", timeout_seconds, " seconds.")
     }
   }
+  parsed <- .opencode_apply_export_fallback(
+    output = parsed,
+    cli = cli,
+    cli_env = cli_env,
+    workdir = workdir,
+    cli_status = result$status,
+    process_timeout = process_timeout,
+    timeout_seconds = timeout_seconds
+  )
 
   .opencode_response_from_output(
     output = parsed,

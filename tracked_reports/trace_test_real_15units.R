@@ -134,14 +134,36 @@ bootstrap_trace_runtime <- function() {
 }
 
 TRACE_SOURCE_TABLE <- "InputMESData"
-TRACE_INPUT_DB_PATH <- {
+TRACE_DEFAULT_INPUT_DB_DIR <- "/Users/cjerzak/Library/CloudStorage/Dropbox/GLP/Electoral systems/Data"
+TRACE_DEFAULT_INPUT_DB_BASENAME <- "InputMESData_6aa27952.sqlite"
+
+resolve_trace_input_db_path <- function() {
   env_path <- trimws(Sys.getenv("ASA_TRACE_INPUT_DB_PATH", unset = ""))
   if (nzchar(env_path)) {
-    path.expand(env_path)
-  } else {
-    "/Users/cjerzak/Library/CloudStorage/Dropbox/GLP/Electoral systems/InputMESData_6aa27952.sqlite"
+    return(path.expand(env_path))
   }
+
+  preferred_path <- file.path(TRACE_DEFAULT_INPUT_DB_DIR, TRACE_DEFAULT_INPUT_DB_BASENAME)
+  preferred_info <- file.info(preferred_path)
+  if (!is.na(preferred_info$size) && preferred_info$size > 0L) {
+    return(preferred_path)
+  }
+
+  candidate_paths <- list.files(
+    TRACE_DEFAULT_INPUT_DB_DIR,
+    pattern = "^InputMESData_.*\\.sqlite$",
+    full.names = TRUE
+  )
+  candidate_info <- file.info(candidate_paths)
+  candidate_paths <- candidate_paths[!is.na(candidate_info$size) & candidate_info$size > 0L]
+
+  if (length(candidate_paths) == 1L) {
+    return(candidate_paths[[1]])
+  }
+
+  preferred_path
 }
+TRACE_INPUT_DB_PATH <- resolve_trace_input_db_path()
 TRACE_ARTIFACT_BASE_DIR <- {
   env_dir <- trimws(Sys.getenv("ASA_TRACE_ARTIFACT_BASE_DIR", unset = ""))
   if (nzchar(env_dir)) {
@@ -412,8 +434,34 @@ build_payload_release_audit <- function(attempt, final_answer, unit_key, generat
 }
 
 sample_real_units <- function(input_db_path, sampling_seed) {
+  if (!is.character(input_db_path) || length(input_db_path) != 1L || is.na(input_db_path) || !nzchar(input_db_path)) {
+    stop("Input SQLite database path must be a non-empty string.", call. = FALSE)
+  }
+
+  input_db_path <- path.expand(input_db_path)
+  if (!file.exists(input_db_path)) {
+    stop(sprintf("Input SQLite database does not exist: %s", input_db_path), call. = FALSE)
+  }
+
+  input_db_info <- file.info(input_db_path)
+  if (is.na(input_db_info$size) || input_db_info$size <= 0L) {
+    stop(sprintf("Input SQLite database is empty: %s", input_db_path), call. = FALSE)
+  }
+
+  input_db_path <- normalizePath(input_db_path, mustWork = TRUE)
   conn <- DBI::dbConnect(RSQLite::SQLite(), input_db_path)
   on.exit(DBI::dbDisconnect(conn), add = TRUE)
+
+  tables <- DBI::dbListTables(conn)
+  if (!(TRACE_SOURCE_TABLE %in% tables)) {
+    table_summary <- if (length(tables) > 0L) paste(tables, collapse = ", ") else "<none>"
+    stop(sprintf(
+      "Input SQLite database %s does not contain table %s. Available tables: %s",
+      input_db_path,
+      TRACE_SOURCE_TABLE,
+      table_summary
+    ), call. = FALSE)
+  }
 
   sampled <- DBI::dbReadTable(conn, TRACE_SOURCE_TABLE)
   sampled <- sampled[, c(

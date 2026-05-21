@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Graduated from the Law Faculty of Taras Shevchenko National University of Kyiv in 1978 with a degree in law.",
+  "educational_attainment_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk",
+  "prior_occupation": "Lawyer (Attorney)",
+  "prior_occupation_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk",
+  "birth_year": "1954",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk",
+  "birth_place": "Pochet, Abansky District, Krasnoyarsk Krai, Russian SFSR, Soviet Union",
+  "birth_place_source": "https://en.wikipedia.org/wiki/Viktor_Medvedchuk",
+  "disability_status": "Unknown",
+  "disability_status_source": "Unknown",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "Unknown"
+}
