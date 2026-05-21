@@ -557,6 +557,11 @@
   parse_error <- isTRUE(output$parse_error %||% FALSE)
   cli_status <- as.integer(cli_status %||% 0L)
   process_timeout <- isTRUE(process_timeout) || isTRUE(output$process_timeout %||% FALSE)
+  events <- output$events %||% list()
+  event_types <- vapply(events, function(event) {
+    .opencode_scalar_text(event$type %||% event$part$type %||% "")
+  }, character(1))
+  event_types <- event_types[nzchar(event_types)]
   timeout_seconds <- timeout_seconds %||% output$timeout_seconds %||% NULL
   timeout_message <- if (isTRUE(process_timeout)) {
     suffix <- if (!is.null(timeout_seconds) && !is.na(timeout_seconds)) {
@@ -570,6 +575,22 @@
   }
   if (nzchar(timeout_message)) {
     errors <- unique(c(errors, timeout_message))
+  }
+  empty_terminal_output <- !process_timeout &&
+    !parse_error &&
+    identical(cli_status, 0L) &&
+    !nzchar(result_text) &&
+    length(errors) == 0L &&
+    length(events) > 0L
+  if (empty_terminal_output) {
+    last_event_types <- tail(event_types, 8L)
+    errors <- unique(c(
+      errors,
+      paste0(
+        "OpenCode returned JSONL events without terminal text. Last event types: ",
+        if (length(last_event_types)) paste(last_event_types, collapse = ", ") else "<none>"
+      )
+    ))
   }
   is_error <- process_timeout || parse_error || length(errors) > 0L || !identical(cli_status, 0L)
 
@@ -606,6 +627,8 @@
       stderr = stderr_text,
       errors = errors,
       parse_error = parse_error,
+      empty_terminal_output = empty_terminal_output,
+      last_event_types = tail(event_types, 8L),
       raw_stdout = output$raw_stdout %||% ""
     ),
     auto_unbox = TRUE,
@@ -664,6 +687,8 @@
       opencode_timeout_seconds = timeout_seconds,
       opencode_errors = errors,
       opencode_parse_error = parse_error,
+      opencode_empty_terminal_output = empty_terminal_output,
+      opencode_last_event_types = tail(event_types, 8L),
       opencode_stderr = stderr_text,
       tool_loop_guard = tool_loop_guard
     ),
