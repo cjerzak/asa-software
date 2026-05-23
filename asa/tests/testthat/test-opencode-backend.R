@@ -427,7 +427,11 @@ test_that("OpenCode export fallback recovers empty terminal output", {
     list(info = list(role = "user"), parts = list(list(type = "text", text = "prompt"))),
     list(info = list(role = "assistant"), parts = list(
       list(type = "text", text = ""),
-      list(type = "text", text = final_text)
+      list(type = "text", text = final_text),
+      list(
+        type = "step-finish",
+        tokens = list(input = 17L, output = 5L, reasoning = 2L, cache = list(read = 3L, write = 4L))
+      )
     ))
   ))
   captured <- NULL
@@ -465,9 +469,59 @@ test_that("OpenCode export fallback recovers empty terminal output", {
   expect_true(isTRUE(resp$diagnostics$opencode_export_fallback_used))
   expect_identical(resp$diagnostics$opencode_export_session_id, "ses_abc")
   expect_identical(resp$diagnostics$opencode_export_final_text_chars, nchar(final_text))
+  expect_identical(resp$tokens_used, 31L)
+  expect_identical(resp$input_tokens, 24L)
+  expect_identical(resp$output_tokens, 5L)
   expect_true(any(vapply(resp$raw_response$events, function(event) {
     isTRUE(event$synthetic) && identical(event$source, "opencode_export_fallback")
   }, logical(1))))
+  fallback_finish <- Filter(function(event) {
+    isTRUE(event$synthetic) && identical(event$type, "step_finish")
+  }, resp$raw_response$events)[[1]]
+  expect_identical(fallback_finish$part$tokens$input, 17L)
+  expect_identical(fallback_finish$part$tokens$cache$read, 3L)
+  expect_identical(fallback_finish$part$tokens$cache$write, 4L)
+})
+
+test_that("OpenCode export fallback recovers assistant info token usage", {
+  final_text <- "{\"ok\":true}"
+  export_stdout <- opencode_export_json(list(
+    list(info = list(role = "assistant", tokens = list(
+      total = 22L,
+      input = 20L,
+      output = 2L,
+      reasoning = 0L,
+      cache = list(read = 0L, write = 0L)
+    )), parts = list(list(type = "text", text = final_text)))
+  ))
+  testthat::local_mocked_bindings(
+    .run_processx = function(...) {
+      list(status = 0L, stdout = export_stdout, stderr = "", timeout = FALSE)
+    },
+    .package = "asa"
+  )
+
+  recovered <- asa:::.opencode_apply_export_fallback(
+    output = opencode_empty_terminal_output("ses_info"),
+    cli = list(command = "/fake/opencode", prefix_args = character(0)),
+    cli_env = c(TEST = "1"),
+    workdir = tempdir(),
+    cli_status = 0L,
+    process_timeout = FALSE,
+    timeout_seconds = 10
+  )
+  resp <- asa:::.opencode_response_from_output(
+    output = recovered,
+    prompt = "Return JSON.",
+    elapsed_minutes = 0.01,
+    cli_status = 0L
+  )
+
+  expect_identical(resp$status_code, asa:::ASA_STATUS_SUCCESS)
+  expect_true(isTRUE(resp$diagnostics$opencode_export_fallback_used))
+  expect_identical(resp$tokens_used, 22L)
+  expect_identical(resp$input_tokens, 20L)
+  expect_identical(resp$output_tokens, 2L)
 })
 
 test_that("OpenCode export fallback parses prefixed export stdout", {

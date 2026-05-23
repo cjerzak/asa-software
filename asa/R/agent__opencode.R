@@ -614,6 +614,51 @@
   }
 }
 
+#' Extract token usage from an OpenCode export
+#' @keywords internal
+.opencode_export_token_payload <- function(exported) {
+  valid_tokens <- function(tokens) {
+    if (!is.list(tokens) || length(tokens) == 0L) {
+      return(NULL)
+    }
+    token_names <- names(tokens) %||% character(0)
+    if (any(token_names %in% c("input", "output", "reasoning", "total", "cache"))) {
+      return(tokens)
+    }
+    NULL
+  }
+
+  messages <- exported$messages %||% list()
+  assistant <- NULL
+  for (message in messages) {
+    role <- .opencode_scalar_text(message$info$role %||% "")
+    if (identical(role, "assistant")) {
+      assistant <- message
+    }
+  }
+
+  if (!is.null(assistant)) {
+    parts <- rev(assistant$parts %||% list())
+    for (part in parts) {
+      type <- .opencode_scalar_text(part$type %||% "")
+      if (!(type %in% c("step-finish", "step_finish"))) {
+        next
+      }
+      tokens <- valid_tokens(part$tokens %||% list())
+      if (!is.null(tokens)) {
+        return(tokens)
+      }
+    }
+
+    tokens <- valid_tokens(assistant$info$tokens %||% list())
+    if (!is.null(tokens)) {
+      return(tokens)
+    }
+  }
+
+  valid_tokens(exported$info$tokens %||% list())
+}
+
 #' Determine whether the OpenCode export fallback is applicable
 #' @keywords internal
 .opencode_should_try_export_fallback <- function(output,
@@ -741,6 +786,12 @@
     return(output)
   }
 
+  export_tokens <- .opencode_export_token_payload(exported)
+  step_finish_part <- list(type = "step-finish", reason = "stop")
+  if (!is.null(export_tokens)) {
+    step_finish_part$tokens <- export_tokens
+  }
+
   output$text <- final_text
   output$session_id <- session_id
   if (!nzchar(.opencode_scalar_text(output$stop_reason %||% ""))) {
@@ -759,12 +810,13 @@
       list(
         type = "step_finish",
         sessionID = session_id,
-        part = list(type = "step-finish", reason = "stop"),
+        part = step_finish_part,
         source = "opencode_export_fallback",
         synthetic = TRUE
       )
     )
   )
+  output$usage <- .opencode_usage_from_events(output$events)
   output$opencode_export_fallback_used <- TRUE
   output$opencode_export_fallback_error <- NULL
   output$opencode_export_final_text_chars <- nchar(final_text, type = "chars", allowNA = FALSE, keepNA = FALSE)
