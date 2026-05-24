@@ -122,7 +122,7 @@ state. Legacy v1 checkpoints return the saved result without continuation.}
 agent or creates a new one with specified backend/model.}
 
 \item{backend}{LLM backend if creating new agent: "openai", "groq", "xai",
-"gemini", "exo", "openrouter", "anthropic", or "bedrock".}
+"gemini", "exo", "ollama", "openrouter", "anthropic", or "bedrock".}
 
 \item{model}{Model identifier if creating new agent.}
 

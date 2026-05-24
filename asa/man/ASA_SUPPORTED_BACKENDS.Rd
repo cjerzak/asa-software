@@ -5,7 +5,7 @@
 \alias{ASA_SUPPORTED_BACKENDS}
 \title{Supported Backends}
 \format{
-An object of class \code{character} of length 8.
+An object of class \code{character} of length 9.
 }
 \usage{
 ASA_SUPPORTED_BACKENDS

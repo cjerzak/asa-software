@@ -9,7 +9,11 @@
 #'   external free-code agent behind ASA-managed provider and search wrappers,
 #'   or \code{"opencode"} to run the OpenCode CLI behind the same ASA-managed
 #'   provider and search wrappers.
-#' @param backend LLM backend to use. One of: "openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock"
+#' @param backend LLM backend to use. One of: "openai", "groq", "xai",
+#'   "gemini", "exo", "ollama", "openrouter", "anthropic", "bedrock".
+#'   Ollama also supports shorthand like
+#'   \code{"ollama-qwen3:30b-a3b-instruct-2507-q4_K_M"} when \code{model}
+#'   is omitted.
 #' @param model Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")
 #' @param conda_env Name of the conda environment with Python dependencies
 #' @param proxy Proxy URL for search tools.
@@ -82,6 +86,7 @@
 #'     (optionally \code{AWS_DEFAULT_REGION}, defaults to "us-east-1")
 #'   \item OpenRouter: \code{OPENROUTER_API_KEY}
 #'   \item Exo: no API key required (local server)
+#'   \item Ollama: no API key required (local server)
 #' }
 #'
 #' @section OpenRouter Models:
@@ -116,6 +121,12 @@
 #'   backend = "openrouter",
 #'   model = "anthropic/claude-3-sonnet"  # Note: provider/model format
 #' )
+#'
+#' # Initialize with a local Ollama model
+#' agent <- initialize_agent(
+#'   backend = "ollama",
+#'   model = "qwen3:30b-a3b-instruct-2507-q4_K_M"
+#' )
 #' }
 #'
 #' @seealso \code{\link{run_task}}, \code{\link{run_task_batch}}
@@ -149,6 +160,9 @@ initialize_agent <- function(agent_backend = NULL,
   # Apply defaults (option-aware where available)
   agent_backend <- agent_backend %||% ASA_DEFAULT_AGENT_BACKEND
   backend <- backend %||% .get_default_backend()
+  normalized_backend_model <- .normalize_backend_model(backend, model)
+  backend <- normalized_backend_model$backend
+  model <- normalized_backend_model$model
   model <- model %||% .get_default_model_for_backend(backend)
   conda_env <- conda_env %||% .get_default_conda_env()
 
@@ -664,6 +678,7 @@ initialize_agent <- function(agent_backend = NULL,
                     anthropic = 0.0,
                     bedrock = 0.0,
                     exo = 0.01,
+                    ollama = 0.01,
                     0.0))
     }
     if (profile == "balanced") {
@@ -676,6 +691,7 @@ initialize_agent <- function(agent_backend = NULL,
                     anthropic = ASA_DEFAULT_TEMPERATURES$anthropic,
                     bedrock = ASA_DEFAULT_TEMPERATURES$bedrock,
                     exo = 0.01,
+                    ollama = 0.01,
                     0.5))
     }
     # stealth_first profile: keep some variation while reducing extraction drift.
@@ -688,6 +704,7 @@ initialize_agent <- function(agent_backend = NULL,
            anthropic = 0.2,
            bedrock = 0.2,
            exo = 0.01,
+           ollama = 0.01,
            0.2)
   }
 
@@ -701,7 +718,7 @@ initialize_agent <- function(agent_backend = NULL,
   # OpenAI-compatible backends share ChatOpenAI with per-backend config.
   # Build config only for the requested backend to avoid eager side-effects
   # (e.g. .get_local_ip() for exo when not using exo).
-  openai_compat_names <- c("openai", "xai", "exo", "openrouter")
+  openai_compat_names <- c("openai", "xai", "exo", "ollama", "openrouter")
 
   if (backend %in% openai_compat_names) {
     cfg <- switch(backend,
@@ -721,7 +738,16 @@ initialize_agent <- function(agent_backend = NULL,
       ),
       exo = list(
         base = sprintf("http://%s:52415/v1", .get_local_ip()),
-        temperature = .profile_temperature("exo")
+        temperature = .profile_temperature("exo"),
+        api_key = "exo-local"
+      ),
+      ollama = list(
+        base = .normalize_openai_compatible_base_url(
+          Sys.getenv("OLLAMA_API_BASE", unset = ""),
+          ASA_API_ENDPOINTS$ollama
+        ),
+        temperature = .profile_temperature("ollama"),
+        api_key = "ollama-local"
       ),
       openrouter = list(
         env = "OPENROUTER_API_KEY",
@@ -745,6 +771,7 @@ initialize_agent <- function(agent_backend = NULL,
       stream_usage = TRUE
     )
     if (!is.null(cfg$env)) args$openai_api_key <- Sys.getenv(cfg$env)
+    if (is.null(cfg$env) && !is.null(cfg$api_key)) args$openai_api_key <- cfg$api_key
     if (!is.null(cfg$http_client)) args$http_client <- cfg$http_client
     if (!is.null(cfg$include_response_headers)) args$include_response_headers <- cfg$include_response_headers
     if (!is.null(cfg$rate_limiter)) args$rate_limiter <- cfg$rate_limiter

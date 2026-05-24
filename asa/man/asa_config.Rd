@@ -38,7 +38,9 @@ provider routing and search MCP tools), or "opencode" (OpenCode CLI backend
 with ASA-managed provider routing and search MCP tools).}
 
 \item{backend}{LLM backend: "openai", "groq", "xai", "gemini", "exo",
-"openrouter", "anthropic", or "bedrock"}
+"ollama", "openrouter", "anthropic", or "bedrock". Ollama also supports
+shorthand like \code{"ollama-qwen3:30b-a3b-instruct-2507-q4_K_M"} when
+\code{model} is omitted.}
 
 \item{model}{Model identifier (e.g., "gpt-4.1-mini")}
 

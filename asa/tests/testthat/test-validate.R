@@ -685,6 +685,36 @@ test_that(".validate_api_key passes for exo backend (no key needed)", {
   expect_silent(.validate_api_key("exo"))
 })
 
+test_that(".validate_api_key passes for ollama backend (no key needed)", {
+  expect_silent(.validate_api_key("ollama"))
+})
+
+test_that(".normalize_backend_model resolves ollama shorthand", {
+  out <- .normalize_backend_model("ollama-qwen3:30b-a3b-instruct-2507-q4_K_M")
+  expect_identical(out$backend, "ollama")
+  expect_identical(out$model, "qwen3:30b-a3b-instruct-2507-q4_K_M")
+
+  expect_error(
+    .normalize_backend_model("ollama-qwen3:30b-a3b-instruct-2507-q4_K_M", "explicit-model"),
+    "Use either"
+  )
+})
+
+test_that(".normalize_openai_compatible_base_url appends v1 once", {
+  expect_identical(
+    .normalize_openai_compatible_base_url("http://127.0.0.1:11434", "http://unused:1/v1"),
+    "http://127.0.0.1:11434/v1"
+  )
+  expect_identical(
+    .normalize_openai_compatible_base_url("http://127.0.0.1:11434/v1/", "http://unused:1/v1"),
+    "http://127.0.0.1:11434/v1"
+  )
+  expect_identical(
+    .normalize_openai_compatible_base_url("", "http://127.0.0.1:11434/v1"),
+    "http://127.0.0.1:11434/v1"
+  )
+})
+
 test_that(".validate_api_key errors for unknown backend", {
   expect_error(.validate_api_key("unknown_backend"), "Unknown backend")
 })

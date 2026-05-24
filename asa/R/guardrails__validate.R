@@ -1308,8 +1308,8 @@
     openrouter = "OPENROUTER_API_KEY"
   )
 
-  # Exo is local, no API key needed
-  if (backend == "exo") {
+  # Local OpenAI-compatible servers do not require provider API keys.
+  if (backend %in% c("exo", "ollama")) {
     return(invisible(TRUE))
   }
 

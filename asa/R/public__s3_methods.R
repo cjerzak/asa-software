@@ -13,7 +13,9 @@
 #'   provider routing and search MCP tools), or "opencode" (OpenCode CLI backend
 #'   with ASA-managed provider routing and search MCP tools).
 #' @param backend LLM backend: "openai", "groq", "xai", "gemini", "exo",
-#'   "openrouter", "anthropic", or "bedrock"
+#'   "ollama", "openrouter", "anthropic", or "bedrock". Ollama also supports
+#'   shorthand like \code{"ollama-qwen3:30b-a3b-instruct-2507-q4_K_M"} when
+#'   \code{model} is omitted.
 #' @param model Model identifier (e.g., "gpt-4.1-mini")
 #' @param conda_env Conda environment name. Defaults to the package option
 #'   \code{asa.default_conda_env} (or \code{"asa_env"} if unset).
@@ -95,6 +97,9 @@ asa_config <- function(agent_backend = NULL,
   # Use defaults from constants.R if not specified
   agent_backend <- agent_backend %||% ASA_DEFAULT_AGENT_BACKEND
   backend <- backend %||% .get_default_backend()
+  normalized_backend_model <- .normalize_backend_model(backend, model)
+  backend <- normalized_backend_model$backend
+  model <- normalized_backend_model$model
   model <- model %||% .get_default_model_for_backend(backend)
   conda_env <- conda_env %||% .get_default_conda_env()
   workers <- workers %||% .get_default_workers()

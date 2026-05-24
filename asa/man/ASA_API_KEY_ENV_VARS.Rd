@@ -5,7 +5,7 @@
 \alias{ASA_API_KEY_ENV_VARS}
 \title{Environment Variables for API Keys}
 \format{
-An object of class \code{list} of length 8.
+An object of class \code{list} of length 9.
 }
 \usage{
 ASA_API_KEY_ENV_VARS

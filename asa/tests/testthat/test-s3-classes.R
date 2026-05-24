@@ -10,6 +10,31 @@ test_that("asa_agent constructor creates correct object", {
   expect_true(!is.null(agent$created_at))
 })
 
+test_that("asa_config accepts ollama explicit and shorthand backends", {
+  explicit <- asa_config(
+    backend = "ollama",
+    model = "qwen3:30b-a3b-instruct-2507-q4_K_M"
+  )
+  expect_s3_class(explicit, "asa_config")
+  expect_identical(explicit$backend, "ollama")
+  expect_identical(explicit$model, "qwen3:30b-a3b-instruct-2507-q4_K_M")
+
+  shorthand <- asa_config(
+    backend = "ollama-qwen3:30b-a3b-instruct-2507-q4_K_M"
+  )
+  expect_s3_class(shorthand, "asa_config")
+  expect_identical(shorthand$backend, "ollama")
+  expect_identical(shorthand$model, "qwen3:30b-a3b-instruct-2507-q4_K_M")
+
+  expect_error(
+    asa_config(
+      backend = "ollama-qwen3:30b-a3b-instruct-2507-q4_K_M",
+      model = "explicit-model"
+    ),
+    "Use either"
+  )
+})
+
 test_that("asa_response constructor creates correct object", {
   response <- asa_response(
     message = "Test response",

@@ -64,6 +64,14 @@ def _local_ip() -> str:
                 pass
 
 
+def _openai_compatible_base_url(value: Optional[str], default: str) -> str:
+    base_url = str(value or "").strip() or default
+    base_url = base_url.rstrip("/")
+    if not base_url.endswith("/v1"):
+        base_url = f"{base_url}/v1"
+    return base_url
+
+
 def _header_target(handler: BaseHTTPRequestHandler, name: str, default: Optional[str] = None) -> Optional[str]:
     value = handler.headers.get(name)
     if value is None:
@@ -481,7 +489,7 @@ def _create_model(
     backend = str(backend or "").strip().lower()
     timeout_s = None if timeout_s is None else float(timeout_s)
 
-    if backend in {"openai", "xai", "exo", "openrouter"}:
+    if backend in {"openai", "xai", "exo", "ollama", "openrouter"}:
         base_url = None
         api_key = None
         default_headers = None
@@ -494,6 +502,12 @@ def _create_model(
         elif backend == "exo":
             base_url = f"http://{_local_ip()}:52415/v1"
             api_key = "exo-local"
+        elif backend == "ollama":
+            base_url = _openai_compatible_base_url(
+                os.getenv("OLLAMA_API_BASE"),
+                "http://127.0.0.1:11434/v1",
+            )
+            api_key = "ollama-local"
         else:
             base_url = "https://openrouter.ai/api/v1"
             api_key = os.getenv("OPENROUTER_API_KEY", "")

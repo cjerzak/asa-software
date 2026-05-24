@@ -23,6 +23,10 @@ ASA_DEFAULT_AGENT_BACKEND <- "agent"
 #' @keywords internal
 ASA_DEFAULT_MODEL <- "gpt-4.1-mini"
 
+#' Default Ollama Model
+#' @keywords internal
+ASA_DEFAULT_OLLAMA_MODEL <- "qwen3:30b-a3b-instruct-2507-q4_K_M"
+
 #' Default Gemini Model
 #' @keywords internal
 ASA_DEFAULT_GEMINI_MODEL <- "gemini-3-flash-preview"
@@ -45,7 +49,7 @@ ASA_DEFAULT_PROXY <- "socks5h://127.0.0.1:9050"
 
 #' Supported Backends
 #' @keywords internal
-ASA_SUPPORTED_BACKENDS <- c("openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock")
+ASA_SUPPORTED_BACKENDS <- c("openai", "groq", "xai", "gemini", "exo", "ollama", "openrouter", "anthropic", "bedrock")
 
 #' Supported Agent Backends
 #' @keywords internal
@@ -73,6 +77,7 @@ ASA_API_ENDPOINTS <- list(
 
   openai = "https://api.openai.com/v1",
   xai = "https://api.x.ai/v1",
+  ollama = "http://127.0.0.1:11434/v1",
   openrouter = "https://openrouter.ai/api/v1"
 )
 
@@ -86,7 +91,8 @@ ASA_API_KEY_ENV_VARS <- list(
   anthropic = "ANTHROPIC_API_KEY",
   bedrock = "AWS_ACCESS_KEY_ID",
   openrouter = "OPENROUTER_API_KEY",
-  exo = NULL  # Local server, no API key needed
+  exo = NULL,  # Local server, no API key needed
+  ollama = NULL  # Local server, no API key needed
 )
 
 # ============================================================================
@@ -453,6 +459,7 @@ ASA_DEFAULT_TEMPERATURES <- list(
   anthropic = 0.5,
   bedrock = 0.5,
   exo = 0.01,
+  ollama = 0.01,
   openrouter = 0.5
 )
 
@@ -526,6 +533,48 @@ ASA_TRUNCATE_LENGTH <- 80L
   .asa_option("default_model", ASA_DEFAULT_MODEL)
 }
 
+#' Normalize Backend/Model Shorthand
+#' @keywords internal
+.normalize_backend_model <- function(backend, model = NULL) {
+  if (is.character(backend) && length(backend) == 1L &&
+      grepl("^ollama-", backend)) {
+    shorthand_model <- sub("^ollama-", "", backend)
+    if (!nzchar(shorthand_model)) {
+      stop(
+        "`backend = \"ollama-...\"` shorthand must include a model name after `ollama-`.",
+        call. = FALSE
+      )
+    }
+    if (!is.null(model)) {
+      stop(
+        "Use either `backend = \"ollama-<model>\"` shorthand or ",
+        "`backend = \"ollama\", model = \"<model>\"`, not both.",
+        call. = FALSE
+      )
+    }
+    return(list(backend = "ollama", model = shorthand_model))
+  }
+
+  list(backend = backend, model = model)
+}
+
+#' Normalize an OpenAI-Compatible Base URL
+#' @keywords internal
+.normalize_openai_compatible_base_url <- function(base_url, default) {
+  if (is.null(base_url)) {
+    base_url <- default
+  }
+  base_url <- trimws(as.character(base_url)[1])
+  if (!nzchar(base_url)) {
+    base_url <- default
+  }
+  base_url <- sub("/+$", "", base_url)
+  if (!grepl("/v1$", base_url)) {
+    base_url <- paste0(base_url, "/v1")
+  }
+  base_url
+}
+
 #' Get Default Model for Backend
 #' @keywords internal
 .get_default_model_for_backend <- function(backend) {
@@ -543,6 +592,9 @@ ASA_TRUNCATE_LENGTH <- 80L
   }
   if (identical(backend, "bedrock")) {
     return(ASA_DEFAULT_BEDROCK_MODEL)
+  }
+  if (identical(backend, "ollama")) {
+    return(ASA_DEFAULT_OLLAMA_MODEL)
   }
 
   ASA_DEFAULT_MODEL

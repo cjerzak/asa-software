@@ -38,7 +38,11 @@ external free-code agent behind ASA-managed provider and search wrappers,
 or \code{"opencode"} to run the OpenCode CLI behind the same ASA-managed
 provider and search wrappers.}
 
-\item{backend}{LLM backend to use. One of: "openai", "groq", "xai", "gemini", "exo", "openrouter", "anthropic", "bedrock"}
+\item{backend}{LLM backend to use. One of: "openai", "groq", "xai",
+"gemini", "exo", "ollama", "openrouter", "anthropic", "bedrock".
+Ollama also supports shorthand like
+\code{"ollama-qwen3:30b-a3b-instruct-2507-q4_K_M"} when \code{model}
+is omitted.}
 
 \item{model}{Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")}
 
@@ -140,6 +144,7 @@ The following environment variables should be set based on your backend:
     (optionally \code{AWS_DEFAULT_REGION}, defaults to "us-east-1")
   \item OpenRouter: \code{OPENROUTER_API_KEY}
   \item Exo: no API key required (local server)
+  \item Ollama: no API key required (local server)
 }
 }
 
@@ -176,6 +181,12 @@ agent <- initialize_agent(
 agent <- initialize_agent(
   backend = "openrouter",
   model = "anthropic/claude-3-sonnet"  # Note: provider/model format
+)
+
+# Initialize with a local Ollama model
+agent <- initialize_agent(
+  backend = "ollama",
+  model = "qwen3:30b-a3b-instruct-2507-q4_K_M"
 )
 }
 

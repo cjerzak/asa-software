@@ -297,6 +297,87 @@ asa_audit(senators, backend = "langgraph", agent = agent)
 | `bedrock` | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` | `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` |
 | `openrouter` | `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.3-70b-instruct:free` | `OPENROUTER_API_KEY` |
 | `exo` | Local models | (none) |
+| `ollama` | `qwen3:30b-a3b-instruct-2507-q4_K_M` | (none) |
+
+### Local Ollama Backend
+
+ASA supports Ollama as a first-class local backend. Ollama exposes an
+OpenAI-compatible API internally, but callers should use `backend = "ollama"`
+so local model routing is explicit in ASA configuration and traces.
+
+```r
+agent <- asa::initialize_agent(
+  backend = "ollama",
+  model = "qwen3:30b-a3b-instruct-2507-q4_K_M",
+  conda_env = "asa_env"
+)
+```
+
+For compact configuration, the backend can include the model name:
+
+```r
+agent <- asa::initialize_agent(
+  backend = "ollama-qwen3:30b-a3b-instruct-2507-q4_K_M",
+  conda_env = "asa_env"
+)
+```
+
+By default ASA connects to `http://127.0.0.1:11434/v1`. Override this with
+`OLLAMA_API_BASE` if Ollama is served elsewhere; both `http://host:11434` and
+`http://host:11434/v1` are accepted.
+
+Production Mac Studio serving settings:
+
+```bash
+export OLLAMA_HOST=127.0.0.1:11434
+export OLLAMA_CONTEXT_LENGTH=32768
+export OLLAMA_NUM_PARALLEL=2
+export OLLAMA_MAX_LOADED_MODELS=1
+export OLLAMA_MAX_QUEUE=64
+export OLLAMA_KEEP_ALIVE=-1
+
+ollama serve
+ollama pull qwen3:30b-a3b-instruct-2507-q4_K_M
+```
+
+On `connors-mac-studio`, ASA's production Ollama service is installed as the
+user LaunchAgent `~/Library/LaunchAgents/com.asa.ollama.plist` with label
+`com.asa.ollama`; the default Ollama GUI helper is disabled so this service owns
+port `11434`. Useful service commands:
+
+```bash
+ssh connors-mac-studio 'launchctl print gui/$(id -u)/com.asa.ollama'
+ssh connors-mac-studio 'launchctl kickstart -k gui/$(id -u)/com.asa.ollama'
+ssh connors-mac-studio 'tail -f ~/Library/Logs/asa-ollama.err.log'
+```
+
+If ASA runs on another machine, keep Ollama bound to localhost and use SSH
+tunneling:
+
+```bash
+ssh -N -L 11434:127.0.0.1:11434 connors-mac-studio
+```
+
+Health checks:
+
+```bash
+curl http://127.0.0.1:11434/api/version
+ollama ps
+curl http://127.0.0.1:11434/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ollama-local" \
+  -d '{
+    "model": "qwen3:30b-a3b-instruct-2507-q4_K_M",
+    "messages": [{"role": "user", "content": "Say ready."}],
+    "stream": false
+  }'
+```
+
+Ollama supports chat completions, streaming, structured outputs, and tool calls
+through its OpenAI-compatible `/v1` API. Local concurrency is controlled by
+`OLLAMA_NUM_PARALLEL`; required memory scales with
+`OLLAMA_NUM_PARALLEL * OLLAMA_CONTEXT_LENGTH`, so the Mac Studio default is two
+parallel model slots.
 
 ### Agent Options
 
