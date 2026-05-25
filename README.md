@@ -297,7 +297,7 @@ asa_audit(senators, backend = "langgraph", agent = agent)
 | `bedrock` | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` | `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` |
 | `openrouter` | `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.3-70b-instruct:free` | `OPENROUTER_API_KEY` |
 | `exo` | Local models | (none) |
-| `ollama` | `qwen3:30b-a3b-instruct-2507-q4_K_M` | (none) |
+| `ollama` | `lfm2:24b-a2b` | (none) |
 
 ### Local Ollama Backend
 
@@ -308,7 +308,7 @@ so local model routing is explicit in ASA configuration and traces.
 ```r
 agent <- asa::initialize_agent(
   backend = "ollama",
-  model = "qwen3:30b-a3b-instruct-2507-q4_K_M",
+  model = "lfm2:24b-a2b",
   conda_env = "asa_env"
 )
 ```
@@ -317,7 +317,7 @@ For compact configuration, the backend can include the model name:
 
 ```r
 agent <- asa::initialize_agent(
-  backend = "ollama-qwen3:30b-a3b-instruct-2507-q4_K_M",
+  backend = "ollama-lfm2:24b-a2b",
   conda_env = "asa_env"
 )
 ```
@@ -337,7 +337,7 @@ export OLLAMA_MAX_QUEUE=64
 export OLLAMA_KEEP_ALIVE=-1
 
 ollama serve
-ollama pull qwen3:30b-a3b-instruct-2507-q4_K_M
+ollama pull lfm2:24b-a2b
 ```
 
 On `connors-mac-studio`, ASA's production Ollama service is installed as the
@@ -358,6 +358,9 @@ tunneling:
 ssh -N -L 11434:127.0.0.1:11434 connors-mac-studio
 ```
 
+For SSD-backed local ASA/OpenCode jobs on `connors-mac-studio`, see
+`OllamaReadme.md`.
+
 Health checks:
 
 ```bash
@@ -367,7 +370,7 @@ curl http://127.0.0.1:11434/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer ollama-local" \
   -d '{
-    "model": "qwen3:30b-a3b-instruct-2507-q4_K_M",
+    "model": "lfm2:24b-a2b",
     "messages": [{"role": "user", "content": "Say ready."}],
     "stream": false
   }'

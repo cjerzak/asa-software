@@ -13,22 +13,22 @@ test_that("asa_agent constructor creates correct object", {
 test_that("asa_config accepts ollama explicit and shorthand backends", {
   explicit <- asa_config(
     backend = "ollama",
-    model = "qwen3:30b-a3b-instruct-2507-q4_K_M"
+    model = "lfm2:24b-a2b"
   )
   expect_s3_class(explicit, "asa_config")
   expect_identical(explicit$backend, "ollama")
-  expect_identical(explicit$model, "qwen3:30b-a3b-instruct-2507-q4_K_M")
+  expect_identical(explicit$model, "lfm2:24b-a2b")
 
   shorthand <- asa_config(
-    backend = "ollama-qwen3:30b-a3b-instruct-2507-q4_K_M"
+    backend = "ollama-lfm2:24b-a2b"
   )
   expect_s3_class(shorthand, "asa_config")
   expect_identical(shorthand$backend, "ollama")
-  expect_identical(shorthand$model, "qwen3:30b-a3b-instruct-2507-q4_K_M")
+  expect_identical(shorthand$model, "lfm2:24b-a2b")
 
   expect_error(
     asa_config(
-      backend = "ollama-qwen3:30b-a3b-instruct-2507-q4_K_M",
+      backend = "ollama-lfm2:24b-a2b",
       model = "explicit-model"
     ),
     "Use either"

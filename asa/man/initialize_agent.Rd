@@ -41,7 +41,7 @@ provider and search wrappers.}
 \item{backend}{LLM backend to use. One of: "openai", "groq", "xai",
 "gemini", "exo", "ollama", "openrouter", "anthropic", "bedrock".
 Ollama also supports shorthand like
-\code{"ollama-qwen3:30b-a3b-instruct-2507-q4_K_M"} when \code{model}
+\code{"ollama-lfm2:24b-a2b"} when \code{model}
 is omitted.}
 
 \item{model}{Model identifier (e.g., "gpt-4.1-mini", "llama-3.3-70b-versatile")}
@@ -186,7 +186,7 @@ agent <- initialize_agent(
 # Initialize with a local Ollama model
 agent <- initialize_agent(
   backend = "ollama",
-  model = "qwen3:30b-a3b-instruct-2507-q4_K_M"
+  model = "lfm2:24b-a2b"
 )
 }
 

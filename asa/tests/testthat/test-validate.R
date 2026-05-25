@@ -690,12 +690,12 @@ test_that(".validate_api_key passes for ollama backend (no key needed)", {
 })
 
 test_that(".normalize_backend_model resolves ollama shorthand", {
-  out <- .normalize_backend_model("ollama-qwen3:30b-a3b-instruct-2507-q4_K_M")
+  out <- .normalize_backend_model("ollama-lfm2:24b-a2b")
   expect_identical(out$backend, "ollama")
-  expect_identical(out$model, "qwen3:30b-a3b-instruct-2507-q4_K_M")
+  expect_identical(out$model, "lfm2:24b-a2b")
 
   expect_error(
-    .normalize_backend_model("ollama-qwen3:30b-a3b-instruct-2507-q4_K_M", "explicit-model"),
+    .normalize_backend_model("ollama-lfm2:24b-a2b", "explicit-model"),
     "Use either"
   )
 })

@@ -25,7 +25,7 @@ ASA_DEFAULT_MODEL <- "gpt-4.1-mini"
 
 #' Default Ollama Model
 #' @keywords internal
-ASA_DEFAULT_OLLAMA_MODEL <- "qwen3:30b-a3b-instruct-2507-q4_K_M"
+ASA_DEFAULT_OLLAMA_MODEL <- "lfm2:24b-a2b"
 
 #' Default Gemini Model
 #' @keywords internal
