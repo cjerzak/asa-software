@@ -1,0 +1,18 @@
+{
+  "unit_key": "04_hungary_row02091",
+  "generated_at_utc": "2026-05-30T18:10:30Z",
+  "canonical_artifact_id": "e45df1693a7c5950db8541bc2deb35dd841796e2ce1e0b0d2cca029ad73dc4bf",
+  "released_artifact_id": "6cb9c84198613ba66b02d11c54198d7c59ebc4a70020897ab88872ed0f43252e",
+  "released_from": "opencode_final_text_json",
+  "canonical_available": true,
+  "canonical_matches_message": false,
+  "canonical_byte_hash": "e45df1693a7c5950db8541bc2deb35dd841796e2ce1e0b0d2cca029ad73dc4bf",
+  "released_byte_hash": "6cb9c84198613ba66b02d11c54198d7c59ebc4a70020897ab88872ed0f43252e",
+  "byte_hash_matches": false,
+  "canonical_semantic_hash": "2587014ea8c69e8ef60dd2beca387b1202f9e6bc465017d0dbc10dc11ccd2d8b",
+  "released_semantic_hash": null,
+  "semantic_hash_matches": false,
+  "hash_mismatch_type": null,
+  "truncation_signals": [],
+  "json_repair_reasons": []
+}

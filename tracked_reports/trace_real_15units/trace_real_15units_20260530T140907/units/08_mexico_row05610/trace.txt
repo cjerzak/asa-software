@@ -1,0 +1,582 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1780164601955,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a142862001abr5nCYNVSLbrA",
+        "messageID": "msg_e7a141beb001H5mA8azlro4gEF",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164604788,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "2ba7b46c-b01b-49eb-9662-3297fecc9791",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Yesenia Nolasco Ramírez biografía SIL México PRD 2012"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> YeseniaNolascoRamírez(born 22 August 1982) is a Mexican politician affiliated with thePRD. As of 2013 she served as Deputy of the LXII Legislature of the Mexican Congress representing the Federal District. <\/CONTENT> <URL> https://alchetron.com/Yesenia-Nolasco-Ramírez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. She was municipal president of Tehuantepec from 2017-2018. <\/CONTENT> <URL> https://dbpedia.org/page/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> La Secretaría de Movilidad (Semovi) será encabezada porYeseniaNolascoRamírez, quien fue diputada por elPRDen la LXII Legislatura federal (2012-2015), diputada local por Morena en la LXV Legislatura (2021-2024). <\/CONTENT> <URL> https://semmexico.mx/cambios-en-el-gabinete-de-salomon-jara-siete-nuevas-funcionarias <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> DiputadaYeseniaNolascoRamírez... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> YeseniaNolascoRamírez, es una mujer de resultados, de gestión y de compromisos, su trabajo legislativo y las gestiones lo comprueban, durante el periodo del2012- 2015 cuando fue diputada federal gestionó 86 millones para obras para Oaxaca, en especial para su tierra, Santo Domingo Tehuantepec. <\/CONTENT> <URL> https://www.istmopress.com.mx/municipales/yesenia-nolasco-una-mujer-de-compromisos-y-gestion <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Nombre completo:YeseniaNolascoRamírez. Edad y lugar de nacimiento: 40 años, nací en Santo Domingo Tehuantepec. Cargo que ocupa actualmente: Diputada local por el Distrito XIX, con cabecera en Salina Cruz. ¿Qué estudió y dónde? Estudié la licenciatura en Derecho, con especialidad en Fiscal. En la Universidad de las Américas, en Puebla. Pasatiempo favorito: Tengo muy poco tiempo ... <\/CONTENT> <URL> https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MÉXICO, D.F., 29 de julio.- ¿Qué ocurre cuando no se cumplen los acuerdos políticos? El caso deYeseniaNolascosirve para analizar una situación frecuente en nuestro país. <\/CONTENT> <URL> https://www.proceso.com.mx/opinion/2010/7/29/quien-es-yesenia-nolasco-6107.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> YeseniaNolascoRamírezes Licenciada en Derecho con Diplomado en Participación Política y Ciudadana de la Mujer. Pertenece a las fundaciones Juana C. Romero y Equipo, Equidad y Progreso, Oaxaca, que tienen como principal eje rector el empoderamiento de las mujeres. Es hija, hermana, esposa, madre de dos hijas y gestora de tiempo completo. <\/CONTENT> <URL> https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> YeseniaNolascoRamírez, Secretaria de Movilidad Nació el 22 de agosto de 1982. Es Licenciada en Derecho y Política Mexicana. Además, fue presidenta municipal de Tehuantepec de 2017 a 2018. <\/CONTENT> <URL> https://www.nvinoticias.com/oaxaca/general/quienes-son-los-nuevos-integrantes-del-gabinete-de-oaxaca-aqui-te-contamos/169890 <\/URL> __END_OF_SOURCE 10__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164601961,
+            "end": 1780164604786
+          }
+        },
+        "id": "prt_e7a142863001B7tDhA9KWfhpM1",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a141beb001H5mA8azlro4gEF"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164607578,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "85fcc09b-379d-495b-99a8-72be4a388352",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Yesenia Nolasco Ramírez Wikipedia"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Mexican politician FromWikipedia, the free encyclopediaYeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. She was municipal president of Tehuantepec from 2017-2018. <\/CONTENT> <URL> https://dbpedia.org/page/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> YeseniaNolascoRamírez(born 22 August 1982) is a Mexican politician affiliated with the PRD. As of 2013 she served as Deputy of the LXII Legislature of the Mexican Congress representing the Federal District. <\/CONTENT> <URL> https://alchetron.com/Yesenia-Nolasco-Ramírez <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> YeseniaNolascoRamírez. 33,027 likes · 2,512 talking about this. SECRETARIA DE MOVILIDAD DEL ESTADO DE OAXACA <\/CONTENT> <URL> https://www.facebook.com/YesNolasco <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> YeseniaNolascoRamírezes Licenciada en Derecho con Diplomado en Participación Política y Ciudadana de la Mujer. Pertenece a las fundaciones Juana C. Romero y Equipo, Equidad y Progreso, Oaxaca, que tienen como principal eje rector el empoderamiento de las mujeres. Es hija, hermana, esposa, madre de dos hijas y gestora de tiempo completo. <\/CONTENT> <URL> https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> YeseniaNolascoRamírez, Secretaria de Movilidad Nació el 22 de agosto de 1982. Es Licenciada en Derecho y Política Mexicana. Además, fue presidenta municipal de Tehuantepec de 2017 a 2018. <\/CONTENT> <URL> https://www.nvinoticias.com/oaxaca/general/quienes-son-los-nuevos-integrantes-del-gabinete-de-oaxaca-aqui-te-contamos/169890 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> La Secretaría de Movilidad (Semovi) será encabezada porYeseniaNolascoRamírez, quien fue diputada por el PRD en la LXII Legislatura federal (2012-2015), diputada local por Morena en la LXV Legislatura (2021-2024). <\/CONTENT> <URL> https://semmexico.mx/cambios-en-el-gabinete-de-salomon-jara-siete-nuevas-funcionarias <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DiputadaYeseniaNolascoRamírez... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921 <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164601965,
+            "end": 1780164607576
+          }
+        },
+        "id": "prt_e7a14286a001sWjCfsU9yocjk6",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a141beb001H5mA8azlro4gEF"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164607586,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a143e5b0011evytAONEZJcRZ",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a141beb001H5mA8azlro4gEF",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5366,
+          "input": 5097,
+          "output": 269,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0193
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164608708,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a1442c3001zOd4wxi4jkMrkQ",
+        "messageID": "msg_e7a143e60001EBSs7VtN0qGx5K",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164613114,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "9b1dd429-9705-4ba2-bc95-f79208be1a17",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921"
+          },
+          "output": "URL: https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\nFinal URL: http://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\nTitle: SIL - Sistema de Información Legislativa-PopUp Legislador\nBytes read: 76471\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nTrámites\n[link: https://www.gob.mx/tramites]\nG\nobierno\n[link: https://www.gob.mx/gobierno]\n[link: https://www.gob.mx/segob]\nInicio\nA\ncerca de\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/acerca]\nC\nontacto\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/contactanos]\nPerfil ⁄ Actividad legislativa\n62\nIniciativa\n________________________________________________\nCampo\nComunicaciones y Transportes\nDerechos Humanos\nDesarrollo Social\nEconomía\nEducación y Cultura\nElectoral\nEnergía\nFederalismo\nIndígenas\nLaboral\nMigración\nHacienda Pública\nPoblación y Asuntos Religiosos\nPoder Ejecutivo\nPoder Judicial\nPoder Legislativo\nReforma del Estado\nReformas constitucionales\nReformas estructurales\nRelaciones exteriores\nSalud\nSeguridad Nacional\nSeguridad Pública y Justicia\nSistema Financiero\nVivienda\nNo aplica\nMedio Ambiente\nTrámites Legislativos\nGobernabilidad\nTransparencia y Rendición de Cuentas\nProtección Civil\nOrdenamiento territorial\nDesarrollo Democrático\nGobernación\nSeguridad Pública\nJusticia\nLegislador\nDiputada Yesenia Nolasco Ramírez\nSelecciona...\nAprobado\nAtendida\nDesechado\nPendiente\nRetirada\nSelecciona...\n62\nProposiciones con punto de acuerdo\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164608711,
+            "end": 1780164613113
+          }
+        },
+        "id": "prt_e7a1442c4001gsjufdYBrwvhFw",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a143e60001EBSs7VtN0qGx5K"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164613125,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a1453fa001jovmSWVO3sYKkP",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a143e60001EBSs7VtN0qGx5K",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7803,
+          "input": 7689,
+          "output": 114,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0248
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164614691,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a145a22001lVeyc5MyXQo4dS",
+        "messageID": "msg_e7a145403001yTuUPvY100y8ga",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164616200,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "dda2436c-e3b6-41ba-85aa-5ea662fa3556",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Yesenia Nolasco Ramírez trayectoria profesional antes de 2012"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> YeseniaNolascoRamírez(born 22 August 1982) is a Mexican politician affiliated with the PRD. As of 2013 she served as Deputy of the LXII Legislature of the Mexican Congress representing the Federal District. <\/CONTENT> <URL> https://alchetron.com/Yesenia-Nolasco-Ramírez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. She was municipal president of Tehuantepec from 2017-2018. <\/CONTENT> <URL> https://dbpedia.org/page/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> YeseniaNolascoRamírezMexican politicianYeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://reference.org/facts/yesenia_nolasco_ramirez/DLPrsRbF <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> YeseniaNolascoRamírez. 33,027 likes · 2,512 talking about this. SECRETARIADEMOVILIDAD DEL ESTADODEOAXACA <\/CONTENT> <URL> https://www.facebook.com/YesNolasco <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> #Tehuantepec 26 Mayo (#Istmopress).-YeseniaNolascoRamírez, es una mujerderesultados,degestión ydecompromisos, su trabajo legislativo y las gestiones lo comprueban, durante el periodo del2012- 2015 cuando fue diputada federal gestionó 86 millones para obras para Oaxaca, en especial para ... <\/CONTENT> <URL> https://www.istmopress.com.mx/municipales/yesenia-nolasco-una-mujer-de-compromisos-y-gestion <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> YeseniaNolascoRamírez, dijo que respaldará decididamente las ideas y estrategiasdecambio para solventar las injustas condiciones económicas, sociales, políticas y culturales que prevalecen en nuestra nación. <\/CONTENT> <URL> https://expresionnoticias.blogspot.com/2010/11/yesenia-nolasco-directora-de-la.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> YeseniaNolascoRamírezes Licenciada en Derecho con Diplomado en Participación Política y Ciudadanadela Mujer. Pertenece a las fundaciones Juana C. Romero y Equipo, Equidad y Progreso, Oaxaca, que tienen como principal eje rector el empoderamientodelas mujeres. Es hija, hermana, esposa, madrededos hijas y gestoradetiempo completo. <\/CONTENT> <URL> https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Minuto a Minuto Legisladores Comisiones Organosdegobierno Búsquedasdeasuntos Proceso legislativo Enlaces Actualizar Perfil del legisladorNolascoRamírez,YeseniaEstatus: ActivoPartido: Partidodela Revolución Democrática (PRD)Nacimiento: 22/08/1982, Tehuantepec, Oaxaca <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921 <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164614694,
+            "end": 1780164616198
+          }
+        },
+        "id": "prt_e7a145a23001Pam74mySKkkhr8",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a145403001yTuUPvY100y8ga"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164616214,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a146009001cJ2F7epROGS8vm",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a145403001yTuUPvY100y8ga",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8383,
+          "input": 8291,
+          "output": 92,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0263
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164617621,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a146594001p6J5drBa7L81XJ",
+        "messageID": "msg_e7a14600e0014yNKEMdQO1wlVH",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164619591,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "8bc444e8-bb36-491b-bd65-11a7c85de7fd",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921"
+          },
+          "output": "URL: https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921\nFinal URL: http://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921\nTitle: Mini SIL 1.5\nBytes read: 5024\nCache: MISS\n\nRelevant excerpts:\n\n[1]\nSistema de Información Legislativa\nSábado 30 de mayo de 2026\nMinuto a Minuto\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MMinuto]\nLegisladores\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MLegislador]\nComisiones\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MComisiones]\nOrganos de gobierno\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MOrganosGob]\nBúsquedas de asuntos\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MBusqueda]\nProceso legislativo\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MPLegislativo]\nEnlaces\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MEnlaces]\nActualizar\n[link: http://sil.gobernacion.gob.mx/movil?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921]\nPerfil del legislador\nNolasco Ramírez, Yesenia\nEstatus\n:\nActivo\nPartido\n:\nPartido de la Revolución Democrática (PRD)\nNacimiento\n:\n22/08/1982, Tehuantepec, Oaxaca\nPrincipio de elección\n:\nRepresentación Proporcional\nZona\n:\nDistrito Federal, Cuarta\nProtesta\n:\n29/08/2012\nUbicación\n:\nEdificio B, 3er. Piso.\nCorreo electrónico\n:\nyesenia.nolasco@congreso.gob.mx\nTeléfono\n:\n50-36-00-00 Ext: 56357.\nÚltimo grado de estudios\n:\nLicenciatura\nPreparación académica\n:\nDerecho\nSuplente\n:\n",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164617623,
+            "end": 1780164619590
+          }
+        },
+        "id": "prt_e7a146595001zkMy8DEK22FMDu",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a14600e0014yNKEMdQO1wlVH"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164619595,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a146d47001iEIbteRXqMo8tJ",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a14600e0014yNKEMdQO1wlVH",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 9626,
+          "input": 9507,
+          "output": 119,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0303
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164621017,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a1472d8001ujUyNFqCOURa73",
+        "messageID": "msg_e7a146d4a001IOOweFNB9Zq7Dp",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164622660,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "96ee048f-ef46-4022-b1d0-d02f1daa2382",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Yesenia Nolasco Ramírez \"trayectoria\" SIL México"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Yesenia- Orgullosa de ti, mi hermosa hija Rebecca por este logro en tutrayectoriaacadémica. Sigue así mi Bebecca, siendo responsable, dedicada y comprometida. ¡Muchas felicidades! 🎉🎊 💜 | Facebook Facebook 󱣽 󱙆YeseniaNolascoRamírez󱙄 Jun 21, 2024 · 󰟠 Timeline photos Orgullosa de ti, mi hermosa hija Rebecca por este logro en tutrayectoriaacadémica. Sigue así mi ... <\/CONTENT> <URL> https://www.facebook.com/YesNolasco/photos/orgullosa-de-ti-mi-hermosa-hija-rebecca-por-este-logro-en-tu-trayectoria-académi/1019388759543682 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Sistema de Información Legislativa Lunes 04 de mayo de 2026 Minuto a Minuto Legisladores Comisiones Organos de gobierno Búsquedas de asuntos Proceso legislativo Enlaces Actualizar Perfil del legislador -TRAYECTORIAPOLÍTICA Galarza Castro,Yesenia <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9227920%2F3 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 64 likes, 2 comments - yes_nolasco on June 21, 2024: \"Orgullosa de ti, mi hermosa hija Rebecca por este logro en tutrayectoriaacadémica. Sigue así mi Bebecca, siendo responsable, dedicada y comprometida. ¡Muchas felicidades! \". <\/CONTENT> <URL> https://www.instagram.com/p/C8fSdPduZpe <\/URL> __END_OF_SOURCE 3__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164621019,
+            "end": 1780164622659
+          }
+        },
+        "id": "prt_e7a1472d9001CApBkqcB1MSgNJ",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a146d4a001IOOweFNB9Zq7Dp"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164622666,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a147945001KgbH3JZhOlWnU6",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a146d4a001IOOweFNB9Zq7Dp",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10341,
+          "input": 10252,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0321
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164624094,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a147edd001ZhGJ7Flqj0n4v4",
+        "messageID": "msg_e7a147948001boibfQnW8sqyxy",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164639104,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "8a2a3d4a-4400-4b0e-b3c6-f8e062f948f6",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Yesenia Nolasco Ramírez \"trayectoria administrativa\" SIL"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 7, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"Yesenia Nolasco Ramírez \\\"trayectoria administrativa\\\" SIL\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"yesenia nolasco ramírez \\\\\\\"trayectoria administrativa\\\\\\\" sil\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164624097,
+            "end": 1780164639103
+          }
+        },
+        "id": "prt_e7a147ede001UymyVsql2e8z9B",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a147948001boibfQnW8sqyxy"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164639108,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a14b980001iI5WREkBnQ3We8",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a147948001boibfQnW8sqyxy",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 10916,
+          "input": 10827,
+          "output": 89,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0338
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164640480,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a14bedf001VAUyvbuBeS7Sir",
+        "messageID": "msg_e7a14b982001WvwceSTRx2jGaJ",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164641983,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "e2be5d0b-bff4-4e56-b0d5-9ec5c45b4a26",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Yesenia Nolasco Ramírez \"trayectoria\" SIL.gobernacion.gob.mx"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> Sistema de Información Legislativa Lunes 04 de mayo de 2026 Minuto a Minuto Legisladores Comisiones Organos de gobierno Búsquedas de asuntos Proceso legislativo Enlaces Actualizar Perfil del legislador -TRAYECTORIAPOLÍTICA Galarza Castro,Yesenia <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9227920%2F3 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Zona: Guerrero, Cuarta Protesta: 29/08/2021 Ubicación: Edificio H, 4º Piso. Correo electrónico:yesenia.galarza@diputados.gob.mx Teléfono: 55 5036 0000 Ext. 59889. Último grado de estudios: Licenciatura Preparación académica: Educación Primaria Suplente: Martínez De La Cruz, Silvia ::: COMISIONES :::TRAYECTORIAPOLÍTICA ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9227920 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Actualizar Perfil del legislador -TRAYECTORIAEMPRESARIAL/INICIATIVA PRIVADA <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F101%2F557128 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Sistema de Información Legislativa Miércoles 06 de mayo de 2026 Minuto a Minuto Legisladores Comisiones Organos de gobierno Búsquedas de asuntos Proceso legislativo Enlaces Actualizar Perfil del legislador -TRAYECTORIAPOLÍTICA Villanueva Moo, Jazmín Yaneli <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9228166%2F3 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Actualizar Perfil del legislador -TRAYECTORIAADMINISTRATIVA Valles Sampedro, Lorenia Iveth : (2008-2012) : (2016-2018) : (2021-2024) <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9229130%2F1 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Los que conformamos la gran familia #CATEM felicitamos a nuestra amigaYeseniaNolascoRamírez, quien asumió el cargo como presidenta de la Comisión Permanente de Presupuesto y Programación, del H. Congreso del Estado de Oaxaca. Conocedores de su grantrayectoriay trabajo buenas cosas llegarán al puerto de Salina Cruz. <\/CONTENT> <URL> https://www.facebook.com/salinacruzaldia/posts/los-que-conformamos-la-gran-familia-catem-felicitamos-a-nuestra-amiga-yesenia-no/701618258737102 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> TRAYECTORIALABORAL DIPUTADA ELECTAPRINCIPIO POR EL DE MAYORÍA RELATIVA. PRIMERA DIPUTADA MIGRANTE. <\/CONTENT> <URL> https://rh.congresogto.gob.mx/portale/Archivos/Currículum/5001061.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> La persona servidora pública tiene 2 meses como Delegado de Gobernación Conclusión <\/CONTENT> <URL> https://transparenciadocs.hidalgo.gob.mx/dependencias/gobierno/dir1/2024/Curriculum/4T/133.pdf <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> progreso y el desarrollo de nuestra sociedad.YeseniaNolascoRamírezha demostrado a lo largo de sutrayectoriaun firme compromiso con los valores de justicia, inclusión y participación ciudadana, principios que compartimos plenamente en la labor diaria de proteger y servir a nuestra comunidad. La candidataYeseniaNolascoRamírezha ... <\/CONTENT> <URL> https://www.facebook.com/PoliciaMunicipalSalinaCruz <\/URL> __END_OF_SOURCE 9__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164640482,
+            "end": 1780164641982
+          }
+        },
+        "id": "prt_e7a14bee0001Z5nOSlyrTb5B8i",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a14b982001WvwceSTRx2jGaJ"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164641988,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a14c4bf001sSROXPWwtBotxx",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a14b982001WvwceSTRx2jGaJ",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 11199,
+          "input": 11103,
+          "output": 96,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0347
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164643546,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a14cad90010135Su5Tw7MsrH",
+        "messageID": "msg_e7a14c4c30016Nic0pr5gdOnsg",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164643556,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "40998552-c364-4d81-a1d3-0aafff91e823",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 8, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_budget_exhausted\", \"input\": {\"url\": \"https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"The configured web search/fetch budget has been exhausted.\", \"retryable\": false, \"signature\": \"web_fetch:{\\\"query\\\": \\\"\\\", \\\"url\\\": \\\"https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\\\"}\", \"tool\": \"web_fetch\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164643550,
+            "end": 1780164643554
+          }
+        },
+        "id": "prt_e7a14cada001yvbFvGJDpY4Y2m",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "messageID": "msg_e7a14c4c30016Nic0pr5gdOnsg"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164643566,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a14cae50013CdnIljHvqApad",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a14c4c30016Nic0pr5gdOnsg",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-finish",
+        "tokens": {
+          "total": 12494,
+          "input": 12382,
+          "output": 112,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0388
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164656426,
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "id": "prt_e7a14fd29001y1tMtpRFjRC15v",
+        "messageID": "msg_e7a14caec001lInCG0OcN1FWw3",
+        "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Licenciatura en Derecho\",\n  \"prior_occupation\": \"Lawyer and foundation manager\",\n  \"birth_year\": 1982,\n  \"birth_place\": \"Santo Domingo Tehuantepec, Oaxaca, Mexico\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t\",\n    \"prior_occupation\": \"https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco\",\n    \"birth_year\": \"https://en.wikipedia.org/wiki/Yesenia_Nolasco_Ram%C3%ADrez\",\n    \"birth_place\": \"https://en.wikipedia.org/wiki/Yesenia_Nolasco_Ram%C3%ADrez\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\",\n    \"class_background\": \"https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t\"\n  }\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_185ebe491ffevBAP0XQEbiQr3g",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop",
+        "tokens": {
+          "total": 12534,
+          "input": 10154,
+          "output": 2380,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        }
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_185ebe491ffevBAP0XQEbiQr3g",
+  "opencode_export_final_text_chars": 932,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["tool_use", "step_finish", "step_start", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1780164601955,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a142862001abr5nCYNVSLbrA\",\"messageID\":\"msg_e7a141beb001H5mA8azlro4gEF\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164604788,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"2ba7b46c-b01b-49eb-9662-3297fecc9791\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Yesenia Nolasco Ramírez biografía SIL México PRD 2012\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> YeseniaNolascoRamírez(born 22 August 1982) is a Mexican politician affiliated with thePRD. As of 2013 she served as Deputy of the LXII Legislature of the Mexican Congress representing the Federal District. <\/CONTENT> <URL> https://alchetron.com/Yesenia-Nolasco-Ramírez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. She was municipal president of Tehuantepec from 2017-2018. <\/CONTENT> <URL> https://dbpedia.org/page/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> La Secretaría de Movilidad (Semovi) será encabezada porYeseniaNolascoRamírez, quien fue diputada por elPRDen la LXII Legislatura federal (2012-2015), diputada local por Morena en la LXV Legislatura (2021-2024). <\/CONTENT> <URL> https://semmexico.mx/cambios-en-el-gabinete-de-salomon-jara-siete-nuevas-funcionarias <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> DiputadaYeseniaNolascoRamírez... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> YeseniaNolascoRamírez, es una mujer de resultados, de gestión y de compromisos, su trabajo legislativo y las gestiones lo comprueban, durante el periodo del2012- 2015 cuando fue diputada federal gestionó 86 millones para obras para Oaxaca, en especial para su tierra, Santo Domingo Tehuantepec. <\/CONTENT> <URL> https://www.istmopress.com.mx/municipales/yesenia-nolasco-una-mujer-de-compromisos-y-gestion <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Nombre completo:YeseniaNolascoRamírez. Edad y lugar de nacimiento: 40 años, nací en Santo Domingo Tehuantepec. Cargo que ocupa actualmente: Diputada local por el Distrito XIX, con cabecera en Salina Cruz. ¿Qué estudió y dónde? Estudié la licenciatura en Derecho, con especialidad en Fiscal. En la Universidad de las Américas, en Puebla. Pasatiempo favorito: Tengo muy poco tiempo ... <\/CONTENT> <URL> https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> MÉXICO, D.F., 29 de julio.- ¿Qué ocurre cuando no se cumplen los acuerdos políticos? El caso deYeseniaNolascosirve para analizar una situación frecuente en nuestro país. <\/CONTENT> <URL> https://www.proceso.com.mx/opinion/2010/7/29/quien-es-yesenia-nolasco-6107.html <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> YeseniaNolascoRamírezes Licenciada en Derecho con Diplomado en Participación Política y Ciudadana de la Mujer. Pertenece a las fundaciones Juana C. Romero y Equipo, Equidad y Progreso, Oaxaca, que tienen como principal eje rector el empoderamiento de las mujeres. Es hija, hermana, esposa, madre de dos hijas y gestora de tiempo completo. <\/CONTENT> <URL> https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco <\/URL> __END_OF_SOURCE 9__ __START_OF_SOURCE 10__ <CONTENT> YeseniaNolascoRamírez, Secretaria de Movilidad Nació el 22 de agosto de 1982. Es Licenciada en Derecho y Política Mexicana. Además, fue presidenta municipal de Tehuantepec de 2017 a 2018. <\/CONTENT> <URL> https://www.nvinoticias.com/oaxaca/general/quienes-son-los-nuevos-integrantes-del-gabinete-de-oaxaca-aqui-te-contamos/169890 <\/URL> __END_OF_SOURCE 10__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164601961,\"end\":1780164604786}},\"id\":\"prt_e7a142863001B7tDhA9KWfhpM1\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a141beb001H5mA8azlro4gEF\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164607578,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"85fcc09b-379d-495b-99a8-72be4a388352\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Yesenia Nolasco Ramírez Wikipedia\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://en.wikipedia.org/wiki/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Mexican politician FromWikipedia, the free encyclopediaYeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. She was municipal president of Tehuantepec from 2017-2018. <\/CONTENT> <URL> https://dbpedia.org/page/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> YeseniaNolascoRamírez(born 22 August 1982) is a Mexican politician affiliated with the PRD. As of 2013 she served as Deputy of the LXII Legislature of the Mexican Congress representing the Federal District. <\/CONTENT> <URL> https://alchetron.com/Yesenia-Nolasco-Ramírez <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> YeseniaNolascoRamírez. 33,027 likes · 2,512 talking about this. SECRETARIA DE MOVILIDAD DEL ESTADO DE OAXACA <\/CONTENT> <URL> https://www.facebook.com/YesNolasco <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> YeseniaNolascoRamírezes Licenciada en Derecho con Diplomado en Participación Política y Ciudadana de la Mujer. Pertenece a las fundaciones Juana C. Romero y Equipo, Equidad y Progreso, Oaxaca, que tienen como principal eje rector el empoderamiento de las mujeres. Es hija, hermana, esposa, madre de dos hijas y gestora de tiempo completo. <\/CONTENT> <URL> https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> YeseniaNolascoRamírez, Secretaria de Movilidad Nació el 22 de agosto de 1982. Es Licenciada en Derecho y Política Mexicana. Además, fue presidenta municipal de Tehuantepec de 2017 a 2018. <\/CONTENT> <URL> https://www.nvinoticias.com/oaxaca/general/quienes-son-los-nuevos-integrantes-del-gabinete-de-oaxaca-aqui-te-contamos/169890 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> La Secretaría de Movilidad (Semovi) será encabezada porYeseniaNolascoRamírez, quien fue diputada por el PRD en la LXII Legislatura federal (2012-2015), diputada local por Morena en la LXV Legislatura (2021-2024). <\/CONTENT> <URL> https://semmexico.mx/cambios-en-el-gabinete-de-salomon-jara-siete-nuevas-funcionarias <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> DiputadaYeseniaNolascoRamírez... Con fundamento en el artículo 35 fracciones I y IV del Reglamento Interior de la Secretaría de Gobernación, la Dirección General de Información Legislativa recopila y procesa la información que se presenta en esta página, la cual proviene de fuentes públicas: periódicos, revistas, gacetas ... <\/CONTENT> <URL> https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921 <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164601965,\"end\":1780164607576}},\"id\":\"prt_e7a14286a001sWjCfsU9yocjk6\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a141beb001H5mA8azlro4gEF\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164607586,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a143e5b0011evytAONEZJcRZ\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a141beb001H5mA8azlro4gEF\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":5366,\"input\":5097,\"output\":269,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.019326}}\n{\"type\":\"step_start\",\"timestamp\":1780164608708,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a1442c3001zOd4wxi4jkMrkQ\",\"messageID\":\"msg_e7a143e60001EBSs7VtN0qGx5K\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164613114,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"9b1dd429-9705-4ba2-bc95-f79208be1a17\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\"},\"output\":\"URL: https://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\\nFinal URL: http://www.sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\\nTitle: SIL - Sistema de Información Legislativa-PopUp Legislador\\nBytes read: 76471\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nTrámites\\n[link: https://www.gob.mx/tramites]\\nG\\nobierno\\n[link: https://www.gob.mx/gobierno]\\n[link: https://www.gob.mx/segob]\\nInicio\\nA\\ncerca de\\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/acerca]\\nC\\nontacto\\n[link: http://silvmqa.gobernacion.gob.mx/portal/Contacto/contactanos]\\nPerfil ⁄ Actividad legislativa\\n62\\nIniciativa\\n________________________________________________\\nCampo\\nComunicaciones y Transportes\\nDerechos Humanos\\nDesarrollo Social\\nEconomía\\nEducación y Cultura\\nElectoral\\nEnergía\\nFederalismo\\nIndígenas\\nLaboral\\nMigración\\nHacienda Pública\\nPoblación y Asuntos Religiosos\\nPoder Ejecutivo\\nPoder Judicial\\nPoder Legislativo\\nReforma del Estado\\nReformas constitucionales\\nReformas estructurales\\nRelaciones exteriores\\nSalud\\nSeguridad Nacional\\nSeguridad Pública y Justicia\\nSistema Financiero\\nVivienda\\nNo aplica\\nMedio Ambiente\\nTrámites Legislativos\\nGobernabilidad\\nTransparencia y Rendición de Cuentas\\nProtección Civil\\nOrdenamiento territorial\\nDesarrollo Democrático\\nGobernación\\nSeguridad Pública\\nJusticia\\nLegislador\\nDiputada Yesenia Nolasco Ramírez\\nSelecciona...\\nAprobado\\nAtendida\\nDesechado\\nPendiente\\nRetirada\\nSelecciona...\\n62\\nProposiciones con punto de acuerdo\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164608711,\"end\":1780164613113}},\"id\":\"prt_e7a1442c4001gsjufdYBrwvhFw\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a143e60001EBSs7VtN0qGx5K\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164613125,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a1453fa001jovmSWVO3sYKkP\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a143e60001EBSs7VtN0qGx5K\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":7803,\"input\":7689,\"output\":114,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.024777}}\n{\"type\":\"step_start\",\"timestamp\":1780164614691,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a145a22001lVeyc5MyXQo4dS\",\"messageID\":\"msg_e7a145403001yTuUPvY100y8ga\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164616200,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"dda2436c-e3b6-41ba-85aa-5ea662fa3556\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Yesenia Nolasco Ramírez trayectoria profesional antes de 2012\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> YeseniaNolascoRamírez(born 22 August 1982) is a Mexican politician affiliated with the PRD. As of 2013 she served as Deputy of the LXII Legislature of the Mexican Congress representing the Federal District. <\/CONTENT> <URL> https://alchetron.com/Yesenia-Nolasco-Ramírez <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://www.wikiwand.com/en/articles/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> YeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. She was municipal president of Tehuantepec from 2017-2018. <\/CONTENT> <URL> https://dbpedia.org/page/Yesenia_Nolasco_Ramírez <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> YeseniaNolascoRamírezMexican politicianYeseniaNolascoRamírez(Tehuantepec, Oaxaca; August 22, 1982), Graduated in Law and Mexican politics, member of the National Regeneration Movement party (Morena), Deputy elected of the Congress of the Union for the district XIX of the state of Oaxaca. <\/CONTENT> <URL> https://reference.org/facts/yesenia_nolasco_ramirez/DLPrsRbF <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> YeseniaNolascoRamírez. 33,027 likes · 2,512 talking about this. SECRETARIADEMOVILIDAD DEL ESTADODEOAXACA <\/CONTENT> <URL> https://www.facebook.com/YesNolasco <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> #Tehuantepec 26 Mayo (#Istmopress).-YeseniaNolascoRamírez, es una mujerderesultados,degestión ydecompromisos, su trabajo legislativo y las gestiones lo comprueban, durante el periodo del2012- 2015 cuando fue diputada federal gestionó 86 millones para obras para Oaxaca, en especial para ... <\/CONTENT> <URL> https://www.istmopress.com.mx/municipales/yesenia-nolasco-una-mujer-de-compromisos-y-gestion <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> YeseniaNolascoRamírez, dijo que respaldará decididamente las ideas y estrategiasdecambio para solventar las injustas condiciones económicas, sociales, políticas y culturales que prevalecen en nuestra nación. <\/CONTENT> <URL> https://expresionnoticias.blogspot.com/2010/11/yesenia-nolasco-directora-de-la.html <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> YeseniaNolascoRamírezes Licenciada en Derecho con Diplomado en Participación Política y Ciudadanadela Mujer. Pertenece a las fundaciones Juana C. Romero y Equipo, Equidad y Progreso, Oaxaca, que tienen como principal eje rector el empoderamientodelas mujeres. Es hija, hermana, esposa, madrededos hijas y gestoradetiempo completo. <\/CONTENT> <URL> https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> Minuto a Minuto Legisladores Comisiones Organosdegobierno Búsquedasdeasuntos Proceso legislativo Enlaces Actualizar Perfil del legisladorNolascoRamírez,YeseniaEstatus: ActivoPartido: Partidodela Revolución Democrática (PRD)Nacimiento: 22/08/1982, Tehuantepec, Oaxaca <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921 <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164614694,\"end\":1780164616198}},\"id\":\"prt_e7a145a23001Pam74mySKkkhr8\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a145403001yTuUPvY100y8ga\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164616214,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a146009001cJ2F7epROGS8vm\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a145403001yTuUPvY100y8ga\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":8383,\"input\":8291,\"output\":92,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.026253}}\n{\"type\":\"step_start\",\"timestamp\":1780164617621,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a146594001p6J5drBa7L81XJ\",\"messageID\":\"msg_e7a14600e0014yNKEMdQO1wlVH\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164619591,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"8bc444e8-bb36-491b-bd65-11a7c85de7fd\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921\"},\"output\":\"URL: https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921\\nFinal URL: http://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921\\nTitle: Mini SIL 1.5\\nBytes read: 5024\\nCache: MISS\\n\\nRelevant excerpts:\\n\\n[1]\\nSistema de Información Legislativa\\nSábado 30 de mayo de 2026\\nMinuto a Minuto\\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MMinuto]\\nLegisladores\\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MLegislador]\\nComisiones\\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MComisiones]\\nOrganos de gobierno\\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MOrganosGob]\\nBúsquedas de asuntos\\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MBusqueda]\\nProceso legislativo\\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MPLegislativo]\\nEnlaces\\n[link: http://sil.gobernacion.gob.mx/movil/?pg=/msil/MEnlaces]\\nActualizar\\n[link: http://sil.gobernacion.gob.mx/movil?pg=msil%2FMLegislador%2FvistaPrevia%2F9216921]\\nPerfil del legislador\\nNolasco Ramírez, Yesenia\\nEstatus\\n:\\nActivo\\nPartido\\n:\\nPartido de la Revolución Democrática (PRD)\\nNacimiento\\n:\\n22/08/1982, Tehuantepec, Oaxaca\\nPrincipio de elección\\n:\\nRepresentación Proporcional\\nZona\\n:\\nDistrito Federal, Cuarta\\nProtesta\\n:\\n29/08/2012\\nUbicación\\n:\\nEdificio B, 3er. Piso.\\nCorreo electrónico\\n:\\nyesenia.nolasco@congreso.gob.mx\\nTeléfono\\n:\\n50-36-00-00 Ext: 56357.\\nÚltimo grado de estudios\\n:\\nLicenciatura\\nPreparación académica\\n:\\nDerecho\\nSuplente\\n:\\n\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164617623,\"end\":1780164619590}},\"id\":\"prt_e7a146595001zkMy8DEK22FMDu\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a14600e0014yNKEMdQO1wlVH\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164619595,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a146d47001iEIbteRXqMo8tJ\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a14600e0014yNKEMdQO1wlVH\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":9626,\"input\":9507,\"output\":119,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.030306}}\n{\"type\":\"step_start\",\"timestamp\":1780164621017,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a1472d8001ujUyNFqCOURa73\",\"messageID\":\"msg_e7a146d4a001IOOweFNB9Zq7Dp\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164622660,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"96ee048f-ef46-4022-b1d0-d02f1daa2382\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Yesenia Nolasco Ramírez \\\"trayectoria\\\" SIL México\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Yesenia- Orgullosa de ti, mi hermosa hija Rebecca por este logro en tutrayectoriaacadémica. Sigue así mi Bebecca, siendo responsable, dedicada y comprometida. ¡Muchas felicidades! 🎉🎊 💜 | Facebook Facebook 󱣽 󱙆YeseniaNolascoRamírez󱙄 Jun 21, 2024 · 󰟠 Timeline photos Orgullosa de ti, mi hermosa hija Rebecca por este logro en tutrayectoriaacadémica. Sigue así mi ... <\/CONTENT> <URL> https://www.facebook.com/YesNolasco/photos/orgullosa-de-ti-mi-hermosa-hija-rebecca-por-este-logro-en-tu-trayectoria-académi/1019388759543682 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Sistema de Información Legislativa Lunes 04 de mayo de 2026 Minuto a Minuto Legisladores Comisiones Organos de gobierno Búsquedas de asuntos Proceso legislativo Enlaces Actualizar Perfil del legislador -TRAYECTORIAPOLÍTICA Galarza Castro,Yesenia <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9227920%2F3 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 64 likes, 2 comments - yes_nolasco on June 21, 2024: \\\"Orgullosa de ti, mi hermosa hija Rebecca por este logro en tutrayectoriaacadémica. Sigue así mi Bebecca, siendo responsable, dedicada y comprometida. ¡Muchas felicidades! \\\". <\/CONTENT> <URL> https://www.instagram.com/p/C8fSdPduZpe <\/URL> __END_OF_SOURCE 3__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164621019,\"end\":1780164622659}},\"id\":\"prt_e7a1472d9001CApBkqcB1MSgNJ\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a146d4a001IOOweFNB9Zq7Dp\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164622666,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a147945001KgbH3JZhOlWnU6\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a146d4a001IOOweFNB9Zq7Dp\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":10341,\"input\":10252,\"output\":89,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.032091}}\n{\"type\":\"step_start\",\"timestamp\":1780164624094,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a147edd001ZhGJ7Flqj0n4v4\",\"messageID\":\"msg_e7a147948001boibfQnW8sqyxy\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164639104,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"8a2a3d4a-4400-4b0e-b3c6-f8e062f948f6\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Yesenia Nolasco Ramírez \\\"trayectoria administrativa\\\" SIL\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 7, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"Yesenia Nolasco Ramírez \\\\\\\"trayectoria administrativa\\\\\\\" SIL\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"yesenia nolasco ramírez \\\\\\\\\\\\\\\"trayectoria administrativa\\\\\\\\\\\\\\\" sil\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164624097,\"end\":1780164639103}},\"id\":\"prt_e7a147ede001UymyVsql2e8z9B\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a147948001boibfQnW8sqyxy\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164639108,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a14b980001iI5WREkBnQ3We8\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a147948001boibfQnW8sqyxy\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":10916,\"input\":10827,\"output\":89,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.033816}}\n{\"type\":\"step_start\",\"timestamp\":1780164640480,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a14bedf001VAUyvbuBeS7Sir\",\"messageID\":\"msg_e7a14b982001WvwceSTRx2jGaJ\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164641983,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"e2be5d0b-bff4-4e56-b0d5-9ec5c45b4a26\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Yesenia Nolasco Ramírez \\\"trayectoria\\\" SIL.gobernacion.gob.mx\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> Sistema de Información Legislativa Lunes 04 de mayo de 2026 Minuto a Minuto Legisladores Comisiones Organos de gobierno Búsquedas de asuntos Proceso legislativo Enlaces Actualizar Perfil del legislador -TRAYECTORIAPOLÍTICA Galarza Castro,Yesenia <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9227920%2F3 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> Zona: Guerrero, Cuarta Protesta: 29/08/2021 Ubicación: Edificio H, 4º Piso. Correo electrónico:yesenia.galarza@diputados.gob.mx Teléfono: 55 5036 0000 Ext. 59889. Último grado de estudios: Licenciatura Preparación académica: Educación Primaria Suplente: Martínez De La Cruz, Silvia ::: COMISIONES :::TRAYECTORIAPOLÍTICA ... <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaPrevia%2F9227920 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> Actualizar Perfil del legislador -TRAYECTORIAEMPRESARIAL/INICIATIVA PRIVADA <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F101%2F557128 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> Sistema de Información Legislativa Miércoles 06 de mayo de 2026 Minuto a Minuto Legisladores Comisiones Organos de gobierno Búsquedas de asuntos Proceso legislativo Enlaces Actualizar Perfil del legislador -TRAYECTORIAPOLÍTICA Villanueva Moo, Jazmín Yaneli <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9228166%2F3 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> Actualizar Perfil del legislador -TRAYECTORIAADMINISTRATIVA Valles Sampedro, Lorenia Iveth : (2008-2012) : (2016-2018) : (2021-2024) <\/CONTENT> <URL> https://sil.gobernacion.gob.mx/movil/?pg=msil%2FMLegislador%2FvistaTrayectoria%2F9229130%2F1 <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Los que conformamos la gran familia #CATEM felicitamos a nuestra amigaYeseniaNolascoRamírez, quien asumió el cargo como presidenta de la Comisión Permanente de Presupuesto y Programación, del H. Congreso del Estado de Oaxaca. Conocedores de su grantrayectoriay trabajo buenas cosas llegarán al puerto de Salina Cruz. <\/CONTENT> <URL> https://www.facebook.com/salinacruzaldia/posts/los-que-conformamos-la-gran-familia-catem-felicitamos-a-nuestra-amiga-yesenia-no/701618258737102 <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> TRAYECTORIALABORAL DIPUTADA ELECTAPRINCIPIO POR EL DE MAYORÍA RELATIVA. PRIMERA DIPUTADA MIGRANTE. <\/CONTENT> <URL> https://rh.congresogto.gob.mx/portale/Archivos/Currículum/5001061.pdf <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> La persona servidora pública tiene 2 meses como Delegado de Gobernación Conclusión <\/CONTENT> <URL> https://transparenciadocs.hidalgo.gob.mx/dependencias/gobierno/dir1/2024/Curriculum/4T/133.pdf <\/URL> __END_OF_SOURCE 8__ __START_OF_SOURCE 9__ <CONTENT> progreso y el desarrollo de nuestra sociedad.YeseniaNolascoRamírezha demostrado a lo largo de sutrayectoriaun firme compromiso con los valores de justicia, inclusión y participación ciudadana, principios que compartimos plenamente en la labor diaria de proteger y servir a nuestra comunidad. La candidataYeseniaNolascoRamírezha ... <\/CONTENT> <URL> https://www.facebook.com/PoliciaMunicipalSalinaCruz <\/URL> __END_OF_SOURCE 9__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164640482,\"end\":1780164641982}},\"id\":\"prt_e7a14bee0001Z5nOSlyrTb5B8i\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a14b982001WvwceSTRx2jGaJ\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164641988,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a14c4bf001sSROXPWwtBotxx\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a14b982001WvwceSTRx2jGaJ\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":11199,\"input\":11103,\"output\":96,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.034749}}\n{\"type\":\"step_start\",\"timestamp\":1780164643546,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a14cad90010135Su5Tw7MsrH\",\"messageID\":\"msg_e7a14c4c30016Nic0pr5gdOnsg\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164643556,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"40998552-c364-4d81-a1d3-0aafff91e823\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 8, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_budget_exhausted\\\", \\\"input\\\": {\\\"url\\\": \\\"https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"The configured web search/fetch budget has been exhausted.\\\", \\\"retryable\\\": false, \\\"signature\\\": \\\"web_fetch:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\", \\\\\\\"url\\\\\\\": \\\\\\\"https://sil.gobernacion.gob.mx/Librerias/pp_PerfilLegislador.php?Referencia=9216921\\\\\\\"}\\\", \\\"tool\\\": \\\"web_fetch\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164643550,\"end\":1780164643554}},\"id\":\"prt_e7a14cada001yvbFvGJDpY4Y2m\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"messageID\":\"msg_e7a14c4c30016Nic0pr5gdOnsg\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164643566,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a14cae50013CdnIljHvqApad\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a14c4c30016Nic0pr5gdOnsg\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-finish\",\"tokens\":{\"total\":12494,\"input\":12382,\"output\":112,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.038826}}\n{\"type\":\"step_start\",\"timestamp\":1780164656426,\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"part\":{\"id\":\"prt_e7a14fd29001y1tMtpRFjRC15v\",\"messageID\":\"msg_e7a14caec001lInCG0OcN1FWw3\",\"sessionID\":\"ses_185ebe491ffevBAP0XQEbiQr3g\",\"type\":\"step-start\"}}\n"
+}

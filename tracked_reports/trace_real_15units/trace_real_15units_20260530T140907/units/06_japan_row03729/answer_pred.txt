@@ -1,0 +1,10 @@
+{
+  "educational_attainment": "Bachelor's degree in Economics from Ritsumeikan University",
+  "prior_occupation": "Chairman of the Kagoshima City Employees' Union (Kagoshima Shishokuro)",
+  "birth_year": "1950",
+  "birth_place": "Kagoshima City, Kagoshima Prefecture, Japan",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": ["https://ja.wikipedia.org/wiki/皆吉稲生", "https://www.wikiwand.com/ja/皆吉稲生", "https://pedia.3rd-in.co.jp/wiki/皆吉稲生"]
+}

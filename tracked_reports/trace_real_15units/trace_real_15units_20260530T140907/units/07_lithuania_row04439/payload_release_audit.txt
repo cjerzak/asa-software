@@ -1,0 +1,18 @@
+{
+  "unit_key": "07_lithuania_row04439",
+  "generated_at_utc": "2026-05-30T18:10:22Z",
+  "canonical_artifact_id": "82acc902b4bf93e30449e0736c97fa99b38e0a871a79229ba8b30ad383781452",
+  "released_artifact_id": "bf8b11c1391e7b662f179b153e6e4102e026ac9e6efb3d3414a0aefb50fc05c5",
+  "released_from": "opencode_final_text_json",
+  "canonical_available": true,
+  "canonical_matches_message": false,
+  "canonical_byte_hash": "82acc902b4bf93e30449e0736c97fa99b38e0a871a79229ba8b30ad383781452",
+  "released_byte_hash": "bf8b11c1391e7b662f179b153e6e4102e026ac9e6efb3d3414a0aefb50fc05c5",
+  "byte_hash_matches": false,
+  "canonical_semantic_hash": "5db6e084a8e2a60525359133616c2e9604db2a0c3be178bf37904c6c9ae79a69",
+  "released_semantic_hash": null,
+  "semantic_hash_matches": false,
+  "hash_mismatch_type": null,
+  "truncation_signals": [],
+  "json_repair_reasons": []
+}

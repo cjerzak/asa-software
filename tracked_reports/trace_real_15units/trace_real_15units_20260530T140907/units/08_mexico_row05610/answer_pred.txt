@@ -1,0 +1,18 @@
+{
+  "educational_attainment": "Licenciatura en Derecho",
+  "prior_occupation": "Lawyer and foundation manager",
+  "birth_year": 1982,
+  "birth_place": "Santo Domingo Tehuantepec, Oaxaca, Mexico",
+  "disability_status": "Unknown",
+  "sexual_orientation": "Unknown",
+  "class_background": "Middle class/professional",
+  "sources": {
+    "educational_attainment": "https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t",
+    "prior_occupation": "https://www.revistavidayestilo-oaxaca.com.mx/de-portada/yesenia-nolasco",
+    "birth_year": "https://en.wikipedia.org/wiki/Yesenia_Nolasco_Ram%C3%ADrez",
+    "birth_place": "https://en.wikipedia.org/wiki/Yesenia_Nolasco_Ram%C3%ADrez",
+    "disability_status": "Unknown",
+    "sexual_orientation": "Unknown",
+    "class_background": "https://elsoberano.mx/2022/09/09/yesenia-nolasco-el-compromiso-es-nuestro-para-consolidar-la-4t"
+  }
+}

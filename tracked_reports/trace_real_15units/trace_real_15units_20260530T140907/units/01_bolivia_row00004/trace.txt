@@ -1,0 +1,348 @@
+{
+  "events": [
+    {
+      "type": "step_start",
+      "timestamp": 1780164603705,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "id": "prt_e7a142f37001VVdRjGXLpqlrxT",
+        "messageID": "msg_e7a1420a6001qNILiYKa0720JE",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164605937,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "a1795bf1-9cb7-4808-95eb-67aaf4200370",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth José Shiriqui Rapp Bolivia biography"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> ShiriquiRappMezothJosese encuentra en Santa Cruz de la Sierra, Departamento de Santa Cruz. Esta empresa se desempeña en la siguiente industria: Venta de maquinaria. <\/CONTENT> <URL> https://bo.todosnegocios.com/shiriqui-rapp-mezoth-jose-4-6217970 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> CONCEJAL MUNICIPALMEZOTHJ. SHRIQUIRAPP, PARTICIPÓ EN EL 88 ANIVERSARIO DEL CESE DE HOSTILIDADES DE LA GUERRA DEL CHACO. La guerra del chaco, conflicto que enfrentó aBoliviay Paraguay entre los años 1932 y 1935. <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/concejal-municipal-mezoth-j-shriqui-rapp-participó-en-el-88-aniversario-del-cese/288420563637279 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 0 likes, 0 comments - roxanaahoracon on November 16, 2025: \"MOISÉSSHIRIQUIRAPPES EL NUEVO JEFE DE LA CASA MILITARShiriquiestuvo cumpliendo su servicio en Villazón por dos años, tras su nombramiento se traslado a la ciudad de La Paz para asumir sus nuevas funciones. La población de Villazón, reconoce el trabajo del Cnl. MoisésShiriqui, por su contribución en temas de seguridad. Su ... <\/CONTENT> <URL> https://www.instagram.com/p/DRJA9n2Doz2 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BoliviaOnline Genealogy Records ... Due to changes in contracts with record custodians, the availability of some FamilySearch record collections may change over time. This website requires a paid subscription for full access. Some subscription websites are available for free at your local FamilySearch Center or Affiliate Library. <\/CONTENT> <URL> https://www.familysearch.org/en/wiki/Bolivia_Online_Genealogy_Records <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Personas Conoce cómo buscar datos de personas enBolivia. Guía para encontrar información de personas Bolivianas por cédula, nombre, apellidos y otros documentos de identificación. 🇧🇴 Registro NacionalBoliviaPersonas - Para buscar datos y más información adicional en registros públicos. <\/CONTENT> <URL> https://registronacional.com/bolivia/personas.htm <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Este documento presenta el Diccionario Biográfico de Parlamentarios 1979-2019, el cual contiene información biográfica de aproximadamente 1000 parlamentarios bolivianos desde 1979 hasta la fecha. El diccionario fue apoyado por Fundappac y la Fundación Konrad Adenauer y tiene como objetivo mejorar el conocimiento sobre la historia del parlamento boliviano y sus miembros a través de datos ... <\/CONTENT> <URL> https://es.scribd.com/document/564856051/Diccionario-biogra-fico-de-parlamentarios-1979-2019 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> El Diccionario permite acceder a la información biográfica sobre todos los diputados y senadores titulares deBoliviadesde la legislatura de 1979 hasta la de 2014 - 2019. Brinda una imagen matizada y completa de las maneras cómo se hace política en <\/CONTENT> <URL> https://www.academia.edu/36427729/Diccionario_biográfico_de_parlamentarios_1979_2019 <\/URL> __END_OF_SOURCE 8__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164603713,
+            "end": 1780164605936
+          }
+        },
+        "id": "prt_e7a142f3900156hRTyQsRQEl4z",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "messageID": "msg_e7a1420a6001qNILiYKa0720JE"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164607595,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "dfa96818-7549-4e11-a32d-3e8ad5c56213",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "Mezoth Shiriqui Rapp diputado Bolivia 2009"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> El domingo 6 de diciembre de2009se celebraron las elecciones generales enBolivia, después de un referéndum constitucional celebrado el 25 de enero de ese mismo año. Los votantes debían elegir al presidente, al vicepresidente y a 130diputadosy 36 senadores para el período 2010-2015. Los cinco departamentos que aún no lo habían hecho votaron a favor de la autonomía departamental ... <\/CONTENT> <URL> https://es.wikipedia.org/wiki/Elecciones_generales_de_Bolivia_de_2009 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos como senadores,diputadosplurinominales,diputadosuninominales ydiputadospor circunscripción especial indígena originario de la Asamblea Legislativa Plurinacional del Estado Plurinacional deBolivia, en las elecciones generales del 6 de diciembre. <\/CONTENT> <URL> https://mail.eabolivia.com/lista-nomina-de-senadores-y-diputados-electos-el-2009.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 20/11/1974 16/04/1966 TARIJA <\/CONTENT> <URL> https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> (*) Alianza para la Refundacion deBolivia(**) Plan Progreso paraBolivia/ Convergencia Nacional Nota: Cada uno de los nueve departamentos deBoliviaelige 4 senadores. / Each of the nine Bolivian states elects four Senators. Fuente / Source: Corte Nacional Electoral Ultima actualización / Last updated: Junio 30, 2010 <\/CONTENT> <URL> https://pdba.georgetown.edu/Elecdata/Bolivia/sen09.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> PLURINATIONAL STATE OFBOLIVIALEGISLATIVE ELECTION OF 6 DECEMBER2009========================================================================== Source: Supreme ... <\/CONTENT> <URL> https://psephos.adam-carr.net/countries/b/bolivia/bolivia20093.txt <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Publicidad (ABI) El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos comodiputadosplurinominales,diputadosuninominales ydiputadospor circunscripción ... <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El Boletín Estadístico número 2 presenta un análisis de las elecciones generales deBoliviaen2009, destacando la implementación de un nuevo régimen electoral y la participación de diversas organizaciones políticas. La participación electoral alcanzó un 95,25% enBoliviay un 73,98% en el exterior, con el MAS-IPSP como el partido más votado. Los resultados muestran que el MAS-IPSP ... <\/CONTENT> <URL> https://es.scribd.com/document/831220059/boletin-estadistico-2 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> El Diccionario permite acceder a la información biográfica sobre todos losdiputadosy senadores titulares deBoliviadesde la legislatura de 1979 hasta la de 2014 - 2019. Brinda una imagen ... <\/CONTENT> <URL> https://www.researchgate.net/publication/324569555_Diccionario_biografico_de_parlamentarios_1979_-_2019 <\/URL> __END_OF_SOURCE 8__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164603717,
+            "end": 1780164607594
+          }
+        },
+        "id": "prt_e7a142f42001aXQ5rZBoB1CC0v",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "messageID": "msg_e7a1420a6001qNILiYKa0720JE"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164607603,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "id": "prt_e7a143e6c0011QNCNQlZKLE4Vp",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a1420a6001qNILiYKa0720JE",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "type": "step-finish",
+        "tokens": {
+          "total": 5443,
+          "input": 5108,
+          "output": 335,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0203
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164609431,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "id": "prt_e7a144596001hIYJEfR615mx1T",
+        "messageID": "msg_e7a143e71001TmTwpj1VlMPH30",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164612709,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_fetch",
+        "callID": "624563ac-5a62-4eb1-9441-bf13b167469b",
+        "state": {
+          "status": "completed",
+          "input": {
+            "url": "https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf"
+          },
+          "output": "{\"ok\":false,\"tool\":\"OpenWebpage\",\"error_type\":\"request_exception\",\"retryable\":true,\"url\":\"https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf\",\"final_url\":null,\"status_code\":null,\"error\":\"Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\",\"error_detail\":null,\"attempt\":2,\"attempts\":2}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164609434,
+            "end": 1780164612708
+          }
+        },
+        "id": "prt_e7a144598001HEvK8HJiG1w1E3",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "messageID": "msg_e7a143e71001TmTwpj1VlMPH30"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164627712,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "4521a036-4c95-45c5-b9a4-ea65cb8ee523",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Mezoth José Shiriqui Rapp\" biografía"
+          },
+          "output": "ASA_TOOL_ERROR {\"budget_state\": {\"network_calls\": 4, \"search_budget_limit\": 8, \"timeouts\": 1, \"total_timeout_limit\": 3}, \"error_type\": \"tool_timeout\", \"input\": {\"query\": \"\\\"Mezoth José Shiriqui Rapp\\\" biografía\"}, \"instruction\": \"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\", \"message\": \"ASA tool deadline exceeded after 15.0s\", \"retryable\": true, \"signature\": \"web_search:{\\\"query\\\": \\\"\\\\\\\"mezoth josé shiriqui rapp\\\\\\\" biografía\\\"}\", \"tool\": \"web_search\"}",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164609437,
+            "end": 1780164627711
+          }
+        },
+        "id": "prt_e7a14459b001yoCdnnd39sb660",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "messageID": "msg_e7a143e71001TmTwpj1VlMPH30"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164628988,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "0c6721fe-d7c2-4cb7-a35c-c9f99cba14dd",
+        "state": {
+          "status": "completed",
+          "input": {
+            "query": "\"Mezoth Shiriqui Rapp\" profesión"
+          },
+          "output": "__START_OF_SOURCE 1__ <CONTENT> NOTICIA DE ULTIMA HORA #TRINIDAD SUB NACIONALES BENI ING.MEZOTH SHIRIQUI RAPP, Y ALEIDA BARBOZA ANUNCIO RENUNCIA IRREVOCABLE A PARTIDO DEMOCRAS EN BENI. AMBOS SE INSCRIBIRAN COMO CONCEJAL POR EL PARTIDO DE TERCER SISTEMA EN BENI CANDIDATO A GOBERNADOR DE TERCER SISTEMA EN BENI , ES DR. ALEJANDRO UNZUETA. CRISTHIAN CAMARA CANDIDATO A LA ALCALDIA DE TRINIDAD. Trinidad, 27 de diciembre 2020 ... <\/CONTENT> <URL> https://www.facebook.com/VillantvTrinidad-72841443-1869359710058685/videos/noticia-de-ultima-hora-trinidadsub-nacionales-beniing-mezoth-shiriqui-rapp-y-ale/766446650614239 <\/URL> __END_OF_SOURCE 1__",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "",
+          "time": {
+            "start": 1780164609440,
+            "end": 1780164628987
+          }
+        },
+        "id": "prt_e7a14459e001LSAoej8kG8Qvnk",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "messageID": "msg_e7a143e71001TmTwpj1VlMPH30"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164628996,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "id": "prt_e7a1491fc001iLey1DotnFrpSg",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a143e71001TmTwpj1VlMPH30",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "type": "step-finish",
+        "tokens": {
+          "total": 7448,
+          "input": 7275,
+          "output": 173,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0244
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164630189,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "id": "prt_e7a1496ac001m3GRehlJ2Pdtg3",
+        "messageID": "msg_e7a149201001coEEziITy6gGWg",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164650196,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "7b474acb-f13b-45e1-ac7a-9f3b73cbdbaa",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "\"Mezoth José Shiriqui Rapp\" educación"
+          },
+          "error": "MCP error -32001: Request timed out",
+          "time": {
+            "start": 1780164630191,
+            "end": 1780164650195
+          }
+        },
+        "id": "prt_e7a1496ad0013bsMydXkZJQc4y",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "messageID": "msg_e7a149201001coEEziITy6gGWg"
+      }
+    },
+    {
+      "type": "tool_use",
+      "timestamp": 1780164650199,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "tool",
+        "tool": "asa_search_web_search",
+        "callID": "a2c77e8b-cefc-4e10-b1ed-7c43cd9254f8",
+        "state": {
+          "status": "error",
+          "input": {
+            "query": "\"Mezoth Shiriqui Rapp\" nacimiento"
+          },
+          "error": "MCP error -32001: Request timed out",
+          "time": {
+            "start": 1780164630194,
+            "end": 1780164650198
+          }
+        },
+        "id": "prt_e7a1496b00018xJbGomEBAmFhD",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "messageID": "msg_e7a149201001coEEziITy6gGWg"
+      }
+    },
+    {
+      "type": "step_finish",
+      "timestamp": 1780164650205,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "id": "prt_e7a14e4d70012MJd6fGxflvs1S",
+        "reason": "tool-calls",
+        "messageID": "msg_e7a149201001coEEziITy6gGWg",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "type": "step-finish",
+        "tokens": {
+          "total": 8171,
+          "input": 8056,
+          "output": 115,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        },
+        "cost": 0.0259
+      }
+    },
+    {
+      "type": "step_start",
+      "timestamp": 1780164657735,
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "id": "prt_e7a150246001yE3i4061Ub3IOC",
+        "messageID": "msg_e7a14e4db00139hE4XogBkO7F2",
+        "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+        "type": "step-start"
+      }
+    },
+    {
+      "type": "text",
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "text",
+        "text": "```json\n{\n  \"educational_attainment\": \"Engineering degree\",\n  \"prior_occupation\": \"Engineer / Machinery sales\",\n  \"birth_year\": 1975,\n  \"birth_place\": \"Unknown\",\n  \"disability_status\": \"Unknown\",\n  \"sexual_orientation\": \"Unknown\",\n  \"class_background\": \"Middle class/professional\",\n  \"sources\": {\n    \"educational_attainment\": \"https://www.facebook.com/VillantvTrinidad-72841443-1869359710058685/videos/noticia-de-ultima-hora-trinidadsub-nacionales-beniing-mezoth-shiriqui-rapp-y-ale/766446650614239\",\n    \"prior_occupation\": \"https://bo.todosnegocios.com/shiriqui-rapp-mezoth-jose-4-6217970\",\n    \"birth_year\": \"Task metadata\",\n    \"birth_place\": \"Unknown\",\n    \"disability_status\": \"Unknown\",\n    \"sexual_orientation\": \"Unknown\"\n  }\n}\n```"
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    },
+    {
+      "type": "step_finish",
+      "sessionID": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+      "part": {
+        "type": "step-finish",
+        "reason": "stop",
+        "tokens": {
+          "total": 7406,
+          "input": 5938,
+          "output": 1468,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 0
+          }
+        }
+      },
+      "source": "opencode_export_fallback",
+      "synthetic": true
+    }
+  ],
+  "cli_status": 0,
+  "process_timeout": false,
+  "timeout_seconds": 180,
+  "stderr": "",
+  "errors": [],
+  "parse_error": false,
+  "empty_terminal_output": false,
+  "opencode_export_fallback_used": true,
+  "opencode_export_session_id": "ses_185ebe065ffeMhsLmHVCaYlR0x",
+  "opencode_export_final_text_chars": 740,
+  "opencode_export_fallback_error": null,
+  "last_event_types": ["step_finish", "step_start", "tool_use", "tool_use", "step_finish", "step_start", "text", "step_finish"],
+  "raw_stdout": "{\"type\":\"step_start\",\"timestamp\":1780164603705,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"id\":\"prt_e7a142f37001VVdRjGXLpqlrxT\",\"messageID\":\"msg_e7a1420a6001qNILiYKa0720JE\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164605937,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"a1795bf1-9cb7-4808-95eb-67aaf4200370\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth José Shiriqui Rapp Bolivia biography\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> ShiriquiRappMezothJosese encuentra en Santa Cruz de la Sierra, Departamento de Santa Cruz. Esta empresa se desempeña en la siguiente industria: Venta de maquinaria. <\/CONTENT> <URL> https://bo.todosnegocios.com/shiriqui-rapp-mezoth-jose-4-6217970 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> MezothJoséShriquiRapp, diputado uninominal titular por Beni circunscripción-61 (Convergencia Nacional) <\/CONTENT> <URL> https://www.flickr.com/photos/194792615@N03/52363186801 <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> CONCEJAL MUNICIPALMEZOTHJ. SHRIQUIRAPP, PARTICIPÓ EN EL 88 ANIVERSARIO DEL CESE DE HOSTILIDADES DE LA GUERRA DEL CHACO. La guerra del chaco, conflicto que enfrentó aBoliviay Paraguay entre los años 1932 y 1935. <\/CONTENT> <URL> https://www.facebook.com/Concejo.Municipal.de.Trinidad/videos/concejal-municipal-mezoth-j-shriqui-rapp-participó-en-el-88-aniversario-del-cese/288420563637279 <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> 0 likes, 0 comments - roxanaahoracon on November 16, 2025: \\\"MOISÉSSHIRIQUIRAPPES EL NUEVO JEFE DE LA CASA MILITARShiriquiestuvo cumpliendo su servicio en Villazón por dos años, tras su nombramiento se traslado a la ciudad de La Paz para asumir sus nuevas funciones. La población de Villazón, reconoce el trabajo del Cnl. MoisésShiriqui, por su contribución en temas de seguridad. Su ... <\/CONTENT> <URL> https://www.instagram.com/p/DRJA9n2Doz2 <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> BoliviaOnline Genealogy Records ... Due to changes in contracts with record custodians, the availability of some FamilySearch record collections may change over time. This website requires a paid subscription for full access. Some subscription websites are available for free at your local FamilySearch Center or Affiliate Library. <\/CONTENT> <URL> https://www.familysearch.org/en/wiki/Bolivia_Online_Genealogy_Records <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Personas Conoce cómo buscar datos de personas enBolivia. Guía para encontrar información de personas Bolivianas por cédula, nombre, apellidos y otros documentos de identificación. 🇧🇴 Registro NacionalBoliviaPersonas - Para buscar datos y más información adicional en registros públicos. <\/CONTENT> <URL> https://registronacional.com/bolivia/personas.htm <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> Este documento presenta el Diccionario Biográfico de Parlamentarios 1979-2019, el cual contiene información biográfica de aproximadamente 1000 parlamentarios bolivianos desde 1979 hasta la fecha. El diccionario fue apoyado por Fundappac y la Fundación Konrad Adenauer y tiene como objetivo mejorar el conocimiento sobre la historia del parlamento boliviano y sus miembros a través de datos ... <\/CONTENT> <URL> https://es.scribd.com/document/564856051/Diccionario-biogra-fico-de-parlamentarios-1979-2019 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> El Diccionario permite acceder a la información biográfica sobre todos los diputados y senadores titulares deBoliviadesde la legislatura de 1979 hasta la de 2014 - 2019. Brinda una imagen matizada y completa de las maneras cómo se hace política en <\/CONTENT> <URL> https://www.academia.edu/36427729/Diccionario_biográfico_de_parlamentarios_1979_2019 <\/URL> __END_OF_SOURCE 8__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164603713,\"end\":1780164605936}},\"id\":\"prt_e7a142f3900156hRTyQsRQEl4z\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"messageID\":\"msg_e7a1420a6001qNILiYKa0720JE\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164607595,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"dfa96818-7549-4e11-a32d-3e8ad5c56213\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"Mezoth Shiriqui Rapp diputado Bolivia 2009\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> El domingo 6 de diciembre de2009se celebraron las elecciones generales enBolivia, después de un referéndum constitucional celebrado el 25 de enero de ese mismo año. Los votantes debían elegir al presidente, al vicepresidente y a 130diputadosy 36 senadores para el período 2010-2015. Los cinco departamentos que aún no lo habían hecho votaron a favor de la autonomía departamental ... <\/CONTENT> <URL> https://es.wikipedia.org/wiki/Elecciones_generales_de_Bolivia_de_2009 <\/URL> __END_OF_SOURCE 1__ __START_OF_SOURCE 2__ <CONTENT> El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos como senadores,diputadosplurinominales,diputadosuninominales ydiputadospor circunscripción especial indígena originario de la Asamblea Legislativa Plurinacional del Estado Plurinacional deBolivia, en las elecciones generales del 6 de diciembre. <\/CONTENT> <URL> https://mail.eabolivia.com/lista-nomina-de-senadores-y-diputados-electos-el-2009.html <\/URL> __END_OF_SOURCE 2__ __START_OF_SOURCE 3__ <CONTENT> 20/11/1974 16/04/1966 TARIJA <\/CONTENT> <URL> https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf <\/URL> __END_OF_SOURCE 3__ __START_OF_SOURCE 4__ <CONTENT> (*) Alianza para la Refundacion deBolivia(**) Plan Progreso paraBolivia/ Convergencia Nacional Nota: Cada uno de los nueve departamentos deBoliviaelige 4 senadores. / Each of the nine Bolivian states elects four Senators. Fuente / Source: Corte Nacional Electoral Ultima actualización / Last updated: Junio 30, 2010 <\/CONTENT> <URL> https://pdba.georgetown.edu/Elecdata/Bolivia/sen09.html <\/URL> __END_OF_SOURCE 4__ __START_OF_SOURCE 5__ <CONTENT> PLURINATIONAL STATE OFBOLIVIALEGISLATIVE ELECTION OF 6 DECEMBER2009========================================================================== Source: Supreme ... <\/CONTENT> <URL> https://psephos.adam-carr.net/countries/b/bolivia/bolivia20093.txt <\/URL> __END_OF_SOURCE 5__ __START_OF_SOURCE 6__ <CONTENT> Publicidad (ABI) El Órgano Electoral Plurinacional oficializó la siguiente nómina de ciudadanos electos comodiputadosplurinominales,diputadosuninominales ydiputadospor circunscripción ... <\/CONTENT> <URL> https://www.bolivia.com/noticias/autonoticias/DetalleNoticia42223.asp <\/URL> __END_OF_SOURCE 6__ __START_OF_SOURCE 7__ <CONTENT> El Boletín Estadístico número 2 presenta un análisis de las elecciones generales deBoliviaen2009, destacando la implementación de un nuevo régimen electoral y la participación de diversas organizaciones políticas. La participación electoral alcanzó un 95,25% enBoliviay un 73,98% en el exterior, con el MAS-IPSP como el partido más votado. Los resultados muestran que el MAS-IPSP ... <\/CONTENT> <URL> https://es.scribd.com/document/831220059/boletin-estadistico-2 <\/URL> __END_OF_SOURCE 7__ __START_OF_SOURCE 8__ <CONTENT> El Diccionario permite acceder a la información biográfica sobre todos losdiputadosy senadores titulares deBoliviadesde la legislatura de 1979 hasta la de 2014 - 2019. Brinda una imagen ... <\/CONTENT> <URL> https://www.researchgate.net/publication/324569555_Diccionario_biografico_de_parlamentarios_1979_-_2019 <\/URL> __END_OF_SOURCE 8__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164603717,\"end\":1780164607594}},\"id\":\"prt_e7a142f42001aXQ5rZBoB1CC0v\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"messageID\":\"msg_e7a1420a6001qNILiYKa0720JE\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164607603,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"id\":\"prt_e7a143e6c0011QNCNQlZKLE4Vp\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a1420a6001qNILiYKa0720JE\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"type\":\"step-finish\",\"tokens\":{\"total\":5443,\"input\":5108,\"output\":335,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.020349}}\n{\"type\":\"step_start\",\"timestamp\":1780164609431,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"id\":\"prt_e7a144596001hIYJEfR615mx1T\",\"messageID\":\"msg_e7a143e71001TmTwpj1VlMPH30\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164612709,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_fetch\",\"callID\":\"624563ac-5a62-4eb1-9441-bf13b167469b\",\"state\":{\"status\":\"completed\",\"input\":{\"url\":\"https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf\"},\"output\":\"{\\\"ok\\\":false,\\\"tool\\\":\\\"OpenWebpage\\\",\\\"error_type\\\":\\\"request_exception\\\",\\\"retryable\\\":true,\\\"url\\\":\\\"https://web.oep.org.bo/wp-content/uploads/2017/03/candidatos_electos_2009.pdf\\\",\\\"final_url\\\":null,\\\"status_code\\\":null,\\\"error\\\":\\\"Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.\\\",\\\"error_detail\\\":null,\\\"attempt\\\":2,\\\"attempts\\\":2}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164609434,\"end\":1780164612708}},\"id\":\"prt_e7a144598001HEvK8HJiG1w1E3\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"messageID\":\"msg_e7a143e71001TmTwpj1VlMPH30\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164627712,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"4521a036-4c95-45c5-b9a4-ea65cb8ee523\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Mezoth José Shiriqui Rapp\\\" biografía\"},\"output\":\"ASA_TOOL_ERROR {\\\"budget_state\\\": {\\\"network_calls\\\": 4, \\\"search_budget_limit\\\": 8, \\\"timeouts\\\": 1, \\\"total_timeout_limit\\\": 3}, \\\"error_type\\\": \\\"tool_timeout\\\", \\\"input\\\": {\\\"query\\\": \\\"\\\\\\\"Mezoth José Shiriqui Rapp\\\\\\\" biografía\\\"}, \\\"instruction\\\": \\\"Do not retry this exact tool input when retryable is false. Use existing evidence, try a materially different source if budget remains, or return Unknown for unresolved fields.\\\", \\\"message\\\": \\\"ASA tool deadline exceeded after 15.0s\\\", \\\"retryable\\\": true, \\\"signature\\\": \\\"web_search:{\\\\\\\"query\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"mezoth josé shiriqui rapp\\\\\\\\\\\\\\\" biografía\\\\\\\"}\\\", \\\"tool\\\": \\\"web_search\\\"}\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164609437,\"end\":1780164627711}},\"id\":\"prt_e7a14459b001yoCdnnd39sb660\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"messageID\":\"msg_e7a143e71001TmTwpj1VlMPH30\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164628988,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"0c6721fe-d7c2-4cb7-a35c-c9f99cba14dd\",\"state\":{\"status\":\"completed\",\"input\":{\"query\":\"\\\"Mezoth Shiriqui Rapp\\\" profesión\"},\"output\":\"__START_OF_SOURCE 1__ <CONTENT> NOTICIA DE ULTIMA HORA #TRINIDAD SUB NACIONALES BENI ING.MEZOTH SHIRIQUI RAPP, Y ALEIDA BARBOZA ANUNCIO RENUNCIA IRREVOCABLE A PARTIDO DEMOCRAS EN BENI. AMBOS SE INSCRIBIRAN COMO CONCEJAL POR EL PARTIDO DE TERCER SISTEMA EN BENI CANDIDATO A GOBERNADOR DE TERCER SISTEMA EN BENI , ES DR. ALEJANDRO UNZUETA. CRISTHIAN CAMARA CANDIDATO A LA ALCALDIA DE TRINIDAD. Trinidad, 27 de diciembre 2020 ... <\/CONTENT> <URL> https://www.facebook.com/VillantvTrinidad-72841443-1869359710058685/videos/noticia-de-ultima-hora-trinidadsub-nacionales-beniing-mezoth-shiriqui-rapp-y-ale/766446650614239 <\/URL> __END_OF_SOURCE 1__\",\"metadata\":{\"truncated\":false},\"title\":\"\",\"time\":{\"start\":1780164609440,\"end\":1780164628987}},\"id\":\"prt_e7a14459e001LSAoej8kG8Qvnk\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"messageID\":\"msg_e7a143e71001TmTwpj1VlMPH30\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164628996,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"id\":\"prt_e7a1491fc001iLey1DotnFrpSg\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a143e71001TmTwpj1VlMPH30\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"type\":\"step-finish\",\"tokens\":{\"total\":7448,\"input\":7275,\"output\":173,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.02442}}\n{\"type\":\"step_start\",\"timestamp\":1780164630189,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"id\":\"prt_e7a1496ac001m3GRehlJ2Pdtg3\",\"messageID\":\"msg_e7a149201001coEEziITy6gGWg\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"type\":\"step-start\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164650196,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"7b474acb-f13b-45e1-ac7a-9f3b73cbdbaa\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"\\\"Mezoth José Shiriqui Rapp\\\" educación\"},\"error\":\"MCP error -32001: Request timed out\",\"time\":{\"start\":1780164630191,\"end\":1780164650195}},\"id\":\"prt_e7a1496ad0013bsMydXkZJQc4y\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"messageID\":\"msg_e7a149201001coEEziITy6gGWg\"}}\n{\"type\":\"tool_use\",\"timestamp\":1780164650199,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"type\":\"tool\",\"tool\":\"asa_search_web_search\",\"callID\":\"a2c77e8b-cefc-4e10-b1ed-7c43cd9254f8\",\"state\":{\"status\":\"error\",\"input\":{\"query\":\"\\\"Mezoth Shiriqui Rapp\\\" nacimiento\"},\"error\":\"MCP error -32001: Request timed out\",\"time\":{\"start\":1780164630194,\"end\":1780164650198}},\"id\":\"prt_e7a1496b00018xJbGomEBAmFhD\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"messageID\":\"msg_e7a149201001coEEziITy6gGWg\"}}\n{\"type\":\"step_finish\",\"timestamp\":1780164650205,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"id\":\"prt_e7a14e4d70012MJd6fGxflvs1S\",\"reason\":\"tool-calls\",\"messageID\":\"msg_e7a149201001coEEziITy6gGWg\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"type\":\"step-finish\",\"tokens\":{\"total\":8171,\"input\":8056,\"output\":115,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":0}},\"cost\":0.025893}}\n{\"type\":\"step_start\",\"timestamp\":1780164657735,\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"part\":{\"id\":\"prt_e7a150246001yE3i4061Ub3IOC\",\"messageID\":\"msg_e7a14e4db00139hE4XogBkO7F2\",\"sessionID\":\"ses_185ebe065ffeMhsLmHVCaYlR0x\",\"type\":\"step-start\"}}\n"
+}

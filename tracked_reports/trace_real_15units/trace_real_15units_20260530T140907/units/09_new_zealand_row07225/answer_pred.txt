@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Bachelor of Arts with Honours in Politics (1995)",
+  "educational_attainment_source": "https://www.otago.ac.nz/council/membership/the-vice-chancellor",
+  "prior_occupation": "Diplomat/Civil Servant (Ministry of Foreign Affairs and Trade)",
+  "prior_occupation_source": "https://www.infinz.com/Site/INFINZConference/2018_programme/grant_robertson.aspx",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.infinz.com/Site/INFINZConference/2018_programme/grant_robertson.aspx",
+  "birth_year": 1971,
+  "birth_year_source": "https://en.wikipedia.org/wiki/Grant_Robertson",
+  "birth_place": "Palmerston North, New Zealand",
+  "birth_place_source": "https://wellingtonforum.flt.nz/hon grant robertson",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://www.odt.co.nz/star-news/star-national/grant-robertson-troubled-health-issues-build-last-election",
+  "sexual_orientation": "Gay",
+  "sexual_orientation_source": "https://gayexpress.co.nz/2020/12/getting-to-know-grant"
+}

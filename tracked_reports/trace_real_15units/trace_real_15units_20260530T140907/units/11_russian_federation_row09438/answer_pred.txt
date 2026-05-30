@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Graduated from the History Department of Moscow State University (MSU) in 1981 with honors (red diploma), and completed postgraduate studies at MSU in 1985.",
+  "educational_attainment_source": "https://radiokp.ru/people/konstantin-zatulin",
+  "prior_occupation": "Executive and General Director of the Association 'Entrepreneurs for a New Russia' (1993), President of the Interregional Exchange and Trade Union (1991-1993), and assistant to the secretary of the Komsomol Committee of Moscow State University (1987-1990).",
+  "prior_occupation_source": "https://tass.ru/encyclopedia/person/zatulin-konstantin-fedorovich",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://zatulin.ru/kandidat2021/biografiya-kandidata.html",
+  "birth_year": "1958",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin",
+  "birth_place": "Batumi, Adjarian ASSR, Georgian SSR, Soviet Union",
+  "birth_place_source": "https://bcl.wikipedia.org/wiki/Konstantin_Zatulin",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Konstantin_Zatulin",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://borntoday.ru/person/konstantin-fedorovich-zatulin"
+}

@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Master's degree in Public Affairs from Ming Chuan University; graduated from the 7th class of the Army Academy R.O.C. (陸軍官校專7期).",
+  "educational_attainment_source": "https://votetw.com/wiki/趙正宇",
+  "prior_occupation": "Captain and Staff Officer in the Republic of China Army (中華民國陸軍上尉參謀).",
+  "prior_occupation_source": "https://votetw.com/wiki/趙正宇",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://votetw.com/wiki/趙正宇",
+  "birth_year": "1966",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Chao_Cheng-yu",
+  "birth_place": "Bade District, Taoyuan, Taiwan (born in a military dependents' village).",
+  "birth_place_source": "https://votetw.com/wiki/趙正宇",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Chao_Cheng-yu",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Chao_Cheng-yu"
+}

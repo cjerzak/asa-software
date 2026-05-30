@@ -1,0 +1,18 @@
+{
+  "unit_key": "10_panama_row07260",
+  "generated_at_utc": "2026-05-30T18:11:03Z",
+  "canonical_artifact_id": "1b93db0e07146abf00d3d9785cb86a822e7e765041b6cb4fbb4c51f424556d51",
+  "released_artifact_id": "b5255e3e1ae464b26dba20d3e9af266bc147be0093be2d5ae2daf00a92727b6f",
+  "released_from": "opencode_final_text_json",
+  "canonical_available": true,
+  "canonical_matches_message": false,
+  "canonical_byte_hash": "1b93db0e07146abf00d3d9785cb86a822e7e765041b6cb4fbb4c51f424556d51",
+  "released_byte_hash": "b5255e3e1ae464b26dba20d3e9af266bc147be0093be2d5ae2daf00a92727b6f",
+  "byte_hash_matches": false,
+  "canonical_semantic_hash": "88e9882320eb1867536cdd7a4522138763fb329514a9750edcc22e0871a2c4ab",
+  "released_semantic_hash": "88e9882320eb1867536cdd7a4522138763fb329514a9750edcc22e0871a2c4ab",
+  "semantic_hash_matches": true,
+  "hash_mismatch_type": "byte_only",
+  "truncation_signals": [],
+  "json_repair_reasons": []
+}

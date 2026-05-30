@@ -1,0 +1,16 @@
+{
+  "educational_attainment": "Chung Sye-kyun holds a Bachelor's degree in Law from Korea University (1974), a Master's degree in Public Service from New York University (1983), an MBA from Pepperdine University (1993), and a Doctorate in Business Administration from Kyung Hee University (2000/2004).",
+  "educational_attainment_source": "https://en.wikipedia.org/wiki/Chung_Sye-kyun",
+  "prior_occupation": "He worked for the Ssangyong Group for 17 years (1978–1995), rising to the position of managing director.",
+  "prior_occupation_source": "https://www.koreatimes.co.kr/www/nation/2025/01/113_33089.html",
+  "class_background": "Middle class/professional",
+  "class_background_source": "https://www.koreatimes.co.kr/www/nation/2025/01/113_33089.html",
+  "birth_year": "1950",
+  "birth_year_source": "https://en.wikipedia.org/wiki/Chung_Sye-kyun",
+  "birth_place": "Jinan, North Jeolla Province, South Korea",
+  "birth_place_source": "https://en.wikipedia.org/wiki/Chung_Sye-kyun",
+  "disability_status": "Unknown",
+  "disability_status_source": "https://en.wikipedia.org/wiki/Chung_Sye-kyun",
+  "sexual_orientation": "Unknown",
+  "sexual_orientation_source": "https://en.wikipedia.org/wiki/Chung_Sye-kyun"
+}
