@@ -76,6 +76,7 @@ backends <- list(
     paste("Missing", paste(cfg$env, collapse = " or "))
   )
 
+  withr::local_envvar(c(ASA_REQUIRE_TOR_PROXY = "false"))
   agent <- initialize_agent(
     backend = cfg$backend,
     model = cfg$model,

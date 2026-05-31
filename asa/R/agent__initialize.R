@@ -180,8 +180,11 @@ initialize_agent <- function(agent_backend = NULL,
   proxy_mode <- proxy_info$mode
   proxy_source <- proxy_info$source
 
-  # If auto-detected proxy is malformed, warn and fall back to no proxy.
-  if (identical(proxy_mode, "auto") && !is.null(proxy)) {
+  if (.require_tor_proxy_enabled()) {
+    proxy <- .require_tor_proxy(proxy_info)
+  } else if (identical(proxy_mode, "auto") && !is.null(proxy)) {
+    # If auto-detected proxy is malformed and the Tor guard is disabled,
+    # preserve the legacy behavior: warn and fall back to no proxy.
     proxy <- tryCatch({
       .validate_proxy_url(proxy, "proxy")
       proxy

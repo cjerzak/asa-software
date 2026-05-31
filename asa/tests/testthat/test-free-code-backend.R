@@ -50,6 +50,25 @@ test_that("free-code schema conversion handles nested objects and arrays", {
   )
 })
 
+test_that("initialize_agent requires ASA_PROXY for free-code by default", {
+  withr::local_envvar(c(
+    ASA_REQUIRE_TOR_PROXY = "true",
+    ASA_PROXY = NA_character_,
+    HTTP_PROXY = NA_character_,
+    HTTPS_PROXY = NA_character_
+  ))
+
+  expect_error(
+    asa::initialize_agent(
+      agent_backend = "free-code",
+      backend = "exo",
+      model = "local-model",
+      verbose = FALSE
+    ),
+    "ASA_PROXY is required"
+  )
+})
+
 test_that("free-code MCP config wires the stdio search server", {
   skip_if_not_installed("withr")
 
@@ -354,6 +373,7 @@ test_that("run_free_code_agent succeeds against repo entrypoint with live OpenAI
     agent_backend = "free-code",
     backend = "openai",
     model = "gpt-4.1-mini",
+    proxy = "socks5h://127.0.0.1:9050",
     verbose = FALSE
   )
 

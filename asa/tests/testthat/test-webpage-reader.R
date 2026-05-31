@@ -460,6 +460,7 @@ test_that("Gemini reasons about fetched webpage content (live)", {
   asa_test_skip_api_tests()
   asa_test_require_gemini_key()
 
+  withr::local_envvar(c(ASA_REQUIRE_TOR_PROXY = "false"))
   agent <- asa::initialize_agent(
     backend = "gemini",
     model = "gemini-2.0-flash"

@@ -207,15 +207,67 @@ opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
   jsonlite::fromJSON(stdout, simplifyVector = FALSE)
 }
 
-test_that("asa_config and initialize_agent accept opencode", {
+test_that("initialize_agent requires ASA_PROXY for opencode by default", {
+  withr::local_envvar(c(
+    ASA_REQUIRE_TOR_PROXY = "true",
+    ASA_PROXY = NA_character_,
+    HTTP_PROXY = NA_character_,
+    HTTPS_PROXY = NA_character_
+  ))
+
+  expect_error(
+    asa::initialize_agent(
+      agent_backend = "opencode",
+      backend = "exo",
+      model = "local-model",
+      verbose = FALSE
+    ),
+    "ASA_PROXY is required"
+  )
+})
+
+test_that("asa_config and initialize_agent accept opencode with Tor proxy", {
   cfg <- asa::asa_config(
     agent_backend = "opencode",
     backend = "exo",
     model = "local-model",
-    proxy = NULL
+    proxy = "socks5h://127.0.0.1:9050"
   )
   expect_s3_class(cfg, "asa_config")
   expect_identical(cfg$agent_backend, "opencode")
+
+  testthat::local_mocked_bindings(
+    .opencode_require_processx = function() invisible(TRUE),
+    .opencode_command_spec = function() list(command = "/usr/bin/opencode", prefix_args = character(0)),
+    .opencode_python_binary = function(conda_env) "/usr/bin/python3",
+    .opencode_python_path = function() "/tmp/asa-python",
+    .package = "asa"
+  )
+  on.exit(asa::reset_agent(), add = TRUE)
+
+  agent <- asa::initialize_agent(
+    agent_backend = "opencode",
+    backend = "exo",
+    model = "local-model",
+    proxy = "socks5h://127.0.0.1:9050",
+    verbose = FALSE
+  )
+
+  expect_s3_class(agent, "asa_agent")
+  expect_null(agent$python_agent)
+  expect_identical(agent$config$agent_backend, "opencode")
+  expect_identical(agent$backend, "exo")
+  expect_identical(agent$model, "local-model")
+  expect_identical(agent$config$proxy, "socks5h://127.0.0.1:9050")
+})
+
+test_that("ASA_REQUIRE_TOR_PROXY=false allows intentional opencode direct tests", {
+  withr::local_envvar(c(
+    ASA_REQUIRE_TOR_PROXY = "false",
+    ASA_PROXY = NA_character_,
+    HTTP_PROXY = NA_character_,
+    HTTPS_PROXY = NA_character_
+  ))
 
   testthat::local_mocked_bindings(
     .opencode_require_processx = function() invisible(TRUE),
@@ -235,10 +287,7 @@ test_that("asa_config and initialize_agent accept opencode", {
   )
 
   expect_s3_class(agent, "asa_agent")
-  expect_null(agent$python_agent)
-  expect_identical(agent$config$agent_backend, "opencode")
-  expect_identical(agent$backend, "exo")
-  expect_identical(agent$model, "local-model")
+  expect_null(agent$config$proxy)
 })
 
 test_that("OpenCode command discovery supports ASA_OPENCODE_BIN and PATH", {

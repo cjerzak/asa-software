@@ -99,6 +99,80 @@ test_that(".validate_proxy_url rejects invalid formats", {
   expect_error(.validate_proxy_url("ftp://localhost:21", "proxy"), "proxy URL")
 })
 
+test_that(".require_tor_proxy enforces local Tor SOCKS proxy", {
+  expect_error(
+    .require_tor_proxy(list(proxy = NULL, mode = "auto", source = NULL)),
+    "ASA_PROXY is required"
+  )
+  expect_error(
+    .require_tor_proxy(list(proxy = "socks5h://127.0.0.1:9050", mode = "auto", source = "HTTP_PROXY")),
+    "ASA_PROXY is required"
+  )
+  expect_error(
+    .require_tor_proxy(list(proxy = "http://127.0.0.1:9050", mode = "manual", source = NULL)),
+    "local Tor SOCKS proxy"
+  )
+  expect_error(
+    .require_tor_proxy(list(proxy = "socks5://127.0.0.1:9050", mode = "manual", source = NULL)),
+    "local Tor SOCKS proxy"
+  )
+  expect_error(
+    .require_tor_proxy(list(proxy = "socks5h://example.com:9050", mode = "manual", source = NULL)),
+    "local Tor SOCKS proxy"
+  )
+  expect_error(
+    .require_tor_proxy(list(proxy = "socks5h://127.0.0.1:65536", mode = "manual", source = NULL)),
+    "between 1 and 65535"
+  )
+
+  expect_identical(
+    .require_tor_proxy(list(proxy = "socks5h://127.0.0.1:9050", mode = "auto", source = "ASA_PROXY")),
+    "socks5h://127.0.0.1:9050"
+  )
+  expect_identical(
+    .require_tor_proxy(list(proxy = "socks5h://localhost:9050", mode = "manual", source = NULL)),
+    "socks5h://localhost:9050"
+  )
+})
+
+test_that("initialize_agent requires ASA_PROXY for search agent by default", {
+  withr::local_envvar(c(
+    ASA_REQUIRE_TOR_PROXY = "true",
+    ASA_PROXY = NA_character_,
+    HTTP_PROXY = NA_character_,
+    HTTPS_PROXY = NA_character_
+  ))
+
+  expect_error(
+    asa::initialize_agent(
+      agent_backend = "agent",
+      backend = "exo",
+      model = "local-model",
+      verbose = FALSE
+    ),
+    "ASA_PROXY is required"
+  )
+})
+
+test_that("initialize_agent rejects HTTP_PROXY-only auto proxy", {
+  withr::local_envvar(c(
+    ASA_REQUIRE_TOR_PROXY = "true",
+    ASA_PROXY = NA_character_,
+    HTTP_PROXY = "socks5h://127.0.0.1:9050",
+    HTTPS_PROXY = NA_character_
+  ))
+
+  expect_error(
+    asa::initialize_agent(
+      agent_backend = "agent",
+      backend = "exo",
+      model = "local-model",
+      verbose = FALSE
+    ),
+    "HTTP_PROXY/HTTPS_PROXY are not accepted"
+  )
+})
+
 test_that(".validate_conda_env accepts valid names", {
   expect_silent(.validate_conda_env("asa_env", "conda_env"))
   expect_silent(.validate_conda_env("my-env-123", "conda_env"))

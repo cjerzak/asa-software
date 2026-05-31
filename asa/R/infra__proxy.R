@@ -38,6 +38,73 @@
   list(proxy = proxy, mode = "manual", source = NULL)
 }
 
+#' Is Required Tor Proxy Enforcement Enabled
+#' @keywords internal
+.require_tor_proxy_enabled <- function() {
+  value <- tolower(trimws(Sys.getenv("ASA_REQUIRE_TOR_PROXY", unset = "true")))
+  !value %in% c("0", "false", "f", "no", "n", "off")
+}
+
+#' Require a Local Tor SOCKS Proxy
+#' @keywords internal
+.require_tor_proxy <- function(proxy_info) {
+  proxy <- trimws(as.character(proxy_info$proxy %||% ""))
+  source <- as.character(proxy_info$source %||% "")
+  mode <- as.character(proxy_info$mode %||% "")
+
+  if (!nzchar(proxy)) {
+    stop(
+      paste0(
+        "ASA_PROXY is required for ASA agent web/search pipelines. ",
+        "Set ASA_PROXY to a local Tor SOCKS proxy such as ",
+        "socks5h://127.0.0.1:9050, or set ASA_REQUIRE_TOR_PROXY=false ",
+        "only for intentional direct-connection development/tests."
+      ),
+      call. = FALSE
+    )
+  }
+
+  if (identical(mode, "auto") && !identical(source, "ASA_PROXY")) {
+    stop(
+      paste0(
+        "ASA_PROXY is required for ASA agent web/search pipelines. ",
+        "Found ", source, " instead, but HTTP_PROXY/HTTPS_PROXY are not accepted ",
+        "for the production Tor guard. Set ASA_PROXY=socks5h://127.0.0.1:<port>."
+      ),
+      call. = FALSE
+    )
+  }
+
+  match <- regexec("^socks5h://(127\\.0\\.0\\.1|localhost):([0-9]{1,5})$", proxy)
+  parts <- regmatches(proxy, match)[[1]]
+  if (length(parts) != 3L) {
+    stop(
+      sprintf(
+        paste0(
+          "Invalid proxy '%s'. ASA agent web/search pipelines require a local ",
+          "Tor SOCKS proxy in the form socks5h://127.0.0.1:<port> or ",
+          "socks5h://localhost:<port>."
+        ),
+        proxy
+      ),
+      call. = FALSE
+    )
+  }
+
+  port <- suppressWarnings(as.integer(parts[[3L]]))
+  if (is.na(port) || port < 1L || port > 65535L) {
+    stop(
+      sprintf(
+        "Invalid proxy '%s'. Proxy port must be between 1 and 65535.",
+        proxy
+      ),
+      call. = FALSE
+    )
+  }
+
+  proxy
+}
+
 #' Format Proxy for Printing
 #' @keywords internal
 .format_proxy <- function(proxy, mode = NULL, source = NULL) {
@@ -62,4 +129,3 @@
   if (isTRUE(is.na(proxy))) return("Auto")
   as.character(proxy)
 }
-
