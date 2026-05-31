@@ -703,6 +703,12 @@ test_that("asa_enumerate integration test with OpenAI", {
   skip_if(Sys.getenv("OPENAI_API_KEY") == "", "OPENAI_API_KEY not set")
   skip_if(!reticulate::py_module_available("langchain"), "LangChain not available")
   skip_on_cran()
+  readiness <- asa_test_require_tor_ready()
+  withr::local_envvar(c(
+    ASA_REQUIRE_TOR_PROXY = "true",
+    ASA_PROXY = readiness$proxy
+  ))
+  on.exit(asa::reset_agent(), add = TRUE)
 
   # Simple test with minimal resources
   result <- asa_enumerate(
