@@ -1,8 +1,0 @@
-{
-  "status": "empty",
-  "artifact": "plan_output",
-  "reason": "plan_not_generated",
-  "expected_empty": true,
-  "unit_key": "01_bolivia_row00180",
-  "generated_at_utc": "2026-05-20T02:14:51Z"
-}

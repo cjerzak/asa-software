@@ -1,8 +1,0 @@
-{
-  "status": "empty",
-  "artifact": "completion_gate",
-  "reason": "completion_gate_not_available",
-  "expected_empty": true,
-  "unit_key": "07_lithuania_row04595",
-  "generated_at_utc": "2026-05-20T02:16:35Z"
-}

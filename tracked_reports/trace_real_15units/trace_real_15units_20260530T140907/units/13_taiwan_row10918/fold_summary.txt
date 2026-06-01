@@ -1,8 +1,0 @@
-{
-  "status": "empty",
-  "artifact": "fold_summary",
-  "reason": "fold_summary_not_available",
-  "expected_empty": true,
-  "unit_key": "13_taiwan_row10918",
-  "generated_at_utc": "2026-05-30T18:10:18Z"
-}

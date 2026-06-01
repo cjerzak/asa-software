@@ -1,4 +1,0 @@
-{
-  "free_code_cli_status": 0,
-  "free_code_permission_denials": []
-}

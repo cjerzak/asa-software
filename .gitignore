@@ -230,3 +230,19 @@ CLAUDE.md
 /tmp/
 /reports/
 /asa.Rcheck/
+
+# R/RStudio local state
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Local R package library
+/.r-lib/
+
+# Local conda environments
+/.conda/
+/asa_env/
+
+# Generated trace/report artifacts
+/tracked_reports/

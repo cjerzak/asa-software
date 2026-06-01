@@ -1,6 +1,0 @@
-{
-  "opencode_cli_status": 0,
-  "opencode_errors": "UnknownError: TimeoutError: The operation timed out.",
-  "opencode_parse_error": false,
-  "opencode_stderr": ""
-}
