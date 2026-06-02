@@ -1138,6 +1138,7 @@ run_direct_task <- function(prompt,
 
   phase_marks$output_parse_started <- Sys.time()
   parsed <- NULL
+  json_parse_failed <- FALSE
   if (identical(status, "success")) {
     if (identical(output_format, "json")) {
       parsed <- .parse_json_response(response_text)
@@ -1146,6 +1147,13 @@ run_direct_task <- function(prompt,
     }
   }
   parsing_status <- .validate_json_schema(parsed, expected_fields = NULL)
+  if (identical(output_format, "json") && identical(status, "success") && is.null(parsed)) {
+    json_parse_failed <- TRUE
+    status <- "error"
+    stop_reason <- "json_parse_error"
+    parsing_status$valid <- FALSE
+    parsing_status$error <- "Provider completed without parseable JSON output."
+  }
   phase_marks$output_parse_finished <- Sys.time()
 
   raw_output <- if (inherits(invoke_condition, "error")) response_text else {
@@ -1154,7 +1162,13 @@ run_direct_task <- function(prompt,
 
   invoke_error <- if (identical(status, "error")) {
     list(
-      error_type = if (inherits(invoke_condition, "error")) "provider_invoke_error" else "provider_empty_response",
+      error_type = if (isTRUE(json_parse_failed)) {
+        "provider_json_parse_error"
+      } else if (inherits(invoke_condition, "error")) {
+        "provider_invoke_error"
+      } else {
+        "provider_empty_response"
+      },
       error_message = response_text,
       retry_attempts = invoke_attempts,
       retry_max_attempts = invoke_max_attempts,

@@ -52,3 +52,53 @@ test_that("search_options stores normalized performance profile and webpage poli
     "webpage_policy"
   )
 })
+
+test_that("search_options validates numeric and logical controls", {
+  valid <- asa::search_options(
+    max_results = 10L,
+    timeout = 15,
+    max_retries = 0L,
+    retry_delay = 0,
+    backoff_multiplier = 1.5,
+    inter_search_delay = 0,
+    humanize_timing = FALSE,
+    jitter_factor = 0,
+    allow_direct_fallback = FALSE,
+    langgraph_node_retries = TRUE,
+    langgraph_cache_enabled = FALSE,
+    finalize_when_all_unresolved_exhausted = TRUE,
+    allow_read_webpages = FALSE,
+    webpage_use_mmr = TRUE,
+    webpage_mmr_lambda = 0.5,
+    webpage_cache_enabled = FALSE,
+    webpage_blocked_detect_on_200 = TRUE,
+    webpage_pdf_enabled = FALSE
+  )
+  expect_s3_class(valid, "asa_search")
+  expect_identical(valid$max_results, 10L)
+  expect_identical(valid$max_retries, 0L)
+  expect_false(valid$humanize_timing)
+  expect_true(valid$finalize_when_all_unresolved_exhausted)
+
+  invalid_cases <- list(
+    list(args = list(max_results = -5L), pattern = "max_results"),
+    list(args = list(max_results = 200L), pattern = "max_results"),
+    list(args = list(timeout = -1), pattern = "timeout"),
+    list(args = list(max_retries = -1L), pattern = "max_retries"),
+    list(args = list(backoff_multiplier = 0.5), pattern = "backoff_multiplier"),
+    list(args = list(humanize_timing = "yes"), pattern = "humanize_timing"),
+    list(args = list(allow_direct_fallback = "yes"), pattern = "allow_direct_fallback"),
+    list(args = list(webpage_use_mmr = "yes"), pattern = "webpage_use_mmr"),
+    list(args = list(webpage_mmr_lambda = 2), pattern = "webpage_mmr_lambda"),
+    list(args = list(webpage_cache_enabled = "yes"), pattern = "webpage_cache_enabled"),
+    list(args = list(webpage_relevance_mode = "semantic"), pattern = "webpage_relevance_mode"),
+    list(args = list(webpage_embedding_provider = "bad"), pattern = "webpage_embedding_provider")
+  )
+
+  for (case in invalid_cases) {
+    expect_error(
+      do.call(asa::search_options, case$args),
+      case$pattern
+    )
+  }
+})

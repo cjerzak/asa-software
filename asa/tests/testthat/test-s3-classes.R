@@ -223,6 +223,31 @@ test_that("asa_config defaults and printing are consistent", {
   expect_true(any(grepl("^Agent Backend:.*free-code", output_fc)))
 })
 
+test_that("asa_config validates runtime control fields", {
+  cfg <- asa_config(
+    workers = 2L,
+    timeout = 30L,
+    rate_limit = 0.5,
+    memory_folding = FALSE,
+    memory_threshold = 12L,
+    memory_keep_recent = 4L
+  )
+
+  expect_identical(cfg$workers, 2L)
+  expect_identical(cfg$timeout, 30L)
+  expect_equal(cfg$rate_limit, 0.5)
+  expect_false(cfg$memory_folding)
+  expect_identical(cfg$memory_threshold, 12L)
+  expect_identical(cfg$memory_keep_recent, 4L)
+
+  expect_error(asa_config(workers = -2L), "workers")
+  expect_error(asa_config(timeout = 0L), "timeout")
+  expect_error(asa_config(rate_limit = -1), "rate_limit")
+  expect_error(asa_config(memory_folding = "yes"), "memory_folding")
+  expect_error(asa_config(memory_threshold = 0L), "memory_threshold")
+  expect_error(asa_config(memory_keep_recent = 0L), "memory_keep_recent")
+})
+
 test_that("print methods produce expected headers", {
   agent <- asa_test_mock_agent(config = list())
   expect_output(print(agent), "ASA Search Agent")

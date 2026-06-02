@@ -135,6 +135,12 @@ asa_config <- function(agent_backend = NULL,
   # Validate proxy (NA = auto, NULL = disabled)
   .validate_proxy_url(proxy, "proxy")
   .validate_logical(use_browser, "use_browser")
+  .validate_positive(workers, "workers", integer_only = TRUE)
+  .validate_positive(timeout, "timeout", integer_only = TRUE)
+  .validate_positive(rate_limit, "rate_limit")
+  .validate_logical(memory_folding, "memory_folding")
+  .validate_positive(memory_threshold, "memory_threshold", integer_only = TRUE)
+  .validate_positive(memory_keep_recent, "memory_keep_recent", integer_only = TRUE)
   .validate_recursion_limit(recursion_limit, "recursion_limit")
   .validate_logical(use_observational_memory, "use_observational_memory")
   .validate_positive(om_observation_token_budget, "om_observation_token_budget", integer_only = TRUE)
@@ -606,6 +612,76 @@ search_options <- function(max_results = NULL,
                            wiki_top_k_results = NULL,
                            wiki_doc_content_chars_max = NULL,
                            search_doc_content_chars_max = NULL) {
+  validate_optional_positive <- function(value, name, allow_zero = FALSE,
+                                         integer_only = FALSE, min = NULL,
+                                         max = NULL) {
+    if (is.null(value)) {
+      return(invisible(TRUE))
+    }
+    .validate_positive(value, name, allow_zero = allow_zero, integer_only = integer_only)
+    .validate_range(value, name, min = min, max = max)
+    invisible(TRUE)
+  }
+  validate_optional_logical <- function(value, name) {
+    if (!is.null(value)) {
+      .validate_logical(value, name)
+    }
+    invisible(TRUE)
+  }
+
+  validate_optional_positive(max_results, "max_results", integer_only = TRUE, min = 1, max = 100)
+  validate_optional_positive(timeout, "timeout", min = 1, max = 300)
+  validate_optional_positive(max_retries, "max_retries", allow_zero = TRUE, integer_only = TRUE, max = 10)
+  validate_optional_positive(retry_delay, "retry_delay", allow_zero = TRUE)
+  validate_optional_positive(backoff_multiplier, "backoff_multiplier", min = 1.0, max = 5.0)
+  validate_optional_positive(inter_search_delay, "inter_search_delay", allow_zero = TRUE)
+  validate_optional_positive(jitter_factor, "jitter_factor", allow_zero = TRUE)
+  validate_optional_positive(wiki_top_k_results, "wiki_top_k_results", integer_only = TRUE)
+  validate_optional_positive(wiki_doc_content_chars_max, "wiki_doc_content_chars_max", integer_only = TRUE)
+  validate_optional_positive(search_doc_content_chars_max, "search_doc_content_chars_max", integer_only = TRUE)
+  validate_optional_positive(webpage_timeout, "webpage_timeout")
+  validate_optional_positive(webpage_max_bytes, "webpage_max_bytes", integer_only = TRUE)
+  validate_optional_positive(webpage_max_chars, "webpage_max_chars", integer_only = TRUE)
+  validate_optional_positive(webpage_max_chunks, "webpage_max_chunks", integer_only = TRUE)
+  validate_optional_positive(webpage_chunk_chars, "webpage_chunk_chars", integer_only = TRUE)
+  validate_optional_positive(webpage_prefilter_k, "webpage_prefilter_k", allow_zero = TRUE, integer_only = TRUE)
+  validate_optional_positive(webpage_mmr_lambda, "webpage_mmr_lambda", allow_zero = TRUE, min = 0, max = 1)
+  validate_optional_positive(webpage_cache_max_entries, "webpage_cache_max_entries", integer_only = TRUE)
+  validate_optional_positive(webpage_cache_max_text_chars, "webpage_cache_max_text_chars", integer_only = TRUE)
+  validate_optional_positive(webpage_blocked_cache_ttl_sec, "webpage_blocked_cache_ttl_sec", allow_zero = TRUE)
+  validate_optional_positive(webpage_blocked_cache_max_entries, "webpage_blocked_cache_max_entries", integer_only = TRUE)
+  validate_optional_positive(webpage_blocked_probe_bytes, "webpage_blocked_probe_bytes", integer_only = TRUE)
+  validate_optional_positive(webpage_blocked_body_scan_bytes, "webpage_blocked_body_scan_bytes", integer_only = TRUE)
+  validate_optional_positive(webpage_pdf_timeout, "webpage_pdf_timeout")
+  validate_optional_positive(webpage_pdf_max_bytes, "webpage_pdf_max_bytes", integer_only = TRUE)
+  validate_optional_positive(webpage_pdf_max_pages, "webpage_pdf_max_pages", integer_only = TRUE)
+  validate_optional_positive(webpage_pdf_max_text_chars, "webpage_pdf_max_text_chars", integer_only = TRUE)
+  validate_optional_logical(humanize_timing, "humanize_timing")
+  validate_optional_logical(allow_direct_fallback, "allow_direct_fallback")
+  validate_optional_logical(langgraph_node_retries, "langgraph_node_retries")
+  validate_optional_logical(langgraph_cache_enabled, "langgraph_cache_enabled")
+  validate_optional_logical(finalize_when_all_unresolved_exhausted, "finalize_when_all_unresolved_exhausted")
+  validate_optional_logical(allow_read_webpages, "allow_read_webpages")
+  validate_optional_logical(webpage_use_mmr, "webpage_use_mmr")
+  validate_optional_logical(webpage_cache_enabled, "webpage_cache_enabled")
+  validate_optional_logical(webpage_blocked_detect_on_200, "webpage_blocked_detect_on_200")
+  validate_optional_logical(webpage_pdf_enabled, "webpage_pdf_enabled")
+  if (!is.null(webpage_relevance_mode)) {
+    .validate_choice(webpage_relevance_mode, "webpage_relevance_mode", c("auto", "lexical", "embeddings"))
+  }
+  if (!is.null(webpage_embedding_provider)) {
+    .validate_choice(webpage_embedding_provider, "webpage_embedding_provider", c("auto", "openai", "sentence_transformers"))
+  }
+  if (!is.null(webpage_embedding_model)) {
+    .validate_string(webpage_embedding_model, "webpage_embedding_model")
+  }
+  if (!is.null(webpage_user_agent)) {
+    .validate_string(webpage_user_agent, "webpage_user_agent")
+  }
+  if (!is.null(wikidata_template_path)) {
+    .validate_string(wikidata_template_path, "wikidata_template_path")
+  }
+
   browser_preference <- tolower(trimws(as.character(
     selenium_browser_preference %||% ASA_DEFAULT_SELENIUM_BROWSER_PREFERENCE
   )))

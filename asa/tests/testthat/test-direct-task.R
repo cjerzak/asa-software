@@ -137,6 +137,32 @@ test_that("run_direct_task parses JSON, extracts fields, and attaches raw respon
   expect_false(is.null(raw_result$raw_response))
 })
 
+test_that("run_direct_task reports invalid JSON output as an error result", {
+  mock_direct_runtime()
+  agent <- mock_direct_agent(function(prompt) {
+    list(role = "assistant", content = "not json")
+  })
+
+  result <- asa::run_direct_task(
+    prompt = "Return JSON.",
+    output_format = "json",
+    agent = agent
+  )
+
+  expect_s3_class(result, "asa_result")
+  expect_identical(result$status, "error")
+  expect_identical(result$message, "not json")
+  expect_null(result$parsed)
+  expect_false(isTRUE(result$parsing_status$valid))
+  expect_match(result$parsing_status$error, "parseable JSON")
+  expect_identical(result$execution$mode, "provider_direct")
+  expect_identical(result$execution$stop_reason, "json_parse_error")
+  expect_identical(result$execution$status_code, asa:::ASA_STATUS_ERROR)
+  expect_identical(result$execution$invoke_error$error_type, "provider_json_parse_error")
+  expect_identical(result$execution$invoke_error$error_message, "not json")
+  expect_match(result$raw_output, "not json")
+})
+
 test_that("run_direct_task errors clearly when no agent is available", {
   mock_direct_runtime()
   testthat::local_mocked_bindings(
