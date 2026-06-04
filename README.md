@@ -290,6 +290,7 @@ asa_audit(senators, backend = "langgraph", agent = agent)
 | Backend | Model Examples | API Key Variable |
 |---------|----------------|------------------|
 | `openai` | `gpt-4.1-mini`, `gpt-4o` | `OPENAI_API_KEY` |
+| `azure-openai` | Azure deployment names such as `gpt-5-mini` | `AZURE_OPENAI_API_KEY` + `AZURE_OPENAI_ENDPOINT` |
 | `groq` | `llama-3.3-70b-versatile` | `GROQ_API_KEY` |
 | `xai` | `grok-2-1212`, `grok-3` | `XAI_API_KEY` |
 | `gemini` | `gemini-3-flash-preview` | `GOOGLE_API_KEY` (or `GEMINI_API_KEY`) |
@@ -298,6 +299,35 @@ asa_audit(senators, backend = "langgraph", agent = agent)
 | `openrouter` | `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.3-70b-instruct:free` | `OPENROUTER_API_KEY` |
 | `exo` | Local models | (none) |
 | `ollama` | `lfm2:24b-a2b` | (none) |
+
+### Azure OpenAI Backend
+
+Use `backend = "azure-openai"` for Azure-hosted OpenAI deployments. In this
+mode `model` is the Azure deployment name, not necessarily the base model name.
+
+```bash
+export AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com"
+export AZURE_OPENAI_API_KEY="..."
+export AZURE_OPENAI_DEPLOYMENT="gpt-5-mini"  # optional default deployment
+```
+
+```r
+cfg <- asa::asa_config(
+  backend = "azure-openai",
+  model = Sys.getenv("AZURE_OPENAI_DEPLOYMENT"),
+  workers = 8,
+  rate_limit = 0.1
+)
+```
+
+ASA normalizes Azure endpoints to `/openai/v1` and rejects `api.openai.com` for
+this backend. Parallel workers coordinate model calls through a shared SQLite
+limiter keyed by endpoint host and deployment. Useful knobs are
+`ASA_AZURE_RPM`, `ASA_AZURE_TPM`, `ASA_AZURE_MAX_CONCURRENT_REQUESTS`, and
+`ASA_AZURE_RATE_LIMIT_DB`; set `ASA_AZURE_RATE_LIMIT_MODE=off` only for local
+testing. For OpenWebpage embeddings, use
+`webpage_embedding_provider = "azure-openai"` and optionally set
+`AZURE_OPENAI_EMBEDDING_DEPLOYMENT`.
 
 ### Local Ollama Backend
 
@@ -461,8 +491,11 @@ enum <- asa::asa_enumerate("Find all current US senators", config = config)
 When enabled, the agent can open full webpages (not just search snippets) and
 extract the most relevant excerpts. This is disabled by default and must be
 explicitly turned on per call or via `search_options()`. Relevance selection
-uses embeddings when available (local `sentence-transformers` or OpenAI
-embeddings via `OPENAI_API_KEY`), otherwise falls back to lexical overlap.
+uses embeddings when available (local `sentence-transformers`, OpenAI
+embeddings via `OPENAI_API_KEY`, or explicit Azure OpenAI embeddings), otherwise
+falls back to lexical overlap. When the main backend is `azure-openai`, `auto`
+does not silently choose direct OpenAI embeddings just because
+`OPENAI_API_KEY` exists.
 Within a single run, repeated opens of the same URL are cached to avoid
 re-fetching.
 

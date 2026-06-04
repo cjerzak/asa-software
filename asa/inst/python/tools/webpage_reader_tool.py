@@ -53,10 +53,11 @@ class WebpageReaderConfig:
     relevance_mode: str = "auto"
     # Link annotation heuristics profile: "generic" (default)
     heuristic_profile: str = "generic"
-    # Embedding selection: "auto" (default), "openai", "sentence_transformers"
+    # Embedding selection: "auto" (default), "openai", "azure-openai", "sentence_transformers"
     embedding_provider: str = "auto"
     embedding_model: str = "text-embedding-3-small"
     embedding_api_base: Optional[str] = None  # defaults to OPENAI_API_BASE or https://api.openai.com/v1
+    main_backend: Optional[str] = None
     prefilter_k: int = 30
     use_mmr: bool = True
     mmr_lambda: float = 0.7
@@ -201,6 +202,7 @@ def configure_webpage_reader(
     embedding_provider: str = None,
     embedding_model: str = None,
     embedding_api_base: str = None,
+    main_backend: str = None,
     prefilter_k: int = None,
     use_mmr: bool = None,
     mmr_lambda: float = None,
@@ -248,6 +250,8 @@ def configure_webpage_reader(
             _default_config.embedding_model = str(embedding_model)
         if embedding_api_base is not None:
             _default_config.embedding_api_base = str(embedding_api_base) if embedding_api_base else None
+        if main_backend is not None:
+            _default_config.main_backend = str(main_backend) if main_backend else None
         if prefilter_k is not None:
             _default_config.prefilter_k = int(prefilter_k)
         if use_mmr is not None:
@@ -602,6 +606,37 @@ def _openai_api_base(cfg: WebpageReaderConfig) -> str:
     return base
 
 
+def _normalize_azure_openai_base_url(endpoint: Optional[str]) -> str:
+    base = str(endpoint or "").strip().rstrip("/")
+    if not base:
+        raise RuntimeError("missing Azure OpenAI endpoint for embeddings")
+    if "api.openai.com" in base.lower():
+        raise RuntimeError("Azure OpenAI embeddings cannot use api.openai.com")
+    allow_insecure = str(os.getenv("ASA_ALLOW_INSECURE_AZURE_OPENAI_ENDPOINT", "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    if not allow_insecure and not base.lower().startswith("https://"):
+        raise RuntimeError("Azure OpenAI endpoint must use https://")
+    if base.lower().endswith("/openai/v1"):
+        return base
+    if base.lower().endswith("/openai"):
+        return f"{base}/v1"
+    return f"{base}/openai/v1"
+
+
+def _azure_openai_api_base(cfg: WebpageReaderConfig) -> str:
+    endpoint = (
+        cfg.embedding_api_base
+        or os.getenv("AZURE_OPENAI_EMBEDDING_ENDPOINT")
+        or os.getenv("AZURE_OPENAI_API_BASE")
+        or os.getenv("AZURE_OPENAI_ENDPOINT")
+    )
+    return _normalize_azure_openai_base_url(endpoint)
+
+
 def _openai_embed_texts(texts: List[str], *, cfg: WebpageReaderConfig) -> List[List[float]]:
     api_key = os.getenv("OPENAI_API_KEY", "")
     if not api_key:
@@ -625,6 +660,42 @@ def _openai_embed_texts(texts: List[str], *, cfg: WebpageReaderConfig) -> List[L
             out.append(emb)
     if len(out) != len(texts):
         raise RuntimeError("unexpected embeddings response shape")
+    return out
+
+
+def _azure_openai_embed_texts(texts: List[str], *, cfg: WebpageReaderConfig) -> List[List[float]]:
+    api_key = (
+        os.getenv("AZURE_OPENAI_EMBEDDING_API_KEY")
+        or os.getenv("AZURE_OPENAI_API_KEY")
+        or ""
+    )
+    if not api_key:
+        raise RuntimeError("missing AZURE_OPENAI_API_KEY for Azure embeddings")
+
+    deployment = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT") or cfg.embedding_model
+    deployment = str(deployment or "").strip()
+    if not deployment:
+        raise RuntimeError("missing Azure embedding deployment")
+
+    url = _azure_openai_api_base(cfg) + "/embeddings"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "api-key": api_key,
+        "Content-Type": "application/json",
+        "User-Agent": cfg.user_agent,
+    }
+    payload = {"model": deployment, "input": texts}
+    r = requests.post(url, headers=headers, json=payload, timeout=cfg.timeout)
+    r.raise_for_status()
+    data = (r.json() or {}).get("data") or []
+    data.sort(key=lambda d: int(d.get("index", 0)))
+    out: List[List[float]] = []
+    for item in data:
+        emb = item.get("embedding")
+        if isinstance(emb, list) and emb:
+            out.append(emb)
+    if len(out) != len(texts):
+        raise RuntimeError("unexpected Azure embeddings response shape")
     return out
 
 
@@ -652,14 +723,28 @@ def _st_embed_texts(texts: List[str], *, cfg: WebpageReaderConfig) -> List[List[
 
 def _embed_provider(cfg: WebpageReaderConfig) -> str:
     provider = (cfg.embedding_provider or "auto").strip().lower()
-    if provider in {"openai", "sentence_transformers"}:
+    if provider in {"openai", "azure-openai", "sentence_transformers"}:
         return provider
+
+    main_backend = (cfg.main_backend or os.getenv("ASA_MAIN_BACKEND") or "").strip().lower()
     # auto: prefer local ST if available, else OpenAI if key present.
     try:
         import sentence_transformers  # noqa: F401
         return "sentence_transformers"
     except Exception:
         pass
+    if main_backend == "azure-openai":
+        if (
+            os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
+            and (os.getenv("AZURE_OPENAI_EMBEDDING_API_KEY") or os.getenv("AZURE_OPENAI_API_KEY"))
+            and (
+                os.getenv("AZURE_OPENAI_EMBEDDING_ENDPOINT")
+                or os.getenv("AZURE_OPENAI_API_BASE")
+                or os.getenv("AZURE_OPENAI_ENDPOINT")
+            )
+        ):
+            return "azure-openai"
+        return "none"
     if os.getenv("OPENAI_API_KEY"):
         return "openai"
     return "none"
@@ -671,6 +756,8 @@ def _embed_texts(texts: List[str], *, cfg: WebpageReaderConfig) -> List[List[flo
         return _st_embed_texts(texts, cfg=cfg)
     if provider == "openai":
         return _openai_embed_texts(texts, cfg=cfg)
+    if provider == "azure-openai":
+        return _azure_openai_embed_texts(texts, cfg=cfg)
     raise RuntimeError("no embedding provider available")
 
 
@@ -740,7 +827,17 @@ def _relevant_chunks_embeddings(
 
     candidates = [chunks[i] for i in candidate_idx]
 
-    embed_key = f"{_embed_provider(cfg)}:{cfg.embedding_model}:{_openai_api_base(cfg) if _embed_provider(cfg)=='openai' else ''}"
+    provider = _embed_provider(cfg)
+    if provider == "openai":
+        provider_base = _openai_api_base(cfg)
+        provider_model = cfg.embedding_model
+    elif provider == "azure-openai":
+        provider_base = _azure_openai_api_base(cfg)
+        provider_model = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT") or cfg.embedding_model
+    else:
+        provider_base = ""
+        provider_model = cfg.embedding_model
+    embed_key = f"{provider}:{provider_model}:{provider_base}"
 
     # Cache embeddings per-page to avoid repeated API calls within a run.
     emb_cache: Dict[str, Dict[str, List[float]]] = {}

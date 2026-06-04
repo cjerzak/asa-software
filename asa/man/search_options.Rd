@@ -129,7 +129,7 @@ One of: "auto", "lexical", "embeddings".}
 from opened webpages. Must be "generic" (task-agnostic default).}
 
 \item{webpage_embedding_provider}{Embedding provider for relevance. One of:
-"auto", "openai", "sentence_transformers".}
+"auto", "openai", "azure-openai", "sentence_transformers".}
 
 \item{webpage_embedding_model}{Embedding model identifier for relevance.}
 
@@ -147,8 +147,8 @@ a page.}
 \item{webpage_chunk_chars}{Approximate size (in characters) of each excerpt.}
 
 \item{webpage_embedding_api_base}{Optional OpenAI-compatible base URL for
-embeddings. If NULL, uses \code{OPENAI_API_BASE} or
-\code{https://api.openai.com/v1}.}
+embeddings. If NULL, uses provider defaults. For Azure embeddings, set
+\code{AZURE_OPENAI_EMBEDDING_ENDPOINT} or \code{AZURE_OPENAI_ENDPOINT}.}
 
 \item{webpage_prefilter_k}{Optional lexical prefilter size before embedding
 relevance selection.}

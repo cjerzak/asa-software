@@ -69,7 +69,7 @@ id,prompt,output_format,template_vars
 | `ASA_TASKS_FILE` | `./tasks.csv` | Input tasks file |
 | `ASA_OUTPUT_DIR` | `./results` | Output directory |
 | `ASA_BACKEND` | `openai` | LLM backend |
-| `ASA_MODEL` | `gpt-4.1-mini` | Model name |
+| `ASA_MODEL` | `gpt-4.1-mini` | Model name, or Azure deployment name for `azure-openai` |
 | `ASA_CONDA_ENV` | `asa_env` | Conda environment |
 | `ASA_PARALLEL_JOBS` | profile | Jobs for Custom profile |
 
@@ -100,7 +100,18 @@ Set your LLM API key:
 export OPENAI_API_KEY="sk-..."
 # or
 export GROQ_API_KEY="..."
+# or for Azure OpenAI
+export ASA_BACKEND="azure-openai"
+export AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com"
+export AZURE_OPENAI_API_KEY="..."
+export AZURE_OPENAI_DEPLOYMENT="gpt-5-mini"
+export ASA_MODEL="$AZURE_OPENAI_DEPLOYMENT"
 ```
+
+For Azure OpenAI batches, ASA coordinates model calls through a shared SQLite
+limiter across local workers. Set `ASA_AZURE_RPM`, `ASA_AZURE_TPM`, and
+`ASA_AZURE_MAX_CONCURRENT_REQUESTS` to match the deployment quota; the default
+database path is `${TMPDIR:-/tmp}/asa_azure_rate_limit.sqlite`.
 
 ## How It Works
 

@@ -72,6 +72,27 @@ def _openai_compatible_base_url(value: Optional[str], default: str) -> str:
     return base_url
 
 
+def _normalize_azure_openai_base_url(endpoint: Optional[str]) -> str:
+    base_url = str(endpoint or "").strip().rstrip("/")
+    if not base_url:
+        raise ValueError("AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_BASE is required for azure-openai")
+    if "api.openai.com" in base_url.lower():
+        raise ValueError("Azure backend cannot use api.openai.com")
+    allow_insecure = str(os.getenv("ASA_ALLOW_INSECURE_AZURE_OPENAI_ENDPOINT", "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    if not allow_insecure and not base_url.lower().startswith("https://"):
+        raise ValueError("Azure OpenAI endpoint must use https://")
+    if base_url.lower().endswith("/openai/v1"):
+        return base_url
+    if base_url.lower().endswith("/openai"):
+        return f"{base_url}/v1"
+    return f"{base_url}/openai/v1"
+
+
 def _header_target(handler: BaseHTTPRequestHandler, name: str, default: Optional[str] = None) -> Optional[str]:
     value = handler.headers.get(name)
     if value is None:
@@ -489,13 +510,33 @@ def _create_model(
     backend = str(backend or "").strip().lower()
     timeout_s = None if timeout_s is None else float(timeout_s)
 
-    if backend in {"openai", "xai", "exo", "ollama", "openrouter"}:
+    if backend in {"openai", "azure-openai", "xai", "exo", "ollama", "openrouter"}:
         base_url = None
         api_key = None
         default_headers = None
+        azure_limiter = None
         if backend == "openai":
             base_url = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
             api_key = os.getenv("OPENAI_API_KEY", "")
+        elif backend == "azure-openai":
+            base_url = _normalize_azure_openai_base_url(
+                os.getenv("AZURE_OPENAI_API_BASE") or os.getenv("AZURE_OPENAI_ENDPOINT")
+            )
+            api_key = os.getenv("AZURE_OPENAI_API_KEY", "")
+            if not api_key:
+                raise ValueError("AZURE_OPENAI_API_KEY is required for azure-openai")
+            os.environ["ASA_MAIN_BACKEND"] = "azure-openai"
+            os.environ["ASA_AZURE_OPENAI_ACTIVE_BASE_URL"] = base_url
+            os.environ["ASA_AZURE_OPENAI_ACTIVE_DEPLOYMENT"] = model
+            try:
+                from shared.azure_rate_limit import AzureOpenAISharedRateLimiter
+
+                azure_limiter = AzureOpenAISharedRateLimiter(
+                    endpoint=base_url,
+                    deployment=model,
+                )
+            except Exception as exc:
+                raise ValueError(f"Could not initialize Azure OpenAI shared limiter: {exc}") from exc
         elif backend == "xai":
             base_url = "https://api.x.ai/v1"
             api_key = os.getenv("XAI_API_KEY", "")
@@ -529,7 +570,12 @@ def _create_model(
             kwargs["max_completion_tokens"] = int(max_tokens)
         if default_headers is not None:
             kwargs["default_headers"] = default_headers
-        return ChatOpenAI(**kwargs)
+        llm = ChatOpenAI(**kwargs)
+        if azure_limiter is not None:
+            from shared.azure_rate_limit import wrap_chat_model
+
+            llm = wrap_chat_model(llm, azure_limiter)
+        return llm
 
     if backend == "groq":
         kwargs = {

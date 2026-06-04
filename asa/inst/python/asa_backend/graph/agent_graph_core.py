@@ -15363,6 +15363,12 @@ def _invoke_model_with_fallback(
             ), None
         except Exception as exc:
             last_exc = exc
+            try:
+                from shared.azure_rate_limit import record_active_azure_exception
+
+                record_active_azure_exception(exc)
+            except Exception:
+                pass
             last_retryable = _is_retryable_invoke_exception(exc)
             if (not last_retryable) or attempt >= max_attempts:
                 break
@@ -17421,6 +17427,8 @@ def _llm_extract_schema_payloads_from_openwebpages(
         selector_model,
         backend_hint=langextract_backend_hint,
     )
+    if engine == "langextract" and selector_backend == "azure-openai" and not langextract_backend_hint:
+        engine = "legacy"
     prefer_structured_output = bool(engine == "langextract" and selector_backend == "openai")
 
     for item in chosen:
@@ -17792,14 +17800,16 @@ def _llm_extract_schema_payloads_from_search_snippets(
             already.add(normalized)
 
     engine = _normalize_search_snippet_extraction_engine(extraction_engine)
-    use_deterministic_first = engine in {"deterministic", "deterministic_then_legacy", "triage_then_structured"}
-    use_selector_fallback = engine in {"legacy", "deterministic_then_legacy"}
-    use_langextract = engine == "langextract"
-    use_structured_output = engine == "triage_then_structured"
     selector_backend = _selector_model_backend_for_extraction(
         selector_model,
         backend_hint=langextract_backend_hint,
     )
+    if engine == "langextract" and selector_backend == "azure-openai" and not langextract_backend_hint:
+        engine = "legacy"
+    use_deterministic_first = engine in {"deterministic", "deterministic_then_legacy", "triage_then_structured"}
+    use_selector_fallback = engine in {"legacy", "deterministic_then_legacy"}
+    use_langextract = engine == "langextract"
+    use_structured_output = engine == "triage_then_structured"
 
     max_chars_int = max(256, int(max_chars or 2000))
     candidate_map: Dict[str, Dict[str, Any]] = {}

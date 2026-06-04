@@ -218,6 +218,11 @@
   env["PYTHONUNBUFFERED"] <- "1"
   env["ASA_FREE_CODE_PORT_FILE"] <- port_file
   env["ASA_FREE_CODE_GATEWAY_TIMEOUT"] <- as.character(as.numeric(config$timeout %||% ASA_DEFAULT_TIMEOUT))
+  env["ASA_MAIN_BACKEND"] <- as.character(config$backend %||% "")
+  if (identical(as.character(config$backend %||% ""), "azure-openai") &&
+      !nzchar(Sys.getenv("ASA_AZURE_RPM", unset = ""))) {
+    env["ASA_AZURE_RPM"] <- as.character(as.numeric(config$rate_limit %||% ASA_DEFAULT_RATE_LIMIT) * 60)
+  }
   env
 }
 
@@ -341,7 +346,8 @@
   if (nzchar(mcp_log_file)) {
     env["ASA_FREE_CODE_MCP_LOG_FILE"] <- mcp_log_file
   }
-  env <- c(env, .free_code_proxy_env(config$proxy %||% NULL))
+  proxy_env <- .free_code_proxy_env(config$proxy %||% NULL)
+  env[names(proxy_env)] <- proxy_env
   env["NO_PROXY"] <- .free_code_join_no_proxy(Sys.getenv("NO_PROXY", unset = ""))
   env
 }
@@ -524,7 +530,8 @@
   # Keep provider API traffic direct. free-code's Bun fetch proxy path does not
   # honor NO_PROXY for local gateways, so proxy settings stay scoped to the MCP
   # search server instead of the CLI process.
-  env <- c(env, .free_code_proxy_env(NULL))
+  proxy_env <- .free_code_proxy_env(NULL)
+  env[names(proxy_env)] <- proxy_env
   env["NO_PROXY"] <- .free_code_join_no_proxy(Sys.getenv("NO_PROXY", unset = ""))
   env["ANTHROPIC_BASE_URL"] <- gateway_base_url
   env["ANTHROPIC_API_KEY"] <- "asa-local-gateway"

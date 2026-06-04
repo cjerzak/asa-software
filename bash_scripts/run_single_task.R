@@ -11,8 +11,12 @@
 # Environment Variables:
 #   ASA_TASKS_FILE    - Path to tasks CSV (default: ./tasks.csv)
 #   ASA_OUTPUT_DIR    - Directory for results (default: ./results)
-#   ASA_BACKEND       - LLM backend (default: openai)
-#   ASA_MODEL         - Model name (default: gpt-4.1-mini)
+#   ASA_BACKEND       - LLM backend (default: openai; use azure-openai for Azure)
+#   ASA_MODEL         - Model name/deployment name (default: gpt-4.1-mini)
+#   AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_API_KEY / AZURE_OPENAI_DEPLOYMENT
+#                     - Required for ASA_BACKEND=azure-openai
+#   ASA_AZURE_RPM / ASA_AZURE_TPM / ASA_AZURE_MAX_CONCURRENT_REQUESTS
+#                     - Optional shared Azure deployment limiter settings
 #   HTTP_PROXY        - Proxy URL (set by run_batch.sh)
 #
 # Tasks CSV Format:

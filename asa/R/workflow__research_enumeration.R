@@ -1256,7 +1256,7 @@ asa_enumerate <- function(query = NULL,
   }
   if (!is.null(webpage_embedding_provider)) {
     .validate_choice(webpage_embedding_provider, "webpage_embedding_provider",
-                     c("auto", "openai", "sentence_transformers"))
+                     c("auto", "openai", "azure-openai", "sentence_transformers"))
   }
   if (!is.null(webpage_embedding_model)) {
     .validate_string(webpage_embedding_model, "webpage_embedding_model")

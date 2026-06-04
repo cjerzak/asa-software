@@ -37,8 +37,9 @@ pipeline), "free-code" (headless free-code backend with ASA-managed
 provider routing and search MCP tools), or "opencode" (OpenCode CLI backend
 with ASA-managed provider routing and search MCP tools).}
 
-\item{backend}{LLM backend: "openai", "groq", "xai", "gemini", "exo",
-"ollama", "openrouter", "anthropic", or "bedrock". Ollama also supports
+\item{backend}{LLM backend: "openai", "azure-openai", "groq", "xai",
+"gemini", "exo", "ollama", "openrouter", "anthropic", or "bedrock".
+For Azure OpenAI, \code{model} is the Azure deployment name. Ollama also supports
 shorthand like \code{"ollama-lfm2:24b-a2b"} when
 \code{model} is omitted.}
 

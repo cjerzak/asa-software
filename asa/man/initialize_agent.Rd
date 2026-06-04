@@ -38,8 +38,9 @@ external free-code agent behind ASA-managed provider and search wrappers,
 or \code{"opencode"} to run the OpenCode CLI behind the same ASA-managed
 provider and search wrappers.}
 
-\item{backend}{LLM backend to use. One of: "openai", "groq", "xai",
-"gemini", "exo", "ollama", "openrouter", "anthropic", "bedrock".
+\item{backend}{LLM backend to use. One of: "openai", "azure-openai",
+"groq", "xai", "gemini", "exo", "ollama", "openrouter", "anthropic",
+"bedrock".
 Ollama also supports shorthand like
 \code{"ollama-lfm2:24b-a2b"} when \code{model}
 is omitted.}
@@ -136,6 +137,9 @@ to manage context length in long conversations, following the DeepAgent paper.
 The following environment variables should be set based on your backend:
 \itemize{
   \item OpenAI: \code{OPENAI_API_KEY}
+  \item Azure OpenAI: \code{AZURE_OPENAI_API_KEY} plus
+    \code{AZURE_OPENAI_ENDPOINT} or \code{AZURE_OPENAI_API_BASE};
+    \code{model} is the Azure deployment name.
   \item Groq: \code{GROQ_API_KEY}
   \item xAI: \code{XAI_API_KEY}
   \item Gemini: \code{GOOGLE_API_KEY} (or \code{GEMINI_API_KEY})

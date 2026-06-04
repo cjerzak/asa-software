@@ -12,8 +12,9 @@
 #'   pipeline), "free-code" (headless free-code backend with ASA-managed
 #'   provider routing and search MCP tools), or "opencode" (OpenCode CLI backend
 #'   with ASA-managed provider routing and search MCP tools).
-#' @param backend LLM backend: "openai", "groq", "xai", "gemini", "exo",
-#'   "ollama", "openrouter", "anthropic", or "bedrock". Ollama also supports
+#' @param backend LLM backend: "openai", "azure-openai", "groq", "xai",
+#'   "gemini", "exo", "ollama", "openrouter", "anthropic", or "bedrock".
+#'   For Azure OpenAI, \code{model} is the Azure deployment name. Ollama also supports
 #'   shorthand like \code{"ollama-lfm2:24b-a2b"} when
 #'   \code{model} is omitted.
 #' @param model Model identifier (e.g., "gpt-4.1-mini")
@@ -473,7 +474,7 @@ print.asa_temporal <- function(x, ...) {
 #' @param webpage_heuristic_profile Heuristic profile used when annotating links
 #'   from opened webpages. Must be "generic" (task-agnostic default).
 #' @param webpage_embedding_provider Embedding provider for relevance. One of:
-#'   "auto", "openai", "sentence_transformers".
+#'   "auto", "openai", "azure-openai", "sentence_transformers".
 #' @param webpage_embedding_model Embedding model identifier for relevance.
 #' @param webpage_timeout Timeout in seconds for OpenWebpage fetches and (when
 #'   used) relevance embeddings.
@@ -484,8 +485,8 @@ print.asa_temporal <- function(x, ...) {
 #'   a page.
 #' @param webpage_chunk_chars Approximate size (in characters) of each excerpt.
 #' @param webpage_embedding_api_base Optional OpenAI-compatible base URL for
-#'   embeddings. If NULL, uses \code{OPENAI_API_BASE} or
-#'   \code{https://api.openai.com/v1}.
+#'   embeddings. If NULL, uses provider defaults. For Azure embeddings, set
+#'   \code{AZURE_OPENAI_EMBEDDING_ENDPOINT} or \code{AZURE_OPENAI_ENDPOINT}.
 #' @param webpage_prefilter_k Optional lexical prefilter size before embedding
 #'   relevance selection.
 #' @param webpage_use_mmr Whether to apply maximal marginal relevance (MMR) for
@@ -670,7 +671,7 @@ search_options <- function(max_results = NULL,
     .validate_choice(webpage_relevance_mode, "webpage_relevance_mode", c("auto", "lexical", "embeddings"))
   }
   if (!is.null(webpage_embedding_provider)) {
-    .validate_choice(webpage_embedding_provider, "webpage_embedding_provider", c("auto", "openai", "sentence_transformers"))
+    .validate_choice(webpage_embedding_provider, "webpage_embedding_provider", c("auto", "openai", "azure-openai", "sentence_transformers"))
   }
   if (!is.null(webpage_embedding_model)) {
     .validate_string(webpage_embedding_model, "webpage_embedding_model")

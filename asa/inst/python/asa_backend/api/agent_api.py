@@ -936,11 +936,20 @@ def invoke_graph_with_payload(
         config=config,
         config_snapshot=config_snapshot,
     )
+    diagnostics = _state_get(state, "diagnostics", {}) or {}
+    try:
+        from shared.azure_rate_limit import merge_azure_diagnostics
+
+        diagnostics = merge_azure_diagnostics(diagnostics, state)
+        if isinstance(state, dict):
+            state["diagnostics"] = diagnostics
+    except Exception:
+        pass
 
     payload: Dict[str, Any] = {
         "schema_version": ASA_BRIDGE_SCHEMA_VERSION,
         "response": state,
-        "diagnostics": _state_get(state, "diagnostics", {}) or {},
+        "diagnostics": diagnostics,
         "trace_metadata": trace_metadata,
         "phase_timings": {
             "invoke_graph_seconds": duration_s,

@@ -761,7 +761,7 @@
   if (!is.null(webpage_embedding_provider)) {
     .validate_choice(
       webpage_embedding_provider, "webpage_embedding_provider",
-      c("auto", "openai", "sentence_transformers")
+      c("auto", "openai", "azure-openai", "sentence_transformers")
     )
   }
   if (!is.null(webpage_embedding_model)) {
@@ -1300,6 +1300,7 @@
   # Map backends to their API key environment variables
   key_vars <- list(
     openai = "OPENAI_API_KEY",
+    `azure-openai` = "AZURE_OPENAI_API_KEY",
     groq = "GROQ_API_KEY",
     xai = "XAI_API_KEY",
     gemini = c("GOOGLE_API_KEY", "GEMINI_API_KEY"),
@@ -1325,6 +1326,52 @@
         fix = "Set both AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables"
       )
     }
+    return(invisible(TRUE))
+  }
+
+  if (identical(backend, "azure-openai")) {
+    api_key <- Sys.getenv("AZURE_OPENAI_API_KEY", unset = "")
+    if (!nzchar(api_key) || is.na(api_key)) {
+      .stop_validation(
+        "api_key",
+        "be set in environment variable AZURE_OPENAI_API_KEY for backend 'azure-openai'",
+        actual = "<not set>",
+        fix = paste(
+          "Set the API key via: Sys.setenv(AZURE_OPENAI_API_KEY = \"your-azure-api-key\")",
+          "and set AZURE_OPENAI_ENDPOINT to your Azure OpenAI resource endpoint."
+        )
+      )
+    }
+
+    endpoint <- Sys.getenv(
+      "AZURE_OPENAI_API_BASE",
+      unset = Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = "")
+    )
+    tryCatch(
+      .normalize_azure_openai_base_url(endpoint),
+      error = function(e) {
+        .stop_validation(
+          "azure_openai_endpoint",
+          "be set to a valid Azure OpenAI endpoint for backend 'azure-openai'",
+          actual = if (!nzchar(endpoint)) "<not set>" else endpoint,
+          fix = paste(
+            "Set AZURE_OPENAI_ENDPOINT, for example",
+            "https://<resource>.openai.azure.com or",
+            "https://<resource>.services.ai.azure.com."
+          )
+        )
+      }
+    )
+
+    if (nchar(api_key) < 10) {
+      warning("AZURE_OPENAI_API_KEY appears to be too short. Is it a valid API key?",
+              call. = FALSE)
+    }
+    if (grepl("your[_-]?api[_-]?key|placeholder|test|example", api_key, ignore.case = TRUE)) {
+      warning("AZURE_OPENAI_API_KEY appears to be a placeholder value. Is it a real API key?",
+              call. = FALSE)
+    }
+
     return(invisible(TRUE))
   }
 

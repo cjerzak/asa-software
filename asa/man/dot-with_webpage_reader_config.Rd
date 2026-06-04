@@ -10,6 +10,7 @@
   heuristic_profile = NULL,
   embedding_provider = NULL,
   embedding_model = NULL,
+  main_backend = NULL,
   timeout = NULL,
   max_bytes = NULL,
   max_chars = NULL,
@@ -48,9 +49,11 @@ otherwise falls back to lexical overlap.}
 "generic" (task-agnostic default).}
 
 \item{embedding_provider}{Embedding provider for relevance ("auto",
-"openai", or "sentence_transformers").}
+"openai", "azure-openai", or "sentence_transformers").}
 
 \item{embedding_model}{Embedding model identifier for relevance.}
+
+\item{main_backend}{Main ASA LLM backend for provider-aware auto selection.}
 
 \item{timeout}{Timeout (seconds) for webpage fetches/embeddings.}
 

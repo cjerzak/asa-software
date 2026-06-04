@@ -23,6 +23,10 @@ ASA_DEFAULT_AGENT_BACKEND <- "agent"
 #' @keywords internal
 ASA_DEFAULT_MODEL <- "gpt-4.1-mini"
 
+#' Default Azure OpenAI Deployment
+#' @keywords internal
+ASA_DEFAULT_AZURE_OPENAI_MODEL <- "gpt-5-mini"
+
 #' Default Ollama Model
 #' @keywords internal
 ASA_DEFAULT_OLLAMA_MODEL <- "lfm2:24b-a2b"
@@ -49,7 +53,18 @@ ASA_DEFAULT_PROXY <- "socks5h://127.0.0.1:9050"
 
 #' Supported Backends
 #' @keywords internal
-ASA_SUPPORTED_BACKENDS <- c("openai", "groq", "xai", "gemini", "exo", "ollama", "openrouter", "anthropic", "bedrock")
+ASA_SUPPORTED_BACKENDS <- c(
+  "openai",
+  "azure-openai",
+  "groq",
+  "xai",
+  "gemini",
+  "exo",
+  "ollama",
+  "openrouter",
+  "anthropic",
+  "bedrock"
+)
 
 #' Supported Agent Backends
 #' @keywords internal
@@ -76,6 +91,7 @@ ASA_OPENCODE_DEFAULT_AGENT <- "build"
 ASA_API_ENDPOINTS <- list(
 
   openai = "https://api.openai.com/v1",
+  `azure-openai` = NULL,
   xai = "https://api.x.ai/v1",
   ollama = "http://127.0.0.1:11434/v1",
   openrouter = "https://openrouter.ai/api/v1"
@@ -85,6 +101,7 @@ ASA_API_ENDPOINTS <- list(
 #' @keywords internal
 ASA_API_KEY_ENV_VARS <- list(
   openai = "OPENAI_API_KEY",
+  `azure-openai` = "AZURE_OPENAI_API_KEY",
   groq = "GROQ_API_KEY",
   xai = "XAI_API_KEY",
   gemini = "GOOGLE_API_KEY",
@@ -575,6 +592,36 @@ ASA_TRUNCATE_LENGTH <- 80L
   base_url
 }
 
+#' Normalize an Azure OpenAI v1 Base URL
+#' @keywords internal
+.normalize_azure_openai_base_url <- function(endpoint) {
+  endpoint <- trimws(as.character(endpoint %||% "")[1])
+  endpoint <- sub("/+$", "", endpoint)
+  if (!nzchar(endpoint)) {
+    stop("AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_BASE is required for the azure-openai backend.",
+         call. = FALSE)
+  }
+  if (grepl("api\\.openai\\.com", endpoint, ignore.case = TRUE)) {
+    stop("Azure backend cannot use api.openai.com. Set AZURE_OPENAI_ENDPOINT to your Azure resource endpoint.",
+         call. = FALSE)
+  }
+
+  allow_insecure <- tolower(Sys.getenv("ASA_ALLOW_INSECURE_AZURE_OPENAI_ENDPOINT", unset = "")) %in%
+    c("1", "true", "yes", "on")
+  if (!allow_insecure && !grepl("^https://", endpoint, ignore.case = TRUE)) {
+    stop("Azure OpenAI endpoint must use https://.", call. = FALSE)
+  }
+
+  if (grepl("/openai/v1$", endpoint, ignore.case = TRUE)) {
+    return(endpoint)
+  }
+  if (grepl("/openai$", endpoint, ignore.case = TRUE)) {
+    return(paste0(endpoint, "/v1"))
+  }
+
+  paste0(endpoint, "/openai/v1")
+}
+
 #' Get Default Model for Backend
 #' @keywords internal
 .get_default_model_for_backend <- function(backend) {
@@ -592,6 +639,13 @@ ASA_TRUNCATE_LENGTH <- 80L
   }
   if (identical(backend, "bedrock")) {
     return(ASA_DEFAULT_BEDROCK_MODEL)
+  }
+  if (identical(backend, "azure-openai")) {
+    deployment <- Sys.getenv("AZURE_OPENAI_DEPLOYMENT", unset = "")
+    if (nzchar(deployment)) {
+      return(deployment)
+    }
+    return(ASA_DEFAULT_AZURE_OPENAI_MODEL)
   }
   if (identical(backend, "ollama")) {
     return(ASA_DEFAULT_OLLAMA_MODEL)

@@ -73,6 +73,14 @@ def _selector_model_name(selector_model: Any) -> str:
 
 
 def _selector_model_backend(selector_model: Any) -> str:
+    for attr in ("asa_backend", "_asa_backend"):
+        try:
+            marker = str(getattr(selector_model, attr, "") or "").strip().lower()
+        except Exception:
+            marker = ""
+        if marker:
+            return marker
+
     try:
         module_name = str(getattr(selector_model.__class__, "__module__", "") or "").lower()
     except Exception:
@@ -114,6 +122,8 @@ def _resolve_route(
     backend = str(backend_hint or "").strip().lower()
     if not backend:
         backend = _selector_model_backend(selector_model)
+        if backend == "openai" and str(os.getenv("ASA_MAIN_BACKEND", "")).strip().lower() == "azure-openai":
+            backend = "azure-openai"
 
     raw_model_name = model_id_override if model_id_override is not None else _selector_model_name(selector_model)
     model_name = _normalize_model_id_for_backend(backend=backend, model_name=raw_model_name)

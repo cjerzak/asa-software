@@ -5,7 +5,7 @@
 \alias{ASA_API_ENDPOINTS}
 \title{Backend API Endpoints}
 \format{
-An object of class \code{list} of length 4.
+An object of class \code{list} of length 5.
 }
 \usage{
 ASA_API_ENDPOINTS

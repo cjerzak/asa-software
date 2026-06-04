@@ -45,7 +45,8 @@
 
 \item{webpage_heuristic_profile}{"generic" or NULL}
 
-\item{webpage_embedding_provider}{"auto", "openai", "sentence_transformers", or NULL}
+\item{webpage_embedding_provider}{"auto", "openai", "azure-openai",
+"sentence_transformers", or NULL}
 
 \item{webpage_embedding_model}{Embedding model identifier or NULL}
 

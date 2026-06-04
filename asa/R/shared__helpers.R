@@ -779,7 +779,8 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param allow_read_webpages TRUE/FALSE/NULL
 #' @param webpage_relevance_mode "auto", "lexical", "embeddings", or NULL
 #' @param webpage_heuristic_profile "generic" or NULL
-#' @param webpage_embedding_provider "auto", "openai", "sentence_transformers", or NULL
+#' @param webpage_embedding_provider "auto", "openai", "azure-openai",
+#'   "sentence_transformers", or NULL
 #' @param webpage_embedding_model Embedding model identifier or NULL
 #' @param webpage_timeout OpenWebpage timeout in seconds, or NULL to use the
 #'   Python default.
@@ -943,8 +944,9 @@ configure_temporal <- function(time_filter = NULL) {
 #' @param heuristic_profile Heuristic profile for hyperlink annotation:
 #'   "generic" (task-agnostic default).
 #' @param embedding_provider Embedding provider for relevance ("auto",
-#'   "openai", or "sentence_transformers").
+#'   "openai", "azure-openai", or "sentence_transformers").
 #' @param embedding_model Embedding model identifier for relevance.
+#' @param main_backend Main ASA LLM backend for provider-aware auto selection.
 #' @param timeout Timeout (seconds) for webpage fetches/embeddings.
 #' @param max_bytes Download cap in bytes.
 #' @param max_chars Output cap in characters.
@@ -977,6 +979,7 @@ configure_temporal <- function(time_filter = NULL) {
                                        heuristic_profile = NULL,
                                        embedding_provider = NULL,
                                        embedding_model = NULL,
+                                       main_backend = NULL,
                                        timeout = NULL,
                                        max_bytes = NULL,
                                        max_chars = NULL,
@@ -1010,6 +1013,7 @@ configure_temporal <- function(time_filter = NULL) {
     heuristic_profile = heuristic_profile,
     embedding_provider = embedding_provider,
     embedding_model = embedding_model,
+    main_backend = main_backend,
     timeout = timeout,
     max_bytes = max_bytes,
     max_chars = max_chars,

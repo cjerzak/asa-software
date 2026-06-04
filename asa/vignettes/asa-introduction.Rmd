@@ -30,7 +30,7 @@ This architecture enables complex research tasks that require multiple searches 
 
 ### Key Features
 
-- **Multiple LLM Backends**: Support for OpenAI, Groq, xAI, Gemini, Anthropic, Bedrock, OpenRouter, and Exo
+- **Multiple LLM Backends**: Support for OpenAI, Azure OpenAI, Groq, xAI, Gemini, Anthropic, Bedrock, OpenRouter, and Exo
 - **Web Search Tools**: DuckDuckGo search with 4-tier fallback system and Wikipedia lookup
 - **Memory Folding**: DeepAgent-style context compression for long conversations
 - **Structured Outputs**: Extract JSON or specific fields from agent responses
@@ -76,6 +76,9 @@ Sys.setenv(GROQ_API_KEY = "your-groq-api-key")
 Sys.setenv(XAI_API_KEY = "your-xai-api-key")
 
 # Also supported:
+# Sys.setenv(AZURE_OPENAI_ENDPOINT = "https://<resource>.openai.azure.com")
+# Sys.setenv(AZURE_OPENAI_API_KEY = "your-azure-openai-api-key")
+# Sys.setenv(AZURE_OPENAI_DEPLOYMENT = "your-azure-deployment")
 # Sys.setenv(GOOGLE_API_KEY = "your-gemini-api-key")      # or GEMINI_API_KEY
 # Sys.setenv(ANTHROPIC_API_KEY = "your-anthropic-api-key")
 # Sys.setenv(OPENROUTER_API_KEY = "your-openrouter-api-key")
@@ -248,13 +251,19 @@ results <- run_task_batch(
 
 ### LLM Backend Options
 
-asa supports `openai`, `groq`, `xai`, `gemini`, `anthropic`, `bedrock`, `openrouter`, and `exo`. The examples below show a few common setups:
+asa supports `openai`, `azure-openai`, `groq`, `xai`, `gemini`, `anthropic`, `bedrock`, `openrouter`, and `exo`. The examples below show a few common setups:
 
 ```{r backend-options}
 # OpenAI - Best for complex reasoning tasks
 agent_openai <- initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini"  # or "gpt-4.1", "gpt-4o"
+)
+
+# Azure OpenAI - model is the Azure deployment name
+agent_azure <- initialize_agent(
+  backend = "azure-openai",
+  model = Sys.getenv("AZURE_OPENAI_DEPLOYMENT")
 )
 
 # Groq - Fast inference, good for simple queries

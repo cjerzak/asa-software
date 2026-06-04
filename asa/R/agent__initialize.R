@@ -9,8 +9,9 @@
 #'   external free-code agent behind ASA-managed provider and search wrappers,
 #'   or \code{"opencode"} to run the OpenCode CLI behind the same ASA-managed
 #'   provider and search wrappers.
-#' @param backend LLM backend to use. One of: "openai", "groq", "xai",
-#'   "gemini", "exo", "ollama", "openrouter", "anthropic", "bedrock".
+#' @param backend LLM backend to use. One of: "openai", "azure-openai",
+#'   "groq", "xai", "gemini", "exo", "ollama", "openrouter", "anthropic",
+#'   "bedrock".
 #'   Ollama also supports shorthand like
 #'   \code{"ollama-lfm2:24b-a2b"} when \code{model}
 #'   is omitted.
@@ -78,6 +79,9 @@
 #' The following environment variables should be set based on your backend:
 #' \itemize{
 #'   \item OpenAI: \code{OPENAI_API_KEY}
+#'   \item Azure OpenAI: \code{AZURE_OPENAI_API_KEY} plus
+#'     \code{AZURE_OPENAI_ENDPOINT} or \code{AZURE_OPENAI_API_BASE};
+#'     \code{model} is the Azure deployment name.
 #'   \item Groq: \code{GROQ_API_KEY}
 #'   \item xAI: \code{XAI_API_KEY}
 #'   \item Gemini: \code{GOOGLE_API_KEY} (or \code{GEMINI_API_KEY})
@@ -482,7 +486,7 @@ initialize_agent <- function(agent_backend = NULL,
   # Create HTTP clients for backends that need them (OpenAI-compatible APIs)
   # Dual-client approach: direct client for LLM API, proxied client for search tools
   clients <- NULL
-  if (backend %in% c("openai", "openrouter")) {
+  if (backend %in% c("openai", "azure-openai", "openrouter")) {
     clients <- .create_http_clients(search_proxy = proxy, timeout = timeout)
     # Store clients in asa_env for cleanup on reset/unload
     asa_env$http_clients <- clients
@@ -654,6 +658,76 @@ initialize_agent <- function(agent_backend = NULL,
   list(direct = direct_client, proxied = proxied_client, async = NULL)
 }
 
+#' Resolve Azure OpenAI Endpoint from Environment
+#' @keywords internal
+.azure_openai_base_url_from_env <- function() {
+  .normalize_azure_openai_base_url(
+    Sys.getenv(
+      "AZURE_OPENAI_API_BASE",
+      unset = Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = "")
+    )
+  )
+}
+
+#' Build Azure OpenAI ChatOpenAI Configuration
+#' @keywords internal
+.azure_openai_llm_config <- function(clients, rate_limiter, temperature) {
+  list(
+    env = "AZURE_OPENAI_API_KEY",
+    base = .azure_openai_base_url_from_env(),
+    temperature = temperature,
+    http_client = clients$direct,
+    include_response_headers = TRUE,
+    rate_limiter = rate_limiter
+  )
+}
+
+#' Create Shared Azure OpenAI Rate Limiter
+#' @keywords internal
+.create_azure_openai_shared_limiter <- function(model, base_url, rate_limit) {
+  python_path <- .get_python_path()
+  azure_rate_limit <- reticulate::import_from_path(
+    "shared.azure_rate_limit",
+    path = python_path
+  )
+  azure_rate_limit$AzureOpenAISharedRateLimiter(
+    endpoint = base_url,
+    deployment = model,
+    rpm = as.numeric(rate_limit) * 60
+  )
+}
+
+#' Synchronize Provider Marker Environment into R and Python
+#' @keywords internal
+.sync_provider_backend_env <- function(backend, azure_base_url = NULL, azure_deployment = NULL) {
+  backend <- as.character(backend %||% "")
+  Sys.setenv(ASA_MAIN_BACKEND = backend)
+  if (identical(backend, "azure-openai")) {
+    Sys.setenv(
+      ASA_AZURE_OPENAI_ACTIVE_BASE_URL = as.character(azure_base_url %||% ""),
+      ASA_AZURE_OPENAI_ACTIVE_DEPLOYMENT = as.character(azure_deployment %||% "")
+    )
+  } else {
+    Sys.unsetenv(c("ASA_AZURE_OPENAI_ACTIVE_BASE_URL", "ASA_AZURE_OPENAI_ACTIVE_DEPLOYMENT"))
+  }
+
+  if (isTRUE(reticulate::py_available(initialize = FALSE))) {
+    tryCatch({
+      os <- reticulate::import("os", convert = FALSE)
+      os$environ$`__setitem__`("ASA_MAIN_BACKEND", backend)
+      if (identical(backend, "azure-openai")) {
+        os$environ$`__setitem__`("ASA_AZURE_OPENAI_ACTIVE_BASE_URL", as.character(azure_base_url %||% ""))
+        os$environ$`__setitem__`("ASA_AZURE_OPENAI_ACTIVE_DEPLOYMENT", as.character(azure_deployment %||% ""))
+      } else {
+        os$environ$pop("ASA_AZURE_OPENAI_ACTIVE_BASE_URL", NULL)
+        os$environ$pop("ASA_AZURE_OPENAI_ACTIVE_DEPLOYMENT", NULL)
+      }
+    }, error = function(e) NULL)
+  }
+
+  invisible(TRUE)
+}
+
 #' Create LLM Instance
 #' @param backend Backend name
 #' @param model Model identifier
@@ -721,7 +795,7 @@ initialize_agent <- function(agent_backend = NULL,
   # OpenAI-compatible backends share ChatOpenAI with per-backend config.
   # Build config only for the requested backend to avoid eager side-effects
   # (e.g. .get_local_ip() for exo when not using exo).
-  openai_compat_names <- c("openai", "xai", "exo", "ollama", "openrouter")
+  openai_compat_names <- c("openai", "azure-openai", "xai", "exo", "ollama", "openrouter")
 
   if (backend %in% openai_compat_names) {
     cfg <- switch(backend,
@@ -732,6 +806,11 @@ initialize_agent <- function(agent_backend = NULL,
         http_client = clients$direct,
         include_response_headers = FALSE,
         rate_limiter = rate_limiter
+      ),
+      `azure-openai` = .azure_openai_llm_config(
+        clients = clients,
+        rate_limiter = rate_limiter,
+        temperature = .profile_temperature("openai")
       ),
       xai = list(
         env = "XAI_API_KEY",
@@ -765,13 +844,38 @@ initialize_agent <- function(agent_backend = NULL,
         )
       )
     )
+    shared_azure_limiter <- NULL
+    azure_rate_limit_module <- NULL
+    if (identical(backend, "azure-openai")) {
+      .sync_provider_backend_env(
+        backend = "azure-openai",
+        azure_base_url = cfg$base,
+        azure_deployment = model
+      )
+      shared_azure_limiter <- .create_azure_openai_shared_limiter(
+        model = model,
+        base_url = cfg$base,
+        rate_limit = rate_limit
+      )
+      azure_rate_limit_module <- reticulate::import_from_path(
+        "shared.azure_rate_limit",
+        path = .get_python_path()
+      )
+    } else {
+      .sync_provider_backend_env(backend)
+    }
     chat_models <- reticulate::import("langchain_openai")
     args <- list(
       model_name = model,
       openai_api_base = cfg$base,
       temperature = cfg$temperature,
       streaming = TRUE,
-      stream_usage = TRUE
+      stream_usage = if (identical(backend, "azure-openai")) {
+        !tolower(Sys.getenv("AZURE_OPENAI_STREAM_USAGE", unset = "true")) %in%
+          c("0", "false", "no", "off")
+      } else {
+        TRUE
+      }
     )
     if (!is.null(cfg$env)) args$openai_api_key <- Sys.getenv(cfg$env)
     if (is.null(cfg$env) && !is.null(cfg$api_key)) args$openai_api_key <- cfg$api_key
@@ -780,7 +884,11 @@ initialize_agent <- function(agent_backend = NULL,
     if (!is.null(cfg$rate_limiter)) args$rate_limiter <- cfg$rate_limiter
     if (!is.null(cfg$default_headers)) args$default_headers <- cfg$default_headers
     llm <- do.call(chat_models$ChatOpenAI, args)
+    if (!is.null(shared_azure_limiter) && !is.null(azure_rate_limit_module)) {
+      llm <- azure_rate_limit_module$wrap_chat_model(llm, shared_azure_limiter)
+    }
   } else if (backend == "groq") {
+    .sync_provider_backend_env(backend)
     chat_models <- reticulate::import("langchain_groq")
     llm <- chat_models$ChatGroq(
       groq_api_key = Sys.getenv("GROQ_API_KEY"),
@@ -790,6 +898,7 @@ initialize_agent <- function(agent_backend = NULL,
       rate_limiter = rate_limiter
     )
   } else if (backend == "gemini") {
+    .sync_provider_backend_env(backend)
     chat_models <- reticulate::import("langchain_google_genai")
     api_key <- Sys.getenv("GOOGLE_API_KEY", unset = "")
     if (!nzchar(api_key)) {
@@ -808,6 +917,7 @@ initialize_agent <- function(agent_backend = NULL,
 
     llm <- do.call(chat_models$ChatGoogleGenerativeAI, args)
   } else if (backend == "anthropic") {
+    .sync_provider_backend_env(backend)
     chat_models <- reticulate::import("langchain_anthropic")
     llm <- chat_models$ChatAnthropic(
       api_key = Sys.getenv("ANTHROPIC_API_KEY"),
@@ -816,6 +926,7 @@ initialize_agent <- function(agent_backend = NULL,
       rate_limiter = rate_limiter
     )
   } else if (backend == "bedrock") {
+    .sync_provider_backend_env(backend)
     chat_models <- reticulate::import("langchain_aws")
     region <- Sys.getenv("AWS_DEFAULT_REGION", unset = "us-east-1")
     llm <- chat_models$ChatBedrockConverse(

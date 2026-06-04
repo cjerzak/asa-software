@@ -150,6 +150,7 @@
                                      webpage_embedding_model = NULL) {
   config_search <- .resolve_agent_config_value(config = config, agent = agent, key = "search")
   config_conda_env <- .resolve_agent_config_value(config = config, agent = agent, key = "conda_env")
+  config_backend <- .resolve_agent_config_value(config = config, agent = agent, key = "backend")
 
   resolved <- .resolve_temporal_and_webpage_reader(
     temporal = temporal,
@@ -165,7 +166,8 @@
   c(
     list(
       config_search = config_search,
-      config_conda_env = config_conda_env
+      config_conda_env = config_conda_env,
+      config_backend = config_backend
     ),
     resolved
   )
@@ -207,6 +209,7 @@
       heuristic_profile = runtime$heuristic_profile,
       embedding_provider = runtime$embedding_provider,
       embedding_model = runtime$embedding_model,
+      main_backend = runtime$config_backend,
       timeout = runtime$timeout,
       max_bytes = runtime$max_bytes,
       max_chars = runtime$max_chars,
