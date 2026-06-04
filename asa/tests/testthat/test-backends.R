@@ -2,7 +2,8 @@
 # Uses loop-based approach to test all supported backends
 
 # Backend configurations: (backend, model, env_var)
-# Updated Mar 2026 with stable smoke-test model IDs
+# Updated Jun 2026 with stable smoke-test model IDs.
+# Gemini 2.0 Flash IDs shut down on 2026-06-01.
 backends <- list(
   list(backend = "openai", model = "gpt-4o-mini", env = "OPENAI_API_KEY"),
   list(backend = "groq", model = "llama-3.3-70b-versatile", env = "GROQ_API_KEY"),
@@ -13,7 +14,7 @@ backends <- list(
     env = c("GOOGLE_API_KEY", "GEMINI_API_KEY"),
     py_module = "langchain_google_genai"
   ),
-  list(backend = "openrouter", model = "google/gemini-2.0-flash-001", env = "OPENROUTER_API_KEY"),
+  list(backend = "openrouter", model = "google/gemini-3.1-flash-lite", env = "OPENROUTER_API_KEY"),
   list(backend = "openrouter", model = "openai/gpt-4.1-mini", env = "OPENROUTER_API_KEY")
 )
 

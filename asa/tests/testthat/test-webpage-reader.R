@@ -463,7 +463,8 @@ test_that("Gemini reasons about fetched webpage content (live)", {
   withr::local_envvar(c(ASA_REQUIRE_TOR_PROXY = "false"))
   agent <- asa::initialize_agent(
     backend = "gemini",
-    model = "gemini-2.0-flash"
+    # Gemini 2.0 Flash IDs shut down on 2026-06-01.
+    model = "gemini-3.5-flash"
   )
 
   result <- asa::run_task(
