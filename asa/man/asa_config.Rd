@@ -32,10 +32,10 @@ asa_config(
 )
 }
 \arguments{
-\item{agent_backend}{Agent runtime backend: "agent" (default ASA LangGraph
-pipeline), "free-code" (headless free-code backend with ASA-managed
-provider routing and search MCP tools), or "opencode" (OpenCode CLI backend
-with ASA-managed provider routing and search MCP tools).}
+\item{agent_backend}{Agent runtime backend: "opencode" (default OpenCode CLI
+backend with ASA-managed provider routing and search MCP tools), "agent"
+(built-in ASA LangGraph pipeline), or "free-code" (headless free-code
+backend with ASA-managed provider routing and search MCP tools).}
 
 \item{backend}{LLM backend: "openai", "azure-openai", "groq", "xai",
 "gemini", "exo", "ollama", "openrouter", "anthropic", or "bedrock".

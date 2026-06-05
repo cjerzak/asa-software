@@ -1,7 +1,7 @@
 #' Build the Python Backend Environment
 #'
-#' Creates a conda environment with all required Python dependencies for the
-#' asa search agent, including LangChain, LangGraph, and search tools.
+#' Creates a conda environment with required Python dependencies for ASA's
+#' built-in LangGraph runtime, provider gateways, and search tools.
 #'
 #' @param conda_env Name of the conda environment. Defaults to the package
 #'   option \code{asa.default_conda_env} (or \code{"asa_env"} if unset).

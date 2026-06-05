@@ -39,8 +39,8 @@ binaries. Defaults to \code{~/.asa/chromedriver} when \code{fix_browser = TRUE}.
 Invisibly returns NULL; called for side effects.
 }
 \description{
-Creates a conda environment with all required Python dependencies for the
-asa search agent, including LangChain, LangGraph, and search tools.
+Creates a conda environment with required Python dependencies for ASA's
+built-in LangGraph runtime, provider gateways, and search tools.
 }
 \details{
 This function creates a new conda environment and installs the following

@@ -12,9 +12,10 @@ Authors@R:
 Description: Provides an LLM-powered research agent for performing AI search tasks
     at large scales. Uses a ReAct (Reasoning + Acting) agent pattern with web search
     capabilities via DuckDuckGo and Wikipedia. Implements DeepAgent-style memory
-    folding for context management. The agent is built on 'LangGraph' and supports
-    multiple LLM backends including 'OpenAI', 'Groq', 'xAI', 'Gemini',
-    'Anthropic' (Claude), 'AWS Bedrock', 'OpenRouter', and 'Exo'.
+    folding for context management. Agent runtimes include default 'OpenCode' and
+    a built-in 'LangGraph' runtime. The package supports multiple LLM backends
+    including 'OpenAI', 'Groq', 'xAI', 'Gemini', 'Anthropic' (Claude),
+    'AWS Bedrock', 'OpenRouter', and 'Exo'.
 URL: https://github.com/cjerzak/asa-software
 BugReports: https://github.com/cjerzak/asa-software/issues
 Depends: R (>= 4.0.0)
@@ -38,4 +39,6 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3
-SystemRequirements: Python (>= 3.11), Conda, Tor (optional, for anonymous searching)
+SystemRequirements: Python (>= 3.11), Conda, OpenCode CLI (default agent runtime;
+    optional when using another agent_backend), Tor (optional, for anonymous
+    searching)

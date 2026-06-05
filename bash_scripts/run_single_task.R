@@ -11,6 +11,7 @@
 # Environment Variables:
 #   ASA_TASKS_FILE    - Path to tasks CSV (default: ./tasks.csv)
 #   ASA_OUTPUT_DIR    - Directory for results (default: ./results)
+#   ASA_AGENT_BACKEND - Agent runtime backend (default: opencode; use agent for built-in LangGraph)
 #   ASA_BACKEND       - LLM backend (default: openai; use azure-openai for Azure)
 #   ASA_MODEL         - Model name/deployment name (default: gpt-4.1-mini)
 #   AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_API_KEY / AZURE_OPENAI_DEPLOYMENT
@@ -37,6 +38,7 @@ task_id <- as.integer(args[1])
 # Configuration from environment
 tasks_file <- Sys.getenv("ASA_TASKS_FILE", "tasks.csv")
 output_dir <- Sys.getenv("ASA_OUTPUT_DIR", "results")
+agent_backend <- Sys.getenv("ASA_AGENT_BACKEND", "opencode")
 backend <- Sys.getenv("ASA_BACKEND", "openai")
 model <- Sys.getenv("ASA_MODEL", "gpt-4.1-mini")
 conda_env <- Sys.getenv("ASA_CONDA_ENV", "asa_env")
@@ -89,6 +91,7 @@ if (proxy == "") proxy <- NULL
 # Initialize agent (uses shared conda environment)
 agent <- tryCatch({
   initialize_agent(
+    agent_backend = agent_backend,
     backend = backend,
     model = model,
     conda_env = conda_env,
@@ -99,6 +102,7 @@ agent <- tryCatch({
   # If agent init fails, try without proxy
   message(sprintf("[Task %d] Agent init with proxy failed, retrying without proxy...", task_id))
   initialize_agent(
+    agent_backend = agent_backend,
     backend = backend,
     model = model,
     conda_env = conda_env,

@@ -9,11 +9,12 @@
 The asa package provides an LLM-powered research agent for performing
 AI search tasks at large scales using web search capabilities.
 
-The agent uses a ReAct (Reasoning + Acting) pattern implemented via
-LangGraph, with tools for searching DuckDuckGo and Wikipedia. It supports
-multiple LLM backends (OpenAI, Groq, xAI, Gemini, Anthropic, Bedrock,
-OpenRouter, Exo) and implements DeepAgent-style
-memory folding for managing long conversations.
+The agent uses ReAct-style reasoning with ASA-managed tools for searching
+DuckDuckGo and Wikipedia. The default runtime is OpenCode, with a built-in
+LangGraph pipeline and free-code runtime also available. It supports multiple
+LLM backends (OpenAI, Groq, xAI, Gemini, Anthropic, Bedrock, OpenRouter,
+Exo) and implements DeepAgent-style memory folding for managing long
+conversations.
 }
 \section{Main Functions}{
 

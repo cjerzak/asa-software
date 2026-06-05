@@ -4,7 +4,7 @@
 
 **AI Search Agent for Large-Scale Research Automation**
 
-An R package for running LLM-powered research tasks at scale. Unlike search-enabled APIs that charge ~$10 per 1,000 searches with limited control, asa provides full customizability over search behavior, LLM backends, and temporal filtering at minimal cost. Uses a ReAct (Reasoning + Acting) agent pattern with web search capabilities, implemented via LangGraph in Python and orchestrated from R.
+An R package for running LLM-powered research tasks at scale. Unlike search-enabled APIs that charge ~$10 per 1,000 searches with limited control, asa provides full customizability over search behavior, LLM backends, agent runtimes, and temporal filtering at minimal cost. ASA defaults to the OpenCode CLI runtime with ASA-managed provider routing and search tools; the built-in LangGraph runtime remains available with `agent_backend = "agent"`.
 
 ## Installation
 
@@ -23,8 +23,9 @@ devtools::install("path/to/asa")
 asa::build_backend()
 
 # Initialize the agent
+# Default runtime is OpenCode; install `opencode` on PATH or set ASA_OPENCODE_BIN.
 agent <- asa::initialize_agent(
-
+  agent_backend = "opencode",
   backend = "openai",
   model = "gpt-4.1-mini"
 )
@@ -42,7 +43,7 @@ print(result)
 | Function | Description |
 |----------|-------------|
 | `build_backend()` | Create conda environment with Python dependencies |
-| `initialize_agent()` | Initialize the search agent with LLM backend |
+| `initialize_agent()` | Initialize the search agent runtime and LLM backend |
 | `run_task()` | Execute a research task and get structured results |
 | `run_task_batch()` | Run multiple tasks in batch |
 | `asa_enumerate()` | **Open-ended enumeration** with multi-agent orchestration and temporal filtering |
@@ -426,6 +427,7 @@ agent <- asa::initialize_agent(
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
+| `agent_backend` | `"opencode"` | Agent runtime (`"opencode"`, `"agent"` for built-in LangGraph, or `"free-code"`) |
 | `proxy` | `NA` | Proxy URL for search tools (`NA` = auto from env; `NULL` = disable) |
 | `timeout` | `120` | Request timeout in seconds |
 | `rate_limit` | `0.1` | Max requests per second (conservative default for heavy workloads) |
@@ -437,7 +439,7 @@ agent <- asa::initialize_agent(
 | `fold_char_budget` | `30000` | Character budget triggering fold |
 | `use_observational_memory` | `FALSE` | Enable observational memory subsystem |
 | `tor` | `tor_options()` | Tor routing configuration |
-| `recursion_limit` | `NULL` | Max LangGraph steps (NULL = framework default) |
+| `recursion_limit` | `NULL` | Max agent steps (NULL = runtime default) |
 
 ### Intent Interpretation
 
@@ -795,6 +797,15 @@ Sys.setenv(OPENAI_API_KEY = "sk-...")
 asa::build_backend(conda_env = "asa_env", python_version = "3.12", force = TRUE)
 ```
 
+**OpenCode CLI not found?**
+```r
+# Install the `opencode` CLI or point ASA at a specific binary.
+Sys.setenv(ASA_OPENCODE_BIN = "/path/to/opencode")
+
+# To use the built-in LangGraph runtime instead:
+agent <- asa::initialize_agent(agent_backend = "agent")
+```
+
 ### Running Tor integration tests
 
 Tor integration tests are opt-in outside CI and verify:
@@ -841,7 +852,7 @@ See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.
 
 **Optional:**
 - Claude Code CLI (for `asa_audit()` with `backend = "claude_code"`)
-- processx (recommended for robust CLI invocations; base `system2()` fallback is used if unavailable)
+- OpenCode CLI (required for the default `agent_backend = "opencode"` runtime; set `ASA_OPENCODE_BIN` or install `opencode` on `PATH`)
 - Tor + stealth Chrome support (requires system Tor plus Python packages `undetected-chromedriver` and `stem`, installed by `asa::build_backend()`)
 
 ## Reference
@@ -886,6 +897,6 @@ MIT
 ║          ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    > Search:    [Multi-Tier Fallback]      ║
 ║                                                                              ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
-║  v0.1.0  ::  DuckDuckGo + Wiki  ::  LangGraph  ::  Parallel Batch Processing ║
+║  v0.1.0  ::  DuckDuckGo + Wiki  ::  OpenCode/LangGraph  ::  Parallel Batch  ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```

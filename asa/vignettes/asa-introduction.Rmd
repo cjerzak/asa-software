@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-The **asa** package provides an LLM-powered research agent for performing AI search tasks at large scales. It implements a ReAct (Reasoning + Acting) agent pattern that combines:
+The **asa** package provides an LLM-powered research agent for performing AI search tasks at large scales. It defaults to the OpenCode CLI runtime with ASA-managed provider routing and search tools, and also includes a built-in LangGraph runtime. It implements a ReAct (Reasoning + Acting) agent pattern that combines:
 - **Reasoning**: The LLM thinks through what information it needs
 - **Acting**: The agent uses tools (web search, Wikipedia) to gather information
 - **Iteration**: The process repeats until the task is complete
@@ -31,6 +31,7 @@ This architecture enables complex research tasks that require multiple searches 
 ### Key Features
 
 - **Multiple LLM Backends**: Support for OpenAI, Azure OpenAI, Groq, xAI, Gemini, Anthropic, Bedrock, OpenRouter, and Exo
+- **Multiple Agent Runtimes**: OpenCode by default, plus the built-in LangGraph runtime and free-code
 - **Web Search Tools**: DuckDuckGo search with 4-tier fallback system and Wikipedia lookup
 - **Memory Folding**: DeepAgent-style context compression for long conversations
 - **Structured Outputs**: Extract JSON or specific fields from agent responses
@@ -51,7 +52,7 @@ devtools::install("path/to/asa-software/asa")
 
 ### Build the Python Backend
 
-The package uses Python for the LangGraph agent infrastructure. Run this once to set up the environment:
+The package uses Python for ASA-managed search tools, provider gateways, and the built-in LangGraph runtime. Run this once to set up the environment:
 
 ```{r build-backend}
 library(asa)
@@ -59,7 +60,7 @@ library(asa)
 # Create conda environment with all Python dependencies
 build_backend(conda_env = "asa_env")
 ```
-This installs LangChain, LangGraph, search tools, and proxy support packages.
+This installs LangChain, LangGraph, search tools, gateway helpers, and proxy support packages. The default OpenCode runtime also requires the `opencode` CLI on `PATH` or `ASA_OPENCODE_BIN`.
 
 ### API Keys
 
@@ -96,6 +97,7 @@ library(asa)
 
 # Initialize the agent
 agent <- initialize_agent(
+  agent_backend = "opencode",
   backend = "openai",
   model = "gpt-4.1-mini",
   conda_env = "asa_env"

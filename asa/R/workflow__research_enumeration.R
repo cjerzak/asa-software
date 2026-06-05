@@ -603,6 +603,7 @@ asa_enumerate <- function(query = NULL,
   }
 
   asa_config(
+    agent_backend = agent$config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND,
     backend = agent$backend,
     model = agent$model,
     conda_env = agent$config$conda_env,
@@ -658,6 +659,7 @@ asa_enumerate <- function(query = NULL,
 
   if (verbose) message("Initializing agent...")
   initialized <- initialize_agent(
+    agent_backend = config_for_agent$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND,
     backend = config_for_agent$backend,
     model = config_for_agent$model,
     conda_env = config_for_agent$conda_env,

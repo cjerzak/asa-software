@@ -1786,6 +1786,7 @@ run_task_batch <- function(prompts,
     }
 
     worker_config <- asa_config(
+      agent_backend = config_template$config$agent_backend %||% ASA_DEFAULT_AGENT_BACKEND,
       backend = config_template$backend,
       model = config_template$model,
       conda_env = config_template$config$conda_env,

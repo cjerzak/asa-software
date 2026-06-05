@@ -68,6 +68,7 @@ id,prompt,output_format,template_vars
 |----------|---------|-------------|
 | `ASA_TASKS_FILE` | `./tasks.csv` | Input tasks file |
 | `ASA_OUTPUT_DIR` | `./results` | Output directory |
+| `ASA_AGENT_BACKEND` | `opencode` | Agent runtime (`opencode`, `agent`, or `free-code`) |
 | `ASA_BACKEND` | `openai` | LLM backend |
 | `ASA_MODEL` | `gpt-4.1-mini` | Model name, or Azure deployment name for `azure-openai` |
 | `ASA_CONDA_ENV` | `asa_env` | Conda environment |
@@ -92,6 +93,10 @@ devtools::install_github("cjerzak/asa-software/asa")
 library(asa)
 build_backend()  # First time only
 ```
+
+Batch jobs default to the OpenCode agent runtime. Install `opencode` on `PATH`,
+set `ASA_OPENCODE_BIN`, or set `ASA_AGENT_BACKEND=agent` to use the built-in
+LangGraph runtime.
 
 ### API Keys
 

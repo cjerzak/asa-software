@@ -32,11 +32,11 @@ initialize_agent(
 )
 }
 \arguments{
-\item{agent_backend}{Agent runtime backend. Use \code{"agent"} (default) for
-the built-in ASA LangGraph pipeline, \code{"free-code"} to run the
-external free-code agent behind ASA-managed provider and search wrappers,
-or \code{"opencode"} to run the OpenCode CLI behind the same ASA-managed
-provider and search wrappers.}
+\item{agent_backend}{Agent runtime backend. Use \code{"opencode"} (default)
+to run the OpenCode CLI behind ASA-managed provider and search wrappers,
+\code{"agent"} for the built-in ASA LangGraph pipeline, or
+\code{"free-code"} to run the external free-code agent behind the same
+ASA-managed provider and search wrappers.}
 
 \item{backend}{LLM backend to use. One of: "openai", "azure-openai",
 "groq", "xai", "gemini", "exo", "ollama", "openrouter", "anthropic",
@@ -114,9 +114,11 @@ An object of class \code{asa_agent} containing the initialized agent
   and configuration.
 }
 \description{
-Initializes the Python environment and creates the LangGraph agent with
-search tools (Wikipedia, DuckDuckGo). The agent can use multiple LLM
-backends and supports DeepAgent-style memory folding.
+Initializes the Python environment and creates an ASA research agent runtime
+with search tools (Wikipedia, DuckDuckGo). The default runtime is OpenCode;
+the built-in LangGraph pipeline and free-code runtime remain available.
+The agent can use multiple LLM backends and supports DeepAgent-style memory
+folding.
 }
 \details{
 The agent is created with these tools:

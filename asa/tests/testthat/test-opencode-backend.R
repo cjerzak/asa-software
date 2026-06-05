@@ -301,6 +301,35 @@ test_that("initialize_agent requires ASA_PROXY for opencode by default", {
   )
 })
 
+test_that("initialize_agent defaults to opencode runtime", {
+  withr::local_envvar(c(
+    ASA_REQUIRE_TOR_PROXY = "false",
+    ASA_PROXY = NA_character_,
+    HTTP_PROXY = NA_character_,
+    HTTPS_PROXY = NA_character_
+  ))
+
+  testthat::local_mocked_bindings(
+    .opencode_require_processx = function() invisible(TRUE),
+    .opencode_command_spec = function() list(command = "/usr/bin/opencode", prefix_args = character(0)),
+    .opencode_python_binary = function(conda_env) "/usr/bin/python3",
+    .opencode_python_path = function() "/tmp/asa-python",
+    .package = "asa"
+  )
+  on.exit(asa::reset_agent(), add = TRUE)
+
+  agent <- asa::initialize_agent(
+    backend = "exo",
+    model = "local-model",
+    proxy = NULL,
+    verbose = FALSE
+  )
+
+  expect_s3_class(agent, "asa_agent")
+  expect_null(agent$python_agent)
+  expect_identical(agent$config$agent_backend, "opencode")
+})
+
 test_that("asa_config and initialize_agent accept opencode with Tor proxy", {
   cfg <- asa::asa_config(
     agent_backend = "opencode",
@@ -1240,4 +1269,54 @@ test_that("resolve_agent_from_config forwards opencode agent_backend", {
   agent <- asa:::.resolve_agent_from_config(config = cfg, agent = NULL, verbose = FALSE)
   expect_s3_class(agent, "asa_agent")
   expect_identical(captured$agent_backend, "opencode")
+})
+
+test_that("research config derivation preserves explicit agent_backend", {
+  agent <- asa_test_mock_agent(
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    config = list(
+      agent_backend = "agent",
+      conda_env = "asa_env",
+      proxy = NULL,
+      use_browser = FALSE,
+      use_memory_folding = TRUE,
+      memory_folding = TRUE,
+      memory_threshold = 10L,
+      memory_keep_recent = 4L,
+      rate_limit = 0.1,
+      timeout = 120L,
+      recursion_limit = NULL,
+      search = NULL,
+      tor = asa::tor_options()
+    )
+  )
+
+  cfg <- asa:::.agent_config_from_agent(agent)
+  expect_s3_class(cfg, "asa_config")
+  expect_identical(cfg$agent_backend, "agent")
+})
+
+test_that("ensure_research_agent forwards explicit agent_backend", {
+  cfg <- asa::asa_config(
+    agent_backend = "agent",
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    proxy = NULL,
+    use_browser = FALSE
+  )
+
+  captured <- NULL
+  testthat::local_mocked_bindings(
+    .is_initialized = function() FALSE,
+    initialize_agent = function(...) {
+      captured <<- list(...)
+      asa_test_mock_agent(config = list(agent_backend = captured$agent_backend))
+    },
+    .package = "asa"
+  )
+
+  agent <- asa:::.ensure_research_agent(config = cfg, agent = NULL, verbose = FALSE)$agent
+  expect_s3_class(agent, "asa_agent")
+  expect_identical(captured$agent_backend, "agent")
 })

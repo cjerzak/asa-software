@@ -17,7 +17,7 @@ ASA_DEFAULT_BACKEND <- "openai"
 
 #' Default Agent Backend
 #' @keywords internal
-ASA_DEFAULT_AGENT_BACKEND <- "agent"
+ASA_DEFAULT_AGENT_BACKEND <- "opencode"
 
 #' Default Model
 #' @keywords internal

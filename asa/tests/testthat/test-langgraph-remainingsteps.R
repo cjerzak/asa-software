@@ -662,7 +662,7 @@ test_that("run_task passes expected_schema into LangGraph state (explicit schema
     python_agent = python_agent,
     backend = "gemini",
     model = "stub",
-    config = list(use_memory_folding = FALSE, backend = "gemini")
+    config = list(agent_backend = "agent", use_memory_folding = FALSE, backend = "gemini")
   )
 
   expected_schema <- list(

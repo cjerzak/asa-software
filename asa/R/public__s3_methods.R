@@ -8,10 +8,10 @@
 #' This provides a unified way to configure backend, model, search, temporal,
 #' and resource settings in a single object.
 #'
-#' @param agent_backend Agent runtime backend: "agent" (default ASA LangGraph
-#'   pipeline), "free-code" (headless free-code backend with ASA-managed
-#'   provider routing and search MCP tools), or "opencode" (OpenCode CLI backend
-#'   with ASA-managed provider routing and search MCP tools).
+#' @param agent_backend Agent runtime backend: "opencode" (default OpenCode CLI
+#'   backend with ASA-managed provider routing and search MCP tools), "agent"
+#'   (built-in ASA LangGraph pipeline), or "free-code" (headless free-code
+#'   backend with ASA-managed provider routing and search MCP tools).
 #' @param backend LLM backend: "openai", "azure-openai", "groq", "xai",
 #'   "gemini", "exo", "ollama", "openrouter", "anthropic", or "bedrock".
 #'   For Azure OpenAI, \code{model} is the Azure deployment name. Ollama also supports

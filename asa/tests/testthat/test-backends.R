@@ -79,6 +79,7 @@ backends <- list(
 
   withr::local_envvar(c(ASA_REQUIRE_TOR_PROXY = "false"))
   agent <- initialize_agent(
+    agent_backend = "agent",
     backend = cfg$backend,
     model = cfg$model,
     search = search_options(stability_profile = "deterministic"),
