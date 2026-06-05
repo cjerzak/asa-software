@@ -119,6 +119,7 @@ opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
       "install_module('langchain_openai', ChatOpenAI=DummyChat)",
       "",
       "from asa_backend.free_code import anthropic_gateway as gateway",
+      "real_invoke_model = gateway._invoke_model",
       "",
       "def fake_invoke(request, backend, model):",
       "    return gateway.AIMessage(",
@@ -164,12 +165,86 @@ opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
       "            'body': exc.read().decode('utf-8'),",
       "        }",
       "",
+      "import os",
+      "os.environ['ASA_FREE_CODE_LOOP_GUARD_JSON'] = json.dumps({'search_budget_limit': 2, 'recursion_limit': 20})",
+      "guard_search_budget = gateway._analyze_loop_guard({",
+      "    'messages': [",
+      "        {'role': 'assistant', 'content': [{'type': 'tool_use', 'id': 'toolu_1', 'name': 'grep', 'input': {'pattern': 'x'}}]},",
+      "        {'role': 'user', 'content': [{'type': 'tool_result', 'tool_use_id': 'toolu_1', 'content': 'native tool output'}]},",
+      "        {'role': 'assistant', 'content': [{'type': 'tool_use', 'id': 'toolu_2', 'name': 'mcp__asa_search__web_search', 'input': {'query': 'alpha'}}]},",
+      "        {'role': 'user', 'content': [{'type': 'tool_result', 'tool_use_id': 'toolu_2', 'content': 'search output'}]},",
+      "        {'role': 'assistant', 'content': [{'type': 'tool_use', 'id': 'toolu_3', 'name': 'asa_search_web_fetch', 'input': {'url': 'https://example.com'}}]},",
+      "    ]",
+      "})",
+      "guard_native_only = gateway._analyze_loop_guard({",
+      "    'messages': [",
+      "        {'role': 'assistant', 'content': [{'type': 'tool_use', 'id': 'toolu_4', 'name': 'grep', 'input': {'pattern': 'x'}}]},",
+      "    ]",
+      "})",
+      "",
+      "class FailingModel:",
+      "    def invoke(self, messages):",
+      "        raise RuntimeError('simulated content_filter')",
+      "",
+      "old_create_model = gateway._create_model",
+      "gateway._create_model = lambda *args, **kwargs: FailingModel()",
+      "os.environ['ASA_FREE_CODE_LOOP_GUARD_JSON'] = json.dumps({'search_budget_limit': 1, 'recursion_limit': 20})",
+      "try:",
+      "    fallback_message = real_invoke_model({",
+      "        'model': 'claude-test',",
+      "        'max_tokens': 64,",
+      "        'messages': [",
+      "            {'role': 'user', 'content': 'Return strict JSON only with exactly these keys: education_level, birth_year, confidence, justification.'},",
+      "            {'role': 'assistant', 'content': [{'type': 'tool_use', 'id': 'toolu_5', 'name': 'mcp__asa_search__web_search', 'input': {'query': 'alpha'}}]},",
+      "        ],",
+      "    }, 'openai', 'gpt-test')",
+      "finally:",
+      "    gateway._create_model = old_create_model",
+      "guard_finalize_fallback = json.loads(fallback_message.content)",
+      "",
+      "class RecoveringModel:",
+      "    def __init__(self):",
+      "        self.calls = 0",
+      "    def invoke(self, messages):",
+      "        self.calls += 1",
+      "        if self.calls == 1:",
+      "            raise RuntimeError('simulated content_filter')",
+      "        return gateway.AIMessage(content=json.dumps({",
+      "            'education_level': 'Recovered from evidence',",
+      "            'birth_year': 1960,",
+      "            'confidence': 0.8,",
+      "            'justification': 'Recovered on retry without guard instruction.',",
+      "        }))",
+      "",
+      "recovering_model = RecoveringModel()",
+      "gateway._create_model = lambda *args, **kwargs: recovering_model",
+      "os.environ['ASA_FREE_CODE_LOOP_GUARD_JSON'] = json.dumps({'search_budget_limit': 1, 'recursion_limit': 20})",
+      "try:",
+      "    recovered_message = real_invoke_model({",
+      "        'model': 'claude-test',",
+      "        'max_tokens': 64,",
+      "        'messages': [",
+      "            {'role': 'user', 'content': 'Return strict JSON only with exactly these keys: education_level, birth_year, confidence, justification.'},",
+      "            {'role': 'assistant', 'content': [{'type': 'tool_use', 'id': 'toolu_6', 'name': 'mcp__asa_search__web_search', 'input': {'query': 'alpha'}}]},",
+      "            {'role': 'user', 'content': [{'type': 'tool_result', 'tool_use_id': 'toolu_6', 'content': 'Recovered evidence says birth year 1960.'}]},",
+      "        ],",
+      "    }, 'openai', 'gpt-test')",
+      "finally:",
+      "    gateway._create_model = old_create_model",
+      "guard_finalize_recovered = json.loads(recovered_message.content)",
+      "guard_finalize_recovered_calls = recovering_model.calls",
+      "",
       "try:",
       "    results = {",
       "        'v1_messages': post('/v1/messages'),",
       "        'messages': post('/messages'),",
       "        'messages_stream': post('/messages', stream=True),",
       "        'bad': post('/bad'),",
+      "        'guard_search_budget': guard_search_budget,",
+      "        'guard_native_only': guard_native_only,",
+      "        'guard_finalize_fallback': guard_finalize_fallback,",
+      "        'guard_finalize_recovered': guard_finalize_recovered,",
+      "        'guard_finalize_recovered_calls': guard_finalize_recovered_calls,",
       "    }",
       "finally:",
       "    server.shutdown()",
@@ -409,6 +484,21 @@ test_that("OpenCode gateway accepts /messages and /v1/messages", {
 
   expect_equal(result$bad$status, 404L)
   expect_match(result$bad$body, "Unsupported path: /bad", fixed = TRUE)
+
+  expect_true(isTRUE(result$guard_search_budget$finalize))
+  expect_identical(result$guard_search_budget$reason, "search_budget_limit")
+  expect_identical(result$guard_search_budget$search_tool_requests, 2L)
+  expect_identical(result$guard_search_budget$tool_requests, 3L)
+  expect_false(isTRUE(result$guard_native_only$finalize))
+  expect_identical(result$guard_native_only$search_tool_requests, 0L)
+  expect_identical(result$guard_finalize_fallback$education_level, "Unknown")
+  expect_null(result$guard_finalize_fallback$birth_year)
+  expect_identical(result$guard_finalize_fallback$confidence, 0)
+  expect_match(result$guard_finalize_fallback$justification, "search_budget_limit", fixed = TRUE)
+  expect_identical(result$guard_finalize_recovered$education_level, "Recovered from evidence")
+  expect_identical(result$guard_finalize_recovered$birth_year, 1960L)
+  expect_identical(result$guard_finalize_recovered$confidence, 0.8)
+  expect_identical(result$guard_finalize_recovered_calls, 2L)
 })
 
 test_that("OpenCode JSONL parser handles text, errors, sessions, usage, and malformed stdout", {

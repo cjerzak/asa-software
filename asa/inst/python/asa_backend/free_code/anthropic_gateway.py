@@ -299,6 +299,7 @@ def _analyze_loop_guard(request: Dict[str, Any]) -> Dict[str, Any]:
     cfg = _loop_guard_config()
     assistant_turns = 0
     tool_requests = 0
+    search_tool_requests = 0
     timeout_errors = 0
     invalid_tool_errors = 0
     asa_terminal_errors = 0
@@ -320,7 +321,10 @@ def _analyze_loop_guard(request: Dict[str, Any]) -> Dict[str, Any]:
                     continue
                 tool_requests += 1
                 tool_id = str(block.get("id") or "")
-                signature = _tool_signature(str(block.get("name") or ""), block.get("input") or {})
+                tool_name = str(block.get("name") or "")
+                if _tool_base_name(tool_name) in {"web_search", "web_fetch"}:
+                    search_tool_requests += 1
+                signature = _tool_signature(tool_name, block.get("input") or {})
                 if tool_id:
                     tool_id_to_signature[tool_id] = signature
                 requests_by_signature[signature] = requests_by_signature.get(signature, 0) + 1
@@ -355,6 +359,8 @@ def _analyze_loop_guard(request: Dict[str, Any]) -> Dict[str, Any]:
     reason = ""
     if cfg["recursion_limit"] is not None and assistant_turns >= int(cfg["recursion_limit"]):
         reason = "recursion_limit"
+    elif cfg["search_budget_limit"] is not None and search_tool_requests >= int(cfg["search_budget_limit"]):
+        reason = "search_budget_limit"
     elif invalid_tool_errors >= int(cfg["total_invalid_tool_limit"]):
         reason = "invalid_tool_limit"
     elif any(count >= int(cfg["repeated_invalid_tool_limit"]) for count in invalid_by_tool.values()):
@@ -374,6 +380,7 @@ def _analyze_loop_guard(request: Dict[str, Any]) -> Dict[str, Any]:
         "config": cfg,
         "assistant_turns": assistant_turns,
         "tool_requests": tool_requests,
+        "search_tool_requests": search_tool_requests,
         "timeout_errors": timeout_errors,
         "invalid_tool_errors": invalid_tool_errors,
         "asa_terminal_errors": asa_terminal_errors,
@@ -384,12 +391,81 @@ def _analyze_loop_guard(request: Dict[str, Any]) -> Dict[str, Any]:
 
 def _finalization_instruction(guard: Dict[str, Any]) -> str:
     return (
-        "ASA loop guard triggered: "
-        f"{guard.get('reason') or 'tool_cycle'}.\n"
-        "Do not call any tools in this response. Produce the final answer now using only "
-        "the evidence already present in the conversation. If a requested field is not "
-        "supported by the available evidence, mark it Unknown or null according to the "
-        "requested output schema. If a strict JSON output was requested, return only JSON."
+        "The ASA retrieval budget is now exhausted for this batch item "
+        f"({guard.get('reason') or 'tool_cycle'}). "
+        "Please produce the requested final answer from the evidence already present "
+        "in the conversation. If a requested field is not supported by that evidence, "
+        "mark it Unknown or null according to the requested output schema. If JSON "
+        "output was requested, return the JSON object."
+    )
+
+
+def _request_prompt_text(request: Dict[str, Any]) -> str:
+    parts: List[str] = []
+    parts.extend(_extract_text_blocks(request.get("system")))
+    for message in request.get("messages", []) or []:
+        if not isinstance(message, dict):
+            continue
+        content = message.get("content")
+        if isinstance(content, str):
+            parts.append(content)
+            continue
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                text = block.get("text")
+                if text is not None:
+                    parts.append(str(text))
+    return "\n\n".join(part for part in parts if part)
+
+
+def _infer_strict_json_keys(text: str) -> List[str]:
+    lowered = text.lower()
+    marker = "exactly these keys:"
+    start = lowered.find(marker)
+    if start < 0:
+        return []
+    tail = text[start + len(marker):]
+    stop_positions = [
+        pos for pos in (tail.find("\n"), tail.find(".")) if pos >= 0
+    ]
+    if stop_positions:
+        tail = tail[: min(stop_positions)]
+    keys: List[str] = []
+    for raw_key in tail.split(","):
+        key = raw_key.strip().strip("`'\" ")
+        key = "".join(ch for ch in key if ch.isalnum() or ch == "_")
+        if key and key not in keys:
+            keys.append(key)
+    return keys
+
+
+def _fallback_value_for_key(key: str, guard: Dict[str, Any]) -> Any:
+    key_lower = key.lower()
+    if key_lower == "confidence" or key_lower.endswith("_confidence"):
+        return 0.0
+    if key_lower == "birth_year" or key_lower.endswith("_year"):
+        return None
+    if key_lower == "justification":
+        reason = str(guard.get("reason") or "tool_cycle")
+        return f"Unknown; ASA loop guard finalized after {reason} before sufficient evidence was found."
+    return "Unknown"
+
+
+def _finalization_fallback_text(request: Dict[str, Any], guard: Dict[str, Any], error: Exception) -> str:
+    prompt_text = _request_prompt_text(request)
+    keys = _infer_strict_json_keys(prompt_text)
+    if keys:
+        payload = {key: _fallback_value_for_key(key, guard) for key in keys}
+        return json.dumps(payload, ensure_ascii=False)
+    return json.dumps(
+        {
+            "status": "unknown",
+            "reason": str(guard.get("reason") or "tool_cycle"),
+            "justification": "ASA loop guard finalized, but the final model call failed.",
+        },
+        ensure_ascii=False,
     )
 
 
@@ -664,14 +740,15 @@ def _invoke_model(request: Dict[str, Any], backend: str, model: str) -> AIMessag
         )
 
     guard = _analyze_loop_guard(request)
-    messages = _convert_request_messages(request)
+    base_messages = _convert_request_messages(request)
+    messages = list(base_messages)
     if guard.get("finalize"):
         messages.append(HumanMessage(content=_finalization_instruction(guard)))
         anthropic_tools = []
 
     _write_progress(
         "model_finalize" if guard.get("finalize") else "model_invoke",
-        tool_used=int(guard.get("tool_requests", 0) or 0),
+        tool_used=int(guard.get("search_tool_requests", guard.get("tool_requests", 0)) or 0),
         tool_limit=guard.get("config", {}).get("search_budget_limit"),
         reason=str(guard.get("reason") or "none"),
     )
@@ -682,7 +759,17 @@ def _invoke_model(request: Dict[str, Any], backend: str, model: str) -> AIMessag
             tool_choice=_tool_choice_for_backend(request.get("tool_choice")),
         )
 
-    response = runnable.invoke(messages)
+    try:
+        response = runnable.invoke(messages)
+    except Exception as exc:
+        if not guard.get("finalize"):
+            raise
+        _debug_log("finalize retry without guard instruction", str(exc))
+        try:
+            response = runnable.invoke(base_messages)
+        except Exception as retry_exc:
+            _debug_log("finalize fallback", str(retry_exc))
+            response = AIMessage(content=_finalization_fallback_text(request, guard, retry_exc))
     if not isinstance(response, AIMessage):
         response = AIMessage(content=_stringify_content(response))
     if guard.get("finalize") and getattr(response, "tool_calls", None):
