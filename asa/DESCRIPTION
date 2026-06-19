@@ -35,10 +35,12 @@ Suggests:
     rmarkdown,
     future,
     future.apply,
-    withr
+    withr,
+    DBI,
+    RSQLite
 VignetteBuilder: knitr
-RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 SystemRequirements: Python (>= 3.11), Conda, OpenCode CLI (default agent runtime;
     optional when using another agent_backend), Tor (optional, for anonymous
     searching)
+Config/roxygen2/version: 8.0.0

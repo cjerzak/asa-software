@@ -48,5 +48,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Connor Jerzak \email{connor.jerzak@gmail.com} (\href{https://orcid.org/0000-0003-1914-8905}{ORCID})
 
+Authors:
+\itemize{
+  \item Connor Jerzak \email{connor.jerzak@gmail.com} (\href{https://orcid.org/0000-0003-1914-8905}{ORCID})
+}
+
 }
 \keyword{internal}
