@@ -239,7 +239,8 @@ test_that("run_free_code_agent maps structured output back into asa_response", {
       )
     },
     .free_code_write_mcp_config = function(config, python, python_path, allow_read_webpages = NULL,
-                                           auto_openwebpage_policy = NULL) {
+                                           auto_openwebpage_policy = NULL,
+                                           wayback = NULL) {
       mcp_file
     },
     .package = "asa"
@@ -317,7 +318,8 @@ test_that("run_free_code_agent enforces configured timeout seconds and maps proc
       )
     },
     .free_code_write_mcp_config = function(config, python, python_path, allow_read_webpages = NULL,
-                                           auto_openwebpage_policy = NULL) {
+                                           auto_openwebpage_policy = NULL,
+                                           wayback = NULL) {
       mcp_file
     },
     .run_processx = function(...) {
