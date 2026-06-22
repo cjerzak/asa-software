@@ -129,6 +129,13 @@ results <- run_task_batch(
   agent = agent
 )
 
+# Opt in to Wayback support for all batch tasks
+results <- run_task_batch(
+  prompts,
+  temporal = temporal_options(before = "2018-01-01", use_wayback = TRUE),
+  agent = agent
+)
+
 # Disable circuit breaker
 results <- run_task_batch(prompts, agent = agent, circuit_breaker = FALSE)
 

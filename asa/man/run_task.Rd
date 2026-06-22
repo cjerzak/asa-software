@@ -55,6 +55,9 @@ run_task(
     after this date (added to prompt context)
   \item before: ISO 8601 date (e.g., "2024-01-01") - hint for results
     before this date (added to prompt context)
+  \item strictness: "best_effort" (default) or "strict"
+  \item use_wayback: If TRUE, expose Wayback Machine search for historical
+    source checks. Disabled by default.
 }}
 
 \item{config}{An \code{asa_config} object for unified configuration, or NULL
@@ -251,6 +254,13 @@ result <- run_task(
     after = "2020-01-01",
     before = "2024-01-01"
   ),
+  agent = agent
+)
+
+# Opt in to Wayback Machine for historical source checks
+result <- run_task(
+  prompt = "Check what example.com published before 2018",
+  temporal = temporal_options(before = "2018-01-01", use_wayback = TRUE),
   agent = agent
 )
 

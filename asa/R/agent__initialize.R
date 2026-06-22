@@ -602,6 +602,10 @@ initialize_agent <- function(agent_backend = NULL,
       reticulate::import_from_path("tools.webpage_reader_tool", path = python_path),
       error = function(e) NULL
     )
+    asa_env$wayback_tool <- tryCatch(
+      reticulate::import_from_path("tools.archive_wayback_tool", path = python_path),
+      error = function(e) NULL
+    )
   } else {
     stop("Python module not found. Package may not be installed correctly.",
          call. = FALSE)
@@ -1053,6 +1057,15 @@ initialize_agent <- function(agent_backend = NULL,
   tools <- list(wiki, search)
   if (!is.null(webpage)) {
     tools <- c(tools, list(webpage))
+  }
+  if (!is.null(asa_env$wayback_tool)) {
+    wayback <- tryCatch(
+      asa_env$wayback_tool$create_wayback_tool(),
+      error = function(e) NULL
+    )
+    if (!is.null(wayback)) {
+      tools <- c(tools, list(wayback))
+    }
   }
 
   tools

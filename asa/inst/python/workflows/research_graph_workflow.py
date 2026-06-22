@@ -833,6 +833,8 @@ def create_searcher_node(llm, tools, wikidata_tool=None, research_config: Resear
                     tool_name = getattr(tool, "name", "") or ""
                     if (not allow_read_webpages) and tool_name == "OpenWebpage":
                         continue
+                    if (not use_wayback) and str(tool_name).strip().lower() == "wayback_search":
+                        continue
                     # Check if it's a DDG search tool and apply time filter
                     if hasattr(tool, 'api_wrapper') and time_filter:
                         try:

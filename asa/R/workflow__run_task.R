@@ -21,6 +21,9 @@
 #'       after this date (added to prompt context)
 #'     \item before: ISO 8601 date (e.g., "2024-01-01") - hint for results
 #'       before this date (added to prompt context)
+#'     \item strictness: "best_effort" (default) or "strict"
+#'     \item use_wayback: If TRUE, expose Wayback Machine search for historical
+#'       source checks. Disabled by default.
 #'   }
 #' @param config An \code{asa_config} object for unified configuration, or NULL
 #'   to use defaults
@@ -186,6 +189,13 @@
 #'     after = "2020-01-01",
 #'     before = "2024-01-01"
 #'   ),
+#'   agent = agent
+#' )
+#'
+#' # Opt in to Wayback Machine for historical source checks
+#' result <- run_task(
+#'   prompt = "Check what example.com published before 2018",
+#'   temporal = temporal_options(before = "2018-01-01", use_wayback = TRUE),
 #'   agent = agent
 #' )
 #'
@@ -471,6 +481,7 @@ run_task <- function(prompt,
       webpage_policy = resolved_webpage_policy,
       query_templates = query_templates,
       allow_read_webpages = allow_rw,
+      wayback = runtime$wayback,
       use_plan_mode = use_plan_mode,
       verbose = verbose
     )
@@ -1685,6 +1696,13 @@ build_prompt <- function(template, ...) {
 #' results <- run_task_batch(
 #'   prompts,
 #'   temporal = list(time_filter = "y"),
+#'   agent = agent
+#' )
+#'
+#' # Opt in to Wayback support for all batch tasks
+#' results <- run_task_batch(
+#'   prompts,
+#'   temporal = temporal_options(before = "2018-01-01", use_wayback = TRUE),
 #'   agent = agent
 #' )
 #'

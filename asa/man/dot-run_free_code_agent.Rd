@@ -16,6 +16,7 @@
   performance_profile = NULL,
   webpage_policy = NULL,
   allow_read_webpages = NULL,
+  wayback = NULL,
   verbose = FALSE
 )
 }

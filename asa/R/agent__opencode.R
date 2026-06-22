@@ -111,12 +111,14 @@
                                         python_path,
                                         loop_guard = NULL,
                                         allow_read_webpages = NULL,
-                                        auto_openwebpage_policy = NULL) {
+                                        auto_openwebpage_policy = NULL,
+                                        wayback = NULL) {
   environment <- as.list(.free_code_mcp_env(
     config = config,
     python_path = python_path,
     allow_read_webpages = allow_read_webpages,
-    auto_openwebpage_policy = auto_openwebpage_policy
+    auto_openwebpage_policy = auto_openwebpage_policy,
+    wayback = wayback
   ))
   if (!is.null(loop_guard)) {
     environment$ASA_FREE_CODE_LOOP_GUARD_JSON <- paste(jsonlite::toJSON(
@@ -146,7 +148,8 @@
                                      outer_model = ASA_OPENCODE_OUTER_MODEL,
                                      loop_guard = NULL,
                                      allow_read_webpages = NULL,
-                                     auto_openwebpage_policy = NULL) {
+                                     auto_openwebpage_policy = NULL,
+                                     wayback = NULL) {
   model_ref <- .opencode_model_ref(outer_model)
   model_id <- .opencode_provider_model_id(outer_model)
 
@@ -203,7 +206,8 @@
       python_path = python_path,
       loop_guard = loop_guard,
       allow_read_webpages = allow_read_webpages,
-      auto_openwebpage_policy = auto_openwebpage_policy
+      auto_openwebpage_policy = auto_openwebpage_policy,
+      wayback = wayback
     )
   )
   cfg$tools <- tools
@@ -428,7 +432,7 @@
         pending_question_tool_calls <- pending_question_tool_calls + 1L
       }
     }
-    if (grepl("web_search|web_fetch|asa_search", tool, ignore.case = TRUE)) {
+    if (grepl("web_search|web_fetch|wayback_search|asa_search", tool, ignore.case = TRUE)) {
       search_calls <- search_calls + 1L
     }
     if (identical(tool, "invalid") || grepl("unavailable tool|invalid tool", paste(error, output), ignore.case = TRUE)) {
@@ -1069,6 +1073,7 @@
                                 performance_profile = NULL,
                                 webpage_policy = NULL,
                                 allow_read_webpages = NULL,
+                                wayback = NULL,
                                 verbose = FALSE) {
   .opencode_require_processx()
   cli <- .opencode_command_spec()
@@ -1113,7 +1118,8 @@
     outer_model = outer_model,
     loop_guard = loop_guard,
     allow_read_webpages = allow_read_webpages,
-    auto_openwebpage_policy = auto_openwebpage_policy
+    auto_openwebpage_policy = auto_openwebpage_policy,
+    wayback = wayback
   )
 
   cli_env <- .opencode_cli_env(config_content)

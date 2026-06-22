@@ -315,7 +315,8 @@
 .free_code_mcp_env <- function(config,
                                python_path,
                                allow_read_webpages = NULL,
-                               auto_openwebpage_policy = NULL) {
+                               auto_openwebpage_policy = NULL,
+                               wayback = NULL) {
   search_opts <- .try_or(unclass(config$search), list())
   if (!is.list(search_opts)) {
     search_opts <- list()
@@ -332,6 +333,12 @@
   if (!is.list(tor_opts)) {
     tor_opts <- list()
   }
+  wayback_opts <- wayback %||% .resolve_wayback_settings(NULL)
+  if (!is.list(wayback_opts)) {
+    wayback_opts <- .resolve_wayback_settings(NULL)
+  }
+  wayback_opts$enabled <- isTRUE(wayback_opts$enabled %||% FALSE)
+  wayback_json <- paste(jsonlite::toJSON(wayback_opts, auto_unbox = TRUE, null = "null"), collapse = "")
 
   env <- Sys.getenv()
   env["PYTHONPATH"] <- python_path
@@ -342,6 +349,9 @@
   env["ASA_FREE_CODE_SEARCH_OPTIONS_JSON"] <- jsonlite::toJSON(search_opts, auto_unbox = TRUE, null = "null")
   env["ASA_FREE_CODE_TOR_OPTIONS_JSON"] <- jsonlite::toJSON(tor_opts, auto_unbox = TRUE, null = "null")
   env["ASA_FREE_CODE_WEBPAGE_OPTIONS_JSON"] <- jsonlite::toJSON(webpage_opts, auto_unbox = TRUE, null = "null")
+  env["ASA_FREE_CODE_WAYBACK_OPTIONS_JSON"] <- wayback_json
+  env["ASA_WAYBACK_CONFIG_JSON"] <- wayback_json
+  env["ASA_WAYBACK_ENABLED"] <- if (isTRUE(wayback_opts$enabled)) "true" else "false"
   mcp_log_file <- Sys.getenv("ASA_FREE_CODE_MCP_LOG_FILE", unset = "")
   if (nzchar(mcp_log_file)) {
     env["ASA_FREE_CODE_MCP_LOG_FILE"] <- mcp_log_file
@@ -358,12 +368,14 @@
                                         python,
                                         python_path,
                                         allow_read_webpages = NULL,
-                                        auto_openwebpage_policy = NULL) {
+                                        auto_openwebpage_policy = NULL,
+                                        wayback = NULL) {
   mcp_env <- as.list(.free_code_mcp_env(
     config = config,
     python_path = python_path,
     allow_read_webpages = allow_read_webpages,
-    auto_openwebpage_policy = auto_openwebpage_policy
+    auto_openwebpage_policy = auto_openwebpage_policy,
+    wayback = wayback
   ))
   cfg <- list(
     mcpServers = list(
@@ -718,6 +730,7 @@
                                  performance_profile = NULL,
                                  webpage_policy = NULL,
                                  allow_read_webpages = NULL,
+                                 wayback = NULL,
                                  verbose = FALSE) {
   .free_code_require_processx()
   cli <- .free_code_command_spec()
@@ -756,7 +769,8 @@
     python = python,
     python_path = python_path,
     allow_read_webpages = allow_read_webpages,
-    auto_openwebpage_policy = auto_openwebpage_policy
+    auto_openwebpage_policy = auto_openwebpage_policy,
+    wayback = wayback
   )
   on.exit(unlink(mcp_config_path, force = TRUE), add = TRUE)
 

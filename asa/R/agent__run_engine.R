@@ -31,6 +31,7 @@
                        webpage_policy = NULL,
                        query_templates = NULL,
                        allow_read_webpages = NULL,
+                       wayback = NULL,
                        use_plan_mode = FALSE,
                        verbose = FALSE) {
 
@@ -94,6 +95,7 @@
       performance_profile = performance_profile,
       webpage_policy = webpage_policy,
       allow_read_webpages = allow_read_webpages,
+      wayback = wayback,
       verbose = verbose
     ))
   }
@@ -111,6 +113,7 @@
       performance_profile = performance_profile,
       webpage_policy = webpage_policy,
       allow_read_webpages = allow_read_webpages,
+      wayback = wayback,
       verbose = verbose
     ))
   }
@@ -162,6 +165,7 @@
             performance_profile = performance_profile,
             webpage_policy = webpage_policy,
             query_templates = query_templates,
+            wayback = wayback,
             use_plan_mode = use_plan_mode,
             model_timeout_s = as.numeric(config$timeout %||% 0),
             om_config = config$om_config %||% list(
@@ -191,6 +195,7 @@
             performance_profile = performance_profile,
             webpage_policy = webpage_policy,
             query_templates = query_templates,
+            wayback = wayback,
             use_plan_mode = use_plan_mode,
             model_timeout_s = as.numeric(config$timeout %||% 0)
           )
@@ -1017,6 +1022,7 @@
                                          performance_profile = NULL,
                                          webpage_policy = NULL,
                                          query_templates = NULL,
+                                         wayback = NULL,
                                          use_plan_mode = FALSE,
                                          om_config = NULL,
                                          model_timeout_s = NULL) {
@@ -1084,6 +1090,9 @@
   }
   if (!is.null(query_templates)) {
     initial_state$query_templates <- query_templates
+  }
+  if (!is.null(wayback)) {
+    initial_state$wayback <- wayback
   }
 
   initial_state$tokens_used <- 0L
@@ -1169,6 +1178,7 @@
                                    performance_profile = NULL,
                                    webpage_policy = NULL,
                                    query_templates = NULL,
+                                   wayback = NULL,
                                    use_plan_mode = FALSE,
                                    model_timeout_s = NULL) {
   invoke_phase_started <- Sys.time()
@@ -1234,6 +1244,9 @@
   }
   if (!is.null(query_templates)) {
     initial_state$query_templates <- query_templates
+  }
+  if (!is.null(wayback)) {
+    initial_state$wayback <- wayback
   }
   initial_state$use_plan_mode <- isTRUE(use_plan_mode)
   if (!is.null(model_timeout_s) && is.finite(as.numeric(model_timeout_s))) {

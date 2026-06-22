@@ -4,6 +4,8 @@
 # Provides guaranteed pre-date content access via archived snapshots.
 #
 import logging
+import json
+import os
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -28,6 +30,26 @@ WAYBACK_BASE_URL = "https://web.archive.org/web"
 
 DEFAULT_TIMEOUT = 30.0
 DEFAULT_USER_AGENT = "ASA-Research-Agent/1.0 (Wayback Integration)"
+
+
+def _runtime_wayback_config() -> Dict[str, Any]:
+    """Read per-run Wayback settings exposed by the R/runtime wrappers."""
+    raw = os.getenv("ASA_WAYBACK_CONFIG_JSON", "").strip()
+    if raw:
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, dict):
+                return parsed
+        except Exception:
+            pass
+
+    enabled = os.getenv("ASA_WAYBACK_ENABLED", "").strip().lower()
+    return {"enabled": enabled in {"1", "true", "t", "yes", "y", "on"}}
+
+
+def _runtime_wayback_enabled(config: Optional[Dict[str, Any]] = None) -> bool:
+    cfg = config if isinstance(config, dict) else _runtime_wayback_config()
+    return bool(cfg.get("enabled", False))
 
 
 @dataclass
@@ -351,7 +373,16 @@ class WaybackSearchTool(BaseTool):
     def _run(self, query: str) -> str:
         """Execute Wayback search and return formatted results."""
         try:
+            runtime_config = _runtime_wayback_config()
+            if not _runtime_wayback_enabled(runtime_config):
+                return (
+                    "Wayback search is disabled for this run. "
+                    "Enable it with temporal_options(..., use_wayback = TRUE)."
+                )
+
             url, after_date, before_date = self._parse_query(query)
+            after_date = after_date or runtime_config.get("date_after")
+            before_date = before_date or runtime_config.get("date_before")
 
             if not url or not url.startswith("http"):
                 return f"Invalid URL: {url}. Please provide a valid HTTP/HTTPS URL."

@@ -235,10 +235,45 @@
       user_agent = runtime$user_agent,
       conda_env = conda_env,
       fn = function() {
-        .with_temporal(runtime$temporal, fn, agent = agent)
+        .with_wayback_config(runtime$wayback, function() {
+          .with_temporal(runtime$temporal, fn, agent = agent)
+        })
       }
     )
   })
+}
+
+#' Temporarily Expose Wayback Runtime Settings to Python Tools
+#' @keywords internal
+.with_wayback_config <- function(wayback = NULL, fn) {
+  wayback <- wayback %||% .resolve_wayback_settings(NULL)
+  if (!is.list(wayback)) {
+    wayback <- .resolve_wayback_settings(NULL)
+  }
+  wayback$enabled <- isTRUE(wayback$enabled %||% FALSE)
+
+  payload <- paste(jsonlite::toJSON(wayback, auto_unbox = TRUE, null = "null"), collapse = "")
+  old_json <- Sys.getenv("ASA_WAYBACK_CONFIG_JSON", unset = NA_character_)
+  old_enabled <- Sys.getenv("ASA_WAYBACK_ENABLED", unset = NA_character_)
+
+  Sys.setenv(
+    ASA_WAYBACK_CONFIG_JSON = payload,
+    ASA_WAYBACK_ENABLED = if (isTRUE(wayback$enabled)) "true" else "false"
+  )
+  on.exit({
+    if (is.na(old_json)) {
+      Sys.unsetenv("ASA_WAYBACK_CONFIG_JSON")
+    } else {
+      Sys.setenv(ASA_WAYBACK_CONFIG_JSON = old_json)
+    }
+    if (is.na(old_enabled)) {
+      Sys.unsetenv("ASA_WAYBACK_ENABLED")
+    } else {
+      Sys.setenv(ASA_WAYBACK_ENABLED = old_enabled)
+    }
+  }, add = TRUE)
+
+  fn()
 }
 
 

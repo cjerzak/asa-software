@@ -474,3 +474,92 @@ test_that(".with_webpage_reader_config keeps unspecified settings isolated", {
   expect_equal(inside$pdf_timeout, fixture$pdf_timeout)
   expect_equal(mock$state$current$pdf_timeout, fixture$pdf_timeout)
 })
+
+test_that(".resolve_wayback_settings defaults disabled and maps temporal fields", {
+  defaults <- asa:::.resolve_wayback_settings(NULL)
+  expect_false(isTRUE(defaults$enabled))
+  expect_null(defaults$date_after)
+  expect_null(defaults$date_before)
+  expect_equal(defaults$strictness, "best_effort")
+
+  cfg <- asa:::.resolve_wayback_settings(list(
+    after = "2010-01-01",
+    before = "2012-12-31",
+    strictness = "strict",
+    use_wayback = TRUE
+  ))
+
+  expect_true(isTRUE(cfg$enabled))
+  expect_equal(cfg$date_after, "2010-01-01")
+  expect_equal(cfg$date_before, "2012-12-31")
+  expect_equal(cfg$strictness, "strict")
+})
+
+test_that(".with_wayback_config sets and restores environment", {
+  old_config <- Sys.getenv("ASA_WAYBACK_CONFIG_JSON", unset = NA_character_)
+  old_enabled <- Sys.getenv("ASA_WAYBACK_ENABLED", unset = NA_character_)
+  on.exit({
+    if (is.na(old_config)) {
+      Sys.unsetenv("ASA_WAYBACK_CONFIG_JSON")
+    } else {
+      Sys.setenv(ASA_WAYBACK_CONFIG_JSON = old_config)
+    }
+    if (is.na(old_enabled)) {
+      Sys.unsetenv("ASA_WAYBACK_ENABLED")
+    } else {
+      Sys.setenv(ASA_WAYBACK_ENABLED = old_enabled)
+    }
+  }, add = TRUE)
+
+  Sys.setenv(
+    ASA_WAYBACK_CONFIG_JSON = "{\"enabled\":false}",
+    ASA_WAYBACK_ENABLED = "false"
+  )
+
+  inside <- NULL
+  out <- asa:::.with_wayback_config(
+    list(
+      enabled = TRUE,
+      date_after = "2000-01-01",
+      date_before = "2001-01-01",
+      strictness = "strict"
+    ),
+    function() {
+      inside <<- list(
+        config = jsonlite::fromJSON(Sys.getenv("ASA_WAYBACK_CONFIG_JSON")),
+        enabled = Sys.getenv("ASA_WAYBACK_ENABLED")
+      )
+      "ok"
+    }
+  )
+
+  expect_identical(out, "ok")
+  expect_true(isTRUE(inside$config$enabled))
+  expect_equal(inside$config$date_after, "2000-01-01")
+  expect_equal(inside$config$date_before, "2001-01-01")
+  expect_equal(inside$config$strictness, "strict")
+  expect_equal(inside$enabled, "true")
+  expect_equal(Sys.getenv("ASA_WAYBACK_CONFIG_JSON"), "{\"enabled\":false}")
+  expect_equal(Sys.getenv("ASA_WAYBACK_ENABLED"), "false")
+})
+
+test_that(".free_code_mcp_env exposes Wayback settings to MCP server", {
+  env <- asa:::.free_code_mcp_env(
+    config = asa::asa_config(),
+    python_path = "/tmp/asa-python",
+    wayback = list(
+      enabled = TRUE,
+      date_after = "1999-01-01",
+      date_before = "2000-01-01",
+      strictness = "best_effort"
+    )
+  )
+
+  wayback_cfg <- jsonlite::fromJSON(env[["ASA_FREE_CODE_WAYBACK_OPTIONS_JSON"]])
+
+  expect_true(isTRUE(wayback_cfg$enabled))
+  expect_equal(wayback_cfg$date_after, "1999-01-01")
+  expect_equal(wayback_cfg$date_before, "2000-01-01")
+  expect_equal(env[["ASA_WAYBACK_ENABLED"]], "true")
+  expect_equal(env[["ASA_WAYBACK_CONFIG_JSON"]], env[["ASA_FREE_CODE_WAYBACK_OPTIONS_JSON"]])
+})

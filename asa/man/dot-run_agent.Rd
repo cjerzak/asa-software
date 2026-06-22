@@ -25,6 +25,7 @@
   webpage_policy = NULL,
   query_templates = NULL,
   allow_read_webpages = NULL,
+  wayback = NULL,
   use_plan_mode = FALSE,
   verbose = FALSE
 )

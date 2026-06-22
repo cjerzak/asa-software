@@ -24,6 +24,7 @@
   performance_profile = NULL,
   webpage_policy = NULL,
   query_templates = NULL,
+  wayback = NULL,
   use_plan_mode = FALSE,
   om_config = NULL,
   model_timeout_s = NULL

@@ -700,6 +700,33 @@ test_that("create_wayback_tool uses default config when not specified", {
   expect_equal(tool$config$timeout, 30.0)
 })
 
+test_that("WaybackSearchTool._run is disabled unless opted in", {
+  wayback <- asa_test_import_langgraph_module("tools.archive_wayback_tool", required_files = "shared/temporal_date_extractor.py", required_modules = ASA_TEST_LANGCHAIN_CORE_MODULES, initialize = FALSE)
+
+  old_config <- Sys.getenv("ASA_WAYBACK_CONFIG_JSON", unset = NA_character_)
+  old_enabled <- Sys.getenv("ASA_WAYBACK_ENABLED", unset = NA_character_)
+  on.exit({
+    if (is.na(old_config)) {
+      Sys.unsetenv("ASA_WAYBACK_CONFIG_JSON")
+    } else {
+      Sys.setenv(ASA_WAYBACK_CONFIG_JSON = old_config)
+    }
+    if (is.na(old_enabled)) {
+      Sys.unsetenv("ASA_WAYBACK_ENABLED")
+    } else {
+      Sys.setenv(ASA_WAYBACK_ENABLED = old_enabled)
+    }
+  }, add = TRUE)
+
+  Sys.unsetenv("ASA_WAYBACK_CONFIG_JSON")
+  Sys.unsetenv("ASA_WAYBACK_ENABLED")
+
+  tool <- wayback$create_wayback_tool()
+  result <- tool$`_run`("https://example.com before:2020-01-01")
+
+  expect_match(result, "Wayback search is disabled", fixed = TRUE)
+})
+
 # ============================================================================
 # ResearchConfig Tests (workflows/research_graph_workflow.py)
 # ============================================================================

@@ -15078,6 +15078,7 @@ class MemoryFoldingAgentState(TypedDict):
     auto_openwebpage_policy: Optional[str]
     performance_profile: Optional[str]
     webpage_policy: Optional[Dict[str, Any]]
+    wayback: Optional[Dict[str, Any]]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
     orchestration_options: Optional[Dict[str, Any]]
@@ -20212,6 +20213,35 @@ def _create_tool_node_with_scratchpad(
     return tool_node_with_scratchpad
 
 
+_WAYBACK_TOOL_NAMES = {"wayback_search"}
+
+
+def _tool_runtime_name(tool: Any) -> str:
+    try:
+        return str(getattr(tool, "name", "") or "").strip()
+    except Exception:
+        return ""
+
+
+def _state_wayback_enabled(state: Any) -> bool:
+    wayback = state.get("wayback") if isinstance(state, dict) else None
+    if isinstance(wayback, dict):
+        return bool(wayback.get("enabled", False))
+    raw = os.getenv("ASA_WAYBACK_ENABLED", "").strip().lower()
+    return raw in {"1", "true", "t", "yes", "y", "on"}
+
+
+def _runtime_visible_primary_tools(primary_tools: Any, state: Any) -> List[Any]:
+    enabled = _state_wayback_enabled(state)
+    out: List[Any] = []
+    for tool in list(primary_tools or []):
+        name = _tool_runtime_name(tool).lower()
+        if name in _WAYBACK_TOOL_NAMES and not enabled:
+            continue
+        out.append(tool)
+    return out
+
+
 def _should_force_finalize(state) -> bool:
     """Check if recursion or search budgeting requires forced finalize."""
     remaining = remaining_steps_value(state)
@@ -21196,9 +21226,6 @@ def create_memory_folding_agent(
     primary_tools = list(tools)
     tools_with_scratchpad = primary_tools + [save_finding, update_plan]
 
-    # Bind tools to model for the agent node
-    model_with_tools = model.bind_tools(tools_with_scratchpad)
-
     # Create tool executor with scratchpad wrapper
     from langgraph.prebuilt import ToolNode
     base_tool_node = ToolNode(tools_with_scratchpad)
@@ -21254,6 +21281,17 @@ def create_memory_folding_agent(
         except Exception:
             return [system_msg] + list(messages)
 
+    def _primary_tool_names_for_state(state: Any) -> List[str]:
+        names: List[str] = []
+        for t in _runtime_visible_primary_tools(primary_tools, state):
+            try:
+                tool_name = getattr(t, "name", None)
+                if isinstance(tool_name, str) and tool_name.strip():
+                    names.append(tool_name.strip())
+            except Exception:
+                continue
+        return names
+
     user_tool_names: List[str] = []
     for t in primary_tools:
         try:
@@ -21263,14 +21301,15 @@ def create_memory_folding_agent(
         except Exception:
             continue
 
-    def _extract_required_tool_plan(messages: list) -> Dict[str, Any]:
+    def _extract_required_tool_plan(messages: list, available_tool_names: Optional[List[str]] = None) -> Dict[str, Any]:
         """Infer explicit user mandates like "use Tool X across N steps"."""
         prompt = _extract_last_user_prompt(messages)
         if not prompt:
             return {"required_calls": 0, "tool_names": []}
         prompt_lower = prompt.lower()
+        candidate_tool_names = available_tool_names if available_tool_names is not None else user_tool_names
         mentioned_tools = [
-            name for name in user_tool_names
+            name for name in candidate_tool_names
             if isinstance(name, str) and name and name.lower() in prompt_lower
         ]
         if not mentioned_tools:
@@ -21341,7 +21380,12 @@ def create_memory_folding_agent(
             "must be one of",
         ))
 
-    def _invoke_with_required_user_tools(full_messages: list, preferred_tool_names: list) -> Any:
+    def _invoke_with_required_user_tools(
+        full_messages: list,
+        preferred_tool_names: list,
+        active_primary_tools: List[Any],
+        fallback_model_with_tools: Any,
+    ) -> Any:
         """Best-effort force of user-requested tool calls; falls back safely."""
         tool_choice_attempts: List[Any] = []
         for preferred in preferred_tool_names or []:
@@ -21355,14 +21399,14 @@ def create_memory_folding_agent(
                 continue
             seen.add(tool_choice)
             try:
-                forced_model = model.bind_tools(primary_tools, tool_choice=tool_choice)
+                forced_model = model.bind_tools(active_primary_tools, tool_choice=tool_choice)
                 return forced_model.invoke(full_messages)
             except Exception as exc:
                 if not _is_tool_choice_unsupported_error(exc):
                     raise
 
         # Provider/runtime did not accept tool_choice forcing; use default binding.
-        return model_with_tools.invoke(full_messages)
+        return fallback_model_with_tools.invoke(full_messages)
 
     def agent_node(state: MemoryFoldingAgentState) -> dict:
         """The main agent reasoning node."""
@@ -21499,7 +21543,12 @@ def create_memory_folding_agent(
                         ),
                     )
                 )
-            required_tool_plan = _extract_required_tool_plan(messages)
+            active_primary_tools = _runtime_visible_primary_tools(primary_tools, state)
+            runtime_model_with_tools = model.bind_tools(active_primary_tools + [save_finding, update_plan])
+            required_tool_plan = _extract_required_tool_plan(
+                messages,
+                _primary_tool_names_for_state(state),
+            )
             required_tool_calls = int(required_tool_plan.get("required_calls", 0) or 0)
             completed_tool_calls = _count_completed_user_tool_calls(
                 messages,
@@ -21517,9 +21566,11 @@ def create_memory_folding_agent(
                 invoke_callable = lambda: _invoke_with_required_user_tools(
                     full_messages,
                     required_tool_plan.get("tool_names", []),
+                    active_primary_tools,
+                    runtime_model_with_tools,
                 )
             else:
-                invoke_callable = lambda: model_with_tools.invoke(full_messages)
+                invoke_callable = lambda: runtime_model_with_tools.invoke(full_messages)
             response, invoke_event = _invoke_model_with_fallback(
                 invoke_callable,
                 expected_schema=expected_schema,
@@ -23101,6 +23152,7 @@ class StandardAgentState(TypedDict):
     auto_openwebpage_policy: Optional[str]
     performance_profile: Optional[str]
     webpage_policy: Optional[Dict[str, Any]]
+    wayback: Optional[Dict[str, Any]]
     field_rules: Optional[Dict[str, Any]]
     query_templates: Optional[Dict[str, Any]]
     orchestration_options: Optional[Dict[str, Any]]
@@ -23152,13 +23204,13 @@ def create_standard_agent(
     update_plan = _make_update_plan_tool()
     tools_with_scratchpad = list(tools) + [save_finding, update_plan]
 
-    model_with_tools = model.bind_tools(tools_with_scratchpad)
     base_tool_node = ToolNode(tools_with_scratchpad)
     tool_node_with_scratchpad = _create_tool_node_with_scratchpad(
         base_tool_node,
         debug=debug,
         selector_model=model,
     )
+    primary_tools = list(tools)
 
     def agent_node(state: StandardAgentState) -> dict:
         node_started_at = time.perf_counter()
@@ -23266,7 +23318,9 @@ def create_standard_agent(
                     )
                 )
             response, invoke_event = _invoke_model_with_fallback(
-                lambda: model_with_tools.invoke(full_messages),
+                lambda: model.bind_tools(
+                    _runtime_visible_primary_tools(primary_tools, state) + [save_finding, update_plan]
+                ).invoke(full_messages),
                 expected_schema=expected_schema,
                 field_status=field_status,
                 schema_source=expected_schema_source,

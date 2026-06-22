@@ -577,6 +577,23 @@ configure_temporal <- function(time_filter = NULL) {
   temporal
 }
 
+#' Resolve Wayback Settings from Temporal Options
+#'
+#' @param temporal NULL, list, or asa_temporal
+#' @return Named list consumed by R/Python runtime adapters
+#' @keywords internal
+.resolve_wayback_settings <- function(temporal = NULL) {
+  temporal <- .resolve_temporal_input(temporal, config = NULL)
+  enabled <- isTRUE(temporal$use_wayback %||% FALSE)
+
+  list(
+    enabled = enabled,
+    date_after = temporal$after %||% NULL,
+    date_before = temporal$before %||% NULL,
+    strictness = temporal$strictness %||% "best_effort"
+  )
+}
+
 #' Resolve temporal + webpage reader settings for a single call
 #'
 #' Internal helper that keeps run_task() and asa_enumerate() in sync.
@@ -657,6 +674,7 @@ configure_temporal <- function(time_filter = NULL) {
 
   list(
     temporal = temporal,
+    wayback = .resolve_wayback_settings(temporal),
     allow_read_webpages = webpage_settings$allow_read_webpages,
     relevance_mode = webpage_settings$relevance_mode,
     heuristic_profile = webpage_settings$heuristic_profile,

@@ -20,6 +20,11 @@ from asa_backend.search import (
 )
 from tools.webpage_reader_tool import configure_webpage_reader, create_webpage_reader_tool
 
+try:
+    from tools.archive_wayback_tool import create_wayback_tool
+except Exception:  # pragma: no cover - optional integration guard
+    create_wayback_tool = None
+
 
 def _mcp_log_file() -> str:
     return str(os.getenv("ASA_FREE_CODE_MCP_LOG_FILE", "") or "").strip()
@@ -186,6 +191,8 @@ def _canonical_tool_name(name: str) -> str:
         return "web_search"
     if lowered.endswith("web_fetch") or lowered in {"fetch", "webfetch", "openwebpage"}:
         return "web_fetch"
+    if lowered.endswith("wayback_search") or lowered in {"wayback", "wayback_search"}:
+        return "wayback_search"
     return normalized
 
 
@@ -197,6 +204,8 @@ def _normalize_text(value: Any, *, lowercase: bool = False) -> str:
 def _tool_signature(name: str, arguments: Dict[str, Any]) -> str:
     canonical = _canonical_tool_name(name)
     if canonical == "web_search":
+        payload = {"query": _normalize_text(arguments.get("query"), lowercase=True)}
+    elif canonical == "wayback_search":
         payload = {"query": _normalize_text(arguments.get("query"), lowercase=True)}
     elif canonical == "web_fetch":
         payload = {
@@ -356,9 +365,11 @@ def _build_tools() -> Dict[str, Any]:
     search_options = _env_json("ASA_FREE_CODE_SEARCH_OPTIONS_JSON")
     tor_options = _env_json("ASA_FREE_CODE_TOR_OPTIONS_JSON")
     webpage_options = _env_json("ASA_FREE_CODE_WEBPAGE_OPTIONS_JSON")
+    wayback_options = _env_json("ASA_FREE_CODE_WAYBACK_OPTIONS_JSON")
     proxy = os.getenv("ASA_FREE_CODE_PROXY", "").strip() or None
     use_browser = _env_bool("ASA_FREE_CODE_USE_BROWSER", default=True)
     allow_read_webpages = _env_bool("ASA_FREE_CODE_ALLOW_READ_WEBPAGES", default=False)
+    allow_wayback = bool(wayback_options.get("enabled", False))
 
     if tor_options:
         configure_tor_registry(
@@ -424,11 +435,19 @@ def _build_tools() -> Dict[str, Any]:
         user_agent=webpage_options.get("user_agent"),
     )
     webpage_tool = create_webpage_reader_tool(proxy=proxy)
+    wayback_tool = None
+    if allow_wayback and create_wayback_tool is not None:
+        try:
+            wayback_tool = create_wayback_tool()
+        except Exception:
+            wayback_tool = None
 
     return {
         "search": search_tool,
         "webpage": webpage_tool,
         "allow_read_webpages": allow_read_webpages,
+        "wayback": wayback_tool,
+        "allow_wayback": bool(allow_wayback and wayback_tool is not None),
     }
 
 
@@ -477,6 +496,30 @@ def _tool_definitions() -> list[dict[str, Any]]:
             }
         )
 
+    if TOOLS.get("allow_wayback"):
+        tools.append(
+            {
+                "name": "wayback_search",
+                "description": (
+                    "Search Internet Archive Wayback Machine snapshots for historical "
+                    "versions of a public URL. Use only for historical/pre-date checks."
+                ),
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": (
+                                "URL plus optional after:YYYY-MM-DD and before:YYYY-MM-DD filters."
+                            ),
+                        },
+                    },
+                    "required": ["query"],
+                    "additionalProperties": False,
+                },
+            }
+        )
+
     return tools
 
 
@@ -487,7 +530,7 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
     TOOL_STATE["requests"] = int(TOOL_STATE.get("requests", 0) or 0) + 1
     _mcp_log("tools/call", name, json.dumps(arguments, ensure_ascii=False, sort_keys=True))
 
-    if name not in {"web_search", "web_fetch"}:
+    if name not in {"web_search", "web_fetch", "wayback_search"}:
         return _error_result(
             error_type="unknown_tool",
             message=f"Unknown tool: {original_name}",
@@ -516,6 +559,56 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         try:
             with _tool_deadline(LOOP_GUARD.get("tool_deadline_seconds")):
                 result = TOOLS["search"].invoke(query)
+        except Exception as exc:
+            text = str(exc)
+            error_type = "tool_timeout" if isinstance(exc, _ToolDeadlineExpired) or "timeout" in text.lower() or "timed out" in text.lower() else "tool_exception"
+            _record_tool_error(name, signature, error_type)
+            retryable = (
+                error_type == "tool_timeout"
+                and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
+                and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
+            )
+            return _error_result(
+                error_type=error_type,
+                message=text,
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=retryable,
+            )
+        text = _stringify(result)
+        TOOL_STATE["cache"][signature] = text
+        _write_progress("tool_result", tool=name)
+        return {"content": [{"type": "text", "text": text}], "isError": False}
+
+    if name == "wayback_search":
+        if not TOOLS.get("allow_wayback") or TOOLS.get("wayback") is None:
+            return _error_result(
+                error_type="tool_disabled",
+                message="wayback_search is disabled for this run.",
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=False,
+            )
+        query = str(arguments.get("query") or "").strip()
+        if not query:
+            return _error_result(
+                error_type="invalid_tool_input",
+                message="wayback_search requires a non-empty `query`.",
+                name=name,
+                arguments=arguments,
+                signature=signature,
+                retryable=False,
+            )
+        guarded = _preflight_guard(name, arguments, signature)
+        if guarded is not None:
+            return guarded
+        TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
+        _write_progress("tool_call", tool=name)
+        try:
+            with _tool_deadline(LOOP_GUARD.get("tool_deadline_seconds")):
+                result = TOOLS["wayback"].invoke(query)
         except Exception as exc:
             text = str(exc)
             error_type = "tool_timeout" if isinstance(exc, _ToolDeadlineExpired) or "timeout" in text.lower() or "timed out" in text.lower() else "tool_exception"
