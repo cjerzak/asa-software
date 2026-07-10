@@ -4,7 +4,13 @@
 \alias{.free_code_cli_env}
 \title{Build free-code CLI environment}
 \usage{
-.free_code_cli_env(config, gateway_base_url, target_backend, target_model)
+.free_code_cli_env(
+  config,
+  gateway_base_url,
+  target_backend,
+  target_model,
+  gateway_token = "asa-local-gateway"
+)
 }
 \description{
 Build free-code CLI environment

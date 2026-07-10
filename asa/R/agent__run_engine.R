@@ -1,3 +1,89 @@
+#' Emit a deduplicated warning about parameters a backend ignores
+#'
+#' Signals an `asa_unsupported_params` warning once per session per
+#' backend/parameter-set signature (so batch runs do not spam).
+#' @keywords internal
+.signal_unsupported_params <- function(agent_backend, ignored, message) {
+  signature <- paste(agent_backend, paste(sort(ignored), collapse = ","), sep = "|")
+  warned <- asa_env$unsupported_params_warned %||% character(0)
+  if (signature %in% warned) {
+    return(invisible(NULL))
+  }
+  asa_env$unsupported_params_warned <- c(warned, signature)
+  warning(warningCondition(
+    message,
+    class = "asa_unsupported_params",
+    params = ignored
+  ))
+  invisible(NULL)
+}
+
+#' Warn about run parameters ignored by the CLI backends
+#'
+#' The opencode/free-code backends do not implement the full `run_task()`
+#' parameter surface. Rather than silently no-op, collect every supplied
+#' parameter the selected backend ignores and emit one consolidated warning.
+#' Parameters the CLI backends do support (recursion_limit,
+#' search_budget_limit, unknown_after_searches, auto_openwebpage_policy,
+#' allow_read_webpages, wayback, thread_id) are not flagged; free-code also
+#' supports expected_schema via `--json-schema`.
+#' @keywords internal
+.warn_unsupported_backend_params <- function(agent_backend,
+                                             expected_schema = NULL,
+                                             field_status = NULL,
+                                             budget_state = NULL,
+                                             finalize_on_all_fields_resolved = NULL,
+                                             field_rules = NULL,
+                                             source_policy = NULL,
+                                             retry_policy = NULL,
+                                             finalization_policy = NULL,
+                                             orchestration_options = NULL,
+                                             performance_profile = NULL,
+                                             webpage_policy = NULL,
+                                             query_templates = NULL,
+                                             use_plan_mode = FALSE) {
+  ignored <- character(0)
+  if (identical(agent_backend, "opencode") && !is.null(expected_schema)) {
+    ignored <- c(ignored, "expected_schema")
+  }
+  supplied <- list(
+    field_status = field_status,
+    budget_state = budget_state,
+    finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+    field_rules = field_rules,
+    source_policy = source_policy,
+    retry_policy = retry_policy,
+    finalization_policy = finalization_policy,
+    performance_profile = performance_profile,
+    webpage_policy = webpage_policy,
+    query_templates = query_templates
+  )
+  for (name in names(supplied)) {
+    if (!is.null(supplied[[name]])) {
+      ignored <- c(ignored, name)
+    }
+  }
+  if (!is.null(orchestration_options) && length(orchestration_options) > 0L) {
+    ignored <- c(ignored, "orchestration_options")
+  }
+  if (isTRUE(use_plan_mode)) {
+    ignored <- c(ignored, "use_plan_mode")
+  }
+  if (length(ignored) == 0L) {
+    return(invisible(NULL))
+  }
+
+  .signal_unsupported_params(
+    agent_backend = agent_backend,
+    ignored = ignored,
+    message = sprintf(
+      "These run parameters are not supported by the `%s` agent backend and were ignored: %s.",
+      agent_backend,
+      paste(ignored, collapse = ", ")
+    )
+  )
+}
+
 #' Run the ASA Agent (Internal)
 #'
 #' Internal function that invokes the search agent with a prompt.
@@ -83,6 +169,22 @@
   )
 
   if (identical(agent_backend, "opencode")) {
+    .warn_unsupported_backend_params(
+      agent_backend = agent_backend,
+      expected_schema = expected_schema,
+      field_status = field_status,
+      budget_state = budget_state,
+      finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+      field_rules = field_rules,
+      source_policy = source_policy,
+      retry_policy = retry_policy,
+      finalization_policy = finalization_policy,
+      orchestration_options = orchestration_options,
+      performance_profile = performance_profile,
+      webpage_policy = webpage_policy,
+      query_templates = query_templates,
+      use_plan_mode = use_plan_mode
+    )
     return(.run_opencode_agent(
       prompt = prompt,
       agent = agent,
@@ -101,6 +203,21 @@
   }
 
   if (identical(agent_backend, "free-code")) {
+    .warn_unsupported_backend_params(
+      agent_backend = agent_backend,
+      field_status = field_status,
+      budget_state = budget_state,
+      finalize_on_all_fields_resolved = finalize_on_all_fields_resolved,
+      field_rules = field_rules,
+      source_policy = source_policy,
+      retry_policy = retry_policy,
+      finalization_policy = finalization_policy,
+      orchestration_options = orchestration_options,
+      performance_profile = performance_profile,
+      webpage_policy = webpage_policy,
+      query_templates = query_templates,
+      use_plan_mode = use_plan_mode
+    )
     return(.run_free_code_agent(
       prompt = prompt,
       agent = agent,

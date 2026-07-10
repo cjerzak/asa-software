@@ -4,7 +4,7 @@
 \alias{.opencode_cli_env}
 \title{Build OpenCode CLI environment}
 \usage{
-.opencode_cli_env(config_content)
+.opencode_cli_env(config_content, gateway_token = "asa-local-gateway")
 }
 \description{
 Build OpenCode CLI environment

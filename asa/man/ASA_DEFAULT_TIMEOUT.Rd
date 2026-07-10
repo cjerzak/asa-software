@@ -7,6 +7,6 @@
 ASA_DEFAULT_TIMEOUT
 }
 \description{
-Overall agent operation timeout used for API clients/runtime wrappers.
+Per-LLM-request timeout used for API clients/runtime wrappers.
 }
 \keyword{internal}

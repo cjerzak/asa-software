@@ -68,6 +68,10 @@
   )
   same_rate <- identical(agent$config$rate_limit, config$rate_limit)
   same_timeout <- identical(agent$config$timeout, config$timeout)
+  same_run_timeout <- identical(
+    suppressWarnings(as.numeric(agent$config$run_timeout %||% NA_real_)),
+    suppressWarnings(as.numeric(config$run_timeout %||% NA_real_))
+  )
   same_recursion_limit <- identical(
     .normalize_recursion_limit(agent$config$recursion_limit %||% NULL),
     .normalize_recursion_limit(config$recursion_limit %||% NULL)
@@ -118,7 +122,7 @@
            same_om_enabled && same_om_cross_thread && same_om_obs_budget &&
            same_om_ref_budget && same_om_buffer && same_om_activation &&
            same_om_block_after && same_om_async &&
-           same_rate && same_timeout && same_recursion_limit &&
+           same_rate && same_timeout && same_run_timeout && same_recursion_limit &&
            same_tor && same_search_tools)
 }
 

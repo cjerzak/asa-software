@@ -25,7 +25,8 @@
   timeout,
   verbose,
   tor = NULL,
-  recursion_limit = NULL
+  recursion_limit = NULL,
+  run_timeout = NULL
 )
 }
 \description{

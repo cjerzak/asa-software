@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hmac
 import json
 import os
 import socket
@@ -955,6 +956,29 @@ class _GatewayHandler(BaseHTTPRequestHandler):
         if path not in {"/v1/messages", "/messages"}:
             _json_response(self, 404, {"error": {"type": "not_found", "message": f"Unsupported path: {path}"}})
             return
+
+        # Per-run auth: enforced only when the launcher provided a token, so
+        # any local process without it cannot spend the session's API credits.
+        expected_token = os.getenv("ASA_FREE_CODE_GATEWAY_TOKEN", "").strip()
+        if expected_token:
+            provided = str(self.headers.get("x-api-key") or "").strip()
+            if not provided:
+                auth = str(self.headers.get("Authorization") or "").strip()
+                if auth.lower().startswith("bearer "):
+                    provided = auth[7:].strip()
+            if not provided or not hmac.compare_digest(provided, expected_token):
+                _json_response(
+                    self,
+                    401,
+                    {
+                        "type": "error",
+                        "error": {
+                            "type": "authentication_error",
+                            "message": "Invalid or missing gateway token.",
+                        },
+                    },
+                )
+                return
 
         try:
             request = _read_json(self)

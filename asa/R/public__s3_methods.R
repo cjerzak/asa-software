@@ -25,7 +25,11 @@
 #'   \code{HTTPS_PROXY}); use \code{NULL} to disable proxying.
 #' @param use_browser Enable Selenium browser tier for DuckDuckGo search.
 #' @param workers Number of parallel workers for batch operations
-#' @param timeout Request timeout in seconds
+#' @param timeout Per-LLM-request timeout in seconds
+#' @param run_timeout Maximum wall-clock seconds for a single opencode/free-code
+#'   CLI run. \code{NULL} (default) auto-derives a generous value from
+#'   \code{timeout}, the search budget, and the per-tool deadline (floor 600s,
+#'   cap 3600s). Ignored by the built-in \code{"agent"} backend.
 #' @param rate_limit Requests per second
 #' @param memory_folding Enable DeepAgent-style memory folding
 #' @param memory_threshold Messages before folding triggers
@@ -78,6 +82,7 @@ asa_config <- function(agent_backend = NULL,
                        use_browser = NULL,
                        workers = NULL,
                        timeout = NULL,
+                       run_timeout = NULL,
                        rate_limit = NULL,
                        memory_folding = NULL,
                        memory_threshold = NULL,
@@ -138,6 +143,9 @@ asa_config <- function(agent_backend = NULL,
   .validate_logical(use_browser, "use_browser")
   .validate_positive(workers, "workers", integer_only = TRUE)
   .validate_positive(timeout, "timeout", integer_only = TRUE)
+  if (!is.null(run_timeout)) {
+    .validate_positive(run_timeout, "run_timeout")
+  }
   .validate_positive(rate_limit, "rate_limit")
   .validate_logical(memory_folding, "memory_folding")
   .validate_positive(memory_threshold, "memory_threshold", integer_only = TRUE)
@@ -199,6 +207,7 @@ asa_config <- function(agent_backend = NULL,
       use_browser = use_browser,
       workers = as.integer(workers),
       timeout = as.integer(timeout),
+      run_timeout = if (is.null(run_timeout)) NULL else as.numeric(run_timeout),
       rate_limit = rate_limit,
       memory_folding = memory_folding,
       memory_threshold = as.integer(memory_threshold),
@@ -240,6 +249,7 @@ print.asa_config <- function(x, ...) {
   cat("Use Browser:     ", if (isTRUE(x$use_browser)) "Enabled" else "Disabled", "\n", sep = "")
   cat("Workers:         ", x$workers, "\n", sep = "")
   cat("Timeout:         ", x$timeout, "s\n", sep = "")
+  cat("Run Timeout:     ", if (is.null(x$run_timeout)) "Auto" else paste0(x$run_timeout, "s"), "\n", sep = "")
   cat("Rate Limit:      ", x$rate_limit, " req/s\n", sep = "")
   rec_limit <- .normalize_recursion_limit(x$recursion_limit %||% NULL)
   cat("Recursion Limit: ", if (is.null(rec_limit)) "Auto" else rec_limit, "\n", sep = "")

@@ -314,6 +314,7 @@ NULL
     om_cross_thread_memory = config$om_cross_thread_memory %||% FALSE,
     rate_limit = config$rate_limit,
     timeout = config$timeout,
+    run_timeout = config$run_timeout,
     tor = config$tor,
     recursion_limit = config$recursion_limit,
     verbose = verbose

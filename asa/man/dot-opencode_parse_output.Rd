@@ -7,6 +7,9 @@
 .opencode_parse_output(stdout)
 }
 \description{
-Parse OpenCode JSONL stdout
+Tolerates interleaved non-JSON stdout lines (e.g. the CLI's plain-text
+permission auto-reject notice): unparseable lines are skipped and reported
+via `skipped_lines` instead of failing the run. Errors only when stdout is
+empty or no line parses as a JSON event.
 }
 \keyword{internal}

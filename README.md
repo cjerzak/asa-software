@@ -420,7 +420,7 @@ agent <- asa::initialize_agent(
   backend = "openai",
   model = "gpt-4.1-mini",
   proxy = NA,                           # NA=auto from env; NULL=disable; set socks5h://127.0.0.1:9050 for Tor
-  timeout = 120,                        # Request timeout in seconds
+  timeout = 120,                        # Per-LLM-request timeout in seconds
   rate_limit = 0.1                      # Requests per second (conservative default)
 )
 ```
@@ -429,7 +429,8 @@ agent <- asa::initialize_agent(
 |-----------|---------|-------------|
 | `agent_backend` | `"opencode"` | Agent runtime (`"opencode"`, `"agent"` for built-in LangGraph, or `"free-code"`) |
 | `proxy` | `NA` | Proxy URL for search tools (`NA` = auto from env; `NULL` = disable) |
-| `timeout` | `120` | Request timeout in seconds |
+| `timeout` | `120` | Per-LLM-request timeout in seconds |
+| `run_timeout` | `NULL` (auto) | Wall-clock cap for a full opencode/free-code CLI run; auto-derived from `timeout`, search budget, and tool deadline (floor 600s, cap 3600s) |
 | `rate_limit` | `0.1` | Max requests per second (conservative default for heavy workloads) |
 | `verbose` | `TRUE` | Print initialization status messages |
 | `search` | `NULL` | `search_options()` object for search configuration |
@@ -806,6 +807,21 @@ Sys.setenv(ASA_OPENCODE_BIN = "/path/to/opencode")
 agent <- asa::initialize_agent(agent_backend = "agent")
 ```
 
+### CLI runtime security notes
+
+The opencode/free-code runtimes route all LLM traffic through a localhost
+gateway that holds your provider API keys. Hardening applied by ASA:
+
+- The gateway requires a per-run auth token (checked via `x-api-key`), so
+  other local processes cannot spend your API credits while a run is active.
+- Provider API keys and other credential-shaped environment variables are
+  never passed to the third-party CLI processes or embedded in MCP/OpenCode
+  configs; the MCP search server receives a minimal allowlisted environment
+  (plus `ASA_*`/`TOR_*` variables).
+- Remote embedding keys (e.g. `OPENAI_API_KEY` for webpage relevance ranking)
+  reach the MCP server only when `webpage_relevance_mode = "embeddings"` or an
+  OpenAI/Azure embedding provider is explicitly configured.
+
 ### Running Tor integration tests
 
 Tor integration tests are opt-in outside CI and verify:
@@ -832,13 +848,13 @@ If `ASA_RUN_TOR_TESTS=true` and Tor is not reachable, these tests fail fast by d
 ## Performance
 
 <!-- SPEED_REPORT_START -->
-**Last Run:** 2026-06-22 12:44:11 EDT | **Status:** PASS
+**Last Run:** 2026-07-10 09:56:16 EDT | **Status:** PASS
 
 | Benchmark | Current | Baseline | Ratio | Status |
 |-----------|---------|----------|-------|--------|
-| `build_prompt` | 0.093s | 0.09s | 1.03x | PASS |
-| `helper_funcs` | 0.054s | 0.07s | 0.77x | PASS |
-| `combined` | 0.075s | 0.09s | 0.83x | PASS |
+| `build_prompt` | 0.128s | 0.09s | 1.43x | PASS |
+| `helper_funcs` | 0.070s | 0.07s | 0.99x | PASS |
+| `combined` | 0.112s | 0.09s | 1.23x | PASS |
 
 Tests fail if time exceeds 4.00x baseline. 
 See [full report](asa/tests/testthat/SPEED_REPORT.md) for details.

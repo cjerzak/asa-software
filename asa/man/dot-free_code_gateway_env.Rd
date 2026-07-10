@@ -4,7 +4,7 @@
 \alias{.free_code_gateway_env}
 \title{Build environment for the gateway process}
 \usage{
-.free_code_gateway_env(config, python_path, port_file)
+.free_code_gateway_env(config, python_path, port_file, gateway_token = NULL)
 }
 \description{
 Build environment for the gateway process

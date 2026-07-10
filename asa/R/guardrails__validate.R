@@ -578,7 +578,8 @@
                                         om_cross_thread_memory = NULL,
                                         rate_limit, timeout, verbose,
                                         tor = NULL,
-                                        recursion_limit = NULL) {
+                                        recursion_limit = NULL,
+                                        run_timeout = NULL) {
   # backend is validated by match.arg() in the calling function
   .validate_string(model, "model")
   .validate_conda_env(conda_env, "conda_env")
@@ -589,6 +590,9 @@
   .validate_positive(memory_keep_recent, "memory_keep_recent", integer_only = TRUE)
   .validate_positive(rate_limit, "rate_limit")
   .validate_positive(timeout, "timeout", integer_only = TRUE)
+  if (!is.null(run_timeout)) {
+    .validate_positive(run_timeout, "run_timeout")
+  }
   .validate_recursion_limit(recursion_limit, "recursion_limit")
   .validate_logical(verbose, "verbose")
   .validate_tor_options(tor, "tor")

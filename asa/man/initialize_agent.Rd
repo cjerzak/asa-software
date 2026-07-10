@@ -26,6 +26,7 @@ initialize_agent(
   om_cross_thread_memory = ASA_DEFAULT_OM_CROSS_THREAD_MEMORY,
   rate_limit = ASA_DEFAULT_RATE_LIMIT,
   timeout = ASA_DEFAULT_TIMEOUT,
+  run_timeout = NULL,
   tor = tor_options(),
   verbose = TRUE,
   recursion_limit = NULL
@@ -96,7 +97,14 @@ aggressively; higher values preserve more raw conversation.}
 
 \item{rate_limit}{Requests per second for rate limiting (default: 0.1)}
 
-\item{timeout}{Request timeout in seconds (default: 120)}
+\item{timeout}{Per-LLM-request timeout in seconds (default: 120)}
+
+\item{run_timeout}{Maximum wall-clock seconds for a single opencode/free-code
+CLI run (the whole multi-turn agent process). When \code{NULL} (default),
+a generous value is auto-derived from \code{timeout}, the search budget,
+and the per-tool deadline (floor 600s, cap 3600s). Distinct from
+\code{timeout}, which bounds each LLM request. Ignored by the built-in
+\code{"agent"} backend.}
 
 \item{tor}{Tor registry options from \code{\link{tor_options}}. Disable shared
 tracking by setting \code{dirty_tor_exists = FALSE}.}

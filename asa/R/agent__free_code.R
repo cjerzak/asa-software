@@ -167,6 +167,45 @@
   )
 }
 
+#' Resolve the whole-run process timeout for CLI-based backends
+#'
+#' An explicit, positive `config$run_timeout` always wins (no clamping).
+#' Otherwise a generous default is derived from the run's budgets:
+#'   turns = search_budget_limit if set (capped by recursion_limit), else 12
+#'   derived = turns * (per_request_timeout + tool_deadline) + per_request_timeout
+#' clamped to [ASA_RUN_TIMEOUT_FLOOR, ASA_RUN_TIMEOUT_CAP]. `config$timeout`
+#' keeps per-LLM-request semantics everywhere else (provider timeout, gateway
+#' timeout); this value only bounds the whole CLI process.
+#' @keywords internal
+.free_code_run_timeout <- function(config, loop_guard = NULL) {
+  explicit <- suppressWarnings(as.numeric(config$run_timeout %||% NA_real_)[1])
+  if (is.finite(explicit) && explicit > 0) {
+    return(explicit)
+  }
+
+  per_request <- suppressWarnings(as.numeric(config$timeout %||% ASA_DEFAULT_TIMEOUT)[1])
+  if (!is.finite(per_request) || per_request <= 0) {
+    per_request <- as.numeric(ASA_DEFAULT_TIMEOUT)
+  }
+
+  tool_deadline <- suppressWarnings(as.numeric(loop_guard$tool_deadline_seconds %||% 25)[1])
+  if (!is.finite(tool_deadline) || tool_deadline <= 0) {
+    tool_deadline <- 25
+  }
+
+  turns <- suppressWarnings(as.numeric(loop_guard$search_budget_limit %||% NA_real_)[1])
+  if (!is.finite(turns) || turns <= 0) {
+    turns <- 12
+  }
+  recursion_limit <- suppressWarnings(as.numeric(loop_guard$recursion_limit %||% NA_real_)[1])
+  if (is.finite(recursion_limit) && recursion_limit > 0) {
+    turns <- min(turns, recursion_limit)
+  }
+
+  derived <- turns * (per_request + tool_deadline) + per_request
+  min(ASA_RUN_TIMEOUT_CAP, max(ASA_RUN_TIMEOUT_FLOOR, derived))
+}
+
 #' Serialize shared loop-guard configuration for helper processes
 #' @keywords internal
 .free_code_loop_guard_json <- function(config,
@@ -208,15 +247,36 @@
   }
 }
 
+#' Generate a per-launch gateway auth token without touching .Random.seed
+#'
+#' Guards against other local processes/users spending the session's API
+#' credits through the localhost gateway; not intended to be crypto-grade.
+#' Avoids sample()/runif() so user RNG reproducibility is unaffected.
+#' @keywords internal
+.free_code_generate_gateway_token <- function() {
+  paste0("asa-gw-", digest::digest(
+    list(
+      time = format(Sys.time(), "%Y-%m-%d %H:%M:%OS6"),
+      pid = Sys.getpid(),
+      tmp = basename(tempfile("asa_gw_tok_")),
+      clock = unname(proc.time()[["elapsed"]])
+    ),
+    algo = "sha256"
+  ))
+}
+
 #' Build environment for the gateway process
 #' @keywords internal
-.free_code_gateway_env <- function(config, python_path, port_file) {
+.free_code_gateway_env <- function(config, python_path, port_file, gateway_token = NULL) {
   env <- Sys.getenv()
   env[c("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy")] <- ""
   env["NO_PROXY"] <- .free_code_join_no_proxy(Sys.getenv("NO_PROXY", unset = ""))
   env["PYTHONPATH"] <- python_path
   env["PYTHONUNBUFFERED"] <- "1"
   env["ASA_FREE_CODE_PORT_FILE"] <- port_file
+  if (!is.null(gateway_token) && nzchar(gateway_token)) {
+    env["ASA_FREE_CODE_GATEWAY_TOKEN"] <- gateway_token
+  }
   env["ASA_FREE_CODE_GATEWAY_TIMEOUT"] <- as.character(as.numeric(config$timeout %||% ASA_DEFAULT_TIMEOUT))
   env["ASA_MAIN_BACKEND"] <- as.character(config$backend %||% "")
   if (identical(as.character(config$backend %||% ""), "azure-openai") &&
@@ -232,7 +292,13 @@
   .free_code_require_processx()
   port_file <- tempfile("asa_free_code_gateway_port_", fileext = ".txt")
   log_file <- tempfile("asa_free_code_gateway_", fileext = ".log")
-  env <- .free_code_gateway_env(config = config, python_path = python_path, port_file = port_file)
+  token <- .free_code_generate_gateway_token()
+  env <- .free_code_gateway_env(
+    config = config,
+    python_path = python_path,
+    port_file = port_file,
+    gateway_token = token
+  )
 
   proc <- processx::process$new(
     command = python,
@@ -274,7 +340,8 @@
     process = proc,
     base_url = sprintf("http://127.0.0.1:%s", port),
     log_file = log_file,
-    port_file = port_file
+    port_file = port_file,
+    token = token
   )
 }
 
@@ -310,6 +377,73 @@
   identical(policy, "always")
 }
 
+#' Minimal base environment for ASA-managed helper processes
+#'
+#' Builds a child-process environment from an allowlist instead of inheriting
+#' the full R session environment, so provider API keys and other secrets never
+#' land in MCP configs or `OPENCODE_CONFIG_CONTENT`. All `ASA_`/`TOR_`-prefixed
+#' session variables pass through (package-owned knobs, Tor control settings,
+#' and the loop-guard JSON set by `.free_code_with_loop_guard_env()`).
+#' @keywords internal
+.free_code_env_base <- function(extra_keys = character(0)) {
+  keys <- c(
+    "PATH", "HOME", "TMPDIR", "TMP", "TEMP", "USER", "LOGNAME", "SHELL", "TZ",
+    "LANG", "LC_ALL", "LC_CTYPE", "LC_COLLATE", "LC_MESSAGES", "LC_MONETARY",
+    "LC_NUMERIC", "LC_TIME",
+    "SSL_CERT_FILE", "SSL_CERT_DIR", "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE",
+    "LD_LIBRARY_PATH", "DYLD_LIBRARY_PATH", "DYLD_FALLBACK_LIBRARY_PATH",
+    "DISPLAY", "XAUTHORITY",
+    "SYSTEMROOT", "COMSPEC", "PATHEXT", "USERPROFILE", "APPDATA",
+    "LOCALAPPDATA", "PROGRAMDATA",
+    as.character(extra_keys %||% character(0))
+  )
+  keys <- unique(keys[nzchar(keys)])
+  values <- Sys.getenv(keys, unset = NA_character_)
+  env <- values[!is.na(values)]
+
+  session_env <- Sys.getenv()
+  prefixed <- session_env[grepl("^(ASA_|TOR_)", names(session_env))]
+  env[names(prefixed)] <- prefixed
+  env
+}
+
+#' Embedding-provider keys the MCP webpage reader may need
+#'
+#' Only exposed when the webpage reader is explicitly configured to use a
+#' remote embedding provider; with the default "auto" relevance mode no
+#' provider key is inherited.
+#' @keywords internal
+.free_code_embedding_env_keys <- function(webpage_opts) {
+  relevance_mode <- tolower(as.character(webpage_opts$relevance_mode %||% "")[1])
+  embedding_provider <- tolower(as.character(webpage_opts$embedding_provider %||% "")[1])
+  if (!identical(relevance_mode, "embeddings") &&
+      !embedding_provider %in% c("openai", "azure-openai")) {
+    return(character(0))
+  }
+  c(
+    "OPENAI_API_KEY", "OPENAI_API_BASE",
+    "AZURE_OPENAI_API_KEY", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_BASE",
+    "AZURE_OPENAI_EMBEDDING_API_KEY", "AZURE_OPENAI_EMBEDDING_ENDPOINT",
+    "AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
+  )
+}
+
+#' Drop credential-shaped variables from a child-process environment
+#'
+#' Used for CLI process environments, which need a mostly-full environment but
+#' never provider credentials (all LLM traffic is routed via the local
+#' gateway). ASA-managed values (e.g. ANTHROPIC_API_KEY for the gateway) are
+#' re-added explicitly by the callers after scrubbing.
+#' @keywords internal
+.free_code_scrub_secret_env <- function(env) {
+  drop <- grepl(
+    "(?i)(api[_-]?key|apikey|secret|token|password|passwd|credential|private[_-]?key)",
+    names(env),
+    perl = TRUE
+  ) | grepl("^AWS_", names(env))
+  env[!drop]
+}
+
 #' Build environment for the MCP search server
 #' @keywords internal
 .free_code_mcp_env <- function(config,
@@ -340,7 +474,7 @@
   wayback_opts$enabled <- isTRUE(wayback_opts$enabled %||% FALSE)
   wayback_json <- paste(jsonlite::toJSON(wayback_opts, auto_unbox = TRUE, null = "null"), collapse = "")
 
-  env <- Sys.getenv()
+  env <- .free_code_env_base(extra_keys = .free_code_embedding_env_keys(webpage_opts))
   env["PYTHONPATH"] <- python_path
   env["PYTHONUNBUFFERED"] <- "1"
   env["ASA_FREE_CODE_PROXY"] <- as.character(config$proxy %||% "")
@@ -537,8 +671,9 @@
 
 #' Build free-code CLI environment
 #' @keywords internal
-.free_code_cli_env <- function(config, gateway_base_url, target_backend, target_model) {
-  env <- Sys.getenv()
+.free_code_cli_env <- function(config, gateway_base_url, target_backend, target_model,
+                               gateway_token = "asa-local-gateway") {
+  env <- .free_code_scrub_secret_env(Sys.getenv())
   # Keep provider API traffic direct. free-code's Bun fetch proxy path does not
   # honor NO_PROXY for local gateways, so proxy settings stay scoped to the MCP
   # search server instead of the CLI process.
@@ -546,7 +681,7 @@
   env[names(proxy_env)] <- proxy_env
   env["NO_PROXY"] <- .free_code_join_no_proxy(Sys.getenv("NO_PROXY", unset = ""))
   env["ANTHROPIC_BASE_URL"] <- gateway_base_url
-  env["ANTHROPIC_API_KEY"] <- "asa-local-gateway"
+  env["ANTHROPIC_API_KEY"] <- gateway_token
   env["ANTHROPIC_CUSTOM_HEADERS"] <- paste(
     c(
       paste0("X-ASA-Target-Backend: ", target_backend),
@@ -778,7 +913,8 @@
     config = agent$config,
     gateway_base_url = gateway$base_url,
     target_backend = agent$backend,
-    target_model = agent$model
+    target_model = agent$model,
+    gateway_token = gateway$token %||% "asa-local-gateway"
   )
   cli_args <- c(
     cli$prefix_args,
@@ -795,7 +931,7 @@
   }
 
   started <- Sys.time()
-  timeout_seconds <- as.numeric(agent$config$timeout %||% ASA_DEFAULT_TIMEOUT)
+  timeout_seconds <- .free_code_run_timeout(agent$config, loop_guard)
   result <- .run_processx(
     command = cli$command,
     args = cli_args,

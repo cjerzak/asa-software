@@ -722,6 +722,29 @@ configure_temporal <- function(time_filter = NULL) {
     return(fn())
   }
 
+  # The CLI backends (opencode/free-code) run search out-of-process via the
+  # MCP server, so mutating the in-process tool's time filter cannot reach
+  # them. Warn clearly instead of failing into a misleading
+  # "Could not set DuckDuckGo time filter" message.
+  backend <- NULL
+  if (!is.null(agent) && inherits(agent, "asa_agent")) {
+    backend <- agent$config$agent_backend %||% NULL
+  } else if (.is_initialized()) {
+    backend <- .try_or(asa_env$config$agent_backend, NULL)
+  }
+  if (!is.null(temporal$time_filter) &&
+      (identical(backend, "opencode") || identical(backend, "free-code"))) {
+    .signal_unsupported_params(
+      agent_backend = backend,
+      ignored = "temporal$time_filter",
+      message = paste0(
+        "temporal$time_filter is not supported on the `", backend,
+        "` agent backend; only after/before prompt hints apply. Ignoring time_filter."
+      )
+    )
+    return(fn())
+  }
+
   tools <- NULL
   if (!is.null(agent) && inherits(agent, "asa_agent") && !is.null(agent$tools)) {
     tools <- agent$tools

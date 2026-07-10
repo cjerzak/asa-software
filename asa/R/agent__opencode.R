@@ -149,7 +149,8 @@
                                      loop_guard = NULL,
                                      allow_read_webpages = NULL,
                                      auto_openwebpage_policy = NULL,
-                                     wayback = NULL) {
+                                     wayback = NULL,
+                                     gateway_token = "asa-local-gateway") {
   model_ref <- .opencode_model_ref(outer_model)
   model_id <- .opencode_provider_model_id(outer_model)
 
@@ -192,7 +193,7 @@
     anthropic = list(
       options = list(
         baseURL = gateway_base_url,
-        apiKey = "asa-local-gateway",
+        apiKey = gateway_token,
         headers = headers,
         timeout = as.integer(as.numeric(config$timeout %||% ASA_DEFAULT_TIMEOUT) * 1000)
       ),
@@ -234,11 +235,11 @@
 
 #' Build OpenCode CLI environment
 #' @keywords internal
-.opencode_cli_env <- function(config_content) {
-  env <- Sys.getenv()
+.opencode_cli_env <- function(config_content, gateway_token = "asa-local-gateway") {
+  env <- .free_code_scrub_secret_env(Sys.getenv())
   env <- c(env, .free_code_proxy_env(NULL))
   env["NO_PROXY"] <- .free_code_join_no_proxy(Sys.getenv("NO_PROXY", unset = ""))
-  env["ANTHROPIC_API_KEY"] <- "asa-local-gateway"
+  env["ANTHROPIC_API_KEY"] <- gateway_token
   env["OPENCODE_CONFIG_CONTENT"] <- config_content
   env
 }
@@ -483,6 +484,11 @@
 }
 
 #' Parse OpenCode JSONL stdout
+#'
+#' Tolerates interleaved non-JSON stdout lines (e.g. the CLI's plain-text
+#' permission auto-reject notice): unparseable lines are skipped and reported
+#' via `skipped_lines` instead of failing the run. Errors only when stdout is
+#' empty or no line parses as a JSON event.
 #' @keywords internal
 .opencode_parse_output <- function(stdout) {
   raw_stdout <- as.character(stdout %||% "")
@@ -497,21 +503,35 @@
     stop("OpenCode returned empty stdout.", call. = FALSE)
   }
 
-  events <- vector("list", length(lines))
+  events <- list()
+  skipped <- list()
   for (i in seq_along(lines)) {
-    events[[i]] <- tryCatch(
+    event <- tryCatch(
       jsonlite::fromJSON(lines[[i]], simplifyVector = FALSE),
-      error = function(e) {
-        stop(
-          "OpenCode returned malformed JSONL stdout at line ", i, ": ",
-          conditionMessage(e),
-          call. = FALSE
-        )
-      }
+      error = function(e) NULL
+    )
+    if (is.null(event) || !is.list(event)) {
+      skipped[[length(skipped) + 1L]] <- list(
+        line = i,
+        snippet = substr(trimws(lines[[i]]), 1L, 200L)
+      )
+      next
+    }
+    events[[length(events) + 1L]] <- event
+  }
+
+  if (length(events) == 0L) {
+    stop(
+      "OpenCode returned no parseable JSONL stdout lines (",
+      length(lines), " line(s); first line: ",
+      substr(trimws(lines[[1]]), 1L, 200L), ")",
+      call. = FALSE
     )
   }
 
-  .opencode_summarize_events(events, raw_stdout = raw_stdout)
+  out <- .opencode_summarize_events(events, raw_stdout = raw_stdout)
+  out$skipped_lines <- skipped
+  out
 }
 
 #' Extract an OpenCode session id from a parsed event
@@ -879,6 +899,7 @@
   cli_status <- as.integer(cli_status %||% 0L)
   process_timeout <- isTRUE(process_timeout) || isTRUE(output$process_timeout %||% FALSE)
   events <- output$events %||% list()
+  skipped_lines <- output$skipped_lines %||% list()
   event_types <- vapply(events, function(event) {
     .opencode_scalar_text(event$type %||% event$part$type %||% "")
   }, character(1))
@@ -948,6 +969,7 @@
       stderr = stderr_text,
       errors = errors,
       parse_error = parse_error,
+      skipped_lines = skipped_lines,
       empty_terminal_output = empty_terminal_output,
       opencode_export_fallback_used = export_fallback_used,
       opencode_export_session_id = if (nzchar(export_session_id)) export_session_id else NULL,
@@ -1012,6 +1034,8 @@
       opencode_timeout_seconds = timeout_seconds,
       opencode_errors = errors,
       opencode_parse_error = parse_error,
+      opencode_skipped_stdout_lines = length(skipped_lines),
+      opencode_skipped_stdout_samples = utils::head(skipped_lines, 3L),
       opencode_empty_terminal_output = empty_terminal_output,
       opencode_export_fallback_used = export_fallback_used,
       opencode_export_session_id = if (nzchar(export_session_id)) export_session_id else NULL,
@@ -1108,6 +1132,7 @@
   }, add = TRUE)
 
   outer_model <- ASA_OPENCODE_OUTER_MODEL
+  gateway_token <- gateway$token %||% "asa-local-gateway"
   config_content <- .opencode_config_content(
     config = agent$config,
     gateway_base_url = gateway$base_url,
@@ -1119,10 +1144,11 @@
     loop_guard = loop_guard,
     allow_read_webpages = allow_read_webpages,
     auto_openwebpage_policy = auto_openwebpage_policy,
-    wayback = wayback
+    wayback = wayback,
+    gateway_token = gateway_token
   )
 
-  cli_env <- .opencode_cli_env(config_content)
+  cli_env <- .opencode_cli_env(config_content, gateway_token = gateway_token)
   cli_args <- c(
     cli$prefix_args,
     .opencode_cli_args(
@@ -1138,7 +1164,7 @@
   }
 
   started <- Sys.time()
-  timeout_seconds <- as.numeric(agent$config$timeout %||% ASA_DEFAULT_TIMEOUT)
+  timeout_seconds <- .free_code_run_timeout(agent$config, loop_guard)
   result <- .run_processx(
     command = cli$command,
     args = cli_args,

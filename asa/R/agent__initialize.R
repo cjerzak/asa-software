@@ -1,3 +1,67 @@
+#' Warn when memory/OM tuning options are supplied for a CLI backend
+#'
+#' Memory folding and observational memory run only on the built-in "agent"
+#' backend; the opencode/free-code CLIs manage their own context. Flags any of
+#' these options that differ from the package defaults so users are not left
+#' tuning inert knobs. `use_memory_folding` is deliberately excluded (it still
+#' affects the default recursion limit), as are `rate_limit`/`timeout` (used).
+#' @keywords internal
+.warn_inert_memory_options <- function(agent_backend,
+                                       memory_threshold,
+                                       memory_keep_recent,
+                                       fold_char_budget,
+                                       use_observational_memory,
+                                       om_observation_token_budget,
+                                       om_reflection_token_budget,
+                                       om_buffer_tokens,
+                                       om_buffer_activation,
+                                       om_block_after,
+                                       om_async_prebuffer,
+                                       om_cross_thread_memory) {
+  defaults <- list(
+    memory_threshold = ASA_DEFAULT_MEMORY_THRESHOLD,
+    memory_keep_recent = ASA_DEFAULT_MEMORY_KEEP_RECENT,
+    fold_char_budget = ASA_DEFAULT_FOLD_CHAR_BUDGET,
+    use_observational_memory = ASA_DEFAULT_USE_OBSERVATIONAL_MEMORY,
+    om_observation_token_budget = ASA_DEFAULT_OM_OBSERVATION_TOKENS,
+    om_reflection_token_budget = ASA_DEFAULT_OM_REFLECTION_TOKENS,
+    om_buffer_tokens = ASA_DEFAULT_OM_BUFFER_TOKENS,
+    om_buffer_activation = ASA_DEFAULT_OM_BUFFER_ACTIVATION,
+    om_block_after = ASA_DEFAULT_OM_BLOCK_AFTER,
+    om_async_prebuffer = ASA_DEFAULT_OM_ASYNC_PREBUFFER,
+    om_cross_thread_memory = ASA_DEFAULT_OM_CROSS_THREAD_MEMORY
+  )
+  values <- list(
+    memory_threshold = memory_threshold,
+    memory_keep_recent = memory_keep_recent,
+    fold_char_budget = fold_char_budget,
+    use_observational_memory = use_observational_memory,
+    om_observation_token_budget = om_observation_token_budget,
+    om_reflection_token_budget = om_reflection_token_budget,
+    om_buffer_tokens = om_buffer_tokens,
+    om_buffer_activation = om_buffer_activation,
+    om_block_after = om_block_after,
+    om_async_prebuffer = om_async_prebuffer,
+    om_cross_thread_memory = om_cross_thread_memory
+  )
+  changed <- names(defaults)[vapply(names(defaults), function(name) {
+    !isTRUE(all.equal(defaults[[name]], values[[name]]))
+  }, logical(1))]
+  if (length(changed) == 0L) {
+    return(invisible(NULL))
+  }
+
+  .signal_unsupported_params(
+    agent_backend = agent_backend,
+    ignored = changed,
+    message = sprintf(
+      "These memory/observational-memory options are not supported by the `%s` agent backend and were ignored: %s.",
+      agent_backend,
+      paste(changed, collapse = ", ")
+    )
+  )
+}
+
 #' Initialize the ASA Search Agent
 #'
 #' Initializes the Python environment and creates an ASA research agent runtime
@@ -50,7 +114,13 @@
 #' @param om_async_prebuffer Whether to pre-buffer observations asynchronously.
 #' @param om_cross_thread_memory Whether observational memory is shared across threads.
 #' @param rate_limit Requests per second for rate limiting (default: 0.1)
-#' @param timeout Request timeout in seconds (default: 120)
+#' @param timeout Per-LLM-request timeout in seconds (default: 120)
+#' @param run_timeout Maximum wall-clock seconds for a single opencode/free-code
+#'   CLI run (the whole multi-turn agent process). When \code{NULL} (default),
+#'   a generous value is auto-derived from \code{timeout}, the search budget,
+#'   and the per-tool deadline (floor 600s, cap 3600s). Distinct from
+#'   \code{timeout}, which bounds each LLM request. Ignored by the built-in
+#'   \code{"agent"} backend.
 #' @param recursion_limit Optional default maximum number of agent steps to
 #'   store in the initialized agent. When \code{NULL} (default), step limits
 #'   fall back to mode-specific defaults at run time (memory folding: 100;
@@ -159,6 +229,7 @@ initialize_agent <- function(agent_backend = NULL,
                              om_cross_thread_memory = ASA_DEFAULT_OM_CROSS_THREAD_MEMORY,
                              rate_limit = ASA_DEFAULT_RATE_LIMIT,
                              timeout = ASA_DEFAULT_TIMEOUT,
+                             run_timeout = NULL,
                              tor = tor_options(),
                              verbose = TRUE,
                              recursion_limit = NULL) {
@@ -246,8 +317,26 @@ initialize_agent <- function(agent_backend = NULL,
     timeout = timeout,
     recursion_limit = recursion_limit,
     verbose = verbose,
-    tor = tor
+    tor = tor,
+    run_timeout = run_timeout
   )
+
+  if (agent_backend %in% c("free-code", "opencode")) {
+    .warn_inert_memory_options(
+      agent_backend = agent_backend,
+      memory_threshold = memory_threshold,
+      memory_keep_recent = memory_keep_recent,
+      fold_char_budget = fold_char_budget,
+      use_observational_memory = use_observational_memory,
+      om_observation_token_budget = om_observation_token_budget,
+      om_reflection_token_budget = om_reflection_token_budget,
+      om_buffer_tokens = om_buffer_tokens,
+      om_buffer_activation = om_buffer_activation,
+      om_block_after = om_block_after,
+      om_async_prebuffer = om_async_prebuffer,
+      om_cross_thread_memory = om_cross_thread_memory
+    )
+  }
 
   recursion_limit <- .normalize_recursion_limit(recursion_limit)
   om_observation_token_budget <- as.integer(om_observation_token_budget)
@@ -290,6 +379,7 @@ initialize_agent <- function(agent_backend = NULL,
 
     .close_http_clients()
     .runtime_control_reset()
+    asa_env$unsupported_params_warned <- character(0)
 
     asa_env$initialized <- TRUE
     asa_env$agent <- NULL
@@ -306,6 +396,7 @@ initialize_agent <- function(agent_backend = NULL,
       use_browser = use_browser,
       rate_limit = rate_limit,
       timeout = timeout,
+      run_timeout = run_timeout,
       recursion_limit = recursion_limit,
       use_memory_folding = use_memory_folding,
       memory_folding = use_memory_folding,
@@ -355,6 +446,7 @@ initialize_agent <- function(agent_backend = NULL,
 
     .close_http_clients()
     .runtime_control_reset()
+    asa_env$unsupported_params_warned <- character(0)
 
     asa_env$initialized <- TRUE
     asa_env$agent <- NULL
@@ -371,6 +463,7 @@ initialize_agent <- function(agent_backend = NULL,
       use_browser = use_browser,
       rate_limit = rate_limit,
       timeout = timeout,
+      run_timeout = run_timeout,
       recursion_limit = recursion_limit,
       use_memory_folding = use_memory_folding,
       memory_folding = use_memory_folding,
@@ -543,6 +636,7 @@ initialize_agent <- function(agent_backend = NULL,
     use_browser = use_browser,
     rate_limit = rate_limit,
     timeout = timeout,
+    run_timeout = run_timeout,
     recursion_limit = recursion_limit,
     use_memory_folding = use_memory_folding,
     memory_folding = use_memory_folding,
@@ -1174,6 +1268,7 @@ reset_agent <- function() {
   # Close HTTP clients to prevent resource leak (BUG-007 fix)
   .close_http_clients()
   .runtime_control_reset()
+  asa_env$unsupported_params_warned <- character(0)
 
   asa_env$initialized <- FALSE
   asa_env$agent <- NULL

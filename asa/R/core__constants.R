@@ -204,9 +204,21 @@ ASA_DEFAULT_OM_ASYNC_PREBUFFER <- TRUE
 ASA_DEFAULT_RATE_LIMIT <- 0.1
 
 #' Default Request Timeout (seconds)
-#' @description Overall agent operation timeout used for API clients/runtime wrappers.
+#' @description Per-LLM-request timeout used for API clients/runtime wrappers.
 #' @keywords internal
 ASA_DEFAULT_TIMEOUT <- 120L
+
+#' Whole-Run Timeout Floor (seconds)
+#' @description Minimum auto-derived wall-clock timeout for a full
+#'   opencode/free-code CLI run. See `.free_code_run_timeout()`.
+#' @keywords internal
+ASA_RUN_TIMEOUT_FLOOR <- 600
+
+#' Whole-Run Timeout Cap (seconds)
+#' @description Maximum auto-derived wall-clock timeout for a full
+#'   opencode/free-code CLI run. Explicit `run_timeout` values are not capped.
+#' @keywords internal
+ASA_RUN_TIMEOUT_CAP <- 3600
 
 #' Default Search Timeout (seconds)
 #' @description Per-search HTTP timeout used by search/network tools.

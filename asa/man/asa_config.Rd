@@ -13,6 +13,7 @@ asa_config(
   use_browser = NULL,
   workers = NULL,
   timeout = NULL,
+  run_timeout = NULL,
   rate_limit = NULL,
   memory_folding = NULL,
   memory_threshold = NULL,
@@ -56,7 +57,12 @@ auto-detect from environment variables (\code{ASA_PROXY}, \code{HTTP_PROXY},
 
 \item{workers}{Number of parallel workers for batch operations}
 
-\item{timeout}{Request timeout in seconds}
+\item{timeout}{Per-LLM-request timeout in seconds}
+
+\item{run_timeout}{Maximum wall-clock seconds for a single opencode/free-code
+CLI run. \code{NULL} (default) auto-derives a generous value from
+\code{timeout}, the search budget, and the per-tool deadline (floor 600s,
+cap 3600s). Ignored by the built-in \code{"agent"} backend.}
 
 \item{rate_limit}{Requests per second}
 

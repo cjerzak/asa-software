@@ -71,6 +71,7 @@ opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
   writeLines(
     c(
       "import json",
+      "import os",
       "import sys",
       "import threading",
       "import types",
@@ -128,12 +129,13 @@ opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
       "    )",
       "",
       "gateway._invoke_model = fake_invoke",
+      "os.environ['ASA_FREE_CODE_GATEWAY_TOKEN'] = 'probe-token'",
       "server = gateway.ThreadingHTTPServer(('127.0.0.1', 0), gateway._GatewayHandler)",
       "thread = threading.Thread(target=server.serve_forever, daemon=True)",
       "thread.start()",
       "base_url = f'http://127.0.0.1:{server.server_port}'",
       "",
-      "def post(path, stream=False):",
+      "def post(path, stream=False, auth=True):",
       "    payload = {",
       "        'model': 'claude-test',",
       "        'max_tokens': 64,",
@@ -141,15 +143,18 @@ opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
       "        'messages': [{'role': 'user', 'content': 'ping'}],",
       "    }",
       "    body = json.dumps(payload).encode('utf-8')",
+      "    headers = {",
+      "        'Content-Type': 'application/json',",
+      "        'X-ASA-Target-Backend': 'openai',",
+      "        'X-ASA-Target-Model': 'gpt-4.1-mini',",
+      "    }",
+      "    if auth:",
+      "        headers['x-api-key'] = 'probe-token'",
       "    request = urllib.request.Request(",
       "        base_url + path,",
       "        data=body,",
       "        method='POST',",
-      "        headers={",
-      "            'Content-Type': 'application/json',",
-      "            'X-ASA-Target-Backend': 'openai',",
-      "            'X-ASA-Target-Model': 'gpt-4.1-mini',",
-      "        },",
+      "        headers=headers,",
       "    )",
       "    try:",
       "        with urllib.request.urlopen(request, timeout=5) as response:",
@@ -237,6 +242,7 @@ opencode_gateway_probe <- function(python_path, python = Sys.which("python3")) {
       "try:",
       "    results = {",
       "        'v1_messages': post('/v1/messages'),",
+      "        'v1_messages_noauth': post('/v1/messages', auth=False),",
       "        'messages': post('/messages'),",
       "        'messages_stream': post('/messages', stream=True),",
       "        'bad': post('/bad'),",
@@ -493,6 +499,65 @@ test_that("OpenCode config content wires provider, headers, tools, and MCP", {
   expect_identical(search_opts$search_doc_content_chars_max, 321L)
 })
 
+test_that("run_opencode_agent threads the gateway token into config and CLI env", {
+  dummy_proc <- new.env(parent = emptyenv())
+  dummy_proc$is_alive <- function() FALSE
+  dummy_proc$kill <- function() invisible(NULL)
+  dummy_proc$wait <- function(timeout = 0) 0L
+
+  stdout <- opencode_jsonl(
+    list(type = "text", sessionID = "oc-token-1", part = list(type = "text", text = "done")),
+    list(
+      type = "step_finish",
+      sessionID = "oc-token-1",
+      part = list(type = "step-finish", reason = "stop", tokens = list(input = 1L, output = 1L))
+    )
+  )
+
+  captured_run <- NULL
+  testthat::local_mocked_bindings(
+    .opencode_require_processx = function() invisible(TRUE),
+    .opencode_command_spec = function() list(command = "/usr/bin/opencode", prefix_args = character(0)),
+    .opencode_python_binary = function(conda_env) "/usr/bin/python3",
+    .opencode_python_path = function() "/tmp/asa-python",
+    .free_code_launch_gateway = function(config, python, python_path, verbose = FALSE) {
+      list(
+        process = dummy_proc,
+        base_url = "http://127.0.0.1:8789",
+        log_file = tempfile("asa-opencode-gateway-log-", fileext = ".log"),
+        port_file = tempfile("asa-opencode-gateway-port-", fileext = ".txt"),
+        token = "tok-123"
+      )
+    },
+    .run_processx = function(...) {
+      captured_run <<- list(...)
+      list(status = 0L, stdout = stdout, stderr = "", timeout = FALSE)
+    },
+    .package = "asa"
+  )
+
+  agent <- asa::asa_agent(
+    python_agent = NULL,
+    backend = "openai",
+    model = "gpt-4.1-mini",
+    config = asa::asa_config(
+      agent_backend = "opencode",
+      backend = "openai",
+      model = "gpt-4.1-mini",
+      proxy = NULL,
+      run_timeout = 5
+    )
+  )
+
+  resp <- asa:::.run_opencode_agent(prompt = "ping", agent = agent)
+  expect_identical(resp$status_code, asa:::ASA_STATUS_SUCCESS)
+
+  env <- captured_run$env
+  expect_identical(unname(env[["ANTHROPIC_API_KEY"]]), "tok-123")
+  opencode_config <- jsonlite::fromJSON(env[["OPENCODE_CONFIG_CONTENT"]], simplifyVector = FALSE)
+  expect_identical(opencode_config$provider$anthropic$options$apiKey, "tok-123")
+})
+
 test_that("OpenCode gateway accepts /messages and /v1/messages", {
   python_path <- asa_test_python_path(
     required_files = file.path("asa_backend", "free_code", "anthropic_gateway.py")
@@ -505,6 +570,9 @@ test_that("OpenCode gateway accepts /messages and /v1/messages", {
   expect_match(result$v1_messages$body, "gateway ok", fixed = TRUE)
   expect_equal(result$messages$status, 200L)
   expect_match(result$messages$body, "gateway ok", fixed = TRUE)
+
+  expect_equal(result$v1_messages_noauth$status, 401L)
+  expect_match(result$v1_messages_noauth$body, "authentication_error", fixed = TRUE)
 
   expect_equal(result$messages_stream$status, 200L)
   expect_match(result$messages_stream$content_type, "text/event-stream", fixed = TRUE)
@@ -567,11 +635,59 @@ test_that("OpenCode JSONL parser handles text, errors, sessions, usage, and malf
   expect_match(error_parsed$errors[[1]], "APIError: Rate limit exceeded")
   expect_match(error_parsed$errors[[1]], "status 429")
 
-  expect_error(
-    asa:::.opencode_parse_output(paste(stdout, "not-json", sep = "\n")),
-    "malformed JSONL stdout at line 5"
-  )
+  mixed <- asa:::.opencode_parse_output(paste(stdout, "not-json", sep = "\n"))
+  expect_identical(mixed$text, "Hello\nWorld")
+  expect_identical(mixed$session_id, "ses-opencode-1")
+  expect_length(mixed$skipped_lines, 1L)
+  expect_identical(mixed$skipped_lines[[1]]$line, 5L)
+  expect_identical(mixed$skipped_lines[[1]]$snippet, "not-json")
+
   expect_error(asa:::.opencode_parse_output(""), "empty stdout")
+})
+
+test_that("OpenCode parser errors when no stdout line is parseable", {
+  expect_error(
+    asa:::.opencode_parse_output("garbage\nalso-garbage"),
+    "no parseable JSONL"
+  )
+  # Scalar JSON lines are not events either.
+  expect_error(
+    asa:::.opencode_parse_output("42\n\"just a string\""),
+    "no parseable JSONL"
+  )
+})
+
+test_that("OpenCode skipped stdout lines surface in diagnostics without parse_error", {
+  stdout <- paste(
+    "! permission requested: asa_search_web_search - auto-rejecting",
+    opencode_jsonl(
+      list(type = "text", sessionID = "ses-skip-1", part = list(type = "text", text = "{\"ok\":true}")),
+      list(
+        type = "step_finish",
+        sessionID = "ses-skip-1",
+        part = list(type = "step-finish", reason = "stop", tokens = list(input = 2L, output = 3L))
+      )
+    ),
+    sep = "\n"
+  )
+
+  parsed <- asa:::.opencode_parse_output(stdout)
+  expect_length(parsed$skipped_lines, 1L)
+  expect_identical(parsed$skipped_lines[[1]]$line, 1L)
+
+  resp <- asa:::.opencode_response_from_output(
+    output = parsed,
+    prompt = "prompt",
+    elapsed_minutes = 0.1
+  )
+  expect_identical(resp$status_code, asa:::ASA_STATUS_SUCCESS)
+  expect_identical(resp$diagnostics$opencode_skipped_stdout_lines, 1L)
+  expect_false(isTRUE(resp$diagnostics$opencode_parse_error))
+  expect_match(
+    resp$diagnostics$opencode_skipped_stdout_samples[[1]]$snippet,
+    "permission requested"
+  )
+  expect_match(resp$trace_json, "skipped_lines")
 })
 
 test_that("OpenCode final payload accepts raw and fenced JSON", {
@@ -1105,7 +1221,8 @@ test_that("run_opencode_agent maps fake CLI output into asa_response and run_tas
     ASA_OPENCODE_TEST_ARGS_FILE = args_file,
     ASA_OPENCODE_TEST_ENV_FILE = env_file,
     ASA_OPENCODE_TEST_CONFIG_FILE = config_file,
-    ASA_OPENCODE_TEST_STDOUT = stdout
+    ASA_OPENCODE_TEST_STDOUT = stdout,
+    OPENAI_API_KEY = "sk-test-leak"
   ))
 
   testthat::local_mocked_bindings(
@@ -1173,6 +1290,14 @@ test_that("run_opencode_agent maps fake CLI output into asa_response and run_tas
   expect_true(any(grepl("^HTTP_PROXY=$", env_lines)))
   expect_true(any(grepl("^ANTHROPIC_API_KEY=asa-local-gateway$", env_lines)))
   expect_true(any(grepl("^OPENCODE_CONFIG_CONTENT=", env_lines)))
+  # Provider secrets must not reach the CLI process or the embedded config.
+  expect_false(any(grepl("^OPENAI_API_KEY=", env_lines)))
+  expect_false(any(grepl("sk-test-leak", env_lines, fixed = TRUE)))
+  expect_false(grepl(
+    "sk-test-leak",
+    paste(readLines(config_file, warn = FALSE), collapse = ""),
+    fixed = TRUE
+  ))
 
   opencode_config <- jsonlite::fromJSON(config_file, simplifyVector = FALSE)
   expect_identical(opencode_config$provider$anthropic$options$baseURL, "http://127.0.0.1:8789")
@@ -1232,7 +1357,8 @@ test_that("run_opencode_agent enforces configured timeout seconds and maps proce
       backend = "openai",
       model = "gpt-4.1-mini",
       proxy = NULL,
-      timeout = 5L
+      timeout = 5L,
+      run_timeout = 5
     )
   )
 
