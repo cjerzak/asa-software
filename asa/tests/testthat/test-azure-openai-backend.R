@@ -200,3 +200,66 @@ os.environ['ASA_AZURE_RATE_LIMIT_MODE'] = 'off'
     fixed = TRUE
   )
 })
+
+test_that("Azure shared limiter adopts the advertised deployment quota and learns call size", {
+  asa_test_skip_if_no_python(required_files = "shared/azure_rate_limit.py")
+  python_path <- asa_test_python_path(required_files = "shared/azure_rate_limit.py")
+  db_path <- tempfile("asa_azure_rate_limit_adapt_", fileext = ".sqlite")
+  withr::local_envvar(c(
+    ASA_AZURE_RATE_LIMIT_DB = db_path,
+    ASA_AZURE_RATE_LIMIT_MODE = "shared",
+    ASA_AZURE_RPM = NA,
+    ASA_AZURE_TPM = NA,
+    ASA_AZURE_MAX_CONCURRENT_REQUESTS = NA,
+    ASA_AZURE_ESTIMATED_TOKENS_PER_CALL = NA,
+    ASA_AZURE_ADAPT_TO_HEADERS = NA
+  ))
+
+  mod <- reticulate::import_from_path("shared.azure_rate_limit", path = python_path)
+  make <- function(...) {
+    mod$AzureOpenAISharedRateLimiter(
+      endpoint = "https://example.openai.azure.com",
+      deployment = "gpt-5.4-mini-hiq",
+      db_path = db_path,
+      mode = "shared",
+      ...
+    )
+  }
+
+  # Package floor before any response has been seen.
+  lim <- make()
+  eff <- lim$effective_limits()
+  expect_equal(eff$rpm, 60)
+  expect_equal(eff$tpm, 60000)
+  expect_equal(eff$max_concurrent_requests, 16L)
+  expect_equal(eff$rpm_source, "default")
+
+  # The deployment's x-ratelimit-limit-* headers raise the enforced quota for
+  # every limiter object sharing the SQLite file (the gateway builds one per request).
+  lim$record_response_headers(list(
+    "x-ratelimit-limit-requests" = "3000",
+    "x-ratelimit-limit-tokens" = "3000000"
+  ))
+  eff2 <- make()$effective_limits()
+  expect_equal(eff2$rpm, 3000)
+  expect_equal(eff2$tpm, 3000000)
+  expect_equal(eff2$rpm_source, "advertised")
+  expect_equal(eff2$tpm_source, "advertised")
+
+  # Explicit settings are never overridden by headers.
+  explicit <- make(rpm = 120, tpm = 100000)$effective_limits()
+  expect_equal(explicit$rpm, 120)
+  expect_equal(explicit$tpm, 100000)
+  expect_equal(explicit$rpm_source, "explicit")
+
+  # Observed usage lifts the per-call token estimate used by the TPM guard.
+  lim$record_usage(9000L, 100L)
+  est <- make()$effective_limits()$estimated_tokens_per_call
+  expect_gt(est, 2000)
+  expect_lte(est, 9100)
+
+  # Adaptation can be switched off.
+  withr::with_envvar(c(ASA_AZURE_ADAPT_TO_HEADERS = "false"), {
+    expect_equal(make()$effective_limits()$rpm, 60)
+  })
+})

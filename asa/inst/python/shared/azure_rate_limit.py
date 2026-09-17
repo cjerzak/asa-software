@@ -197,9 +197,15 @@ class AzureOpenAISharedRateLimiter:
             self.mode = "shared"
         self.rpm = _env_float("ASA_AZURE_RPM", float(rpm if rpm is not None else 60.0), minimum=1e-6)
         self.tpm = _env_float("ASA_AZURE_TPM", float(tpm if tpm is not None else 60000.0), minimum=1.0)
+        # The conservative defaults above are only a floor: unless RPM/TPM were
+        # set explicitly (constructor or env), the limiter adopts the quota the
+        # deployment advertises in its x-ratelimit-limit-* response headers.
+        self.rpm_explicit = rpm is not None or bool(str(os.getenv("ASA_AZURE_RPM", "")).strip())
+        self.tpm_explicit = tpm is not None or bool(str(os.getenv("ASA_AZURE_TPM", "")).strip())
+        self.adapt_to_headers = _env_bool("ASA_AZURE_ADAPT_TO_HEADERS", True)
         self.max_concurrent_requests = _env_int(
             "ASA_AZURE_MAX_CONCURRENT_REQUESTS",
-            int(max_concurrent_requests if max_concurrent_requests is not None else 4),
+            int(max_concurrent_requests if max_concurrent_requests is not None else 16),
             minimum=1,
         )
         self.estimated_tokens_per_call = _env_int(
@@ -209,9 +215,12 @@ class AzureOpenAISharedRateLimiter:
         )
         self.lease_ttl_seconds = _env_float(
             "ASA_AZURE_CONCURRENCY_LEASE_SECONDS",
-            float(lease_ttl_seconds if lease_ttl_seconds is not None else 300.0),
+            float(lease_ttl_seconds if lease_ttl_seconds is not None else 90.0),
             minimum=1.0,
         )
+        # Exponential moving average of observed (input + output) tokens per
+        # call; the TPM guard charges max(estimate, observed) per acquisition.
+        self._observed_tokens_per_call: Optional[float] = None
         self.db_path = str(db_path or os.getenv("ASA_AZURE_RATE_LIMIT_DB", "") or _default_db_path())
         self.busy_timeout_s = _env_float("ASA_AZURE_SQLITE_BUSY_TIMEOUT", 5.0, minimum=0.1)
         self.poll_seconds = _env_float("ASA_AZURE_RATE_LIMIT_POLL_SECONDS", 0.10, minimum=0.01)
@@ -281,6 +290,7 @@ class AzureOpenAISharedRateLimiter:
         headers = _headers_from_response(response)
         if headers:
             self.record_response_headers(headers)
+        self.record_usage_from_response(response)
         self._attach_response_metadata(response)
 
     def record_response_headers(self, headers: Any) -> None:
@@ -375,6 +385,13 @@ class AzureOpenAISharedRateLimiter:
             "azure_rate_limit_deployment": self.deployment,
             "azure_limiter_wait_seconds": float(self.last_wait_seconds or 0.0),
         }
+        try:
+            eff = self.effective_limits()
+            out["azure_rate_limit_effective_rpm"] = eff["rpm"]
+            out["azure_rate_limit_effective_tpm"] = eff["tpm"]
+            out["azure_rate_limit_estimated_tokens_per_call"] = eff["estimated_tokens_per_call"]
+        except Exception:
+            pass
         if self.mode != "shared":
             return out
         try:
@@ -447,10 +464,15 @@ class AzureOpenAISharedRateLimiter:
                     limit_tokens REAL,
                     remaining_tokens REAL,
                     retry_after_ms REAL,
+                    observed_tokens_per_call REAL,
                     updated_at REAL NOT NULL
                 )
                 """
             )
+            try:
+                conn.execute("ALTER TABLE azure_rate_limits ADD COLUMN observed_tokens_per_call REAL")
+            except sqlite3.OperationalError:
+                pass  # column already present
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS azure_rate_leases (
@@ -482,12 +504,106 @@ class AzureOpenAISharedRateLimiter:
             (self.key, self.endpoint_host, self.deployment, self.scope, now, now, now),
         )
 
+    def _effective_rpm(self, advertised: Any) -> float:
+        rpm = float(self.rpm)
+        if self.rpm_explicit or not self.adapt_to_headers:
+            return rpm
+        try:
+            adv = float(advertised) if advertised is not None else 0.0
+        except Exception:
+            adv = 0.0
+        return max(rpm, adv) if adv > 0 else rpm
+
+    def _effective_tpm(self, advertised: Any) -> float:
+        tpm = float(self.tpm)
+        if self.tpm_explicit or not self.adapt_to_headers:
+            return tpm
+        try:
+            adv = float(advertised) if advertised is not None else 0.0
+        except Exception:
+            adv = 0.0
+        return max(tpm, adv) if adv > 0 else tpm
+
+    def _effective_estimate(self, observed: Any = None) -> int:
+        est = float(self.estimated_tokens_per_call)
+        candidates = [observed, self._observed_tokens_per_call]
+        for value in candidates:
+            try:
+                if value is not None and float(value) > est:
+                    est = float(value)
+            except Exception:
+                continue
+        return int(est)
+
+    def effective_limits(self) -> Dict[str, Any]:
+        """Limits the limiter is currently enforcing (configured floor vs advertised quota)."""
+        advertised_rpm = advertised_tpm = observed = None
+        if self.mode == "shared":
+            try:
+                with self._connect() as conn:
+                    row = conn.execute(
+                        "SELECT limit_requests, limit_tokens, observed_tokens_per_call FROM azure_rate_limits WHERE key = ?",
+                        (self.key,),
+                    ).fetchone()
+                if row:
+                    advertised_rpm, advertised_tpm, observed = row
+            except Exception:
+                pass
+        return {
+            "rpm": self._effective_rpm(advertised_rpm),
+            "tpm": self._effective_tpm(advertised_tpm),
+            "estimated_tokens_per_call": self._effective_estimate(observed),
+            "max_concurrent_requests": int(self.max_concurrent_requests),
+            "rpm_source": "explicit" if self.rpm_explicit else ("advertised" if advertised_rpm and self.adapt_to_headers and float(advertised_rpm) > float(self.rpm) else "default"),
+            "tpm_source": "explicit" if self.tpm_explicit else ("advertised" if advertised_tpm and self.adapt_to_headers and float(advertised_tpm) > float(self.tpm) else "default"),
+        }
+
+    def record_usage(self, input_tokens: Any, output_tokens: Any = 0) -> None:
+        """Fold an observed call size into the per-call token estimate (EMA, alpha 0.2)."""
+        try:
+            total = float(input_tokens or 0) + float(output_tokens or 0)
+        except Exception:
+            return
+        if total <= 0:
+            return
+        prev = self._observed_tokens_per_call
+        self._observed_tokens_per_call = total if prev is None else 0.8 * float(prev) + 0.2 * total
+        if self.mode != "shared":
+            return
+        try:
+            with self._transaction() as conn:
+                self._ensure_row(conn, time.time())
+                conn.execute(
+                    """
+                    UPDATE azure_rate_limits
+                    SET observed_tokens_per_call = CASE
+                            WHEN observed_tokens_per_call IS NULL THEN ?
+                            ELSE 0.8 * observed_tokens_per_call + 0.2 * ?
+                        END,
+                        updated_at = ?
+                    WHERE key = ?
+                    """,
+                    (total, total, time.time(), self.key),
+                )
+        except Exception:
+            pass
+
+    def record_usage_from_response(self, response: Any) -> None:
+        usage = None
+        try:
+            usage = getattr(response, "usage_metadata", None)
+        except Exception:
+            usage = None
+        if usage is None and isinstance(response, dict):
+            usage = response.get("usage_metadata") or response.get("usage")
+        if not isinstance(usage, dict):
+            return
+        self.record_usage(usage.get("input_tokens") or usage.get("prompt_tokens") or 0,
+                          usage.get("output_tokens") or usage.get("completion_tokens") or 0)
+
     def _try_acquire_shared(self) -> Tuple[Optional[str], float]:
         now = time.time()
         lease_id = uuid.uuid4().hex
-        rpm = float(self.rpm)
-        request_window_seconds = 60.0 if rpm >= 1.0 else 60.0 / max(rpm, 1e-6)
-        request_limit = int(rpm) if rpm >= 1.0 else 1
         try:
             with self._transaction() as conn:
                 self._ensure_row(conn, now)
@@ -496,7 +612,8 @@ class AzureOpenAISharedRateLimiter:
                     """
                     SELECT request_window_start, request_count,
                            token_window_start, token_count,
-                           backoff_until
+                           backoff_until, limit_requests, limit_tokens,
+                           observed_tokens_per_call
                     FROM azure_rate_limits
                     WHERE key = ?
                     """,
@@ -504,7 +621,13 @@ class AzureOpenAISharedRateLimiter:
                 ).fetchone()
                 if row is None:
                     return None, self.poll_seconds
-                req_start, req_count, tok_start, tok_count, backoff_until = row
+                (req_start, req_count, tok_start, tok_count, backoff_until,
+                 advertised_rpm, advertised_tpm, observed_tokens) = row
+                rpm = self._effective_rpm(advertised_rpm)
+                tpm = self._effective_tpm(advertised_tpm)
+                est_tokens = self._effective_estimate(observed_tokens)
+                request_window_seconds = 60.0 if rpm >= 1.0 else 60.0 / max(rpm, 1e-6)
+                request_limit = int(rpm) if rpm >= 1.0 else 1
                 req_start = float(req_start or now)
                 tok_start = float(tok_start or now)
                 req_count = int(req_count or 0)
@@ -536,7 +659,7 @@ class AzureOpenAISharedRateLimiter:
                         wait_for = max(wait_for, self.poll_seconds)
                 if req_count >= request_limit:
                     wait_for = max(wait_for, (req_start + request_window_seconds) - now)
-                if tok_count + int(self.estimated_tokens_per_call) > float(self.tpm):
+                if tok_count + est_tokens > tpm:
                     wait_for = max(wait_for, (tok_start + 60.0) - now)
 
                 if wait_for > 0:
@@ -564,7 +687,7 @@ class AzureOpenAISharedRateLimiter:
                         req_start,
                         req_count + 1,
                         tok_start,
-                        tok_count + int(self.estimated_tokens_per_call),
+                        tok_count + est_tokens,
                         now,
                         self.key,
                     ),
@@ -604,13 +727,13 @@ class AzureOpenAISharedRateLimiter:
             if len(self._local_requests) >= request_limit:
                 wait_for = max(wait_for, (self._local_requests[0] + request_window_seconds) - now)
             token_count = sum(tokens for _, tokens in self._local_tokens)
-            if token_count + int(self.estimated_tokens_per_call) > float(self.tpm):
+            if token_count + int(self._effective_estimate()) > float(self.tpm):
                 wait_for = max(wait_for, (self._local_tokens[0][0] + 60.0) - now if self._local_tokens else 60.0)
             if wait_for > 0:
                 return None, max(self.poll_seconds, wait_for)
 
             self._local_requests.append(now)
-            self._local_tokens.append((now, int(self.estimated_tokens_per_call)))
+            self._local_tokens.append((now, int(self._effective_estimate())))
             self._local_leases[lease_id] = now + float(self.lease_ttl_seconds)
             return lease_id, 0.0
 

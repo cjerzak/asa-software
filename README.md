@@ -323,10 +323,19 @@ cfg <- asa::asa_config(
 
 ASA normalizes Azure endpoints to `/openai/v1` and rejects `api.openai.com` for
 this backend. Parallel workers coordinate model calls through a shared SQLite
-limiter keyed by endpoint host and deployment. Useful knobs are
-`ASA_AZURE_RPM`, `ASA_AZURE_TPM`, `ASA_AZURE_MAX_CONCURRENT_REQUESTS`, and
-`ASA_AZURE_RATE_LIMIT_DB`; set `ASA_AZURE_RATE_LIMIT_MODE=off` only for local
-testing. For OpenWebpage embeddings, use
+limiter keyed by endpoint host and deployment. The limiter starts from a
+conservative floor (60 RPM, 60K TPM, 16 concurrent requests per host, 90 s
+lease) and, after the first response, **adopts the quota the deployment
+advertises** in its `x-ratelimit-limit-requests` / `x-ratelimit-limit-tokens`
+headers and learns the observed tokens per call for its TPM guard. Set
+`ASA_AZURE_RPM` / `ASA_AZURE_TPM` explicitly to pin lower limits (explicit
+values are never raised by headers), `ASA_AZURE_ADAPT_TO_HEADERS=false` to
+keep the floor, and tune `ASA_AZURE_MAX_CONCURRENT_REQUESTS`,
+`ASA_AZURE_ESTIMATED_TOKENS_PER_CALL`, `ASA_AZURE_CONCURRENCY_LEASE_SECONDS`
+and `ASA_AZURE_RATE_LIMIT_DB` as needed; set `ASA_AZURE_RATE_LIMIT_MODE=off`
+only for local testing. (Before this change a 12-worker batch against a
+3,000 RPM / 3M TPM deployment ran at ~21 LLM turns/min; with the quota
+adopted it runs at ~48.) For OpenWebpage embeddings, use
 `webpage_embedding_provider = "azure-openai"` and optionally set
 `AZURE_OPENAI_EMBEDDING_DEPLOYMENT`.
 
