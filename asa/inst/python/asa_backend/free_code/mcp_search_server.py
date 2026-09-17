@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
+import concurrent.futures
 import json
 import os
-import signal
 import sys
 import threading
 import time
-from contextlib import contextmanager
 from typing import Any, Dict, Optional
 
 from asa_backend.search import (
@@ -125,28 +124,48 @@ class _ToolDeadlineExpired(TimeoutError):
     pass
 
 
-@contextmanager
-def _tool_deadline(seconds: Optional[float]):
-    if (
-        seconds is None
-        or seconds <= 0
-        or not hasattr(signal, "SIGALRM")
-        or threading.current_thread() is not threading.main_thread()
-    ):
-        yield
-        return
+# Serialisation guard for TOOL_STATE (counters, cache, loop-guard bookkeeping):
+# tool calls now execute concurrently (see main()).
+_STATE_LOCK = threading.RLock()
+_STDOUT_LOCK = threading.Lock()
 
-    def _raise_timeout(signum: int, frame: Any) -> None:
-        raise _ToolDeadlineExpired(f"ASA tool deadline exceeded after {seconds:.1f}s")
 
-    old_handler = signal.getsignal(signal.SIGALRM)
-    signal.signal(signal.SIGALRM, _raise_timeout)
-    old_timer = signal.setitimer(signal.ITIMER_REAL, float(seconds))
+def _mcp_workers() -> int:
+    """Concurrent tools/call handlers. opencode dispatches every tool call of a
+    turn at once (observed up to 5 searches per turn); a serial server made the
+    later calls queue behind the earlier ones and burn their client-side MCP
+    timeout before they even started."""
     try:
-        yield
-    finally:
-        signal.setitimer(signal.ITIMER_REAL, old_timer[0], old_timer[1])
-        signal.signal(signal.SIGALRM, old_handler)
+        return max(1, int(os.getenv("ASA_FREE_CODE_MCP_WORKERS", "6") or 6))
+    except Exception:
+        return 6
+
+
+def _run_with_deadline(fn, seconds: Optional[float]):
+    """Run fn() and give up after `seconds` (thread-safe replacement for the
+    old SIGALRM deadline, which only worked on the main thread and could not
+    interrupt a blocking transport call, so the client-side MCP timeout fired
+    first and the loop guard never saw the timeout)."""
+    if seconds is None or float(seconds) <= 0:
+        return fn()
+    box: Dict[str, Any] = {}
+
+    def _target() -> None:
+        try:
+            box["result"] = fn()
+        except BaseException as exc:  # noqa: BLE001 - surfaced to the caller
+            box["error"] = exc
+
+    worker = threading.Thread(target=_target, name="asa-mcp-tool", daemon=True)
+    worker.start()
+    worker.join(float(seconds))
+    if worker.is_alive():
+        # The transport keeps running in the background until its own socket
+        # timeouts fire; the reply must not wait for it.
+        raise _ToolDeadlineExpired(f"ASA tool deadline exceeded after {float(seconds):.1f}s")
+    if "error" in box:
+        raise box["error"]
+    return box.get("result")
 
 
 def _progress_token(value: Any, default: str = "na", max_chars: int = 72) -> str:
@@ -288,6 +307,11 @@ def _terminal_failure(signature: str) -> Optional[str]:
 
 
 def _preflight_guard(name: str, arguments: Dict[str, Any], signature: str) -> Optional[Dict[str, Any]]:
+    with _STATE_LOCK:
+        return _preflight_guard_locked(name, arguments, signature)
+
+
+def _preflight_guard_locked(name: str, arguments: Dict[str, Any], signature: str) -> Optional[Dict[str, Any]]:
     terminal_failure = _terminal_failure(signature)
     if terminal_failure:
         return _error_result(
@@ -348,6 +372,11 @@ def _preflight_guard(name: str, arguments: Dict[str, Any], signature: str) -> Op
 
 
 def _record_tool_error(name: str, signature: str, error_type: str) -> None:
+    with _STATE_LOCK:
+        _record_tool_error_locked(name, signature, error_type)
+
+
+def _record_tool_error_locked(name: str, signature: str, error_type: str) -> None:
     TOOL_STATE["errors"] = int(TOOL_STATE.get("errors", 0) or 0) + 1
     TOOL_STATE["error_by_signature"][signature] = int(
         TOOL_STATE["error_by_signature"].get(signature, 0) or 0
@@ -527,7 +556,8 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
     original_name = name
     name = _canonical_tool_name(name)
     signature = _tool_signature(name, arguments)
-    TOOL_STATE["requests"] = int(TOOL_STATE.get("requests", 0) or 0) + 1
+    with _STATE_LOCK:
+        TOOL_STATE["requests"] = int(TOOL_STATE.get("requests", 0) or 0) + 1
     _mcp_log("tools/call", name, json.dumps(arguments, ensure_ascii=False, sort_keys=True))
 
     if name not in {"web_search", "web_fetch", "wayback_search"}:
@@ -554,20 +584,24 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         guarded = _preflight_guard(name, arguments, signature)
         if guarded is not None:
             return guarded
-        TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
+        with _STATE_LOCK:
+            TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
         _write_progress("tool_call", tool=name)
         try:
-            with _tool_deadline(LOOP_GUARD.get("tool_deadline_seconds")):
-                result = TOOLS["search"].invoke(query)
+            result = _run_with_deadline(
+                lambda: TOOLS["search"].invoke(query),
+                LOOP_GUARD.get("tool_deadline_seconds"),
+            )
         except Exception as exc:
             text = str(exc)
             error_type = "tool_timeout" if isinstance(exc, _ToolDeadlineExpired) or "timeout" in text.lower() or "timed out" in text.lower() else "tool_exception"
             _record_tool_error(name, signature, error_type)
-            retryable = (
-                error_type == "tool_timeout"
-                and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
-                and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
-            )
+            with _STATE_LOCK:
+                retryable = (
+                    error_type == "tool_timeout"
+                    and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
+                    and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
+                )
             return _error_result(
                 error_type=error_type,
                 message=text,
@@ -577,7 +611,8 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
                 retryable=retryable,
             )
         text = _stringify(result)
-        TOOL_STATE["cache"][signature] = text
+        with _STATE_LOCK:
+            TOOL_STATE["cache"][signature] = text
         _write_progress("tool_result", tool=name)
         return {"content": [{"type": "text", "text": text}], "isError": False}
 
@@ -604,20 +639,24 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         guarded = _preflight_guard(name, arguments, signature)
         if guarded is not None:
             return guarded
-        TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
+        with _STATE_LOCK:
+            TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
         _write_progress("tool_call", tool=name)
         try:
-            with _tool_deadline(LOOP_GUARD.get("tool_deadline_seconds")):
-                result = TOOLS["wayback"].invoke(query)
+            result = _run_with_deadline(
+                lambda: TOOLS["wayback"].invoke(query),
+                LOOP_GUARD.get("tool_deadline_seconds"),
+            )
         except Exception as exc:
             text = str(exc)
             error_type = "tool_timeout" if isinstance(exc, _ToolDeadlineExpired) or "timeout" in text.lower() or "timed out" in text.lower() else "tool_exception"
             _record_tool_error(name, signature, error_type)
-            retryable = (
-                error_type == "tool_timeout"
-                and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
-                and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
-            )
+            with _STATE_LOCK:
+                retryable = (
+                    error_type == "tool_timeout"
+                    and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
+                    and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
+                )
             return _error_result(
                 error_type=error_type,
                 message=text,
@@ -627,7 +666,8 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
                 retryable=retryable,
             )
         text = _stringify(result)
-        TOOL_STATE["cache"][signature] = text
+        with _STATE_LOCK:
+            TOOL_STATE["cache"][signature] = text
         _write_progress("tool_result", tool=name)
         return {"content": [{"type": "text", "text": text}], "isError": False}
 
@@ -658,20 +698,24 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         query = str(arguments.get("query") or "").strip()
         if query:
             payload["query"] = query
-        TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
+        with _STATE_LOCK:
+            TOOL_STATE["network_calls"] = int(TOOL_STATE.get("network_calls", 0) or 0) + 1
         _write_progress("tool_call", tool=name)
         try:
-            with _tool_deadline(LOOP_GUARD.get("tool_deadline_seconds")):
-                result = TOOLS["webpage"].invoke(payload)
+            result = _run_with_deadline(
+                lambda: TOOLS["webpage"].invoke(payload),
+                LOOP_GUARD.get("tool_deadline_seconds"),
+            )
         except Exception as exc:
             text = str(exc)
             error_type = "tool_timeout" if isinstance(exc, _ToolDeadlineExpired) or "timeout" in text.lower() or "timed out" in text.lower() else "tool_exception"
             _record_tool_error(name, signature, error_type)
-            retryable = (
-                error_type == "tool_timeout"
-                and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
-                and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
-            )
+            with _STATE_LOCK:
+                retryable = (
+                    error_type == "tool_timeout"
+                    and int(TOOL_STATE["timeout_by_signature"].get(signature, 0) or 0) < _same_input_timeout_limit(name)
+                    and int(TOOL_STATE.get("timeouts", 0) or 0) < int(LOOP_GUARD.get("total_timeout_limit", 6) or 6)
+                )
             return _error_result(
                 error_type=error_type,
                 message=text,
@@ -681,7 +725,8 @@ def _call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
                 retryable=retryable,
             )
         text = _stringify(result)
-        TOOL_STATE["cache"][signature] = text
+        with _STATE_LOCK:
+            TOOL_STATE["cache"][signature] = text
         _write_progress("tool_result", tool=name)
         return {"content": [{"type": "text", "text": text}], "isError": False}
 
@@ -720,8 +765,9 @@ def _read_message() -> Optional[Dict[str, Any]]:
 
 def _write_message(payload: Dict[str, Any]) -> None:
     body = (json.dumps(payload, ensure_ascii=False) + "\n").encode("utf-8")
-    sys.stdout.buffer.write(body)
-    sys.stdout.buffer.flush()
+    with _STDOUT_LOCK:
+        sys.stdout.buffer.write(body)
+        sys.stdout.buffer.flush()
 
 
 def _reply(request_id: Any, result: Optional[Dict[str, Any]] = None, error: Optional[Dict[str, Any]] = None) -> None:
@@ -733,10 +779,22 @@ def _reply(request_id: Any, result: Optional[Dict[str, Any]] = None, error: Opti
     _write_message(payload)
 
 
+def _handle_tool_call(request_id: Any, name: str, arguments: Dict[str, Any]) -> None:
+    try:
+        _reply(request_id, result=_call_tool(name, arguments))
+    except Exception as exc:  # noqa: BLE001 - never leave a request unanswered
+        _mcp_log("tools/call error", name, str(exc))
+        _reply(request_id, error={"code": -32603, "message": f"Tool call failed: {exc}"})
+
+
 def main() -> None:
+    executor = concurrent.futures.ThreadPoolExecutor(
+        max_workers=_mcp_workers(), thread_name_prefix="asa-mcp-call"
+    )
     while True:
         request = _read_message()
         if request is None:
+            executor.shutdown(wait=False)
             return
 
         method = request.get("method")
@@ -774,7 +832,14 @@ def main() -> None:
             arguments = params.get("arguments") or {}
             if not isinstance(arguments, dict):
                 arguments = {}
-            _reply(request_id, result=_call_tool(name, arguments))
+            # Parallel tool calls from the client run concurrently; the reader
+            # loop keeps draining stdin so later calls are not queued behind
+            # earlier ones.
+            executor.submit(_handle_tool_call, request_id, name, arguments)
+            continue
+
+        if method == "notifications/cancelled":
+            _mcp_log("notifications/cancelled")
             continue
 
         if request_id is not None:

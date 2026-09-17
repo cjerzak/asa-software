@@ -143,7 +143,12 @@
   }
 
   tool_deadline <- min(25, max(5, min(search_timeout, webpage_timeout)))
-  mcp_timeout_ms <- as.integer((tool_deadline + 5) * 1000)
+  # Client-side MCP timeout per tool call. The search server now answers every
+  # call within `tool_deadline` (thread-based deadline) and runs the parallel
+  # calls of a turn concurrently, so this only needs to cover one deadline
+  # plus one extra deadline of tolerance for a call that briefly queues when a
+  # turn issues more calls than the server's worker pool.
+  mcp_timeout_ms <- as.integer((tool_deadline * 2 + 5) * 1000)
 
   unknown_after <- suppressWarnings(as.integer(unknown_after_searches %||% NA_integer_))
   total_timeout_limit <- if (!is.na(unknown_after) && unknown_after > 0L) {

@@ -271,7 +271,7 @@ test_that("free-code loop guard config derives bounded tool deadlines and budget
   expect_identical(guard$unknown_after_searches, 3L)
   expect_identical(guard$total_timeout_limit, 3L)
   expect_equal(guard$tool_deadline_seconds, 11)
-  expect_identical(guard$mcp_timeout_ms, 16000L)
+  expect_identical(guard$mcp_timeout_ms, 27000L)  # 2 x 11 s deadline + 5 s
 })
 
 test_that("free-code CLI env routes API locally without inheriting proxy env", {
