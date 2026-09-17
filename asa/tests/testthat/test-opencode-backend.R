@@ -482,7 +482,7 @@ test_that("OpenCode config content wires provider, headers, tools, and MCP", {
   server <- parsed$mcp$asa_search
   expect_identical(server$type, "local")
   expect_true(isTRUE(server$enabled))
-  expect_identical(server$timeout, 17000L)
+  expect_identical(server$timeout, 29000L)  # 2 x 12 s tool deadline + 5 s
   expect_identical(unlist(server$command, use.names = FALSE), c("/usr/bin/python3", "-m", "asa_backend.free_code.mcp_search_server"))
   expect_identical(server$environment$PYTHONPATH, "/tmp/asa-python")
   expect_identical(server$environment$ASA_FREE_CODE_PROXY, "socks5h://127.0.0.1:9050")
