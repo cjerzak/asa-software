@@ -258,8 +258,11 @@ test_that("Azure shared limiter adopts the advertised deployment quota and learn
   expect_gt(est, 2000)
   expect_lte(est, 9100)
 
-  # Adaptation can be switched off.
-  withr::with_envvar(c(ASA_AZURE_ADAPT_TO_HEADERS = "false"), {
-    expect_equal(make()$effective_limits()$rpm, 60)
-  })
+  # Adaptation can be switched off. The embedded interpreter's os.environ is a
+  # snapshot, so toggle the variable on the Python side rather than via Sys.setenv().
+  reticulate::py_run_string("import os; os.environ['ASA_AZURE_ADAPT_TO_HEADERS'] = 'false'")
+  on.exit(reticulate::py_run_string("import os; os.environ.pop('ASA_AZURE_ADAPT_TO_HEADERS', None)"), add = TRUE)
+  expect_equal(make()$effective_limits()$rpm, 60)
+  reticulate::py_run_string("import os; os.environ.pop('ASA_AZURE_ADAPT_TO_HEADERS', None)")
+  expect_equal(make()$effective_limits()$rpm, 3000)
 })
